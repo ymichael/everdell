@@ -16,5 +16,8 @@ export const pageTypeReducer = (
   if (action.type === "NEW_GAME") {
     return PageType.GAME_BUILDER;
   }
+  if (action.type === "END_GAME") {
+    return PageType.HOME;
+  }
   return state;
 };

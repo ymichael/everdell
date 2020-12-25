@@ -1,13 +1,19 @@
 import "../styles/globals.css";
+import { Provider } from "react-redux";
+import { useStore } from "../redux/store";
 
-function MyApp<T>({
+export default function App<T extends { initialReduxState: any }>({
   Component,
   pageProps,
 }: {
   Component: React.ComponentType<T>;
   pageProps: T;
 }) {
-  return <Component {...pageProps} />;
-}
+  const store = useStore(pageProps.initialReduxState);
 
-export default MyApp;
+  return (
+    <Provider store={store}>
+      <Component {...pageProps} />
+    </Provider>
+  );
+}

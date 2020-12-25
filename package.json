@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "format": "prettier --write pages"
+    "format": "prettier --write src"
   },
   "dependencies": {
     "next": "10.0.4",

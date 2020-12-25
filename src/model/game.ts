@@ -21,7 +21,7 @@ class Game implements IGame {
   }
 }
 
-export const createGame = (playerNames: string[]) => {
+export const createGame = (playerNames: string[]): IGame => {
   return new Game(
     uuid4(),
     playerNames.map((name) => createPlayer(name))

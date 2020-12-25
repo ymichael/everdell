@@ -1,29 +1,35 @@
 import { useMemo } from "react";
-import { Store, AnyAction, createStore, applyMiddleware } from "redux";
+import {
+  Store,
+  AnyAction,
+  createStore,
+  applyMiddleware,
+  combineReducers,
+} from "redux";
 import { composeWithDevTools } from "redux-devtools-extension";
 
 import { IGame } from "../model/types";
+import { PageType, pageTypeReducer } from "./pageType";
+import { gameReducer } from "./game";
 
 let store: Store | undefined;
 
-type StoreState = {
+export type StoreState = {
+  pageType: PageType;
   activeGame: IGame | null;
 };
 
 const initialState: StoreState = {
+  pageType: PageType.HOME,
   activeGame: null,
-};
-
-const reducer = (state: StoreState = initialState, action: AnyAction) => {
-  switch (action.type) {
-    default:
-      return state;
-  }
 };
 
 function initStore(preloadedState = initialState) {
   return createStore(
-    reducer,
+    combineReducers({
+      pageType: pageTypeReducer,
+      activeGame: gameReducer,
+    }),
     preloadedState,
     composeWithDevTools(applyMiddleware())
   );

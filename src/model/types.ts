@@ -57,6 +57,7 @@ export interface IPlayer {
   // TBD
   numWorkers: number;
   numAvailableWorkers: number;
+  toJSON(includePrivate: boolean): object;
 }
 
 export enum GameInputType {

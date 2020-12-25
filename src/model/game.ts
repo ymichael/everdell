@@ -19,11 +19,40 @@ class Game implements IGame {
   get gameState(): IGameState {
     return this._gameState;
   }
+
+  toJSON(): object {
+    return {
+      gameId: this.gameId,
+      gameState: {
+        players: this._gameState.players.map((p) =>
+          p.toJSON(false /* includePrivate */)
+        ),
+      },
+    };
+  }
 }
 
-export const createGame = (playerNames: string[]): IGame => {
-  return new Game(
-    uuid4(),
+export const createGame = (playerNames: string[]): Game => {
+  if (playerNames.length === 0) {
+    throw new Error(
+      `Unable to create a game with ${playerNames.length} players`
+    );
+  }
+
+  const gameId = uuid4();
+  const game = new Game(
+    gameId,
     playerNames.map((name) => createPlayer(name))
   );
+  gameById[gameId] = game;
+  console.log(`Creating game: ${gameId}`);
+  return game;
+};
+
+// TODO persist to db
+const gameById: Record<string, Game> = {};
+gameById["test"] = createGame(["one", "two"]);
+
+export const getGameById = (gameId: string): Game | null => {
+  return gameById[gameId] || null;
 };

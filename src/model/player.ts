@@ -1,21 +1,81 @@
-import { IPlayer, Season, ResourceType } from "./types";
+import { ICard, IPlayer, Season, ResourceType } from "./types";
+import { v4 as uuid4 } from "uuid";
 
-export const createPlayer = (name: string): IPlayer => {
-  return {
-    name,
-    playedCards: [],
-    cardsInHand: [],
-    resources: {
+class Player implements IPlayer {
+  private playerKey: string;
+
+  public name: string;
+  public playerId: string;
+  public playedCards: ICard[];
+  public cardsInHand: ICard[];
+  public resources: {
+    [ResourceType.VP]: number;
+    [ResourceType.TWIG]: number;
+    [ResourceType.BERRY]: number;
+    [ResourceType.STONE]: number;
+    [ResourceType.RESIN]: number;
+  };
+  public currentSeason: Season;
+  public numWorkers: number;
+  public numAvailableWorkers: number;
+
+  constructor(playerName: string) {
+    this.playerId = uuid4();
+    this.playerKey = uuid4();
+    this.name = playerName;
+    this.playedCards = [];
+    this.cardsInHand = [];
+    this.resources = {
       [ResourceType.VP]: 0,
       [ResourceType.TWIG]: 0,
       [ResourceType.BERRY]: 0,
       [ResourceType.STONE]: 0,
       [ResourceType.RESIN]: 0,
-    },
-    currentSeason: Season.WINTER,
+    };
+    this.currentSeason = Season.WINTER;
+    this.numWorkers = 0;
+    this.numAvailableWorkers = 0;
+  }
 
-    // TBD
-    numWorkers: 0,
-    numAvailableWorkers: 0,
-  };
+  get playerKeyUNSAFE(): string {
+    return this.playerKey;
+  }
+
+  toJSON(includePrivate: boolean): object {
+    return {
+      name: this.name,
+      playerId: this.playerId,
+      playedCards: this.playedCards,
+      numCardsInHand: this.cardsInHand.length,
+      resources: this.resources,
+      numWorkers: this.numWorkers,
+      numAvailableWorkers: this.numAvailableWorkers,
+      currentSeason: this.currentSeason,
+      ...(includePrivate
+        ? {
+            playerKey: this.playerKey,
+            cardsInHand: this.cardsInHand,
+          }
+        : {}),
+    };
+  }
+}
+
+export const createPlayer = (name: string): Player => {
+  const player = new Player(name);
+  playerById[player.playerId] = player;
+  playerByKey[player.playerKeyUNSAFE] = player;
+  return player;
+};
+
+// TODO
+const playerById: Record<string, Player> = {};
+const playerByKey: Record<string, Player> = {};
+
+export const getPlayerById = (playerId: string): Player | null => {
+  return playerById[playerId] || null;
+};
+
+export const getPlayerByKey = (playerKey: string): Player | null => {
+  return playerByKey[playerKey] || null;
 };

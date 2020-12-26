@@ -1,13 +1,5 @@
 import { CardName } from "./types";
-
-// maybe more this into a utils file.
-// https://stackoverflow.com/a/12646864
-function shuffleArray<T>(array: T[]): void {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-}
+import shuffle from "lodash/shuffle";
 
 /**
  * Model a stack of cards
@@ -20,7 +12,7 @@ export class CardStack {
   }
 
   shuffle(): void {
-    shuffleArray(this.cards);
+    this.cards = shuffle(this.cards);
   }
 
   get isEmpty(): boolean {

@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "formik": "^2.2.6",
+    "lodash": "^4.17.20",
     "next": "10.0.4",
     "react": "17.0.1",
     "react-dom": "17.0.1",
@@ -17,6 +18,7 @@
     "short-uuid": "^4.1.0"
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.166",
     "@types/node": "^14.14.16",
     "@types/react": "^17.0.0",
     "@types/react-redux": "^7.1.14",

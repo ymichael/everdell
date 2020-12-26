@@ -65,11 +65,11 @@ export const createGame = (playerNames: string[]): Game => {
     new GameState({
       activePlayerId: players[0].playerId,
       players,
-      locations: [],
       meadowCards: [],
       discardPile: [],
       deck: [],
-      events: [],
+      locationsMap: {},
+      eventsMap: {},
       pendingGameInput: null,
     })
   );

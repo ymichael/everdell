@@ -125,12 +125,12 @@ export type GameInput =
   | {
       inputType: GameInputType.PLACE_WORKER;
       playerId: string;
-      location: ILocation;
+      location: LocationName;
     }
   | {
       inputType: GameInputType.CLAIM_EVENT;
       playerId: string;
-      event: IEvent;
+      event: EventName;
     }
   | {
       inputType: GameInputType.PREPARE_FOR_SEASON;
@@ -183,16 +183,39 @@ export enum LocationType {
   JOURNEY = "JOURNEY",
 }
 
-export interface ILocation {
-  name: string;
-  locationType: LocationType;
-}
-
 export enum EventType {
   BASIC = "BASIC",
   SPECIAL = "SPECIAL",
 }
 
-export interface IEvent {
-  eventType: EventType;
+export enum LocationName {
+  // Basic
+  ONE_BERRY = "ONE_BERRY",
+  ONE_BERRY_AND_ONE_CARD = "ONE_BERRY_AND_ONE_CARD",
+  ONE_RESIN_AND_ONE_CARD = "ONE_RESIN_AND_ONE_CARD",
+  ONE_STONE = "ONE_STONE",
+  THREE_TWIGS = "THREE_TWIGS",
+  TWO_CARDS_AND_ONE_VP = "TWO_CARDS_AND_ONE_VP",
+  TWO_RESIN = "TWO_RESIN",
+  TWO_TWIGS_AND_ONE_CARD = "TWO_TWIGS_AND_ONE_CARD",
+
+  // Forest
+  // TODO
+
+  // Haven
+  HAVEN = "HAVEN",
+
+  // Journey
+  JOURNEY_FIVE = "JOURNEY_FIVE",
+  JOURNEY_FOUR = "JOURNEY_FOUR",
+  JOURNEY_THREE = "JOURNEY_THREE",
+  JOURNEY_TWO = "JOURNEY_TWO",
+}
+
+export enum EventName {
+  // Basic
+  FOUR_PRODUCTION_TAGS = "FOUR_PRODUCTION_TAGS",
+  THREE_DESTINATION = "THREE_DESTINATION",
+  THREE_GOVERNANCE = "THREE_GOVERNANCE",
+  THREE_TRAVELER = "THREE_TRAVELER",
 }

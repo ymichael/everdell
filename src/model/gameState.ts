@@ -3,47 +3,50 @@ import {
   GameInputType,
   GameInput,
   CardName,
-  IEvent,
-  ILocation,
+  EventName,
+  LocationName,
 } from "./types";
 import { Player } from "./player";
+
+type LocationNameToPlayerIds = { [key: string]: string[] };
+type EventNameToPlayerId = { [key: string]: string | null };
 
 export class GameState {
   readonly activePlayerId: Player["playerId"];
   readonly players: Player[];
-  readonly locations: ILocation[];
   readonly meadowCards: CardName[];
   readonly discardPile: CardName[];
   readonly deck: CardName[];
-  readonly events: IEvent[];
+  readonly locationsMap: LocationNameToPlayerIds;
+  readonly eventsMap: EventNameToPlayerId;
   readonly pendingGameInput: GameInput | null;
 
   constructor({
     activePlayerId,
     players,
-    locations,
     meadowCards,
     discardPile,
     deck,
-    events,
+    locationsMap,
+    eventsMap,
     pendingGameInput,
   }: {
     activePlayerId: Player["playerId"];
     players: Player[];
-    locations: ILocation[];
     meadowCards: CardName[];
     discardPile: CardName[];
     deck: CardName[];
-    events: IEvent[];
+    locationsMap: LocationNameToPlayerIds;
+    eventsMap: EventNameToPlayerId;
     pendingGameInput: GameInput | null;
   }) {
     this.activePlayerId = activePlayerId;
     this.players = players;
-    this.locations = locations;
+    this.locationsMap = locationsMap;
     this.meadowCards = meadowCards;
     this.discardPile = discardPile;
     this.deck = deck;
-    this.events = events;
+    this.eventsMap = eventsMap;
     this.pendingGameInput = pendingGameInput;
   }
 
@@ -52,8 +55,8 @@ export class GameState {
       activePlayerId: this.activePlayerId,
       players: this.players.map((p) => p.toJSON(includePrivate)),
       meadowCards: this.meadowCards,
-      locations: this.locations,
-      events: this.events,
+      locationsMap: this.locationsMap,
+      eventsMap: this.eventsMap,
       pendingGameInput: this.pendingGameInput,
       ...(includePrivate
         ? {
@@ -84,15 +87,25 @@ export class GameState {
     return activePlayer;
   }
 
-  private getEligibleEvents = (): IEvent[] => {
-    return this.events.filter((event) => {
-      // TODO
-      return true;
-    });
+  private getEligibleEvents = (): EventName[] => {
+    const entries = (Object.entries(this.eventsMap) as unknown) as [
+      EventName,
+      string
+    ][];
+    return entries
+      .filter(([eventName, playerIdIfTaken]) => {
+        if (!!playerIdIfTaken) {
+          return false;
+        }
+        // TODO check if player is eligible for event.
+        return true;
+      })
+      .map(([eventName, _]) => eventName);
   };
 
-  private getAvailableLocations = (): ILocation[] => {
-    return this.locations.filter((location) => {
+  private getAvailableLocations = (): LocationName[] => {
+    const keys = (Object.keys(this.locationsMap) as unknown) as LocationName[];
+    return keys.filter((locationName) => {
       // TODO
       return true;
     });

@@ -12,7 +12,7 @@ export class Player {
     [ResourceType.VP]: number;
     [ResourceType.TWIG]: number;
     [ResourceType.BERRY]: number;
-    [ResourceType.STONE]: number;
+    [ResourceType.PEBBLE]: number;
     [ResourceType.RESIN]: number;
   };
   public currentSeason: Season;
@@ -33,7 +33,7 @@ export class Player {
       [ResourceType.VP]: 0,
       [ResourceType.TWIG]: 0,
       [ResourceType.BERRY]: 0,
-      [ResourceType.STONE]: 0,
+      [ResourceType.PEBBLE]: 0,
       [ResourceType.RESIN]: 0,
     };
     this.currentSeason = Season.WINTER;

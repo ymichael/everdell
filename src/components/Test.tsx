@@ -3,7 +3,7 @@ import { Card } from "../model/card";
 
 const Test: React.FC = () => {
 	var name = "POSTAL_PIGEON";
-	var card = Card.fromName(name);
+	var card = Card.fromName(name as any);
 	var cost = card.baseCost; // [ResourceType.BERRY]: 2,
 
 	return (

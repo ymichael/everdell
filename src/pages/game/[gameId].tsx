@@ -28,10 +28,31 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-export default function GamePage(props: any) {
+export default function GamePage(props: {
+  isGameAdmin: boolean;
+  game: any;
+  currentPlayer: any;
+}) {
+  const { isGameAdmin, game, currentPlayer } = props;
   return (
     <div>
-      <pre>{JSON.stringify(props, null, 2)}</pre>
+      {isGameAdmin ? (
+        <>
+          <h1>Game id: {game.gameId}</h1>
+          <p>Copy links to share with other players:</p>
+          <ul>
+            {game.gameState.players.map((p: any, idx: number) => (
+              <li key={idx}>
+                <a href={`/game/${game.gameId}?playerSecret=${p.playerSecret}`}>
+                  {p.name}{" "}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </>
+      ) : (
+        <pre>{JSON.stringify(props, null, 2)}</pre>
+      )}
     </div>
   );
 }

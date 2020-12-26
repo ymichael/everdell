@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useRouter } from "next/router";
 import { useSelector, useDispatch } from "react-redux";
 
 import { StoreState } from "../redux/store";
@@ -8,6 +9,7 @@ import Game from "./Game";
 import GameBuilder from "./GameBuilder";
 
 const Main: React.FC = () => {
+  const router = useRouter();
   const dispatch = useDispatch();
   const pageType: PageType = useSelector((state: StoreState) => state.pageType);
 
@@ -20,15 +22,7 @@ const Main: React.FC = () => {
       <>
         <h1>Everdell</h1>
         <div>No active game</div>
-        <button
-          onClick={() => {
-            dispatch({
-              type: "NEW_GAME",
-            });
-          }}
-        >
-          new game
-        </button>
+        <button onClick={() => router.push("/game/new")}>new game</button>
       </>
     );
   }

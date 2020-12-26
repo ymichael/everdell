@@ -11,7 +11,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   } = context.query;
   const game = await getGameById(gameId as string);
   if (!game) {
-    return { notFound: true };
+    return { redirect: { statusCode: 302, destination: "/" } };
   }
 
   // Render admin page showing links for all players

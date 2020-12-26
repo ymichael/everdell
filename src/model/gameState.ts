@@ -14,6 +14,9 @@ import { initialLocationsMap } from "./location";
 import { initialEventMap } from "./event";
 import { initialShuffledDeck } from "./deck";
 
+const MEADOW_SIZE = 8;
+const STARTING_PLAYER_HAND_SIZE = 5;
+
 export class GameState {
   readonly activePlayerId: Player["playerId"];
   readonly players: Player[];
@@ -66,6 +69,33 @@ export class GameState {
     };
   }
 
+  clone(): GameState {
+    return GameState.fromJSON(this.toJSON(true /* includePrivate */));
+  }
+
+  next(gameInput: GameInput): GameState {
+    const nextGameState = this.clone();
+
+    switch (gameInput.inputType) {
+      case GameInputType.DRAW_CARDS:
+        const player = nextGameState.getPlayer(gameInput.playerId);
+        for (let i = 0; i < gameInput.count; i++) {
+          player.cardsInHand.push(nextGameState.deck.draw());
+          console.log(player);
+        }
+        break;
+      case GameInputType.REPLENISH_MEADOW:
+        while (nextGameState.meadowCards.length !== MEADOW_SIZE) {
+          nextGameState.meadowCards.push(nextGameState.deck.draw());
+        }
+        break;
+      default:
+        throw new Error(`Unhandled game input: ${JSON.stringify(gameInput)}`);
+    }
+
+    return nextGameState;
+  }
+
   static fromJSON(gameStateJSON: any): GameState {
     return new GameState({
       ...gameStateJSON,
@@ -82,7 +112,7 @@ export class GameState {
       throw new Error(`Unable to create a game with ${players.length} players`);
     }
 
-    const gameState = new GameState({
+    let gameState = new GameState({
       activePlayerId: players[0].playerId,
       players,
       meadowCards: [],
@@ -93,18 +123,30 @@ export class GameState {
       pendingGameInput: null,
     });
 
+    // Players draw cards
+    players.forEach((p, idx) => {
+      gameState = gameState.next({
+        inputType: GameInputType.DRAW_CARDS,
+        playerId: p.playerId,
+        count: STARTING_PLAYER_HAND_SIZE + idx,
+      });
+    });
+
+    // Draw cards onto the meadow
+    gameState = gameState.next({
+      inputType: GameInputType.REPLENISH_MEADOW,
+    });
+
     return gameState;
   }
 
-  getActivePlayer(): Player {
-    const activePlayer = this.players.find(
-      (player) => player.playerId === this.activePlayerId
-    );
+  getPlayer(playerId: string): Player {
+    const ret = this.players.find((player) => player.playerId === playerId);
 
-    if (!activePlayer) {
-      throw new Error(`Unable to find the active player`);
+    if (!ret) {
+      throw new Error(`Unable to find player: ${playerId}`);
     }
-    return activePlayer;
+    return ret;
   }
 
   private getEligibleEvents = (): EventName[] => {
@@ -132,16 +174,17 @@ export class GameState {
   };
 
   private getPlayableCards = (): CardName[] => {
-    return [...this.meadowCards, ...this.getActivePlayer().cardsInHand].filter(
-      (card) => {
-        // TODO
-        return true;
-      }
-    );
+    return [
+      ...this.meadowCards,
+      ...this.getPlayer(this.activePlayerId).cardsInHand,
+    ].filter((card) => {
+      // TODO
+      return true;
+    });
   };
 
   getPossibleGameInputs(): GameInput[] {
-    const player = this.getActivePlayer();
+    const player = this.getPlayer(this.activePlayerId);
     const playerId = player.playerId;
     const possibleGameInputs: GameInput[] = [];
 

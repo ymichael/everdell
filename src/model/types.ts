@@ -85,6 +85,7 @@ export enum GameInputType {
   CLAIM_EVENT = "CLAIM_EVENT",
   PREPARE_FOR_SEASON = "PREPARE_FOR_SEASON",
 
+  REPLENISH_MEADOW = "REPLENISH_MEADOW",
   PAY_FOR_CARD = "PAY_FOR_CARD",
   DRAW_CARDS = "DRAW_CARDS",
   GAIN_RESOURCES = "GAIN_RESOURCES",
@@ -93,6 +94,14 @@ export enum GameInputType {
 }
 
 export type GameInput =
+  | {
+      inputType: GameInputType.DRAW_CARDS;
+      playerId: string;
+      count: number;
+    }
+  | {
+      inputType: GameInputType.REPLENISH_MEADOW;
+    }
   | {
       inputType: GameInputType.PLAY_CARD;
       playerId: string;
@@ -115,11 +124,6 @@ export type GameInput =
   | {
       inputType: GameInputType.PAY_FOR_CARD;
       playerId: string;
-    }
-  | {
-      inputType: GameInputType.DRAW_CARDS;
-      playerId: string;
-      count: number;
     }
   | {
       inputType: GameInputType.GAIN_RESOURCES;

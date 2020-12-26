@@ -19,26 +19,48 @@ export class Player {
   public numWorkers: number;
   public numAvailableWorkers: number;
 
-  constructor(
-    playerName: string,
-    playerId: string | null = null,
-    playerSecret: string | null = null
-  ) {
-    this.playerId = playerId || uuid();
-    this.playerSecret = playerSecret || uuid();
-    this.name = playerName;
-    this.playedCards = [];
-    this.cardsInHand = [];
-    this.resources = {
+  constructor({
+    name,
+    playerSecret = uuid(),
+    playerId = uuid(),
+    playedCards = [],
+    cardsInHand = [],
+    resources = {
       [ResourceType.VP]: 0,
       [ResourceType.TWIG]: 0,
       [ResourceType.BERRY]: 0,
       [ResourceType.PEBBLE]: 0,
       [ResourceType.RESIN]: 0,
+    },
+    currentSeason = Season.WINTER,
+    numWorkers = 2,
+    numAvailableWorkers = 2,
+  }: {
+    name: string;
+    playerSecret: string;
+    playerId: string;
+    playedCards: CardName[];
+    cardsInHand: CardName[];
+    resources: {
+      [ResourceType.VP]: number;
+      [ResourceType.TWIG]: number;
+      [ResourceType.BERRY]: number;
+      [ResourceType.PEBBLE]: number;
+      [ResourceType.RESIN]: number;
     };
-    this.currentSeason = Season.WINTER;
-    this.numWorkers = 0;
-    this.numAvailableWorkers = 0;
+    currentSeason: Season;
+    numWorkers: number;
+    numAvailableWorkers: number;
+  }) {
+    this.playerId = playerId;
+    this.playerSecret = playerSecret;
+    this.name = name;
+    this.playedCards = playedCards;
+    this.cardsInHand = cardsInHand;
+    this.resources = resources;
+    this.currentSeason = currentSeason;
+    this.numWorkers = numWorkers;
+    this.numAvailableWorkers = numAvailableWorkers;
   }
 
   get playerSecretUNSAFE(): string {
@@ -65,21 +87,28 @@ export class Player {
   }
 
   static fromJSON(playerJSON: any): Player {
-    const player = new Player(
-      playerJSON.name,
-      playerJSON.playerId,
-      playerJSON.playerSecret
-    );
-    player.playedCards = playerJSON.playedCards;
-    player.resources = playerJSON.resources;
-    player.numWorkers = playerJSON.numWorkers;
-    player.numAvailableWorkers = playerJSON.numAvailableWorkers;
-    player.currentSeason = playerJSON.currentSeason;
+    const player = new Player(playerJSON);
     return player;
   }
 }
 
 export const createPlayer = (name: string): Player => {
-  const player = new Player(name);
+  const player = new Player({
+    name,
+    playerSecret: uuid(),
+    playerId: uuid(),
+    playedCards: [],
+    cardsInHand: [],
+    resources: {
+      [ResourceType.VP]: 0,
+      [ResourceType.TWIG]: 0,
+      [ResourceType.BERRY]: 0,
+      [ResourceType.PEBBLE]: 0,
+      [ResourceType.RESIN]: 0,
+    },
+    currentSeason: Season.WINTER,
+    numWorkers: 2,
+    numAvailableWorkers: 2,
+  });
   return player;
 };

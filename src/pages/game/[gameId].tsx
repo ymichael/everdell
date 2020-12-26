@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 
 import { getGameById } from "../../model/game";
 import GameAdmin from "../../components/GameAdmin";
+import Game from "../../components/Game";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const {
@@ -40,7 +41,7 @@ export default function GamePage(props: {
       {isGameAdmin ? (
         <GameAdmin game={game} />
       ) : (
-        <pre>{JSON.stringify(props, null, 2)}</pre>
+        <Game game={game} currentPlayer={currentPlayer} />
       )}
     </div>
   );

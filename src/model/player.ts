@@ -1,5 +1,5 @@
 import { CardName, Season, ResourceType } from "./types";
-import { v4 as uuid4 } from "uuid";
+import { generate as uuid } from "short-uuid";
 
 export class Player {
   private playerSecret: string;
@@ -24,8 +24,8 @@ export class Player {
     playerId: string | null = null,
     playerSecret: string | null = null
   ) {
-    this.playerId = playerId || uuid4();
-    this.playerSecret = playerSecret || uuid4();
+    this.playerId = playerId || uuid();
+    this.playerSecret = playerSecret || uuid();
     this.name = playerName;
     this.playedCards = [];
     this.cardsInHand = [];

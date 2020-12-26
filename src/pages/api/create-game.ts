@@ -27,5 +27,8 @@ export default (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   const game = createGame(body.players.map((p: any) => p.name));
-  res.json({ success: "ok", gameUrl: `/game/${game.gameId}` });
+  res.json({
+    success: "ok",
+    gameUrl: `/game/${game.gameId}?gameSecret=${game.gameSecretUNSAFE}`,
+  });
 };

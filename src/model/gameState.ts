@@ -9,16 +9,43 @@ import {
 import { Player } from "./player";
 
 export class GameState {
-  constructor(
-    readonly activePlayerId: Player["playerId"],
-    readonly players: Player[],
-    readonly locations: ILocation[],
-    readonly meadowCards: CardName[],
-    readonly discardPile: CardName[],
-    readonly deck: CardName[],
-    readonly events: IEvent[],
-    readonly pendingGameInput: GameInput | null
-  ) {}
+  readonly activePlayerId: Player["playerId"];
+  readonly players: Player[];
+  readonly locations: ILocation[];
+  readonly meadowCards: CardName[];
+  readonly discardPile: CardName[];
+  readonly deck: CardName[];
+  readonly events: IEvent[];
+  readonly pendingGameInput: GameInput | null;
+
+  constructor({
+    activePlayerId,
+    players,
+    locations,
+    meadowCards,
+    discardPile,
+    deck,
+    events,
+    pendingGameInput,
+  }: {
+    activePlayerId: Player["playerId"];
+    players: Player[];
+    locations: ILocation[];
+    meadowCards: CardName[];
+    discardPile: CardName[];
+    deck: CardName[];
+    events: IEvent[];
+    pendingGameInput: GameInput | null;
+  }) {
+    this.activePlayerId = activePlayerId;
+    this.players = players;
+    this.locations = locations;
+    this.meadowCards = meadowCards;
+    this.discardPile = discardPile;
+    this.deck = deck;
+    this.events = events;
+    this.pendingGameInput = pendingGameInput;
+  }
 
   toJSON(includePrivate: boolean): object {
     return {
@@ -38,16 +65,12 @@ export class GameState {
   }
 
   static fromJSON(gameStateJSON: any): GameState {
-    return new GameState(
-      gameStateJSON.activePlayerId,
-      gameStateJSON.players.map((pJSON: any) => Player.fromJSON(pJSON)),
-      gameStateJSON.locations,
-      gameStateJSON.meadowCards,
-      gameStateJSON.discardPile,
-      gameStateJSON.desk,
-      gameStateJSON.events,
-      gameStateJSON.pendingGameInput
-    );
+    return new GameState({
+      ...gameStateJSON,
+      players: gameStateJSON.players.map((pJSON: any) =>
+        Player.fromJSON(pJSON)
+      ),
+    });
   }
 
   getActivePlayer(): Player {

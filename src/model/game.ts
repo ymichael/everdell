@@ -1,4 +1,4 @@
-import { v4 as uuid4 } from "uuid";
+import { generate as uuid } from "short-uuid";
 import { Player, createPlayer } from "./player";
 import { GameState } from "./gameState";
 import { getGameJSONById, saveGameJSONById } from "./db";
@@ -55,14 +55,23 @@ export const createGame = (playerNames: string[]): Game => {
       `Unable to create a game with ${playerNames.length} players`
     );
   }
-  const gameId = uuid4();
-  const gameSecret = uuid4();
+  const gameId = uuid();
+  const gameSecret = uuid();
   console.log(`Creating game: ${gameId}`);
   const players = playerNames.map((name) => createPlayer(name));
   const game = new Game(
     gameId,
     gameSecret,
-    new GameState(players[0].playerId, players, [], [], [], [], [], null)
+    new GameState({
+      activePlayerId: players[0].playerId,
+      players,
+      locations: [],
+      meadowCards: [],
+      discardPile: [],
+      deck: [],
+      events: [],
+      pendingGameInput: null,
+    })
   );
 
   game.save();

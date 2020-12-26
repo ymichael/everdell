@@ -9,7 +9,10 @@ import {
   EventNameToPlayerId,
 } from "./types";
 import { Player } from "./player";
-import { CardStack } from "./cardStack";
+import { CardStack, emptyCardStack } from "./cardStack";
+import { initialLocationsMap } from "./location";
+import { initialEventMap } from "./event";
+import { initialShuffledDeck } from "./deck";
 
 export class GameState {
   readonly activePlayerId: Player["playerId"];
@@ -72,6 +75,25 @@ export class GameState {
         Player.fromJSON(pJSON)
       ),
     });
+  }
+
+  static initialGameState({ players }: { players: Player[] }): GameState {
+    if (players.length < 2) {
+      throw new Error(`Unable to create a game with ${players.length} players`);
+    }
+
+    const gameState = new GameState({
+      activePlayerId: players[0].playerId,
+      players,
+      meadowCards: [],
+      deck: initialShuffledDeck(),
+      discardPile: emptyCardStack(),
+      locationsMap: initialLocationsMap(),
+      eventsMap: initialEventMap(),
+      pendingGameInput: null,
+    });
+
+    return gameState;
   }
 
   getActivePlayer(): Player {

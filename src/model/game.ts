@@ -1,9 +1,5 @@
 import { generate as uuid } from "short-uuid";
 import { Player, createPlayer } from "./player";
-import { initialLocationsMap } from "./location";
-import { initialEventMap } from "./event";
-import { emptyCardStack } from "./cardStack";
-import { initialShuffledDeck } from "./deck";
 import { GameState } from "./gameState";
 import { getGameJSONById, saveGameJSONById } from "./db";
 
@@ -54,7 +50,7 @@ class Game {
 }
 
 export const createGame = (playerNames: string[]): Game => {
-  if (playerNames.length === 0) {
+  if (playerNames.length < 2) {
     throw new Error(
       `Unable to create a game with ${playerNames.length} players`
     );
@@ -66,15 +62,8 @@ export const createGame = (playerNames: string[]): Game => {
   const game = new Game(
     gameId,
     gameSecret,
-    new GameState({
-      activePlayerId: players[0].playerId,
+    GameState.initialGameState({
       players,
-      meadowCards: [],
-      discardPile: emptyCardStack(),
-      deck: initialShuffledDeck(),
-      locationsMap: initialLocationsMap(),
-      eventsMap: initialEventMap(),
-      pendingGameInput: null,
     })
   );
 

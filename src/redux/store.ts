@@ -7,25 +7,21 @@ import {
   combineReducers,
 } from "redux";
 import { composeWithDevTools } from "redux-devtools-extension";
-import { PageType, pageTypeReducer } from "./pageType";
 import { gameReducer } from "./game";
 
 let store: Store | undefined;
 
 export type StoreState = {
-  pageType: PageType;
   activeGame: object | null;
 };
 
 const initialState: StoreState = {
-  pageType: PageType.HOME,
   activeGame: null,
 };
 
 function initStore(preloadedState = initialState) {
   return createStore(
     combineReducers({
-      pageType: pageTypeReducer,
       activeGame: gameReducer,
     }),
     preloadedState,

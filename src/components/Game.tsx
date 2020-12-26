@@ -2,7 +2,6 @@ import * as React from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 import { StoreState } from "../redux/store";
-import { PageType } from "../redux/pageType";
 
 const Game: React.FC = () => {
   const dispatch = useDispatch();

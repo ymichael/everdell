@@ -1,110 +1,134 @@
 .container {
-	height: 370px;
-	width: 450px;
-	position: relative;
+  height: 370px;
+  width: 450px;
+  position: relative;
 }
 
 .card_border {
-	background: #ffffff;
-	border: 1px solid #000000;
-	box-sizing: border-box;
-	height: 338px;
-	width: 391px;
-	left: 43px;
-	top: 59px;
-	position: relative;
+  background: #ffffff;
+  border: 1px solid #000000;
+  box-sizing: border-box;
+  height: 338px;
+  width: 391px;
+  left: 43px;
+  top: 59px;
+  position: relative;
 }
 
 .card_header {
-	height: 50px;
-	border: 1px solid #000000;
-	padding-top: 10px;
+  height: 50px;
+  border: 1px solid #000000;
+  padding-top: 10px;
 
-	font-weight: bold;
-	font-size: 20px;
-	line-height: 23px;
+  font-weight: bold;
+  font-size: 20px;
+  line-height: 23px;
 
-	align-items: center;
-	text-align: center;
-	color: #ffffff;
+  align-items: center;
+  text-align: center;
+  color: #ffffff;
 }
 
 .associated_card {
-	width: 180px;
-	height: 25px;
+  width: 180px;
+  height: 25px;
 
-	float: right;
-	position: absolute;
-	bottom: 0;
-	right: 0;
+  float: right;
+  position: absolute;
+  bottom: 0;
+  right: 0;
 
-	border: 1px solid #000000;
-	box-sizing: border-box;
+  border: 1px solid #000000;
+  box-sizing: border-box;
 
-	padding-right: 10px;
-	padding-top: 2px;
-	font-size: 14px;
-	font-style: normal;
-	font-weight: 700;
-	line-height: 16px;
-	letter-spacing: 0em;
-	text-align: right;
-	color: #ffffff;
+  padding-right: 10px;
+  padding-top: 2px;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 16px;
+  letter-spacing: 0em;
+  text-align: right;
+  color: #ffffff;
 }
 
 .circle {
-	border-radius: 99px;
-	width: 70px;
-	height: 70px;
+  border-radius: 99px;
+  width: 70px;
+  height: 70px;
 
-	margin-top: 50px;
+  margin-top: 50px;
 
-	text-align: center;
-	font-weight: normal;
-	font-size: 30px;
-	color: #000000;
-	padding-top: 15px;
+  text-align: center;
+  font-weight: normal;
+  font-size: 30px;
+  color: #000000;
+  padding-top: 15px;
 
-	border: 1px solid #000000;
+  border: 1px solid #000000;
 }
 
 .card_header_vp {
-	position: absolute;
-	float: right;
-	top: 0;
-	right: 0;
-	z-index: 10;
+  position: absolute;
+  float: right;
+  top: 0;
+  right: 0;
+  z-index: 10;
 }
 
 .card_header_symbol {
-	position: absolute;
-	float: left;
-	top: 0;
-	margin-left: 20px;
-	z-index: 10;
+  position: absolute;
+  float: left;
+  top: 0;
+  margin-left: 20px;
+  z-index: 10;
 }
 
 .color_victory_point {
-	background: #e3b117;
+  background: #e3b117;
 }
 
 .color_destination {
-	background: #943032;
+  background: #943032;
 }
 
 .color_destination_gradient {
-	background: linear-gradient(111.09deg, #c26473 -23.53%, #431f24 116.69%),
-		linear-gradient(0deg, #b84a5b, #b84a5b);
+  background: linear-gradient(111.09deg, #c26473 -23.53%, #431f24 116.69%),
+    linear-gradient(0deg, #b84a5b, #b84a5b);
 }
 
 .color_governence {
-	background: #476f80;
+  background: #476f80;
 }
 
 .color_production {
-	background: #88a55e;
+  background: #88a55e;
 }
 
 .color_prosperity {
-	background: #534279;
+  background: #534279;
+}
+
+.color_traveler {
+  background: #796a53;
+}
+
+.cost {
+  margin-left: 150px;
+  margin-bottom: 10px;
+  margin-top: 10px;
+}
+
+.rarity_label {
+  width: 182px;
+  height: 25px;
+  margin-left: 100px;
+
+  position: absolute;
+
+  font-style: normal;
+  font-weight: normal;
+  font-size: 18px;
+  line-height: 16px;
+  text-align: center;
 }

@@ -5,13 +5,13 @@ import Card from "../components/Card";
 import { CardName } from "../model/types";
 
 export default function TestPage() {
-	var name = CardName.POSTAL_PIGEON;
-	return (
-		<div className={styles.container}>
-			<Head>
-				<title>Everdell Test Page</title>
-			</Head>
-			<Card name={name} />
-		</div>
-	);
+  var name = CardName.POSTAL_PIGEON;
+  return (
+    <div className={styles.container}>
+      <Head>
+        <title>Everdell Test Page</title>
+      </Head>
+      <Card name={name} />
+    </div>
+  );
 }

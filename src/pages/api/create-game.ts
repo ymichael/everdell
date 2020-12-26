@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import shuffle from "lodash/shuffle";
 import { createGame } from "../../model/game";
 
 export default (req: NextApiRequest, res: NextApiResponse) => {
@@ -25,7 +26,12 @@ export default (req: NextApiRequest, res: NextApiResponse) => {
     });
     return;
   }
-
-  const game = createGame(body.players.map((p: any) => p.name));
-  res.json({ success: "ok", gameUrl: `/game/${game.gameId}` });
+  const players = body.randomizeStartingPlayer
+    ? shuffle([...body.players])
+    : [...body.players];
+  const game = createGame(players.map((p: any) => p.name));
+  res.json({
+    success: "ok",
+    gameUrl: `/game/${game.gameId}?gameSecret=${game.gameSecretUNSAFE}`,
+  });
 };

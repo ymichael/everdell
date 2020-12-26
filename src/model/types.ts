@@ -85,6 +85,7 @@ export enum GameInputType {
   CLAIM_EVENT = "CLAIM_EVENT",
   PREPARE_FOR_SEASON = "PREPARE_FOR_SEASON",
 
+  REPLENISH_MEADOW = "REPLENISH_MEADOW",
   PAY_FOR_CARD = "PAY_FOR_CARD",
   DRAW_CARDS = "DRAW_CARDS",
   GAIN_RESOURCES = "GAIN_RESOURCES",
@@ -94,6 +95,14 @@ export enum GameInputType {
 
 export type GameInput =
   | {
+      inputType: GameInputType.DRAW_CARDS;
+      playerId: string;
+      count: number;
+    }
+  | {
+      inputType: GameInputType.REPLENISH_MEADOW;
+    }
+  | {
       inputType: GameInputType.PLAY_CARD;
       playerId: string;
       card: CardName;
@@ -101,12 +110,12 @@ export type GameInput =
   | {
       inputType: GameInputType.PLACE_WORKER;
       playerId: string;
-      location: ILocation;
+      location: LocationName;
     }
   | {
       inputType: GameInputType.CLAIM_EVENT;
       playerId: string;
-      event: IEvent;
+      event: EventName;
     }
   | {
       inputType: GameInputType.PREPARE_FOR_SEASON;
@@ -115,11 +124,6 @@ export type GameInput =
   | {
       inputType: GameInputType.PAY_FOR_CARD;
       playerId: string;
-    }
-  | {
-      inputType: GameInputType.DRAW_CARDS;
-      playerId: string;
-      count: number;
     }
   | {
       inputType: GameInputType.GAIN_RESOURCES;
@@ -159,16 +163,38 @@ export enum LocationType {
   JOURNEY = "JOURNEY",
 }
 
-export interface ILocation {
-  name: string;
-  locationType: LocationType;
-}
-
 export enum EventType {
   BASIC = "BASIC",
   SPECIAL = "SPECIAL",
 }
 
-export interface IEvent {
-  eventType: EventType;
+export enum LocationName {
+  HAVEN = "HAVEN",
+  JOURNEY_FIVE = "JOURNEY_FIVE",
+  JOURNEY_FOUR = "JOURNEY_FOUR",
+  JOURNEY_THREE = "JOURNEY_THREE",
+  JOURNEY_TWO = "JOURNEY_TWO",
+  BASIC_ONE_BERRY = "BASIC_ONE_BERRY",
+  BASIC_ONE_BERRY_AND_ONE_CARD = "BASIC_ONE_BERRY_AND_ONE_CARD",
+  BASIC_ONE_RESIN_AND_ONE_CARD = "BASIC_ONE_RESIN_AND_ONE_CARD",
+  BASIC_ONE_STONE = "BASIC_ONE_STONE",
+  BASIC_THREE_TWIGS = "BASIC_THREE_TWIGS",
+  BASIC_TWO_CARDS_AND_ONE_VP = "BASIC_TWO_CARDS_AND_ONE_VP",
+  BASIC_TWO_RESIN = "BASIC_TWO_RESIN",
+  BASIC_TWO_TWIGS_AND_ONE_CARD = "BASIC_TWO_TWIGS_AND_ONE_CARD",
 }
+
+export enum EventName {
+  BASIC_FOUR_PRODUCTION_TAGS = "BASIC_FOUR_PRODUCTION_TAGS",
+  BASIC_THREE_DESTINATION = "BASIC_THREE_DESTINATION",
+  BASIC_THREE_GOVERNANCE = "BASIC_THREE_GOVERNANCE",
+  BASIC_THREE_TRAVELER = "BASIC_THREE_TRAVELER",
+}
+
+export type LocationNameToPlayerIds = Partial<
+  { [key in LocationName]: string[] }
+>;
+
+export type EventNameToPlayerId = Partial<
+  { [key in EventName]: string | null }
+>;

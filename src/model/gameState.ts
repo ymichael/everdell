@@ -3,89 +3,188 @@ import {
   GameInputType,
   GameInput,
   CardName,
-  IEvent,
-  ILocation,
+  EventName,
+  LocationName,
+  LocationNameToPlayerIds,
+  EventNameToPlayerId,
 } from "./types";
 import { Player } from "./player";
+import { CardStack, emptyCardStack } from "./cardStack";
+import { initialLocationsMap } from "./location";
+import { initialEventMap } from "./event";
+import { initialShuffledDeck } from "./deck";
+
+const MEADOW_SIZE = 8;
+const STARTING_PLAYER_HAND_SIZE = 5;
 
 export class GameState {
-  constructor(
-    readonly activePlayerId: Player["playerId"],
-    readonly players: Player[],
-    readonly locations: ILocation[],
-    readonly meadowCards: CardName[],
-    readonly discardPile: CardName[],
-    readonly deck: CardName[],
-    readonly events: IEvent[],
-    readonly pendingGameInput: GameInput | null
-  ) {}
+  readonly activePlayerId: Player["playerId"];
+  readonly players: Player[];
+  readonly meadowCards: CardName[];
+  readonly discardPile: CardStack;
+  readonly deck: CardStack;
+  readonly locationsMap: LocationNameToPlayerIds;
+  readonly eventsMap: EventNameToPlayerId;
+  readonly pendingGameInput: GameInput | null;
+
+  constructor({
+    activePlayerId,
+    players,
+    meadowCards,
+    discardPile,
+    deck,
+    locationsMap,
+    eventsMap,
+    pendingGameInput,
+  }: {
+    activePlayerId: Player["playerId"];
+    players: Player[];
+    meadowCards: CardName[];
+    discardPile: CardStack;
+    deck: CardStack;
+    locationsMap: LocationNameToPlayerIds;
+    eventsMap: EventNameToPlayerId;
+    pendingGameInput: GameInput | null;
+  }) {
+    this.activePlayerId = activePlayerId;
+    this.players = players;
+    this.locationsMap = locationsMap;
+    this.meadowCards = meadowCards;
+    this.discardPile = discardPile;
+    this.deck = deck;
+    this.eventsMap = eventsMap;
+    this.pendingGameInput = pendingGameInput;
+  }
 
   toJSON(includePrivate: boolean): object {
     return {
       activePlayerId: this.activePlayerId,
       players: this.players.map((p) => p.toJSON(includePrivate)),
       meadowCards: this.meadowCards,
-      locations: this.locations,
-      events: this.events,
+      locationsMap: this.locationsMap,
+      eventsMap: this.eventsMap,
       pendingGameInput: this.pendingGameInput,
-      ...(includePrivate
-        ? {
-            deck: this.deck,
-            discardPile: this.discardPile,
-          }
-        : {}),
+      deck: this.deck.toJSON(includePrivate),
+      discardPile: this.discardPile.toJSON(includePrivate),
     };
   }
 
-  static fromJSON(gameStateJSON: any): GameState {
-    return new GameState(
-      gameStateJSON.activePlayerId,
-      gameStateJSON.players.map((pJSON: any) => Player.fromJSON(pJSON)),
-      gameStateJSON.locations,
-      gameStateJSON.meadowCards,
-      gameStateJSON.discardPile,
-      gameStateJSON.desk,
-      gameStateJSON.events,
-      gameStateJSON.pendingGameInput
-    );
+  clone(): GameState {
+    return GameState.fromJSON(this.toJSON(true /* includePrivate */));
   }
 
-  getActivePlayer(): Player {
-    const activePlayer = this.players.find(
-      (player) => player.playerId === this.activePlayerId
-    );
+  next(gameInput: GameInput): GameState {
+    const nextGameState = this.clone();
 
-    if (!activePlayer) {
-      throw new Error(`Unable to find the active player`);
+    switch (gameInput.inputType) {
+      case GameInputType.DRAW_CARDS:
+        const player = nextGameState.getPlayer(gameInput.playerId);
+        for (let i = 0; i < gameInput.count; i++) {
+          player.cardsInHand.push(nextGameState.deck.draw());
+          console.log(player);
+        }
+        break;
+      case GameInputType.REPLENISH_MEADOW:
+        while (nextGameState.meadowCards.length !== MEADOW_SIZE) {
+          nextGameState.meadowCards.push(nextGameState.deck.draw());
+        }
+        break;
+      default:
+        throw new Error(`Unhandled game input: ${JSON.stringify(gameInput)}`);
     }
-    return activePlayer;
+
+    return nextGameState;
   }
 
-  private getEligibleEvents = (): IEvent[] => {
-    return this.events.filter((event) => {
-      // TODO
-      return true;
+  static fromJSON(gameStateJSON: any): GameState {
+    return new GameState({
+      ...gameStateJSON,
+      deck: CardStack.fromJSON(gameStateJSON.deck),
+      discardPile: CardStack.fromJSON(gameStateJSON.discardPile),
+      players: gameStateJSON.players.map((pJSON: any) =>
+        Player.fromJSON(pJSON)
+      ),
     });
+  }
+
+  static initialGameState({ players }: { players: Player[] }): GameState {
+    if (players.length < 2) {
+      throw new Error(`Unable to create a game with ${players.length} players`);
+    }
+
+    let gameState = new GameState({
+      activePlayerId: players[0].playerId,
+      players,
+      meadowCards: [],
+      deck: initialShuffledDeck(),
+      discardPile: emptyCardStack(),
+      locationsMap: initialLocationsMap(),
+      eventsMap: initialEventMap(),
+      pendingGameInput: null,
+    });
+
+    // Players draw cards
+    players.forEach((p, idx) => {
+      gameState = gameState.next({
+        inputType: GameInputType.DRAW_CARDS,
+        playerId: p.playerId,
+        count: STARTING_PLAYER_HAND_SIZE + idx,
+      });
+    });
+
+    // Draw cards onto the meadow
+    gameState = gameState.next({
+      inputType: GameInputType.REPLENISH_MEADOW,
+    });
+
+    return gameState;
+  }
+
+  getPlayer(playerId: string): Player {
+    const ret = this.players.find((player) => player.playerId === playerId);
+
+    if (!ret) {
+      throw new Error(`Unable to find player: ${playerId}`);
+    }
+    return ret;
+  }
+
+  private getEligibleEvents = (): EventName[] => {
+    const entries = (Object.entries(this.eventsMap) as unknown) as [
+      EventName,
+      string
+    ][];
+    return entries
+      .filter(([eventName, playerIdIfTaken]) => {
+        if (!!playerIdIfTaken) {
+          return false;
+        }
+        // TODO check if player is eligible for event.
+        return true;
+      })
+      .map(([eventName, _]) => eventName);
   };
 
-  private getAvailableLocations = (): ILocation[] => {
-    return this.locations.filter((location) => {
+  private getAvailableLocations = (): LocationName[] => {
+    const keys = (Object.keys(this.locationsMap) as unknown) as LocationName[];
+    return keys.filter((locationName) => {
       // TODO
       return true;
     });
   };
 
   private getPlayableCards = (): CardName[] => {
-    return [...this.meadowCards, ...this.getActivePlayer().cardsInHand].filter(
-      (card) => {
-        // TODO
-        return true;
-      }
-    );
+    return [
+      ...this.meadowCards,
+      ...this.getPlayer(this.activePlayerId).cardsInHand,
+    ].filter((card) => {
+      // TODO
+      return true;
+    });
   };
 
   getPossibleGameInputs(): GameInput[] {
-    const player = this.getActivePlayer();
+    const player = this.getPlayer(this.activePlayerId);
     const playerId = player.playerId;
     const possibleGameInputs: GameInput[] = [];
 

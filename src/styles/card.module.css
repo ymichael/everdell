@@ -1,7 +1,110 @@
 .container {
-	min-height: 100vh;
-	padding: 0 0.5rem;
+	height: 370px;
+	width: 450px;
+	position: relative;
+}
+
+.card_border {
 	background: #ffffff;
 	border: 1px solid #000000;
 	box-sizing: border-box;
+	height: 338px;
+	width: 391px;
+	left: 43px;
+	top: 59px;
+	position: relative;
+}
+
+.card_header {
+	height: 50px;
+	border: 1px solid #000000;
+	padding-top: 10px;
+
+	font-weight: bold;
+	font-size: 20px;
+	line-height: 23px;
+
+	align-items: center;
+	text-align: center;
+	color: #ffffff;
+}
+
+.associated_card {
+	width: 180px;
+	height: 25px;
+
+	float: right;
+	position: absolute;
+	bottom: 0;
+	right: 0;
+
+	border: 1px solid #000000;
+	box-sizing: border-box;
+
+	padding-right: 10px;
+	padding-top: 2px;
+	font-size: 14px;
+	font-style: normal;
+	font-weight: 700;
+	line-height: 16px;
+	letter-spacing: 0em;
+	text-align: right;
+	color: #ffffff;
+}
+
+.circle {
+	border-radius: 99px;
+	width: 70px;
+	height: 70px;
+
+	margin-top: 50px;
+
+	text-align: center;
+	font-weight: normal;
+	font-size: 30px;
+	color: #000000;
+	padding-top: 15px;
+
+	border: 1px solid #000000;
+}
+
+.card_header_vp {
+	position: absolute;
+	float: right;
+	top: 0;
+	right: 0;
+	z-index: 10;
+}
+
+.card_header_symbol {
+	position: absolute;
+	float: left;
+	top: 0;
+	margin-left: 20px;
+	z-index: 10;
+}
+
+.color_victory_point {
+	background: #e3b117;
+}
+
+.color_destination {
+	background: #943032;
+}
+
+.color_destination_gradient {
+	background: linear-gradient(111.09deg, #c26473 -23.53%, #431f24 116.69%),
+		linear-gradient(0deg, #b84a5b, #b84a5b);
+}
+
+.color_governence {
+	background: #476f80;
+}
+
+.color_production {
+	background: #88a55e;
+}
+
+.color_prosperity {
+	background: #534279;
 }

@@ -18,6 +18,7 @@ const Main: React.FC = () => {
   } else {
     return (
       <>
+        <h1>Everdell</h1>
         <div>No active game</div>
         <button
           onClick={() => {

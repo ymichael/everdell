@@ -2,7 +2,7 @@ import Head from "next/head";
 import styles from "../styles/Home.module.css";
 import Test from "../components/Test";
 
-export default function IndexPage() {
+export default function TestPage() {
   return (
     <div className={styles.container}>
       <Head>

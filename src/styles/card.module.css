@@ -1,0 +1,7 @@
+.container {
+	min-height: 100vh;
+	padding: 0 0.5rem;
+	background: #ffffff;
+	border: 1px solid #000000;
+	box-sizing: border-box;
+}

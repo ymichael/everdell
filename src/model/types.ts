@@ -48,37 +48,13 @@ export enum CardName {
   WANDERER = "WANDERER",
   WIFE = "WIFE",
   WOODCARVER = "WOODCARVER",
-  CARNIVAL = "CARNIVAL",
-  GAZETTE = "GAZETTE",
-  JUGGLER = "JUGGLER",
-  SCURBBLE_CHAMPION = "SCURBBLE_CHAMPION",
-  SCURBBLE_STADIUM = "SCURBBLE_STADIUM",
-  TOWN_CRIER = "TOWN_CRIER",
-  AMILLA_GLISTENDEW = "AMILLA_GLISTENDEW",
-  BRIDGE_OF_THE_SKY = "BRIDGE_OF_THE_SKY",
-  CIRRUS_WINDFALL = "CIRRUS_WINDFALL",
-  FORESIGHT = "FORESIGHT",
-  FYNN_NOBLETAIL = "FYNN_NOBLETAIL",
-  MCGREGORS_MARKET = "MCGREGORS_MARKET",
-  OLEANDERS_OPERA = "OLEANDERS_OPERA",
-  POE = "POE",
-  SILVER_SCALE_SPRING = "SILVER_SCALE_SPRING",
-  THE_GREEN_ACORN = "THE_GREEN_ACORN",
-  BRIDGE = "BRIDGE",
-  FERRY = "FERRY",
-  FERRY_FERRET = "FERRY_FERRET",
-  HARBOR = "HARBOR",
-  MESSENGER = "MESSENGER",
-  PIRATE = "PIRATE",
-  PIRATE_SHIP = "PIRATE_SHIP",
-  SHIPWRIGHT = "SHIPWRIGHT",
 }
 
 export enum ResourceType {
   TWIG = "TWIG",
   RESIN = "RESIN",
   BERRY = "BERRY",
-  STONE = "STONE",
+  PEBBLE = "PEBBLE",
   WILD = "WILD",
   WILD_BUT_NOT_BERRY = "WILD_BUT_NOT_BERRY",
   VP = "VP",
@@ -88,7 +64,7 @@ export type ResourceMap = {
   [ResourceType.VP]?: number;
   [ResourceType.TWIG]?: number;
   [ResourceType.BERRY]?: number;
-  [ResourceType.STONE]?: number;
+  [ResourceType.PEBBLE]?: number;
   [ResourceType.RESIN]?: number;
   [ResourceType.WILD]?: number;
   [ResourceType.WILD_BUT_NOT_BERRY]?: number;
@@ -97,7 +73,7 @@ export type ResourceMap = {
 export type CardCost = {
   [ResourceType.TWIG]?: number;
   [ResourceType.BERRY]?: number;
-  [ResourceType.STONE]?: number;
+  [ResourceType.PEBBLE]?: number;
   [ResourceType.RESIN]?: number;
   [ResourceType.WILD]?: number;
   [ResourceType.WILD_BUT_NOT_BERRY]?: number;

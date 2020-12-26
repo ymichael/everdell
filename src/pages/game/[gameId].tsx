@@ -2,23 +2,22 @@ import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 
 import { getGameById } from "../../model/game";
-import { getPlayerByKey } from "../../model/player";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const { gameId = null, playerKey = null } = context.query;
+  const { gameId = null, playerSecret = null } = context.query;
   const game = await getGameById(gameId as string);
   if (!game) {
     return { notFound: true };
   }
 
-  const player = playerKey && getPlayerByKey(playerKey as string);
+  const player = playerSecret && game.getPlayerBySecret(playerSecret as string);
 
   // TODO: Check if gameId & playerId is valid
   return {
     props: {
       query: {
         gameId,
-        playerKey,
+        playerSecret,
       },
       game: game && game.toJSON(false /* includePrivate */),
       currentPlayer: player && player.toJSON(true /* includePrivate */),

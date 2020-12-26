@@ -2,7 +2,7 @@ import { CardName, Season, ResourceType } from "./types";
 import { v4 as uuid4 } from "uuid";
 
 export class Player {
-  private playerKey: string;
+  private playerSecret: string;
 
   public name: string;
   public playerId: string;
@@ -22,10 +22,10 @@ export class Player {
   constructor(
     playerName: string,
     playerId: string | null = null,
-    playerKey: string | null = null
+    playerSecret: string | null = null
   ) {
     this.playerId = playerId || uuid4();
-    this.playerKey = playerKey || uuid4();
+    this.playerSecret = playerSecret || uuid4();
     this.name = playerName;
     this.playedCards = [];
     this.cardsInHand = [];
@@ -41,8 +41,8 @@ export class Player {
     this.numAvailableWorkers = 0;
   }
 
-  get playerKeyUNSAFE(): string {
-    return this.playerKey;
+  get playerSecretUNSAFE(): string {
+    return this.playerSecret;
   }
 
   toJSON(includePrivate: boolean): object {
@@ -57,7 +57,7 @@ export class Player {
       currentSeason: this.currentSeason,
       ...(includePrivate
         ? {
-            playerKey: this.playerKey,
+            playerSecret: this.playerSecret,
             cardsInHand: this.cardsInHand,
           }
         : {}),
@@ -68,7 +68,7 @@ export class Player {
     const player = new Player(
       playerJSON.name,
       playerJSON.playerId,
-      playerJSON.playerKey
+      playerJSON.playerSecret
     );
     player.playedCards = playerJSON.playedCards;
     player.resources = playerJSON.resources;
@@ -81,19 +81,5 @@ export class Player {
 
 export const createPlayer = (name: string): Player => {
   const player = new Player(name);
-  playerById[player.playerId] = player;
-  playerByKey[player.playerKeyUNSAFE] = player;
   return player;
-};
-
-// TODO
-const playerById: Record<string, Player> = {};
-const playerByKey: Record<string, Player> = {};
-
-export const getPlayerById = (playerId: string): Player | null => {
-  return playerById[playerId] || null;
-};
-
-export const getPlayerByKey = (playerKey: string): Player | null => {
-  return playerByKey[playerKey] || null;
 };

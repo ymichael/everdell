@@ -1,13 +1,13 @@
-import { ICard, IPlayer, Season, ResourceType } from "./types";
+import { CardName, Season, ResourceType } from "./types";
 import { v4 as uuid4 } from "uuid";
 
-export class Player implements IPlayer {
+export class Player {
   private playerKey: string;
 
   public name: string;
   public playerId: string;
-  public playedCards: ICard[];
-  public cardsInHand: ICard[];
+  public playedCards: CardName[];
+  public cardsInHand: CardName[];
   public resources: {
     [ResourceType.VP]: number;
     [ResourceType.TWIG]: number;

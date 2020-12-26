@@ -1,3 +1,79 @@
+// All known cards
+export enum CardName {
+  ARCHITECT = "ARCHITECT",
+  BARD = "BARD",
+  BARGE_TOAD = "BARGE_TOAD",
+  CASTLE = "CASTLE",
+  CEMETARY = "CEMETARY",
+  CHAPEL = "CHAPEL",
+  CHIP_SWEEP = "CHIP_SWEEP",
+  CLOCK_TOWER = "CLOCK_TOWER",
+  COURTHOUSE = "COURTHOUSE",
+  CRANE = "CRANE",
+  DOCTOR = "DOCTOR",
+  DUNGEON = "DUNGEON",
+  EVERTREE = "EVERTREE",
+  FAIRGROUNDS = "FAIRGROUNDS",
+  FARM = "FARM",
+  FOOL = "FOOL",
+  GENERAL_STORE = "GENERAL_STORE",
+  HISTORIAN = "HISTORIAN",
+  HUSBAND = "HUSBAND",
+  INN = "INN",
+  INNKEEPER = "INNKEEPER",
+  JUDGE = "JUDGE",
+  KING = "KING",
+  LOOKOUT = "LOOKOUT",
+  MINE = "MINE",
+  MINER_MOLE = "MINER_MOLE",
+  MONASTERY = "MONASTERY",
+  MONK = "MONK",
+  PALACE = "PALACE",
+  PEDDLER = "PEDDLER",
+  POST_OFFICE = "POST_OFFICE",
+  POSTAL_PIGEON = "POSTAL_PIGEON",
+  QUEEN = "QUEEN",
+  RANGER = "RANGER",
+  RESIN_REFINERY = "RESIN_REFINERY",
+  RUINS = "RUINS",
+  SCHOOL = "SCHOOL",
+  SHEPHERD = "SHEPHERD",
+  SHOPKEEPER = "SHOPKEEPER",
+  STOREHOUSE = "STOREHOUSE",
+  TEACHER = "TEACHER",
+  THEATRE = "THEATRE",
+  TWIG_BARGE = "TWIG_BARGE",
+  UNDERTAKER = "UNDERTAKER",
+  UNIVERSITY = "UNIVERSITY",
+  WANDERER = "WANDERER",
+  WIFE = "WIFE",
+  WOODCARVER = "WOODCARVER",
+  CARNIVAL = "CARNIVAL",
+  GAZETTE = "GAZETTE",
+  JUGGLER = "JUGGLER",
+  SCURBBLE_CHAMPION = "SCURBBLE_CHAMPION",
+  SCURBBLE_STADIUM = "SCURBBLE_STADIUM",
+  TOWN_CRIER = "TOWN_CRIER",
+  AMILLA_GLISTENDEW = "AMILLA_GLISTENDEW",
+  BRIDGE_OF_THE_SKY = "BRIDGE_OF_THE_SKY",
+  CIRRUS_WINDFALL = "CIRRUS_WINDFALL",
+  FORESIGHT = "FORESIGHT",
+  FYNN_NOBLETAIL = "FYNN_NOBLETAIL",
+  MCGREGORS_MARKET = "MCGREGORS_MARKET",
+  OLEANDERS_OPERA = "OLEANDERS_OPERA",
+  POE = "POE",
+  SILVER_SCALE_SPRING = "SILVER_SCALE_SPRING",
+  THE_GREEN_ACORN = "THE_GREEN_ACORN",
+  BRIDGE = "BRIDGE",
+  FERRY = "FERRY",
+  FERRY_FERRET = "FERRY_FERRET",
+  HARBOR = "HARBOR",
+  MESSENGER = "MESSENGER",
+  PIRATE = "PIRATE",
+  PIRATE_SHIP = "PIRATE_SHIP",
+  SHIPWRIGHT = "SHIPWRIGHT",
+}
+
 export enum ResourceType {
   TWIG = "TWIG",
   RESIN = "RESIN",
@@ -27,39 +103,6 @@ export type CardCost = {
   [ResourceType.WILD_BUT_NOT_BERRY]?: number;
 };
 
-export type IGameState = {
-  readonly activePlayerId: IPlayer["playerId"];
-  readonly players: IPlayer[];
-  readonly locations: ILocation[];
-  readonly meadowCards: ICard[];
-  readonly discardPile: ICard[];
-  readonly deck: ICard[];
-  readonly events: IEvent[];
-  readonly pendingGameInput: GameInput | null;
-
-  getActivePlayer(): IPlayer;
-};
-
-export interface IPlayer {
-  playerId: string;
-  name: string;
-  playedCards: ICard[];
-  cardsInHand: ICard[];
-  resources: {
-    [ResourceType.VP]: number;
-    [ResourceType.TWIG]: number;
-    [ResourceType.BERRY]: number;
-    [ResourceType.STONE]: number;
-    [ResourceType.RESIN]: number;
-  };
-  currentSeason: Season;
-
-  // TBD
-  numWorkers: number;
-  numAvailableWorkers: number;
-  toJSON(includePrivate: boolean): object;
-}
-
 export enum GameInputType {
   PLAY_CARD = "PLAY_CARD",
   PLACE_WORKER = "PLACE_WORKER",
@@ -76,45 +119,45 @@ export enum GameInputType {
 export type GameInput =
   | {
       inputType: GameInputType.PLAY_CARD;
-      player: IPlayer;
-      card: ICard;
+      playerId: string;
+      card: CardName;
     }
   | {
       inputType: GameInputType.PLACE_WORKER;
-      player: IPlayer;
+      playerId: string;
       location: ILocation;
     }
   | {
       inputType: GameInputType.CLAIM_EVENT;
-      player: IPlayer;
+      playerId: string;
       event: IEvent;
     }
   | {
       inputType: GameInputType.PREPARE_FOR_SEASON;
-      player: IPlayer;
+      playerId: string;
     }
   | {
       inputType: GameInputType.PAY_FOR_CARD;
-      player: IPlayer;
+      playerId: string;
     }
   | {
       inputType: GameInputType.DRAW_CARDS;
-      player: IPlayer;
+      playerId: string;
       count: number;
     }
   | {
       inputType: GameInputType.GAIN_RESOURCES;
-      player: IPlayer;
+      playerId: string;
       resources: ResourceMap;
     }
   | {
       inputType: GameInputType.SPEND_RESOURCES;
-      player: IPlayer;
+      playerId: string;
       resources: ResourceMap;
     }
   | {
       inputType: GameInputType.DISCARD_CARDS;
-      player: IPlayer | null;
+      playerId: string | null;
       count: number;
     };
 
@@ -131,18 +174,6 @@ export enum CardType {
   DESTINATION = "DESTINATION", // Red
   GOVERNANCE = "GOVERNANCE", // Blue
   PROSPERITY = "PROSPERITY", // Purple
-}
-
-export interface ICard {
-  name: string;
-  rawCost: CardCost;
-  cardType: CardType;
-  isUnique: boolean;
-  isCritter: boolean;
-  isConstruction: boolean;
-
-  associatedCard: string | null;
-  getPointTotal(player: IPlayer): number;
 }
 
 export enum LocationType {

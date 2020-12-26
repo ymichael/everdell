@@ -2,21 +2,20 @@ import {
   Season,
   GameInputType,
   GameInput,
-  ICard,
-  IGameState,
+  CardName,
   IEvent,
   ILocation,
 } from "./types";
 import { Player } from "./player";
 
-export class GameState implements IGameState {
+export class GameState {
   constructor(
     readonly activePlayerId: Player["playerId"],
     readonly players: Player[],
     readonly locations: ILocation[],
-    readonly meadowCards: ICard[],
-    readonly discardPile: ICard[],
-    readonly deck: ICard[],
+    readonly meadowCards: CardName[],
+    readonly discardPile: CardName[],
+    readonly deck: CardName[],
     readonly events: IEvent[],
     readonly pendingGameInput: GameInput | null
   ) {}
@@ -76,7 +75,7 @@ export class GameState implements IGameState {
     });
   };
 
-  private getPlayableCards = (): ICard[] => {
+  private getPlayableCards = (): CardName[] => {
     return [...this.meadowCards, ...this.getActivePlayer().cardsInHand].filter(
       (card) => {
         // TODO
@@ -87,6 +86,7 @@ export class GameState implements IGameState {
 
   getPossibleGameInputs(): GameInput[] {
     const player = this.getActivePlayer();
+    const playerId = player.playerId;
     const possibleGameInputs: GameInput[] = [];
 
     if (this.pendingGameInput) {
@@ -109,7 +109,7 @@ export class GameState implements IGameState {
       if (player.currentSeason !== Season.WINTER) {
         possibleGameInputs.push({
           inputType: GameInputType.PREPARE_FOR_SEASON,
-          player,
+          playerId,
         });
       }
 
@@ -117,7 +117,7 @@ export class GameState implements IGameState {
         this.getAvailableLocations().forEach((location) => {
           possibleGameInputs.push({
             inputType: GameInputType.PLACE_WORKER,
-            player,
+            playerId,
             location,
           });
         });
@@ -125,7 +125,7 @@ export class GameState implements IGameState {
         this.getEligibleEvents().forEach((event) => {
           possibleGameInputs.push({
             inputType: GameInputType.CLAIM_EVENT,
-            player,
+            playerId,
             event,
           });
         });
@@ -134,7 +134,7 @@ export class GameState implements IGameState {
       this.getPlayableCards().forEach((card) => {
         possibleGameInputs.push({
           inputType: GameInputType.PLAY_CARD,
-          player,
+          playerId,
           card,
         });
       });

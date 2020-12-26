@@ -1,5 +1,4 @@
 import { v4 as uuid4 } from "uuid";
-import { IPlayer } from "./types";
 import { createPlayer } from "./player";
 import { GameState } from "./gameState";
 import { getGameJSONById, saveGameJSONById } from "./db";

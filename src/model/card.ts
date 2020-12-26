@@ -1,6 +1,6 @@
-import { ResourceType, CardCost, CardType, ICard } from "./types";
+import { ResourceType, CardCost, CardType, CardName } from "./types";
 
-export const allCards: ICard[] = [
+export const allCards = [
   {
     name: "Postal Pigeon",
     cardType: CardType.TRAVELER,

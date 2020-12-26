@@ -9,13 +9,14 @@ import {
   EventNameToPlayerId,
 } from "./types";
 import { Player } from "./player";
+import { CardStack } from "./cardStack";
 
 export class GameState {
   readonly activePlayerId: Player["playerId"];
   readonly players: Player[];
   readonly meadowCards: CardName[];
-  readonly discardPile: CardName[];
-  readonly deck: CardName[];
+  readonly discardPile: CardStack;
+  readonly deck: CardStack;
   readonly locationsMap: LocationNameToPlayerIds;
   readonly eventsMap: EventNameToPlayerId;
   readonly pendingGameInput: GameInput | null;
@@ -33,8 +34,8 @@ export class GameState {
     activePlayerId: Player["playerId"];
     players: Player[];
     meadowCards: CardName[];
-    discardPile: CardName[];
-    deck: CardName[];
+    discardPile: CardStack;
+    deck: CardStack;
     locationsMap: LocationNameToPlayerIds;
     eventsMap: EventNameToPlayerId;
     pendingGameInput: GameInput | null;
@@ -57,18 +58,16 @@ export class GameState {
       locationsMap: this.locationsMap,
       eventsMap: this.eventsMap,
       pendingGameInput: this.pendingGameInput,
-      ...(includePrivate
-        ? {
-            deck: this.deck,
-            discardPile: this.discardPile,
-          }
-        : {}),
+      deck: this.deck.toJSON(includePrivate),
+      discardPile: this.discardPile.toJSON(includePrivate),
     };
   }
 
   static fromJSON(gameStateJSON: any): GameState {
     return new GameState({
       ...gameStateJSON,
+      deck: CardStack.fromJSON(gameStateJSON.deck),
+      discardPile: CardStack.fromJSON(gameStateJSON.discardPile),
       players: gameStateJSON.players.map((pJSON: any) =>
         Player.fromJSON(pJSON)
       ),

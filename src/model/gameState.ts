@@ -140,6 +140,10 @@ export class GameState {
     return gameState;
   }
 
+  getActivePlayer(): Player {
+    return this.getPlayer(this.activePlayerId);
+  }
+
   getPlayer(playerId: string): Player {
     const ret = this.players.find((player) => player.playerId === playerId);
 
@@ -174,17 +178,16 @@ export class GameState {
   };
 
   private getPlayableCards = (): CardName[] => {
-    return [
-      ...this.meadowCards,
-      ...this.getPlayer(this.activePlayerId).cardsInHand,
-    ].filter((card) => {
-      // TODO
-      return true;
-    });
+    return [...this.meadowCards, ...this.getActivePlayer().cardsInHand].filter(
+      (card) => {
+        // TODO
+        return true;
+      }
+    );
   };
 
   getPossibleGameInputs(): GameInput[] {
-    const player = this.getPlayer(this.activePlayerId);
+    const player = this.getActivePlayer();
     const playerId = player.playerId;
     const possibleGameInputs: GameInput[] = [];
 

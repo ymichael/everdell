@@ -5,13 +5,27 @@ import Card from "../components/Card";
 import { CardName } from "../model/types";
 
 export default function TestPage() {
-	var name = CardName.POSTAL_PIGEON;
-	return (
-		<div className={styles.container}>
-			<Head>
-				<title>Everdell Test Page</title>
-			</Head>
-			<Card name={name} />
-		</div>
-	);
+  var renderAllCards = true;
+  var cardsToRender = [];
+
+  if (renderAllCards == true) {
+    var enums = Object.keys(CardName) as CardName[];
+    console.log(enums);
+    cardsToRender.push(...enums);
+  } else {
+    cardsToRender = [CardName.POSTAL_PIGEON];
+  }
+  return (
+    <div className={styles.container}>
+      <Head>
+        <title>Everdell Test Page</title>
+      </Head>
+
+      <div>
+        {cardsToRender.map(function (cardsToRender, index) {
+          return <Card key={index} name={cardsToRender} />;
+        })}
+      </div>
+    </div>
+  );
 }

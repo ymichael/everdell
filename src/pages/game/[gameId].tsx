@@ -2,6 +2,7 @@ import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 
 import { getGameById } from "../../model/game";
+import GameAdmin from "../../components/GameAdmin";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const {
@@ -37,19 +38,7 @@ export default function GamePage(props: {
   return (
     <div>
       {isGameAdmin ? (
-        <>
-          <h1>Game id: {game.gameId}</h1>
-          <p>Copy links to share with other players:</p>
-          <ul>
-            {game.gameState.players.map((p: any, idx: number) => (
-              <li key={idx}>
-                <a href={`/game/${game.gameId}?playerSecret=${p.playerSecret}`}>
-                  {p.name}{" "}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </>
+        <GameAdmin game={game} />
       ) : (
         <pre>{JSON.stringify(props, null, 2)}</pre>
       )}

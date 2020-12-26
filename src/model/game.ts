@@ -46,8 +46,6 @@ export const createGame = (playerNames: string[]): Game => {
   return game;
 };
 
-createGame(["test1", "test2"]);
-
 export const getGameById = async (gameId: string): Promise<Game | null> => {
   const gameJSON = await getGameJSONById(gameId);
   return gameJSON ? Game.fromJSON(gameJSON) : null;

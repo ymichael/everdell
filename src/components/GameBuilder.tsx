@@ -1,15 +1,18 @@
 import * as React from "react";
+import { useRouter } from "next/router";
 import { Formik, Form, Field, FieldArray } from "formik";
 
-const GameBuilder: React.FC = () => {
-  let playerIdx = 0;
-  const getDummyPlayer = (name: string = "") => {
-    playerIdx++;
-    return {
-      name: name || `Player ${playerIdx}`,
-      critter: "",
-    };
+let playerIdx = 0;
+const getDummyPlayer = (name: string = "") => {
+  playerIdx++;
+  return {
+    name: name || `Player ${playerIdx}`,
+    critter: "",
   };
+};
+
+const GameBuilder: React.FC = () => {
+  const router = useRouter();
 
   return (
     <>
@@ -17,6 +20,23 @@ const GameBuilder: React.FC = () => {
       <Formik
         initialValues={{
           players: [getDummyPlayer("Player 1"), getDummyPlayer("Player 2")],
+        }}
+        onSubmit={async (values, actions) => {
+          const response = await fetch("/api/create-game", {
+            method: "POST",
+            cache: "no-cache",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(values),
+          });
+          const json = await response.json();
+          if (json.success && json.gameUrl) {
+            router.push(json.gameUrl);
+          } else {
+            alert(json.error);
+          }
+          actions.setSubmitting(false);
         }}
         render={({ values }) => {
           const players = values.players || [];
@@ -71,11 +91,6 @@ const GameBuilder: React.FC = () => {
               </p>
             </Form>
           );
-        }}
-        onSubmit={(values, actions) => {
-          console.log({ values, actions });
-          alert(JSON.stringify(values, null, 2));
-          actions.setSubmitting(false);
         }}
       />
     </>

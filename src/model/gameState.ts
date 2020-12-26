@@ -5,11 +5,10 @@ import {
   CardName,
   EventName,
   LocationName,
+  LocationNameToPlayerIds,
+  EventNameToPlayerId,
 } from "./types";
 import { Player } from "./player";
-
-type LocationNameToPlayerIds = { [key: string]: string[] };
-type EventNameToPlayerId = { [key: string]: string | null };
 
 export class GameState {
   readonly activePlayerId: Player["playerId"];

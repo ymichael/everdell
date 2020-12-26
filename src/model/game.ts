@@ -1,5 +1,7 @@
 import { generate as uuid } from "short-uuid";
 import { Player, createPlayer } from "./player";
+import { initialLocationsMap } from "./location";
+import { initialEventMap } from "./event";
 import { GameState } from "./gameState";
 import { getGameJSONById, saveGameJSONById } from "./db";
 
@@ -68,8 +70,8 @@ export const createGame = (playerNames: string[]): Game => {
       meadowCards: [],
       discardPile: [],
       deck: [],
-      locationsMap: {},
-      eventsMap: {},
+      locationsMap: initialLocationsMap(),
+      eventsMap: initialEventMap(),
       pendingGameInput: null,
     })
   );

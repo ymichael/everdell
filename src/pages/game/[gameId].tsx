@@ -25,7 +25,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     props: {
       isGameAdmin,
       game: game && game.toJSON(isGameAdmin /* includePrivate */),
-      currentPlayer: player && player.toJSON(true /* includePrivate */),
+      viewingPlayer: player && player.toJSON(true /* includePrivate */),
     },
   };
 };
@@ -33,15 +33,15 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 export default function GamePage(props: {
   isGameAdmin: boolean;
   game: any;
-  currentPlayer: any;
+  viewingPlayer: any;
 }) {
-  const { isGameAdmin, game, currentPlayer } = props;
+  const { isGameAdmin, game, viewingPlayer } = props;
   return (
     <div>
       {isGameAdmin ? (
         <GameAdmin game={game} />
       ) : (
-        <Game game={game} currentPlayer={currentPlayer} />
+        <Game game={game} viewingPlayer={viewingPlayer} />
       )}
     </div>
   );

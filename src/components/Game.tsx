@@ -1,11 +1,16 @@
 import * as React from "react";
+import Meadow from "./Meadow";
+import GameInputBox from "./GameInputBox";
 
-const Game: React.FC = ({ game }: { game: any }) => {
+const Game: React.FC<{
+  game: any;
+  viewingPlayer: any;
+}> = ({ game, viewingPlayer }) => {
   return (
     <>
-      <p>
-        <h2>Meadow</h2>
-      </p>
+      <Meadow meadowCards={game.gameState.meadowCards} />
+      <GameInputBox gameState={game.gameState} viewingPlayer={viewingPlayer} />
+      <hr />
       <pre>{JSON.stringify(game, null, 2)}</pre>
     </>
   );

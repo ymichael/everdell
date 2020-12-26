@@ -1,7 +1,6 @@
 import * as React from "react";
 import { useSelector, useDispatch } from "react-redux";
 
-import { IGame } from "../model/types";
 import { StoreState } from "../redux/store";
 import { PageType } from "../redux/pageType";
 

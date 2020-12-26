@@ -1,34 +1,31 @@
 import { v4 as uuid4 } from "uuid";
-import { IGame, IPlayer, IGameState } from "./types";
+import { IPlayer } from "./types";
 import { createPlayer } from "./player";
+import { GameState } from "./gameState";
+import { getGameJSONById, saveGameJSONById } from "./db";
 
-class Game implements IGame {
-  private _gameState: IGameState;
+class Game {
+  public gameId: string;
+  private gameState: GameState;
 
-  constructor(readonly gameId: string, players: IPlayer[]) {
-    this._gameState = {
-      activePlayer: players[0],
-      players,
-      locations: [],
-      events: [],
-      meadowCards: [],
-      pendingGameInput: null,
-    };
+  constructor(gameId: string, gameState: GameState) {
+    this.gameId = gameId;
+    this.gameState = gameState;
   }
 
-  get gameState(): IGameState {
-    return this._gameState;
+  save(): void {
+    saveGameJSONById(this.gameId, this.toJSON(true /* includePrivate */));
   }
 
-  toJSON(): object {
+  toJSON(includePrivate: boolean): object {
     return {
       gameId: this.gameId,
-      gameState: {
-        players: this._gameState.players.map((p) =>
-          p.toJSON(false /* includePrivate */)
-        ),
-      },
+      gameState: this.gameState.toJSON(includePrivate),
     };
+  }
+
+  static fromJSON(gameJSON: any): Game | null {
+    return new Game(gameJSON.gameId, GameState.fromJSON(gameJSON.gameState));
   }
 }
 
@@ -38,21 +35,21 @@ export const createGame = (playerNames: string[]): Game => {
       `Unable to create a game with ${playerNames.length} players`
     );
   }
-
   const gameId = uuid4();
+  console.log(`Creating game: ${gameId}`);
+  const players = playerNames.map((name) => createPlayer(name));
   const game = new Game(
     gameId,
-    playerNames.map((name) => createPlayer(name))
+    new GameState(players[0].playerId, players, [], [], [], [], [], null)
   );
-  gameById[gameId] = game;
-  console.log(`Creating game: ${gameId}`);
+
+  game.save();
   return game;
 };
 
-// TODO persist to db
-const gameById: Record<string, Game> = {};
-gameById["test"] = createGame(["one", "two"]);
+createGame(["test1", "test2"]);
 
-export const getGameById = (gameId: string): Game | null => {
-  return gameById[gameId] || null;
+export const getGameById = async (gameId: string): Promise<Game | null> => {
+  const gameJSON = await getGameJSONById(gameId);
+  return gameJSON ? Game.fromJSON(gameJSON) : null;
 };

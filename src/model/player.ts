@@ -1,7 +1,7 @@
 import { ICard, IPlayer, Season, ResourceType } from "./types";
 import { v4 as uuid4 } from "uuid";
 
-class Player implements IPlayer {
+export class Player implements IPlayer {
   private playerKey: string;
 
   public name: string;
@@ -19,9 +19,13 @@ class Player implements IPlayer {
   public numWorkers: number;
   public numAvailableWorkers: number;
 
-  constructor(playerName: string) {
-    this.playerId = uuid4();
-    this.playerKey = uuid4();
+  constructor(
+    playerName: string,
+    playerId: string | null = null,
+    playerKey: string | null = null
+  ) {
+    this.playerId = playerId || uuid4();
+    this.playerKey = playerKey || uuid4();
     this.name = playerName;
     this.playedCards = [];
     this.cardsInHand = [];
@@ -58,6 +62,20 @@ class Player implements IPlayer {
           }
         : {}),
     };
+  }
+
+  static fromJSON(playerJSON: any): Player {
+    const player = new Player(
+      playerJSON.name,
+      playerJSON.playerId,
+      playerJSON.playerKey
+    );
+    player.playedCards = playerJSON.playedCards;
+    player.resources = playerJSON.resources;
+    player.numWorkers = playerJSON.numWorkers;
+    player.numAvailableWorkers = playerJSON.numAvailableWorkers;
+    player.currentSeason = playerJSON.currentSeason;
+    return player;
   }
 }
 

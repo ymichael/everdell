@@ -27,21 +27,21 @@ export type CardCost = {
   [ResourceType.WILD_BUT_NOT_BERRY]?: number;
 };
 
-export interface IGame {
-  readonly gameId: string;
-  readonly gameState: IGameState;
-}
-
 export type IGameState = {
-  readonly activePlayer: IPlayer;
+  readonly activePlayerId: IPlayer["playerId"];
   readonly players: IPlayer[];
   readonly locations: ILocation[];
   readonly meadowCards: ICard[];
+  readonly discardPile: ICard[];
+  readonly deck: ICard[];
   readonly events: IEvent[];
   readonly pendingGameInput: GameInput | null;
+
+  getActivePlayer(): IPlayer;
 };
 
 export interface IPlayer {
+  playerId: string;
   name: string;
   playedCards: ICard[];
   cardsInHand: ICard[];

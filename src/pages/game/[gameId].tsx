@@ -6,7 +6,7 @@ import { getPlayerByKey } from "../../model/player";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { gameId = null, playerKey = null } = context.query;
-  const game = gameId && getGameById(gameId as string);
+  const game = await getGameById(gameId as string);
   if (!game) {
     return { notFound: true };
   }
@@ -20,7 +20,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         gameId,
         playerKey,
       },
-      game: game && game.toJSON(),
+      game: game && game.toJSON(false /* includePrivate */),
       currentPlayer: player && player.toJSON(true /* includePrivate */),
     },
   };

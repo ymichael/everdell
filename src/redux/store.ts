@@ -7,8 +7,6 @@ import {
   combineReducers,
 } from "redux";
 import { composeWithDevTools } from "redux-devtools-extension";
-
-import { IGame } from "../model/types";
 import { PageType, pageTypeReducer } from "./pageType";
 import { gameReducer } from "./game";
 
@@ -16,7 +14,7 @@ let store: Store | undefined;
 
 export type StoreState = {
   pageType: PageType;
-  activeGame: IGame | null;
+  activeGame: object | null;
 };
 
 const initialState: StoreState = {

@@ -19,6 +19,7 @@ export class Card implements GameStatePlayable {
   readonly playInner: GameStatePlayFn | undefined;
   readonly canPlayInner: GameStateCanPlayFn | undefined;
   readonly playedCardInfoInner: (() => PlayedCardInfo) | undefined;
+  readonly pointsInner: number | undefined;
 
   readonly name: CardName;
   readonly baseCost: CardCost;
@@ -37,9 +38,10 @@ export class Card implements GameStatePlayable {
     isUnique,
     isConstruction,
     associatedCard,
-    playInner,
-    canPlayInner,
-    playedCardInfoInner,
+    playInner, // called when the card is played
+    canPlayInner, // called when we check canPlay function
+    playedCardInfoInner, // used for cards that accumulate other cards or resources
+    pointsInner, // computed if specified + added to base points
   }: {
     name: CardName;
     baseCost: CardCost;
@@ -51,6 +53,7 @@ export class Card implements GameStatePlayable {
     playInner?: GameStatePlayFn;
     canPlayInner?: GameStateCanPlayFn;
     playedCardInfoInner?: () => PlayedCardInfo;
+    pointsInner?: number;
   }) {
     this.name = name;
     this.baseCost = baseCost;
@@ -63,6 +66,7 @@ export class Card implements GameStatePlayable {
     this.playInner = playInner;
     this.canPlayInner = canPlayInner;
     this.playedCardInfoInner = playedCardInfoInner;
+    this.pointsInner = pointsInner;
   }
 
   getPlayedCardInfo(): PlayedCardInfo {

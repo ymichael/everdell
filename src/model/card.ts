@@ -1,6 +1,15 @@
-import { ResourceType, CardCost, CardType, CardName } from "./types";
+import { ResourceType, CardCost, CardType, CardName, GameInput } from "./types";
+import {
+  GameState,
+  GameStatePlayable,
+  GameStatePlayFn,
+  GameStateCanPlayFn,
+} from "./gameState";
 
-export class Card {
+export class Card implements GameStatePlayable {
+  readonly playInner: GameStatePlayFn | undefined;
+  readonly canPlayInner: GameStateCanPlayFn | undefined;
+
   readonly name: CardName;
   readonly baseCost: CardCost;
   readonly baseVP: number;
@@ -18,6 +27,8 @@ export class Card {
     isUnique,
     isConstruction,
     associatedCard,
+    playInner,
+    canPlayInner,
   }: {
     name: CardName;
     baseCost: CardCost;
@@ -26,6 +37,8 @@ export class Card {
     isUnique: boolean;
     isConstruction: boolean;
     associatedCard: CardName | null;
+    playInner?: GameStatePlayFn;
+    canPlayInner?: GameStateCanPlayFn;
   }) {
     this.name = name;
     this.baseCost = baseCost;
@@ -35,7 +48,15 @@ export class Card {
     this.isCritter = !isConstruction;
     this.isConstruction = isConstruction;
     this.associatedCard = associatedCard;
+    this.playInner = playInner;
+    this.canPlayInner = canPlayInner;
   }
+
+  canPlay(gameState: GameState): boolean {
+    return true;
+  }
+
+  play(gameState: GameState, gameInput: GameInput): void {}
 
   static fromName(name: CardName): Card {
     return CARD_REGISTRY[name];

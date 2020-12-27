@@ -13,46 +13,48 @@ import {
 } from "./types";
 import {
   GameState,
-  GameStateApplyInner,
-  GameStateCanApplyInner,
+  GameStatePlayable,
+  GameStatePlayFn,
+  GameStateCanPlayFn,
 } from "./gameState";
+import { playGainResourceFactory } from "./gameStatePlayHelpers";
 import { Player } from "./player";
 
-export class Location {
+export class Location implements GameStatePlayable {
   readonly name: LocationName;
   readonly type: LocationType;
   readonly occupancy: LocationOccupancy;
-  readonly applyInner: GameStateApplyInner;
-  readonly canApplyInner: GameStateCanApplyInner | undefined;
+  readonly playInner: GameStatePlayFn;
+  readonly canPlayInner: GameStateCanPlayFn | undefined;
 
   constructor({
     name,
     type,
     occupancy,
-    applyInner,
-    canApplyInner,
+    playInner,
+    canPlayInner,
   }: {
     name: LocationName;
     type: LocationType;
     occupancy: LocationOccupancy;
-    applyInner: GameStateApplyInner;
-    canApplyInner?: GameStateCanApplyInner;
+    playInner: GameStatePlayFn;
+    canPlayInner?: GameStateCanPlayFn;
   }) {
     this.name = name;
     this.type = type;
     this.occupancy = occupancy;
-    this.applyInner = applyInner;
-    this.canApplyInner = canApplyInner;
+    this.playInner = playInner;
+    this.canPlayInner = canPlayInner;
   }
 
-  canApply(gameState: GameState): boolean {
+  canPlay(gameState: GameState): boolean {
     if (!(this.name in gameState.locationsMap)) {
       return false;
     }
     if (gameState.getActivePlayer().numAvailableWorkers <= 0) {
       return false;
     }
-    if (this.canApplyInner && !this.canApplyInner(gameState)) {
+    if (this.canPlayInner && !this.canPlayInner(gameState)) {
       return false;
     }
     if (this.occupancy === LocationOccupancy.EXCLUSIVE) {
@@ -69,15 +71,14 @@ export class Location {
     }
   }
 
-  apply(gameState: GameState, gameInput: GameInput): void {
-    if (!this.canApply(gameState)) {
+  play(gameState: GameState, gameInput: GameInput): void {
+    if (!this.canPlay(gameState)) {
       throw new Error(`Unable to visit location ${this.name}`);
     }
     const player = gameState.getActivePlayer();
     gameState.locationsMap[this.name]!.push(player.playerId);
     player.numAvailableWorkers--;
-
-    this.applyInner(gameState, player, gameInput);
+    this.playInner(gameState, gameInput);
   }
 
   static fromName(name: LocationName): Location {
@@ -103,11 +104,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     name: LocationName.HAVEN,
     type: LocationType.HAVEN,
     occupancy: LocationOccupancy.UNLIMITED,
-    applyInner: (
-      gameState: GameState,
-      player: Player,
-      gameInput: GameInput
-    ) => {
+    playInner: (gameState: GameState, gameInput: GameInput) => {
       if (gameInput.inputType !== GameInputType.PLACE_WORKER) {
         throw new Error("Invalid input type");
       }
@@ -142,55 +139,46 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
         );
       }
 
+      const player = gameState.getActivePlayer();
       gameInput.cardsToDiscard.forEach((card: CardName) => {
         player.discardCard(card);
       });
-
-      (Object.keys(resourcesToGain) as (
-        | ResourceType.TWIG
-        | ResourceType.BERRY
-        | ResourceType.PEBBLE
-        | ResourceType.RESIN
-      )[]).forEach((resourceType) => {
-        player.resources[resourceType] += resourcesToGain[
-          resourceType
-        ] as number;
-      });
+      player.gainResources(resourcesToGain);
     },
   }),
   [LocationName.JOURNEY_FIVE]: new Location({
     name: LocationName.JOURNEY_FIVE,
     type: LocationType.JOURNEY,
     occupancy: LocationOccupancy.EXCLUSIVE,
-    applyInner: applyInnerJourneyFactory(5),
-    canApplyInner: canApplyInnerJourneyFactory(5),
+    playInner: playInnerJourneyFactory(5),
+    canPlayInner: canPlayInnerJourneyFactory(5),
   }),
   [LocationName.JOURNEY_FOUR]: new Location({
     name: LocationName.JOURNEY_FOUR,
     type: LocationType.JOURNEY,
     occupancy: LocationOccupancy.EXCLUSIVE,
-    applyInner: applyInnerJourneyFactory(4),
-    canApplyInner: canApplyInnerJourneyFactory(4),
+    playInner: playInnerJourneyFactory(4),
+    canPlayInner: canPlayInnerJourneyFactory(4),
   }),
   [LocationName.JOURNEY_THREE]: new Location({
     name: LocationName.JOURNEY_THREE,
     type: LocationType.JOURNEY,
     occupancy: LocationOccupancy.EXCLUSIVE,
-    applyInner: applyInnerJourneyFactory(3),
-    canApplyInner: canApplyInnerJourneyFactory(3),
+    playInner: playInnerJourneyFactory(3),
+    canPlayInner: canPlayInnerJourneyFactory(3),
   }),
   [LocationName.JOURNEY_TWO]: new Location({
     name: LocationName.JOURNEY_TWO,
     type: LocationType.JOURNEY,
     occupancy: LocationOccupancy.UNLIMITED,
-    applyInner: applyInnerJourneyFactory(2),
-    canApplyInner: canApplyInnerJourneyFactory(2),
+    playInner: playInnerJourneyFactory(2),
+    canPlayInner: canPlayInnerJourneyFactory(2),
   }),
   [LocationName.BASIC_ONE_BERRY]: new Location({
     name: LocationName.BASIC_ONE_BERRY,
     type: LocationType.BASIC,
     occupancy: LocationOccupancy.UNLIMITED,
-    applyInner: applyInnerGainResourceFactory({
+    playInner: playGainResourceFactory({
       resourceMap: { [ResourceType.BERRY]: 1 },
     }),
   }),
@@ -198,7 +186,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     name: LocationName.BASIC_ONE_BERRY_AND_ONE_CARD,
     type: LocationType.BASIC,
     occupancy: LocationOccupancy.EXCLUSIVE,
-    applyInner: applyInnerGainResourceFactory({
+    playInner: playGainResourceFactory({
       resourceMap: { [ResourceType.BERRY]: 1 },
       numCardsToDraw: 1,
     }),
@@ -207,7 +195,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     name: LocationName.BASIC_ONE_RESIN_AND_ONE_CARD,
     type: LocationType.BASIC,
     occupancy: LocationOccupancy.UNLIMITED,
-    applyInner: applyInnerGainResourceFactory({
+    playInner: playGainResourceFactory({
       resourceMap: { [ResourceType.RESIN]: 1 },
       numCardsToDraw: 1,
     }),
@@ -216,7 +204,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     name: LocationName.BASIC_ONE_STONE,
     type: LocationType.BASIC,
     occupancy: LocationOccupancy.EXCLUSIVE,
-    applyInner: applyInnerGainResourceFactory({
+    playInner: playGainResourceFactory({
       resourceMap: { [ResourceType.PEBBLE]: 1 },
     }),
   }),
@@ -224,7 +212,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     name: LocationName.BASIC_THREE_TWIGS,
     type: LocationType.BASIC,
     occupancy: LocationOccupancy.EXCLUSIVE,
-    applyInner: applyInnerGainResourceFactory({
+    playInner: playGainResourceFactory({
       resourceMap: { [ResourceType.TWIG]: 3 },
     }),
   }),
@@ -232,7 +220,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     name: LocationName.BASIC_TWO_CARDS_AND_ONE_VP,
     type: LocationType.BASIC,
     occupancy: LocationOccupancy.UNLIMITED,
-    applyInner: applyInnerGainResourceFactory({
+    playInner: playGainResourceFactory({
       resourceMap: { [ResourceType.VP]: 1 },
       numCardsToDraw: 2,
     }),
@@ -241,7 +229,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     name: LocationName.BASIC_TWO_RESIN,
     type: LocationType.BASIC,
     occupancy: LocationOccupancy.EXCLUSIVE,
-    applyInner: applyInnerGainResourceFactory({
+    playInner: playGainResourceFactory({
       resourceMap: { [ResourceType.RESIN]: 2 },
     }),
   }),
@@ -249,7 +237,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     name: LocationName.BASIC_TWO_TWIGS_AND_ONE_CARD,
     type: LocationType.BASIC,
     occupancy: LocationOccupancy.UNLIMITED,
-    applyInner: applyInnerGainResourceFactory({
+    playInner: playGainResourceFactory({
       resourceMap: { [ResourceType.RESIN]: 2 },
       numCardsToDraw: 1,
     }),
@@ -271,23 +259,10 @@ export const initialLocationsMap = (): LocationNameToPlayerIds => {
 /**
  * Helpers
  */
-function applyInnerGainResourceFactory({
-  resourceMap,
-  numCardsToDraw = 0,
-}: {
-  resourceMap: Partial<Record<OwnableResourceType, number>>;
-  numCardsToDraw?: number;
-}): GameStateApplyInner {
-  return (gameState: GameState, player: Player, gameInput: GameInput) => {
-    player.gainResources(resourceMap);
-    if (numCardsToDraw !== 0) {
-      player.drawCards(gameState, numCardsToDraw);
-    }
-  };
-}
 
-function applyInnerJourneyFactory(numPoints: number): GameStateApplyInner {
-  return (gameState: GameState, player: Player, gameInput: GameInput) => {
+function playInnerJourneyFactory(numPoints: number): GameStatePlayFn {
+  return (gameState: GameState, gameInput: GameInput) => {
+    const player = gameState.getActivePlayer();
     if (player.cardsInHand.length < numPoints) {
       throw new Error("Insufficient cards for journey");
     }
@@ -304,14 +279,13 @@ function applyInnerJourneyFactory(numPoints: number): GameStateApplyInner {
   };
 }
 
-function canApplyInnerJourneyFactory(
-  numPoints: number
-): GameStateCanApplyInner {
+function canPlayInnerJourneyFactory(numPoints: number): GameStateCanPlayFn {
   return (gameState: GameState) => {
-    if (gameState.getActivePlayer().currentSeason !== Season.AUTUMN) {
+    const player = gameState.getActivePlayer();
+    if (player.currentSeason !== Season.AUTUMN) {
       return false;
     }
-    if (gameState.getActivePlayer().cardsInHand.length < numPoints) {
+    if (player.cardsInHand.length < numPoints) {
       return false;
     }
     return true;

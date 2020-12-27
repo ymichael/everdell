@@ -102,7 +102,7 @@ export class GameState {
         if (!location) {
           throw new Error("Invalid location");
         }
-        location.apply(nextGameState, gameInput);
+        location.play(nextGameState, gameInput);
         nextGameState.nextPlayer();
         break;
       default:
@@ -206,7 +206,7 @@ export class GameState {
     const keys = (Object.keys(this.locationsMap) as unknown) as LocationName[];
     return keys.filter((locationName) => {
       const location = Location.fromName(locationName);
-      return location.canApply(this);
+      return location.canPlay(this);
     });
   };
 
@@ -279,10 +279,14 @@ export class GameState {
   }
 }
 
-export type GameStateApplyInner = (
+export type GameStatePlayFn = (
   gameState: GameState,
-  player: Player,
   gameInput: GameInput
 ) => void;
 
-export type GameStateCanApplyInner = (gameState: GameState) => boolean;
+export type GameStateCanPlayFn = (gameState: GameState) => boolean;
+
+export interface GameStatePlayable {
+  canPlay: GameStateCanPlayFn;
+  play: GameStatePlayFn;
+}

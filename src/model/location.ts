@@ -75,9 +75,6 @@ export class Location implements GameStatePlayable {
     if (!this.canPlay(gameState)) {
       throw new Error(`Unable to visit location ${this.name}`);
     }
-    const player = gameState.getActivePlayer();
-    gameState.locationsMap[this.name]!.push(player.playerId);
-    player.numAvailableWorkers--;
     this.playInner(gameState, gameInput);
   }
 

@@ -74,6 +74,11 @@ export class Player {
     }
   }
 
+  hasPlayedCard(cardName: CardName): boolean {
+    const idx = this.playedCards.indexOf(cardName);
+    return idx !== -1;
+  }
+
   drawCards(gameState: GameState, count: number): void {
     for (let i = 0; i < count; i++) {
       const drawnCard = gameState.drawCard();

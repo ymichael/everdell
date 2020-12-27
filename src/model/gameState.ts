@@ -102,7 +102,18 @@ export class GameState {
         if (!location) {
           throw new Error("Invalid location");
         }
+        if (!location.canPlay(nextGameState)) {
+          throw new Error("Cannot take action");
+        }
+
+        // Take location effect
         location.play(nextGameState, gameInput);
+
+        // Update game state
+        player = nextGameState.getActivePlayer();
+        player.numAvailableWorkers--;
+        nextGameState.locationsMap[gameInput.location]!.push(player.playerId);
+
         nextGameState.nextPlayer();
         break;
       default:

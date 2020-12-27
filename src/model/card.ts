@@ -5,6 +5,7 @@ import {
   GameStatePlayFn,
   GameStateCanPlayFn,
 } from "./gameState";
+import { playGainResourceFactory } from "./gameStatePlayHelpers";
 
 export class Card implements GameStatePlayable {
   readonly playInner: GameStatePlayFn | undefined;
@@ -53,10 +54,17 @@ export class Card implements GameStatePlayable {
   }
 
   canPlay(gameState: GameState): boolean {
+    const player = gameState.getActivePlayer();
+
+    // Is able to pay the cost?
     return true;
   }
 
-  play(gameState: GameState, gameInput: GameInput): void {}
+  play(gameState: GameState, gameInput: GameInput): void {
+    if (this.playInner) {
+      this.playInner(gameState, gameInput);
+    }
+  }
 
   static fromName(name: CardName): Card {
     return CARD_REGISTRY[name];
@@ -90,6 +98,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: false,
     associatedCard: CardName.TWIG_BARGE,
+    playInner: playGainResourceFactory({
+      resourceMap: {
+        [ResourceType.TWIG]: 2,
+      },
+    }),
   }),
   [CardName.CASTLE]: new Card({
     name: CardName.CASTLE,
@@ -134,6 +147,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: false,
     associatedCard: CardName.RESIN_REFINERY,
+    playInner: playGainResourceFactory({
+      resourceMap: {
+        [ResourceType.RESIN]: 1,
+      },
+    }),
   }),
   [CardName.CLOCK_TOWER]: new Card({
     name: CardName.CLOCK_TOWER,
@@ -209,6 +227,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: true,
     associatedCard: CardName.FOOL,
+    playInner: playGainResourceFactory({
+      resourceMap: {},
+      numCardsToDraw: 2,
+    }),
   }),
   [CardName.FARM]: new Card({
     name: CardName.FARM,
@@ -218,6 +240,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: true,
     associatedCard: CardName.HUSBAND,
+    playInner: playGainResourceFactory({
+      resourceMap: {
+        [ResourceType.BERRY]: 1,
+      },
+    }),
   }),
   [CardName.FOOL]: new Card({
     name: CardName.FOOL,
@@ -236,6 +263,12 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: true,
     associatedCard: CardName.SHOPKEEPER,
+    playInner: (gameState: GameState) => {
+      const player = gameState.getActivePlayer();
+      player.gainResources({
+        [ResourceType.BERRY]: player.hasPlayedCard(CardName.FARM) ? 2 : 1,
+      });
+    },
   }),
   [CardName.HISTORIAN]: new Card({
     name: CardName.HISTORIAN,
@@ -325,6 +358,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: false,
     associatedCard: CardName.MINE,
+    playInner: playGainResourceFactory({
+      resourceMap: {
+        [ResourceType.PEBBLE]: 1,
+      },
+    }),
   }),
   [CardName.MONASTERY]: new Card({
     name: CardName.MONASTERY,

@@ -1,5 +1,8 @@
 import { CardName, Season, ResourceType } from "./types";
+import { GameState } from "./gameState";
 import { generate as uuid } from "short-uuid";
+
+const MAX_HAND_SIZE = 8;
 
 export class Player {
   private playerSecret: string;
@@ -65,6 +68,17 @@ export class Player {
 
   get playerSecretUNSAFE(): string {
     return this.playerSecret;
+  }
+
+  drawCards(gameState: GameState, count: number): void {
+    for (let i = 0; i < count; i++) {
+      const drawnCard = gameState.deck.draw();
+      if (this.cardsInHand.length < MAX_HAND_SIZE) {
+        this.cardsInHand.push(drawnCard);
+      } else {
+        gameState.discardPile.addToStack(drawnCard);
+      }
+    }
   }
 
   toJSON(includePrivate: boolean): object {

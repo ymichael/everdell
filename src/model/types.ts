@@ -156,6 +156,12 @@ export enum CardType {
   PROSPERITY = "PROSPERITY", // Purple
 }
 
+export enum LocationOccupancy {
+  EXCLUSIVE = "EXCLUSIVE",
+  EXCLUSIVE_FOUR = "EXCLUSIVE_FOUR",
+  UNLIMITED = "UNLIMITED",
+}
+
 export enum LocationType {
   BASIC = "BASIC",
   FOREST = "FOREST",

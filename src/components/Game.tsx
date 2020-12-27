@@ -9,7 +9,11 @@ const Game: React.FC<{
   return (
     <>
       <Meadow meadowCards={game.gameState.meadowCards} />
-      <GameInputBox gameState={game.gameState} viewingPlayer={viewingPlayer} />
+      <GameInputBox
+        gameId={game.gameId}
+        gameState={game.gameState}
+        viewingPlayer={viewingPlayer}
+      />
       <hr />
       <pre>{JSON.stringify(game, null, 2)}</pre>
     </>

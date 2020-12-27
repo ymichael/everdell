@@ -10,7 +10,7 @@ import {
 } from "./types";
 import { Player } from "./player";
 import { CardStack, emptyCardStack } from "./cardStack";
-import { initialLocationsMap } from "./location";
+import { Location, initialLocationsMap } from "./location";
 import { initialEventMap } from "./event";
 import { initialShuffledDeck } from "./deck";
 
@@ -75,19 +75,23 @@ export class GameState {
 
   next(gameInput: GameInput): GameState {
     const nextGameState = this.clone();
-
+    let player: Player;
     switch (gameInput.inputType) {
       case GameInputType.DRAW_CARDS:
-        const player = nextGameState.getPlayer(gameInput.playerId);
-        for (let i = 0; i < gameInput.count; i++) {
-          player.cardsInHand.push(nextGameState.deck.draw());
-          console.log(player);
-        }
+        player = nextGameState.getPlayer(gameInput.playerId);
+        player.drawCards(nextGameState, gameInput.count);
         break;
       case GameInputType.REPLENISH_MEADOW:
         while (nextGameState.meadowCards.length !== MEADOW_SIZE) {
           nextGameState.meadowCards.push(nextGameState.deck.draw());
         }
+        break;
+      case GameInputType.PLACE_WORKER:
+        const location = Location.fromName(gameInput.location);
+        if (!location) {
+          throw new Error("Invalid location");
+        }
+        location.apply(nextGameState, gameInput);
         break;
       default:
         throw new Error(`Unhandled game input: ${JSON.stringify(gameInput)}`);
@@ -172,8 +176,8 @@ export class GameState {
   private getAvailableLocations = (): LocationName[] => {
     const keys = (Object.keys(this.locationsMap) as unknown) as LocationName[];
     return keys.filter((locationName) => {
-      // TODO
-      return true;
+      const location = Location.fromName(locationName);
+      return location.canApply(this);
     });
   };
 

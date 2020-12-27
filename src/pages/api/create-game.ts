@@ -11,7 +11,7 @@ export default (req: NextApiRequest, res: NextApiResponse) => {
 
   const { body, method } = req;
 
-  // Validate came creation
+  // Validate game creation
   if (!(body.players && body.players.length > 1)) {
     res.status(400).json({
       success: false,

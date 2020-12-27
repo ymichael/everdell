@@ -7,8 +7,8 @@ const Meadow: React.FC<{ meadowCards: CardName[] }> = ({ meadowCards }) => {
     <div className={styles.container}>
       <h3>Meadow</h3>
       <ul>
-        {meadowCards.map((cardName) => (
-          <li>{cardName}</li>
+        {meadowCards.map((cardName, idx) => (
+          <li key={idx}>{cardName}</li>
         ))}
       </ul>
     </div>

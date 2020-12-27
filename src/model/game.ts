@@ -1,6 +1,7 @@
 import { generate as uuid } from "short-uuid";
 import { Player, createPlayer } from "./player";
 import { GameState } from "./gameState";
+import { GameInput } from "./types";
 import { getGameJSONById, saveGameJSONById } from "./db";
 
 class Game {
@@ -16,6 +17,18 @@ class Game {
 
   get gameSecretUNSAFE(): string {
     return this.gameSecret;
+  }
+
+  getPlayer(playerId: string): Player {
+    return this.gameState.getPlayer(playerId);
+  }
+
+  getActivePlayer(): Player {
+    return this.gameState.getActivePlayer();
+  }
+
+  applyGameInput(gameInput: GameInput): void {
+    this.gameState = this.gameState.next(gameInput);
   }
 
   save(): void {

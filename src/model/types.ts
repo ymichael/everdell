@@ -74,11 +74,7 @@ export enum GameInputType {
   PREPARE_FOR_SEASON = "PREPARE_FOR_SEASON",
 
   REPLENISH_MEADOW = "REPLENISH_MEADOW",
-  PAY_FOR_CARD = "PAY_FOR_CARD",
   DRAW_CARDS = "DRAW_CARDS",
-  GAIN_RESOURCES = "GAIN_RESOURCES",
-  SPEND_RESOURCES = "SPEND_RESOURCES",
-  DISCARD_CARDS = "DISCARD_CARDS",
 }
 
 export type GameInput =
@@ -89,12 +85,6 @@ export type GameInput =
     }
   | {
       inputType: GameInputType.REPLENISH_MEADOW;
-    }
-  | {
-      inputType: GameInputType.PLAY_CARD;
-      playerId: string;
-      card: CardName;
-      fromMeadow: boolean;
     }
   | {
       inputType: GameInputType.PLACE_WORKER;
@@ -111,6 +101,12 @@ export type GameInput =
       };
     }
   | {
+      inputType: GameInputType.PLAY_CARD;
+      playerId: string;
+      card: CardName;
+      fromMeadow: boolean;
+    }
+  | {
       inputType: GameInputType.CLAIM_EVENT;
       playerId: string;
       event: EventName;
@@ -118,25 +114,6 @@ export type GameInput =
   | {
       inputType: GameInputType.PREPARE_FOR_SEASON;
       playerId: string;
-    }
-  | {
-      inputType: GameInputType.PAY_FOR_CARD;
-      playerId: string;
-    }
-  | {
-      inputType: GameInputType.GAIN_RESOURCES;
-      playerId: string;
-      resources: ResourceMap;
-    }
-  | {
-      inputType: GameInputType.SPEND_RESOURCES;
-      playerId: string;
-      resources: ResourceMap;
-    }
-  | {
-      inputType: GameInputType.DISCARD_CARDS;
-      playerId: string | null;
-      count: number;
     };
 
 export enum Season {

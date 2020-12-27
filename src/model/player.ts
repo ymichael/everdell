@@ -1,4 +1,4 @@
-import { CardCost, CardName, Season, ResourceType } from "./types";
+import { CardCost, CardName, Season, ResourceType, GameInput } from "./types";
 import { GameState } from "./gameState";
 import { Location } from "./location";
 import { Card } from "./card";
@@ -23,7 +23,7 @@ export class Player {
 
   public name: string;
   public playerId: string;
-  public playedCards: Partial<Record<CardName, PlayedCardInfo>>;
+  public playedCards: Partial<Record<CardName, PlayedCardInfo[]>>;
   public cardsInHand: CardName[];
   public resources: Record<ResourceType, number>;
   public currentSeason: Season;
@@ -50,7 +50,7 @@ export class Player {
     name: string;
     playerSecret: string;
     playerId: string;
-    playedCards: Partial<Record<CardName, PlayedCardInfo>>;
+    playedCards: Partial<Record<CardName, PlayedCardInfo[]>>;
     cardsInHand: CardName[];
     resources: {
       [ResourceType.VP]: number;
@@ -87,6 +87,12 @@ export class Player {
     }
   }
 
+  addToCity(cardName: CardName): void {
+    const playedCard = {};
+    this.playedCards[cardName] = this.playedCards[cardName] || [];
+    this.playedCards[cardName]!.push(playedCard);
+  }
+
   hasPlayedCard(cardName: CardName): boolean {
     return !!this.playedCards[cardName];
   }
@@ -94,12 +100,12 @@ export class Player {
   hasUnoccupiedConstruction(cardName: CardName): boolean {
     return !!(
       Card.fromName(cardName).isConstruction &&
-      this.playedCards[cardName]?.isOccupied === false
+      this.playedCards[cardName]?.some((playedCard) => !playedCard.isOccupied)
     );
   }
 
   canInvokeDungeon(): boolean {
-    const playedDungeon = this.playedCards[CardName.DUNGEON];
+    const playedDungeon = this.playedCards[CardName.DUNGEON]?.[0];
     if (!playedDungeon) {
       return false;
     }
@@ -126,13 +132,14 @@ export class Player {
     if (this.numAvailableWorkers <= 0) {
       return false;
     }
-    const playedCard = this.playedCards[cardName];
-    if (!playedCard) {
+    if (!this.playedCards[cardName]) {
       return false;
     }
-    const maxWorkers = playedCard.maxWorkers || 0;
-    const numWorkers = playedCard.workers?.length || 0;
-    return numWorkers < maxWorkers;
+    return this.playedCards[cardName]!.some((playedCard) => {
+      const maxWorkers = playedCard.maxWorkers || 1;
+      const numWorkers = playedCard.workers?.length || 0;
+      return numWorkers < maxWorkers;
+    });
   }
 
   drawCards(gameState: GameState, count: number): void {
@@ -241,6 +248,10 @@ export class Player {
     }
 
     return false;
+  }
+
+  payForCard(cardName: CardName, gameInput: GameInput): void {
+    // TODO
   }
 
   gainResources({

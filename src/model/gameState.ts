@@ -98,6 +98,20 @@ export class GameState {
           nextGameState.meadowCards.push(nextGameState.drawCard());
         }
         break;
+      case GameInputType.PLAY_CARD:
+        const card = Card.fromName(gameInput.card);
+        if (!card) {
+          throw new Error("Invalid card");
+        }
+        if (!card.canPlay(nextGameState, gameInput)) {
+          throw new Error("Cannot take action");
+        }
+        card.play(nextGameState, gameInput);
+        player = nextGameState.getActivePlayer();
+        player.payForCard(gameInput.card, gameInput);
+        player.addToCity(gameInput.card);
+        nextGameState.nextPlayer();
+        break;
       case GameInputType.PLACE_WORKER:
         const location = Location.fromName(gameInput.location);
         if (!location) {

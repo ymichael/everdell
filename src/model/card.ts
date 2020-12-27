@@ -251,7 +251,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     baseVP: 1,
     isUnique: false,
     isConstruction: true,
-    associatedCard: CardName.HUSBAND,
+    associatedCard: null,
     playInner: playGainResourceFactory({
       resourceMap: {
         [ResourceType.BERRY]: 1,

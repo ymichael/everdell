@@ -157,12 +157,16 @@ export class Player {
     const card = Card.fromName(cardName);
 
     // Check if you have the associated construction if card is a critter
-    if (
-      card.isCritter &&
-      card.associatedCard &&
-      this.hasUnoccupiedConstruction(card.associatedCard)
-    ) {
-      return true;
+    if (card.isCritter) {
+      if (this.hasUnoccupiedConstruction(CardName.EVERTREE)) {
+        return true;
+      }
+      if (
+        card.associatedCard &&
+        this.hasUnoccupiedConstruction(card.associatedCard)
+      ) {
+        return true;
+      }
     }
 
     // Queen (below 3 vp free)

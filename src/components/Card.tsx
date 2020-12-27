@@ -3,39 +3,41 @@ import { Card as CardModel } from "../model/card";
 import styles from "../styles/card.module.css";
 import { ResourceType, CardCost, CardType, CardName } from "../model//types";
 
+var colorClassMap = {
+  GOVERNANCE: styles.color_governance,
+  PROSPERITY: styles.color_prosperity,
+  PRODUCTION: styles.color_production,
+  DESTINATION: styles.color_destination,
+  TRAVELER: styles.color_traveler,
+};
+
+// determine rarity label, which is unique vs. common and
+// critter vs. construction
+const getRarityLabel = (card: CardModel) => {
+  var rarity = card.isUnique ? "Rare" : "Common";
+  var category = card.isCritter ? "Critter" : "Construction";
+  return rarity + " " + category;
+};
+
+const getCardBaseCost = (cardCost: CardCost) => {
+  var totalCost = [];
+  for (var resource in cardCost) {
+    //    if (cost[resource as ResourceType]) {
+    totalCost.push(cardCost[resource as keyof CardCost] + " " + resource);
+    //}
+  }
+  return totalCost;
+};
+
 const Card: React.FC<{ name: CardName }> = ({ name }) => {
   //var name = "POSTAL_PIGEON";
   var card = CardModel.fromName(name as any);
-  var cardType = card.cardType;
 
-  // Determine the color of the card
-  var colorClass = styles.color_destination;
-  if (cardType == CardType.GOVERNANCE) {
-    colorClass = styles.color_governance;
-  } else if (cardType == CardType.PROSPERITY) {
-    colorClass = styles.color_prosperity;
-  } else if (cardType == CardType.PRODUCTION) {
-    colorClass = styles.color_production;
-  } else if (cardType == CardType.TRAVELER) {
-    colorClass = styles.color_traveler;
-  } else if (cardType == CardType.DESTINATION) {
-    colorClass = styles.color_destination;
-  }
+  var colorClass = colorClassMap[card.cardType];
 
-  // determine rarity label, which is unique vs. common and
-  // critter vs. construction
-  var rarity = card.isUnique ? "Rare" : "Common";
-  var category = card.isCritter ? "Critter" : "Construction";
-  var rarityLabel = rarity + " " + category;
+  var rarityLabel = getRarityLabel(card);
 
-  // figure out the basic cost of the card
-  var cost = card.baseCost; // [ResourceType.BERRY]: 2,
-  var totalCost = [];
-  for (var resource in cost) {
-    //    if (cost[resource as ResourceType]) {
-    totalCost.push(cost[resource as keyof CardCost] + " " + resource);
-    //}
-  }
+  var totalCost = getCardBaseCost(card.baseCost);
 
   return (
     <>

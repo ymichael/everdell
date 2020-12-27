@@ -113,6 +113,13 @@ export class Card implements GameStatePlayable {
     }
   }
 
+  getPoints(gameState: GameState, playerId: string): number {
+    return (
+      this.baseVP +
+      (this.pointsInner ? this.pointsInner(gameState, playerId) : 0)
+    );
+  }
+
   static fromName(name: CardName): Card {
     return CARD_REGISTRY[name];
   }

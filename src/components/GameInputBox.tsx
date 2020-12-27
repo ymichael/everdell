@@ -17,7 +17,12 @@ const GameInputBoxWaiting: React.FC<{ activePlayer: Player }> = ({
   );
 };
 
-const GameInputBox: React.FC<any> = ({ gameId, gameState, viewingPlayer }) => {
+const GameInputBox: React.FC<any> = ({
+  gameId,
+  gameState,
+  viewingPlayer,
+  updateGameAndViewingPlayer,
+}) => {
   const gameStateImpl = GameState.fromJSON(gameState);
   const activePlayerImpl = gameStateImpl.getActivePlayer();
 
@@ -62,7 +67,14 @@ const GameInputBox: React.FC<any> = ({ gameId, gameState, viewingPlayer }) => {
             });
 
             const json = await response.json();
-            console.log(json);
+            if (json.success) {
+              updateGameAndViewingPlayer({
+                game: json.game,
+                viewingPlayer: json.viewingPlayer,
+              });
+            } else {
+              alert(json.error);
+            }
           }}
           render={({ values }) => {
             return (

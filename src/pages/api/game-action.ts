@@ -56,6 +56,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
   try {
     game.applyGameInput(gameInput);
+    game.save();
   } catch (e) {
     console.error(e);
     res.status(500).json({

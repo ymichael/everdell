@@ -18,7 +18,7 @@ const MEADOW_SIZE = 8;
 const STARTING_PLAYER_HAND_SIZE = 5;
 
 export class GameState {
-  readonly activePlayerId: Player["playerId"];
+  activePlayerId: Player["playerId"];
   readonly players: Player[];
   readonly meadowCards: CardName[];
   readonly discardPile: CardStack;
@@ -69,6 +69,13 @@ export class GameState {
     };
   }
 
+  nextPlayer(): void {
+    const player = this.getActivePlayer();
+    const playerIdx = this.players.indexOf(player);
+    const nextPlayer = this.players[(playerIdx + 1) % this.players.length];
+    this.activePlayerId = nextPlayer.playerId;
+  }
+
   clone(): GameState {
     return GameState.fromJSON(this.toJSON(true /* includePrivate */));
   }
@@ -92,6 +99,7 @@ export class GameState {
           throw new Error("Invalid location");
         }
         location.apply(nextGameState, gameInput);
+        nextGameState.nextPlayer();
         break;
       default:
         throw new Error(`Unhandled game input: ${JSON.stringify(gameInput)}`);

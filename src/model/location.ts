@@ -2,7 +2,6 @@ import {
   CardName,
   ResourceType,
   ResourceMap,
-  OwnableResourceType,
   LocationName,
   LocationType,
   LocationOccupancy,

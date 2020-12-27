@@ -1,18 +1,31 @@
-import { CardName, Season, ResourceType, OwnableResourceType } from "./types";
+import { CardCost, CardName, Season, ResourceType } from "./types";
 import { GameState } from "./gameState";
 import { Location } from "./location";
+import { Card } from "./card";
 import { generate as uuid } from "short-uuid";
 
 const MAX_HAND_SIZE = 8;
+
+type PlayedCardInfo = {
+  // constructions
+  isOccupied?: boolean;
+
+  // queen, inn etc
+  workers?: string[];
+  maxWorkers?: number;
+
+  // husband/wife, dungeon
+  pairedCards?: string[];
+};
 
 export class Player {
   private playerSecret: string;
 
   public name: string;
   public playerId: string;
-  public playedCards: CardName[];
+  public playedCards: Partial<Record<CardName, PlayedCardInfo>>;
   public cardsInHand: CardName[];
-  public resources: Record<OwnableResourceType, number>;
+  public resources: Record<ResourceType, number>;
   public currentSeason: Season;
   public numWorkers: number;
   public numAvailableWorkers: number;
@@ -21,7 +34,7 @@ export class Player {
     name,
     playerSecret = uuid(),
     playerId = uuid(),
-    playedCards = [],
+    playedCards = {},
     cardsInHand = [],
     resources = {
       [ResourceType.VP]: 0,
@@ -37,7 +50,7 @@ export class Player {
     name: string;
     playerSecret: string;
     playerId: string;
-    playedCards: CardName[];
+    playedCards: Partial<Record<CardName, PlayedCardInfo>>;
     cardsInHand: CardName[];
     resources: {
       [ResourceType.VP]: number;
@@ -75,8 +88,51 @@ export class Player {
   }
 
   hasPlayedCard(cardName: CardName): boolean {
-    const idx = this.playedCards.indexOf(cardName);
-    return idx !== -1;
+    return !!this.playedCards[cardName];
+  }
+
+  hasUnoccupiedConstruction(cardName: CardName): boolean {
+    return !!(
+      Card.fromName(cardName).isConstruction &&
+      this.playedCards[cardName]?.isOccupied === false
+    );
+  }
+
+  canInvokeDungeon(): boolean {
+    const playedDungeon = this.playedCards[CardName.DUNGEON];
+    if (!playedDungeon) {
+      return false;
+    }
+
+    const numDungeoned = playedDungeon.pairedCards?.length || 0;
+    const maxDungeoned = this.playedCards[CardName.RANGER] ? 2 : 1;
+
+    // Need to have a critter to dungeon
+    if (
+      !(Object.keys(this.playedCards) as CardName[]).some((cardName) => {
+        const card = Card.fromName(cardName);
+        return (
+          card.isCritter && (numDungeoned == 0 || cardName !== CardName.RANGER)
+        );
+      })
+    ) {
+      return false;
+    }
+
+    return numDungeoned < maxDungeoned;
+  }
+
+  canPlaceWorkerOnCard(cardName: CardName): boolean {
+    if (this.numAvailableWorkers <= 0) {
+      return false;
+    }
+    const playedCard = this.playedCards[cardName];
+    if (!playedCard) {
+      return false;
+    }
+    const maxWorkers = playedCard.maxWorkers || 0;
+    const numWorkers = playedCard.workers?.length || 0;
+    return numWorkers < maxWorkers;
   }
 
   drawCards(gameState: GameState, count: number): void {
@@ -88,6 +144,103 @@ export class Player {
         gameState.discardPile.addToStack(drawnCard);
       }
     }
+  }
+
+  canAffordCard(cardName: CardName, isMeadowCard: boolean): boolean {
+    const card = Card.fromName(cardName);
+
+    // Check if you have the associated construction if card is a critter
+    if (
+      card.isCritter &&
+      card.associatedCard &&
+      this.hasUnoccupiedConstruction(card.associatedCard)
+    ) {
+      return true;
+    }
+
+    // Queen (below 3 vp free)
+    if (card.baseVP <= 3 && this.canPlaceWorkerOnCard(CardName.QUEEN)) {
+      return true;
+    }
+
+    const baseCost = {
+      [ResourceType.TWIG]: card.baseCost[ResourceType.TWIG] || 0,
+      [ResourceType.BERRY]: card.baseCost[ResourceType.BERRY] || 0,
+      [ResourceType.PEBBLE]: card.baseCost[ResourceType.PEBBLE] || 0,
+      [ResourceType.RESIN]: card.baseCost[ResourceType.RESIN] || 0,
+    };
+
+    // Innkeeper (3 berries less)
+    if (
+      baseCost[ResourceType.BERRY] &&
+      card.isCritter &&
+      this.hasPlayedCard(CardName.INNKEEPER)
+    ) {
+      baseCost[ResourceType.BERRY] -= Math.min(3, baseCost[ResourceType.BERRY]);
+    }
+
+    const outstandingOwed = {
+      [ResourceType.TWIG]: 0,
+      [ResourceType.BERRY]: 0,
+      [ResourceType.PEBBLE]: 0,
+      [ResourceType.RESIN]: 0,
+    };
+    const remainingResources = {
+      [ResourceType.TWIG]: this.resources[ResourceType.TWIG],
+      [ResourceType.BERRY]: this.resources[ResourceType.BERRY],
+      [ResourceType.PEBBLE]: this.resources[ResourceType.PEBBLE],
+      [ResourceType.RESIN]: this.resources[ResourceType.RESIN],
+    };
+
+    (Object.entries(baseCost) as [keyof CardCost, number][]).forEach(
+      ([resourceType, count]) => {
+        if (count <= remainingResources[resourceType]) {
+          remainingResources[resourceType] -= count;
+        } else {
+          count -= remainingResources[resourceType];
+          remainingResources[resourceType] = 0;
+          outstandingOwed[resourceType] += count;
+        }
+      }
+    );
+
+    // Don't owe anything
+    if (Object.values(outstandingOwed).every((count) => count === 0)) {
+      return true;
+    }
+
+    let outstandingOwedSum = Object.values(outstandingOwed).reduce(
+      (a, b) => a + b,
+      0
+    );
+
+    // Inn (3 less if from the meadow)
+    // TODO need to check other playes!!
+    if (isMeadowCard && this.canPlaceWorkerOnCard(CardName.INN)) {
+      if (outstandingOwedSum <= 3) {
+        return true;
+      }
+      outstandingOwedSum -= 3;
+    }
+
+    // Dungeon lets you lock up a critter to pay 3 less
+    if (this.canInvokeDungeon()) {
+      if (outstandingOwedSum <= 3) {
+        return true;
+      }
+      outstandingOwedSum -= 3;
+    }
+
+    // Judge allows substitution of one resource.
+    if (
+      this.hasPlayedCard(CardName.JUDGE) &&
+      outstandingOwedSum === 1 &&
+      Object.values(remainingResources).some((x) => x > 0)
+    ) {
+      return true;
+    }
+
+    return false;
   }
 
   gainResources({
@@ -150,7 +303,7 @@ export const createPlayer = (name: string): Player => {
     name,
     playerSecret: uuid(),
     playerId: uuid(),
-    playedCards: [],
+    playedCards: {},
     cardsInHand: [],
     resources: {
       [ResourceType.VP]: 0,

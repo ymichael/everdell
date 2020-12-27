@@ -1,11 +1,11 @@
-import { OwnableResourceType, GameInput } from "./types";
+import { ResourceMap, GameInput } from "./types";
 import { GameState, GameStatePlayFn } from "./gameState";
 
 export function playGainResourceFactory({
   resourceMap,
   numCardsToDraw = 0,
 }: {
-  resourceMap: Partial<Record<OwnableResourceType, number>>;
+  resourceMap: ResourceMap;
   numCardsToDraw?: number;
 }): GameStatePlayFn {
   return (gameState: GameState, gameInput: GameInput) => {

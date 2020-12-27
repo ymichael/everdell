@@ -55,35 +55,16 @@ export enum ResourceType {
   RESIN = "RESIN",
   BERRY = "BERRY",
   PEBBLE = "PEBBLE",
-  WILD = "WILD",
-  WILD_BUT_NOT_BERRY = "WILD_BUT_NOT_BERRY",
   VP = "VP",
 }
 
-export type OwnableResourceType =
-  | ResourceType.TWIG
-  | ResourceType.RESIN
-  | ResourceType.BERRY
-  | ResourceType.PEBBLE
-  | ResourceType.VP;
-
-export type ResourceMap = {
-  [ResourceType.VP]?: number;
-  [ResourceType.TWIG]?: number;
-  [ResourceType.BERRY]?: number;
-  [ResourceType.PEBBLE]?: number;
-  [ResourceType.RESIN]?: number;
-  [ResourceType.WILD]?: number;
-  [ResourceType.WILD_BUT_NOT_BERRY]?: number;
-};
+export type ResourceMap = Partial<Record<ResourceType, number>>;
 
 export type CardCost = {
   [ResourceType.TWIG]?: number;
   [ResourceType.BERRY]?: number;
   [ResourceType.PEBBLE]?: number;
   [ResourceType.RESIN]?: number;
-  [ResourceType.WILD]?: number;
-  [ResourceType.WILD_BUT_NOT_BERRY]?: number;
 };
 
 export enum GameInputType {

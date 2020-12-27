@@ -110,11 +110,15 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: false,
     associatedCard: CardName.TWIG_BARGE,
-    playInner: playGainResourceFactory({
-      resourceMap: {
-        [ResourceType.TWIG]: 2,
-      },
-    }),
+    playInner: (gameState: GameState) => {
+      const player = gameState.getActivePlayer();
+      const playedFarms = player.playedCards[CardName.FARM];
+      if (playedFarms) {
+        player.gainResources({
+          [ResourceType.TWIG]: 2 * playedFarms.length,
+        });
+      }
+    },
   }),
   [CardName.CASTLE]: new Card({
     name: CardName.CASTLE,
@@ -544,6 +548,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: true,
     associatedCard: CardName.BARGE_TOAD,
+    playInner: playGainResourceFactory({
+      resourceMap: {
+        [ResourceType.TWIG]: 2,
+      },
+    }),
   }),
   [CardName.UNDERTAKER]: new Card({
     name: CardName.UNDERTAKER,

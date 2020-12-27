@@ -105,6 +105,9 @@ export type GameInput =
       playerId: string;
       card: CardName;
       fromMeadow: boolean;
+      clientOptions?: {
+        cardsToDiscard?: CardName[];
+      };
     }
   | {
       inputType: GameInputType.CLAIM_EVENT;

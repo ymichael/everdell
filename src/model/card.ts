@@ -101,6 +101,23 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: false,
     associatedCard: CardName.THEATRE,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      if (gameInput.inputType !== GameInputType.PLAY_CARD) {
+        throw new Error("Invalid input type");
+      }
+      const player = gameState.getActivePlayer();
+      if (gameInput.clientOptions?.cardsToDiscard) {
+        if (gameInput.clientOptions.cardsToDiscard.length > 5) {
+          throw new Error("Discarding too many cards");
+        }
+        gameInput.clientOptions.cardsToDiscard.forEach((cardName) => {
+          player.discardCard(cardName);
+        });
+        player.gainResources({
+          [ResourceType.VP]: gameInput.clientOptions?.cardsToDiscard.length,
+        });
+      }
+    },
   }),
   [CardName.BARGE_TOAD]: new Card({
     name: CardName.BARGE_TOAD,

@@ -1,4 +1,4 @@
-import { CardName, Season, ResourceType } from "./types";
+import { CardName, Season, ResourceType, OwnableResourceType } from "./types";
 import { GameState } from "./gameState";
 import { generate as uuid } from "short-uuid";
 
@@ -11,13 +11,7 @@ export class Player {
   public playerId: string;
   public playedCards: CardName[];
   public cardsInHand: CardName[];
-  public resources: {
-    [ResourceType.VP]: number;
-    [ResourceType.TWIG]: number;
-    [ResourceType.BERRY]: number;
-    [ResourceType.PEBBLE]: number;
-    [ResourceType.RESIN]: number;
-  };
+  public resources: Record<OwnableResourceType, number>;
   public currentSeason: Season;
   public numWorkers: number;
   public numAvailableWorkers: number;
@@ -68,6 +62,15 @@ export class Player {
 
   get playerSecretUNSAFE(): string {
     return this.playerSecret;
+  }
+
+  discardCard(cardName: CardName): void {
+    const idx = this.cardsInHand.indexOf(cardName);
+    if (idx === -1) {
+      throw new Error(`Unable to discard ${cardName}`);
+    } else {
+      this.cardsInHand.splice(idx, 1);
+    }
   }
 
   drawCards(gameState: GameState, count: number): void {

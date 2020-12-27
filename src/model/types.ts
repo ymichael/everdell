@@ -60,6 +60,13 @@ export enum ResourceType {
   VP = "VP",
 }
 
+export type OwnableResourceType =
+  | ResourceType.TWIG
+  | ResourceType.RESIN
+  | ResourceType.BERRY
+  | ResourceType.PEBBLE
+  | ResourceType.VP;
+
 export type ResourceMap = {
   [ResourceType.VP]?: number;
   [ResourceType.TWIG]?: number;
@@ -111,6 +118,13 @@ export type GameInput =
       inputType: GameInputType.PLACE_WORKER;
       playerId: string;
       location: LocationName;
+      cardsToDiscard?: CardName[];
+      resourcesToGain?: {
+        [ResourceType.TWIG]?: number;
+        [ResourceType.BERRY]?: number;
+        [ResourceType.PEBBLE]?: number;
+        [ResourceType.RESIN]?: number;
+      };
     }
   | {
       inputType: GameInputType.CLAIM_EVENT;

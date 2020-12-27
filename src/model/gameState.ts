@@ -278,3 +278,11 @@ export class GameState {
     return possibleGameInputs;
   }
 }
+
+export type GameStateApplyInner = (
+  gameState: GameState,
+  player: Player,
+  gameInput: GameInput
+) => void;
+
+export type GameStateCanApplyInner = (gameState: GameState) => boolean;

@@ -11,70 +11,19 @@ import {
   GameInputType,
   Season,
 } from "./types";
-import { GameState } from "./gameState";
+import {
+  GameState,
+  GameStateApplyInner,
+  GameStateCanApplyInner,
+} from "./gameState";
 import { Player } from "./player";
-
-type LocationApplyInner = (
-  gameState: GameState,
-  player: Player,
-  gameInput: GameInput
-) => void;
-
-type LocationCanApplyInner = (gameState: GameState) => boolean;
-
-const applyInnerGainResourceFactory = ({
-  resourceMap,
-  numCardsToDraw = 0,
-}: {
-  resourceMap: Partial<Record<OwnableResourceType, number>>;
-  numCardsToDraw?: number;
-}): LocationApplyInner => {
-  return (gameState: GameState, player: Player, gameInput: GameInput) => {
-    player.gainResources(resourceMap);
-    if (numCardsToDraw !== 0) {
-      player.drawCards(gameState, numCardsToDraw);
-    }
-  };
-};
-
-const applyInnerJourneyFactory = (numPoints: number): LocationApplyInner => {
-  return (gameState: GameState, player: Player, gameInput: GameInput) => {
-    if (player.cardsInHand.length < numPoints) {
-      throw new Error("Insufficient cards for journey");
-    }
-    if (gameInput.inputType !== GameInputType.PLACE_WORKER) {
-      throw new Error("Invalid input type");
-    }
-    if (gameInput.cardsToDiscard?.length !== numPoints) {
-      throw new Error("Must specify cards to discard for journey");
-    }
-    gameInput.cardsToDiscard.forEach((card: CardName) =>
-      player.discardCard(card)
-    );
-    player.resources[ResourceType.VP] += numPoints;
-  };
-};
-
-const canApplyInnerJourneyFactory = (
-  numPoints: number
-): LocationCanApplyInner => {
-  return (gameState: GameState) => {
-    if (gameState.getActivePlayer().currentSeason !== Season.AUTUMN) {
-      return false;
-    }
-    if (gameState.getActivePlayer().cardsInHand.length < numPoints) {
-      return false;
-    }
-    return true;
-  };
-};
 
 export class Location {
   readonly name: LocationName;
   readonly type: LocationType;
   readonly occupancy: LocationOccupancy;
-  readonly applyInner: LocationApplyInner;
-  readonly canApplyInner: LocationCanApplyInner | undefined;
+  readonly applyInner: GameStateApplyInner;
+  readonly canApplyInner: GameStateCanApplyInner | undefined;
 
   constructor({
     name,
@@ -86,8 +35,8 @@ export class Location {
     name: LocationName;
     type: LocationType;
     occupancy: LocationOccupancy;
-    applyInner: LocationApplyInner;
-    canApplyInner?: LocationCanApplyInner;
+    applyInner: GameStateApplyInner;
+    canApplyInner?: GameStateCanApplyInner;
   }) {
     this.name = name;
     this.type = type;
@@ -318,3 +267,53 @@ export const initialLocationsMap = (): LocationNameToPlayerIds => {
   });
   return ret;
 };
+
+/**
+ * Helpers
+ */
+function applyInnerGainResourceFactory({
+  resourceMap,
+  numCardsToDraw = 0,
+}: {
+  resourceMap: Partial<Record<OwnableResourceType, number>>;
+  numCardsToDraw?: number;
+}): GameStateApplyInner {
+  return (gameState: GameState, player: Player, gameInput: GameInput) => {
+    player.gainResources(resourceMap);
+    if (numCardsToDraw !== 0) {
+      player.drawCards(gameState, numCardsToDraw);
+    }
+  };
+}
+
+function applyInnerJourneyFactory(numPoints: number): GameStateApplyInner {
+  return (gameState: GameState, player: Player, gameInput: GameInput) => {
+    if (player.cardsInHand.length < numPoints) {
+      throw new Error("Insufficient cards for journey");
+    }
+    if (gameInput.inputType !== GameInputType.PLACE_WORKER) {
+      throw new Error("Invalid input type");
+    }
+    if (gameInput.cardsToDiscard?.length !== numPoints) {
+      throw new Error("Must specify cards to discard for journey");
+    }
+    gameInput.cardsToDiscard.forEach((card: CardName) =>
+      player.discardCard(card)
+    );
+    player.resources[ResourceType.VP] += numPoints;
+  };
+}
+
+function canApplyInnerJourneyFactory(
+  numPoints: number
+): GameStateCanApplyInner {
+  return (gameState: GameState) => {
+    if (gameState.getActivePlayer().currentSeason !== Season.AUTUMN) {
+      return false;
+    }
+    if (gameState.getActivePlayer().cardsInHand.length < numPoints) {
+      return false;
+    }
+    return true;
+  };
+}

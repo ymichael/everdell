@@ -46,14 +46,14 @@ export class Location implements GameStatePlayable {
     this.canPlayInner = canPlayInner;
   }
 
-  canPlay(gameState: GameState): boolean {
+  canPlay(gameState: GameState, gameInput: GameInput): boolean {
     if (!(this.name in gameState.locationsMap)) {
       return false;
     }
     if (gameState.getActivePlayer().numAvailableWorkers <= 0) {
       return false;
     }
-    if (this.canPlayInner && !this.canPlayInner(gameState)) {
+    if (this.canPlayInner && !this.canPlayInner(gameState, gameInput)) {
       return false;
     }
     if (this.occupancy === LocationOccupancy.EXCLUSIVE) {
@@ -71,7 +71,7 @@ export class Location implements GameStatePlayable {
   }
 
   play(gameState: GameState, gameInput: GameInput): void {
-    if (!this.canPlay(gameState)) {
+    if (!this.canPlay(gameState, gameInput)) {
       throw new Error(`Unable to visit location ${this.name}`);
     }
     this.playInner(gameState, gameInput);
@@ -104,13 +104,21 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
       if (gameInput.inputType !== GameInputType.PLACE_WORKER) {
         throw new Error("Invalid input type");
       }
-      if (!(gameInput.cardsToDiscard && gameInput.resourcesToGain)) {
+      if (!gameInput.clientOptions) {
+        throw new Error("Invalid input");
+      }
+      if (
+        !(
+          gameInput.clientOptions.cardsToDiscard &&
+          gameInput.clientOptions.resourcesToGain
+        )
+      ) {
         throw new Error("Invalid game input");
       }
 
-      const numToDiscard = gameInput.cardsToDiscard.length;
+      const numToDiscard = gameInput.clientOptions.cardsToDiscard.length;
       const numResourcesToGain = Math.floor(numToDiscard / 2);
-      const resourcesToGain = gameInput.resourcesToGain;
+      const resourcesToGain = gameInput.clientOptions.resourcesToGain;
 
       let gainingNumResources = 0;
       (Object.entries(resourcesToGain) as [ResourceType, number][]).forEach(
@@ -136,7 +144,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
       }
 
       const player = gameState.getActivePlayer();
-      gameInput.cardsToDiscard.forEach((card: CardName) => {
+      gameInput.clientOptions.cardsToDiscard.forEach((card: CardName) => {
         player.discardCard(card);
       });
       player.gainResources(resourcesToGain);
@@ -265,10 +273,13 @@ function playInnerJourneyFactory(numPoints: number): GameStatePlayFn {
     if (gameInput.inputType !== GameInputType.PLACE_WORKER) {
       throw new Error("Invalid input type");
     }
-    if (gameInput.cardsToDiscard?.length !== numPoints) {
+    if (!gameInput.clientOptions) {
+      throw new Error("Invalid input");
+    }
+    if (gameInput.clientOptions.cardsToDiscard?.length !== numPoints) {
       throw new Error("Must specify cards to discard for journey");
     }
-    gameInput.cardsToDiscard.forEach((card: CardName) =>
+    gameInput.clientOptions.cardsToDiscard.forEach((card: CardName) =>
       player.discardCard(card)
     );
     player.resources[ResourceType.VP] += numPoints;
@@ -276,7 +287,7 @@ function playInnerJourneyFactory(numPoints: number): GameStatePlayFn {
 }
 
 function canPlayInnerJourneyFactory(numPoints: number): GameStateCanPlayFn {
-  return (gameState: GameState) => {
+  return (gameState: GameState, gameInput: GameInput) => {
     const player = gameState.getActivePlayer();
     if (player.currentSeason !== Season.AUTUMN) {
       return false;

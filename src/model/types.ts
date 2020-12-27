@@ -94,17 +94,20 @@ export type GameInput =
       inputType: GameInputType.PLAY_CARD;
       playerId: string;
       card: CardName;
+      fromMeadow: boolean;
     }
   | {
       inputType: GameInputType.PLACE_WORKER;
       playerId: string;
       location: LocationName;
-      cardsToDiscard?: CardName[];
-      resourcesToGain?: {
-        [ResourceType.TWIG]?: number;
-        [ResourceType.BERRY]?: number;
-        [ResourceType.PEBBLE]?: number;
-        [ResourceType.RESIN]?: number;
+      clientOptions?: {
+        cardsToDiscard?: CardName[];
+        resourcesToGain?: {
+          [ResourceType.TWIG]?: number;
+          [ResourceType.BERRY]?: number;
+          [ResourceType.PEBBLE]?: number;
+          [ResourceType.RESIN]?: number;
+        };
       };
     }
   | {

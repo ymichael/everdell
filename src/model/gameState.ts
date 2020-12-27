@@ -9,6 +9,7 @@ import {
   EventNameToPlayerId,
 } from "./types";
 import { Player } from "./player";
+import { Card } from "./card";
 import { CardStack, emptyCardStack } from "./cardStack";
 import { Location, initialLocationsMap } from "./location";
 import { initialEventMap } from "./event";
@@ -102,7 +103,7 @@ export class GameState {
         if (!location) {
           throw new Error("Invalid location");
         }
-        if (!location.canPlay(nextGameState)) {
+        if (!location.canPlay(nextGameState, gameInput)) {
           throw new Error("Cannot take action");
         }
 
@@ -213,21 +214,20 @@ export class GameState {
       .map(([eventName, _]) => eventName);
   };
 
-  private getAvailableLocations = (): LocationName[] => {
+  private getAvailableLocationGameInputs = (): GameInput[] => {
     const keys = (Object.keys(this.locationsMap) as unknown) as LocationName[];
-    return keys.filter((locationName) => {
-      const location = Location.fromName(locationName);
-      return location.canPlay(this);
-    });
-  };
-
-  private getPlayableCards = (): CardName[] => {
-    return [...this.meadowCards, ...this.getActivePlayer().cardsInHand].filter(
-      (card) => {
-        // TODO
-        return true;
-      }
-    );
+    return keys
+      .map((locationName) => {
+        return {
+          inputType: GameInputType.PLACE_WORKER as const,
+          playerId: this.activePlayerId,
+          location: locationName,
+        };
+      })
+      .filter((gameInput) => {
+        const location = Location.fromName(gameInput.location);
+        return location.canPlay(this, gameInput);
+      });
   };
 
   getPossibleGameInputs(): GameInput[] {
@@ -260,13 +260,7 @@ export class GameState {
       }
 
       if (player.numAvailableWorkers > 0) {
-        this.getAvailableLocations().forEach((location) => {
-          possibleGameInputs.push({
-            inputType: GameInputType.PLACE_WORKER,
-            playerId,
-            location,
-          });
-        });
+        possibleGameInputs.push(...this.getAvailableLocationGameInputs());
 
         this.getEligibleEvents().forEach((event) => {
           possibleGameInputs.push({
@@ -277,13 +271,32 @@ export class GameState {
         });
       }
 
-      this.getPlayableCards().forEach((card) => {
-        possibleGameInputs.push({
-          inputType: GameInputType.PLAY_CARD,
-          playerId,
-          card,
-        });
-      });
+      possibleGameInputs.push(
+        ...this.meadowCards
+          .map((cardName) => {
+            return {
+              inputType: GameInputType.PLAY_CARD as const,
+              playerId,
+              card: cardName,
+              fromMeadow: true,
+            };
+          })
+          .filter((gameInput) =>
+            Card.fromName(gameInput.card).canPlay(this, gameInput)
+          ),
+        ...this.getActivePlayer()
+          .cardsInHand.map((cardName) => {
+            return {
+              inputType: GameInputType.PLAY_CARD as const,
+              playerId,
+              card: cardName,
+              fromMeadow: false,
+            };
+          })
+          .filter((gameInput) =>
+            Card.fromName(gameInput.card).canPlay(this, gameInput)
+          )
+      );
     }
 
     return possibleGameInputs;
@@ -295,7 +308,10 @@ export type GameStatePlayFn = (
   gameInput: GameInput
 ) => void;
 
-export type GameStateCanPlayFn = (gameState: GameState) => boolean;
+export type GameStateCanPlayFn = (
+  gameState: GameState,
+  gameInput: GameInput
+) => boolean;
 
 export interface GameStatePlayable {
   canPlay: GameStateCanPlayFn;

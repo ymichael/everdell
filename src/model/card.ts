@@ -1,4 +1,11 @@
-import { ResourceType, CardCost, CardType, CardName, GameInput } from "./types";
+import {
+  ResourceType,
+  CardCost,
+  CardType,
+  CardName,
+  GameInput,
+  GameInputType,
+} from "./types";
 import {
   GameState,
   GameStatePlayable,
@@ -53,11 +60,16 @@ export class Card implements GameStatePlayable {
     this.canPlayInner = canPlayInner;
   }
 
-  canPlay(gameState: GameState): boolean {
-    const player = gameState.getActivePlayer();
+  canPlay(gameState: GameState, gameInput: GameInput): boolean {
+    if (gameInput.inputType !== GameInputType.PLAY_CARD) {
+      throw new Error("Invalid gameInput");
+    }
 
-    // Is able to pay the cost?
-    return true;
+    const player = gameState.getActivePlayer();
+    if (this.isUnique && player.hasPlayedCard(this.name)) {
+      return false;
+    }
+    return player.canAffordCard(this.name, gameInput.fromMeadow);
   }
 
   play(gameState: GameState, gameInput: GameInput): void {

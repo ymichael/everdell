@@ -23,6 +23,7 @@ export class Card implements GameStatePlayable {
   readonly playInner: GameStatePlayFn | undefined;
   readonly canPlayInner: GameStateCanPlayFn | undefined;
   readonly playedCardInfoInner: (() => PlayedCardInfo) | undefined;
+  readonly pointsInner: ((gameState: GameState) => number) | undefined;
 
   readonly name: CardName;
   readonly baseCost: CardCost;
@@ -41,9 +42,10 @@ export class Card implements GameStatePlayable {
     isUnique,
     isConstruction,
     associatedCard,
-    playInner,
-    canPlayInner,
-    playedCardInfoInner,
+    playInner, // called when the card is played
+    canPlayInner, // called when we check canPlay function
+    playedCardInfoInner, // used for cards that accumulate other cards or resources
+    pointsInner, // computed if specified + added to base points
   }: {
     name: CardName;
     baseCost: CardCost;
@@ -55,6 +57,7 @@ export class Card implements GameStatePlayable {
     playInner?: GameStatePlayFn;
     canPlayInner?: GameStateCanPlayFn;
     playedCardInfoInner?: () => PlayedCardInfo;
+    pointsInner?: (gameState: GameState) => number;
   }) {
     this.name = name;
     this.baseCost = baseCost;
@@ -67,6 +70,7 @@ export class Card implements GameStatePlayable {
     this.playInner = playInner;
     this.canPlayInner = canPlayInner;
     this.playedCardInfoInner = playedCardInfoInner;
+    this.pointsInner = pointsInner;
   }
 
   getPlayedCardInfo(): PlayedCardInfo {
@@ -121,6 +125,16 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: false,
     associatedCard: CardName.CRANE,
+    // 1 point per rock and pebble, up to 6 pts
+    pointsInner: (gameState: GameState) => {
+      const player = gameState.getActivePlayer();
+      const resources = player.resources;
+
+      var numPebblesAndResin =
+        resources[ResourceType.PEBBLE] + resources[ResourceType.RESIN];
+
+      return numPebblesAndResin > 6 ? 6 : numPebblesAndResin;
+    },
   }),
   [CardName.BARD]: new Card({
     name: CardName.BARD,
@@ -178,6 +192,22 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: true,
     associatedCard: CardName.KING,
+    // 1 point per common construction
+    pointsInner: (gameState: GameState) => {
+      const player = gameState.getActivePlayer();
+      const playedCards = player.playedCards;
+      if (playedCards) {
+        var numCommonConstructions = 0;
+        for (var cardName in playedCards) {
+          var card = Card.fromName(cardName as CardName);
+          if (card.isConstruction && !card.isUnique) {
+            numCommonConstructions++;
+          }
+        }
+        return numCommonConstructions;
+      }
+      return 0;
+    },
   }),
   [CardName.CEMETARY]: new Card({
     name: CardName.CEMETARY,
@@ -297,6 +327,22 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: true,
     associatedCard: null,
+    // 1 point per prosperty card
+    pointsInner: (gameState: GameState) => {
+      const player = gameState.getActivePlayer();
+      const playedCards = player.playedCards;
+      if (playedCards) {
+        var numProsperity = 0;
+        for (var cardName in playedCards) {
+          var card = Card.fromName(cardName as CardName);
+          if (card.cardType == CardType.PROSPERITY) {
+            numProsperity++;
+          }
+        }
+        return numProsperity;
+      }
+      return 0;
+    },
   }),
   [CardName.FAIRGROUNDS]: new Card({
     name: CardName.FAIRGROUNDS,
@@ -503,6 +549,22 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: true,
     associatedCard: CardName.QUEEN,
+    // 1 point per unique construction
+    pointsInner: (gameState: GameState) => {
+      const player = gameState.getActivePlayer();
+      const playedCards = player.playedCards;
+      if (playedCards) {
+        var numUniqueConstructions = 0;
+        for (var cardName in playedCards) {
+          var card = Card.fromName(cardName as CardName);
+          if (card.isConstruction && card.isUnique) {
+            numUniqueConstructions++;
+          }
+        }
+        return numUniqueConstructions;
+      }
+      return 0;
+    },
   }),
   [CardName.PEDDLER]: new Card({
     name: CardName.PEDDLER,
@@ -580,6 +642,22 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: true,
     associatedCard: CardName.TEACHER,
+    // 1 point per common critter
+    pointsInner: (gameState: GameState) => {
+      const player = gameState.getActivePlayer();
+      const playedCards = player.playedCards;
+      if (playedCards) {
+        var numCommonCritters = 0;
+        for (var cardName in playedCards) {
+          var card = Card.fromName(cardName as CardName);
+          if (card.isCritter && !card.isUnique) {
+            numCommonCritters++;
+          }
+        }
+        return numCommonCritters;
+      }
+      return 0;
+    },
   }),
   [CardName.SHEPHERD]: new Card({
     name: CardName.SHEPHERD,
@@ -641,6 +719,22 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: true,
     associatedCard: CardName.BARD,
+    // 1 point per unique critter
+    pointsInner: (gameState: GameState) => {
+      const player = gameState.getActivePlayer();
+      const playedCards = player.playedCards;
+      if (playedCards) {
+        var numUniqueCritters = 0;
+        for (var cardName in playedCards) {
+          var card = Card.fromName(cardName as CardName);
+          if (card.isCritter && card.isUnique) {
+            numUniqueCritters++;
+          }
+        }
+        return numUniqueCritters;
+      }
+      return 0;
+    },
   }),
   [CardName.TWIG_BARGE]: new Card({
     name: CardName.TWIG_BARGE,
@@ -692,6 +786,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: false,
     associatedCard: CardName.FARM,
+    // +3 if paired with Husband
+    pointsInner: (gameState: GameState) => {
+      // TODO: implement this!
+      return 0;
+    },
   }),
   [CardName.WOODCARVER]: new Card({
     name: CardName.WOODCARVER,

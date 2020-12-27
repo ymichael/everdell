@@ -23,7 +23,9 @@ export class Card implements GameStatePlayable {
   readonly playInner: GameStatePlayFn | undefined;
   readonly canPlayInner: GameStateCanPlayFn | undefined;
   readonly playedCardInfoInner: (() => PlayedCardInfo) | undefined;
-  readonly pointsInner: ((gameState: GameState) => number) | undefined;
+  readonly pointsInner:
+    | ((gameState: GameState, playerId: string) => number)
+    | undefined;
 
   readonly name: CardName;
   readonly baseCost: CardCost;
@@ -57,7 +59,7 @@ export class Card implements GameStatePlayable {
     playInner?: GameStatePlayFn;
     canPlayInner?: GameStateCanPlayFn;
     playedCardInfoInner?: () => PlayedCardInfo;
-    pointsInner?: (gameState: GameState) => number;
+    pointsInner?: (gameState: GameState, playerId: string) => number;
   }) {
     this.name = name;
     this.baseCost = baseCost;
@@ -126,8 +128,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: false,
     associatedCard: CardName.CRANE,
     // 1 point per rock and pebble, up to 6 pts
-    pointsInner: (gameState: GameState) => {
-      const player = gameState.getActivePlayer();
+    pointsInner: (gameState: GameState, playerId: string) => {
+      const player = gameState.getPlayer(playerId);
       var numPebblesAndResin =
         player.getNumResource(ResourceType.PEBBLE) +
         player.getNumResource(ResourceType.RESIN);
@@ -191,8 +193,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: true,
     associatedCard: CardName.KING,
     // 1 point per common construction
-    pointsInner: (gameState: GameState) => {
-      const player = gameState.getActivePlayer();
+    pointsInner: (gameState: GameState, playerId: string) => {
+      const player = gameState.getPlayer(playerId);
       const playedCards = player.playedCards;
       if (playedCards) {
         var numCommonConstructions = 0;
@@ -326,8 +328,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: true,
     associatedCard: null,
     // 1 point per prosperty card
-    pointsInner: (gameState: GameState) => {
-      const player = gameState.getActivePlayer();
+    pointsInner: (gameState: GameState, playerId: string) => {
+      const player = gameState.getPlayer(playerId);
       const playedCards = player.playedCards;
       if (playedCards) {
         var numProsperity = 0;
@@ -548,8 +550,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: true,
     associatedCard: CardName.QUEEN,
     // 1 point per unique construction
-    pointsInner: (gameState: GameState) => {
-      const player = gameState.getActivePlayer();
+    pointsInner: (gameState: GameState, playerId: string) => {
+      const player = gameState.getPlayer(playerId);
       const playedCards = player.playedCards;
       if (playedCards) {
         var numUniqueConstructions = 0;
@@ -641,8 +643,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: true,
     associatedCard: CardName.TEACHER,
     // 1 point per common critter
-    pointsInner: (gameState: GameState) => {
-      const player = gameState.getActivePlayer();
+    pointsInner: (gameState: GameState, playerId: string) => {
+      const player = gameState.getPlayer(playerId);
       const playedCards = player.playedCards;
       if (playedCards) {
         var numCommonCritters = 0;
@@ -718,8 +720,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: true,
     associatedCard: CardName.BARD,
     // 1 point per unique critter
-    pointsInner: (gameState: GameState) => {
-      const player = gameState.getActivePlayer();
+    pointsInner: (gameState: GameState, playerId: string) => {
+      const player = gameState.getPlayer(playerId);
       const playedCards = player.playedCards;
       if (playedCards) {
         var numUniqueCritters = 0;
@@ -785,7 +787,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: false,
     associatedCard: CardName.FARM,
     // +3 if paired with Husband
-    pointsInner: (gameState: GameState) => {
+    pointsInner: (gameState: GameState, playerId: string) => {
       // TODO: implement this!
       return 0;
     },

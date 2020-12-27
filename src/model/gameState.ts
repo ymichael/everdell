@@ -83,7 +83,7 @@ export class GameState {
         break;
       case GameInputType.REPLENISH_MEADOW:
         while (nextGameState.meadowCards.length !== MEADOW_SIZE) {
-          nextGameState.meadowCards.push(nextGameState.deck.draw());
+          nextGameState.meadowCards.push(nextGameState.drawCard());
         }
         break;
       case GameInputType.PLACE_WORKER:
@@ -155,6 +155,23 @@ export class GameState {
       throw new Error(`Unable to find player: ${playerId}`);
     }
     return ret;
+  }
+
+  drawCard(): CardName {
+    if (!this.deck.isEmpty) {
+      return this.deck.drawInner();
+    }
+
+    while (!this.discardPile.isEmpty) {
+      this.deck.addToStack(this.discardPile.drawInner());
+    }
+
+    this.deck.shuffle();
+    if (!this.deck.isEmpty) {
+      return this.drawCard();
+    }
+
+    throw new Error("No more cards to draw");
   }
 
   private getEligibleEvents = (): EventName[] => {

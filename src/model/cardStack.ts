@@ -19,7 +19,7 @@ export class CardStack {
     return this.cards.length === 0;
   }
 
-  draw(): CardName {
+  drawInner(): CardName {
     if (this.isEmpty) {
       throw new Error("unable to draw card from empty deck");
     }

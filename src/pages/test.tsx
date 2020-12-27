@@ -10,7 +10,6 @@ export default function TestPage() {
 
   if (renderAllCards == true) {
     var enums = Object.keys(CardName) as CardName[];
-    console.log(enums);
     cardsToRender.push(...enums);
   } else {
     cardsToRender = [CardName.POSTAL_PIGEON];
@@ -20,7 +19,6 @@ export default function TestPage() {
       <Head>
         <title>Everdell Test Page</title>
       </Head>
-
       <div>
         {cardsToRender.map(function (cardsToRender, index) {
           return <Card key={index} name={cardsToRender} />;

@@ -10,6 +10,7 @@ import { GameState } from "./gameState";
 import { Location } from "./location";
 import { Card } from "./card";
 import { generate as uuid } from "short-uuid";
+import { sumResources } from "./gameStatePlayHelpers";
 
 const MAX_HAND_SIZE = 8;
 
@@ -20,7 +21,7 @@ export class Player {
   public playerId: string;
   public playedCards: Partial<Record<CardName, PlayedCardInfo[]>>;
   public cardsInHand: CardName[];
-  public resources: Record<ResourceType, number>;
+  private resources: Record<ResourceType, number>;
   public currentSeason: Season;
   public numWorkers: number;
   public numAvailableWorkers: number;
@@ -215,10 +216,7 @@ export class Player {
       return true;
     }
 
-    let outstandingOwedSum = Object.values(outstandingOwed).reduce(
-      (a, b) => a + b,
-      0
-    );
+    let outstandingOwedSum = sumResources(outstandingOwed);
 
     // Inn (3 less if from the meadow)
     // TODO need to check other playes!!
@@ -251,6 +249,51 @@ export class Player {
 
   payForCard(cardName: CardName, gameInput: GameInput): void {
     // TODO
+  }
+
+  spendResources({
+    VP = 0,
+    TWIG = 0,
+    BERRY = 0,
+    PEBBLE = 0,
+    RESIN = 0,
+  }: {
+    [ResourceType.VP]?: number;
+    [ResourceType.TWIG]?: number;
+    [ResourceType.BERRY]?: number;
+    [ResourceType.PEBBLE]?: number;
+    [ResourceType.RESIN]?: number;
+  }): void {
+    if (VP) {
+      if (this.resources[ResourceType.VP] < VP) {
+        throw new Error(`Insufficient ${ResourceType.VP}`);
+      }
+      this.resources[ResourceType.VP] -= VP;
+    }
+    if (TWIG) {
+      if (this.resources[ResourceType.TWIG] < TWIG) {
+        throw new Error(`Insufficient ${ResourceType.TWIG}`);
+      }
+      this.resources[ResourceType.TWIG] -= TWIG;
+    }
+    if (BERRY) {
+      if (this.resources[ResourceType.BERRY] < BERRY) {
+        throw new Error(`Insufficient ${ResourceType.BERRY}`);
+      }
+      this.resources[ResourceType.BERRY] -= BERRY;
+    }
+    if (PEBBLE) {
+      if (this.resources[ResourceType.PEBBLE] < PEBBLE) {
+        throw new Error(`Insufficient ${ResourceType.PEBBLE}`);
+      }
+      this.resources[ResourceType.PEBBLE] -= PEBBLE;
+    }
+    if (RESIN) {
+      if (this.resources[ResourceType.RESIN] < RESIN) {
+        throw new Error(`Insufficient ${ResourceType.RESIN}`);
+      }
+      this.resources[ResourceType.RESIN] -= RESIN;
+    }
   }
 
   gainResources({

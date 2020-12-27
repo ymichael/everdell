@@ -5,6 +5,7 @@ import {
   CardName,
   GameInput,
   GameInputType,
+  PlayedCardInfo,
 } from "./types";
 import {
   GameState,
@@ -17,6 +18,7 @@ import { playGainResourceFactory } from "./gameStatePlayHelpers";
 export class Card implements GameStatePlayable {
   readonly playInner: GameStatePlayFn | undefined;
   readonly canPlayInner: GameStateCanPlayFn | undefined;
+  readonly playedCardInfoInner: (() => PlayedCardInfo) | undefined;
 
   readonly name: CardName;
   readonly baseCost: CardCost;
@@ -37,6 +39,7 @@ export class Card implements GameStatePlayable {
     associatedCard,
     playInner,
     canPlayInner,
+    playedCardInfoInner,
   }: {
     name: CardName;
     baseCost: CardCost;
@@ -47,6 +50,7 @@ export class Card implements GameStatePlayable {
     associatedCard: CardName | null;
     playInner?: GameStatePlayFn;
     canPlayInner?: GameStateCanPlayFn;
+    playedCardInfoInner?: () => PlayedCardInfo;
   }) {
     this.name = name;
     this.baseCost = baseCost;
@@ -58,6 +62,22 @@ export class Card implements GameStatePlayable {
     this.associatedCard = associatedCard;
     this.playInner = playInner;
     this.canPlayInner = canPlayInner;
+    this.playedCardInfoInner = playedCardInfoInner;
+  }
+
+  getPlayedCardInfo(): PlayedCardInfo {
+    const ret: PlayedCardInfo = {};
+    if (this.isConstruction) {
+      ret.isOccupied = false;
+    }
+    if (this.cardType == CardType.DESTINATION) {
+      ret.workers = [];
+      ret.maxWorkers = 1;
+    }
+    return {
+      ...ret,
+      ...(this.playedCardInfoInner ? this.playedCardInfoInner() : {}),
+    };
   }
 
   canPlay(gameState: GameState, gameInput: GameInput): boolean {
@@ -73,7 +93,12 @@ export class Card implements GameStatePlayable {
   }
 
   play(gameState: GameState, gameInput: GameInput): void {
+    if (!this.canPlay(gameState, gameInput)) {
+      throw new Error(`Unable to play card ${this.name}`);
+    }
     if (this.playInner) {
+      const player = gameState.getActivePlayer();
+      player.addToCity(this.name);
       this.playInner(gameState, gameInput);
     }
   }
@@ -194,6 +219,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: true,
     associatedCard: CardName.HISTORIAN,
+    playedCardInfoInner: () => ({
+      resources: {
+        [ResourceType.VP]: 3,
+      },
+    }),
   }),
   [CardName.COURTHOUSE]: new Card({
     name: CardName.COURTHOUSE,
@@ -234,6 +264,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: true,
     associatedCard: CardName.RANGER,
+    playedCardInfoInner: () => ({
+      pairedCards: [],
+    }),
   }),
   [CardName.EVERTREE]: new Card({
     name: CardName.EVERTREE,

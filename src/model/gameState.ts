@@ -271,7 +271,6 @@ export class GameState {
       if (player.currentSeason !== Season.WINTER) {
         possibleGameInputs.push({
           inputType: GameInputType.PREPARE_FOR_SEASON,
-          playerId,
         });
       }
 
@@ -281,7 +280,6 @@ export class GameState {
         this.getEligibleEvents().forEach((event) => {
           possibleGameInputs.push({
             inputType: GameInputType.CLAIM_EVENT,
-            playerId,
             event,
           });
         });

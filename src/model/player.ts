@@ -1,22 +1,17 @@
-import { CardCost, CardName, Season, ResourceType, GameInput } from "./types";
+import {
+  CardCost,
+  CardName,
+  Season,
+  ResourceType,
+  GameInput,
+  PlayedCardInfo,
+} from "./types";
 import { GameState } from "./gameState";
 import { Location } from "./location";
 import { Card } from "./card";
 import { generate as uuid } from "short-uuid";
 
 const MAX_HAND_SIZE = 8;
-
-type PlayedCardInfo = {
-  // constructions
-  isOccupied?: boolean;
-
-  // queen, inn etc
-  workers?: string[];
-  maxWorkers?: number;
-
-  // husband/wife, dungeon
-  pairedCards?: string[];
-};
 
 export class Player {
   private playerSecret: string;
@@ -88,9 +83,9 @@ export class Player {
   }
 
   addToCity(cardName: CardName): void {
-    const playedCard = {};
+    const card = Card.fromName(cardName);
     this.playedCards[cardName] = this.playedCards[cardName] || [];
-    this.playedCards[cardName]!.push(playedCard);
+    this.playedCards[cardName]!.push(card.getPlayedCardInfo());
   }
 
   hasPlayedCard(cardName: CardName): boolean {

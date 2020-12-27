@@ -88,7 +88,6 @@ export type GameInput =
     }
   | {
       inputType: GameInputType.PLACE_WORKER;
-      playerId: string;
       location: LocationName;
       clientOptions?: {
         cardsToDiscard?: CardName[];
@@ -102,21 +101,22 @@ export type GameInput =
     }
   | {
       inputType: GameInputType.PLAY_CARD;
-      playerId: string;
       card: CardName;
       fromMeadow: boolean;
       clientOptions?: {
+        // fool
+        targetPlayerId?: string;
+
+        // bard
         cardsToDiscard?: CardName[];
       };
     }
   | {
       inputType: GameInputType.CLAIM_EVENT;
-      playerId: string;
       event: EventName;
     }
   | {
       inputType: GameInputType.PREPARE_FOR_SEASON;
-      playerId: string;
     };
 
 export enum Season {
@@ -182,3 +182,24 @@ export type LocationNameToPlayerIds = Partial<
 export type EventNameToPlayerId = Partial<
   { [key in EventName]: string | null }
 >;
+
+export type PlayedCardInfo = {
+  // constructions
+  isOccupied?: boolean;
+
+  // clocktower, storehouse etc
+  resources?: {
+    [ResourceType.VP]?: number;
+    [ResourceType.TWIG]?: number;
+    [ResourceType.BERRY]?: number;
+    [ResourceType.PEBBLE]?: number;
+    [ResourceType.RESIN]?: number;
+  };
+
+  // queen, inn etc
+  workers?: string[];
+  maxWorkers?: number;
+
+  // husband/wife, dungeon
+  pairedCards?: string[];
+};

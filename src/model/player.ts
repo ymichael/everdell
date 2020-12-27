@@ -89,6 +89,10 @@ export class Player {
     this.playedCards[cardName]!.push(card.getPlayedCardInfo());
   }
 
+  getNumResource(resourceType: ResourceType): number {
+    return this.resources[resourceType];
+  }
+
   hasPlayedCard(cardName: CardName): boolean {
     return !!this.playedCards[cardName];
   }

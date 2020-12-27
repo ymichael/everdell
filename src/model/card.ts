@@ -128,11 +128,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     // 1 point per rock and pebble, up to 6 pts
     pointsInner: (gameState: GameState) => {
       const player = gameState.getActivePlayer();
-      const resources = player.resources;
-
       var numPebblesAndResin =
-        resources[ResourceType.PEBBLE] + resources[ResourceType.RESIN];
-
+        player.getNumResource(ResourceType.PEBBLE) +
+        player.getNumResource(ResourceType.RESIN);
       return numPebblesAndResin > 6 ? 6 : numPebblesAndResin;
     },
   }),

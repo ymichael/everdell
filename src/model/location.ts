@@ -30,11 +30,7 @@ const applyInnerGainResourceFactory = ({
   numCardsToDraw?: number;
 }): LocationApplyInner => {
   return (gameState: GameState, player: Player, gameInput: GameInput) => {
-    (Object.keys(resourceMap) as OwnableResourceType[]).forEach(
-      (resourceType) => {
-        player.resources[resourceType] += resourceMap[resourceType] as number;
-      }
-    );
+    player.gainResources(resourceMap);
     if (numCardsToDraw !== 0) {
       player.drawCards(gameState, numCardsToDraw);
     }

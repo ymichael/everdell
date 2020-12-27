@@ -18,7 +18,7 @@ const MEADOW_SIZE = 8;
 const STARTING_PLAYER_HAND_SIZE = 5;
 
 export class GameState {
-  activePlayerId: Player["playerId"];
+  private _activePlayerId: Player["playerId"];
   readonly players: Player[];
   readonly meadowCards: CardName[];
   readonly discardPile: CardStack;
@@ -46,7 +46,7 @@ export class GameState {
     eventsMap: EventNameToPlayerId;
     pendingGameInput: GameInput | null;
   }) {
-    this.activePlayerId = activePlayerId;
+    this._activePlayerId = activePlayerId;
     this.players = players;
     this.locationsMap = locationsMap;
     this.meadowCards = meadowCards;
@@ -54,6 +54,10 @@ export class GameState {
     this.deck = deck;
     this.eventsMap = eventsMap;
     this.pendingGameInput = pendingGameInput;
+  }
+
+  get activePlayerId(): string {
+    return this._activePlayerId;
   }
 
   toJSON(includePrivate: boolean): object {
@@ -73,7 +77,7 @@ export class GameState {
     const player = this.getActivePlayer();
     const playerIdx = this.players.indexOf(player);
     const nextPlayer = this.players[(playerIdx + 1) % this.players.length];
-    this.activePlayerId = nextPlayer.playerId;
+    this._activePlayerId = nextPlayer.playerId;
   }
 
   clone(): GameState {

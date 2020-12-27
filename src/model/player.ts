@@ -1,5 +1,6 @@
 import { CardName, Season, ResourceType, OwnableResourceType } from "./types";
 import { GameState } from "./gameState";
+import { Location } from "./location";
 import { generate as uuid } from "short-uuid";
 
 const MAX_HAND_SIZE = 8;
@@ -81,6 +82,36 @@ export class Player {
       } else {
         gameState.discardPile.addToStack(drawnCard);
       }
+    }
+  }
+
+  gainResources({
+    VP = 0,
+    TWIG = 0,
+    BERRY = 0,
+    PEBBLE = 0,
+    RESIN = 0,
+  }: {
+    [ResourceType.VP]?: number;
+    [ResourceType.TWIG]?: number;
+    [ResourceType.BERRY]?: number;
+    [ResourceType.PEBBLE]?: number;
+    [ResourceType.RESIN]?: number;
+  }): void {
+    if (VP) {
+      this.resources[ResourceType.VP] += VP;
+    }
+    if (TWIG) {
+      this.resources[ResourceType.TWIG] += TWIG;
+    }
+    if (BERRY) {
+      this.resources[ResourceType.BERRY] += BERRY;
+    }
+    if (PEBBLE) {
+      this.resources[ResourceType.PEBBLE] += PEBBLE;
+    }
+    if (RESIN) {
+      this.resources[ResourceType.RESIN] += RESIN;
     }
   }
 

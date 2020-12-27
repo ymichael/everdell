@@ -81,6 +81,12 @@ export class GameState {
     this._activePlayerId = nextPlayer.playerId;
   }
 
+  replenishMeadow(): void {
+    while (this.meadowCards.length !== MEADOW_SIZE) {
+      this.meadowCards.push(this.drawCard());
+    }
+  }
+
   clone(): GameState {
     return GameState.fromJSON(this.toJSON(true /* includePrivate */));
   }
@@ -94,9 +100,7 @@ export class GameState {
         player.drawCards(nextGameState, gameInput.count);
         break;
       case GameInputType.REPLENISH_MEADOW:
-        while (nextGameState.meadowCards.length !== MEADOW_SIZE) {
-          nextGameState.meadowCards.push(nextGameState.drawCard());
-        }
+        nextGameState.replenishMeadow();
         break;
       case GameInputType.PLAY_CARD:
         const card = Card.fromName(gameInput.card);
@@ -107,9 +111,7 @@ export class GameState {
           throw new Error("Cannot take action");
         }
         card.play(nextGameState, gameInput);
-        player = nextGameState.getActivePlayer();
-        player.payForCard(gameInput.card, gameInput);
-        player.addToCity(gameInput.card);
+        nextGameState.replenishMeadow();
         nextGameState.nextPlayer();
         break;
       case GameInputType.PLACE_WORKER:

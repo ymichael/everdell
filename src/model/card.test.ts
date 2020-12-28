@@ -39,6 +39,7 @@ describe("Card", () => {
       const player = gameState.getActivePlayer();
       player.gainResources(card.baseCost);
 
+      player.cardsInHand = [];
       expect(card.canPlay(gameState, gameInput)).to.be(false);
       player.cardsInHand = [card.name];
       expect(card.canPlay(gameState, gameInput)).to.be(true);
@@ -89,6 +90,42 @@ describe("Card", () => {
           .getPlayer(player.playerId)
           .getNumResource(ResourceType.BERRY)
       ).to.be(1);
+    });
+  });
+
+  describe(CardName.GENERAL_STORE, () => {
+    it("should gain 1 berry when played (w/o farm)", () => {
+      const card = Card.fromName(CardName.GENERAL_STORE);
+      const gameInput = playCardInput(card.name);
+      const player = gameState.getActivePlayer();
+
+      player.playedCards = {};
+      player.cardsInHand.push(card.name);
+      player.gainResources(card.baseCost);
+      expect(player.getNumResource(ResourceType.BERRY)).to.be(0);
+      const nextGameState = gameState.next(gameInput);
+      expect(
+        nextGameState
+          .getPlayer(player.playerId)
+          .getNumResource(ResourceType.BERRY)
+      ).to.be(1);
+    });
+
+    it("should gain 2 berries when played (w farm)", () => {
+      const card = Card.fromName(CardName.GENERAL_STORE);
+      const gameInput = playCardInput(card.name);
+      const player = gameState.getActivePlayer();
+
+      player.playedCards[CardName.FARM] = [{}];
+      player.cardsInHand.push(card.name);
+      player.gainResources(card.baseCost);
+      expect(player.getNumResource(ResourceType.BERRY)).to.be(0);
+      const nextGameState = gameState.next(gameInput);
+      expect(
+        nextGameState
+          .getPlayer(player.playerId)
+          .getNumResource(ResourceType.BERRY)
+      ).to.be(2);
     });
   });
 });

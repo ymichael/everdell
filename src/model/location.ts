@@ -18,6 +18,7 @@ import {
 } from "./gameState";
 import { playGainResourceFactory } from "./gameStatePlayHelpers";
 import { Player } from "./player";
+import shuffle from "lodash/shuffle";
 
 export class Location implements GameStatePlayable {
   readonly name: LocationName;
@@ -350,10 +351,23 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
   }),
 };
 
-export const initialLocationsMap = (): LocationNameToPlayerIds => {
+export const initialLocationsMap = (
+  numPlayers: number
+): LocationNameToPlayerIds => {
+  const forestLocations = shuffle(Location.byType(LocationType.FOREST));
+
+  if (forestLocations.length < 4 || forestLocations.length < 3) {
+    throw new Error("Not enough Special Events available");
+  }
+  const forestLocationsToPlay = forestLocations.slice(
+    0,
+    numPlayers == 2 ? 3 : 4
+  );
+
   const ret: LocationNameToPlayerIds = {};
   [
     ...Location.byType(LocationType.BASIC),
+    ...forestLocationsToPlay,
     ...Location.byType(LocationType.HAVEN),
     ...Location.byType(LocationType.JOURNEY),
   ].forEach((ty) => {

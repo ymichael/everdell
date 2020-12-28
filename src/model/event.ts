@@ -16,6 +16,7 @@ import {
   GameStatePlayFn,
   GameStateCanPlayFn,
 } from "./gameState";
+import shuffle from "lodash/shuffle";
 
 export class Event {
   readonly playInner: GameStatePlayFn | undefined;
@@ -909,6 +910,17 @@ export const initialEventMap = (): EventNameToPlayerId => {
   [...Event.byType(EventType.BASIC)].forEach((ty) => {
     ret[ty] = null;
   });
+
+  const specialEvents = shuffle(Event.byType(EventType.SPECIAL));
+  if (specialEvents.length < 4) {
+    throw new Error("Not enough Special Events available");
+  }
+
+  const chosenSpecialEvents = specialEvents.slice(0, 4);
+  [...chosenSpecialEvents].forEach((ty) => {
+    ret[ty] = null;
+  });
+
   return ret;
 };
 

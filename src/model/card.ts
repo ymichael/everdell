@@ -981,7 +981,28 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: true,
     associatedCard: CardName.DOCTOR,
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
+      if (gameInput.inputType !== GameInputType.VISIT_DESTINATION_CARD) {
+        throw new Error("Invalid input type");
+      }
+      if (
+        !gameInput.clientOptions?.targetCard ||
+        !gameInput.clientOptions?.resourcesToGain ||
+        sumResources(gameInput.clientOptions?.resourcesToGain) !== 0 ||
+        gameInput.clientOptions?.resourcesToGain[ResourceType.VP]
+      ) {
+        throw new Error("Invalid input");
+      }
+      const player = gameState.getActivePlayer();
+      const card = Card.fromName(gameInput.clientOptions?.targetCard);
+      if (!card.isConstruction) {
+        throw new Error("Can only ruin constructions");
+      }
+      player.removeCardFromCity(gameInput.clientOptions?.targetCard);
+      player.gainResources(card.baseCost);
+      player.gainResources(gameInput.clientOptions?.resourcesToGain);
+      player.gainResources({
+        [ResourceType.VP]: 1,
+      });
     },
   }),
   [CardName.WANDERER]: new Card({

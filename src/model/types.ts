@@ -118,6 +118,18 @@ export type GameInput =
           [ResourceType.PEBBLE]?: number;
           [ResourceType.RESIN]?: number;
         };
+
+        // university
+        targetCard?: CardName;
+
+        // university
+        resourcesToGain?: {
+          [ResourceType.TWIG]?: number;
+          [ResourceType.BERRY]?: number;
+          [ResourceType.PEBBLE]?: number;
+          [ResourceType.RESIN]?: number;
+          [ResourceType.VP]?: number;
+        };
       };
     }
   | {

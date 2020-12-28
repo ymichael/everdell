@@ -247,6 +247,15 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
       numCardsToDraw: 1,
     }),
   }),
+  [LocationName.SPECIAL_TWO_BERRY_ONE_CARD]: new Location({
+    name: LocationName.SPECIAL_TWO_BERRY_ONE_CARD,
+    type: LocationType.FOREST,
+    occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
+    playInner: playGainResourceFactory({
+      resourceMap: { [ResourceType.BERRY]: 2 },
+      numCardsToDraw: 1,
+    }),
+  }),
 };
 
 export const initialLocationsMap = (): LocationNameToPlayerIds => {

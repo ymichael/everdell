@@ -1,6 +1,7 @@
 import {
   CardCost,
   CardName,
+  CardType,
   Season,
   ResourceType,
   GameInput,
@@ -99,6 +100,71 @@ export class Player {
 
   getNumResource(resourceType: ResourceType): number {
     return this.resources[resourceType];
+  }
+
+  getNumProsperityCards(): number {
+    var numCards = 0;
+
+    for (var cardName in this.playedCards) {
+      var card = Card.fromName(cardName as CardName);
+      if (card.cardType == CardType.PROSPERITY) {
+        numCards++;
+      }
+    }
+
+    return numCards;
+  }
+
+  getNumGovernanceCards(): number {
+    var numCards = 0;
+
+    for (var cardName in this.playedCards) {
+      var card = Card.fromName(cardName as CardName);
+      if (card.cardType == CardType.GOVERNANCE) {
+        numCards++;
+      }
+    }
+
+    return numCards;
+  }
+
+  getNumProductionCards(): number {
+    var numCards = 0;
+
+    for (var cardName in this.playedCards) {
+      var card = Card.fromName(cardName as CardName);
+      if (card.cardType == CardType.PRODUCTION) {
+        numCards++;
+      }
+    }
+
+    return numCards;
+  }
+
+  getNumDestinationCards(): number {
+    var numCards = 0;
+
+    for (var cardName in this.playedCards) {
+      var card = Card.fromName(cardName as CardName);
+      if (card.cardType == CardType.DESTINATION) {
+        numCards++;
+      }
+    }
+
+    return numCards;
+  }
+
+  getNumTravelerCards(): number {
+    var numCards = 0;
+
+    for (var cardName in this.playedCards) {
+      var card = Card.fromName(cardName as CardName);
+      if (card.cardType == CardType.TRAVELER) {
+        numCards++;
+      }
+    }
+
+    return numCards;
   }
 
   hasPlayedCard(cardName: CardName): boolean {

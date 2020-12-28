@@ -65,90 +65,158 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
   [EventName.BASIC_FOUR_PRODUCTION_TAGS]: new Event({
     name: EventName.BASIC_FOUR_PRODUCTION_TAGS,
     type: EventType.BASIC,
+    canPlayInner: (gameState: GameState) => {
+      const player = gameState.getActivePlayer();
+      const playedCards = player.playedCards;
+
+      return player.getNumProductionCards() >= 4;
+    },
   }),
   [EventName.BASIC_THREE_DESTINATION]: new Event({
     name: EventName.BASIC_THREE_DESTINATION,
     type: EventType.BASIC,
+    canPlayInner: (gameState: GameState) => {
+      const player = gameState.getActivePlayer();
+      const playedCards = player.playedCards;
+
+      return player.getNumDestinationCards() >= 3;
+    },
   }),
   [EventName.BASIC_THREE_GOVERNANCE]: new Event({
     name: EventName.BASIC_THREE_GOVERNANCE,
     type: EventType.BASIC,
+    canPlayInner: (gameState: GameState) => {
+      const player = gameState.getActivePlayer();
+      const playedCards = player.playedCards;
+
+      return player.getNumGovernanceCards() >= 3;
+    },
   }),
   [EventName.BASIC_THREE_TRAVELER]: new Event({
     name: EventName.BASIC_THREE_TRAVELER,
     type: EventType.BASIC,
+    canPlayInner: (gameState: GameState) => {
+      const player = gameState.getActivePlayer();
+      const playedCards = player.playedCards;
+
+      return player.getNumTravelerCards() >= 3;
+    },
   }),
   [EventName.SPECIAL_GRADUATION_OF_SCHOLARS]: new Event({
     name: EventName.SPECIAL_GRADUATION_OF_SCHOLARS,
     type: EventType.SPECIAL,
+    canPlayInner: canPlayInnerRequiresCards(
+      EventName.SPECIAL_GRADUATION_OF_SCHOLARS
+    ),
   }),
   [EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN]: new Event({
     name: EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN,
     type: EventType.SPECIAL,
+    canPlayInner: canPlayInnerRequiresCards(
+      EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN
+    ),
   }),
   [EventName.SPECIAL_PERFORMER_IN_RESIDENCE]: new Event({
     name: EventName.SPECIAL_PERFORMER_IN_RESIDENCE,
     type: EventType.SPECIAL,
+    canPlayInner: canPlayInnerRequiresCards(
+      EventName.SPECIAL_PERFORMER_IN_RESIDENCE
+    ),
   }),
   [EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES]: new Event({
     name: EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES,
     type: EventType.SPECIAL,
+    canPlayInner: canPlayInnerRequiresCards(
+      EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES
+    ),
   }),
   [EventName.SPECIAL_MINISTERING_TO_MISCREANTS]: new Event({
     name: EventName.SPECIAL_MINISTERING_TO_MISCREANTS,
     type: EventType.SPECIAL,
+    canPlayInner: canPlayInnerRequiresCards(
+      EventName.SPECIAL_MINISTERING_TO_MISCREANTS
+    ),
   }),
   [EventName.SPECIAL_CROAK_WART_CURE]: new Event({
     name: EventName.SPECIAL_CROAK_WART_CURE,
     type: EventType.SPECIAL,
+    canPlayInner: canPlayInnerRequiresCards(EventName.SPECIAL_CROAK_WART_CURE),
   }),
   [EventName.SPECIAL_AN_EVENING_OF_FIREWORKS]: new Event({
     name: EventName.SPECIAL_AN_EVENING_OF_FIREWORKS,
     type: EventType.SPECIAL,
+    canPlayInner: canPlayInnerRequiresCards(
+      EventName.SPECIAL_AN_EVENING_OF_FIREWORKS
+    ),
   }),
   [EventName.SPECIAL_A_WEE_RUN_CITY]: new Event({
     name: EventName.SPECIAL_A_WEE_RUN_CITY,
     type: EventType.SPECIAL,
+    canPlayInner: canPlayInnerRequiresCards(EventName.SPECIAL_A_WEE_RUN_CITY),
   }),
   [EventName.SPECIAL_TAX_RELIEF]: new Event({
     name: EventName.SPECIAL_TAX_RELIEF,
     type: EventType.SPECIAL,
+    canPlayInner: canPlayInnerRequiresCards(EventName.SPECIAL_TAX_RELIEF),
   }),
   [EventName.SPECIAL_UNDER_NEW_MANAGEMENT]: new Event({
     name: EventName.SPECIAL_UNDER_NEW_MANAGEMENT,
     type: EventType.SPECIAL,
+    canPlayInner: canPlayInnerRequiresCards(
+      EventName.SPECIAL_UNDER_NEW_MANAGEMENT
+    ),
   }),
   [EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED]: new Event({
     name: EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED,
     type: EventType.SPECIAL,
+    canPlayInner: canPlayInnerRequiresCards(
+      EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED
+    ),
   }),
   [EventName.SPECIAL_FLYING_DOCTOR_SERVICE]: new Event({
     name: EventName.SPECIAL_FLYING_DOCTOR_SERVICE,
     type: EventType.SPECIAL,
+    canPlayInner: canPlayInnerRequiresCards(
+      EventName.SPECIAL_FLYING_DOCTOR_SERVICE
+    ),
   }),
   [EventName.SPECIAL_PATH_OF_THE_PILGRIMS]: new Event({
     name: EventName.SPECIAL_PATH_OF_THE_PILGRIMS,
     type: EventType.SPECIAL,
+    canPlayInner: canPlayInnerRequiresCards(
+      EventName.SPECIAL_PATH_OF_THE_PILGRIMS
+    ),
   }),
   [EventName.SPECIAL_REMEMBERING_THE_FALLEN]: new Event({
     name: EventName.SPECIAL_REMEMBERING_THE_FALLEN,
     type: EventType.SPECIAL,
+    canPlayInner: canPlayInnerRequiresCards(
+      EventName.SPECIAL_REMEMBERING_THE_FALLEN
+    ),
   }),
   [EventName.SPECIAL_PRISTINE_CHAPEL_CEILING]: new Event({
     name: EventName.SPECIAL_PRISTINE_CHAPEL_CEILING,
     type: EventType.SPECIAL,
+    canPlayInner: canPlayInnerRequiresCards(
+      EventName.SPECIAL_PRISTINE_CHAPEL_CEILING
+    ),
   }),
   [EventName.SPECIAL_THE_EVERDELL_GAMES]: new Event({
     name: EventName.SPECIAL_THE_EVERDELL_GAMES,
     type: EventType.SPECIAL,
+    canPlayInner: (gameState: GameState) => {
+      const player = gameState.getActivePlayer();
+      const playedCards = player.playedCards;
+
+      return (
+        player.getNumProsperityCards() >= 2 &&
+        player.getNumGovernanceCards() >= 2 &&
+        player.getNumProductionCards() >= 2 &&
+        player.getNumDestinationCards() >= 2 &&
+        player.getNumTravelerCards() >= 2
+      );
+    },
   }),
-  //[EventName.SPECIAL_PRISTINE_CHAPEL_CEILING]: new Event({
-  //  name: EventName.SPECIAL_PRISTINE_CHAPEL_CEILING,
-  //  type: EventType.SPECIAL,
-  //  canPlayInner: canPlayInnerRequiresCards(
-  //    EventName.SPECIAL_PRISTINE_CHAPEL_CEILING
-  //  ),
-  //}),
 };
 
 export const initialEventMap = (): EventNameToPlayerId => {
@@ -196,6 +264,13 @@ function canPlayInnerRequiresCards(eventName: EventName): GameStateCanPlayFn {
   return (gameState: GameState, gameInput: GameInput) => {
     const player = gameState.getActivePlayer();
     var requiredCards = requiredCardsMap[eventName];
+
+    for (var requiredCard in requiredCards) {
+      var hasCard = player.playedCards[requiredCard as CardName];
+      if (!hasCard) {
+        return false;
+      }
+    }
 
     return true;
   };

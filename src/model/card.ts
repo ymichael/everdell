@@ -13,7 +13,11 @@ import {
   GameStatePlayFn,
   GameStateCanPlayFn,
 } from "./gameState";
-import { playGainResourceFactory } from "./gameStatePlayHelpers";
+import {
+  playGainResourceFactory,
+  playSpendResourceToGetVPFactory,
+  sumResources,
+} from "./gameStatePlayHelpers";
 
 export class Card implements GameStatePlayable {
   readonly playInner: GameStatePlayFn | undefined;
@@ -124,11 +128,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     // 1 point per rock and pebble, up to 6 pts
     pointsInner: (gameState: GameState) => {
       const player = gameState.getActivePlayer();
-      const resources = player.resources;
-
       var numPebblesAndResin =
-        resources[ResourceType.PEBBLE] + resources[ResourceType.RESIN];
-
+        player.getNumResource(ResourceType.PEBBLE) +
+        player.getNumResource(ResourceType.RESIN);
       return numPebblesAndResin > 6 ? 6 : numPebblesAndResin;
     },
   }),
@@ -235,11 +237,20 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: false,
     associatedCard: CardName.RESIN_REFINERY,
-    playInner: playGainResourceFactory({
-      resourceMap: {
-        [ResourceType.RESIN]: 1,
-      },
-    }),
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      if (gameInput.inputType !== GameInputType.PLAY_CARD) {
+        throw new Error("Invalid input type");
+      }
+      if (!gameInput.clientOptions?.targetCard) {
+        throw new Error("Invalid input");
+      }
+      const player = gameState.getActivePlayer();
+      if (!player.hasPlayedCard(gameInput.clientOptions?.targetCard)) {
+        throw new Error("Invalid input");
+      }
+
+      // TODO
+    },
   }),
   [CardName.CLOCK_TOWER]: new Card({
     name: CardName.CLOCK_TOWER,
@@ -285,6 +296,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: false,
     associatedCard: CardName.UNIVERSITY,
+    playInner: playSpendResourceToGetVPFactory({
+      resourceType: ResourceType.BERRY,
+      maxToSpend: 3,
+    }),
   }),
   [CardName.DUNGEON]: new Card({
     name: CardName.DUNGEON,
@@ -399,6 +414,28 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: false,
     associatedCard: CardName.FARM,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      if (gameInput.inputType !== GameInputType.PLAY_CARD) {
+        throw new Error("Invalid input type");
+      }
+      if (!gameInput.clientOptions?.resourcesToGain) {
+        throw new Error("Invalid input");
+      }
+      const player = gameState.getActivePlayer();
+      const playedHusbands = player.playedCards[CardName.HUSBAND] || [];
+      const playedWifes = player.playedCards[CardName.WIFE] || [];
+      if (playedHusbands.length <= playedWifes.length) {
+        const numToGain = sumResources(gameInput.clientOptions.resourcesToGain);
+        if (numToGain !== 1) {
+          throw new Error(
+            `Invalid resourcesToGain: ${JSON.stringify(
+              gameInput.clientOptions
+            )}`
+          );
+        }
+        player.gainResources(gameInput.clientOptions.resourcesToGain);
+      }
+    },
   }),
   [CardName.INN]: new Card({
     name: CardName.INN,
@@ -461,6 +498,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: true,
     associatedCard: CardName.MINER_MOLE,
+    playInner: playGainResourceFactory({
+      resourceMap: {
+        [ResourceType.PEBBLE]: 1,
+      },
+    }),
   }),
   [CardName.MINER_MOLE]: new Card({
     name: CardName.MINER_MOLE,
@@ -470,11 +512,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: false,
     associatedCard: CardName.MINE,
-    playInner: playGainResourceFactory({
-      resourceMap: {
-        [ResourceType.PEBBLE]: 1,
-      },
-    }),
   }),
   [CardName.MONASTERY]: new Card({
     name: CardName.MONASTERY,
@@ -580,6 +617,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: true,
     associatedCard: CardName.CHIP_SWEEP,
+    playInner: playGainResourceFactory({
+      resourceMap: {
+        [ResourceType.RESIN]: 1,
+      },
+    }),
   }),
   [CardName.RUINS]: new Card({
     name: CardName.RUINS,
@@ -645,6 +687,14 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: true,
     associatedCard: CardName.WOODCARVER,
+    playedCardInfoInner: () => ({
+      resources: {
+        [ResourceType.TWIG]: 0,
+        [ResourceType.RESIN]: 0,
+        [ResourceType.PEBBLE]: 0,
+        [ResourceType.PEBBLE]: 0,
+      },
+    }),
   }),
   [CardName.TEACHER]: new Card({
     name: CardName.TEACHER,
@@ -724,6 +774,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: false,
     associatedCard: CardName.LOOKOUT,
+    playInner: playGainResourceFactory({ resourceMap: {}, numCardsToDraw: 3 }),
   }),
   [CardName.WIFE]: new Card({
     name: CardName.WIFE,
@@ -747,5 +798,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: false,
     associatedCard: CardName.STOREHOUSE,
+    playInner: playSpendResourceToGetVPFactory({
+      resourceType: ResourceType.TWIG,
+      maxToSpend: 3,
+    }),
   }),
 };

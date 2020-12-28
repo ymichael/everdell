@@ -1,4 +1,4 @@
-import { ResourceMap, GameInput } from "./types";
+import { ResourceType, ResourceMap, GameInput, GameInputType } from "./types";
 import { GameState, GameStatePlayFn } from "./gameState";
 
 export function playGainResourceFactory({
@@ -15,4 +15,39 @@ export function playGainResourceFactory({
       player.drawCards(gameState, numCardsToDraw);
     }
   };
+}
+
+export function playSpendResourceToGetVPFactory({
+  resourceType,
+  maxToSpend,
+}: {
+  resourceType: ResourceType;
+  maxToSpend: number;
+}) {
+  return (gameState: GameState, gameInput: GameInput) => {
+    if (gameInput.inputType !== GameInputType.PLAY_CARD) {
+      throw new Error("Invalid input type");
+    }
+    if (!gameInput.clientOptions?.resourcesToSpend) {
+      throw new Error("Invalid input");
+    }
+    const player = gameState.getActivePlayer();
+    const numToSpend =
+      gameInput.clientOptions.resourcesToSpend[resourceType] || 0;
+    if (numToSpend > maxToSpend) {
+      throw new Error(
+        `Too many resources, max: ${maxToSpend}, got: ${numToSpend}`
+      );
+    }
+    player.spendResources({
+      [resourceType]: numToSpend,
+    });
+    player.gainResources({
+      [ResourceType.VP]: numToSpend,
+    });
+  };
+}
+
+export function sumResources(resourceMap: ResourceMap): number {
+  return (Object.values(resourceMap) as number[]).reduce((a, b) => a + b, 0);
 }

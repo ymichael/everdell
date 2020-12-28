@@ -109,6 +109,26 @@ export type GameInput =
 
         // bard
         cardsToDiscard?: CardName[];
+
+        // chip sweep
+        targetCard?: CardName;
+
+        // husband
+        resourcesToGain?: {
+          [ResourceType.TWIG]?: number;
+          [ResourceType.BERRY]?: number;
+          [ResourceType.PEBBLE]?: number;
+          [ResourceType.RESIN]?: number;
+        };
+
+        // wood carver
+        resourcesToSpend?: {
+          [ResourceType.VP]?: number;
+          [ResourceType.TWIG]?: number;
+          [ResourceType.BERRY]?: number;
+          [ResourceType.PEBBLE]?: number;
+          [ResourceType.RESIN]?: number;
+        };
       };
     }
   | {
@@ -216,6 +236,6 @@ export type PlayedCardInfo = {
   workers?: string[];
   maxWorkers?: number;
 
-  // husband/wife, dungeon
+  // dungeon
   pairedCards?: string[];
 };

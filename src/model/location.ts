@@ -282,7 +282,9 @@ function playInnerJourneyFactory(numPoints: number): GameStatePlayFn {
     gameInput.clientOptions.cardsToDiscard.forEach((card: CardName) =>
       player.discardCard(card)
     );
-    player.resources[ResourceType.VP] += numPoints;
+    player.gainResources({
+      [ResourceType.VP]: numPoints,
+    });
   };
 }
 

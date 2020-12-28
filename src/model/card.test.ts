@@ -269,7 +269,7 @@ describe("Card", () => {
       it("should only allow the player to select eligible cards", () => {
         const card = Card.fromName(CardName.POSTAL_PIGEON);
         const gameInput = playCardInput(card.name);
-        let player = gameState.getActivePlayer();
+        const player = gameState.getActivePlayer();
         player.gainResources(card.baseCost);
         player.cardsInHand.push(card.name);
 

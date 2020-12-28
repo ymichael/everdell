@@ -78,8 +78,8 @@ export function getPointsPerRarityLabel({
       throw new Error("Invalid list of played cards");
     }
     let numCardsToCount = 0;
-    for (let cardName in playedCards) {
-      let card = Card.fromName(cardName as CardName);
+    for (const cardName in playedCards) {
+      const card = Card.fromName(cardName as CardName);
       if (card.isCritter == isCritter && card.isUnique == isUnique) {
         numCardsToCount++;
       }

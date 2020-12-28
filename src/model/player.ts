@@ -308,7 +308,7 @@ export class Player {
       return true;
     }
 
-    let outstandingOwedSum = sumResources(outstandingOwed);
+    const outstandingOwedSum = sumResources(outstandingOwed);
 
     // Inn (3 less if from the meadow)
     // TODO need to check other players!!

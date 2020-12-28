@@ -22,6 +22,7 @@ import {
   sumResources,
   getPointsPerRarityLabel,
 } from "./gameStatePlayHelpers";
+import find from "lodash/findIndex";
 
 export class Card implements GameStatePlayable {
   readonly playInner: GameStatePlayFn | undefined;
@@ -85,7 +86,14 @@ export class Card implements GameStatePlayable {
     if (this.cardType == CardType.DESTINATION) {
       ret.workers = [];
       ret.maxWorkers = 1;
+      const openDestinations = [CardName.INN, CardName.POST_OFFICE];
+      if (find(openDestinations, this.name)) {
+        ret.isOpen = true;
+      } else {
+        ret.isOpen = false;
+      }
     }
+
     return {
       ...ret,
       ...(this.playedCardInfoInner ? this.playedCardInfoInner() : {}),

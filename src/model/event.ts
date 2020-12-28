@@ -182,10 +182,15 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN,
     type: EventType.SPECIAL,
     baseVP: 0,
-    canPlayInner: canPlayInnerRequiresCards([
+    canPlayInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
+    },
+    /*
+    canPlayInnerRequiresCards([
       CardName.SHOPKEEPER,
       CardName.POST_OFFICE,
     ]),
+    */
     // TODO: add playInner
     // TODO: add pointsInner
   }),
@@ -469,20 +474,29 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_A_WEE_RUN_CITY,
     type: EventType.SPECIAL,
     baseVP: 0,
-    canPlayInner: canPlayInnerRequiresCards([
+    canPlayInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
+    },
+    /*
+    canPlayInnerRequiresCards([
       CardName.CHIP_SWEEP,
       CardName.CLOCK_TOWER,
     ]),
+    */
     // TODO: add playInner
     pointsInner: (gameState: GameState, playerId: string) => {
       return 4;
     },
   }),
+  // activate all production cards
   [EventName.SPECIAL_TAX_RELIEF]: new Event({
     name: EventName.SPECIAL_TAX_RELIEF,
     type: EventType.SPECIAL,
     baseVP: 0,
-    canPlayInner: canPlayInnerRequiresCards([CardName.JUDGE, CardName.QUEEN]),
+    canPlayInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
+    },
+    /* canPlayInnerRequiresCards([CardName.JUDGE, CardName.QUEEN]),*/
     // TODO: add playInner
     pointsInner: (gameState: GameState, playerId: string) => {
       return 3;
@@ -566,15 +580,36 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED,
     type: EventType.SPECIAL,
     baseVP: 0,
-    canPlayInner: canPlayInnerRequiresCards([
+    canPlayInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
+    },
+
+    /*
+    canPlayInnerRequiresCards([
       CardName.HISTORIAN,
       CardName.RUINS,
     ]),
+    */
     playedCardInfoInner: () => ({
       pairedCards: [],
     }),
     // TODO: add playInner
-    // TODO: add pointsInner
+    pointsInner: (gameState: GameState, playerId: string) => {
+      const player = gameState.getPlayer(playerId);
+      const eventInfo =
+        player.claimedEvents[EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED];
+      if (!eventInfo) {
+        throw new Error("Cannot find event info");
+      }
+
+      const pairedCards = eventInfo.pairedCards;
+
+      if (!pairedCards) {
+        throw new Error("Invalid list of paired cards");
+      }
+
+      return pairedCards.length;
+    },
   }),
   [EventName.SPECIAL_FLYING_DOCTOR_SERVICE]: new Event({
     name: EventName.SPECIAL_FLYING_DOCTOR_SERVICE,
@@ -584,8 +619,29 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       CardName.DOCTOR,
       CardName.POSTAL_PIGEON,
     ]),
-    // TODO: add playInner
-    // TODO: add pointsInner
+    pointsInner: (gameState: GameState, playerId: string) => {
+      const players = gameState.players;
+
+      if (!players) {
+        throw new Error("Invalid list of players");
+      }
+
+      let numHusbandWifePairs = 0;
+
+      for (let player in players) {
+        let playedCards = gameState.getPlayer(player).playedCards;
+        if (!playedCards) {
+          throw new Error("Invalid list of played cards");
+        }
+        let playedHusbands = playedCards[CardName.HUSBAND] || [];
+        let playedWifes = playedCards[CardName.WIFE] || [];
+
+        numHusbandWifePairs =
+          numHusbandWifePairs +
+          Math.min(playedHusbands.length, playedWifes.length);
+      }
+      return numHusbandWifePairs * 3;
+    },
   }),
   [EventName.SPECIAL_PATH_OF_THE_PILGRIMS]: new Event({
     name: EventName.SPECIAL_PATH_OF_THE_PILGRIMS,

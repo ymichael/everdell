@@ -12,7 +12,7 @@ import { Player } from "./player";
 import { Card } from "./card";
 import { CardStack, emptyCardStack } from "./cardStack";
 import { Location, initialLocationsMap } from "./location";
-import { initialEventMap } from "./event";
+import { Event, initialEventMap } from "./event";
 import { initialShuffledDeck } from "./deck";
 import cloneDeep from "lodash/cloneDeep";
 
@@ -215,20 +215,20 @@ export class GameState {
     throw new Error("No more cards to draw");
   }
 
-  private getEligibleEvents = (): EventName[] => {
-    const entries = (Object.entries(this.eventsMap) as unknown) as [
-      EventName,
-      string
-    ][];
-    return entries
-      .filter(([eventName, playerIdIfTaken]) => {
-        if (!!playerIdIfTaken) {
-          return false;
-        }
-        // TODO check if player is eligible for event.
-        return true;
+  private getEligibleEventGameInputs = (): GameInput[] => {
+    const keys = (Object.keys(this.eventsMap) as unknown) as EventName[];
+    return keys
+      .map((eventName) => {
+        return {
+          inputType: GameInputType.CLAIM_EVENT as const,
+          playerId: this.activePlayerId,
+          event: eventName,
+        };
       })
-      .map(([eventName, _]) => eventName);
+      .filter((gameInput) => {
+        const event = Event.fromName(gameInput.event);
+        return event.canPlay(this, gameInput);
+      });
   };
 
   private getAvailableLocationGameInputs = (): GameInput[] => {
@@ -278,12 +278,7 @@ export class GameState {
       if (player.numAvailableWorkers > 0) {
         possibleGameInputs.push(...this.getAvailableLocationGameInputs());
 
-        this.getEligibleEvents().forEach((event) => {
-          possibleGameInputs.push({
-            inputType: GameInputType.CLAIM_EVENT,
-            event,
-          });
-        });
+        possibleGameInputs.push(...this.getEligibleEventGameInputs());
       }
 
       possibleGameInputs.push(

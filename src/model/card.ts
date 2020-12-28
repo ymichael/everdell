@@ -108,8 +108,22 @@ export class Card implements GameStatePlayable {
     if (!this.canPlay(gameState, gameInput)) {
       throw new Error(`Unable to play card ${this.name}`);
     }
+    if (gameInput.inputType !== GameInputType.PLAY_CARD) {
+      throw new Error("Invalid game input type");
+    }
     const player = gameState.getActivePlayer();
-    player.addToCity(this.name);
+    if (this.name == CardName.FOOL) {
+      if (gameInput.clientOptions?.targetPlayerId) {
+        gameState
+          .getPlayer(gameInput.clientOptions?.targetPlayerId)
+          .addToCity(this.name);
+      } else {
+        throw new Error("Invalid input");
+      }
+    } else {
+      player.addToCity(this.name);
+    }
+
     if (
       this.cardType === CardType.PRODUCTION ||
       this.cardType === CardType.TRAVELER

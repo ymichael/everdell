@@ -73,13 +73,9 @@ export enum GameInputType {
   VISIT_DESTINATION_CARD = "VISIT_DESTINATION_CARD",
   CLAIM_EVENT = "CLAIM_EVENT",
   PREPARE_FOR_SEASON = "PREPARE_FOR_SEASON",
-  REPLENISH_MEADOW = "REPLENISH_MEADOW",
 }
 
 export type GameInput =
-  | {
-      inputType: GameInputType.REPLENISH_MEADOW;
-    }
   | {
       inputType: GameInputType.PLACE_WORKER;
       location: LocationName;

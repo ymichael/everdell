@@ -58,12 +58,22 @@ export class Event {
   }
 
   canPlay(gameState: GameState, gameInput: GameInput): boolean {
+    // check whether the event is in the game
     if (!(this.name in gameState.eventsMap)) {
       return false;
     }
+
+    // check whether the event has been playedCards
+    if (!!gameState.eventsMap[this.name]) {
+      return false;
+    }
+
+    // check whether the active player has available workers
     if (gameState.getActivePlayer().numAvailableWorkers <= 0) {
       return false;
     }
+
+    // check whether player meets criteria for playing event
     if (this.canPlayInner && !this.canPlayInner(gameState, gameInput)) {
       return false;
     }

@@ -5,7 +5,7 @@
   "scripts": {
     "test": "mocha -r ts-node/register src/**/*.test.ts",
     "test:watch": "mocha -r ts-node/register --watch --extension ts src/**/*.test.ts",
-    "dev": "next dev",
+    "dev": "DB_PATH=./db/game.sqlite next dev",
     "build": "next build",
     "start": "next start",
     "format": "prettier --write src",
@@ -15,11 +15,13 @@
     "expect.js": "^0.3.1",
     "formik": "^2.2.6",
     "lodash": "^4.17.20",
+    "mitt": "^2.1.0",
     "mocha": "^8.2.1",
     "next": "10.0.4",
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "short-uuid": "^4.1.0",
+    "sqlite3": "^5.0.0",
     "ts-node": "^9.1.1"
   },
   "devDependencies": {
@@ -28,6 +30,7 @@
     "@types/mocha": "^8.2.0",
     "@types/node": "^14.14.16",
     "@types/react": "^17.0.0",
+    "@types/sqlite3": "^3.1.6",
     "@typescript-eslint/eslint-plugin": "^4.11.0",
     "@typescript-eslint/parser": "^4.11.0",
     "eslint": "^7.16.0",

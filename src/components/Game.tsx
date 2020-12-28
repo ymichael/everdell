@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import Meadow from "./Meadow";
 import GameInputBox from "./GameInputBox";
 
@@ -14,12 +14,32 @@ const Game: React.FC<{ game: any; viewingPlayer: any }> = (props) => {
     [game, viewingPlayer]
   );
 
+  const { gameId, gameState } = game;
+  const { playerId, playerSecret } = viewingPlayer;
+  useEffect(() => {
+    const eventSource = new EventSource(
+      `/api/game-updates?gameId=${gameId}&playerId=${playerId}&playerSecret=${playerSecret}`
+    );
+    eventSource.onopen = (e) => {
+      console.log("Open EventStream", e);
+    };
+    eventSource.onerror = (e) => {
+      console.error("EventStream Error", e);
+    };
+    eventSource.onmessage = (e) => {
+      updateGameAndViewingPlayer(JSON.parse(e.data));
+    };
+    return () => {
+      eventSource.close();
+    };
+  }, [gameId, playerId, playerSecret]);
+
   return (
     <>
       <Meadow meadowCards={game.gameState.meadowCards} />
       <GameInputBox
-        gameId={game.gameId}
-        gameState={game.gameState}
+        gameId={gameId}
+        gameState={gameState}
         viewingPlayer={viewingPlayer}
         updateGameAndViewingPlayer={updateGameAndViewingPlayer}
       />

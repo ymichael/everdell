@@ -2,16 +2,18 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import shuffle from "lodash/shuffle";
 import { createGame } from "../../model/game";
 
-export default (req: NextApiRequest, res: NextApiResponse) => {
+export default async (
+  req: NextApiRequest,
+  res: NextApiResponse
+): Promise<void> => {
   if (req.method !== "POST") {
-    res.setHeader("Allow", ["GET", "POST"]);
+    res.setHeader("Allow", ["POST"]);
     res.status(405).end(`Method ${req.method} Not Allowed`);
     return;
   }
 
-  const { body, method } = req;
-
   // Validate game creation
+  const { body } = req;
   if (!(body.players && body.players.length > 1)) {
     res.status(400).json({
       success: false,
@@ -29,7 +31,7 @@ export default (req: NextApiRequest, res: NextApiResponse) => {
   const players = body.randomizeStartingPlayer
     ? shuffle([...body.players])
     : [...body.players];
-  const game = createGame(players.map((p: any) => p.name));
+  const game = await createGame(players.map((p: any) => p.name));
   res.json({
     success: "ok",
     gameUrl: `/game/${game.gameId}?gameSecret=${game.gameSecretUNSAFE}`,

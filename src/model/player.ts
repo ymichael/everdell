@@ -12,6 +12,7 @@ import cloneDeep from "lodash/cloneDeep";
 import { GameState } from "./gameState";
 import { Location } from "./location";
 import { Card } from "./card";
+import { Event } from "./event";
 import { generate as uuid } from "short-uuid";
 import { sumResources } from "./gameStatePlayHelpers";
 
@@ -104,6 +105,11 @@ export class Player {
     }
     // TODO: handle cards that contain other cards (eg. dungeon)
     return [cardName];
+  }
+
+  claimEvent(eventName: EventName): void {
+    const event = Event.fromName(eventName);
+    this.claimedEvents[eventName] = event.getPlayedEventInfo();
   }
 
   getNumResource(resourceType: ResourceType): number {

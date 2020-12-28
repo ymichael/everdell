@@ -351,9 +351,9 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
   }),
 };
 
-export const initialLocationsMap = (
+export function initialLocationsMap(
   numPlayers: number
-): LocationNameToPlayerIds => {
+): LocationNameToPlayerIds {
   const forestLocations = shuffle(Location.byType(LocationType.FOREST));
 
   if (forestLocations.length < 4 || forestLocations.length < 3) {
@@ -374,7 +374,7 @@ export const initialLocationsMap = (
     ret[ty] = [];
   });
   return ret;
-};
+}
 
 /**
  * Helpers

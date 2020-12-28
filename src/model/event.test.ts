@@ -39,6 +39,12 @@ describe("Event", () => {
       player.playedCards[CardName.MINE] = [{}, {}];
       player.playedCards[CardName.FARM] = [{}, {}];
       expect(event.canPlay(gameState, gameInput)).to.be(true);
+
+      expect(Object.keys(player.claimedEvents).length == 0);
+
+      event.play(gameState, gameInput);
+      expect(player.claimedEvents[EventName.BASIC_FOUR_PRODUCTION_TAGS]);
+      expect(Object.keys(player.claimedEvents).length == 1);
     });
   });
 
@@ -54,6 +60,12 @@ describe("Event", () => {
       player.playedCards[CardName.QUEEN] = [{}];
       player.playedCards[CardName.LOOKOUT] = [{}];
       expect(event.canPlay(gameState, gameInput)).to.be(true);
+
+      expect(Object.keys(player.claimedEvents).length == 0);
+
+      event.play(gameState, gameInput);
+      expect(player.claimedEvents[EventName.BASIC_THREE_DESTINATION]);
+      expect(Object.keys(player.claimedEvents).length == 1);
     });
   });
 
@@ -68,6 +80,12 @@ describe("Event", () => {
       player.playedCards[CardName.WANDERER] = [{}, {}];
       player.playedCards[CardName.RANGER] = [{}];
       expect(event.canPlay(gameState, gameInput)).to.be(true);
+
+      expect(Object.keys(player.claimedEvents).length == 0);
+
+      event.play(gameState, gameInput);
+      expect(player.claimedEvents[EventName.BASIC_THREE_TRAVELER]);
+      expect(Object.keys(player.claimedEvents).length == 1);
     });
   });
 
@@ -83,6 +101,12 @@ describe("Event", () => {
       player.playedCards[CardName.HISTORIAN] = [{}];
       player.playedCards[CardName.INNKEEPER] = [{}];
       expect(event.canPlay(gameState, gameInput)).to.be(true);
+
+      expect(Object.keys(player.claimedEvents).length == 0);
+
+      event.play(gameState, gameInput);
+      expect(player.claimedEvents[EventName.BASIC_THREE_GOVERNANCE]);
+      expect(Object.keys(player.claimedEvents).length == 1);
     });
   });
 
@@ -114,6 +138,12 @@ describe("Event", () => {
       player.playedCards[CardName.KING] = [{}];
       player.playedCards[CardName.WIFE] = [{}];
       expect(event.canPlay(gameState, gameInput)).to.be(true);
+
+      expect(Object.keys(player.claimedEvents).length == 0);
+
+      event.play(gameState, gameInput);
+      expect(player.claimedEvents[EventName.SPECIAL_THE_EVERDELL_GAMES]);
+      expect(Object.keys(player.claimedEvents).length == 1);
     });
   });
 });

@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Card as CardModel } from "../model/card";
+import Image from "next/image";
 import styles from "../styles/card.module.css";
 import { ResourceType, CardCost, CardType, CardName } from "../model//types";
 
@@ -48,7 +49,21 @@ const Card: React.FC<{ name: CardName }> = ({ name }) => {
             colorClass,
             styles.card_header_symbol,
           ].join(" ")}
-        ></div>
+        >
+          {card.cardType === CardType.PRODUCTION ? (
+            <Image src="/images/production.png" layout="fill" />
+          ) : card.cardType === CardType.GOVERNANCE ? (
+            <Image src="/images/governance.png" layout="fill" />
+          ) : card.cardType === CardType.DESTINATION ? (
+            <Image src="/images/destination.png" layout="fill" />
+          ) : card.cardType === CardType.PROSPERITY ? (
+            <Image src="/images/prosperity.png" layout="fill" />
+          ) : card.cardType === CardType.TRAVELER ? (
+            <Image src="/images/traveler.png" layout="fill" />
+          ) : (
+            <></>
+          )}
+        </div>
         <div
           className={[
             styles.circle,
@@ -56,24 +71,20 @@ const Card: React.FC<{ name: CardName }> = ({ name }) => {
             styles.card_header_vp,
           ].join(" ")}
         >
-          {card.baseVP}
+          <span className={styles.card_header_vp_number}>{card.baseVP}</span>
         </div>
-        <div className={styles.card_border}>
-          <div className={[styles.card_header, colorClass].join(" ")}>
-            {name}
-          </div>
-          <div className={styles.cost}>
-            <ul>
-              {totalCost.map(function (totalCost, index) {
-                return <li key={index}> {totalCost}</li>;
-              })}
-            </ul>
-          </div>
-          <div className={styles.rarity_label}>{rarityLabel}</div>
+        <div className={[styles.card_header, colorClass].join(" ")}>{name}</div>
+        <div className={styles.cost}>
+          <ul>
+            {totalCost.map(function (totalCost, index) {
+              return <li key={index}> {totalCost}</li>;
+            })}
+          </ul>
+        </div>
+        <div className={styles.rarity_label}>{rarityLabel}</div>
 
-          <div className={[styles.associated_card, colorClass].join(" ")}>
-            {card.associatedCard}
-          </div>
+        <div className={[styles.associated_card, colorClass].join(" ")}>
+          {card.associatedCard}
         </div>
       </div>
     </>

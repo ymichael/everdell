@@ -1,86 +1,65 @@
 .container {
-  height: 370px;
-  width: 450px;
+  height: 200px;
+  width: 250px;
+  border-radius: 5px;
   position: relative;
-}
 
-.card_border {
-  background: #ffffff;
-  border: 1px solid #000000;
-  box-sizing: border-box;
-  height: 338px;
-  width: 391px;
-  left: 43px;
-  top: 59px;
-  position: relative;
+  border: 1px solid #bbb;
+  box-shadow: 1px 1px #eee;
+  overflow: hidden;
+  margin: 10px;
 }
 
 .card_header {
-  height: 50px;
-  border: 1px solid #000000;
-  padding-top: 10px;
-
+  padding: 10px;
   font-weight: bold;
-  font-size: 20px;
-  line-height: 23px;
-
-  align-items: center;
+  font-size: 18px;
   text-align: center;
   color: #ffffff;
 }
 
 .associated_card {
-  width: 180px;
-  height: 25px;
-
-  float: right;
   position: absolute;
   bottom: 0;
   right: 0;
-
-  border: 1px solid #000000;
-  box-sizing: border-box;
-
-  padding-right: 10px;
-  padding-top: 2px;
-  font-size: 14px;
-  font-style: normal;
+  padding: 5px;
+  font-size: 10px;
+  border-radius: 5px 0 0 0;
   font-weight: 700;
-  line-height: 16px;
-  letter-spacing: 0em;
-  text-align: right;
   color: #ffffff;
 }
 
 .circle {
   border-radius: 99px;
-  width: 70px;
-  height: 70px;
-
-  margin-top: 50px;
+  width: 28px;
+  height: 28px;
+  margin: 6px;
 
   text-align: center;
   font-weight: normal;
   font-size: 30px;
   color: #000000;
-  padding-top: 15px;
-
-  border: 1px solid #000000;
 }
 
 .card_header_vp {
   position: absolute;
-  float: right;
   top: 0;
   right: 0;
   z-index: 10;
 }
 
+.card_header_vp_number {
+  font-size: 15px;
+  font-weight: 800;
+  display: inline-block;
+  margin-top: -16px;
+  vertical-align: middle;
+  color: #5a4607;
+}
+
 .card_header_symbol {
   position: absolute;
-  float: left;
   top: 0;
-  margin-left: 20px;
   z-index: 10;
 }
 
@@ -108,23 +87,15 @@
   background: #476f80;
 }
 
-.cost {
-  margin-bottom: 10px;
-  margin-top: 10px;
-}
-
 .rarity_label {
-  width: 182px;
-  height: 25px;
-  margin-left: 100px;
-
+  bottom: 0;
+  left: 0;
   position: absolute;
 
-  font-style: normal;
-  font-weight: normal;
-  font-size: 18px;
-  line-height: 16px;
-  text-align: center;
+  padding: 5px;
+  text-transform: uppercase;
+  font-size: 10px;
+  font-weight: 700;
 }
 
 .color_destination_gradient {

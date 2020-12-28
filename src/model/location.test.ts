@@ -15,7 +15,7 @@ describe("Location", () => {
 
   describe("canPlay basic", () => {
     it("JOURNEY cannot be played until autumn", () => {
-      let gameState = GameState.initialGameState({
+      const gameState = GameState.initialGameState({
         players: [createPlayer("One"), createPlayer("Two")],
       });
       const berryLocation = Location.fromName(LocationName.BASIC_ONE_BERRY);

@@ -38,7 +38,7 @@ export class GameState {
     eventsMap,
     pendingGameInput,
   }: {
-    activePlayerId: Player["playerId"];
+    activePlayerId?: Player["playerId"];
     players: Player[];
     meadowCards: CardName[];
     discardPile: CardStack;
@@ -47,7 +47,7 @@ export class GameState {
     eventsMap: EventNameToPlayerId;
     pendingGameInput: GameInput | null;
   }) {
-    this._activePlayerId = activePlayerId;
+    this._activePlayerId = activePlayerId || players[0].playerId;
     this.players = players;
     this.locationsMap = locationsMap;
     this.meadowCards = meadowCards;
@@ -163,8 +163,7 @@ export class GameState {
       throw new Error(`Unable to create a game with ${players.length} players`);
     }
 
-    let gameState = new GameState({
-      activePlayerId: players[0].playerId,
+    const gameState = new GameState({
       players,
       meadowCards: [],
       deck: initialShuffledDeck(),

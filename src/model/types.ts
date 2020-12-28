@@ -73,6 +73,7 @@ export enum GameInputType {
   VISIT_DESTINATION_CARD = "VISIT_DESTINATION_CARD",
   CLAIM_EVENT = "CLAIM_EVENT",
   PREPARE_FOR_SEASON = "PREPARE_FOR_SEASON",
+  GAME_END = "GAME_END",
 }
 
 export type GameInput =
@@ -178,6 +179,9 @@ export type GameInput =
 
         // TODO: add resources to opponents
       };
+    }
+  | {
+      inputType: GameInputType.GAME_END;
     }
   | {
       inputType: GameInputType.PREPARE_FOR_SEASON;

@@ -269,7 +269,11 @@ export class GameState {
         );
       }
     } else {
-      if (player.currentSeason !== Season.WINTER) {
+      if (player.currentSeason === Season.AUTUMN) {
+        possibleGameInputs.push({
+          inputType: GameInputType.GAME_END,
+        });
+      } else {
         possibleGameInputs.push({
           inputType: GameInputType.PREPARE_FOR_SEASON,
         });

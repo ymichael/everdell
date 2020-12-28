@@ -145,7 +145,8 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
 
       const player = gameState.getActivePlayer();
       gameInput.clientOptions.cardsToDiscard.forEach((card: CardName) => {
-        player.discardCard(card);
+        player.removeCardFromHand(card);
+        gameState.discardPile.addToStack(card);
       });
       player.gainResources(resourcesToGain);
     },
@@ -279,9 +280,10 @@ function playInnerJourneyFactory(numPoints: number): GameStatePlayFn {
     if (gameInput.clientOptions.cardsToDiscard?.length !== numPoints) {
       throw new Error("Must specify cards to discard for journey");
     }
-    gameInput.clientOptions.cardsToDiscard.forEach((card: CardName) =>
-      player.discardCard(card)
-    );
+    gameInput.clientOptions.cardsToDiscard.forEach((card: CardName) => {
+      player.removeCardFromHand(card);
+      gameState.discardPile.addToStack(card);
+    });
     player.gainResources({
       [ResourceType.VP]: numPoints,
     });

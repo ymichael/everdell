@@ -75,7 +75,7 @@ export class Player {
     return this.playerSecret;
   }
 
-  discardCard(cardName: CardName): void {
+  removeCardFromHand(cardName: CardName): void {
     const idx = this.cardsInHand.indexOf(cardName);
     if (idx === -1) {
       throw new Error(`Unable to discard ${cardName}`);

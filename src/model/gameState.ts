@@ -116,7 +116,7 @@ export class GameState {
           nextGameState.removeCardFromMeadow(gameInput.card);
           nextGameState.replenishMeadow();
         } else {
-          nextGameState.getActivePlayer().discardCard(gameInput.card);
+          nextGameState.getActivePlayer().removeCardFromHand(gameInput.card);
         }
         card.play(nextGameState, gameInput);
         nextGameState.nextPlayer();

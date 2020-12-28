@@ -185,7 +185,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           throw new Error("Discarding too many cards");
         }
         gameInput.clientOptions.cardsToDiscard.forEach((cardName) => {
-          player.discardCard(cardName);
+          player.removeCardFromHand(cardName);
+          gameState.discardPile.addToStack(cardName);
         });
         player.gainResources({
           [ResourceType.VP]: gameInput.clientOptions?.cardsToDiscard.length,
@@ -783,7 +784,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       }
       const player = gameState.getActivePlayer();
       gameInput.clientOptions.cardsToDiscard.forEach((cardName) => {
-        player.discardCard(cardName);
+        player.removeCardFromHand(cardName);
+        gameState.discardPile.addToStack(cardName);
       });
       player.drawMaxCards(gameState);
     },

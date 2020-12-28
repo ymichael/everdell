@@ -70,6 +70,7 @@ export type CardCost = {
 export enum GameInputType {
   PLAY_CARD = "PLAY_CARD",
   PLACE_WORKER = "PLACE_WORKER",
+  VISIT_DESTINATION_CARD = "VISIT_DESTINATION_CARD",
   CLAIM_EVENT = "CLAIM_EVENT",
   PREPARE_FOR_SEASON = "PREPARE_FOR_SEASON",
 
@@ -100,28 +101,49 @@ export type GameInput =
       };
     }
   | {
+      inputType: GameInputType.VISIT_DESTINATION_CARD;
+      card: CardName;
+      playerId: string;
+      clientOptions?: {
+        // lookout
+        location?: LocationName;
+
+        // monastery
+        targetPlayerId?: string;
+
+        // monastery
+        resourcesToSpend?: {
+          [ResourceType.TWIG]?: number;
+          [ResourceType.BERRY]?: number;
+          [ResourceType.PEBBLE]?: number;
+          [ResourceType.RESIN]?: number;
+        };
+      };
+    }
+  | {
       inputType: GameInputType.PLAY_CARD;
       card: CardName;
       fromMeadow: boolean;
       clientOptions?: {
-        // fool
+        // fool, miner mole
         targetPlayerId?: string;
 
-        // bard
+        // bard, post office
         cardsToDiscard?: CardName[];
 
-        // chip sweep
+        // chip sweep, miner mole, ruins
         targetCard?: CardName;
 
-        // husband
+        // husband, peddler
         resourcesToGain?: {
+          [ResourceType.VP]?: number;
           [ResourceType.TWIG]?: number;
           [ResourceType.BERRY]?: number;
           [ResourceType.PEBBLE]?: number;
           [ResourceType.RESIN]?: number;
         };
 
-        // wood carver
+        // wood carver, docter, peddler
         resourcesToSpend?: {
           [ResourceType.VP]?: number;
           [ResourceType.TWIG]?: number;

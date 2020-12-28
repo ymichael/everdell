@@ -89,6 +89,14 @@ export class Player {
     this.playedCards[cardName]!.push(card.getPlayedCardInfo());
   }
 
+  removeCardFromCity(cardName: CardName): void {
+    if (this.playedCards[cardName]) {
+      this.playedCards[cardName]!.pop();
+    } else {
+      throw new Error(`Unable to remove ${cardName}`);
+    }
+  }
+
   getNumResource(resourceType: ResourceType): number {
     return this.resources[resourceType];
   }
@@ -140,6 +148,10 @@ export class Player {
       const numWorkers = playedCard.workers?.length || 0;
       return numWorkers < maxWorkers;
     });
+  }
+
+  drawMaxCards(gameState: GameState): void {
+    this.drawCards(gameState, MAX_HAND_SIZE - this.cardsInHand.length);
   }
 
   drawCards(gameState: GameState, count: number): void {
@@ -223,12 +235,18 @@ export class Player {
     let outstandingOwedSum = sumResources(outstandingOwed);
 
     // Inn (3 less if from the meadow)
-    // TODO need to check other playes!!
+    // TODO need to check other players!!
     if (isMeadowCard && this.canPlaceWorkerOnCard(CardName.INN)) {
       if (outstandingOwedSum <= 3) {
         return true;
       }
-      outstandingOwedSum -= 3;
+    }
+
+    // Crane
+    if (card.isConstruction && this.hasPlayedCard(CardName.CRANE)) {
+      if (outstandingOwedSum <= 3) {
+        return true;
+      }
     }
 
     // Dungeon lets you lock up a critter to pay 3 less
@@ -236,7 +254,6 @@ export class Player {
       if (outstandingOwedSum <= 3) {
         return true;
       }
-      outstandingOwedSum -= 3;
     }
 
     // Judge allows substitution of one resource.

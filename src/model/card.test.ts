@@ -4,14 +4,12 @@ import { GameState } from "./gameState";
 import { createPlayer } from "./player";
 import { ResourceType, GameInputType, GameInput, CardName } from "./types";
 
-const playCardInput = (
-  card: CardName,
-  fromMeadow: boolean = false
-): GameInput => {
+const playCardInput = (card: CardName, overrides: any = {}): GameInput => {
   return {
     inputType: GameInputType.PLAY_CARD,
     card,
-    fromMeadow,
+    fromMeadow: false,
+    ...overrides,
   };
 };
 
@@ -126,6 +124,62 @@ describe("Card", () => {
           .getPlayer(player.playerId)
           .getNumResource(ResourceType.BERRY)
       ).to.be(2);
+    });
+  });
+
+  describe(CardName.BARD, () => {
+    it("should gain vp corresponding to no. of discarded cards", () => {
+      const card = Card.fromName(CardName.BARD);
+      const gameInput = playCardInput(card.name, {
+        clientOptions: {
+          cardsToDiscard: [CardName.FARM, CardName.RUINS],
+        },
+      });
+      const player = gameState.getActivePlayer();
+      player.cardsInHand = [CardName.BARD, CardName.FARM, CardName.RUINS];
+      player.gainResources(card.baseCost);
+      expect(player.getNumResource(ResourceType.VP)).to.be(0);
+
+      const nextGameState = gameState.next(gameInput);
+      expect(
+        nextGameState.getPlayer(player.playerId).getNumResource(ResourceType.VP)
+      ).to.be(2);
+      expect(nextGameState.getPlayer(player.playerId).cardsInHand).to.eql([]);
+    });
+
+    it("should not allow more than 5 discarded cards", () => {
+      const card = Card.fromName(CardName.BARD);
+      const gameInput = playCardInput(card.name, {
+        clientOptions: {
+          cardsToDiscard: [
+            CardName.FARM,
+            CardName.RUINS,
+            CardName.FARM,
+            CardName.RUINS,
+            CardName.FARM,
+            CardName.RUINS,
+          ],
+        },
+      });
+      const player = gameState.getActivePlayer();
+      player.cardsInHand = [
+        CardName.BARD,
+        CardName.FARM,
+        CardName.RUINS,
+        CardName.FARM,
+        CardName.RUINS,
+        CardName.FARM,
+        CardName.RUINS,
+      ];
+      player.gainResources(card.baseCost);
+      expect(player.getNumResource(ResourceType.VP)).to.be(0);
+      try {
+        const nextGameState = gameState.next(gameInput);
+        expect("Execption to be raised").to.be(null);
+      } catch (e) {
+        // ignore
+      }
+      expect(player.getNumResource(ResourceType.VP)).to.be(0);
     });
   });
 });

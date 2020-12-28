@@ -73,17 +73,10 @@ export enum GameInputType {
   VISIT_DESTINATION_CARD = "VISIT_DESTINATION_CARD",
   CLAIM_EVENT = "CLAIM_EVENT",
   PREPARE_FOR_SEASON = "PREPARE_FOR_SEASON",
-
   REPLENISH_MEADOW = "REPLENISH_MEADOW",
-  DRAW_CARDS = "DRAW_CARDS",
 }
 
 export type GameInput =
-  | {
-      inputType: GameInputType.DRAW_CARDS;
-      playerId: string;
-      count: number;
-    }
   | {
       inputType: GameInputType.REPLENISH_MEADOW;
     }

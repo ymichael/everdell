@@ -63,7 +63,7 @@ describe("Location", () => {
       expect(location.canPlay(nextGameState, gameInput)).to.be(false);
     });
 
-    it("should allow 2 workers on SPECIAL_TWO_BERRY_ONE_CARD if 4+ players", () => {
+    it("should allow 2 workers on FOREST_TWO_BERRY_ONE_CARD if 4+ players", () => {
       const gameState = GameState.initialGameState({
         players: [
           createPlayer("One"),
@@ -73,10 +73,10 @@ describe("Location", () => {
         ],
       });
       const location = Location.fromName(
-        LocationName.SPECIAL_TWO_BERRY_ONE_CARD
+        LocationName.FOREST_TWO_BERRY_ONE_CARD
       );
       const gameInput = placeWorkerInput(location.name);
-      gameState.locationsMap[LocationName.SPECIAL_TWO_BERRY_ONE_CARD] = [];
+      gameState.locationsMap[LocationName.FOREST_TWO_BERRY_ONE_CARD] = [];
       expect(location.canPlay(gameState, gameInput)).to.be(true);
       const gameState2 = gameState.next(gameInput);
       expect(location.canPlay(gameState2, gameInput)).to.be(true);

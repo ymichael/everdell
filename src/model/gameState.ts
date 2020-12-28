@@ -172,7 +172,7 @@ export class GameState {
       meadowCards: [],
       deck: initialShuffledDeck(),
       discardPile: emptyCardStack(),
-      locationsMap: initialLocationsMap(),
+      locationsMap: initialLocationsMap(players.length),
       eventsMap: initialEventMap(),
       pendingGameInputs: [],
     });

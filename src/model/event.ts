@@ -16,6 +16,7 @@ import {
   GameStatePlayFn,
   GameStateCanPlayFn,
 } from "./gameState";
+import shuffle from "lodash/shuffle";
 
 export class Event {
   readonly playInner: GameStatePlayFn | undefined;
@@ -79,6 +80,88 @@ export class Event {
     }
     return true;
   }
+
+  play(gameState: GameState, gameInput: GameInput): void {
+    if (gameInput.inputType !== GameInputType.CLAIM_EVENT) {
+      throw new Error("Invalid game input type");
+    }
+    const player = gameState.getActivePlayer();
+    player.claimEvent(this.name);
+    if (!!this.playInner) {
+      console.log("foo");
+    }
+  }
+
+  getPlayedEventInfo(): PlayedCardInfo {
+    const ret: PlayedCardInfo = {};
+
+    ret.workers = [];
+    ret.maxWorkers = 1;
+
+    return {
+      ...ret,
+      ...(this.playedCardInfoInner ? this.playedCardInfoInner() : {}),
+    };
+  }
+
+  /*
+  getPlayedCardInfo(): PlayedCardInfo {
+    const ret: PlayedCardInfo = {};
+    if (this.isConstruction) {
+      ret.isOccupied = false;
+    }
+    if (this.cardType == CardType.DESTINATION) {
+      ret.workers = [];
+      ret.maxWorkers = 1;
+    }
+    return {
+      ...ret,
+      ...(this.playedCardInfoInner ? this.playedCardInfoInner() : {}),
+    };
+  }
+
+
+
+  play(gameState: GameState, gameInput: GameInput): void {
+    if (gameInput.inputType !== GameInputType.PLAY_CARD) {
+      throw new Error("Invalid game input type");
+    }
+    const player = gameState.getActivePlayer();
+    if (this.name == CardName.FOOL) {
+      if (gameInput.clientOptions?.targetPlayerId) {
+        gameState
+          .getPlayer(gameInput.clientOptions?.targetPlayerId)
+          .addToCity(this.name);
+      } else {
+        throw new Error("Invalid input");
+      }
+    } else {
+      player.addToCity(this.name);
+    }
+    if (
+      this.cardType === CardType.PRODUCTION ||
+      this.cardType === CardType.TRAVELER
+    ) {
+      this.playCardEffects(gameState, gameInput);
+    }
+  }
+
+  playCardEffects(gameState: GameState, gameInput: GameInput): void {
+    if (this.playInner) {
+      this.playInner(gameState, gameInput);
+    }
+  }
+
+  getPoints(gameState: GameState, playerId: string): number {
+    return (
+      this.baseVP +
+      (this.pointsInner ? this.pointsInner(gameState, playerId) : 0)
+    );
+  }
+
+
+
+  */
 
   static fromName(name: EventName): Event {
     return EVENT_REGISTRY[name];
@@ -909,6 +992,17 @@ export const initialEventMap = (): EventNameToPlayerId => {
   [...Event.byType(EventType.BASIC)].forEach((ty) => {
     ret[ty] = null;
   });
+
+  const specialEvents = shuffle(Event.byType(EventType.SPECIAL));
+  if (specialEvents.length < 4) {
+    throw new Error("Not enough Special Events available");
+  }
+
+  const chosenSpecialEvents = specialEvents.slice(0, 4);
+  [...chosenSpecialEvents].forEach((ty) => {
+    ret[ty] = null;
+  });
+
   return ret;
 };
 

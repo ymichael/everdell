@@ -30,8 +30,24 @@ const getCardBaseCost = (cardCost: CardCost) => {
   return totalCost;
 };
 
+// handle the farm and evertree
+const getAssociatedCard = (card: CardModel) => {
+  if (card.associatedCard) {
+    return card.associatedCard;
+  } else {
+    if (card.name == CardName.FARM) {
+      return "Husband / Wife";
+    } else if (card.name == CardName.EVERTREE) {
+      return "Any Critter";
+    } else {
+      throw new Error(
+        "Associated card is null and card is not Farm or Evertree"
+      );
+    }
+  }
+};
+
 const Card: React.FC<{ name: CardName }> = ({ name }) => {
-  //var name = "POSTAL_PIGEON";
   var card = CardModel.fromName(name as any);
 
   var colorClass = colorClassMap[card.cardType];
@@ -39,6 +55,8 @@ const Card: React.FC<{ name: CardName }> = ({ name }) => {
   var rarityLabel = getRarityLabel(card);
 
   var totalCost = getCardBaseCost(card.baseCost);
+
+  var associatedCard = getAssociatedCard(card);
 
   return (
     <>
@@ -84,7 +102,7 @@ const Card: React.FC<{ name: CardName }> = ({ name }) => {
         <div className={styles.rarity_label}>{rarityLabel}</div>
 
         <div className={[styles.associated_card, colorClass].join(" ")}>
-          {card.associatedCard}
+          {associatedCard}
         </div>
       </div>
     </>

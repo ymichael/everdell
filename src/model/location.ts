@@ -247,14 +247,106 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
       numCardsToDraw: 1,
     }),
   }),
-  [LocationName.SPECIAL_TWO_BERRY_ONE_CARD]: new Location({
-    name: LocationName.SPECIAL_TWO_BERRY_ONE_CARD,
+  [LocationName.FOREST_TWO_BERRY_ONE_CARD]: new Location({
+    name: LocationName.FOREST_TWO_BERRY_ONE_CARD,
     type: LocationType.FOREST,
     occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
     playInner: playGainResourceFactory({
       resourceMap: { [ResourceType.BERRY]: 2 },
       numCardsToDraw: 1,
     }),
+  }),
+  [LocationName.FOREST_TWO_WILD]: new Location({
+    name: LocationName.FOREST_TWO_WILD,
+    type: LocationType.FOREST,
+    occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
+    playInner: () => {
+      throw new Error("Not Implemented");
+    },
+  }),
+  [LocationName.FOREST_DISCARD_ANY_THEN_DRAW_TWO_PER_CARD]: new Location({
+    name: LocationName.FOREST_DISCARD_ANY_THEN_DRAW_TWO_PER_CARD,
+    type: LocationType.FOREST,
+    occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
+    playInner: () => {
+      throw new Error("Not Implemented");
+    },
+  }),
+  [LocationName.FOREST_COPY_BASIC_ONE_CARD]: new Location({
+    name: LocationName.FOREST_COPY_BASIC_ONE_CARD,
+    type: LocationType.FOREST,
+    occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
+    playInner: () => {
+      throw new Error("Not Implemented");
+    },
+  }),
+  [LocationName.FOREST_ONE_PEBBLE_THREE_CARD]: new Location({
+    name: LocationName.FOREST_ONE_PEBBLE_THREE_CARD,
+    type: LocationType.FOREST,
+    occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
+    playInner: playGainResourceFactory({
+      resourceMap: { [ResourceType.PEBBLE]: 1 },
+      numCardsToDraw: 3,
+    }),
+  }),
+  [LocationName.FOREST_ONE_TWIG_RESIN_BERRY]: new Location({
+    name: LocationName.FOREST_ONE_TWIG_RESIN_BERRY,
+    type: LocationType.FOREST,
+    occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
+    playInner: playGainResourceFactory({
+      resourceMap: {
+        [ResourceType.TWIG]: 1,
+        [ResourceType.RESIN]: 1,
+        [ResourceType.BERRY]: 1,
+      },
+    }),
+  }),
+  [LocationName.FOREST_THREE_BERRY]: new Location({
+    name: LocationName.FOREST_THREE_BERRY,
+    type: LocationType.FOREST,
+    occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
+    playInner: playGainResourceFactory({
+      resourceMap: {
+        [ResourceType.BERRY]: 3,
+      },
+    }),
+  }),
+  [LocationName.FOREST_TWO_RESIN_ONE_TWIG]: new Location({
+    name: LocationName.FOREST_TWO_RESIN_ONE_TWIG,
+    type: LocationType.FOREST,
+    occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
+    playInner: playGainResourceFactory({
+      resourceMap: {
+        [ResourceType.TWIG]: 1,
+        [ResourceType.RESIN]: 2,
+      },
+    }),
+  }),
+  [LocationName.FOREST_TWO_CARDS_ONE_WILD]: new Location({
+    name: LocationName.FOREST_TWO_CARDS_ONE_WILD,
+    type: LocationType.FOREST,
+    occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
+    playInner: () => {
+      throw new Error("Not Implemented");
+    },
+  }),
+  [LocationName.FOREST_DISCARD_UP_TO_THREE_CARDS_TO_GAIN_WILD_PER_CARD]: new Location(
+    {
+      name: LocationName.FOREST_DISCARD_UP_TO_THREE_CARDS_TO_GAIN_WILD_PER_CARD,
+      type: LocationType.FOREST,
+      occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
+      playInner: () => {
+        throw new Error("Not Implemented");
+      },
+    }
+  ),
+  [LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS]: new Location({
+    name: LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS,
+    type: LocationType.FOREST,
+    occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
+    playInner: () => {
+      throw new Error("Not Implemented");
+    },
   }),
 };
 

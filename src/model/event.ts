@@ -1,5 +1,6 @@
 import {
   CardName,
+  CardType,
   EventType,
   EventName,
   EventNameToPlayerId,
@@ -74,7 +75,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       const player = gameState.getActivePlayer();
       const playedCards = player.playedCards;
 
-      return player.getNumProductionCards() >= 4;
+      return player.getNumCardType(CardType.PRODUCTION) >= 4;
     },
     pointsInner: (gameState: GameState, playerId: string) => {
       return 3;
@@ -87,7 +88,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       const player = gameState.getActivePlayer();
       const playedCards = player.playedCards;
 
-      return player.getNumDestinationCards() >= 3;
+      return player.getNumCardType(CardType.DESTINATION) >= 3;
     },
     pointsInner: (gameState: GameState, playerId: string) => {
       return 3;
@@ -100,7 +101,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       const player = gameState.getActivePlayer();
       const playedCards = player.playedCards;
 
-      return player.getNumGovernanceCards() >= 3;
+      return player.getNumCardType(CardType.GOVERNANCE) >= 3;
     },
     pointsInner: (gameState: GameState, playerId: string) => {
       return 3;
@@ -113,7 +114,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       const player = gameState.getActivePlayer();
       const playedCards = player.playedCards;
 
-      return player.getNumTravelerCards() >= 3;
+      return player.getNumCardType(CardType.TRAVELER) >= 3;
     },
     pointsInner: (gameState: GameState, playerId: string) => {
       return 3;
@@ -734,11 +735,11 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       const playedCards = player.playedCards;
 
       return (
-        player.getNumProsperityCards() >= 2 &&
-        player.getNumGovernanceCards() >= 2 &&
-        player.getNumProductionCards() >= 2 &&
-        player.getNumDestinationCards() >= 2 &&
-        player.getNumTravelerCards() >= 2
+        player.getNumCardType(CardType.PROSPERITY) >= 2 &&
+        player.getNumCardType(CardType.GOVERNANCE) >= 2 &&
+        player.getNumCardType(CardType.PRODUCTION) >= 2 &&
+        player.getNumCardType(CardType.TRAVELER) >= 2 &&
+        player.getNumCardType(CardType.DESTINATION) >= 2
       );
     },
     pointsInner: (gameState: GameState, playerId: string) => {

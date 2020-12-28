@@ -70,6 +70,7 @@ export type CardCost = {
 export enum GameInputType {
   PLAY_CARD = "PLAY_CARD",
   PLACE_WORKER = "PLACE_WORKER",
+  VISIT_DESTINATION_CARD = "VISIT_DESTINATION_CARD",
   CLAIM_EVENT = "CLAIM_EVENT",
   PREPARE_FOR_SEASON = "PREPARE_FOR_SEASON",
 
@@ -100,28 +101,61 @@ export type GameInput =
       };
     }
   | {
-      inputType: GameInputType.PLAY_CARD;
+      inputType: GameInputType.VISIT_DESTINATION_CARD;
       card: CardName;
-      fromMeadow: boolean;
+      playerId: string;
       clientOptions?: {
-        // fool
+        // lookout
+        location?: LocationName;
+
+        // monastery
         targetPlayerId?: string;
 
-        // bard
-        cardsToDiscard?: CardName[];
-
-        // chip sweep
-        targetCard?: CardName;
-
-        // husband
-        resourcesToGain?: {
+        // monastery
+        resourcesToSpend?: {
           [ResourceType.TWIG]?: number;
           [ResourceType.BERRY]?: number;
           [ResourceType.PEBBLE]?: number;
           [ResourceType.RESIN]?: number;
         };
 
-        // wood carver
+        // university
+        targetCard?: CardName;
+
+        // university
+        resourcesToGain?: {
+          [ResourceType.TWIG]?: number;
+          [ResourceType.BERRY]?: number;
+          [ResourceType.PEBBLE]?: number;
+          [ResourceType.RESIN]?: number;
+          [ResourceType.VP]?: number;
+        };
+      };
+    }
+  | {
+      inputType: GameInputType.PLAY_CARD;
+      card: CardName;
+      fromMeadow: boolean;
+      clientOptions?: {
+        // fool, miner mole
+        targetPlayerId?: string;
+
+        // bard, post office
+        cardsToDiscard?: CardName[];
+
+        // chip sweep, miner mole, ruins
+        targetCard?: CardName;
+
+        // husband, peddler
+        resourcesToGain?: {
+          [ResourceType.VP]?: number;
+          [ResourceType.TWIG]?: number;
+          [ResourceType.BERRY]?: number;
+          [ResourceType.PEBBLE]?: number;
+          [ResourceType.RESIN]?: number;
+        };
+
+        // wood carver, docter, peddler
         resourcesToSpend?: {
           [ResourceType.VP]?: number;
           [ResourceType.TWIG]?: number;

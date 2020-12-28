@@ -1,5 +1,6 @@
 import {
   ResourceType,
+  LocationType,
   CardCost,
   CardType,
   CardName,
@@ -13,6 +14,7 @@ import {
   GameStatePlayFn,
   GameStateCanPlayFn,
 } from "./gameState";
+import { Location } from "./location";
 import {
   playGainResourceFactory,
   playSpendResourceToGetVPFactory,
@@ -23,7 +25,9 @@ export class Card implements GameStatePlayable {
   readonly playInner: GameStatePlayFn | undefined;
   readonly canPlayInner: GameStateCanPlayFn | undefined;
   readonly playedCardInfoInner: (() => PlayedCardInfo) | undefined;
-  readonly pointsInner: ((gameState: GameState) => number) | undefined;
+  readonly pointsInner:
+    | ((gameState: GameState, playerId: string) => number)
+    | undefined;
 
   readonly name: CardName;
   readonly baseCost: CardCost;
@@ -57,7 +61,7 @@ export class Card implements GameStatePlayable {
     playInner?: GameStatePlayFn;
     canPlayInner?: GameStateCanPlayFn;
     playedCardInfoInner?: () => PlayedCardInfo;
-    pointsInner?: (gameState: GameState) => number;
+    pointsInner?: (gameState: GameState, playerId: string) => number;
   }) {
     this.name = name;
     this.baseCost = baseCost;
@@ -104,11 +108,27 @@ export class Card implements GameStatePlayable {
     if (!this.canPlay(gameState, gameInput)) {
       throw new Error(`Unable to play card ${this.name}`);
     }
+    const player = gameState.getActivePlayer();
+    player.addToCity(this.name);
+    if (
+      this.cardType === CardType.PRODUCTION ||
+      this.cardType === CardType.TRAVELER
+    ) {
+      this.playCardEffects(gameState, gameInput);
+    }
+  }
+
+  playCardEffects(gameState: GameState, gameInput: GameInput): void {
     if (this.playInner) {
-      const player = gameState.getActivePlayer();
-      player.addToCity(this.name);
       this.playInner(gameState, gameInput);
     }
+  }
+
+  getPoints(gameState: GameState, playerId: string): number {
+    return (
+      this.baseVP +
+      (this.pointsInner ? this.pointsInner(gameState, playerId) : 0)
+    );
   }
 
   static fromName(name: CardName): Card {
@@ -126,8 +146,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: false,
     associatedCard: CardName.CRANE,
     // 1 point per rock and pebble, up to 6 pts
-    pointsInner: (gameState: GameState) => {
-      const player = gameState.getActivePlayer();
+    pointsInner: (gameState: GameState, playerId: string) => {
+      const player = gameState.getPlayer(playerId);
       var numPebblesAndResin =
         player.getNumResource(ResourceType.PEBBLE) +
         player.getNumResource(ResourceType.RESIN);
@@ -168,7 +188,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: false,
     associatedCard: CardName.TWIG_BARGE,
-    playInner: (gameState: GameState) => {
+    playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       const playedFarms = player.playedCards[CardName.FARM];
       if (playedFarms) {
@@ -191,8 +211,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: true,
     associatedCard: CardName.KING,
     // 1 point per common construction
-    pointsInner: (gameState: GameState) => {
-      const player = gameState.getActivePlayer();
+    pointsInner: (gameState: GameState, playerId: string) => {
+      const player = gameState.getPlayer(playerId);
       const playedCards = player.playedCards;
       if (playedCards) {
         var numCommonConstructions = 0;
@@ -215,6 +235,18 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: true,
     associatedCard: CardName.UNDERTAKER,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      if (gameInput.inputType !== GameInputType.VISIT_DESTINATION_CARD) {
+        throw new Error("Invalid input type");
+      }
+      // TODO
+      // When you place a worker here, reveal 4 cards from the draw pile or
+      // discard pile and play 1 of them for free. Discard the others. Your
+      // worker must stay here permanently. Cemetery may only have up to 2
+      // workers on it, but the second spot must be unlocked by having a Undertaker
+      // in your city.
+      throw new Error("Not Implemented");
+    },
   }),
   [CardName.CHAPEL]: new Card({
     name: CardName.CHAPEL,
@@ -228,6 +260,26 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: true,
     associatedCard: CardName.SHEPHERD,
+    playedCardInfoInner: () => ({
+      resources: {
+        [ResourceType.VP]: 0,
+      },
+    }),
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      if (gameInput.inputType !== GameInputType.VISIT_DESTINATION_CARD) {
+        throw new Error("Invalid input type");
+      }
+      const player = gameState.getActivePlayer();
+      const playedCard = player.playedCards[CardName.SHEPHERD]?.[0];
+      if (!playedCard) {
+        throw new Error("Invalid action");
+      }
+      (playedCard.resources![ResourceType.VP] as number) += 1;
+      player.drawCards(
+        gameState,
+        playedCard.resources![ResourceType.VP] as number
+      );
+    },
   }),
   [CardName.CHIP_SWEEP]: new Card({
     name: CardName.CHIP_SWEEP,
@@ -248,8 +300,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       if (!player.hasPlayedCard(gameInput.clientOptions?.targetCard)) {
         throw new Error("Invalid input");
       }
-
-      // TODO
+      const targetCard = Card.fromName(gameInput.clientOptions?.targetCard);
+      if (targetCard.cardType !== CardType.PRODUCTION) {
+        throw new Error("Invalid input");
+      }
+      targetCard.playCardEffects(gameState, gameInput);
     },
   }),
   [CardName.CLOCK_TOWER]: new Card({
@@ -326,8 +381,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: true,
     associatedCard: null,
     // 1 point per prosperty card
-    pointsInner: (gameState: GameState) => {
-      const player = gameState.getActivePlayer();
+    pointsInner: (gameState: GameState, playerId: string) => {
+      const player = gameState.getPlayer(playerId);
       const playedCards = player.playedCards;
       if (playedCards) {
         var numProsperity = 0;
@@ -418,7 +473,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       if (gameInput.inputType !== GameInputType.PLAY_CARD) {
         throw new Error("Invalid input type");
       }
-      if (!gameInput.clientOptions?.resourcesToGain) {
+      if (
+        !gameInput.clientOptions?.resourcesToGain ||
+        gameInput.clientOptions?.resourcesToGain[ResourceType.VP]
+      ) {
         throw new Error("Invalid input");
       }
       const player = gameState.getActivePlayer();
@@ -445,6 +503,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: true,
     associatedCard: CardName.INNKEEPER,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
+    },
   }),
   [CardName.INNKEEPER]: new Card({
     name: CardName.INNKEEPER,
@@ -485,6 +546,24 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: true,
     associatedCard: CardName.WANDERER,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      if (gameInput.inputType !== GameInputType.VISIT_DESTINATION_CARD) {
+        throw new Error("Invalid input type");
+      }
+      if (!gameInput.clientOptions?.location) {
+        throw new Error("Invalid input");
+      }
+      const location = Location.fromName(gameInput.clientOptions?.location);
+      if (
+        !(
+          location.type === LocationType.FOREST ||
+          location.type === LocationType.BASIC
+        )
+      ) {
+        throw new Error(`Cannot copy ${location.name}`);
+      }
+      location.play(gameState, gameInput);
+    },
   }),
   [CardName.MINE]: new Card({
     name: CardName.MINE,
@@ -512,6 +591,29 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: false,
     associatedCard: CardName.MINE,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      if (gameInput.inputType !== GameInputType.PLAY_CARD) {
+        throw new Error("Invalid input type");
+      }
+      if (
+        !gameInput.clientOptions?.targetCard ||
+        !gameInput.clientOptions?.targetPlayerId
+      ) {
+        throw new Error("Invalid input");
+      }
+      const targetPlayer = gameState.getPlayer(
+        gameInput.clientOptions?.targetPlayerId
+      );
+      if (!targetPlayer.hasPlayedCard(gameInput.clientOptions?.targetCard)) {
+        throw new Error("Invalid input");
+      }
+      const targetCard = Card.fromName(gameInput.clientOptions?.targetCard);
+      if (targetCard.cardType !== CardType.PRODUCTION) {
+        throw new Error("Invalid input");
+      }
+      // TODO fix this so that we compute things like no. of farms
+      targetCard.playCardEffects(gameState, gameInput);
+    },
   }),
   [CardName.MONASTERY]: new Card({
     name: CardName.MONASTERY,
@@ -525,6 +627,29 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: true,
     associatedCard: CardName.MONK,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      if (gameInput.inputType !== GameInputType.VISIT_DESTINATION_CARD) {
+        throw new Error("Invalid input type");
+      }
+      if (
+        !gameInput.clientOptions?.targetPlayerId ||
+        !gameInput.clientOptions?.resourcesToSpend
+      ) {
+        throw new Error("Invalid input");
+      }
+      if (sumResources(gameInput.clientOptions?.resourcesToSpend) !== 2) {
+        throw new Error("Invalid input");
+      }
+      const targetPlayer = gameState.getPlayer(
+        gameInput.clientOptions?.targetPlayerId
+      );
+      const player = gameState.getActivePlayer();
+      player.spendResources(gameInput.clientOptions?.resourcesToSpend);
+      targetPlayer.gainResources(gameInput.clientOptions?.resourcesToSpend);
+      player.gainResources({
+        [ResourceType.VP]: 2,
+      });
+    },
   }),
   [CardName.MONK]: new Card({
     name: CardName.MONK,
@@ -534,6 +659,35 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: false,
     associatedCard: CardName.MONASTERY,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      if (gameInput.inputType !== GameInputType.PLAY_CARD) {
+        throw new Error("Invalid input type");
+      }
+      if (
+        !gameInput.clientOptions?.resourcesToSpend ||
+        !gameInput.clientOptions?.targetPlayerId
+      ) {
+        throw new Error("Invalid input");
+      }
+      const numBerries =
+        gameInput.clientOptions?.resourcesToSpend?.[ResourceType.BERRY] || 0;
+      if (numBerries > 2) {
+        throw new Error("Invalid input");
+      }
+      const targetPlayer = gameState.getPlayer(
+        gameInput.clientOptions?.targetPlayerId
+      );
+      const player = gameState.getActivePlayer();
+      player.spendResources({
+        [ResourceType.BERRY]: numBerries,
+      });
+      targetPlayer.gainResources({
+        [ResourceType.BERRY]: numBerries,
+      });
+      player.gainResources({
+        [ResourceType.VP]: numBerries * 2,
+      });
+    },
   }),
   [CardName.PALACE]: new Card({
     name: CardName.PALACE,
@@ -548,8 +702,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: true,
     associatedCard: CardName.QUEEN,
     // 1 point per unique construction
-    pointsInner: (gameState: GameState) => {
-      const player = gameState.getActivePlayer();
+    pointsInner: (gameState: GameState, playerId: string) => {
+      const player = gameState.getPlayer(playerId);
       const playedCards = player.playedCards;
       if (playedCards) {
         var numUniqueConstructions = 0;
@@ -572,6 +726,29 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: false,
     associatedCard: CardName.RUINS,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      if (gameInput.inputType !== GameInputType.PLAY_CARD) {
+        throw new Error("Invalid input type");
+      }
+      if (
+        !gameInput.clientOptions?.resourcesToSpend ||
+        !gameInput.clientOptions?.resourcesToGain ||
+        gameInput.clientOptions?.resourcesToGain[ResourceType.VP] ||
+        gameInput.clientOptions?.resourcesToSpend[ResourceType.VP]
+      ) {
+        throw new Error("Invalid input");
+      }
+
+      const numSpend = gameInput.clientOptions?.resourcesToSpend;
+      const numGain = gameInput.clientOptions?.resourcesToGain;
+      if (numSpend > 2 || numGain !== numSpend) {
+        throw new Error("Invalid input");
+      }
+
+      const player = gameState.getActivePlayer();
+      player.spendResources(gameInput.clientOptions?.resourcesToSpend);
+      player.gainResources(gameInput.clientOptions?.resourcesToGain);
+    },
   }),
   [CardName.POST_OFFICE]: new Card({
     name: CardName.POST_OFFICE,
@@ -581,6 +758,22 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: true,
     associatedCard: CardName.POSTAL_PIGEON,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      if (gameInput.inputType !== GameInputType.PLAY_CARD) {
+        throw new Error("Invalid input type");
+      }
+      if (
+        !gameInput.clientOptions?.cardsToDiscard ||
+        gameInput.clientOptions?.cardsToDiscard.length !== 2
+      ) {
+        throw new Error("Invalid input");
+      }
+      const player = gameState.getActivePlayer();
+      gameInput.clientOptions.cardsToDiscard.forEach((cardName) => {
+        player.discardCard(cardName);
+      });
+      player.drawMaxCards(gameState);
+    },
   }),
   [CardName.POSTAL_PIGEON]: new Card({
     name: CardName.POSTAL_PIGEON,
@@ -590,6 +783,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: false,
     associatedCard: CardName.POST_OFFICE,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
+    },
   }),
   [CardName.QUEEN]: new Card({
     name: CardName.QUEEN,
@@ -599,6 +795,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: false,
     associatedCard: CardName.PALACE,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
+    },
   }),
   [CardName.RANGER]: new Card({
     name: CardName.RANGER,
@@ -608,6 +807,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: false,
     associatedCard: CardName.DUNGEON,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
+    },
   }),
   [CardName.RESIN_REFINERY]: new Card({
     name: CardName.RESIN_REFINERY,
@@ -631,6 +833,23 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: true,
     associatedCard: CardName.PEDDLER,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      if (gameInput.inputType !== GameInputType.PLAY_CARD) {
+        throw new Error("Invalid input type");
+      }
+      if (!gameInput.clientOptions?.targetCard) {
+        throw new Error("Invalid input");
+      }
+
+      const player = gameState.getActivePlayer();
+      const card = Card.fromName(gameInput.clientOptions?.targetCard);
+      if (!card.isConstruction) {
+        throw new Error("Can only ruin constructions");
+      }
+      player.removeCardFromCity(gameInput.clientOptions?.targetCard);
+      player.gainResources(card.baseCost);
+      player.drawCards(gameState, 2);
+    },
   }),
   [CardName.SCHOOL]: new Card({
     name: CardName.SCHOOL,
@@ -641,8 +860,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: true,
     associatedCard: CardName.TEACHER,
     // 1 point per common critter
-    pointsInner: (gameState: GameState) => {
-      const player = gameState.getActivePlayer();
+    pointsInner: (gameState: GameState, playerId: string) => {
+      const player = gameState.getPlayer(playerId);
       const playedCards = player.playedCards;
       if (playedCards) {
         var numCommonCritters = 0;
@@ -665,6 +884,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: false,
     associatedCard: CardName.CHAPEL,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
+    },
   }),
   [CardName.SHOPKEEPER]: new Card({
     name: CardName.SHOPKEEPER,
@@ -695,6 +917,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         [ResourceType.PEBBLE]: 0,
       },
     }),
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
+    },
   }),
   [CardName.TEACHER]: new Card({
     name: CardName.TEACHER,
@@ -704,6 +929,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: false,
     associatedCard: CardName.SCHOOL,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
+    },
   }),
   [CardName.THEATRE]: new Card({
     name: CardName.THEATRE,
@@ -718,8 +946,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: true,
     associatedCard: CardName.BARD,
     // 1 point per unique critter
-    pointsInner: (gameState: GameState) => {
-      const player = gameState.getActivePlayer();
+    pointsInner: (gameState: GameState, playerId: string) => {
+      const player = gameState.getPlayer(playerId);
       const playedCards = player.playedCards;
       if (playedCards) {
         var numUniqueCritters = 0;
@@ -756,6 +984,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: false,
     associatedCard: CardName.CEMETARY,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
+    },
   }),
   [CardName.UNIVERSITY]: new Card({
     name: CardName.UNIVERSITY,
@@ -765,6 +996,30 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: true,
     associatedCard: CardName.DOCTOR,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      if (gameInput.inputType !== GameInputType.VISIT_DESTINATION_CARD) {
+        throw new Error("Invalid input type");
+      }
+      if (
+        !gameInput.clientOptions?.targetCard ||
+        !gameInput.clientOptions?.resourcesToGain ||
+        sumResources(gameInput.clientOptions?.resourcesToGain) !== 0 ||
+        gameInput.clientOptions?.resourcesToGain[ResourceType.VP]
+      ) {
+        throw new Error("Invalid input");
+      }
+      const player = gameState.getActivePlayer();
+      const card = Card.fromName(gameInput.clientOptions?.targetCard);
+      if (!card.isConstruction) {
+        throw new Error("Can only ruin constructions");
+      }
+      player.removeCardFromCity(gameInput.clientOptions?.targetCard);
+      player.gainResources(card.baseCost);
+      player.gainResources(gameInput.clientOptions?.resourcesToGain);
+      player.gainResources({
+        [ResourceType.VP]: 1,
+      });
+    },
   }),
   [CardName.WANDERER]: new Card({
     name: CardName.WANDERER,
@@ -785,7 +1040,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: false,
     associatedCard: CardName.FARM,
     // +3 if paired with Husband
-    pointsInner: (gameState: GameState) => {
+    pointsInner: (gameState: GameState, playerId: string) => {
       // TODO: implement this!
       return 0;
     },

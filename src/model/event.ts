@@ -138,25 +138,25 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       if (!gameInput.clientOptions) {
         throw new Error("Invalid input");
       }
-      var cardsToUse = gameInput.clientOptions.cardsToUse;
+      const cardsToUse = gameInput.clientOptions.cardsToUse;
       if (cardsToUse && cardsToUse.length > 3) {
         throw new Error("Too many cards");
       }
 
-      for (var cardName in cardsToUse) {
-        var card = Card.fromName(cardName as CardName);
+      for (let cardName in cardsToUse) {
+        let card = Card.fromName(cardName as CardName);
         if (!card.isCritter) {
           throw new Error("Can only put Critters beneath this event");
         }
       }
-      var eventInfo =
+      const eventInfo =
         player?.claimedEvents[EventName.SPECIAL_GRADUATION_OF_SCHOLARS];
       if (!eventInfo) {
         throw new Error("Cannot find event info");
       }
 
       // remove cards from hand
-      for (var cardName in cardsToUse) {
+      for (let cardName in cardsToUse) {
         player.removeCardFromHand(cardName as CardName);
         (eventInfo.pairedCards = eventInfo.pairedCards || []).push(cardName);
       }
@@ -165,12 +165,12 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
 
-      var eventInfo =
+      const eventInfo =
         player.claimedEvents[EventName.SPECIAL_GRADUATION_OF_SCHOLARS];
-      if (eventInfo) {
-        return (eventInfo.pairedCards = eventInfo.pairedCards || []).length * 3;
+      if (!eventInfo) {
+        throw new Error("Cannot find event info");
       }
-      return 0;
+      return (eventInfo.pairedCards = eventInfo.pairedCards || []).length * 2;
     },
   }),
   [EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN]: new Event({
@@ -191,6 +191,63 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         [ResourceType.BERRY]: 0,
       },
     }),
+    // place up to 3 berries on event
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType !== GameInputType.CLAIM_EVENT) {
+        throw new Error("Invalid input type");
+      }
+      if (!gameInput.clientOptions) {
+        throw new Error("Invalid input");
+      }
+      const eventInfo =
+        player?.claimedEvents[EventName.SPECIAL_PERFORMER_IN_RESIDENCE];
+      if (!eventInfo) {
+        throw new Error("Cannot find event info");
+      }
+
+      const resources = gameInput.clientOptions.resourcesToSpend;
+      if (!resources) {
+        throw new Error("Invalid resources list");
+      }
+      const numBerriesToSpend = resources[ResourceType.BERRY];
+      if (!numBerriesToSpend) {
+        throw new Error("Invalid number of berries");
+      }
+      if (numBerriesToSpend > 3) {
+        throw new Error("Cannot place more than 3 berries on this card");
+      }
+
+      // add berries to this event
+      eventInfo.resources = eventInfo.resources || { [ResourceType.BERRY]: 0 };
+      eventInfo.resources[ResourceType.BERRY] = numBerriesToSpend;
+
+      // remove berries from player's supply
+      player.spendResources({ [ResourceType.BERRY]: numBerriesToSpend });
+    },
+    // 2 points per berry on event
+    pointsInner: (gameState: GameState, playerId: string) => {
+      const player = gameState.getPlayer(playerId);
+
+      const eventInfo =
+        player.claimedEvents[EventName.SPECIAL_PERFORMER_IN_RESIDENCE];
+
+      if (!eventInfo) {
+        throw new Error("Invalid event info");
+      }
+
+      const resources = eventInfo.resources;
+      if (!resources) {
+        throw new Error("Invalid resources list");
+      }
+
+      const numBerries = resources[ResourceType.BERRY];
+      if (!numBerries) {
+        throw new Error("Invalid number of berries");
+      }
+
+      return numBerries * 2;
+    },
   }),
   [EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES]: new Event({
     name: EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES,
@@ -202,19 +259,129 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     playedCardInfoInner: () => ({
       pairedCards: [],
     }),
+    // play up to 2 critters from your city beneath this event
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType !== GameInputType.CLAIM_EVENT) {
+        throw new Error("Invalid input type");
+      }
+      if (!gameInput.clientOptions) {
+        throw new Error("Invalid input");
+      }
+      const cardsToUse = gameInput.clientOptions.cardsToUse;
+      if (cardsToUse && cardsToUse.length > 2) {
+        throw new Error("Too many cards");
+      }
+
+      for (let cardName in cardsToUse) {
+        let card = Card.fromName(cardName as CardName);
+        if (!card.isCritter) {
+          throw new Error("Can only put Critters beneath this event");
+        }
+      }
+      const eventInfo =
+        player?.claimedEvents[EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES];
+      if (!eventInfo) {
+        throw new Error("Cannot find event info");
+      }
+
+      // remove cards from city
+      for (let cardName in cardsToUse) {
+        player.removeCardFromCity(cardName as CardName);
+        (eventInfo.pairedCards = eventInfo.pairedCards || []).push(cardName);
+      }
+    },
+    // 3 points per critter beneath event
+    pointsInner: (gameState: GameState, playerId: string) => {
+      const player = gameState.getPlayer(playerId);
+
+      const eventInfo =
+        player.claimedEvents[EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES];
+      if (!eventInfo) {
+        throw new Error("Cannot find event info");
+      }
+      return (eventInfo.pairedCards = eventInfo.pairedCards || []).length * 3;
+    },
   }),
   [EventName.SPECIAL_MINISTERING_TO_MISCREANTS]: new Event({
     name: EventName.SPECIAL_MINISTERING_TO_MISCREANTS,
     type: EventType.SPECIAL,
     canPlayInner: canPlayInnerRequiresCards([CardName.MONK, CardName.DUNGEON]),
+    // 3 points for each prisoner in dungeon
+    pointsInner: (gameState: GameState, playerId: string) => {
+      const player = gameState.getPlayer(playerId);
+
+      const eventInfo =
+        player.claimedEvents[EventName.SPECIAL_MINISTERING_TO_MISCREANTS];
+      if (!eventInfo) {
+        throw new Error("Cannot find event info");
+      }
+
+      const playedCards = player.playedCards;
+      if (!playedCards) {
+        throw new Error("no cards in city");
+      }
+
+      const dungeon = playedCards[CardName.DUNGEON];
+      if (!dungeon) {
+        throw new Error("No dungeon in city");
+      }
+
+      if (dungeon.length > 1) {
+        throw new Error("Cannot have more than one dungeon");
+      }
+
+      // you can only have one dungeon in your city
+      const cardsInDungeon = dungeon[0].pairedCards;
+
+      if (!cardsInDungeon) {
+        throw new Error("Invalid dungeon card list");
+      }
+
+      return cardsInDungeon.length * 3;
+    },
   }),
   [EventName.SPECIAL_CROAK_WART_CURE]: new Event({
     name: EventName.SPECIAL_CROAK_WART_CURE,
     type: EventType.SPECIAL,
-    canPlayInner: canPlayInnerRequiresCards([
-      CardName.UNDERTAKER,
-      CardName.BARGE_TOAD,
-    ]),
+
+    canPlayInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      const playedCards = player.playedCards;
+
+      const cards = [CardName.UNDERTAKER, CardName.BARGE_TOAD];
+      return (
+        cards.every((card) => player.hasPlayedCard(card)) &&
+        player.getNumResource(ResourceType.BERRY) >= 2
+      );
+    },
+    // play up to 2 critters from your city beneath this event
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType !== GameInputType.CLAIM_EVENT) {
+        throw new Error("Invalid input type");
+      }
+      if (!gameInput.clientOptions) {
+        throw new Error("Invalid input");
+      }
+      const cardsToUse = gameInput.clientOptions.cardsToUse;
+      if (cardsToUse && cardsToUse.length > 2) {
+        throw new Error("Too many cards");
+      }
+
+      const eventInfo =
+        player?.claimedEvents[EventName.SPECIAL_CROAK_WART_CURE];
+      if (!eventInfo) {
+        throw new Error("Cannot find event info");
+      }
+
+      // remove cards from city
+      for (let cardName in cardsToUse) {
+        player.removeCardFromCity(cardName as CardName);
+      }
+      // remove berries from player's supply
+      player.spendResources({ [ResourceType.BERRY]: 2 });
+    },
   }),
   [EventName.SPECIAL_AN_EVENING_OF_FIREWORKS]: new Event({
     name: EventName.SPECIAL_AN_EVENING_OF_FIREWORKS,
@@ -228,6 +395,63 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         [ResourceType.TWIG]: 0,
       },
     }),
+    // place up to 3 twigs on event
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType !== GameInputType.CLAIM_EVENT) {
+        throw new Error("Invalid input type");
+      }
+      if (!gameInput.clientOptions) {
+        throw new Error("Invalid input");
+      }
+      const eventInfo =
+        player?.claimedEvents[EventName.SPECIAL_AN_EVENING_OF_FIREWORKS];
+      if (!eventInfo) {
+        throw new Error("Cannot find event info");
+      }
+
+      const resources = gameInput.clientOptions.resourcesToSpend;
+      if (!resources) {
+        throw new Error("Invalid resources list");
+      }
+      const numTwigsToSpend = resources[ResourceType.TWIG];
+      if (!numTwigsToSpend) {
+        throw new Error("Invalid number of twigs");
+      }
+      if (numTwigsToSpend > 3) {
+        throw new Error("Cannot place more than 3 twigs on this card");
+      }
+
+      // add twigs to this event
+      eventInfo.resources = eventInfo.resources || { [ResourceType.TWIG]: 0 };
+      eventInfo.resources[ResourceType.TWIG] = numTwigsToSpend;
+
+      // remove twigs from player's supply
+      player.spendResources({ [ResourceType.TWIG]: numTwigsToSpend });
+    },
+    // 2 points per twig on event
+    pointsInner: (gameState: GameState, playerId: string) => {
+      const player = gameState.getPlayer(playerId);
+
+      const eventInfo =
+        player.claimedEvents[EventName.SPECIAL_AN_EVENING_OF_FIREWORKS];
+
+      if (!eventInfo) {
+        throw new Error("Invalid event info");
+      }
+
+      const resources = eventInfo.resources;
+      if (!resources) {
+        throw new Error("Invalid resources list");
+      }
+
+      const numTwigs = resources[ResourceType.TWIG];
+      if (!numTwigs) {
+        throw new Error("Invalid number of twigs");
+      }
+
+      return numTwigs * 2;
+    },
   }),
   [EventName.SPECIAL_A_WEE_RUN_CITY]: new Event({
     name: EventName.SPECIAL_A_WEE_RUN_CITY,
@@ -257,6 +481,63 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         [ResourceType.BERRY]: 0,
       },
     }),
+    // place up to 3 resources on event
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType !== GameInputType.CLAIM_EVENT) {
+        throw new Error("Invalid input type");
+      }
+      if (!gameInput.clientOptions) {
+        throw new Error("Invalid input");
+      }
+      const eventInfo =
+        player?.claimedEvents[EventName.SPECIAL_UNDER_NEW_MANAGEMENT];
+      if (!eventInfo) {
+        throw new Error("Cannot find event info");
+      }
+
+      const resourcesToSpend = gameInput.clientOptions.resourcesToSpend;
+      if (!resourcesToSpend) {
+        throw new Error("Invalid resources list");
+      }
+
+      // add resources to this event
+      eventInfo.resources = resourcesToSpend;
+
+      // remove resources from player's supply
+      player.spendResources(resourcesToSpend);
+    },
+    // 1 pt per twig and berry, 2 pt per resin and pebble
+    pointsInner: (gameState: GameState, playerId: string) => {
+      const player = gameState.getPlayer(playerId);
+
+      const eventInfo =
+        player.claimedEvents[EventName.SPECIAL_UNDER_NEW_MANAGEMENT];
+
+      if (!eventInfo) {
+        throw new Error("Invalid event info");
+      }
+
+      const resources = eventInfo.resources;
+      if (!resources) {
+        throw new Error("Invalid resources list");
+      }
+      if (
+        !resources[ResourceType.BERRY] ||
+        !resources[ResourceType.TWIG] ||
+        !resources[ResourceType.RESIN] ||
+        !resources[ResourceType.PEBBLE]
+      ) {
+        throw new Error("Resource is undefined");
+      }
+
+      return (
+        (resources[ResourceType.BERRY] || 0) +
+        (resources[ResourceType.TWIG] || 0) +
+        (resources[ResourceType.RESIN] || 0) * 2 +
+        (resources[ResourceType.PEBBLE] || 0) * 2
+      );
+    },
   }),
   [EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED]: new Event({
     name: EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED,
@@ -284,6 +565,81 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       CardName.MONASTERY,
       CardName.WANDERER,
     ]),
+    // 3 points for each worker in the monestary
+    pointsInner: (gameState: GameState, playerId: string) => {
+      const player = gameState.getPlayer(playerId);
+
+      const eventInfo =
+        player.claimedEvents[EventName.SPECIAL_PATH_OF_THE_PILGRIMS];
+      if (!eventInfo) {
+        throw new Error("Cannot find event info");
+      }
+
+      const playedCards = player.playedCards;
+      if (!playedCards) {
+        throw new Error("no cards in city");
+      }
+
+      const monestary = playedCards[CardName.MONASTERY];
+      if (!monestary) {
+        throw new Error("No monestary in city");
+      }
+
+      if (monestary.length > 1) {
+        throw new Error("Cannot have more thna one monestary");
+      }
+
+      // you can only have one monestary in your city
+      const workersInMonestary = monestary[0].workers;
+
+      if (!workersInMonestary) {
+        throw new Error("Invalid monestary worker list");
+      }
+
+      return workersInMonestary.length * 3;
+    },
+  }),
+  [EventName.SPECIAL_CROAK_WART_CURE]: new Event({
+    name: EventName.SPECIAL_CROAK_WART_CURE,
+    type: EventType.SPECIAL,
+
+    canPlayInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      const playedCards = player.playedCards;
+
+      const cards = [CardName.UNDERTAKER, CardName.BARGE_TOAD];
+      return (
+        cards.every((card) => player.hasPlayedCard(card)) &&
+        player.getNumResource(ResourceType.BERRY) >= 2
+      );
+    },
+    // play up to 2 critters from your city beneath this event
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType !== GameInputType.CLAIM_EVENT) {
+        throw new Error("Invalid input type");
+      }
+      if (!gameInput.clientOptions) {
+        throw new Error("Invalid input");
+      }
+      const cardsToUse = gameInput.clientOptions.cardsToUse;
+      if (cardsToUse && cardsToUse.length > 2) {
+        throw new Error("Too many cards");
+      }
+
+      const eventInfo =
+        player?.claimedEvents[EventName.SPECIAL_CROAK_WART_CURE];
+      if (!eventInfo) {
+        throw new Error("Cannot find event info");
+      }
+
+      // remove cards from city
+      for (let cardName in cardsToUse) {
+        player.removeCardFromCity(cardName as CardName);
+      }
+      // remove berries from player's supply
+      player.spendResources({ [ResourceType.BERRY]: 2 });
+    },
   }),
   [EventName.SPECIAL_REMEMBERING_THE_FALLEN]: new Event({
     name: EventName.SPECIAL_REMEMBERING_THE_FALLEN,
@@ -292,6 +648,39 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       CardName.CEMETARY,
       CardName.SHEPHERD,
     ]),
+    // 3 points for each worker in the cemetary
+    pointsInner: (gameState: GameState, playerId: string) => {
+      const player = gameState.getPlayer(playerId);
+
+      const eventInfo =
+        player.claimedEvents[EventName.SPECIAL_REMEMBERING_THE_FALLEN];
+      if (!eventInfo) {
+        throw new Error("Cannot find event info");
+      }
+
+      const playedCards = player.playedCards;
+      if (!playedCards) {
+        throw new Error("no cards in city");
+      }
+
+      const cemetary = playedCards[CardName.CEMETARY];
+      if (!cemetary) {
+        throw new Error("No cemetary in city");
+      }
+
+      if (cemetary.length > 1) {
+        throw new Error("Cannot have more than one cemetary");
+      }
+
+      // you can only have one cemetary in your city
+      const workersInCemetary = cemetary[0].workers;
+
+      if (!workersInCemetary) {
+        throw new Error("Invalid cemetary worker list");
+      }
+
+      return workersInCemetary.length * 3;
+    },
   }),
   [EventName.SPECIAL_PRISTINE_CHAPEL_CEILING]: new Event({
     name: EventName.SPECIAL_PRISTINE_CHAPEL_CEILING,
@@ -300,6 +689,42 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       CardName.WOODCARVER,
       CardName.CHAPEL,
     ]),
+    // draw 1 card and receive 1 resource for each VP on your chapel
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+
+      const eventInfo =
+        player.claimedEvents[EventName.SPECIAL_PRISTINE_CHAPEL_CEILING];
+      if (!eventInfo) {
+        throw new Error("Cannot find event info");
+      }
+
+      const playedCards = player.playedCards;
+      if (!playedCards) {
+        throw new Error("no cards in city");
+      }
+
+      const chapel = playedCards[CardName.CHAPEL];
+      if (!chapel) {
+        throw new Error("No chapel in city");
+      }
+
+      if (chapel.length > 1) {
+        throw new Error("Cannot have more than one chapel");
+      }
+      const chapelResources = chapel[0].resources;
+
+      if (!chapelResources) {
+        throw new Error("Invalid resources");
+      }
+
+      //const numVP = chapelResources[ResourceType.VP] || {
+      //  [ResourceType.VP]: 0,
+      //};
+
+      //player.drawCards(gameState, numVP);
+      // TODO: add gaining resources
+    },
   }),
   [EventName.SPECIAL_THE_EVERDELL_GAMES]: new Event({
     name: EventName.SPECIAL_THE_EVERDELL_GAMES,

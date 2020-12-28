@@ -914,7 +914,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         [ResourceType.TWIG]: 0,
         [ResourceType.RESIN]: 0,
         [ResourceType.PEBBLE]: 0,
-        [ResourceType.PEBBLE]: 0,
+        [ResourceType.BERRY]: 0,
       },
     }),
     playInner: (gameState: GameState, gameInput: GameInput) => {

@@ -4,7 +4,9 @@ import {
   EventName,
   EventNameToPlayerId,
   GameInput,
+  GameInputType,
   PlayedCardInfo,
+  ResourceType,
 } from "./types";
 import { Card } from "./card";
 import {
@@ -18,7 +20,9 @@ export class Event {
   readonly playInner: GameStatePlayFn | undefined;
   readonly canPlayInner: GameStateCanPlayFn | undefined;
   readonly playedCardInfoInner: (() => PlayedCardInfo) | undefined;
-  readonly pointsInner: ((gameState: GameState) => number) | undefined;
+  readonly pointsInner:
+    | ((gameState: GameState, playerId: string) => number)
+    | undefined;
 
   readonly name: EventName;
   readonly type: EventType;
@@ -36,7 +40,7 @@ export class Event {
     playInner?: GameStatePlayFn;
     canPlayInner?: GameStateCanPlayFn;
     playedCardInfoInner?: () => PlayedCardInfo;
-    pointsInner?: (gameState: GameState) => number;
+    pointsInner?: (gameState: GameState, playerId: string) => number;
   }) {
     this.name = name;
     this.type = type;
@@ -61,6 +65,7 @@ export class Event {
   }
 }
 
+// TODO: add worker placement rules
 const EVENT_REGISTRY: Record<EventName, Event> = {
   [EventName.BASIC_FOUR_PRODUCTION_TAGS]: new Event({
     name: EventName.BASIC_FOUR_PRODUCTION_TAGS,
@@ -70,6 +75,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       const playedCards = player.playedCards;
 
       return player.getNumProductionCards() >= 4;
+    },
+    pointsInner: (gameState: GameState, playerId: string) => {
+      return 3;
     },
   }),
   [EventName.BASIC_THREE_DESTINATION]: new Event({
@@ -81,6 +89,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
 
       return player.getNumDestinationCards() >= 3;
     },
+    pointsInner: (gameState: GameState, playerId: string) => {
+      return 3;
+    },
   }),
   [EventName.BASIC_THREE_GOVERNANCE]: new Event({
     name: EventName.BASIC_THREE_GOVERNANCE,
@@ -90,6 +101,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       const playedCards = player.playedCards;
 
       return player.getNumGovernanceCards() >= 3;
+    },
+    pointsInner: (gameState: GameState, playerId: string) => {
+      return 3;
     },
   }),
   [EventName.BASIC_THREE_TRAVELER]: new Event({
@@ -101,6 +115,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
 
       return player.getNumTravelerCards() >= 3;
     },
+    pointsInner: (gameState: GameState, playerId: string) => {
+      return 3;
+    },
   }),
   [EventName.SPECIAL_GRADUATION_OF_SCHOLARS]: new Event({
     name: EventName.SPECIAL_GRADUATION_OF_SCHOLARS,
@@ -108,6 +125,52 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     canPlayInner: canPlayInnerRequiresCards(
       EventName.SPECIAL_GRADUATION_OF_SCHOLARS
     ),
+    playedCardInfoInner: () => ({
+      pairedCards: [],
+    }),
+    // play up to 3 critters from your hand beneath this event
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType !== GameInputType.CLAIM_EVENT) {
+        throw new Error("Invalid input type");
+      }
+      if (!gameInput.clientOptions) {
+        throw new Error("Invalid input");
+      }
+      var cardsToUse = gameInput.clientOptions.cardsToUse;
+      if (cardsToUse && cardsToUse.length > 3) {
+        throw new Error("Too many cards");
+      }
+
+      for (var cardName in cardsToUse) {
+        var card = Card.fromName(cardName as CardName);
+        if (!card.isCritter) {
+          throw new Error("Can only put Critters beneath this event");
+        }
+      }
+      var eventInfo =
+        player?.claimedEvents[EventName.SPECIAL_GRADUATION_OF_SCHOLARS];
+      if (!eventInfo) {
+        throw new Error("Cannot find event info");
+      }
+
+      // remove cards from hand
+      for (var cardName in cardsToUse) {
+        player.discardCard(cardName as CardName);
+        (eventInfo.pairedCards = eventInfo.pairedCards || []).push(cardName);
+      }
+    },
+    // 2 points per critter beneath event
+    pointsInner: (gameState: GameState, playerId: string) => {
+      const player = gameState.getPlayer(playerId);
+
+      var eventInfo =
+        player.claimedEvents[EventName.SPECIAL_GRADUATION_OF_SCHOLARS];
+      if (eventInfo) {
+        return (eventInfo.pairedCards = eventInfo.pairedCards || []).length * 3;
+      }
+      return 0;
+    },
   }),
   [EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN]: new Event({
     name: EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN,
@@ -122,6 +185,12 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     canPlayInner: canPlayInnerRequiresCards(
       EventName.SPECIAL_PERFORMER_IN_RESIDENCE
     ),
+    // may place up to 3 berries on this card
+    playedCardInfoInner: () => ({
+      resources: {
+        [ResourceType.BERRY]: 0,
+      },
+    }),
   }),
   [EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES]: new Event({
     name: EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES,
@@ -129,6 +198,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     canPlayInner: canPlayInnerRequiresCards(
       EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES
     ),
+    playedCardInfoInner: () => ({
+      pairedCards: [],
+    }),
   }),
   [EventName.SPECIAL_MINISTERING_TO_MISCREANTS]: new Event({
     name: EventName.SPECIAL_MINISTERING_TO_MISCREANTS,
@@ -148,6 +220,11 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     canPlayInner: canPlayInnerRequiresCards(
       EventName.SPECIAL_AN_EVENING_OF_FIREWORKS
     ),
+    playedCardInfoInner: () => ({
+      resources: {
+        [ResourceType.TWIG]: 0,
+      },
+    }),
   }),
   [EventName.SPECIAL_A_WEE_RUN_CITY]: new Event({
     name: EventName.SPECIAL_A_WEE_RUN_CITY,
@@ -165,6 +242,14 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     canPlayInner: canPlayInnerRequiresCards(
       EventName.SPECIAL_UNDER_NEW_MANAGEMENT
     ),
+    playedCardInfoInner: () => ({
+      resources: {
+        [ResourceType.TWIG]: 0,
+        [ResourceType.RESIN]: 0,
+        [ResourceType.PEBBLE]: 0,
+        [ResourceType.BERRY]: 0,
+      },
+    }),
   }),
   [EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED]: new Event({
     name: EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED,
@@ -172,6 +257,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     canPlayInner: canPlayInnerRequiresCards(
       EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED
     ),
+    playedCardInfoInner: () => ({
+      pairedCards: [],
+    }),
   }),
   [EventName.SPECIAL_FLYING_DOCTOR_SERVICE]: new Event({
     name: EventName.SPECIAL_FLYING_DOCTOR_SERVICE,
@@ -215,6 +303,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         player.getNumDestinationCards() >= 2 &&
         player.getNumTravelerCards() >= 2
       );
+    },
+    pointsInner: (gameState: GameState, playerId: string) => {
+      return 9;
     },
   }),
 };

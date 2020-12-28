@@ -186,6 +186,8 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       CardName.SHOPKEEPER,
       CardName.POST_OFFICE,
     ]),
+    // TODO: add playInner
+    // TODO: add pointsInner
   }),
   [EventName.SPECIAL_PERFORMER_IN_RESIDENCE]: new Event({
     name: EventName.SPECIAL_PERFORMER_IN_RESIDENCE,
@@ -466,11 +468,19 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       CardName.CHIP_SWEEP,
       CardName.CLOCK_TOWER,
     ]),
+    // TODO: add playInner
+    pointsInner: (gameState: GameState, playerId: string) => {
+      return 4;
+    },
   }),
   [EventName.SPECIAL_TAX_RELIEF]: new Event({
     name: EventName.SPECIAL_TAX_RELIEF,
     type: EventType.SPECIAL,
     canPlayInner: canPlayInnerRequiresCards([CardName.JUDGE, CardName.QUEEN]),
+    // TODO: add playInner
+    pointsInner: (gameState: GameState, playerId: string) => {
+      return 3;
+    },
   }),
   [EventName.SPECIAL_UNDER_NEW_MANAGEMENT]: new Event({
     name: EventName.SPECIAL_UNDER_NEW_MANAGEMENT,
@@ -555,6 +565,8 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     playedCardInfoInner: () => ({
       pairedCards: [],
     }),
+    // TODO: add playInner
+    // TODO: add pointsInner
   }),
   [EventName.SPECIAL_FLYING_DOCTOR_SERVICE]: new Event({
     name: EventName.SPECIAL_FLYING_DOCTOR_SERVICE,
@@ -563,6 +575,8 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       CardName.DOCTOR,
       CardName.POSTAL_PIGEON,
     ]),
+    // TODO: add playInner
+    // TODO: add pointsInner
   }),
   [EventName.SPECIAL_PATH_OF_THE_PILGRIMS]: new Event({
     name: EventName.SPECIAL_PATH_OF_THE_PILGRIMS,
@@ -698,6 +712,72 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     // draw 1 card and receive 1 resource for each VP on your chapel
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
+      if (gameInput.inputType !== GameInputType.CLAIM_EVENT) {
+        throw new Error("Invalid input type");
+      }
+
+      if (!gameInput.clientOptions) {
+        throw new Error("Invalid input");
+      }
+      const eventInfo =
+        player.claimedEvents[EventName.SPECIAL_PRISTINE_CHAPEL_CEILING];
+      if (!eventInfo) {
+        throw new Error("Cannot find event info");
+      }
+
+      const playedCards = player.playedCards;
+      if (!playedCards) {
+        throw new Error("no cards in city");
+      }
+
+      const chapel = playedCards[CardName.CHAPEL];
+      if (!chapel) {
+        throw new Error("No chapel in city");
+      }
+
+      if (chapel.length > 1) {
+        throw new Error("Cannot have more than one chapel");
+      }
+      const chapelResources = chapel[0].resources;
+
+      if (!chapelResources) {
+        throw new Error("Invalid resources");
+      }
+
+      const numVP = chapelResources[ResourceType.VP] || 0;
+
+      player.drawCards(gameState, numVP);
+      const resourcesToGain = gameInput.clientOptions.resourcesToGain;
+
+      if (!resourcesToGain) {
+        throw new Error("No resources to gain specified");
+      }
+
+      // check to make sure we're not trying to gain too many resources
+      if (
+        !resourcesToGain[ResourceType.BERRY] ||
+        !resourcesToGain[ResourceType.TWIG] ||
+        !resourcesToGain[ResourceType.RESIN] ||
+        !resourcesToGain[ResourceType.PEBBLE]
+      ) {
+        throw new Error("Resource is undefined");
+      }
+
+      let totalGainedResources =
+        (resourcesToGain[ResourceType.BERRY] || 0) +
+        (resourcesToGain[ResourceType.TWIG] || 0) +
+        (resourcesToGain[ResourceType.RESIN] || 0) +
+        (resourcesToGain[ResourceType.PEBBLE] || 0);
+
+      if (totalGainedResources > numVP) {
+        throw new Error("Can't gain more resources than VP on the Chapel");
+      }
+
+      player.gainResources(resourcesToGain);
+    },
+    // 2 points for VP on the chapel
+    pointsInner: (gameState: GameState, playerId: string) => {
+      const player = gameState.getPlayer(playerId);
 
       const eventInfo =
         player.claimedEvents[EventName.SPECIAL_PRISTINE_CHAPEL_CEILING];
@@ -724,12 +804,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         throw new Error("Invalid resources");
       }
 
-      //const numVP = chapelResources[ResourceType.VP] || {
-      //  [ResourceType.VP]: 0,
-      //};
+      const numVP = chapelResources[ResourceType.VP] || 0;
 
-      //player.drawCards(gameState, numVP);
-      // TODO: add gaining resources
+      return numVP * 2;
     },
   }),
   [EventName.SPECIAL_THE_EVERDELL_GAMES]: new Event({

@@ -188,7 +188,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: false,
     associatedCard: CardName.TWIG_BARGE,
-    playInner: (gameState: GameState) => {
+    playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       const playedFarms = player.playedCards[CardName.FARM];
       if (playedFarms) {
@@ -301,6 +301,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         throw new Error("Invalid input");
       }
       const targetCard = Card.fromName(gameInput.clientOptions?.targetCard);
+      if (targetCard.cardType !== CardType.PRODUCTION) {
+        throw new Error("Invalid input");
+      }
       targetCard.playCardEffects(gameState, gameInput);
     },
   }),
@@ -605,7 +608,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         throw new Error("Invalid input");
       }
       const targetCard = Card.fromName(gameInput.clientOptions?.targetCard);
-      throw new Error("Not implemented");
+      if (targetCard.cardType !== CardType.PRODUCTION) {
+        throw new Error("Invalid input");
+      }
+      // TODO fix this so that we compute things like no. of farms
+      targetCard.playCardEffects(gameState, gameInput);
     },
   }),
   [CardName.MONASTERY]: new Card({

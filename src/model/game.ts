@@ -3,6 +3,7 @@ import { Player, createPlayer } from "./player";
 import { GameState } from "./gameState";
 import { GameInput } from "./types";
 import { getGameJSONById, saveGameJSONById } from "./db";
+import cloneDeep from "lodash/cloneDeep";
 
 class Game {
   public gameId: string;
@@ -36,7 +37,7 @@ class Game {
   }
 
   toJSON(includePrivate: boolean): object {
-    return {
+    return cloneDeep({
       gameId: this.gameId,
       gameState: this.gameState.toJSON(includePrivate),
       ...(includePrivate
@@ -44,7 +45,7 @@ class Game {
             gameSecret: this.gameSecret,
           }
         : {}),
-    };
+    });
   }
 
   getPlayerBySecret(playerSecret: string): Player | undefined {

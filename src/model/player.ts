@@ -8,6 +8,7 @@ import {
   GameInput,
   PlayedCardInfo,
 } from "./types";
+import cloneDeep from "lodash/cloneDeep";
 import { GameState } from "./gameState";
 import { Location } from "./location";
 import { Card } from "./card";
@@ -371,7 +372,7 @@ export class Player {
   }
 
   toJSON(includePrivate: boolean): object {
-    return {
+    return cloneDeep({
       name: this.name,
       playerId: this.playerId,
       playedCards: this.playedCards,
@@ -386,7 +387,7 @@ export class Player {
             cardsInHand: this.cardsInHand,
           }
         : {}),
-    };
+    });
   }
 
   static fromJSON(playerJSON: any): Player {

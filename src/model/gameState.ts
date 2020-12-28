@@ -332,3 +332,8 @@ export interface GameStatePlayable {
   canPlay: GameStateCanPlayFn;
   play: GameStatePlayFn;
 }
+
+export type GameStateCountPointsFn = (
+  gameState: GameState,
+  playerId: string
+) => number;

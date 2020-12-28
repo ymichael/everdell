@@ -13,21 +13,21 @@ import {
   GameStatePlayable,
   GameStatePlayFn,
   GameStateCanPlayFn,
+  GameStateCountPointsFn,
 } from "./gameState";
 import { Location } from "./location";
 import {
   playGainResourceFactory,
   playSpendResourceToGetVPFactory,
   sumResources,
+  getPointsPerRarityLabel,
 } from "./gameStatePlayHelpers";
 
 export class Card implements GameStatePlayable {
   readonly playInner: GameStatePlayFn | undefined;
   readonly canPlayInner: GameStateCanPlayFn | undefined;
   readonly playedCardInfoInner: (() => PlayedCardInfo) | undefined;
-  readonly pointsInner:
-    | ((gameState: GameState, playerId: string) => number)
-    | undefined;
+  readonly pointsInner: GameStateCountPointsFn | undefined;
 
   readonly name: CardName;
   readonly baseCost: CardCost;
@@ -160,7 +160,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     // 1 point per rock and pebble, up to 6 pts
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
-      var numPebblesAndResin =
+      let numPebblesAndResin =
         player.getNumResource(ResourceType.PEBBLE) +
         player.getNumResource(ResourceType.RESIN);
       return numPebblesAndResin > 6 ? 6 : numPebblesAndResin;
@@ -224,21 +224,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: true,
     associatedCard: CardName.KING,
     // 1 point per common construction
-    pointsInner: (gameState: GameState, playerId: string) => {
-      const player = gameState.getPlayer(playerId);
-      const playedCards = player.playedCards;
-      if (playedCards) {
-        var numCommonConstructions = 0;
-        for (var cardName in playedCards) {
-          var card = Card.fromName(cardName as CardName);
-          if (card.isConstruction && !card.isUnique) {
-            numCommonConstructions++;
-          }
-        }
-        return numCommonConstructions;
-      }
-      return 0;
-    },
+    pointsInner: getPointsPerRarityLabel({ isCritter: false, isUnique: false }),
   }),
   [CardName.CEMETARY]: new Card({
     name: CardName.CEMETARY,
@@ -396,18 +382,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     // 1 point per prosperty card
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
-      const playedCards = player.playedCards;
-      if (playedCards) {
-        var numProsperity = 0;
-        for (var cardName in playedCards) {
-          var card = Card.fromName(cardName as CardName);
-          if (card.cardType == CardType.PROSPERITY) {
-            numProsperity++;
-          }
-        }
-        return numProsperity;
-      }
-      return 0;
+
+      return player.getNumCardType(CardType.PROSPERITY);
     },
   }),
   [CardName.FAIRGROUNDS]: new Card({
@@ -715,21 +691,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: true,
     associatedCard: CardName.QUEEN,
     // 1 point per unique construction
-    pointsInner: (gameState: GameState, playerId: string) => {
-      const player = gameState.getPlayer(playerId);
-      const playedCards = player.playedCards;
-      if (playedCards) {
-        var numUniqueConstructions = 0;
-        for (var cardName in playedCards) {
-          var card = Card.fromName(cardName as CardName);
-          if (card.isConstruction && card.isUnique) {
-            numUniqueConstructions++;
-          }
-        }
-        return numUniqueConstructions;
-      }
-      return 0;
-    },
+    pointsInner: getPointsPerRarityLabel({ isCritter: false, isUnique: true }),
   }),
   [CardName.PEDDLER]: new Card({
     name: CardName.PEDDLER,
@@ -878,21 +840,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: true,
     associatedCard: CardName.TEACHER,
     // 1 point per common critter
-    pointsInner: (gameState: GameState, playerId: string) => {
-      const player = gameState.getPlayer(playerId);
-      const playedCards = player.playedCards;
-      if (playedCards) {
-        var numCommonCritters = 0;
-        for (var cardName in playedCards) {
-          var card = Card.fromName(cardName as CardName);
-          if (card.isCritter && !card.isUnique) {
-            numCommonCritters++;
-          }
-        }
-        return numCommonCritters;
-      }
-      return 0;
-    },
+    pointsInner: getPointsPerRarityLabel({ isCritter: true, isUnique: false }),
   }),
   [CardName.SHEPHERD]: new Card({
     name: CardName.SHEPHERD,
@@ -964,21 +912,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: true,
     associatedCard: CardName.BARD,
     // 1 point per unique critter
-    pointsInner: (gameState: GameState, playerId: string) => {
-      const player = gameState.getPlayer(playerId);
-      const playedCards = player.playedCards;
-      if (playedCards) {
-        var numUniqueCritters = 0;
-        for (var cardName in playedCards) {
-          var card = Card.fromName(cardName as CardName);
-          if (card.isCritter && card.isUnique) {
-            numUniqueCritters++;
-          }
-        }
-        return numUniqueCritters;
-      }
-      return 0;
-    },
+    pointsInner: getPointsPerRarityLabel({ isCritter: true, isUnique: true }),
   }),
   [CardName.TWIG_BARGE]: new Card({
     name: CardName.TWIG_BARGE,

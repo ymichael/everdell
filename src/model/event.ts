@@ -672,7 +672,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       }
 
       if (monestary.length > 1) {
-        throw new Error("Cannot have more thna one monestary");
+        throw new Error("Cannot have more than one monestary");
       }
 
       // you can only have one monestary in your city

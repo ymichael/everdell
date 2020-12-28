@@ -1,5 +1,17 @@
-import { ResourceType, ResourceMap, GameInput, GameInputType } from "./types";
-import { GameState, GameStatePlayFn } from "./gameState";
+import {
+  CardName,
+  ResourceType,
+  ResourceMap,
+  GameInput,
+  GameInputType,
+} from "./types";
+import {
+  GameState,
+  GameStatePlayFn,
+  GameStateCountPointsFn,
+} from "./gameState";
+
+import { Card } from "./card";
 
 export function playGainResourceFactory({
   resourceMap,
@@ -50,4 +62,28 @@ export function playSpendResourceToGetVPFactory({
 
 export function sumResources(resourceMap: ResourceMap): number {
   return (Object.values(resourceMap) as number[]).reduce((a, b) => a + b, 0);
+}
+
+export function getPointsPerRarityLabel({
+  isCritter,
+  isUnique,
+}: {
+  isCritter: boolean;
+  isUnique: boolean;
+}): GameStateCountPointsFn {
+  return (gameState: GameState, playerId: string) => {
+    const player = gameState.getPlayer(playerId);
+    const playedCards = player.playedCards;
+    if (!playedCards) {
+      throw new Error("Invalid list of played cards");
+    }
+    let numCardsToCount = 0;
+    for (let cardName in playedCards) {
+      let card = Card.fromName(cardName as CardName);
+      if (card.isCritter == isCritter && card.isUnique == isUnique) {
+        numCardsToCount++;
+      }
+    }
+    return numCardsToCount;
+  };
 }

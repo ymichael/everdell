@@ -6,6 +6,7 @@ import {
   Season,
   ResourceType,
   GameInput,
+  GameInputType,
   PlayedCardInfo,
 } from "./types";
 import cloneDeep from "lodash/cloneDeep";
@@ -344,7 +345,9 @@ export class Player {
   }
 
   payForCard(cardName: CardName, gameInput: GameInput): void {
-    // TODO
+    if (gameInput.inputType !== GameInputType.PLAY_CARD) {
+      throw new Error("Invalid input type");
+    }
   }
 
   spendResources({

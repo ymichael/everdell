@@ -108,9 +108,18 @@ export class Card implements GameStatePlayable {
     if (!this.canPlay(gameState, gameInput)) {
       throw new Error(`Unable to play card ${this.name}`);
     }
+    const player = gameState.getActivePlayer();
+    player.addToCity(this.name);
+    if (
+      this.cardType === CardType.PRODUCTION ||
+      this.cardType === CardType.TRAVELER
+    ) {
+      this.playCardEffects(gameState, gameInput);
+    }
+  }
+
+  playCardEffects(gameState: GameState, gameInput: GameInput): void {
     if (this.playInner) {
-      const player = gameState.getActivePlayer();
-      player.addToCity(this.name);
       this.playInner(gameState, gameInput);
     }
   }
@@ -292,7 +301,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         throw new Error("Invalid input");
       }
       const targetCard = Card.fromName(gameInput.clientOptions?.targetCard);
-      throw new Error("Not implemented");
+      targetCard.playCardEffects(gameState, gameInput);
     },
   }),
   [CardName.CLOCK_TOWER]: new Card({

@@ -2,7 +2,13 @@ import expect from "expect.js";
 import { Card } from "./card";
 import { GameState } from "./gameState";
 import { createPlayer } from "./player";
-import { ResourceType, GameInputType, GameInput, CardName } from "./types";
+import {
+  CardType,
+  ResourceType,
+  GameInputType,
+  GameInput,
+  CardName,
+} from "./types";
 
 const playCardInput = (card: CardName, overrides: any = {}): GameInput => {
   return {
@@ -180,6 +186,22 @@ describe("Card", () => {
         // ignore
       }
       expect(player.getNumResource(ResourceType.VP)).to.be(0);
+    });
+  });
+
+  describe("Open / closed destinations", () => {
+    it("Inn should be marked as an open destination", () => {
+      const card = Card.fromName(CardName.INN);
+      const cardInfo = card.getPlayedCardInfo();
+      expect(card.cardType == CardType.DESTINATION);
+      expect(cardInfo.isOpen);
+    });
+
+    it("Queen should be marked as a destination, but not open", () => {
+      const card = Card.fromName(CardName.QUEEN);
+      const cardInfo = card.getPlayedCardInfo();
+      expect(card.cardType == CardType.DESTINATION);
+      expect(!cardInfo.isOpen);
     });
   });
 });

@@ -284,6 +284,9 @@ export type PlayedCardInfo = {
   // constructions
   isOccupied?: boolean;
 
+  // inn, post office
+  isOpen?: boolean;
+
   // clocktower, storehouse, certain events, etc
   resources?: {
     [ResourceType.VP]?: number;

@@ -169,6 +169,13 @@ export type GameInput =
           [ResourceType.RESIN]?: number;
         };
 
+        resourcesToGain?: {
+          [ResourceType.TWIG]?: number;
+          [ResourceType.BERRY]?: number;
+          [ResourceType.PEBBLE]?: number;
+          [ResourceType.RESIN]?: number;
+        };
+
         // TODO: add resources to opponents
       };
     }

@@ -2,6 +2,7 @@ import {
   CardCost,
   CardName,
   CardType,
+  EventName,
   Season,
   ResourceType,
   GameInput,
@@ -26,6 +27,7 @@ export class Player {
   public currentSeason: Season;
   public numWorkers: number;
   public numAvailableWorkers: number;
+  public claimedEvents: Partial<Record<EventName, PlayedCardInfo>>;
 
   constructor({
     name,
@@ -43,6 +45,7 @@ export class Player {
     currentSeason = Season.WINTER,
     numWorkers = 2,
     numAvailableWorkers = 2,
+    claimedEvents = {},
   }: {
     name: string;
     playerSecret: string;
@@ -59,6 +62,7 @@ export class Player {
     currentSeason: Season;
     numWorkers: number;
     numAvailableWorkers: number;
+    claimedEvents: Partial<Record<EventName, PlayedCardInfo>>;
   }) {
     this.playerId = playerId;
     this.playerSecret = playerSecret;
@@ -69,6 +73,7 @@ export class Player {
     this.currentSeason = currentSeason;
     this.numWorkers = numWorkers;
     this.numAvailableWorkers = numAvailableWorkers;
+    this.claimedEvents = claimedEvents;
   }
 
   get playerSecretUNSAFE(): string {
@@ -457,6 +462,7 @@ export const createPlayer = (name: string): Player => {
     currentSeason: Season.WINTER,
     numWorkers: 2,
     numAvailableWorkers: 2,
+    claimedEvents: {},
   });
   return player;
 };

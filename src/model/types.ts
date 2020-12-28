@@ -157,6 +157,20 @@ export type GameInput =
   | {
       inputType: GameInputType.CLAIM_EVENT;
       event: EventName;
+      clientOptions?: {
+        // eg, placing cards underneath event
+        cardsToUse?: CardName[];
+
+        // eg, place berries on event
+        resourcesToSpend?: {
+          [ResourceType.TWIG]?: number;
+          [ResourceType.BERRY]?: number;
+          [ResourceType.PEBBLE]?: number;
+          [ResourceType.RESIN]?: number;
+        };
+
+        // TODO: add resources to opponents
+      };
     }
   | {
       inputType: GameInputType.PREPARE_FOR_SEASON;
@@ -246,7 +260,7 @@ export type PlayedCardInfo = {
   // constructions
   isOccupied?: boolean;
 
-  // clocktower, storehouse etc
+  // clocktower, storehouse, certain events, etc
   resources?: {
     [ResourceType.VP]?: number;
     [ResourceType.TWIG]?: number;
@@ -259,6 +273,6 @@ export type PlayedCardInfo = {
   workers?: string[];
   maxWorkers?: number;
 
-  // dungeon
+  // dungeon and certain events
   pairedCards?: string[];
 };

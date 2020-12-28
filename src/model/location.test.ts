@@ -1,7 +1,7 @@
 import expect from "expect.js";
 import { Location } from "./location";
 import { GameState } from "./gameState";
-import { createPlayer } from "./player";
+import { testInitialGameState } from "./testHelpers";
 import {
   Season,
   LocationName,
@@ -21,9 +21,7 @@ describe("Location", () => {
   let gameState: GameState;
 
   beforeEach(() => {
-    gameState = GameState.initialGameState({
-      players: [createPlayer("One"), createPlayer("Two")],
-    });
+    gameState = testInitialGameState();
   });
 
   describe("fromName", () => {
@@ -64,14 +62,7 @@ describe("Location", () => {
     });
 
     it("should allow 2 workers on FOREST_TWO_BERRY_ONE_CARD if 4+ players", () => {
-      const gameState = GameState.initialGameState({
-        players: [
-          createPlayer("One"),
-          createPlayer("Two"),
-          createPlayer("Three"),
-          createPlayer("Four"),
-        ],
-      });
+      const gameState = testInitialGameState({ numPlayers: 4 });
       const location = Location.fromName(
         LocationName.FOREST_TWO_BERRY_ONE_CARD
       );
@@ -98,6 +89,13 @@ describe("Location", () => {
         expect(gameState.getActivePlayer().currentSeason).to.be(Season.WINTER);
         expect(location.canPlay(gameState, gameInput)).to.be(false);
         gameState.getActivePlayer().currentSeason = Season.AUTUMN;
+        gameState.getActivePlayer().cardsInHand = [
+          CardName.FARM,
+          CardName.FARM,
+          CardName.FARM,
+          CardName.FARM,
+          CardName.FARM,
+        ];
         expect(location.canPlay(gameState, gameInput)).to.be(true);
       });
 
@@ -105,15 +103,20 @@ describe("Location", () => {
         const location = Location.fromName(locationName);
         const gameInput = placeWorkerInput(locationName);
         expect(gameState.getActivePlayer().currentSeason).to.be(Season.WINTER);
+        expect(location.canPlay(gameState, gameInput)).to.be(false);
 
         gameState.getActivePlayer().currentSeason = Season.AUTUMN;
-        expect(location.canPlay(gameState, gameInput)).to.be(true);
-
-        gameState.getActivePlayer().cardsInHand = [];
-        expect(location.canPlay(gameState, gameInput)).to.be(false);
-
         gameState.getActivePlayer().cardsInHand = [CardName.RUINS];
         expect(location.canPlay(gameState, gameInput)).to.be(false);
+
+        gameState.getActivePlayer().cardsInHand = [
+          CardName.FARM,
+          CardName.FARM,
+          CardName.FARM,
+          CardName.FARM,
+          CardName.FARM,
+        ];
+        expect(location.canPlay(gameState, gameInput)).to.be(true);
       });
     });
   });

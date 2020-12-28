@@ -1,7 +1,7 @@
 import expect from "expect.js";
 import { Event } from "./event";
 import { GameState } from "./gameState";
-import { createPlayer } from "./player";
+import { testInitialGameState } from "./testHelpers";
 import { EventName, GameInputType, GameInput, CardName } from "./types";
 
 const claimEventInput = (event: EventName): GameInput => {
@@ -15,9 +15,7 @@ describe("Event", () => {
   let gameState: GameState;
 
   beforeEach(() => {
-    gameState = GameState.initialGameState({
-      players: [createPlayer("One"), createPlayer("Two")],
-    });
+    gameState = testInitialGameState();
   });
 
   describe("fromName", () => {

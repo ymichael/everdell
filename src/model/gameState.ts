@@ -87,6 +87,15 @@ export class GameState {
     }
   }
 
+  removeCardFromMeadow(cardName: CardName): void {
+    const idx = this.meadowCards.indexOf(cardName);
+    if (idx === -1) {
+      throw new Error(`Unable to remove meadow card ${cardName}`);
+    } else {
+      this.meadowCards.splice(idx, 1);
+    }
+  }
+
   clone(): GameState {
     return GameState.fromJSON(this.toJSON(true /* includePrivate */));
   }
@@ -103,8 +112,13 @@ export class GameState {
         if (!card.canPlay(nextGameState, gameInput)) {
           throw new Error("Cannot take action");
         }
+        if (gameInput.fromMeadow) {
+          nextGameState.removeCardFromMeadow(gameInput.card);
+          nextGameState.replenishMeadow();
+        } else {
+          nextGameState.getActivePlayer().discardCard(gameInput.card);
+        }
         card.play(nextGameState, gameInput);
-        nextGameState.replenishMeadow();
         nextGameState.nextPlayer();
         break;
       case GameInputType.PLACE_WORKER:

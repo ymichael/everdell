@@ -123,7 +123,6 @@ export class Card implements GameStatePlayable {
     } else {
       player.addToCity(this.name);
     }
-
     if (
       this.cardType === CardType.PRODUCTION ||
       this.cardType === CardType.TRAVELER

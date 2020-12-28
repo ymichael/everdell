@@ -105,7 +105,7 @@ export class Card implements GameStatePlayable {
       throw new Error("Invalid gameInput");
     }
     const player = gameState.getActivePlayer();
-    if (this.isUnique && player.hasPlayedCard(this.name)) {
+    if (!player.canAddToCity(this.name)) {
       return false;
     }
     if (!gameInput.fromMeadow && player.cardsInHand.indexOf(this.name) === -1) {
@@ -768,7 +768,46 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: false,
     associatedCard: CardName.POST_OFFICE,
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
+      if (gameInput.inputType === GameInputType.PLAY_CARD) {
+        if (gameState.pendingGameInputs.length !== 0) {
+          throw new Error("Should not have any pending game input");
+        }
+        const revealedCards = [gameState.drawCard(), gameState.drawCard()];
+        gameState.pendingGameInputs = [
+          ...revealedCards
+            .map((card) => ({
+              inputType: GameInputType.MULTI_STEP as const,
+              prevInputType: GameInputType.PLAY_CARD as const,
+              card: CardName.POSTAL_PIGEON as const,
+              revealedCards,
+              pickedCard: card,
+            }))
+            .filter((gameInput) => {
+              const revealedCard = Card.fromName(gameInput.card);
+              // TODO player has space in city.
+              if (revealedCard.baseVP > 3) {
+                return false;
+              }
+              return true;
+            }),
+          {
+            inputType: GameInputType.MULTI_STEP,
+            prevInputType: GameInputType.PLAY_CARD,
+            card: CardName.POSTAL_PIGEON,
+            revealedCards,
+            pickedCard: null,
+          },
+        ];
+      } else if (
+        gameInput.inputType === GameInputType.MULTI_STEP &&
+        gameInput.prevInputType === GameInputType.PLAY_CARD &&
+        gameInput.card === CardName.POSTAL_PIGEON
+      ) {
+        gameState.pendingGameInputs = [];
+        // TODO add card to city
+      } else {
+        throw new Error("Invalid game input");
+      }
     },
   }),
   [CardName.QUEEN]: new Card({

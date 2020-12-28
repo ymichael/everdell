@@ -2,6 +2,7 @@ import {
   Season,
   GameInputType,
   GameInput,
+  GameInputMultiStep,
   CardName,
   EventName,
   LocationName,
@@ -21,13 +22,13 @@ const STARTING_PLAYER_HAND_SIZE = 5;
 
 export class GameState {
   private _activePlayerId: Player["playerId"];
+  public pendingGameInputs: GameInputMultiStep[];
   readonly players: Player[];
   readonly meadowCards: CardName[];
   readonly discardPile: CardStack;
   readonly deck: CardStack;
   readonly locationsMap: LocationNameToPlayerIds;
   readonly eventsMap: EventNameToPlayerId;
-  readonly pendingGameInput: GameInput | null;
 
   constructor({
     activePlayerId,
@@ -37,7 +38,7 @@ export class GameState {
     deck,
     locationsMap,
     eventsMap,
-    pendingGameInput,
+    pendingGameInputs = [],
   }: {
     activePlayerId?: Player["playerId"];
     players: Player[];
@@ -46,16 +47,16 @@ export class GameState {
     deck: CardStack;
     locationsMap: LocationNameToPlayerIds;
     eventsMap: EventNameToPlayerId;
-    pendingGameInput: GameInput | null;
+    pendingGameInputs: GameInputMultiStep[];
   }) {
-    this._activePlayerId = activePlayerId || players[0].playerId;
     this.players = players;
     this.locationsMap = locationsMap;
     this.meadowCards = meadowCards;
     this.discardPile = discardPile;
     this.deck = deck;
     this.eventsMap = eventsMap;
-    this.pendingGameInput = pendingGameInput;
+    this._activePlayerId = activePlayerId || players[0].playerId;
+    this.pendingGameInputs = pendingGameInputs;
   }
 
   get activePlayerId(): string {
@@ -69,7 +70,7 @@ export class GameState {
       meadowCards: this.meadowCards,
       locationsMap: this.locationsMap,
       eventsMap: this.eventsMap,
-      pendingGameInput: this.pendingGameInput,
+      pendingGameInputs: this.pendingGameInputs,
       deck: this.deck.toJSON(includePrivate),
       discardPile: this.discardPile.toJSON(includePrivate),
     });
@@ -120,7 +121,6 @@ export class GameState {
           nextGameState.getActivePlayer().removeCardFromHand(gameInput.card);
         }
         card.play(nextGameState, gameInput);
-        nextGameState.nextPlayer();
         break;
       case GameInputType.PLACE_WORKER:
         const location = Location.fromName(gameInput.location);
@@ -138,11 +138,14 @@ export class GameState {
         player = nextGameState.getActivePlayer();
         player.numAvailableWorkers--;
         nextGameState.locationsMap[gameInput.location]!.push(player.playerId);
-
-        nextGameState.nextPlayer();
         break;
       default:
         throw new Error(`Unhandled game input: ${JSON.stringify(gameInput)}`);
+    }
+
+    // If there's pending game inputs, don't go to the next player.
+    if (nextGameState.pendingGameInputs.length === 0) {
+      nextGameState.nextPlayer();
     }
 
     return nextGameState;
@@ -171,7 +174,7 @@ export class GameState {
       discardPile: emptyCardStack(),
       locationsMap: initialLocationsMap(players.length),
       eventsMap: initialEventMap(),
-      pendingGameInput: null,
+      pendingGameInputs: [],
     });
 
     // Players draw cards
@@ -248,70 +251,55 @@ export class GameState {
   };
 
   getPossibleGameInputs(): GameInput[] {
+    if (this.pendingGameInputs) {
+      return this.pendingGameInputs;
+    }
+
     const player = this.getActivePlayer();
     const playerId = player.playerId;
     const possibleGameInputs: GameInput[] = [];
-
-    if (this.pendingGameInput) {
-      if (this.pendingGameInput.inputType === GameInputType.PLAY_CARD) {
-        // figure out how to pay
-      } else if (
-        this.pendingGameInput.inputType === GameInputType.PLACE_WORKER
-      ) {
-        // game options for the worker placement
-      } else if (
-        this.pendingGameInput.inputType === GameInputType.CLAIM_EVENT
-      ) {
-        // game options for the claiming event
-      } else {
-        throw new Error(
-          "Unexpected pending game input type " + this.pendingGameInput
-        );
-      }
+    if (player.currentSeason === Season.AUTUMN) {
+      possibleGameInputs.push({
+        inputType: GameInputType.GAME_END,
+      });
     } else {
-      if (player.currentSeason === Season.AUTUMN) {
-        possibleGameInputs.push({
-          inputType: GameInputType.GAME_END,
-        });
-      } else {
-        possibleGameInputs.push({
-          inputType: GameInputType.PREPARE_FOR_SEASON,
-        });
-      }
-
-      if (player.numAvailableWorkers > 0) {
-        possibleGameInputs.push(...this.getAvailableLocationGameInputs());
-
-        possibleGameInputs.push(...this.getEligibleEventGameInputs());
-      }
-
-      possibleGameInputs.push(
-        ...this.meadowCards
-          .map((cardName) => {
-            return {
-              inputType: GameInputType.PLAY_CARD as const,
-              playerId,
-              card: cardName,
-              fromMeadow: true,
-            };
-          })
-          .filter((gameInput) =>
-            Card.fromName(gameInput.card).canPlay(this, gameInput)
-          ),
-        ...this.getActivePlayer()
-          .cardsInHand.map((cardName) => {
-            return {
-              inputType: GameInputType.PLAY_CARD as const,
-              playerId,
-              card: cardName,
-              fromMeadow: false,
-            };
-          })
-          .filter((gameInput) =>
-            Card.fromName(gameInput.card).canPlay(this, gameInput)
-          )
-      );
+      possibleGameInputs.push({
+        inputType: GameInputType.PREPARE_FOR_SEASON,
+      });
     }
+
+    if (player.numAvailableWorkers > 0) {
+      possibleGameInputs.push(...this.getAvailableLocationGameInputs());
+
+      possibleGameInputs.push(...this.getEligibleEventGameInputs());
+    }
+
+    possibleGameInputs.push(
+      ...this.meadowCards
+        .map((cardName) => {
+          return {
+            inputType: GameInputType.PLAY_CARD as const,
+            playerId,
+            card: cardName,
+            fromMeadow: true,
+          };
+        })
+        .filter((gameInput) =>
+          Card.fromName(gameInput.card).canPlay(this, gameInput)
+        ),
+      ...this.getActivePlayer()
+        .cardsInHand.map((cardName) => {
+          return {
+            inputType: GameInputType.PLAY_CARD as const,
+            playerId,
+            card: cardName,
+            fromMeadow: false,
+          };
+        })
+        .filter((gameInput) =>
+          Card.fromName(gameInput.card).canPlay(this, gameInput)
+        )
+    );
 
     return possibleGameInputs;
   }

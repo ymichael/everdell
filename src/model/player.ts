@@ -17,6 +17,7 @@ import { generate as uuid } from "short-uuid";
 import { sumResources } from "./gameStatePlayHelpers";
 
 const MAX_HAND_SIZE = 8;
+const MAX_CITY_SIZE = 15;
 
 export class Player {
   private playerSecret: string;
@@ -92,9 +93,44 @@ export class Player {
   }
 
   addToCity(cardName: CardName): void {
+    if (!this.canAddToCity(cardName)) {
+      throw new Error(`Unable to add ${cardName} to city`);
+    }
     const card = Card.fromName(cardName);
     this.playedCards[cardName] = this.playedCards[cardName] || [];
     this.playedCards[cardName]!.push(card.getPlayedCardInfo());
+  }
+
+  canAddToCity(cardName: CardName): boolean {
+    const card = Card.fromName(cardName);
+    if (card.isUnique && this.hasPlayedCard(card.name)) {
+      return false;
+    }
+
+    // Can always play wanderer
+    if (cardName === CardName.WANDERER) {
+      return true;
+    }
+
+    // TODO: Innkeeper, husband/wife, ruins, dungeoning
+
+    let numOccupiedSpacesInCity = 0;
+    this.forEachPlayedCard(({ cardName }) => {
+      if (cardName === CardName.WANDERER) {
+        return;
+      }
+      numOccupiedSpacesInCity += 1;
+    });
+
+    // Only count each husband/wife pair once
+    numOccupiedSpacesInCity -= this.numHusbandWifePairs();
+    return numOccupiedSpacesInCity <= MAX_CITY_SIZE;
+  }
+
+  numHusbandWifePairs(): number {
+    const numHusbands = (this.playedCards[CardName.HUSBAND] || []).length;
+    const numWifes = (this.playedCards[CardName.WIFE] || []).length;
+    return Math.min(numHusbands, numWifes);
   }
 
   removeCardFromCity(cardName: CardName): CardName[] {
@@ -116,18 +152,27 @@ export class Player {
     return this.resources[resourceType];
   }
 
+  forEachPlayedCard(
+    cb: (x: { cardName: CardName; playedCardInfo: PlayedCardInfo }) => void
+  ): void {
+    (Object.entries(this.playedCards) as [
+      CardName,
+      PlayedCardInfo[]
+    ][]).forEach(([cardName, playedCards]) => {
+      playedCards.forEach((playedCardInfo) => {
+        cb({ cardName, playedCardInfo });
+      });
+    });
+  }
+
   getNumCardType(cardType: CardType): number {
     let numCards = 0;
-    for (let cardName in this.playedCards) {
-      let card = Card.fromName(cardName as CardName);
-      if (card.cardType == cardType) {
-        let numOfCards = this.playedCards[cardName as CardName];
-        if (!numOfCards) {
-          throw new Error("Card can't be found in city");
-        }
-        numCards = numCards + numOfCards.length;
+    this.forEachPlayedCard(({ cardName }) => {
+      const card = Card.fromName(cardName as CardName);
+      if (card.cardType === cardType) {
+        numCards += 1;
       }
-    }
+    });
     return numCards;
   }
 

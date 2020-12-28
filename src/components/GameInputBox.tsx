@@ -18,6 +18,7 @@ const GameInputBoxWaiting: React.FC<{ activePlayer: Player }> = ({
 };
 
 const gameInputSortOrder: Record<GameInputType, number> = {
+  [GameInputType.MULTI_STEP]: -1,
   [GameInputType.CLAIM_EVENT]: 0,
   [GameInputType.PLAY_CARD]: 1,
   [GameInputType.PLACE_WORKER]: 2,

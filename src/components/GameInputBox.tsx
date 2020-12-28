@@ -17,6 +17,15 @@ const GameInputBoxWaiting: React.FC<{ activePlayer: Player }> = ({
   );
 };
 
+const gameInputSortOrder: Record<GameInputType, number> = {
+  [GameInputType.CLAIM_EVENT]: 0,
+  [GameInputType.PLAY_CARD]: 1,
+  [GameInputType.PLACE_WORKER]: 2,
+  [GameInputType.VISIT_DESTINATION_CARD]: 3,
+  [GameInputType.PREPARE_FOR_SEASON]: 4,
+  [GameInputType.GAME_END]: 5,
+};
+
 const GameInputBox: React.FC<any> = ({ gameId, gameState, viewingPlayer }) => {
   const gameStateImpl = GameState.fromJSON(gameState);
   const activePlayerImpl = gameStateImpl.getActivePlayer();
@@ -35,6 +44,9 @@ const GameInputBox: React.FC<any> = ({ gameId, gameState, viewingPlayer }) => {
   const inputTypesOrdered: GameInputType[] = Object.keys(
     inputTypeToInputs
   ) as GameInputType[];
+  inputTypesOrdered.sort((a, b) =>
+    gameInputSortOrder[a] < gameInputSortOrder[b] ? -1 : 1
+  );
 
   return (
     <div>

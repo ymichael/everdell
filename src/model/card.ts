@@ -96,18 +96,17 @@ export class Card implements GameStatePlayable {
     if (gameInput.inputType !== GameInputType.PLAY_CARD) {
       throw new Error("Invalid gameInput");
     }
-
     const player = gameState.getActivePlayer();
     if (this.isUnique && player.hasPlayedCard(this.name)) {
+      return false;
+    }
+    if (!gameInput.fromMeadow && player.cardsInHand.indexOf(this.name) === -1) {
       return false;
     }
     return player.canAffordCard(this.name, gameInput.fromMeadow);
   }
 
   play(gameState: GameState, gameInput: GameInput): void {
-    if (!this.canPlay(gameState, gameInput)) {
-      throw new Error(`Unable to play card ${this.name}`);
-    }
     if (gameInput.inputType !== GameInputType.PLAY_CARD) {
       throw new Error("Invalid game input type");
     }

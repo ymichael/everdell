@@ -49,9 +49,8 @@ describe("Location", () => {
       const location = Location.fromName(LocationName.BASIC_ONE_BERRY);
       const gameInput = placeWorkerInput(location.name);
       expect(location.canPlay(gameState, gameInput)).to.be(true);
-      gameState.next(gameInput);
-      gameState.nextPlayer();
-      expect(location.canPlay(gameState, gameInput)).to.be(true);
+      const nextGameState = gameState.next(gameInput);
+      expect(location.canPlay(nextGameState, gameInput)).to.be(true);
     });
 
     it("should not allow unlimited workers on BASIC_ONE_BERRY_AND_ONE_CARD", () => {
@@ -60,9 +59,8 @@ describe("Location", () => {
       );
       const gameInput = placeWorkerInput(location.name);
       expect(location.canPlay(gameState, gameInput)).to.be(true);
-      gameState.next(gameInput);
-      gameState.nextPlayer();
-      expect(location.canPlay(gameState, gameInput)).to.be(false);
+      const nextGameState = gameState.next(gameInput);
+      expect(location.canPlay(nextGameState, gameInput)).to.be(false);
     });
 
     it("should allow 2 workers on SPECIAL_TWO_BERRY_ONE_CARD if 4+ players", () => {
@@ -80,12 +78,10 @@ describe("Location", () => {
       const gameInput = placeWorkerInput(location.name);
       gameState.locationsMap[LocationName.SPECIAL_TWO_BERRY_ONE_CARD] = [];
       expect(location.canPlay(gameState, gameInput)).to.be(true);
-      gameState.next(gameInput);
-      gameState.nextPlayer();
-      expect(location.canPlay(gameState, gameInput)).to.be(true);
-      gameState.next(gameInput);
-      gameState.nextPlayer();
-      expect(location.canPlay(gameState, gameInput)).to.be(false);
+      const gameState2 = gameState.next(gameInput);
+      expect(location.canPlay(gameState2, gameInput)).to.be(true);
+      const gameState3 = gameState2.next(gameInput);
+      expect(location.canPlay(gameState3, gameInput)).to.be(false);
     });
   });
 

@@ -14,6 +14,7 @@ import { CardStack, emptyCardStack } from "./cardStack";
 import { Location, initialLocationsMap } from "./location";
 import { initialEventMap } from "./event";
 import { initialShuffledDeck } from "./deck";
+import cloneDeep from "lodash/cloneDeep";
 
 const MEADOW_SIZE = 8;
 const STARTING_PLAYER_HAND_SIZE = 5;
@@ -62,7 +63,7 @@ export class GameState {
   }
 
   toJSON(includePrivate: boolean): object {
-    return {
+    return cloneDeep({
       activePlayerId: this.activePlayerId,
       players: this.players.map((p) => p.toJSON(includePrivate)),
       meadowCards: this.meadowCards,
@@ -71,7 +72,7 @@ export class GameState {
       pendingGameInput: this.pendingGameInput,
       deck: this.deck.toJSON(includePrivate),
       discardPile: this.discardPile.toJSON(includePrivate),
-    };
+    });
   }
 
   nextPlayer(): void {

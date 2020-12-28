@@ -87,6 +87,15 @@ export class GameState {
     }
   }
 
+  removeCardFromMeadow(cardName: CardName): void {
+    const idx = this.meadowCards.indexOf(cardName);
+    if (idx === -1) {
+      throw new Error(`Unable to remove meadow card ${cardName}`);
+    } else {
+      this.meadowCards.splice(idx, 1);
+    }
+  }
+
   clone(): GameState {
     return GameState.fromJSON(this.toJSON(true /* includePrivate */));
   }
@@ -95,13 +104,6 @@ export class GameState {
     const nextGameState = this.clone();
     let player: Player;
     switch (gameInput.inputType) {
-      case GameInputType.DRAW_CARDS:
-        player = nextGameState.getPlayer(gameInput.playerId);
-        player.drawCards(nextGameState, gameInput.count);
-        break;
-      case GameInputType.REPLENISH_MEADOW:
-        nextGameState.replenishMeadow();
-        break;
       case GameInputType.PLAY_CARD:
         const card = Card.fromName(gameInput.card);
         if (!card) {
@@ -110,8 +112,13 @@ export class GameState {
         if (!card.canPlay(nextGameState, gameInput)) {
           throw new Error("Cannot take action");
         }
+        if (gameInput.fromMeadow) {
+          nextGameState.removeCardFromMeadow(gameInput.card);
+          nextGameState.replenishMeadow();
+        } else {
+          nextGameState.getActivePlayer().discardCard(gameInput.card);
+        }
         card.play(nextGameState, gameInput);
-        nextGameState.replenishMeadow();
         nextGameState.nextPlayer();
         break;
       case GameInputType.PLACE_WORKER:
@@ -169,17 +176,11 @@ export class GameState {
 
     // Players draw cards
     players.forEach((p, idx) => {
-      gameState = gameState.next({
-        inputType: GameInputType.DRAW_CARDS,
-        playerId: p.playerId,
-        count: STARTING_PLAYER_HAND_SIZE + idx,
-      });
+      p.drawCards(gameState, STARTING_PLAYER_HAND_SIZE + idx);
     });
 
     // Draw cards onto the meadow
-    gameState = gameState.next({
-      inputType: GameInputType.REPLENISH_MEADOW,
-    });
+    gameState.replenishMeadow();
 
     return gameState;
   }

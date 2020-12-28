@@ -3,21 +3,28 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "test": "mocha -r ts-node/register src/**/*.test.ts",
+    "test:watch": "mocha -r ts-node/register --watch --extension ts src/**/*.test.ts",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "format": "prettier --write src"
   },
   "dependencies": {
+    "expect.js": "^0.3.1",
     "formik": "^2.2.6",
     "lodash": "^4.17.20",
+    "mocha": "^8.2.1",
     "next": "10.0.4",
     "react": "17.0.1",
     "react-dom": "17.0.1",
-    "short-uuid": "^4.1.0"
+    "short-uuid": "^4.1.0",
+    "ts-node": "^9.1.1"
   },
   "devDependencies": {
+    "@types/expect.js": "^0.3.29",
     "@types/lodash": "^4.14.166",
+    "@types/mocha": "^8.2.0",
     "@types/node": "^14.14.16",
     "@types/react": "^17.0.0",
     "prettier": "2.2.1",

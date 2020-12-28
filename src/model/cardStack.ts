@@ -17,7 +17,11 @@ export class CardStack {
   }
 
   get isEmpty(): boolean {
-    return this.cards.length === 0;
+    return this.length === 0;
+  }
+
+  get length(): number {
+    return this.cards.length;
   }
 
   drawInner(): CardName {

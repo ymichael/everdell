@@ -93,40 +93,49 @@ export class Card implements GameStatePlayable {
   }
 
   canPlay(gameState: GameState, gameInput: GameInput): boolean {
-    if (gameInput.inputType !== GameInputType.PLAY_CARD) {
-      throw new Error("Invalid gameInput");
-    }
     const player = gameState.getActivePlayer();
-    if (!player.canAddToCity(this.name)) {
-      return false;
+    if (gameInput.inputType === GameInputType.PLAY_CARD) {
+      if (!player.canAddToCity(this.name)) {
+        return false;
+      }
+      if (
+        !gameInput.fromMeadow &&
+        player.cardsInHand.indexOf(this.name) === -1
+      ) {
+        return false;
+      }
+      return player.canAffordCard(this.name, gameInput.fromMeadow);
+    } else if (gameInput.inputType === GameInputType.MULTI_STEP) {
+      return true;
+    } else {
+      throw new Error("Invalid game input: ${gameInput}");
     }
-    if (!gameInput.fromMeadow && player.cardsInHand.indexOf(this.name) === -1) {
-      return false;
-    }
-    return player.canAffordCard(this.name, gameInput.fromMeadow);
   }
 
   play(gameState: GameState, gameInput: GameInput): void {
-    if (gameInput.inputType !== GameInputType.PLAY_CARD) {
-      throw new Error("Invalid game input type");
-    }
     const player = gameState.getActivePlayer();
-    if (this.name == CardName.FOOL) {
-      if (gameInput.clientOptions?.targetPlayerId) {
-        gameState
-          .getPlayer(gameInput.clientOptions?.targetPlayerId)
-          .addToCity(this.name);
+    if (gameInput.inputType === GameInputType.PLAY_CARD) {
+      if (this.name === CardName.FOOL) {
+        if (gameInput.clientOptions?.targetPlayerId) {
+          gameState
+            .getPlayer(gameInput.clientOptions?.targetPlayerId)
+            .addToCity(this.name);
+        } else {
+          throw new Error("Invalid input");
+        }
       } else {
-        throw new Error("Invalid input");
+        player.addToCity(this.name);
       }
-    } else {
-      player.addToCity(this.name);
-    }
-    if (
-      this.cardType === CardType.PRODUCTION ||
-      this.cardType === CardType.TRAVELER
-    ) {
+      if (
+        this.cardType === CardType.PRODUCTION ||
+        this.cardType === CardType.TRAVELER
+      ) {
+        this.playCardEffects(gameState, gameInput);
+      }
+    } else if (gameInput.inputType === GameInputType.MULTI_STEP) {
       this.playCardEffects(gameState, gameInput);
+    } else {
+      throw new Error("Invalid game input type");
     }
   }
 
@@ -765,6 +774,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           throw new Error("Should not have any pending game input");
         }
         const revealedCards = [gameState.drawCard(), gameState.drawCard()];
+        const player = gameState.getActivePlayer();
         gameState.pendingGameInputs = [
           ...revealedCards
             .map((card) => ({
@@ -775,12 +785,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
               pickedCard: card,
             }))
             .filter((gameInput) => {
-              const revealedCard = Card.fromName(gameInput.card);
-              // TODO player has space in city.
+              const revealedCard = Card.fromName(gameInput.pickedCard);
               if (revealedCard.baseVP > 3) {
                 return false;
               }
-              return true;
+              return player.canAddToCity(gameInput.pickedCard);
             }),
           {
             inputType: GameInputType.MULTI_STEP,
@@ -796,7 +805,15 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         gameInput.card === CardName.POSTAL_PIGEON
       ) {
         gameState.pendingGameInputs = [];
-        // TODO add card to city
+        const player = gameState.getActivePlayer();
+        const revealedCards = [...gameInput.revealedCards];
+        if (gameInput.pickedCard) {
+          player.addToCity(gameInput.pickedCard);
+          revealedCards.splice(revealedCards.indexOf(gameInput.pickedCard), 1);
+        }
+        revealedCards.forEach((cardName) => {
+          gameState.discardPile.addToStack(cardName);
+        });
       } else {
         throw new Error("Invalid game input");
       }

@@ -139,6 +139,20 @@ export class GameState {
         player.numAvailableWorkers--;
         nextGameState.locationsMap[gameInput.location]!.push(player.playerId);
         break;
+      case GameInputType.MULTI_STEP:
+        if (gameInput.prevInputType === GameInputType.PLAY_CARD) {
+          const card = Card.fromName(gameInput.card);
+          if (!card) {
+            throw new Error("Invalid card");
+          }
+          if (!card.canPlay(nextGameState, gameInput)) {
+            throw new Error("Cannot take action");
+          }
+          card.play(nextGameState, gameInput);
+        } else {
+          throw new Error(`Unhandled game input: ${JSON.stringify(gameInput)}`);
+        }
+        break;
       default:
         throw new Error(`Unhandled game input: ${JSON.stringify(gameInput)}`);
     }

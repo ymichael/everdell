@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useState, useCallback, useEffect } from "react";
 import Meadow from "./Meadow";
+import PlayerStatus from "./PlayerStatus";
 import GameInputBox from "./GameInputBox";
 
 const Game: React.FC<{ game: any; viewingPlayer: any }> = (props) => {
@@ -36,15 +37,41 @@ const Game: React.FC<{ game: any; viewingPlayer: any }> = (props) => {
 
   return (
     <>
-      <Meadow meadowCards={game.gameState.meadowCards} />
+      <Meadow meadowCards={gameState.meadowCards} />
       <GameInputBox
         gameId={gameId}
         gameState={gameState}
         viewingPlayer={viewingPlayer}
         updateGameAndViewingPlayer={updateGameAndViewingPlayer}
       />
+      <PlayerStatus
+        player={viewingPlayer}
+        isViewer={true}
+        isActivePlayer={viewingPlayer.playerId === gameState.activePlayerId}
+      />
+      {gameState.players
+        .filter((player: any) => player.playerId !== viewingPlayer.playerId)
+        .map((player: any) => {
+          return (
+            <PlayerStatus
+              player={player}
+              isViewer={false}
+              isActivePlayer={player.playerId === gameState.activePlayerId}
+            />
+          );
+        })}
       <hr />
-      <pre>{JSON.stringify(game, null, 2)}</pre>
+      <p>
+        <h2>DEBUG</h2>
+        <p>
+          <h3>you</h3>
+          <pre>{JSON.stringify(viewingPlayer, null, 2)}</pre>
+        </p>
+        <p>
+          <h3>Game State:</h3>
+          <pre>{JSON.stringify(game, null, 2)}</pre>
+        </p>
+      </p>
     </>
   );
 };

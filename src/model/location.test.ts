@@ -14,7 +14,7 @@ describe("Location", () => {
   });
 
   describe("canPlay basic", () => {
-    it("HAVEN cannot be played until autumn", () => {
+    it("JOURNEY cannot be played until autumn", () => {
       let gameState = GameState.initialGameState({
         players: [createPlayer("One"), createPlayer("Two")],
       });

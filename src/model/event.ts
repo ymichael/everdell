@@ -51,6 +51,19 @@ export class Event {
     this.pointsInner = pointsInner;
   }
 
+  canPlay(gameState: GameState, gameInput: GameInput): boolean {
+    if (!(this.name in gameState.eventsMap)) {
+      return false;
+    }
+    if (gameState.getActivePlayer().numAvailableWorkers <= 0) {
+      return false;
+    }
+    if (this.canPlayInner && !this.canPlayInner(gameState, gameInput)) {
+      return false;
+    }
+    return true;
+  }
+
   static fromName(name: EventName): Event {
     return EVENT_REGISTRY[name];
   }
@@ -73,8 +86,6 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.BASIC,
     canPlayInner: (gameState: GameState) => {
       const player = gameState.getActivePlayer();
-      const playedCards = player.playedCards;
-
       return player.getNumCardType(CardType.PRODUCTION) >= 4;
     },
     pointsInner: (gameState: GameState, playerId: string) => {
@@ -86,8 +97,6 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.BASIC,
     canPlayInner: (gameState: GameState) => {
       const player = gameState.getActivePlayer();
-      const playedCards = player.playedCards;
-
       return player.getNumCardType(CardType.DESTINATION) >= 3;
     },
     pointsInner: (gameState: GameState, playerId: string) => {
@@ -99,8 +108,6 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.BASIC,
     canPlayInner: (gameState: GameState) => {
       const player = gameState.getActivePlayer();
-      const playedCards = player.playedCards;
-
       return player.getNumCardType(CardType.GOVERNANCE) >= 3;
     },
     pointsInner: (gameState: GameState, playerId: string) => {
@@ -112,8 +119,6 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.BASIC,
     canPlayInner: (gameState: GameState) => {
       const player = gameState.getActivePlayer();
-      const playedCards = player.playedCards;
-
       return player.getNumCardType(CardType.TRAVELER) >= 3;
     },
     pointsInner: (gameState: GameState, playerId: string) => {
@@ -732,8 +737,6 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     canPlayInner: (gameState: GameState) => {
       const player = gameState.getActivePlayer();
-      const playedCards = player.playedCards;
-
       return (
         player.getNumCardType(CardType.PROSPERITY) >= 2 &&
         player.getNumCardType(CardType.GOVERNANCE) >= 2 &&

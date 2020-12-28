@@ -1,16 +1,17 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getGameById } from "../../model/game";
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
+export default async (
+  req: NextApiRequest,
+  res: NextApiResponse
+): Promise<void> => {
   if (req.method !== "POST") {
-    res.setHeader("Allow", ["GET", "POST"]);
+    res.setHeader("Allow", ["POST"]);
     res.status(405).end(`Method ${req.method} Not Allowed`);
     return;
   }
-
-  const { body, method } = req;
-
   // Validate body
+  const { body } = req;
   const { gameId, playerId, playerSecret, gameInput } = body || {};
   const game = await getGameById(gameId as string);
   if (!game) {
@@ -56,7 +57,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
   try {
     game.applyGameInput(gameInput);
-    game.save();
+    await game.save();
   } catch (e) {
     console.error(e);
     res.status(500).json({
@@ -65,10 +66,5 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     });
     return;
   }
-
-  res.json({
-    success: "ok",
-    game: game.toJSON(false /* includePrivate */),
-    viewingPlayer: game.getPlayer(playerId).toJSON(true /* includePrivate */),
-  });
+  res.json({ success: "ok" });
 };

@@ -3,6 +3,7 @@ import { Player, createPlayer } from "./player";
 import { GameState } from "./gameState";
 import { GameInput } from "./types";
 import { getGameJSONById, saveGameJSONById } from "./db";
+import { emitGameUpdate } from "./gameUpdates";
 import cloneDeep from "lodash/cloneDeep";
 
 class Game {
@@ -32,8 +33,9 @@ class Game {
     this.gameState = this.gameState.next(gameInput);
   }
 
-  save(): void {
-    saveGameJSONById(this.gameId, this.toJSON(true /* includePrivate */));
+  async save(): Promise<void> {
+    await saveGameJSONById(this.gameId, this.toJSON(true /* includePrivate */));
+    emitGameUpdate(this.gameId);
   }
 
   toJSON(includePrivate: boolean): object {
@@ -63,7 +65,7 @@ class Game {
   }
 }
 
-export const createGame = (playerNames: string[]): Game => {
+export const createGame = async (playerNames: string[]): Promise<Game> => {
   if (playerNames.length < 2) {
     throw new Error(
       `Unable to create a game with ${playerNames.length} players`
@@ -81,7 +83,7 @@ export const createGame = (playerNames: string[]): Game => {
     })
   );
 
-  game.save();
+  await game.save();
   return game;
 };
 

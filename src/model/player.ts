@@ -90,12 +90,14 @@ export class Player {
     this.playedCards[cardName]!.push(card.getPlayedCardInfo());
   }
 
-  removeCardFromCity(cardName: CardName): void {
+  removeCardFromCity(cardName: CardName): CardName[] {
     if (this.playedCards[cardName]) {
       this.playedCards[cardName]!.pop();
     } else {
       throw new Error(`Unable to remove ${cardName}`);
     }
+    // TODO: handle cards that contain other cards (eg. dungeon)
+    return [cardName];
   }
 
   getNumResource(resourceType: ResourceType): number {

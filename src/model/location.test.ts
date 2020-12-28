@@ -2,7 +2,13 @@ import expect from "expect.js";
 import { Location } from "./location";
 import { GameState } from "./gameState";
 import { createPlayer } from "./player";
-import { Season, LocationName, GameInputType, GameInput } from "./types";
+import {
+  Season,
+  LocationName,
+  GameInputType,
+  GameInput,
+  CardName,
+} from "./types";
 
 const placeWorkerInput = (location: LocationName): GameInput => {
   return {
@@ -25,6 +31,16 @@ describe("Location", () => {
       for (const loc in LocationName) {
         expect(Location.fromName(loc as LocationName).name).to.be(loc);
       }
+    });
+  });
+
+  describe("Available workers", () => {
+    it("should not allow players w/o workers", () => {
+      const location = Location.fromName(LocationName.BASIC_ONE_BERRY);
+      const gameInput = placeWorkerInput(location.name);
+      expect(location.canPlay(gameState, gameInput)).to.be(true);
+      gameState.getActivePlayer().numAvailableWorkers = 0;
+      expect(location.canPlay(gameState, gameInput)).to.be(false);
     });
   });
 
@@ -73,14 +89,36 @@ describe("Location", () => {
     });
   });
 
-  describe("JOURNEY", () => {
-    it("JOURNEY cannot be played until autumn", () => {
-      const location = Location.fromName(LocationName.JOURNEY_TWO);
-      const gameInput = placeWorkerInput(location.name);
-      expect(gameState.getActivePlayer().currentSeason).to.be(Season.WINTER);
-      expect(location.canPlay(gameState, gameInput)).to.be(false);
-      gameState.getActivePlayer().currentSeason = Season.AUTUMN;
-      expect(location.canPlay(gameState, gameInput)).to.be(true);
+  [
+    LocationName.JOURNEY_TWO,
+    LocationName.JOURNEY_THREE,
+    LocationName.JOURNEY_FOUR,
+    LocationName.JOURNEY_FIVE,
+  ].forEach((locationName) => {
+    describe(`JOURNEY: ${locationName}`, () => {
+      it("cannot be played until autumn", () => {
+        const location = Location.fromName(locationName);
+        const gameInput = placeWorkerInput(locationName);
+        expect(gameState.getActivePlayer().currentSeason).to.be(Season.WINTER);
+        expect(location.canPlay(gameState, gameInput)).to.be(false);
+        gameState.getActivePlayer().currentSeason = Season.AUTUMN;
+        expect(location.canPlay(gameState, gameInput)).to.be(true);
+      });
+
+      it("requires X cards in hand", () => {
+        const location = Location.fromName(locationName);
+        const gameInput = placeWorkerInput(locationName);
+        expect(gameState.getActivePlayer().currentSeason).to.be(Season.WINTER);
+
+        gameState.getActivePlayer().currentSeason = Season.AUTUMN;
+        expect(location.canPlay(gameState, gameInput)).to.be(true);
+
+        gameState.getActivePlayer().cardsInHand = [];
+        expect(location.canPlay(gameState, gameInput)).to.be(false);
+
+        gameState.getActivePlayer().cardsInHand = [CardName.RUINS];
+        expect(location.canPlay(gameState, gameInput)).to.be(false);
+      });
     });
   });
 });

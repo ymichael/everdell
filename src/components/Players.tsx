@@ -1,4 +1,5 @@
 import * as React from "react";
+import styles from "../styles/Players.module.css";
 import { CardName, ResourceType } from "../model/types";
 import { Player } from "../model/player";
 import { GameBlock } from "./common";
@@ -39,7 +40,7 @@ const PlayerStatus: React.FC<{
 }> = ({ player, isViewer, isActivePlayer }) => {
   player = Player.fromJSON(player);
   return (
-    <div>
+    <div className={styles.status_box}>
       <h3>
         {player.name} {isViewer ? "(you)" : ""}{" "}
         {isActivePlayer ? "[active]" : ""}

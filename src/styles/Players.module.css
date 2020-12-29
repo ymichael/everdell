@@ -1,0 +1,6 @@
+.status_box {
+  height: 100px;
+  border: solid 1px black;
+  display: flex;
+  margin: 5px 0;
+}

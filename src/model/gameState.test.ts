@@ -1,6 +1,12 @@
 import expect from "expect.js";
 import { GameState } from "./gameState";
-import { CardName, GameInput, GameInputType, LocationName } from "./types";
+import {
+  CardName,
+  GameInput,
+  GameInputType,
+  LocationName,
+  EventName,
+} from "./types";
 import { testInitialGameState } from "./testHelpers";
 
 describe("GameState", () => {
@@ -71,7 +77,6 @@ describe("GameState", () => {
     });
   });
   describe("visiting destination cards", () => {
-    const foo = "abc";
     it("should handle visit destination card", () => {
       // player1 is the active player
       const player1 = gameState.players[0];
@@ -83,6 +88,7 @@ describe("GameState", () => {
       player2.playedCards[CardName.INN] = [{}];
       player2.playedCards[CardName.POST_OFFICE] = [{}];
       player2.playedCards[CardName.FARM] = [{}];
+      player2.playedCards[CardName.LOOKOUT] = [{}];
 
       expect(player1.numAvailableWorkers).to.be(2);
       expect(player2.numAvailableWorkers).to.be(2);
@@ -109,7 +115,68 @@ describe("GameState", () => {
       // player1 cannot play another worker on lookout since it's occupied
       expect(() => {
         gameState.handleVisitDestinationCardGameInput(gameInput as any);
-      }).to.throwException(/no open spaces/i);
+      }).to.throwException(/open space/i);
+
+      // player1 cannot play on a closed location of player2
+      gameInput = {
+        inputType: GameInputType.VISIT_DESTINATION_CARD as const,
+        playerId: player2.playerId,
+        card: CardName.LOOKOUT,
+        clientOptions: {
+          location: LocationName.BASIC_ONE_BERRY,
+        },
+      };
+
+      expect(() => {
+        gameState.handleVisitDestinationCardGameInput(gameInput as any);
+      }).to.throwException(/Cannot place worker/i);
+
+      // player1 can play on an open location of player2
+      gameInput = {
+        inputType: GameInputType.VISIT_DESTINATION_CARD as const,
+        playerId: player2.playerId,
+        card: CardName.INN,
+      };
+
+      // TODO: bring this test back when open destinations are implemented
+      //gameState.handleVisitDestinationCardGameInput(gameInput as any);
+      //expect(player1.numAvailableWorkers).to.be(0);
+    });
+  });
+  describe("claiming events", () => {
+    it("claim 4 production tags events", () => {
+      // player1 is the active player
+      const player1 = gameState.players[0];
+      const player2 = gameState.players[1];
+
+      player1.playedCards[CardName.MINE] = [{}, {}];
+      player1.playedCards[CardName.FARM] = [{}, {}];
+
+      player2.playedCards[CardName.MINE] = [{}, {}];
+      player2.playedCards[CardName.FARM] = [{}, {}];
+
+      expect(player1.numAvailableWorkers).to.be(2);
+      expect(player2.numAvailableWorkers).to.be(2);
+
+      // player1 should be able to claim event
+      let gameInput: GameInput = {
+        inputType: GameInputType.CLAIM_EVENT as const,
+        event: EventName.BASIC_FOUR_PRODUCTION_TAGS,
+      };
+
+      gameState.handleClaimEventGameInput(gameInput);
+
+      expect(player1.numAvailableWorkers).to.be(1);
+      expect(
+        !!player1.claimedEvents[EventName.BASIC_FOUR_PRODUCTION_TAGS]
+      ).to.be(true);
+
+      // player2 should not be able to claim event
+      gameState.nextPlayer();
+
+      expect(() => {
+        gameState.handleClaimEventGameInput(gameInput as any);
+      }).to.throwException(/cannot play/i);
     });
   });
 });

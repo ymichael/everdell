@@ -5,7 +5,7 @@ import { FormikProps, Formik, Form, Field, FieldArray, useField } from "formik";
 
 import styles from "../styles/GameInputBox.module.css";
 import { GameState } from "../model/gameState";
-import { GameInputType, GameInput } from "../model/types";
+import { GameInputType, GameInput, CardName } from "../model/types";
 import { Player } from "../model/player";
 import { GameBlock } from "./common";
 import Card from "./Card";
@@ -37,13 +37,21 @@ const GameInputPlayCardSelector = ({
 }) => {
   const [field, meta, helpers] = useField("gameInput");
   return (
-    <div role="group" className={styles.selector}>
-      <p>Choose a card to play:</p>
-      <div className={styles.play_card_list}>
-        {gameInputs.map((gameInput, idx) => {
-          const isSelected = isEqual(meta.value, gameInput);
-          return (
-            gameInput.inputType === GameInputType.PLAY_CARD && (
+    <div className={styles.selector}>
+      <div role="group">
+        <p>Choose a card to play:</p>
+        <div className={styles.play_card_list}>
+          {gameInputs.map((gameInput, idx) => {
+            if (gameInput.inputType !== GameInputType.PLAY_CARD) {
+              return <></>;
+            }
+            const isSelected =
+              meta.value &&
+              meta.value.inputType === gameInput.inputType &&
+              meta.value.card === gameInput.card &&
+              meta.value.fromMeadow === gameInput.fromMeadow &&
+              meta.value._idx === idx;
+            return (
               <div className={styles.play_card_list_item_wrapper}>
                 <div
                   key={idx}
@@ -54,7 +62,14 @@ const GameInputPlayCardSelector = ({
                     .filter(Boolean)
                     .join(" ")}
                   onClick={() => {
-                    helpers.setValue(gameInput);
+                    helpers.setValue({
+                      ...gameInput,
+                      _idx: idx,
+                      clientOptions: {},
+                      paymentOptions: {
+                        resources: {},
+                      },
+                    });
                   }}
                 >
                   <Card name={gameInput.card} />
@@ -68,10 +83,62 @@ const GameInputPlayCardSelector = ({
                   <div className={styles.card_selected_overlay_check}>✔</div>
                 )}
               </div>
-            )
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
+      {meta.value && (
+        <div>
+          <pre>{JSON.stringify(meta.value, null, 2)}</pre>
+          <p>
+            Berry:{" "}
+            <Field
+              type="number"
+              name={"gameInput.paymentOptions.resources.BERRY"}
+            />
+          </p>
+          <p>
+            Resin:{" "}
+            <Field
+              type="number"
+              name={"gameInput.paymentOptions.resources.RESIN"}
+            />
+          </p>
+          <p>
+            Pebble:{" "}
+            <Field
+              type="number"
+              name={"gameInput.paymentOptions.resources.PEBBLE"}
+            />
+          </p>
+          <p>
+            Twig:{" "}
+            <Field
+              type="number"
+              name={"gameInput.paymentOptions.resources.TWIG"}
+            />
+          </p>
+          <p>
+            <div>Card to use: </div>
+            {[
+              CardName.QUEEN,
+              CardName.INNKEEPER,
+              CardName.INN,
+              CardName.CRANE,
+              "None",
+            ].map((cardToUse) => (
+              <label>
+                <Field
+                  type="radio"
+                  name="gameInput.paymentOptions.cardToUse"
+                  value={cardToUse}
+                />
+                {cardToUse}
+              </label>
+            ))}
+          </p>
+        </div>
+      )}
     </div>
   );
 };
@@ -81,16 +148,19 @@ const GameInputDefaultSelector = ({
 }: {
   gameInputs?: GameInput[];
 }) => {
+  const [field, meta, helpers] = useField("gameInput");
   return (
     <div role="group" className={styles.selector}>
       {gameInputs.map((gameInput, idx) => {
         return (
           <div key={idx}>
             <label>
-              <Field
+              <input
                 type="radio"
                 name="gameInput"
-                value={JSON.stringify(gameInput)}
+                onChange={() => {
+                  helpers.setValue(gameInput);
+                }}
               />
               {JSON.stringify(
                 omit(gameInput, ["playerId", "inputType"]),
@@ -147,7 +217,7 @@ const GameInputBox: React.FC<any> = ({ gameId, gameState, viewingPlayer }) => {
                 gameId,
                 playerId: viewingPlayer.playerId,
                 playerSecret: viewingPlayer.playerSecret,
-                gameInput: JSON.parse(values.gameInput as any),
+                gameInput: values.gameInput,
               }),
             });
             const json = await response.json();
@@ -156,7 +226,7 @@ const GameInputBox: React.FC<any> = ({ gameId, gameState, viewingPlayer }) => {
             }
           }}
         >
-          {({ values }) => {
+          {({ values, setFieldValue }) => {
             return (
               <Form>
                 <pre>{JSON.stringify(values, null, 2)}</pre>
@@ -169,6 +239,10 @@ const GameInputBox: React.FC<any> = ({ gameId, gameState, viewingPlayer }) => {
                             type="radio"
                             name="selectedInputType"
                             value={inputType}
+                            onChange={() => {
+                              setFieldValue("selectedInputType", inputType);
+                              setFieldValue("gameInput", null);
+                            }}
                           />
                           {inputType}
                         </label>

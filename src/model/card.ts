@@ -892,11 +892,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       if (!card.isConstruction) {
         throw new Error("Can only ruin constructions");
       }
-      player
-        .removeCardFromCity(gameInput.clientOptions?.targetCard)
-        .forEach((card) => {
-          gameState.discardPile.addToStack(card);
-        });
+      player.removeCardFromCity(gameState, gameInput.clientOptions?.targetCard);
       player.gainResources(card.baseCost);
       player.drawCards(gameState, 2);
     },
@@ -1035,11 +1031,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       if (!card.isConstruction) {
         throw new Error("Can only ruin constructions");
       }
-      player
-        .removeCardFromCity(gameInput.clientOptions?.targetCard)
-        .forEach((card) => {
-          gameState.discardPile.addToStack(card);
-        });
+      player.removeCardFromCity(gameState, gameInput.clientOptions?.targetCard);
       player.gainResources(card.baseCost);
       player.gainResources(gameInput.clientOptions?.resourcesToGain);
       player.gainResources({

@@ -389,7 +389,11 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
 
       // remove cards from city
       for (const cardName in cardsToUse) {
-        player.removeCardFromCity(cardName as CardName);
+        player.removeCardFromCity(
+          gameState,
+          cardName as CardName,
+          false /* addToDiscardPile */
+        );
         (eventInfo.storedCards = eventInfo.storedCards || []).push(cardName);
       }
     },
@@ -476,11 +480,15 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         throw new Error("Cannot find event info");
       }
 
-      // remove cards from city
+      // Remove cards from city
       for (const cardName in cardsToUse) {
-        player.removeCardFromCity(cardName as CardName);
+        player.removeCardFromCity(
+          gameState,
+          cardName as CardName,
+          false /* addToDiscardPile */
+        );
       }
-      // remove berries from player's supply
+      // Remove berries from player's supply
       player.spendResources({ [ResourceType.BERRY]: 2 });
     },
   }),
@@ -788,11 +796,15 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         throw new Error("Cannot find event info");
       }
 
-      // remove cards from city
+      // Remove cards from city
       for (const cardName in cardsToUse) {
-        player.removeCardFromCity(cardName as CardName);
+        player.removeCardFromCity(
+          gameState,
+          cardName as CardName,
+          false /* addToDiscardPile */
+        );
       }
-      // remove berries from player's supply
+      // Remove berries from player's supply
       player.spendResources({ [ResourceType.BERRY]: 2 });
     },
   }),

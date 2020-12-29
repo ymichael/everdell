@@ -151,14 +151,24 @@ export class Player {
     return Math.min(numHusbands, numWifes);
   }
 
-  removeCardFromCity(cardName: CardName): CardName[] {
+  removeCardFromCity(
+    gameState: GameState,
+    cardName: CardName,
+    addToDiscardPile: boolean = true
+  ): CardName[] {
     if (this.playedCards[cardName]) {
       this.playedCards[cardName]!.pop();
     } else {
       throw new Error(`Unable to remove ${cardName}`);
     }
     // TODO: handle cards that contain other cards (eg. dungeon)
-    return [cardName];
+    const removedCards = [cardName];
+    if (addToDiscardPile) {
+      removedCards.forEach((card) => {
+        gameState.discardPile.addToStack(card);
+      });
+    }
+    return removedCards;
   }
 
   claimEvent(eventName: EventName): void {
@@ -398,8 +408,6 @@ export class Player {
     );
   }
 
-  payForCard(cardName: CardName, gameInput: GameInput): void {}
-
   isPaidResourcesValid(
     paidResources: CardCost,
     cardCost: CardCost,
@@ -485,27 +493,54 @@ export class Player {
     return outstandingOwedSum === 0;
   }
 
-  isPaymentOptionsValid(gameInput: GameInput): boolean {
-    if (gameInput.inputType !== GameInputType.PLAY_CARD) {
-      throw new Error("Invalid input type");
-    }
+  payForCard(
+    gameState: GameState,
+    gameInput: GameInput & { inputType: GameInputType.PLAY_CARD }
+  ): void {
     if (!gameInput.paymentOptions || !gameInput.paymentOptions.resources) {
       throw new Error("Invalid input");
     }
-    // Validate if player has resources specified by payment options
-    (Object.entries(gameInput.paymentOptions.resources) as [
-      ResourceType,
-      number
-    ][]).forEach(([resourceType, count]) => {
-      if (this.getNumResource(resourceType) < count) {
-        throw new Error(`Can't spend ${count} ${resourceType}`);
+    const paymentOptions = gameInput.paymentOptions;
+    const paymentResources = paymentOptions.resources;
+
+    this.spendResources(paymentResources);
+    if (paymentOptions.cardToDungeon) {
+    } else if (paymentOptions.cardToUse) {
+      switch (paymentOptions.cardToUse) {
+        case CardName.CRANE:
+          break;
+        case CardName.QUEEN:
+          break;
+        case CardName.INN:
+          break;
+        case CardName.INNKEEPER:
+          break;
+        default:
+          throw new Error(`Unexpected card: ${paymentOptions.cardToUse}`);
       }
-    });
+    }
+  }
+
+  isPaymentOptionsValid(
+    gameInput: GameInput & { inputType: GameInputType.PLAY_CARD }
+  ): boolean {
+    if (!gameInput.paymentOptions || !gameInput.paymentOptions.resources) {
+      throw new Error("Invalid input");
+    }
+    const paymentOptions = gameInput.paymentOptions;
+    const paymentResources = paymentOptions.resources;
+
+    // Validate if player has resources specified by payment options
+    (Object.entries(paymentResources) as [ResourceType, number][]).forEach(
+      ([resourceType, count]) => {
+        if (this.getNumResource(resourceType) < count) {
+          throw new Error(`Can't spend ${count} ${resourceType}`);
+        }
+      }
+    );
 
     // Validate if payment options are valid for the card
     const cardToPlay = Card.fromName(gameInput.card);
-    const paymentOptions = gameInput.paymentOptions;
-    const paymentResources = paymentOptions.resources;
     if (paymentOptions.cardToDungeon) {
       if (!this.canInvokeDungeon()) {
         throw new Error("Invalid paymentOptions: cannot use dungeon");
@@ -526,52 +561,51 @@ export class Player {
           `Invalid paymentOptions: cannot use ${paymentOptions.cardToUse}`
         );
       }
-      if (paymentOptions.cardToUse === CardName.CRANE) {
-        if (!cardToPlay.isConstruction) {
-          throw new Error(
-            `Invalid paymentOptions: Cannot use Crane on ${cardToPlay.name}`
+      switch (paymentOptions.cardToUse) {
+        case CardName.CRANE:
+          if (!cardToPlay.isConstruction) {
+            throw new Error(
+              `Invalid paymentOptions: Cannot use Crane on ${cardToPlay.name}`
+            );
+          }
+          return this.isPaidResourcesValid(
+            paymentResources,
+            cardToPlay.baseCost,
+            "ANY"
           );
-        }
-        return this.isPaidResourcesValid(
-          paymentResources,
-          cardToPlay.baseCost,
-          "ANY"
-        );
-      } else if (paymentOptions.cardToUse === CardName.INNKEEPER) {
-        if (!cardToPlay.isCritter) {
-          throw new Error(
-            `Invalid paymentOptions: Cannot use Innkeeper on ${cardToPlay.name}`
+        case CardName.QUEEN:
+          if (cardToPlay.baseVP > 3) {
+            throw new Error(
+              `Invalid paymentOptions: Cannot use Queen to play ${cardToPlay.name}`
+            );
+          }
+          return true;
+        case CardName.INN:
+          // TODO check if we can place a worker here
+          if (!gameInput.fromMeadow) {
+            throw new Error(
+              `Invalid paymentOptions: Cannot use Inn on non-meadow card`
+            );
+          }
+          return this.isPaidResourcesValid(
+            paymentResources,
+            cardToPlay.baseCost,
+            "ANY"
           );
-        }
-        return this.isPaidResourcesValid(
-          paymentResources,
-          cardToPlay.baseCost,
-          ResourceType.BERRY
-        );
-      } else if (paymentOptions.cardToUse === CardName.INN) {
-        // TODO check if we can place a worker here
-        if (!gameInput.fromMeadow) {
-          throw new Error(
-            `Invalid paymentOptions: Cannot use Inn on non-meadow card`
+        case CardName.INNKEEPER:
+          if (!cardToPlay.isCritter) {
+            throw new Error(
+              `Invalid paymentOptions: Cannot use Innkeeper on ${cardToPlay.name}`
+            );
+          }
+          return this.isPaidResourcesValid(
+            paymentResources,
+            cardToPlay.baseCost,
+            ResourceType.BERRY
           );
-        }
-        return this.isPaidResourcesValid(
-          paymentResources,
-          cardToPlay.baseCost,
-          "ANY"
-        );
-      } else if (paymentOptions.cardToUse === CardName.QUEEN) {
-        // TODO check if we can place a worker here
-        if (cardToPlay.baseVP > 3) {
-          throw new Error(
-            `Invalid paymentOptions: Cannot use Queen to play ${cardToPlay.name}`
-          );
-        }
-        return true;
-      } else {
-        throw new Error(
-          `Unexpected paymentOptions.cardToUse: ${paymentOptions.cardToUse}`
-        );
+
+        default:
+          throw new Error(`Unexpected card: ${paymentOptions.cardToUse}`);
       }
     }
     return this.isPaidResourcesValid(paymentResources, cardToPlay.baseCost);

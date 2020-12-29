@@ -6,9 +6,12 @@ import { testInitialGameState } from "./testHelpers";
 import { sumResources } from "./gameStatePlayHelpers";
 import { ResourceType, CardName, GameInput, GameInputType } from "./types";
 
-const playCardInput = (card: CardName, overrides: any = {}): GameInput => {
+const playCardInput = (
+  card: CardName,
+  overrides: any = {}
+): GameInput & { inputType: GameInputType.PLAY_CARD } => {
   return {
-    inputType: GameInputType.PLAY_CARD,
+    inputType: GameInputType.PLAY_CARD as const,
     card,
     fromMeadow: false,
     ...overrides,

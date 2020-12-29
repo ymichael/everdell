@@ -331,3 +331,7 @@ export type PlayedCardInfo = {
   // dungeon and certain events
   pairedCards?: string[];
 };
+
+export type PlayerIdsToAvailableDestinationCards = {
+  [playerId: string]: CardName[];
+};

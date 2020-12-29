@@ -9,6 +9,7 @@ import {
   LocationNameToPlayerIds,
   EventNameToPlayerId,
   PlayerIdsToAvailableDestinationCards,
+  ResourceType,
 } from "./types";
 import { Player } from "./player";
 import { Card } from "./card";
@@ -17,6 +18,7 @@ import { Location, initialLocationsMap } from "./location";
 import { Event, initialEventMap } from "./event";
 import { initialDeck } from "./deck";
 import cloneDeep from "lodash/cloneDeep";
+import findIndex from "lodash/findIndex";
 
 const MEADOW_SIZE = 8;
 const STARTING_PLAYER_HAND_SIZE = 5;
@@ -168,9 +170,75 @@ export class GameState {
     gameInput: GameInput & { inputType: GameInputType.CLAIM_EVENT }
   ): void {}
 
-  private handleVisitDestinationCardGameInput(
+  public handleVisitDestinationCardGameInput(
     gameInput: GameInput & { inputType: GameInputType.VISIT_DESTINATION_CARD }
-  ): void {}
+  ): void {
+    const card = Card.fromName(gameInput.card);
+    const cardOwner = this.getPlayer(gameInput.playerId);
+    const activePlayer = this.getActivePlayer();
+    const activePlayerOwnsCard = cardOwner.playerId === activePlayer.playerId;
+
+    if (!card) {
+      throw new Error("Invalid Card");
+    }
+
+    if (activePlayer.numAvailableWorkers < 1) {
+      throw new Error("Not enough workers");
+    }
+
+    let availableDestinationCards: CardName[] = [];
+    if (activePlayerOwnsCard) {
+      availableDestinationCards = activePlayer.getAllAvailableDestinationCards();
+    } else {
+      availableDestinationCards = cardOwner.getAvailableOpenDestinationCards();
+    }
+
+    /*if (findIndex(availableDestinationCards, card.name) < 0) {
+      console.log(card.name);
+      console.log(availableDestinationCards);
+      throw new Error("Card is not playable");
+    }*/
+
+    // check that player can place worker on this card + card is still playable
+    const cardOwnerPlayedCards = cardOwner.playedCards;
+    const cardInfos = cardOwnerPlayedCards[card.name as CardName];
+
+    if (!cardInfos || cardInfos.length < 1) {
+      throw new Error("No card info for card");
+    }
+
+    if (
+      !cardInfos?.some(
+        (playedCard) =>
+          (playedCard.workers ? playedCard.workers.length : []) <
+          (playedCard.maxWorkers ? playedCard.maxWorkers : 1)
+      )
+    ) {
+      throw new Error("No open spaces on specified card");
+    }
+
+    // take card's effect
+    card.play(this, gameInput);
+
+    // if card isn't owned by active player, pay the other player a VP
+    if (!activePlayerOwnsCard) {
+      cardOwner.gainResources({ [ResourceType.VP]: 1 });
+    }
+
+    // put the worker on the card -- (1) update card info and (2) subtract worker
+    for (let x = 0; x < cardInfos.length; x++) {
+      const cardInfo = cardInfos[x];
+      const workers = cardInfo.workers || [];
+      const maxWorkers = cardInfo.maxWorkers || 1;
+      if (workers.length < maxWorkers) {
+        const activePlayerId = activePlayer.playerId;
+        cardInfo.workers = cardInfo.workers || [];
+        cardInfo.workers.push(activePlayerId);
+        break;
+      }
+    }
+    activePlayer.numAvailableWorkers--;
+  }
 
   next(gameInput: GameInput): GameState {
     const nextGameState = this.clone();
@@ -185,6 +253,7 @@ export class GameState {
         nextGameState.handleMultiStepGameInput(gameInput);
         break;
       case GameInputType.VISIT_DESTINATION_CARD:
+        nextGameState.handleVisitDestinationCardGameInput(gameInput);
         break;
       default:
         throw new Error(`Unhandled game input: ${JSON.stringify(gameInput)}`);

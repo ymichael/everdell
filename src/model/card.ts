@@ -22,7 +22,6 @@ import {
   sumResources,
   getPointsPerRarityLabel,
 } from "./gameStatePlayHelpers";
-import find from "lodash/findIndex";
 
 export class Card implements GameStatePlayable {
   readonly playInner: GameStatePlayFn | undefined;
@@ -145,6 +144,8 @@ export class Card implements GameStatePlayable {
         this.playCardEffects(gameState, gameInput);
       }
     } else if (gameInput.inputType === GameInputType.MULTI_STEP) {
+      this.playCardEffects(gameState, gameInput);
+    } else if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
       this.playCardEffects(gameState, gameInput);
     } else {
       throw new Error("Invalid game input type");

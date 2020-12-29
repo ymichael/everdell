@@ -15,7 +15,7 @@ export const CardTypeSymbol = ({ cardType }: { cardType: CardType }) => {
       ) : cardType === CardType.TRAVELER ? (
         <Image src="/images/traveler.png" layout="fill" />
       ) : (
-        <></>
+        <>{cardType}</>
       )}
     </>
   );
@@ -37,7 +37,7 @@ export const ResourceTypeIcon = ({
       ) : resourceType === ResourceType.RESIN ? (
         <Image src="/images/resin.png" layout="fill" />
       ) : (
-        <></>
+        <>{resourceType}</>
       )}
     </>
   );

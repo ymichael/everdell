@@ -3,6 +3,7 @@ import styles from "../styles/Players.module.css";
 import { CardName, ResourceType } from "../model/types";
 import { Player } from "../model/player";
 import { GameBlock } from "./common";
+import { CardTypeSymbol, ResourceTypeIcon } from "./assets";
 
 export const Players = ({
   viewingPlayer,
@@ -23,6 +24,7 @@ export const Players = ({
         .map((player: any) => {
           return (
             <PlayerStatus
+              key={player.playerId}
               player={player}
               isViewer={false}
               isActivePlayer={player.playerId === gameState.activePlayerId}
@@ -41,44 +43,30 @@ const PlayerStatus: React.FC<{
   player = Player.fromJSON(player);
   return (
     <div className={styles.status_box}>
-      <h3>
-        {player.name} {isViewer ? "(you)" : ""}{" "}
-        {isActivePlayer ? "[active]" : ""}
-      </h3>
-      <ul>
-        <li>numWorkers: {player.numWorkers}</li>
-        <li>numAvailableWorkers: {player.numAvailableWorkers}</li>
-      </ul>
-      {isViewer && (
-        <p>
-          <h4>Cards in hand</h4>
-          <ul>
-            {player.cardsInHand.map((cardName: CardName, idx: number) => (
-              <li key={idx}>{cardName}</li>
-            ))}
-          </ul>
-        </p>
-      )}
-      <p>
-        <h4>Resources:</h4>
-        <ul>
-          <li>
-            {ResourceType.TWIG}: {player.getNumResource(ResourceType.TWIG)}
-          </li>
-          <li>
-            {ResourceType.RESIN}: {player.getNumResource(ResourceType.RESIN)}
-          </li>
-          <li>
-            {ResourceType.BERRY}: {player.getNumResource(ResourceType.BERRY)}
-          </li>
-          <li>
-            {ResourceType.PEBBLE}: {player.getNumResource(ResourceType.PEBBLE)}
-          </li>
-          <li>
-            {ResourceType.VP}: {player.getNumResource(ResourceType.VP)}
-          </li>
-        </ul>
-      </p>
+      <div className={styles.status_box_item}>
+        <div>{player.name}</div>
+        <div>{isActivePlayer ? "[active]" : ""}</div>
+      </div>
+      <div className={styles.status_box_item}>
+        <div className={styles.status_box_item_resource_list}>
+          {[
+            ResourceType.TWIG,
+            ResourceType.RESIN,
+            ResourceType.BERRY,
+            ResourceType.PEBBLE,
+            ResourceType.VP,
+          ].map((resourceType) => (
+            <div className={styles.status_box_item_resource}>
+              <div className={styles.status_box_item_resource_icon}>
+                <ResourceTypeIcon resourceType={resourceType} />
+              </div>
+              <div className={styles.status_box_item_resource_count}>
+                {player.getNumResource(resourceType)}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };

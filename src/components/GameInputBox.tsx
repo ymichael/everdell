@@ -5,15 +5,15 @@ import { GameState } from "../model/gameState";
 import { GameInputType, GameInput } from "../model/types";
 import { Formik, Form, Field, FieldArray } from "formik";
 import { Player } from "../model/player";
+import { GameBlock } from "./common";
 
 const GameInputBoxWaiting: React.FC<{ activePlayer: Player }> = ({
   activePlayer,
 }) => {
   return (
-    <div>
-      <h3>Game Input Box:</h3>
+    <GameBlock title={"Game Input"}>
       <p>Waiting for {activePlayer.name}</p>
-    </div>
+    </GameBlock>
   );
 };
 
@@ -50,8 +50,7 @@ const GameInputBox: React.FC<any> = ({ gameId, gameState, viewingPlayer }) => {
   );
 
   return (
-    <div>
-      <h3>Game Input Box:</h3>
+    <GameBlock title={"Game Input"}>
       <>
         <p>Perform an action:</p>
         <Formik
@@ -132,7 +131,7 @@ const GameInputBox: React.FC<any> = ({ gameId, gameState, viewingPlayer }) => {
           }}
         />
       </>
-    </div>
+    </GameBlock>
   );
 };
 

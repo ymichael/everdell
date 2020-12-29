@@ -18,7 +18,7 @@ import {
 } from "./gameState";
 import shuffle from "lodash/shuffle";
 
-export class Event {
+export class Event implements GameStatePlayable {
   readonly playInner: GameStatePlayFn | undefined;
   readonly playedCardInfoInner: (() => PlayedCardInfo) | undefined;
   readonly pointsInner:
@@ -456,8 +456,6 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     baseVP: 0,
     canPlayInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
-      const playedCards = player.playedCards;
-
       const cards = [CardName.UNDERTAKER, CardName.BARGE_TOAD];
       return (
         cards.every((card) => player.hasPlayedCard(card)) &&
@@ -784,8 +782,6 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     baseVP: 0,
     canPlayInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
-      const playedCards = player.playedCards;
-
       const cards = [CardName.UNDERTAKER, CardName.BARGE_TOAD];
       return (
         cards.every((card) => player.hasPlayedCard(card)) &&

@@ -35,7 +35,7 @@ export function playSpendResourceToGetVPFactory({
 }: {
   resourceType: ResourceType;
   maxToSpend: number;
-}) {
+}): GameStatePlayFn {
   return (gameState: GameState, gameInput: GameInput) => {
     if (gameInput.inputType !== GameInputType.PLAY_CARD) {
       throw new Error("Invalid input type");

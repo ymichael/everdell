@@ -11,7 +11,6 @@ import {
 } from "./types";
 import cloneDeep from "lodash/cloneDeep";
 import { GameState } from "./gameState";
-import { Location } from "./location";
 import { Card } from "./card";
 import { Event } from "./event";
 import { generate as uuid } from "short-uuid";

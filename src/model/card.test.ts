@@ -197,7 +197,7 @@ describe("Card", () => {
         player.gainResources(card.baseCost);
         expect(player.getNumResource(ResourceType.VP)).to.be(0);
         try {
-          const nextGameState = gameState.next(gameInput);
+          gameState.next(gameInput);
           expect("Execption to be raised").to.be(null);
         } catch (e) {
           // ignore

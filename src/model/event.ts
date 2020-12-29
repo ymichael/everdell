@@ -209,6 +209,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     baseVP: 0,
     canPlayInner: (gameState: GameState, gameInput: GameInput) => {
+      return false;
+    },
+    playInner: (gameState: GameState, gameInput: GameInput) => {
       throw new Error("Not Implemented");
     },
     /*
@@ -511,6 +514,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     baseVP: 0,
     canPlayInner: (gameState: GameState, gameInput: GameInput) => {
+      return false;
+    },
+    playInner: (gameState: GameState, gameInput: GameInput) => {
       throw new Error("Not Implemented");
     },
     /*
@@ -617,6 +623,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     baseVP: 0,
     canPlayInner: (gameState: GameState, gameInput: GameInput) => {
+      return false;
       throw new Error("Not Implemented");
     },
 

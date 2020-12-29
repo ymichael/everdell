@@ -109,8 +109,8 @@ export class Player {
     }
     let didOccupy = false;
     (this.playedCards[card.name] || []).forEach((playedCardInfo) => {
-      if (!didOccupy && !playedCardInfo.isOccupied) {
-        playedCardInfo.isOccupied = true;
+      if (!didOccupy && !playedCardInfo.usedForCritter) {
+        playedCardInfo.usedForCritter = true;
         didOccupy = true;
       }
     });
@@ -293,10 +293,12 @@ export class Player {
     });
   }
 
-  hasUnoccupiedConstruction(cardName: CardName): boolean {
+  hasUnusedByCritterConstruction(cardName: CardName): boolean {
     return !!(
       Card.fromName(cardName).isConstruction &&
-      this.playedCards[cardName]?.some((playedCard) => !playedCard.isOccupied)
+      this.playedCards[cardName]?.some(
+        (playedCard) => !playedCard.usedForCritter
+      )
     );
   }
 
@@ -360,12 +362,12 @@ export class Player {
 
     // Check if you have the associated construction if card is a critter
     if (card.isCritter) {
-      if (this.hasUnoccupiedConstruction(CardName.EVERTREE)) {
+      if (this.hasUnusedByCritterConstruction(CardName.EVERTREE)) {
         return true;
       }
       if (
         card.associatedCard &&
-        this.hasUnoccupiedConstruction(card.associatedCard)
+        this.hasUnusedByCritterConstruction(card.associatedCard)
       ) {
         return true;
       }

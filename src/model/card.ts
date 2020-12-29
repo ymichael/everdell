@@ -84,7 +84,7 @@ export class Card implements GameStatePlayable {
   getPlayedCardInfo(): PlayedCardInfo {
     const ret: PlayedCardInfo = {};
     if (this.isConstruction) {
-      ret.isOccupied = false;
+      ret.usedForCritter = false;
     }
     if (this.cardType == CardType.DESTINATION) {
       ret.workers = [];

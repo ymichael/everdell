@@ -318,7 +318,7 @@ export type EventNameToPlayerId = Partial<
 
 export type PlayedCardInfo = {
   // constructions
-  isOccupied?: boolean;
+  usedForCritter?: boolean;
 
   // clocktower, storehouse
   resources?: {

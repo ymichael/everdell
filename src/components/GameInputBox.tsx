@@ -52,7 +52,7 @@ const GameInputPlayCardSelector = ({
               meta.value.fromMeadow === gameInput.fromMeadow &&
               meta.value._idx === idx;
             return (
-              <div className={styles.play_card_list_item_wrapper}>
+              <div key={idx} className={styles.play_card_list_item_wrapper}>
                 <div
                   key={idx}
                   className={[
@@ -118,7 +118,7 @@ const GameInputPlayCardSelector = ({
               name={"gameInput.paymentOptions.resources.TWIG"}
             />
           </p>
-          <p>
+          <div>
             <div>Card to use: </div>
             {[
               CardName.QUEEN,
@@ -126,8 +126,8 @@ const GameInputPlayCardSelector = ({
               CardName.INN,
               CardName.CRANE,
               "None",
-            ].map((cardToUse) => (
-              <label>
+            ].map((cardToUse, idx) => (
+              <label key={idx}>
                 <Field
                   type="radio"
                   name="gameInput.paymentOptions.cardToUse"
@@ -136,7 +136,7 @@ const GameInputPlayCardSelector = ({
                 {cardToUse}
               </label>
             ))}
-          </p>
+          </div>
         </div>
       )}
     </div>

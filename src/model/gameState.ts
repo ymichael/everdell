@@ -8,6 +8,7 @@ import {
   LocationName,
   LocationNameToPlayerIds,
   EventNameToPlayerId,
+  PlayerIdsToAvailableDestinationCards,
 } from "./types";
 import { Player } from "./player";
 import { Card } from "./card";
@@ -267,26 +268,40 @@ export class GameState {
   };
 
   private getAvailableDestinationCardGameInputs = (): GameInput[] => {
-    let availableDestinationCards: CardName[] = [];
+    let destinationCardsToPlayers: PlayerIdsToAvailableDestinationCards = {};
+
     // get open destination cards of other players
     this.players.forEach((player) => {
-      availableDestinationCards.push(
-        ...player.getAvailableOpenDestinationCards()
-      );
+      let availableDestinationCards: CardName[] = player.getAvailableOpenDestinationCards();
+
+      const playerId = player.playerId;
+
+      destinationCardsToPlayers[playerId] = availableDestinationCards;
     });
 
     const activePlayer = this.getActivePlayer();
+    const activePlayerId: string = this.activePlayerId;
     let availableClosedDestinationCards = activePlayer.getAvailableClosedDestinationCards();
+    destinationCardsToPlayers[activePlayerId].push(
+      ...availableClosedDestinationCards
+    );
 
     // create the game inputs for these cards
-    /*return keys.map((cardName) => {
-      return {
-        inputType: GameInputType.VISIT_DESTINATION_CARD as const,
-        playerId: this.activePlayerId,
-        card: cardName,
-      }*/
-    //})
-    return [];
+    let gameInputs: GameInput[] = [];
+    let playerIds = Object.keys(destinationCardsToPlayers);
+
+    playerIds.forEach((player) => {
+      let cards = destinationCardsToPlayers[player];
+      cards.forEach((cardName) => {
+        gameInputs.push({
+          inputType: GameInputType.VISIT_DESTINATION_CARD as const,
+          playerId: this.activePlayerId,
+          card: cardName as CardName,
+        });
+      });
+    });
+
+    return gameInputs;
   };
 
   getPossibleGameInputs(): GameInput[] {
@@ -312,7 +327,7 @@ export class GameState {
 
       possibleGameInputs.push(...this.getEligibleEventGameInputs());
 
-      //possibleGameInputs.push(...this.getAvailableDestinationCardGameInputs());
+      possibleGameInputs.push(...this.getAvailableDestinationCardGameInputs());
     }
 
     possibleGameInputs.push(

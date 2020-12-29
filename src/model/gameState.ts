@@ -164,6 +164,15 @@ export class GameState {
     }
   }
 
+  // TODO: implement
+  private handleClaimEventGameInput(
+    gameInput: GameInput & { inputType: GameInputType.CLAIM_EVENT }
+  ): void {}
+
+  private handleVisitDestinationCardGameInput(
+    gameInput: GameInput & { inputType: GameInputType.VISIT_DESTINATION_CARD }
+  ): void {}
+
   next(gameInput: GameInput): GameState {
     const nextGameState = this.clone();
     switch (gameInput.inputType) {

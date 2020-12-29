@@ -96,65 +96,6 @@ export class Event implements GameStatePlayable {
     return this.playedEventInfoInner ? this.playedEventInfoInner() : {};
   }
 
-  /*
-  getplayedEventInfo(): playedEventInfo {
-    const ret: playedEventInfo = {};
-    if (this.isConstruction) {
-      ret.isOccupied = false;
-    }
-    if (this.cardType == CardType.DESTINATION) {
-      ret.workers = [];
-      ret.maxWorkers = 1;
-    }
-    return {
-      ...ret,
-      ...(this.playedEventInfoInner ? this.playedEventInfoInner() : {}),
-    };
-  }
-
-
-
-  play(gameState: GameState, gameInput: GameInput): void {
-    if (gameInput.inputType !== GameInputType.PLAY_CARD) {
-      throw new Error("Invalid game input type");
-    }
-    const player = gameState.getActivePlayer();
-    if (this.name == CardName.FOOL) {
-      if (gameInput.clientOptions?.targetPlayerId) {
-        gameState
-          .getPlayer(gameInput.clientOptions?.targetPlayerId)
-          .addToCity(this.name);
-      } else {
-        throw new Error("Invalid input");
-      }
-    } else {
-      player.addToCity(this.name);
-    }
-    if (
-      this.cardType === CardType.PRODUCTION ||
-      this.cardType === CardType.TRAVELER
-    ) {
-      this.playCardEffects(gameState, gameInput);
-    }
-  }
-
-  playCardEffects(gameState: GameState, gameInput: GameInput): void {
-    if (this.playInner) {
-      this.playInner(gameState, gameInput);
-    }
-  }
-
-  getPoints(gameState: GameState, playerId: string): number {
-    return (
-      this.baseVP +
-      (this.pointsInner ? this.pointsInner(gameState, playerId) : 0)
-    );
-  }
-
-
-
-  */
-
   static fromName(name: EventName): Event {
     return EVENT_REGISTRY[name];
   }

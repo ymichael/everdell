@@ -108,9 +108,6 @@ export class GameState {
   ): void {
     const card = Card.fromName(gameInput.card);
     const player = this.getActivePlayer();
-    if (!card) {
-      throw new Error("Invalid card");
-    }
     if (!card.canPlay(this, gameInput)) {
       throw new Error("Cannot take action");
     }
@@ -131,9 +128,6 @@ export class GameState {
     gameInput: GameInput & { inputType: GameInputType.PLACE_WORKER }
   ): void {
     const location = Location.fromName(gameInput.location);
-    if (!location) {
-      throw new Error("Invalid location");
-    }
     if (!location.canPlay(this, gameInput)) {
       throw new Error("Cannot take action");
     }

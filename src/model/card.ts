@@ -165,6 +165,9 @@ export class Card implements GameStatePlayable {
   }
 
   static fromName(name: CardName): Card {
+    if (!CARD_REGISTRY[name]) {
+      throw new Error(`Invalid Card name: ${name}`);
+    }
     return CARD_REGISTRY[name];
   }
 }

@@ -34,7 +34,7 @@ describe("Card", () => {
     });
   });
 
-  describe.only("Open / closed destinations", () => {
+  describe("Open / closed destinations", () => {
     it("Inn should be marked as an open destination", () => {
       const card = Card.fromName(CardName.INN);
       expect(card.cardType).to.be(CardType.DESTINATION);

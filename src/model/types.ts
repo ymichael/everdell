@@ -163,10 +163,12 @@ export type GameInputSimple =
       paymentOptions?: {
         cardToDungeon?: CardName;
 
+        useAssociatedCard?: boolean;
+
         // Eg crane, innkeeper, queen
         cardToUse?: CardName;
 
-        resources?: {
+        resources: {
           [ResourceType.TWIG]?: number;
           [ResourceType.BERRY]?: number;
           [ResourceType.PEBBLE]?: number;

@@ -368,92 +368,161 @@ export class Player {
       return true;
     }
 
-    const baseCost = {
-      [ResourceType.TWIG]: card.baseCost[ResourceType.TWIG] || 0,
-      [ResourceType.BERRY]: card.baseCost[ResourceType.BERRY] || 0,
-      [ResourceType.PEBBLE]: card.baseCost[ResourceType.PEBBLE] || 0,
-      [ResourceType.RESIN]: card.baseCost[ResourceType.RESIN] || 0,
-    };
-
     // Innkeeper (3 berries less)
     if (
-      baseCost[ResourceType.BERRY] &&
+      card.baseCost[ResourceType.BERRY] &&
       card.isCritter &&
-      this.hasPlayedCard(CardName.INNKEEPER)
+      this.hasPlayedCard(CardName.INNKEEPER) &&
+      this.isPaidResourcesValid(
+        this.resources,
+        card.baseCost,
+        ResourceType.BERRY,
+        false
+      )
     ) {
-      baseCost[ResourceType.BERRY] -= Math.min(3, baseCost[ResourceType.BERRY]);
+      return true;
     }
+    const wildDiscount =
+      // Dungeon
+      this.canInvokeDungeon() ||
+      // Inn
+      (isMeadowCard && this.canPlaceWorkerOnCard(CardName.INN)) ||
+      // Crane
+      (card.isConstruction && this.hasPlayedCard(CardName.CRANE));
+    return this.isPaidResourcesValid(
+      this.resources,
+      card.baseCost,
+      wildDiscount ? "ANY" : null,
+      false
+    );
+  }
 
+  payForCard(cardName: CardName, gameInput: GameInput): void {}
+
+  isPaidResourcesValid(
+    paidResources: CardCost,
+    cardCost: CardCost,
+    // Discounts are exclusive so we use a single argument to represent them
+    discount: ResourceType.BERRY | "ANY" | null = null,
+    errorIfOverpay: boolean = true
+  ): boolean {
+    const needToPay = {
+      [ResourceType.TWIG]: cardCost[ResourceType.TWIG] || 0,
+      [ResourceType.BERRY]: cardCost[ResourceType.BERRY] || 0,
+      [ResourceType.PEBBLE]: cardCost[ResourceType.PEBBLE] || 0,
+      [ResourceType.RESIN]: cardCost[ResourceType.RESIN] || 0,
+    };
+    const payingWith = {
+      [ResourceType.TWIG]: paidResources[ResourceType.TWIG] || 0,
+      [ResourceType.BERRY]: paidResources[ResourceType.BERRY] || 0,
+      [ResourceType.PEBBLE]: paidResources[ResourceType.PEBBLE] || 0,
+      [ResourceType.RESIN]: paidResources[ResourceType.RESIN] || 0,
+    };
     const outstandingOwed = {
       [ResourceType.TWIG]: 0,
       [ResourceType.BERRY]: 0,
       [ResourceType.PEBBLE]: 0,
       [ResourceType.RESIN]: 0,
     };
-    const remainingResources = {
-      [ResourceType.TWIG]: this.resources[ResourceType.TWIG],
-      [ResourceType.BERRY]: this.resources[ResourceType.BERRY],
-      [ResourceType.PEBBLE]: this.resources[ResourceType.PEBBLE],
-      [ResourceType.RESIN]: this.resources[ResourceType.RESIN],
-    };
-
-    (Object.entries(baseCost) as [keyof CardCost, number][]).forEach(
+    (Object.entries(needToPay) as [keyof CardCost, number][]).forEach(
       ([resourceType, count]) => {
-        if (count <= remainingResources[resourceType]) {
-          remainingResources[resourceType] -= count;
+        // Berry discount
+        if (discount === ResourceType.BERRY && discount === resourceType) {
+          count = Math.max(count - 3, 0);
+        }
+        if (count <= payingWith[resourceType]) {
+          payingWith[resourceType] -= count;
         } else {
-          count -= remainingResources[resourceType];
-          remainingResources[resourceType] = 0;
+          count -= payingWith[resourceType];
+          payingWith[resourceType] = 0;
           outstandingOwed[resourceType] += count;
         }
       }
     );
 
-    // Don't owe anything
-    if (Object.values(outstandingOwed).every((count) => count === 0)) {
-      return true;
-    }
-
     const outstandingOwedSum = sumResources(outstandingOwed);
-
-    // Inn (3 less if from the meadow)
-    // TODO need to check other players!!
-    if (isMeadowCard && this.canPlaceWorkerOnCard(CardName.INN)) {
-      if (outstandingOwedSum <= 3) {
-        return true;
-      }
-    }
-
-    // Crane
-    if (card.isConstruction && this.hasPlayedCard(CardName.CRANE)) {
-      if (outstandingOwedSum <= 3) {
-        return true;
-      }
-    }
-
-    // Dungeon lets you lock up a critter to pay 3 less
-    if (this.canInvokeDungeon()) {
-      if (outstandingOwedSum <= 3) {
-        return true;
-      }
-    }
-
-    // Judge allows substitution of one resource.
-    if (
-      this.hasPlayedCard(CardName.JUDGE) &&
-      outstandingOwedSum === 1 &&
-      Object.values(remainingResources).some((x) => x > 0)
-    ) {
+    const payingWithSum = sumResources(payingWith);
+    if (discount === "ANY" && outstandingOwedSum === 3) {
       return true;
     }
 
-    return false;
+    // Can only use judge if no other discounts are in effect
+    if (!discount && this.hasPlayedCard(CardName.JUDGE)) {
+      if (outstandingOwedSum === 1) {
+        if (payingWithSum >= 1) {
+          if (errorIfOverpay && payingWithSum !== 1) {
+            throw new Error("Cannot overpay for cards");
+          }
+          return true;
+        }
+      }
+    }
+    if (payingWithSum !== 0 && errorIfOverpay) {
+      throw new Error("Cannot overpay for cards");
+    }
+    return outstandingOwedSum === 0;
   }
 
-  payForCard(cardName: CardName, gameInput: GameInput): void {
+  isPaymentOptionsValid(cardName: CardName, gameInput: GameInput): boolean {
     if (gameInput.inputType !== GameInputType.PLAY_CARD) {
       throw new Error("Invalid input type");
     }
+    if (!gameInput.paymentOptions || !gameInput.paymentOptions.resources) {
+      throw new Error("Invalid input");
+    }
+    // Validate if payment options is valid
+    const cardToPlay = Card.fromName(gameInput.card);
+    const paymentOptions = gameInput.paymentOptions;
+    const paymentResources = paymentOptions.resources;
+    if (paymentOptions.cardToDungeon) {
+      if (!this.canInvokeDungeon()) {
+        throw new Error("Invalid paymentOptions: cannot use dungeon");
+      }
+      if (!Card.fromName(paymentOptions.cardToDungeon).isCritter) {
+        throw new Error("Invalid paymentOptions: can only dungeon critter");
+      }
+    }
+    if (paymentOptions.cardToUse) {
+      const cardToUse = Card.fromName(paymentOptions.cardToUse);
+      if (!this.hasPlayedCard(paymentOptions.cardToUse)) {
+        throw new Error(
+          `Invalid paymentOptions: cannot use ${paymentOptions.cardToUse}`
+        );
+      }
+      if (paymentOptions.cardToUse === CardName.CRANE) {
+        if (!cardToPlay.isConstruction) {
+          throw new Error(
+            `Invalid paymentOptions: Cannot use Crane on ${cardToPlay.name}`
+          );
+        }
+      } else if (paymentOptions.cardToUse === CardName.INNKEEPER) {
+        if (!cardToPlay.isCritter) {
+          throw new Error(
+            `Invalid paymentOptions: Cannot use Innkeeper on ${cardToPlay.name}`
+          );
+        }
+      } else if (paymentOptions.cardToUse === CardName.INN) {
+        // TODO check if we can place a worker here
+        if (!gameInput.fromMeadow) {
+          throw new Error(
+            `Invalid paymentOptions: Cannot use Inn on non-meadow card`
+          );
+        }
+      } else if (paymentOptions.cardToUse === CardName.QUEEN) {
+        // TODO check if we can place a worker here
+        if (cardToPlay.baseVP > 3) {
+          throw new Error(
+            `Invalid paymentOptions: Cannot use Queen to play ${cardToPlay.name}`
+          );
+        }
+        return true;
+      } else {
+        throw new Error(
+          `Unexpected paymentOptions.cardToUse: ${paymentOptions.cardToUse}`
+        );
+      }
+    }
+    return false;
   }
 
   spendResources({

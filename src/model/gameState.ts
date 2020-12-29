@@ -340,7 +340,7 @@ export class GameState {
   };
 
   getPossibleGameInputs(): GameInput[] {
-    if (this.pendingGameInputs) {
+    if (this.pendingGameInputs.length !== 0) {
       return this.pendingGameInputs;
     }
 

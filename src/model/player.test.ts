@@ -4,7 +4,16 @@ import { Card } from "./card";
 import { GameState } from "./gameState";
 import { testInitialGameState } from "./testHelpers";
 import { sumResources } from "./gameStatePlayHelpers";
-import { ResourceType, CardName } from "./types";
+import { ResourceType, CardName, GameInput, GameInputType } from "./types";
+
+const playCardInput = (card: CardName, overrides: any = {}): GameInput => {
+  return {
+    inputType: GameInputType.PLAY_CARD,
+    card,
+    fromMeadow: false,
+    ...overrides,
+  };
+};
 
 describe("Player", () => {
   let gameState: GameState;
@@ -124,6 +133,160 @@ describe("Player", () => {
       expect(
         player.canAffordCard(CardName.RESIN_REFINERY, false /* isMeadow */)
       ).to.be(true);
+    });
+  });
+
+  describe("isPaymentOptionsValid", () => {
+    it("sanity checks", () => {
+      const player = gameState.getActivePlayer();
+      expect(() => {
+        player.isPaymentOptionsValid(playCardInput(CardName.FARM));
+      }).to.throwException(/invalid/i);
+      expect(() => {
+        player.isPaymentOptionsValid(
+          playCardInput(CardName.FARM, {
+            paymentOptions: {},
+          })
+        );
+      }).to.throwException(/invalid/i);
+      expect(
+        player.isPaymentOptionsValid(
+          playCardInput(CardName.FARM, {
+            paymentOptions: {
+              resources: {},
+            },
+          })
+        )
+      ).to.be(false);
+      expect(
+        player.isPaymentOptionsValid(
+          playCardInput(CardName.FARM, {
+            paymentOptions: {
+              resources: {
+                [ResourceType.TWIG]: 1,
+                [ResourceType.RESIN]: 1,
+              },
+            },
+          })
+        )
+      ).to.be(false);
+      expect(
+        player.isPaymentOptionsValid(
+          playCardInput(CardName.FARM, {
+            paymentOptions: {
+              resources: {
+                [ResourceType.TWIG]: 2,
+                [ResourceType.RESIN]: 1,
+              },
+            },
+          })
+        )
+      ).to.be(true);
+    });
+
+    it("cardToDungeon", () => {
+      const player = gameState.getActivePlayer();
+      expect(() => {
+        player.isPaymentOptionsValid(
+          playCardInput(CardName.FARM, {
+            paymentOptions: {
+              cardToDungeon: CardName.WIFE,
+              resources: {},
+            },
+          })
+        );
+      }).to.throwException(/cannot use dungeon/i);
+      player.addToCity(CardName.WIFE);
+      player.addToCity(CardName.DUNGEON);
+      expect(
+        player.isPaymentOptionsValid(
+          playCardInput(CardName.FARM, {
+            paymentOptions: {
+              resources: {},
+              cardToDungeon: CardName.WIFE,
+            },
+          })
+        )
+      ).to.be(true);
+      expect(
+        player.isPaymentOptionsValid(
+          playCardInput(CardName.KING, {
+            paymentOptions: {
+              resources: {},
+              cardToDungeon: CardName.WIFE,
+            },
+          })
+        )
+      ).to.be(false);
+    });
+
+    describe("cardToUse", () => {
+      it("invalid", () => {
+        const player = gameState.getActivePlayer();
+        expect(() => {
+          player.isPaymentOptionsValid(
+            playCardInput(CardName.FARM, {
+              paymentOptions: {
+                cardToUse: CardName.FARM,
+                resources: {},
+              },
+            })
+          );
+        }).to.throwException(/cannot use/i);
+      });
+
+      it("INNKEEPER", () => {
+        const player = gameState.getActivePlayer();
+        expect(() => {
+          player.isPaymentOptionsValid(
+            playCardInput(CardName.FARM, {
+              paymentOptions: {
+                cardToUse: CardName.INNKEEPER,
+                resources: {},
+              },
+            })
+          );
+        }).to.throwException(/cannot use innkeeper/i);
+
+        player.addToCity(CardName.INNKEEPER);
+        expect(() => {
+          player.isPaymentOptionsValid(
+            playCardInput(CardName.FARM, {
+              paymentOptions: {
+                cardToUse: CardName.INNKEEPER,
+                resources: {},
+              },
+            })
+          );
+        }).to.throwException(/cannot use innkeeper/i);
+        expect(
+          player.isPaymentOptionsValid(
+            playCardInput(CardName.HUSBAND, {
+              paymentOptions: {
+                cardToUse: CardName.INNKEEPER,
+                resources: {},
+              },
+            })
+          )
+        ).to.be(true);
+        expect(() => {
+          player.isPaymentOptionsValid(
+            playCardInput(CardName.HUSBAND, {
+              paymentOptions: {
+                cardToUse: CardName.INNKEEPER,
+                resources: {
+                  [ResourceType.BERRY]: 1,
+                },
+              },
+            })
+          );
+        }).to.throwException(/overpay/i);
+      });
+
+      // TODO
+      it("QUEEN", () => {});
+      it("CRANE", () => {});
+      it("INN", () => {});
     });
   });
 

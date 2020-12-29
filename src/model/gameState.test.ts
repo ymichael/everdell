@@ -83,6 +83,7 @@ describe("GameState", () => {
       player2.playedCards[CardName.INN] = [{}];
       player2.playedCards[CardName.POST_OFFICE] = [{}];
       player2.playedCards[CardName.FARM] = [{}];
+      player2.playedCards[CardName.LOOKOUT] = [{}];
 
       expect(player1.numAvailableWorkers).to.be(2);
       expect(player2.numAvailableWorkers).to.be(2);
@@ -109,7 +110,32 @@ describe("GameState", () => {
       // player1 cannot play another worker on lookout since it's occupied
       expect(() => {
         gameState.handleVisitDestinationCardGameInput(gameInput as any);
-      }).to.throwException(/no open spaces/i);
+      }).to.throwException(/open space/i);
+
+      // player1 cannot play on a closed location of player2
+      gameInput = {
+        inputType: GameInputType.VISIT_DESTINATION_CARD as const,
+        playerId: player2.playerId,
+        card: CardName.LOOKOUT,
+        clientOptions: {
+          location: LocationName.BASIC_ONE_BERRY,
+        },
+      };
+
+      expect(() => {
+        gameState.handleVisitDestinationCardGameInput(gameInput as any);
+      }).to.throwException(/Cannot place worker/i);
+
+      // player1 can play on an open location of player2
+      gameInput = {
+        inputType: GameInputType.VISIT_DESTINATION_CARD as const,
+        playerId: player2.playerId,
+        card: CardName.INN,
+      };
+
+      // TODO: bring this test back when open destinations are implemented
+      //gameState.handleVisitDestinationCardGameInput(gameInput as any);
+      //expect(player1.numAvailableWorkers).to.be(0);
     });
   });
 });

@@ -223,12 +223,7 @@ export class Player {
     this.forEachPlayedCard(({ cardName }) => {
       let card = Card.fromName(cardName as CardName);
       if (card.cardType === CardType.DESTINATION) {
-        let cardInfo = card.getPlayedCardInfo();
-
-        let maxWorkers = cardInfo.maxWorkers || 1;
-        let workers = cardInfo.workers || [];
-
-        if (workers.length < maxWorkers) {
+        if (this.hasSpaceOnDestinationCard(cardName)) {
           allAvailableDestinationCards.push(cardName);
         }
       }
@@ -245,12 +240,7 @@ export class Player {
     this.forEachPlayedCard(({ cardName }) => {
       let card = Card.fromName(cardName as CardName);
       if (card.cardType === CardType.DESTINATION && !card.isOpenDestination) {
-        let cardInfo = card.getPlayedCardInfo();
-
-        let maxWorkers = cardInfo.maxWorkers || 1;
-        let workers = cardInfo.workers || [];
-
-        if (workers.length < maxWorkers) {
+        if (this.hasSpaceOnDestinationCard(cardName)) {
           availableDestinationCards.push(cardName);
         }
       }
@@ -265,13 +255,7 @@ export class Player {
     let openAvailableDestinations: CardName[] = [];
 
     openDestinationCards.forEach((cardName) => {
-      let card = Card.fromName(cardName as CardName);
-      let cardInfo = card.getPlayedCardInfo();
-
-      let maxWorkers = cardInfo.maxWorkers || 1;
-      let workers = cardInfo.workers || [];
-
-      if (workers.length < maxWorkers) {
+      if (this.hasSpaceOnDestinationCard(cardName)) {
         openAvailableDestinations.push(cardName);
       }
     });
@@ -295,6 +279,18 @@ export class Player {
   hasPlayedCard(cardName: CardName): boolean {
     const playedCardInfos = this.playedCards[cardName];
     return !!playedCardInfos && playedCardInfos.length !== 0;
+  }
+
+  hasSpaceOnDestinationCard(cardName: CardName): boolean {
+    if (!this.hasPlayedCard(cardName)) {
+      return false;
+    }
+
+    return !!this.playedCards[cardName]?.some((playedCard) => {
+      const workers = playedCard.workers || [];
+      const maxWorkers = playedCard.maxWorkers || 1;
+      return workers.length < maxWorkers;
+    });
   }
 
   hasUnoccupiedConstruction(cardName: CardName): boolean {

@@ -185,44 +185,37 @@ export class GameState {
     if (activePlayerOwnsCard) {
       availableDestinationCards = activePlayer.getAllAvailableDestinationCards();
     } else {
+      if (!card.isOpenDestination) {
+        throw new Error(
+          "Cannot place worker on non-open destination owned by another player"
+        );
+      }
       availableDestinationCards = cardOwner.getAvailableOpenDestinationCards();
     }
 
-    /*if (findIndex(availableDestinationCards, card.name) < 0) {
-      console.log(card.name);
-      console.log(availableDestinationCards);
-      throw new Error("Card is not playable");
-    }*/
-
     // check that player can place worker on this card + card is still playable
-    const cardOwnerPlayedCards = cardOwner.playedCards;
-    const cardInfos = cardOwnerPlayedCards[card.name as CardName];
-
-    if (!cardInfos || cardInfos.length < 1) {
-      throw new Error("No card info for card");
+    const cardHasSpace = cardOwner.hasSpaceOnDestinationCard(gameInput.card);
+    if (!cardHasSpace) {
+      throw new Error("Card doesn't have an open space");
     }
-
-    if (
-      !cardInfos?.some(
-        (playedCard) =>
-          (playedCard.workers ? playedCard.workers.length : []) <
-          (playedCard.maxWorkers ? playedCard.maxWorkers : 1)
-      )
-    ) {
-      throw new Error("No open spaces on specified card");
-    }
-
-    // take card's effect
-    card.play(this, gameInput);
 
     // if card isn't owned by active player, pay the other player a VP
     if (!activePlayerOwnsCard) {
       cardOwner.gainResources({ [ResourceType.VP]: 1 });
     }
 
+    const playedCards = cardOwner.playedCards[gameInput.card];
+
+    if (!playedCards) {
+      throw new Error("Card owner hasn't played this card");
+    }
+
+    // take card's effect
+    card.play(this, gameInput);
+
     // put the worker on the card -- (1) update card info and (2) subtract worker
-    for (let x = 0; x < cardInfos.length; x++) {
-      const cardInfo = cardInfos[x];
+    for (let x = 0; x < playedCards.length; x++) {
+      const cardInfo = playedCards[x];
       const workers = cardInfo.workers || [];
       const maxWorkers = cardInfo.maxWorkers || 1;
       if (workers.length < maxWorkers) {

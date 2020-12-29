@@ -158,6 +158,21 @@ export type GameInputSimple =
           [ResourceType.RESIN]?: number;
         };
       };
+
+      // How to pay?
+      paymentOptions?: {
+        cardToDungeon?: CardName;
+
+        // Eg crane, innkeeper, queen
+        cardToUse?: CardName;
+
+        resources?: {
+          [ResourceType.TWIG]?: number;
+          [ResourceType.BERRY]?: number;
+          [ResourceType.PEBBLE]?: number;
+          [ResourceType.RESIN]?: number;
+        };
+      };
     }
   | {
       inputType: GameInputType.CLAIM_EVENT;

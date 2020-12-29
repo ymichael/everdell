@@ -26,7 +26,7 @@ export class Player {
   public playerId: string;
   public playedCards: Partial<Record<CardName, PlayedCardInfo[]>>;
   public cardsInHand: CardName[];
-  private resources: Record<ResourceType, number>;
+  readonly resources: Record<ResourceType, number>;
   public currentSeason: Season;
   public numWorkers: number;
   public numAvailableWorkers: number;
@@ -99,6 +99,23 @@ export class Player {
     const card = Card.fromName(cardName);
     this.playedCards[cardName] = this.playedCards[cardName] || [];
     this.playedCards[cardName]!.push(card.getPlayedCardInfo());
+  }
+
+  occupyConstruction(cardName: CardName): void {
+    const card = Card.fromName(cardName);
+    if (!card.isConstruction) {
+      throw new Error("Can only occupy construction");
+    }
+    let didOccupy = false;
+    (this.playedCards[card.name] || []).forEach((playedCardInfo) => {
+      if (!didOccupy && !playedCardInfo.isOccupied) {
+        playedCardInfo.isOccupied = true;
+        didOccupy = true;
+      }
+    });
+    if (!didOccupy) {
+      throw new Error("No unoccupied construction found");
+    }
   }
 
   canAddToCity(cardName: CardName): boolean {

@@ -107,6 +107,12 @@ export class Card implements GameStatePlayable {
         return false;
       }
       if (
+        gameInput.fromMeadow &&
+        gameState.meadowCards.indexOf(this.name) === -1
+      ) {
+        return false;
+      }
+      if (
         !gameInput.fromMeadow &&
         player.cardsInHand.indexOf(this.name) === -1
       ) {

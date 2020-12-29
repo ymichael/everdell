@@ -115,6 +115,9 @@ export class Card implements GameStatePlayable {
       ) {
         return false;
       }
+      if (this.canPlayInner && !this.canPlayInner(gameState, gameInput)) {
+        return false;
+      }
       return player.canAffordCard(this.name, gameInput.fromMeadow);
     } else if (gameInput.inputType === GameInputType.MULTI_STEP) {
       return true;
@@ -883,6 +886,18 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: true,
     associatedCard: CardName.PEDDLER,
+    canPlayInner: (gameState: GameState, gameInput: GameInput) => {
+      // Need to be able to ruin an existing construction.
+      const player = gameState.getActivePlayer();
+      let hasConstruction = false;
+      player.forEachPlayedCard(({ cardName }) => {
+        if (!hasConstruction) {
+          const card = Card.fromName(cardName);
+          hasConstruction = card.isConstruction;
+        }
+      });
+      return hasConstruction;
+    },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       if (gameInput.inputType !== GameInputType.PLAY_CARD) {
         throw new Error("Invalid input type");

@@ -56,7 +56,7 @@ const PlayerStatus: React.FC<{
             ResourceType.PEBBLE,
             ResourceType.VP,
           ].map((resourceType) => (
-            <div className={styles.status_box_item_resource}>
+            <div key={resourceType} className={styles.status_box_item_resource}>
               <div className={styles.status_box_item_resource_icon}>
                 <ResourceTypeIcon resourceType={resourceType} />
               </div>

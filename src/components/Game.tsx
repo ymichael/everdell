@@ -46,17 +46,17 @@ const Game: React.FC<{ game: any; viewingPlayer: any }> = (props) => {
       />
       <Players viewingPlayer={viewingPlayer} gameState={gameState} />
       <hr />
-      <p>
+      <div>
         <h2>DEBUG</h2>
-        <p>
+        <div>
           <h3>you</h3>
           <pre>{JSON.stringify(viewingPlayer, null, 2)}</pre>
-        </p>
-        <p>
+        </div>
+        <div>
           <h3>Game State:</h3>
           <pre>{JSON.stringify(game, null, 2)}</pre>
-        </p>
-      </p>
+        </div>
+      </div>
     </>
   );
 };

@@ -1,11 +1,14 @@
 import * as React from "react";
-
 import omit from "lodash/omit";
+import isEqual from "lodash/isEqual";
+import { FormikProps, Formik, Form, Field, FieldArray, useField } from "formik";
+
+import styles from "../styles/GameInputBox.module.css";
 import { GameState } from "../model/gameState";
 import { GameInputType, GameInput } from "../model/types";
-import { Formik, Form, Field, FieldArray } from "formik";
 import { Player } from "../model/player";
 import { GameBlock } from "./common";
+import Card from "./Card";
 
 const GameInputBoxWaiting: React.FC<{ activePlayer: Player }> = ({
   activePlayer,
@@ -25,6 +28,81 @@ const gameInputSortOrder: Record<GameInputType, number> = {
   [GameInputType.VISIT_DESTINATION_CARD]: 3,
   [GameInputType.PREPARE_FOR_SEASON]: 4,
   [GameInputType.GAME_END]: 5,
+};
+
+const GameInputPlayCardSelector = ({
+  gameInputs = [],
+}: {
+  gameInputs?: GameInput[];
+}) => {
+  const [field, meta, helpers] = useField("gameInput");
+  return (
+    <div role="group" className={styles.selector}>
+      <p>Choose a card to play:</p>
+      <div className={styles.play_card_list}>
+        {gameInputs.map((gameInput, idx) => {
+          const isSelected = isEqual(meta.value, gameInput);
+          return (
+            gameInput.inputType === GameInputType.PLAY_CARD && (
+              <div className={styles.play_card_list_item_wrapper}>
+                <div
+                  key={idx}
+                  className={[
+                    styles.play_card_list_item,
+                    isSelected && styles.play_card_list_item_selected,
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                  onClick={() => {
+                    helpers.setValue(gameInput);
+                  }}
+                >
+                  <Card name={gameInput.card} />
+                  {gameInput.fromMeadow && (
+                    <div className={styles.play_card_list_item_label}>
+                      (Meadow)
+                    </div>
+                  )}
+                </div>
+                {isSelected && (
+                  <div className={styles.card_selected_overlay_check}>✔</div>
+                )}
+              </div>
+            )
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+const GameInputDefaultSelector = ({
+  gameInputs = [],
+}: {
+  gameInputs?: GameInput[];
+}) => {
+  return (
+    <div role="group" className={styles.selector}>
+      {gameInputs.map((gameInput, idx) => {
+        return (
+          <div key={idx}>
+            <label>
+              <Field
+                type="radio"
+                name="gameInput"
+                value={JSON.stringify(gameInput)}
+              />
+              {JSON.stringify(
+                omit(gameInput, ["playerId", "inputType"]),
+                null,
+                2
+              )}
+            </label>
+          </div>
+        );
+      })}
+    </div>
+  );
 };
 
 const GameInputBox: React.FC<any> = ({ gameId, gameState, viewingPlayer }) => {
@@ -51,7 +129,7 @@ const GameInputBox: React.FC<any> = ({ gameId, gameState, viewingPlayer }) => {
 
   return (
     <GameBlock title={"Game Input"}>
-      <>
+      <div>
         <p>Perform an action:</p>
         <Formik
           initialValues={{
@@ -77,9 +155,11 @@ const GameInputBox: React.FC<any> = ({ gameId, gameState, viewingPlayer }) => {
               alert(json.error);
             }
           }}
-          render={({ values }) => {
+        >
+          {({ values }) => {
             return (
               <Form>
+                <pre>{JSON.stringify(values, null, 2)}</pre>
                 <div role="group">
                   {inputTypesOrdered.map((inputType) => {
                     return (
@@ -92,33 +172,16 @@ const GameInputBox: React.FC<any> = ({ gameId, gameState, viewingPlayer }) => {
                           />
                           {inputType}
                         </label>
-                        {inputType === values.selectedInputType && (
-                          <div role="group" style={{ padding: 20 }}>
-                            {inputTypeToInputs[inputType]?.map(
-                              (gameInput, idx) => {
-                                return (
-                                  <div key={idx}>
-                                    <label>
-                                      <Field
-                                        type="radio"
-                                        name="gameInput"
-                                        value={JSON.stringify(gameInput)}
-                                      />
-                                      {JSON.stringify(
-                                        omit(gameInput, [
-                                          "playerId",
-                                          "inputType",
-                                        ]),
-                                        null,
-                                        2
-                                      )}
-                                    </label>
-                                  </div>
-                                );
-                              }
-                            )}
-                          </div>
-                        )}
+                        {inputType === values.selectedInputType &&
+                          (inputType === GameInputType.PLAY_CARD ? (
+                            <GameInputPlayCardSelector
+                              gameInputs={inputTypeToInputs[inputType]}
+                            />
+                          ) : (
+                            <GameInputDefaultSelector
+                              gameInputs={inputTypeToInputs[inputType]}
+                            />
+                          ))}
                       </div>
                     );
                   })}
@@ -129,8 +192,8 @@ const GameInputBox: React.FC<any> = ({ gameId, gameState, viewingPlayer }) => {
               </Form>
             );
           }}
-        />
-      </>
+        </Formik>
+      </div>
     </GameBlock>
   );
 };

@@ -117,7 +117,7 @@ export class GameState {
     if (!player.isPaymentOptionsValid(gameInput)) {
       throw new Error("Invalid payment options");
     }
-
+    player.payForCard(this, gameInput);
     if (gameInput.fromMeadow) {
       this.removeCardFromMeadow(gameInput.card);
       this.replenishMeadow();

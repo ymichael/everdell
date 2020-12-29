@@ -293,7 +293,8 @@ export class Player {
   }
 
   hasPlayedCard(cardName: CardName): boolean {
-    return !!this.playedCards[cardName];
+    const playedCardInfos = this.playedCards[cardName];
+    return !!playedCardInfos && playedCardInfos.length !== 0;
   }
 
   hasUnoccupiedConstruction(cardName: CardName): boolean {
@@ -508,12 +509,16 @@ export class Player {
     } else if (paymentOptions.cardToUse) {
       switch (paymentOptions.cardToUse) {
         case CardName.CRANE:
-          break;
-        case CardName.QUEEN:
-          break;
-        case CardName.INN:
+          this.removeCardFromCity(gameState, paymentOptions.cardToUse);
           break;
         case CardName.INNKEEPER:
+          this.removeCardFromCity(gameState, paymentOptions.cardToUse);
+          break;
+        case CardName.QUEEN:
+          // TODO place worker
+          break;
+        case CardName.INN:
+          // TODO place worker
           break;
         default:
           throw new Error(`Unexpected card: ${paymentOptions.cardToUse}`);

@@ -510,4 +510,56 @@ describe("Player", () => {
       expect(availableOpenDestinationCards.length).to.be(2);
     });
   });
+
+  describe("payForCard", () => {
+    describe("cardToUse", () => {
+      it("should remove CRANE from city after using it", () => {
+        // Use crane to play farm
+        const card = Card.fromName(CardName.FARM);
+        const gameInput = playCardInput(card.name, {
+          paymentOptions: {
+            resources: {},
+            cardToUse: CardName.CRANE,
+          },
+        });
+        let player = gameState.getActivePlayer();
+
+        player.addToCity(CardName.CRANE);
+        player.cardsInHand = [card.name];
+        expect(player.hasPlayedCard(CardName.CRANE)).to.be(true);
+        expect(card.canPlay(gameState, gameInput)).to.be(true);
+        expect(player.cardsInHand).to.not.eql([]);
+        const nextGameState = gameState.next(gameInput);
+        player = nextGameState.getPlayer(player.playerId);
+
+        expect(player.cardsInHand).to.eql([]);
+        expect(player.hasPlayedCard(CardName.FARM)).to.be(true);
+        expect(player.hasPlayedCard(CardName.CRANE)).to.be(false);
+      });
+
+      it("should remove INNKEEPER from city after using it", () => {
+        // Use innkeeper to play wife
+        const card = Card.fromName(CardName.WIFE);
+        const gameInput = playCardInput(card.name, {
+          paymentOptions: {
+            resources: {},
+            cardToUse: CardName.INNKEEPER,
+          },
+        });
+        let player = gameState.getActivePlayer();
+
+        player.addToCity(CardName.INNKEEPER);
+        player.cardsInHand = [card.name];
+        expect(player.hasPlayedCard(CardName.INNKEEPER)).to.be(true);
+        expect(card.canPlay(gameState, gameInput)).to.be(true);
+        expect(player.cardsInHand).to.not.eql([]);
+        const nextGameState = gameState.next(gameInput);
+        player = nextGameState.getPlayer(player.playerId);
+
+        expect(player.cardsInHand).to.eql([]);
+        expect(player.hasPlayedCard(CardName.WIFE)).to.be(true);
+        expect(player.hasPlayedCard(CardName.INNKEEPER)).to.be(false);
+      });
+    });
+  });
 });

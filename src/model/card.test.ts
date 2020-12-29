@@ -88,6 +88,29 @@ describe("Card", () => {
         expect(nextGameState.getPlayer(player.playerId).cardsInHand).to.eql([]);
       });
 
+      it("should spend resources after playing it", () => {
+        const card = Card.fromName(CardName.FARM);
+        const gameInput = playCardInput(card.name);
+        let player = gameState.getActivePlayer();
+
+        expect(player.getNumResource(ResourceType.TWIG)).to.be(0);
+        expect(player.getNumResource(ResourceType.RESIN)).to.be(0);
+        player.gainResources(card.baseCost);
+        expect(player.getNumResource(ResourceType.TWIG)).to.be(2);
+        expect(player.getNumResource(ResourceType.RESIN)).to.be(1);
+
+        player.cardsInHand = [card.name];
+        expect(card.canPlay(gameState, gameInput)).to.be(true);
+
+        const nextGameState = gameState.next(gameInput);
+        player = nextGameState.getPlayer(player.playerId);
+
+        expect(player.cardsInHand).to.eql([]);
+        expect(player.hasPlayedCard(CardName.FARM)).to.be(true);
+        expect(player.getNumResource(ResourceType.TWIG)).to.be(0);
+        expect(player.getNumResource(ResourceType.RESIN)).to.be(0);
+      });
+
       it("should be able to pay for the card to play it", () => {
         const card = Card.fromName(CardName.FARM);
         const gameInput = playCardInput(card.name);

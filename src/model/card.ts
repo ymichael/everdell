@@ -29,6 +29,7 @@ export class Card implements GameStatePlayable {
   readonly canPlayInner: GameStateCanPlayFn | undefined;
   readonly playedCardInfoInner: (() => PlayedCardInfo) | undefined;
   readonly pointsInner: GameStateCountPointsFn | undefined;
+  readonly isOpenDestination: boolean | undefined;
 
   readonly name: CardName;
   readonly baseCost: CardCost;
@@ -51,6 +52,7 @@ export class Card implements GameStatePlayable {
     canPlayInner, // called when we check canPlay function
     playedCardInfoInner, // used for cards that accumulate other cards or resources
     pointsInner, // computed if specified + added to base points
+    isOpenDestination, // if the destination is an open destination
   }: {
     name: CardName;
     baseCost: CardCost;
@@ -63,6 +65,7 @@ export class Card implements GameStatePlayable {
     canPlayInner?: GameStateCanPlayFn;
     playedCardInfoInner?: () => PlayedCardInfo;
     pointsInner?: (gameState: GameState, playerId: string) => number;
+    isOpenDestination?: boolean;
   }) {
     this.name = name;
     this.baseCost = baseCost;
@@ -76,6 +79,7 @@ export class Card implements GameStatePlayable {
     this.canPlayInner = canPlayInner;
     this.playedCardInfoInner = playedCardInfoInner;
     this.pointsInner = pointsInner;
+    this.isOpenDestination = isOpenDestination;
   }
 
   getPlayedCardInfo(): PlayedCardInfo {
@@ -86,12 +90,6 @@ export class Card implements GameStatePlayable {
     if (this.cardType == CardType.DESTINATION) {
       ret.workers = [];
       ret.maxWorkers = 1;
-      const openDestinations = [CardName.INN, CardName.POST_OFFICE];
-      if (find(openDestinations, this.name)) {
-        ret.isOpen = true;
-      } else {
-        ret.isOpen = false;
-      }
     }
 
     return {
@@ -515,6 +513,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: true,
     associatedCard: CardName.INNKEEPER,
+    isOpenDestination: true,
     playInner: (gameState: GameState, gameInput: GameInput) => {
       throw new Error("Not Implemented");
     },
@@ -756,6 +755,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: true,
     associatedCard: CardName.POSTAL_PIGEON,
+    isOpenDestination: true,
     playInner: (gameState: GameState, gameInput: GameInput) => {
       if (gameInput.inputType !== GameInputType.PLAY_CARD) {
         throw new Error("Invalid input type");

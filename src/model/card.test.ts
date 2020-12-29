@@ -34,19 +34,21 @@ describe("Card", () => {
     });
   });
 
-  describe("Open / closed destinations", () => {
+  describe.only("Open / closed destinations", () => {
     it("Inn should be marked as an open destination", () => {
       const card = Card.fromName(CardName.INN);
-      const cardInfo = card.getPlayedCardInfo();
-      expect(card.cardType == CardType.DESTINATION);
-      expect(cardInfo.isOpen);
+      expect(card.cardType).to.be(CardType.DESTINATION);
+
+      const isOpenDestination = card.isOpenDestination;
+      expect(isOpenDestination).to.be(true);
     });
 
     it("Queen should be marked as a destination, but not open", () => {
       const card = Card.fromName(CardName.QUEEN);
-      const cardInfo = card.getPlayedCardInfo();
-      expect(card.cardType == CardType.DESTINATION);
-      expect(!cardInfo.isOpen);
+      expect(card.cardType).to.be(CardType.DESTINATION);
+
+      const isOpenDestination = card.isOpenDestination;
+      expect(isOpenDestination).to.be(undefined);
     });
   });
 

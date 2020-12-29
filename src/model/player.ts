@@ -491,7 +491,17 @@ export class Player {
     if (!gameInput.paymentOptions || !gameInput.paymentOptions.resources) {
       throw new Error("Invalid input");
     }
-    // Validate if payment options is valid
+    // Validate if player has resources specified by payment options
+    (Object.entries(gameInput.paymentOptions.resources) as [
+      ResourceType,
+      number
+    ][]).forEach(([resourceType, count]) => {
+      if (this.getNumResource(resourceType) < count) {
+        throw new Error(`Can't spend ${count} ${resourceType}`);
+      }
+    });
+
+    // Validate if payment options are valid for the card
     const cardToPlay = Card.fromName(gameInput.card);
     const paymentOptions = gameInput.paymentOptions;
     const paymentResources = paymentOptions.resources;

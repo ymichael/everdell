@@ -126,4 +126,158 @@ describe("Player", () => {
       ).to.be(true);
     });
   });
+
+  describe("isPaidResourcesValid", () => {
+    it("invalid resources", () => {
+      const player = gameState.getActivePlayer();
+      expect(
+        player.isPaidResourcesValid({}, { [ResourceType.BERRY]: 1 })
+      ).to.be(false);
+      expect(player.isPaidResourcesValid({}, { [ResourceType.TWIG]: 1 })).to.be(
+        false
+      );
+      expect(
+        player.isPaidResourcesValid({}, { [ResourceType.PEBBLE]: 1 })
+      ).to.be(false);
+      expect(
+        player.isPaidResourcesValid({}, { [ResourceType.RESIN]: 1 })
+      ).to.be(false);
+      expect(
+        player.isPaidResourcesValid(
+          { [ResourceType.BERRY]: 1 },
+          { [ResourceType.BERRY]: 2 }
+        )
+      ).to.be(false);
+    });
+
+    it("wrong resources", () => {
+      const player = gameState.getActivePlayer();
+      expect(
+        player.isPaidResourcesValid(
+          { [ResourceType.BERRY]: 2, [ResourceType.TWIG]: 1 },
+          { [ResourceType.BERRY]: 2, [ResourceType.RESIN]: 1 }
+        )
+      ).to.be(false);
+      expect(
+        player.isPaidResourcesValid(
+          { [ResourceType.RESIN]: 2, [ResourceType.TWIG]: 1 },
+          { [ResourceType.TWIG]: 2, [ResourceType.RESIN]: 1 }
+        )
+      ).to.be(false);
+      expect(
+        player.isPaidResourcesValid(
+          { [ResourceType.PEBBLE]: 2, [ResourceType.BERRY]: 1 },
+          { [ResourceType.BERRY]: 2, [ResourceType.RESIN]: 1 }
+        )
+      ).to.be(false);
+      expect(
+        player.isPaidResourcesValid(
+          { [ResourceType.BERRY]: 2, [ResourceType.PEBBLE]: 1 },
+          { [ResourceType.TWIG]: 2, [ResourceType.RESIN]: 1 }
+        )
+      ).to.be(false);
+    });
+
+    it("overpay resources", () => {
+      const player = gameState.getActivePlayer();
+      expect(
+        player.isPaidResourcesValid(
+          { [ResourceType.BERRY]: 3, [ResourceType.RESIN]: 1 },
+          { [ResourceType.BERRY]: 2, [ResourceType.RESIN]: 1 },
+          null,
+          false /* errorIfOverpay */
+        )
+      ).to.be(true);
+      expect(() => {
+        player.isPaidResourcesValid(
+          { [ResourceType.BERRY]: 3, [ResourceType.RESIN]: 1 },
+          { [ResourceType.BERRY]: 2, [ResourceType.RESIN]: 1 },
+          null
+        );
+      }).to.throwException(/overpay/);
+    });
+
+    it("BERRY discount", () => {
+      const player = gameState.getActivePlayer();
+      expect(
+        player.isPaidResourcesValid(
+          { [ResourceType.BERRY]: 0 },
+          { [ResourceType.BERRY]: 2 }
+        )
+      ).to.be(false);
+      expect(
+        player.isPaidResourcesValid(
+          { [ResourceType.BERRY]: 0 },
+          { [ResourceType.BERRY]: 2 },
+          ResourceType.BERRY
+        )
+      ).to.be(true);
+      expect(
+        player.isPaidResourcesValid(
+          { [ResourceType.BERRY]: 1 },
+          { [ResourceType.BERRY]: 4 },
+          ResourceType.BERRY
+        )
+      ).to.be(true);
+      expect(
+        player.isPaidResourcesValid(
+          { [ResourceType.BERRY]: 0 },
+          { [ResourceType.BERRY]: 4 },
+          ResourceType.BERRY
+        )
+      ).to.be(false);
+      expect(() => {
+        player.isPaidResourcesValid(
+          { [ResourceType.BERRY]: 1 },
+          { [ResourceType.BERRY]: 2 },
+          ResourceType.BERRY
+        );
+      }).to.throwException(/overpay/);
+    });
+
+    it("ANY discount", () => {
+      const player = gameState.getActivePlayer();
+      expect(
+        player.isPaidResourcesValid(
+          {},
+          { [ResourceType.TWIG]: 2, [ResourceType.RESIN]: 1 }
+        )
+      ).to.be(false);
+      expect(
+        player.isPaidResourcesValid(
+          {},
+          { [ResourceType.TWIG]: 2, [ResourceType.RESIN]: 1 },
+          "ANY"
+        )
+      ).to.be(true);
+      expect(
+        player.isPaidResourcesValid(
+          { [ResourceType.TWIG]: 1 },
+          { [ResourceType.TWIG]: 3, [ResourceType.RESIN]: 1 },
+          "ANY"
+        )
+      ).to.be(true);
+      expect(
+        player.isPaidResourcesValid(
+          { [ResourceType.TWIG]: 0 },
+          { [ResourceType.TWIG]: 3, [ResourceType.RESIN]: 1 },
+          "ANY"
+        )
+      ).to.be(false);
+      expect(
+        player.isPaidResourcesValid(
+          { [ResourceType.PEBBLE]: 5 },
+          { [ResourceType.TWIG]: 3, [ResourceType.RESIN]: 1 },
+          "ANY"
+        )
+      ).to.be(false);
+      expect(() => {
+        player.isPaidResourcesValid(
+          { [ResourceType.TWIG]: 2 },
+          { [ResourceType.TWIG]: 3, [ResourceType.RESIN]: 1 },
+          "ANY"
+        );
+      }).to.throwException(/overpay/);
+    });
+  });
 });

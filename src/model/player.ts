@@ -334,12 +334,20 @@ export class Player {
       [ResourceType.PEBBLE]: 0,
       [ResourceType.RESIN]: 0,
     };
+
+    const needToPaySum = sumResources(needToPay);
+    const payingWithSum = sumResources(payingWith);
+
+    // Take discounts first
+    if (discount === ResourceType.BERRY) {
+      needToPay[ResourceType.BERRY] = Math.max(
+        0,
+        needToPay[ResourceType.BERRY] - 3
+      );
+    }
+
     (Object.entries(needToPay) as [keyof CardCost, number][]).forEach(
       ([resourceType, count]) => {
-        // Berry discount
-        if (discount === ResourceType.BERRY && discount === resourceType) {
-          count = Math.max(count - 3, 0);
-        }
         if (count <= payingWith[resourceType]) {
           payingWith[resourceType] -= count;
         } else {
@@ -351,23 +359,36 @@ export class Player {
     );
 
     const outstandingOwedSum = sumResources(outstandingOwed);
-    const payingWithSum = sumResources(payingWith);
-    if (discount === "ANY" && outstandingOwedSum === 3) {
+    const payingWithRemainerSum = sumResources(payingWith);
+
+    // With wild discount, should have outstandingOwedSum left
+    if (discount === "ANY" && outstandingOwedSum <= 3) {
+      if (
+        errorIfOverpay &&
+        payingWithSum !== 0 &&
+        payingWithSum + 3 > needToPaySum
+      ) {
+        throw new Error("Cannot overpay for cards");
+      }
       return true;
     }
 
     // Can only use judge if no other discounts are in effect
     if (!discount && this.hasPlayedCard(CardName.JUDGE)) {
       if (outstandingOwedSum === 1) {
-        if (payingWithSum >= 1) {
-          if (errorIfOverpay && payingWithSum !== 1) {
+        if (payingWithRemainerSum >= 1) {
+          if (errorIfOverpay && payingWithRemainerSum !== 1) {
             throw new Error("Cannot overpay for cards");
           }
           return true;
         }
       }
     }
-    if (payingWithSum !== 0 && errorIfOverpay) {
+    if (
+      outstandingOwedSum === 0 &&
+      payingWithRemainerSum !== 0 &&
+      errorIfOverpay
+    ) {
       throw new Error("Cannot overpay for cards");
     }
     return outstandingOwedSum === 0;

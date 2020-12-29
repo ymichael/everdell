@@ -1,7 +1,7 @@
 import expect from "expect.js";
 import { Card } from "./card";
 import { GameState } from "./gameState";
-import { createPlayer } from "./player";
+import { testInitialGameState } from "./testHelpers";
 import {
   CardType,
   ResourceType,
@@ -23,9 +23,7 @@ describe("Card", () => {
   let gameState: GameState;
 
   beforeEach(() => {
-    gameState = GameState.initialGameState({
-      players: [createPlayer("One"), createPlayer("Two")],
-    });
+    gameState = testInitialGameState();
   });
 
   describe("fromName", () => {

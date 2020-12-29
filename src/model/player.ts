@@ -52,21 +52,21 @@ export class Player {
     claimedEvents = {},
   }: {
     name: string;
-    playerSecret: string;
-    playerId: string;
-    playedCards: Partial<Record<CardName, PlayedCardInfo[]>>;
-    cardsInHand: CardName[];
-    resources: {
+    playerSecret?: string;
+    playerId?: string;
+    playedCards?: Partial<Record<CardName, PlayedCardInfo[]>>;
+    cardsInHand?: CardName[];
+    resources?: {
       [ResourceType.VP]: number;
       [ResourceType.TWIG]: number;
       [ResourceType.BERRY]: number;
       [ResourceType.PEBBLE]: number;
       [ResourceType.RESIN]: number;
     };
-    currentSeason: Season;
-    numWorkers: number;
-    numAvailableWorkers: number;
-    claimedEvents: Partial<Record<EventName, PlayedEventInfo>>;
+    currentSeason?: Season;
+    numWorkers?: number;
+    numAvailableWorkers?: number;
+    claimedEvents?: Partial<Record<EventName, PlayedEventInfo>>;
   }) {
     this.playerId = playerId;
     this.playerSecret = playerSecret;
@@ -715,21 +715,6 @@ export class Player {
 export const createPlayer = (name: string): Player => {
   const player = new Player({
     name,
-    playerSecret: uuid(),
-    playerId: uuid(),
-    playedCards: {},
-    cardsInHand: [],
-    resources: {
-      [ResourceType.VP]: 0,
-      [ResourceType.TWIG]: 0,
-      [ResourceType.BERRY]: 0,
-      [ResourceType.PEBBLE]: 0,
-      [ResourceType.RESIN]: 0,
-    },
-    currentSeason: Season.WINTER,
-    numWorkers: 2,
-    numAvailableWorkers: 2,
-    claimedEvents: {},
   });
   return player;
 };

@@ -94,6 +94,7 @@ const GameInputPlayCardSelector = ({
             Berry:{" "}
             <Field
               type="number"
+              value="0"
               name={"gameInput.paymentOptions.resources.BERRY"}
             />
           </p>
@@ -101,6 +102,7 @@ const GameInputPlayCardSelector = ({
             Resin:{" "}
             <Field
               type="number"
+              value="0"
               name={"gameInput.paymentOptions.resources.RESIN"}
             />
           </p>
@@ -108,6 +110,7 @@ const GameInputPlayCardSelector = ({
             Pebble:{" "}
             <Field
               type="number"
+              value="0"
               name={"gameInput.paymentOptions.resources.PEBBLE"}
             />
           </p>
@@ -115,6 +118,7 @@ const GameInputPlayCardSelector = ({
             Twig:{" "}
             <Field
               type="number"
+              value="0"
               name={"gameInput.paymentOptions.resources.TWIG"}
             />
           </p>

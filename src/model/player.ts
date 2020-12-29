@@ -193,6 +193,94 @@ export class Player {
     return numCards;
   }
 
+  getPlayedCardType(cardType: CardType): CardName[] {
+    let playedCardsOfType: CardName[] = [];
+    this.forEachPlayedCard(({ cardName }) => {
+      const card = Card.fromName(cardName as CardName);
+      if (card.cardType === cardType) {
+        playedCardsOfType.push(cardName);
+      }
+    });
+    return playedCardsOfType;
+  }
+
+  // returns all destination cards that a player has played that have
+  // room for another worker
+  getAllAvailableDestinationCards(): CardName[] {
+    let allAvailableDestinationCards: CardName[] = [];
+
+    this.forEachPlayedCard(({ cardName }) => {
+      let card = Card.fromName(cardName as CardName);
+      if (card.cardType === CardType.DESTINATION) {
+        let cardInfo = card.getPlayedCardInfo();
+
+        let maxWorkers = cardInfo.maxWorkers || 1;
+        let workers = cardInfo.workers || [];
+
+        if (workers.length < maxWorkers) {
+          allAvailableDestinationCards.push(cardName);
+        }
+      }
+    });
+
+    return allAvailableDestinationCards;
+  }
+
+  // returns all non-Open destination cards that were played by player and
+  // are available for them to put a worker on
+  getAvailableClosedDestinationCards(): CardName[] {
+    let availableDestinationCards: CardName[] = [];
+
+    this.forEachPlayedCard(({ cardName }) => {
+      let card = Card.fromName(cardName as CardName);
+      if (card.cardType === CardType.DESTINATION && !card.isOpenDestination) {
+        let cardInfo = card.getPlayedCardInfo();
+
+        let maxWorkers = cardInfo.maxWorkers || 1;
+        let workers = cardInfo.workers || [];
+
+        if (workers.length < maxWorkers) {
+          availableDestinationCards.push(cardName);
+        }
+      }
+    });
+    return availableDestinationCards;
+  }
+
+  // returns all destination cards played by this player that are "open"
+  // and are available to take other workers
+  getAvailableOpenDestinationCards(): CardName[] {
+    let openDestinationCards = this.getOpenDestinationCards();
+    let openAvailableDestinations: CardName[] = [];
+
+    openDestinationCards.forEach((cardName) => {
+      let card = Card.fromName(cardName as CardName);
+      let cardInfo = card.getPlayedCardInfo();
+
+      let maxWorkers = cardInfo.maxWorkers || 1;
+      let workers = cardInfo.workers || [];
+
+      if (workers.length < maxWorkers) {
+        openAvailableDestinations.push(cardName);
+      }
+    });
+
+    return openAvailableDestinations;
+  }
+
+  // returns all destination cards played by this player that are "open"
+  getOpenDestinationCards(): CardName[] {
+    let openDestinationCards: CardName[] = [];
+
+    this.forEachPlayedCard(({ cardName }) => {
+      let card = Card.fromName(cardName as CardName);
+      if (card.cardType === CardType.DESTINATION && !!card.isOpenDestination) {
+        openDestinationCards.push(cardName);
+      }
+    });
+    return openDestinationCards;
+  }
+
   hasPlayedCard(cardName: CardName): boolean {
     return !!this.playedCards[cardName];
   }
@@ -232,7 +320,9 @@ export class Player {
     if (this.numAvailableWorkers <= 0) {
       return false;
     }
-    if (!this.playedCards[cardName]) {
+
+    const card = Card.fromName(cardName);
+    if (!this.playedCards[cardName] || !!card.isOpenDestination) {
       return false;
     }
     return this.playedCards[cardName]!.some((playedCard) => {

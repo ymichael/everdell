@@ -48,7 +48,7 @@ describe("Card", () => {
       expect(card.cardType).to.be(CardType.DESTINATION);
 
       const isOpenDestination = card.isOpenDestination;
-      expect(isOpenDestination).to.be(undefined);
+      expect(isOpenDestination).to.be(false);
     });
   });
 

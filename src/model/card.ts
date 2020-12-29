@@ -29,7 +29,6 @@ export class Card implements GameStatePlayable {
   readonly canPlayInner: GameStateCanPlayFn | undefined;
   readonly playedCardInfoInner: (() => PlayedCardInfo) | undefined;
   readonly pointsInner: GameStateCountPointsFn | undefined;
-  readonly isOpenDestination: boolean | undefined;
 
   readonly name: CardName;
   readonly baseCost: CardCost;
@@ -39,6 +38,7 @@ export class Card implements GameStatePlayable {
   readonly isCritter: boolean;
   readonly isConstruction: boolean;
   readonly associatedCard: CardName | null;
+  readonly isOpenDestination: boolean;
 
   constructor({
     name,
@@ -48,11 +48,11 @@ export class Card implements GameStatePlayable {
     isUnique,
     isConstruction,
     associatedCard,
+    isOpenDestination = false, // if the destination is an open destination
     playInner, // called when the card is played
     canPlayInner, // called when we check canPlay function
     playedCardInfoInner, // used for cards that accumulate other cards or resources
     pointsInner, // computed if specified + added to base points
-    isOpenDestination, // if the destination is an open destination
   }: {
     name: CardName;
     baseCost: CardCost;
@@ -61,11 +61,11 @@ export class Card implements GameStatePlayable {
     isUnique: boolean;
     isConstruction: boolean;
     associatedCard: CardName | null;
+    isOpenDestination?: boolean;
     playInner?: GameStatePlayFn;
     canPlayInner?: GameStateCanPlayFn;
     playedCardInfoInner?: () => PlayedCardInfo;
     pointsInner?: (gameState: GameState, playerId: string) => number;
-    isOpenDestination?: boolean;
   }) {
     this.name = name;
     this.baseCost = baseCost;
@@ -75,11 +75,11 @@ export class Card implements GameStatePlayable {
     this.isCritter = !isConstruction;
     this.isConstruction = isConstruction;
     this.associatedCard = associatedCard;
+    this.isOpenDestination = isOpenDestination;
     this.playInner = playInner;
     this.canPlayInner = canPlayInner;
     this.playedCardInfoInner = playedCardInfoInner;
     this.pointsInner = pointsInner;
-    this.isOpenDestination = isOpenDestination;
   }
 
   getPlayedCardInfo(): PlayedCardInfo {

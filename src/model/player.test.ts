@@ -158,6 +158,23 @@ describe("Player", () => {
           })
         )
       ).to.be(false);
+      expect(() => {
+        player.isPaymentOptionsValid(
+          playCardInput(CardName.FARM, {
+            paymentOptions: {
+              resources: {
+                [ResourceType.TWIG]: 1,
+                [ResourceType.RESIN]: 1,
+              },
+            },
+          })
+        );
+      }).to.throwException(/Can't spend/);
+
+      player.gainResources({
+        [ResourceType.TWIG]: 1,
+        [ResourceType.RESIN]: 1,
+      });
       expect(
         player.isPaymentOptionsValid(
           playCardInput(CardName.FARM, {
@@ -170,6 +187,10 @@ describe("Player", () => {
           })
         )
       ).to.be(false);
+
+      player.gainResources({
+        [ResourceType.TWIG]: 1,
+      });
       expect(
         player.isPaymentOptionsValid(
           playCardInput(CardName.FARM, {
@@ -269,6 +290,11 @@ describe("Player", () => {
             })
           )
         ).to.be(true);
+
+        player.gainResources({
+          [ResourceType.BERRY]: 1,
+        });
+
         expect(() => {
           player.isPaymentOptionsValid(
             playCardInput(CardName.HUSBAND, {

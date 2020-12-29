@@ -1,6 +1,7 @@
 import expect from "expect.js";
 import { Card } from "./card";
 import { GameState } from "./gameState";
+import merge from "lodash/merge";
 import { testInitialGameState } from "./testHelpers";
 import {
   CardType,
@@ -11,12 +12,17 @@ import {
 } from "./types";
 
 const playCardInput = (card: CardName, overrides: any = {}): GameInput => {
-  return {
-    inputType: GameInputType.PLAY_CARD,
-    card,
-    fromMeadow: false,
-    ...overrides,
-  };
+  return merge(
+    {
+      inputType: GameInputType.PLAY_CARD,
+      card,
+      fromMeadow: false,
+      paymentOptions: {
+        resources: Card.fromName(card).baseCost,
+      },
+    },
+    overrides
+  );
 };
 
 describe("Card", () => {

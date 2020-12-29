@@ -107,11 +107,15 @@ export class GameState {
     gameInput: GameInput & { inputType: GameInputType.PLAY_CARD }
   ): void {
     const card = Card.fromName(gameInput.card);
+    const player = this.getActivePlayer();
     if (!card) {
       throw new Error("Invalid card");
     }
     if (!card.canPlay(this, gameInput)) {
       throw new Error("Cannot take action");
+    }
+    if (!player.isPaymentOptionsValid(gameInput)) {
+      throw new Error("Invalid payment options");
     }
     if (gameInput.fromMeadow) {
       this.removeCardFromMeadow(gameInput.card);

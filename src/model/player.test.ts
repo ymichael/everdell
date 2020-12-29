@@ -126,4 +126,42 @@ describe("Player", () => {
       ).to.be(true);
     });
   });
+
+  describe("getAvailableDestinationCards", () => {
+    it("0 available destination cards if you have played 0 cards", () => {
+      const player = gameState.getActivePlayer();
+      const availableClosedDestinationCards = player.getAvailableClosedDestinationCards();
+
+      expect(availableClosedDestinationCards.length).to.be(0);
+    });
+    it("getAvailableClosedDestinationCards only returns non-Open Destination Cards", () => {
+      const player = gameState.getActivePlayer();
+      let availableClosedDestinationCards = player.getAvailableClosedDestinationCards();
+
+      expect(availableClosedDestinationCards.length).to.be(0);
+
+      player.playedCards[CardName.INN] = [{}];
+      player.playedCards[CardName.LOOKOUT] = [{}];
+      player.playedCards[CardName.QUEEN] = [{}];
+
+      availableClosedDestinationCards = player.getAvailableClosedDestinationCards();
+
+      expect(availableClosedDestinationCards.length).to.be(2);
+    });
+    it("getAvailableOpenDestinationCards only returns Open Destination Cards", () => {
+      const player = gameState.getActivePlayer();
+      let availableOpenDestinationCards = player.getAvailableOpenDestinationCards();
+
+      expect(availableOpenDestinationCards.length).to.be(0);
+
+      player.playedCards[CardName.INN] = [{}];
+      player.playedCards[CardName.POST_OFFICE] = [{}];
+      player.playedCards[CardName.LOOKOUT] = [{}];
+
+      availableOpenDestinationCards = player.getAvailableOpenDestinationCards();
+      expect(Object.keys(player.playedCards).length).to.be(3);
+
+      expect(availableOpenDestinationCards.length).to.be(2);
+    });
+  });
 });

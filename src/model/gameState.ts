@@ -153,6 +153,8 @@ export class GameState {
           throw new Error(`Unhandled game input: ${JSON.stringify(gameInput)}`);
         }
         break;
+      case GameInputType.VISIT_DESTINATION_CARD:
+        break;
       default:
         throw new Error(`Unhandled game input: ${JSON.stringify(gameInput)}`);
     }
@@ -264,6 +266,29 @@ export class GameState {
       });
   };
 
+  private getAvailableDestinationCardGameInputs = (): GameInput[] => {
+    let availableDestinationCards: CardName[] = [];
+    // get open destination cards of other players
+    this.players.forEach((player) => {
+      availableDestinationCards.push(
+        ...player.getAvailableOpenDestinationCards()
+      );
+    });
+
+    const activePlayer = this.getActivePlayer();
+    let availableClosedDestinationCards = activePlayer.getAvailableClosedDestinationCards();
+
+    // create the game inputs for these cards
+    /*return keys.map((cardName) => {
+      return {
+        inputType: GameInputType.VISIT_DESTINATION_CARD as const,
+        playerId: this.activePlayerId,
+        card: cardName,
+      }*/
+    //})
+    return [];
+  };
+
   getPossibleGameInputs(): GameInput[] {
     if (this.pendingGameInputs) {
       return this.pendingGameInputs;
@@ -286,6 +311,8 @@ export class GameState {
       possibleGameInputs.push(...this.getAvailableLocationGameInputs());
 
       possibleGameInputs.push(...this.getEligibleEventGameInputs());
+
+      //possibleGameInputs.push(...this.getAvailableDestinationCardGameInputs());
     }
 
     possibleGameInputs.push(

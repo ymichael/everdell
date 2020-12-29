@@ -38,21 +38,25 @@ export function testInitialGameState(
   }
   gameState.meadowCards.push(...meadowCards);
   gameState.players.forEach((player) => {
-    player.cardsInHand = [];
+    player.cardsInHand = cardsInHand;
   });
-  (Object.keys(gameState.locationsMap) as LocationName[]).forEach(
-    (locationName) => {
-      const location = Location.fromName(locationName);
-      if (location.type === LocationType.FOREST) {
-        delete gameState.locationsMap[locationName];
+  if (noForestLocations) {
+    (Object.keys(gameState.locationsMap) as LocationName[]).forEach(
+      (locationName) => {
+        const location = Location.fromName(locationName);
+        if (location.type === LocationType.FOREST) {
+          delete gameState.locationsMap[locationName];
+        }
       }
-    }
-  );
-  (Object.keys(gameState.eventsMap) as EventName[]).forEach((eventName) => {
-    const event = Event.fromName(eventName);
-    if (event.type === EventType.SPECIAL) {
-      delete gameState.eventsMap[eventName];
-    }
-  });
+    );
+  }
+  if (noSpecialEvents) {
+    (Object.keys(gameState.eventsMap) as EventName[]).forEach((eventName) => {
+      const event = Event.fromName(eventName);
+      if (event.type === EventType.SPECIAL) {
+        delete gameState.eventsMap[eventName];
+      }
+    });
+  }
   return gameState;
 }

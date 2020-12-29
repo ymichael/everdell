@@ -199,7 +199,7 @@ describe("Card", () => {
         player.gainResources(card.baseCost);
         expect(player.getNumResource(ResourceType.VP)).to.be(0);
         try {
-          const nextGameState = gameState.next(gameInput);
+          gameState.next(gameInput);
           expect("Execption to be raised").to.be(null);
         } catch (e) {
           // ignore
@@ -271,7 +271,7 @@ describe("Card", () => {
       it("should only allow the player to select eligible cards", () => {
         const card = Card.fromName(CardName.POSTAL_PIGEON);
         const gameInput = playCardInput(card.name);
-        let player = gameState.getActivePlayer();
+        const player = gameState.getActivePlayer();
         player.gainResources(card.baseCost);
         player.cardsInHand.push(card.name);
 

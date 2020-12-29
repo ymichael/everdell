@@ -18,7 +18,7 @@ import {
 } from "./gameState";
 import shuffle from "lodash/shuffle";
 
-export class Event {
+export class Event implements GameStatePlayable {
   readonly playInner: GameStatePlayFn | undefined;
   readonly playedCardInfoInner: (() => PlayedCardInfo) | undefined;
   readonly pointsInner:
@@ -65,7 +65,7 @@ export class Event {
     }
 
     // check whether the event has been playedCards
-    if (!!gameState.eventsMap[this.name]) {
+    if (gameState.eventsMap[this.name]) {
       return false;
     }
 
@@ -87,7 +87,7 @@ export class Event {
     }
     const player = gameState.getActivePlayer();
     player.claimEvent(this.name);
-    if (!!this.playInner) {
+    if (this.playInner) {
       console.log("foo");
     }
   }
@@ -241,8 +241,8 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         throw new Error("Too many cards");
       }
 
-      for (let cardName in cardsToUse) {
-        let card = Card.fromName(cardName as CardName);
+      for (const cardName in cardsToUse) {
+        const card = Card.fromName(cardName as CardName);
         if (!card.isCritter) {
           throw new Error("Can only put Critters beneath this event");
         }
@@ -254,7 +254,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       }
 
       // remove cards from hand
-      for (let cardName in cardsToUse) {
+      for (const cardName in cardsToUse) {
         player.removeCardFromHand(cardName as CardName);
         (eventInfo.pairedCards = eventInfo.pairedCards || []).push(cardName);
       }
@@ -381,8 +381,8 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         throw new Error("Too many cards");
       }
 
-      for (let cardName in cardsToUse) {
-        let card = Card.fromName(cardName as CardName);
+      for (const cardName in cardsToUse) {
+        const card = Card.fromName(cardName as CardName);
         if (!card.isCritter) {
           throw new Error("Can only put Critters beneath this event");
         }
@@ -394,7 +394,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       }
 
       // remove cards from city
-      for (let cardName in cardsToUse) {
+      for (const cardName in cardsToUse) {
         player.removeCardFromCity(cardName as CardName);
         (eventInfo.pairedCards = eventInfo.pairedCards || []).push(cardName);
       }
@@ -456,8 +456,6 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     baseVP: 0,
     canPlayInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
-      const playedCards = player.playedCards;
-
       const cards = [CardName.UNDERTAKER, CardName.BARGE_TOAD];
       return (
         cards.every((card) => player.hasPlayedCard(card)) &&
@@ -485,7 +483,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       }
 
       // remove cards from city
-      for (let cardName in cardsToUse) {
+      for (const cardName in cardsToUse) {
         player.removeCardFromCity(cardName as CardName);
       }
       // remove berries from player's supply
@@ -713,19 +711,10 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       CardName.POSTAL_PIGEON,
     ]),
     pointsInner: (gameState: GameState, playerId: string) => {
-      const players = gameState.players;
-
-      if (!players) {
-        throw new Error("Invalid list of players");
-      }
-
       let numHusbandWifePairs = 0;
-
-      for (let player in players) {
-        numHusbandWifePairs =
-          numHusbandWifePairs +
-          gameState.getPlayer(player).numHusbandWifePairs();
-      }
+      gameState.players.forEach((player) => {
+        numHusbandWifePairs += player.numHusbandWifePairs();
+      });
       return numHusbandWifePairs * 3;
     },
   }),
@@ -777,8 +766,6 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     baseVP: 0,
     canPlayInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
-      const playedCards = player.playedCards;
-
       const cards = [CardName.UNDERTAKER, CardName.BARGE_TOAD];
       return (
         cards.every((card) => player.hasPlayedCard(card)) &&
@@ -806,7 +793,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       }
 
       // remove cards from city
-      for (let cardName in cardsToUse) {
+      for (const cardName in cardsToUse) {
         player.removeCardFromCity(cardName as CardName);
       }
       // remove berries from player's supply
@@ -917,7 +904,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         throw new Error("Resource is undefined");
       }
 
-      let totalGainedResources =
+      const totalGainedResources =
         (resourcesToGain[ResourceType.BERRY] || 0) +
         (resourcesToGain[ResourceType.TWIG] || 0) +
         (resourcesToGain[ResourceType.RESIN] || 0) +

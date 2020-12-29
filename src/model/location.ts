@@ -1,7 +1,6 @@
 import {
   CardName,
   ResourceType,
-  ResourceMap,
   LocationName,
   LocationType,
   LocationOccupancy,
@@ -17,7 +16,6 @@ import {
   GameStateCanPlayFn,
 } from "./gameState";
 import { playGainResourceFactory } from "./gameStatePlayHelpers";
-import { Player } from "./player";
 import shuffle from "lodash/shuffle";
 
 export class Location implements GameStatePlayable {

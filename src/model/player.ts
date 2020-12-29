@@ -6,11 +6,11 @@ import {
   Season,
   ResourceType,
   GameInput,
+  GameInputType,
   PlayedCardInfo,
 } from "./types";
 import cloneDeep from "lodash/cloneDeep";
 import { GameState } from "./gameState";
-import { Location } from "./location";
 import { Card } from "./card";
 import { Event } from "./event";
 import { generate as uuid } from "short-uuid";
@@ -307,7 +307,7 @@ export class Player {
       return true;
     }
 
-    let outstandingOwedSum = sumResources(outstandingOwed);
+    const outstandingOwedSum = sumResources(outstandingOwed);
 
     // Inn (3 less if from the meadow)
     // TODO need to check other players!!
@@ -344,7 +344,9 @@ export class Player {
   }
 
   payForCard(cardName: CardName, gameInput: GameInput): void {
-    // TODO
+    if (gameInput.inputType !== GameInputType.PLAY_CARD) {
+      throw new Error("Invalid input type");
+    }
   }
 
   spendResources({

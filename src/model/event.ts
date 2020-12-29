@@ -88,7 +88,7 @@ export class Event implements GameStatePlayable {
     const player = gameState.getActivePlayer();
     player.claimEvent(this.name);
 
-    this.playEventEffects();
+    this.playEventEffects(gameState, gameInput);
   }
 
   playEventEffects(gameState: GameState, gameInput: GameInput): void {

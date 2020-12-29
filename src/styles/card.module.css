@@ -102,3 +102,21 @@
   background: linear-gradient(111.09deg, #c26473 -23.53%, #431f24 116.69%),
     linear-gradient(0deg, #b84a5b, #b84a5b);
 }
+
+.card_cost_row {
+  height: 35px;
+  padding: 5px;
+}
+
+.card_cost_icon {
+  height: 30px;
+  width: 30px;
+  position: relative;
+  display: inline-block;
+}
+
+.card_cost_value {
+  vertical-align: super;
+  font-size: 18px;
+  font-weight: 500;
+}

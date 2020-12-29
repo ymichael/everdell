@@ -166,7 +166,12 @@ export type GameInputSimple =
         useAssociatedCard?: boolean;
 
         // Eg crane, innkeeper, queen
-        cardToUse?: CardName;
+        cardToUse?:
+          | CardName.QUEEN
+          | CardName.INNKEEPER
+          | CardName.CRANE
+          | CardName.INN
+          | null;
 
         resources: {
           [ResourceType.TWIG]?: number;

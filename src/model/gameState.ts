@@ -110,15 +110,13 @@ export class GameState {
   ): void {
     const card = Card.fromName(gameInput.card);
     const player = this.getActivePlayer();
-    if (!card) {
-      throw new Error("Invalid card");
-    }
     if (!card.canPlay(this, gameInput)) {
       throw new Error("Cannot take action");
     }
     if (!player.isPaymentOptionsValid(gameInput)) {
       throw new Error("Invalid payment options");
     }
+    player.payForCard(this, gameInput);
     if (gameInput.fromMeadow) {
       this.removeCardFromMeadow(gameInput.card);
       this.replenishMeadow();
@@ -132,9 +130,6 @@ export class GameState {
     gameInput: GameInput & { inputType: GameInputType.PLACE_WORKER }
   ): void {
     const location = Location.fromName(gameInput.location);
-    if (!location) {
-      throw new Error("Invalid location");
-    }
     if (!location.canPlay(this, gameInput)) {
       throw new Error("Cannot take action");
     }
@@ -414,7 +409,7 @@ export class GameState {
   };
 
   getPossibleGameInputs(): GameInput[] {
-    if (this.pendingGameInputs) {
+    if (this.pendingGameInputs.length !== 0) {
       return this.pendingGameInputs;
     }
 

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useState, useCallback, useEffect } from "react";
 import Meadow from "./Meadow";
-import PlayerStatus from "./PlayerStatus";
+import Players from "./Players";
 import GameInputBox from "./GameInputBox";
 
 const Game: React.FC<{ game: any; viewingPlayer: any }> = (props) => {
@@ -44,22 +44,7 @@ const Game: React.FC<{ game: any; viewingPlayer: any }> = (props) => {
         viewingPlayer={viewingPlayer}
         updateGameAndViewingPlayer={updateGameAndViewingPlayer}
       />
-      <PlayerStatus
-        player={viewingPlayer}
-        isViewer={true}
-        isActivePlayer={viewingPlayer.playerId === gameState.activePlayerId}
-      />
-      {gameState.players
-        .filter((player: any) => player.playerId !== viewingPlayer.playerId)
-        .map((player: any) => {
-          return (
-            <PlayerStatus
-              player={player}
-              isViewer={false}
-              isActivePlayer={player.playerId === gameState.activePlayerId}
-            />
-          );
-        })}
+      <Players viewingPlayer={viewingPlayer} gameState={gameState} />
       <hr />
       <p>
         <h2>DEBUG</h2>

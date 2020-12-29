@@ -77,6 +77,9 @@ export class Location implements GameStatePlayable {
   }
 
   static fromName(name: LocationName): Location {
+    if (!LOCATION_REGISTRY[name]) {
+      throw new Error(`Invalid Location name: ${name}`);
+    }
     return LOCATION_REGISTRY[name];
   }
 
@@ -381,14 +384,14 @@ export const initialLocationsMap = (
 function playInnerJourneyFactory(numPoints: number): GameStatePlayFn {
   return (gameState: GameState, gameInput: GameInput) => {
     const player = gameState.getActivePlayer();
-    if (player.cardsInHand.length < numPoints) {
-      throw new Error("Insufficient cards for journey");
-    }
     if (gameInput.inputType !== GameInputType.PLACE_WORKER) {
       throw new Error("Invalid input type");
     }
     if (!gameInput.clientOptions) {
       throw new Error("Invalid input");
+    }
+    if (player.cardsInHand.length < numPoints) {
+      throw new Error("Insufficient cards for journey");
     }
     if (gameInput.clientOptions.cardsToDiscard?.length !== numPoints) {
       throw new Error("Must specify cards to discard for journey");

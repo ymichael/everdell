@@ -1,6 +1,36 @@
 import * as React from "react";
 import { CardName, ResourceType } from "../model/types";
 import { Player } from "../model/player";
+import { GameBlock } from "./common";
+
+export const Players = ({
+  viewingPlayer,
+  gameState,
+}: {
+  viewingPlayer: any;
+  gameState: any;
+}) => {
+  return (
+    <GameBlock title={"Players"}>
+      <PlayerStatus
+        player={viewingPlayer}
+        isViewer={true}
+        isActivePlayer={viewingPlayer.playerId === gameState.activePlayerId}
+      />
+      {gameState.players
+        .filter((player: any) => player.playerId !== viewingPlayer.playerId)
+        .map((player: any) => {
+          return (
+            <PlayerStatus
+              player={player}
+              isViewer={false}
+              isActivePlayer={player.playerId === gameState.activePlayerId}
+            />
+          );
+        })}
+    </GameBlock>
+  );
+};
 
 const PlayerStatus: React.FC<{
   player: any;
@@ -52,4 +82,4 @@ const PlayerStatus: React.FC<{
   );
 };
 
-export default PlayerStatus;
+export default Players;

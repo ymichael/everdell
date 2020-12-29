@@ -1,0 +1,10 @@
+.title {
+  font-family: "Allura", cursive;
+  font-size: 30px;
+}
+
+.block {
+  padding: 0 0.5rem;
+  margin: 10px;
+  width: 1090px;
+}

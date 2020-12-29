@@ -1,8 +1,8 @@
 import * as React from "react";
 import { Card as CardModel } from "../model/card";
-import Image from "next/image";
+import { CardTypeSymbol, ResourceTypeIcon } from "./assets";
 import styles from "../styles/card.module.css";
-import { ResourceType, CardCost, CardType, CardName } from "../model//types";
+import { ResourceType, CardCost, CardType, CardName } from "../model/types";
 
 var colorClassMap = {
   GOVERNANCE: styles.color_governance,
@@ -18,16 +18,6 @@ const getRarityLabel = (card: CardModel) => {
   var rarity = card.isUnique ? "Rare" : "Common";
   var category = card.isCritter ? "Critter" : "Construction";
   return rarity + " " + category;
-};
-
-const getCardBaseCost = (cardCost: CardCost) => {
-  var totalCost = [];
-  for (var resource in cardCost) {
-    //    if (cost[resource as ResourceType]) {
-    totalCost.push(cardCost[resource as keyof CardCost] + " " + resource);
-    //}
-  }
-  return totalCost;
 };
 
 // handle the farm and evertree
@@ -48,39 +38,15 @@ const getAssociatedCard = (card: CardModel) => {
 };
 
 const Card: React.FC<{ name: CardName }> = ({ name }) => {
-  var card = CardModel.fromName(name as any);
-
-  var colorClass = colorClassMap[card.cardType];
-
-  var rarityLabel = getRarityLabel(card);
-
-  var totalCost = getCardBaseCost(card.baseCost);
-
-  var associatedCard = getAssociatedCard(card);
-
+  const card = CardModel.fromName(name as any);
+  const colorClass = colorClassMap[card.cardType];
+  const rarityLabel = getRarityLabel(card);
+  const associatedCard = getAssociatedCard(card);
   return (
     <>
       <div className={styles.container}>
-        <div
-          className={[
-            styles.circle,
-            colorClass,
-            styles.card_header_symbol,
-          ].join(" ")}
-        >
-          {card.cardType === CardType.PRODUCTION ? (
-            <Image src="/images/production.png" layout="fill" />
-          ) : card.cardType === CardType.GOVERNANCE ? (
-            <Image src="/images/governance.png" layout="fill" />
-          ) : card.cardType === CardType.DESTINATION ? (
-            <Image src="/images/destination.png" layout="fill" />
-          ) : card.cardType === CardType.PROSPERITY ? (
-            <Image src="/images/prosperity.png" layout="fill" />
-          ) : card.cardType === CardType.TRAVELER ? (
-            <Image src="/images/traveler.png" layout="fill" />
-          ) : (
-            <></>
-          )}
+        <div className={[styles.circle, styles.card_header_symbol].join(" ")}>
+          <CardTypeSymbol cardType={card.cardType} />
         </div>
         <div
           className={[
@@ -93,11 +59,18 @@ const Card: React.FC<{ name: CardName }> = ({ name }) => {
         </div>
         <div className={[styles.card_header, colorClass].join(" ")}>{name}</div>
         <div className={styles.cost}>
-          <ul>
-            {totalCost.map(function (totalCost, index) {
-              return <li key={index}> {totalCost}</li>;
-            })}
-          </ul>
+          {Object.entries(card.baseCost).map(([resourceType, count], idx) => {
+            return (
+              <div className={styles.card_cost_row} key={idx}>
+                <span className={styles.card_cost_icon}>
+                  <ResourceTypeIcon
+                    resourceType={resourceType as ResourceType}
+                  />
+                </span>{" "}
+                <span className={styles.card_cost_value}>{count}</span>
+              </div>
+            );
+          })}
         </div>
         <div className={styles.rarity_label}>{rarityLabel}</div>
 

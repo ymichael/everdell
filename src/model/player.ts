@@ -8,6 +8,7 @@ import {
   GameInput,
   GameInputType,
   PlayedCardInfo,
+  PlayedEventInfo,
 } from "./types";
 import cloneDeep from "lodash/cloneDeep";
 import { GameState } from "./gameState";
@@ -30,7 +31,7 @@ export class Player {
   public currentSeason: Season;
   public numWorkers: number;
   public numAvailableWorkers: number;
-  public claimedEvents: Partial<Record<EventName, PlayedCardInfo>>;
+  public claimedEvents: Partial<Record<EventName, PlayedEventInfo>>;
 
   constructor({
     name,
@@ -65,7 +66,7 @@ export class Player {
     currentSeason: Season;
     numWorkers: number;
     numAvailableWorkers: number;
-    claimedEvents: Partial<Record<EventName, PlayedCardInfo>>;
+    claimedEvents: Partial<Record<EventName, PlayedEventInfo>>;
   }) {
     this.playerId = playerId;
     this.playerSecret = playerSecret;

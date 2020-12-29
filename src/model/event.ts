@@ -6,7 +6,7 @@ import {
   EventNameToPlayerId,
   GameInput,
   GameInputType,
-  PlayedCardInfo,
+  PlayedEventInfo,
   ResourceType,
 } from "./types";
 import { Card } from "./card";
@@ -20,7 +20,7 @@ import shuffle from "lodash/shuffle";
 
 export class Event implements GameStatePlayable {
   readonly playInner: GameStatePlayFn | undefined;
-  readonly playedCardInfoInner: (() => PlayedCardInfo) | undefined;
+  readonly playedEventInfoInner: (() => PlayedEventInfo) | undefined;
   readonly pointsInner:
     | ((gameState: GameState, playerId: string) => number)
     | undefined;
@@ -38,7 +38,7 @@ export class Event implements GameStatePlayable {
     baseVP,
     playInner, // called when the card is played
     canPlayInner, // called when we check canPlay function
-    playedCardInfoInner, // used for cards that accumulate other cards or resources
+    playedEventInfoInner, // used for cards that accumulate other cards or resources
     pointsInner, // computed if specified + added to base points
   }: {
     name: EventName;
@@ -46,7 +46,7 @@ export class Event implements GameStatePlayable {
     baseVP: number;
     canPlayInner: GameStateCanPlayFn;
     playInner?: GameStatePlayFn;
-    playedCardInfoInner?: () => PlayedCardInfo;
+    playedEventInfoInner?: () => PlayedEventInfo;
     pointsInner?: (gameState: GameState, playerId: string) => number;
   }) {
     this.name = name;
@@ -54,7 +54,7 @@ export class Event implements GameStatePlayable {
     this.baseVP = baseVP;
     this.canPlayInner = canPlayInner;
     this.playInner = playInner;
-    this.playedCardInfoInner = playedCardInfoInner;
+    this.playedEventInfoInner = playedEventInfoInner;
     this.pointsInner = pointsInner;
   }
 
@@ -92,21 +92,13 @@ export class Event implements GameStatePlayable {
     }
   }
 
-  getPlayedEventInfo(): PlayedCardInfo {
-    const ret: PlayedCardInfo = {};
-
-    ret.workers = [];
-    ret.maxWorkers = 1;
-
-    return {
-      ...ret,
-      ...(this.playedCardInfoInner ? this.playedCardInfoInner() : {}),
-    };
+  getPlayedEventInfo(): PlayedEventInfo {
+    return this.playedEventInfoInner ? this.playedEventInfoInner() : {};
   }
 
   /*
-  getPlayedCardInfo(): PlayedCardInfo {
-    const ret: PlayedCardInfo = {};
+  getplayedEventInfo(): playedEventInfo {
+    const ret: playedEventInfo = {};
     if (this.isConstruction) {
       ret.isOccupied = false;
     }
@@ -116,7 +108,7 @@ export class Event implements GameStatePlayable {
     }
     return {
       ...ret,
-      ...(this.playedCardInfoInner ? this.playedCardInfoInner() : {}),
+      ...(this.playedEventInfoInner ? this.playedEventInfoInner() : {}),
     };
   }
 
@@ -224,8 +216,8 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       CardName.TEACHER,
       CardName.UNIVERSITY,
     ]),
-    playedCardInfoInner: () => ({
-      pairedCards: [],
+    playedEventInfoInner: () => ({
+      storedCards: [],
     }),
     // play up to 3 critters from your hand beneath this event
     playInner: (gameState: GameState, gameInput: GameInput) => {
@@ -256,7 +248,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       // remove cards from hand
       for (const cardName in cardsToUse) {
         player.removeCardFromHand(cardName as CardName);
-        (eventInfo.pairedCards = eventInfo.pairedCards || []).push(cardName);
+        (eventInfo.storedCards = eventInfo.storedCards || []).push(cardName);
       }
     },
     // 2 points per critter beneath event
@@ -268,7 +260,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       if (!eventInfo) {
         throw new Error("Cannot find event info");
       }
-      return (eventInfo.pairedCards = eventInfo.pairedCards || []).length * 2;
+      return (eventInfo.storedCards = eventInfo.storedCards || []).length * 2;
     },
   }),
   [EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN]: new Event({
@@ -293,8 +285,8 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     baseVP: 0,
     canPlayInner: canPlayInnerRequiresCards([CardName.INN, CardName.BARD]),
     // may place up to 3 berries on this card
-    playedCardInfoInner: () => ({
-      resources: {
+    playedEventInfoInner: () => ({
+      storedResources: {
         [ResourceType.BERRY]: 0,
       },
     }),
@@ -326,8 +318,10 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       }
 
       // add berries to this event
-      eventInfo.resources = eventInfo.resources || { [ResourceType.BERRY]: 0 };
-      eventInfo.resources[ResourceType.BERRY] = numBerriesToSpend;
+      eventInfo.storedResources = eventInfo.storedResources || {
+        [ResourceType.BERRY]: 0,
+      };
+      eventInfo.storedResources[ResourceType.BERRY] = numBerriesToSpend;
 
       // remove berries from player's supply
       player.spendResources({ [ResourceType.BERRY]: numBerriesToSpend });
@@ -343,7 +337,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         throw new Error("Invalid event info");
       }
 
-      const resources = eventInfo.resources;
+      const resources = eventInfo.storedResources;
       if (!resources) {
         throw new Error("Invalid resources list");
       }
@@ -364,8 +358,8 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       CardName.COURTHOUSE,
       CardName.RANGER,
     ]),
-    playedCardInfoInner: () => ({
-      pairedCards: [],
+    playedEventInfoInner: () => ({
+      storedCards: [],
     }),
     // play up to 2 critters from your city beneath this event
     playInner: (gameState: GameState, gameInput: GameInput) => {
@@ -396,7 +390,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       // remove cards from city
       for (const cardName in cardsToUse) {
         player.removeCardFromCity(cardName as CardName);
-        (eventInfo.pairedCards = eventInfo.pairedCards || []).push(cardName);
+        (eventInfo.storedCards = eventInfo.storedCards || []).push(cardName);
       }
     },
     // 3 points per critter beneath event
@@ -408,7 +402,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       if (!eventInfo) {
         throw new Error("Cannot find event info");
       }
-      return (eventInfo.pairedCards = eventInfo.pairedCards || []).length * 3;
+      return (eventInfo.storedCards = eventInfo.storedCards || []).length * 3;
     },
   }),
   [EventName.SPECIAL_MINISTERING_TO_MISCREANTS]: new Event({
@@ -498,8 +492,8 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       CardName.LOOKOUT,
       CardName.MINER_MOLE,
     ]),
-    playedCardInfoInner: () => ({
-      resources: {
+    playedEventInfoInner: () => ({
+      storedResources: {
         [ResourceType.TWIG]: 0,
       },
     }),
@@ -531,8 +525,10 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       }
 
       // add twigs to this event
-      eventInfo.resources = eventInfo.resources || { [ResourceType.TWIG]: 0 };
-      eventInfo.resources[ResourceType.TWIG] = numTwigsToSpend;
+      eventInfo.storedResources = eventInfo.storedResources || {
+        [ResourceType.TWIG]: 0,
+      };
+      eventInfo.storedResources[ResourceType.TWIG] = numTwigsToSpend;
 
       // remove twigs from player's supply
       player.spendResources({ [ResourceType.TWIG]: numTwigsToSpend });
@@ -548,7 +544,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         throw new Error("Invalid event info");
       }
 
-      const resources = eventInfo.resources;
+      const resources = eventInfo.storedResources;
       if (!resources) {
         throw new Error("Invalid resources list");
       }
@@ -601,8 +597,8 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       CardName.PEDDLER,
       CardName.GENERAL_STORE,
     ]),
-    playedCardInfoInner: () => ({
-      resources: {
+    playedEventInfoInner: () => ({
+      storedResources: {
         [ResourceType.TWIG]: 0,
         [ResourceType.RESIN]: 0,
         [ResourceType.PEBBLE]: 0,
@@ -630,7 +626,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       }
 
       // add resources to this event
-      eventInfo.resources = resourcesToSpend;
+      eventInfo.storedResources = resourcesToSpend;
 
       // remove resources from player's supply
       player.spendResources(resourcesToSpend);
@@ -646,7 +642,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         throw new Error("Invalid event info");
       }
 
-      const resources = eventInfo.resources;
+      const resources = eventInfo.storedResources;
       if (!resources) {
         throw new Error("Invalid resources list");
       }
@@ -681,8 +677,8 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       CardName.RUINS,
     ]),
     */
-    playedCardInfoInner: () => ({
-      pairedCards: [],
+    playedEventInfoInner: () => ({
+      storedCards: [],
     }),
     // TODO: add playInner
     pointsInner: (gameState: GameState, playerId: string) => {
@@ -693,13 +689,13 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         throw new Error("Cannot find event info");
       }
 
-      const pairedCards = eventInfo.pairedCards;
+      const storedCards = eventInfo.storedCards;
 
-      if (!pairedCards) {
+      if (!storedCards) {
         throw new Error("Invalid list of paired cards");
       }
 
-      return pairedCards.length;
+      return storedCards.length;
     },
   }),
   [EventName.SPECIAL_FLYING_DOCTOR_SERVICE]: new Event({

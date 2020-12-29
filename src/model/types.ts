@@ -315,7 +315,7 @@ export type PlayedCardInfo = {
   // constructions
   isOccupied?: boolean;
 
-  // clocktower, storehouse, certain events, etc
+  // clocktower, storehouse
   resources?: {
     [ResourceType.VP]?: number;
     [ResourceType.TWIG]?: number;
@@ -328,8 +328,24 @@ export type PlayedCardInfo = {
   workers?: string[];
   maxWorkers?: number;
 
-  // dungeon and certain events
+  // dungeon
   pairedCards?: string[];
+};
+
+export type PlayedEventInfo = {
+  // whether the event card has a worker on it
+  hasWorker?: boolean;
+
+  // events that store resources
+  storedResources?: {
+    [ResourceType.TWIG]?: number;
+    [ResourceType.BERRY]?: number;
+    [ResourceType.PEBBLE]?: number;
+    [ResourceType.RESIN]?: number;
+  };
+
+  // certain events
+  storedCards?: string[];
 };
 
 export type PlayerIdsToAvailableDestinationCards = {

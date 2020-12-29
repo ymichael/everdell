@@ -1,6 +1,12 @@
 import expect from "expect.js";
 import { GameState } from "./gameState";
-import { CardName, GameInput, GameInputType, LocationName } from "./types";
+import {
+  CardName,
+  GameInput,
+  GameInputType,
+  LocationName,
+  EventName,
+} from "./types";
 import { testInitialGameState } from "./testHelpers";
 
 describe("GameState", () => {
@@ -71,7 +77,6 @@ describe("GameState", () => {
     });
   });
   describe("visiting destination cards", () => {
-    const foo = "abc";
     it("should handle visit destination card", () => {
       // player1 is the active player
       const player1 = gameState.players[0];
@@ -136,6 +141,42 @@ describe("GameState", () => {
       // TODO: bring this test back when open destinations are implemented
       //gameState.handleVisitDestinationCardGameInput(gameInput as any);
       //expect(player1.numAvailableWorkers).to.be(0);
+    });
+  });
+  describe("claiming events", () => {
+    it("claim 4 production tags events", () => {
+      // player1 is the active player
+      const player1 = gameState.players[0];
+      const player2 = gameState.players[1];
+
+      player1.playedCards[CardName.MINE] = [{}, {}];
+      player1.playedCards[CardName.FARM] = [{}, {}];
+
+      player2.playedCards[CardName.MINE] = [{}, {}];
+      player2.playedCards[CardName.FARM] = [{}, {}];
+
+      expect(player1.numAvailableWorkers).to.be(2);
+      expect(player2.numAvailableWorkers).to.be(2);
+
+      // player1 should be able to claim event
+      let gameInput: GameInput = {
+        inputType: GameInputType.CLAIM_EVENT as const,
+        event: EventName.BASIC_FOUR_PRODUCTION_TAGS,
+      };
+
+      gameState.handleClaimEventGameInput(gameInput);
+
+      expect(player1.numAvailableWorkers).to.be(1);
+      expect(
+        !!player1.claimedEvents[EventName.BASIC_FOUR_PRODUCTION_TAGS]
+      ).to.be(true);
+
+      // player2 should not be able to claim event
+      gameState.nextPlayer();
+
+      expect(() => {
+        gameState.handleClaimEventGameInput(gameInput as any);
+      }).to.throwException(/cannot play/i);
     });
   });
 });

@@ -87,8 +87,13 @@ export class Event implements GameStatePlayable {
     }
     const player = gameState.getActivePlayer();
     player.claimEvent(this.name);
+
+    this.playEventEffects();
+  }
+
+  playEventEffects(gameState: GameState, gameInput: GameInput): void {
     if (this.playInner) {
-      console.log("foo");
+      this.playInner(gameState, gameInput);
     }
   }
 

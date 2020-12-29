@@ -160,10 +160,28 @@ export class GameState {
     }
   }
 
-  // TODO: implement
-  private handleClaimEventGameInput(
+  public handleClaimEventGameInput(
     gameInput: GameInput & { inputType: GameInputType.CLAIM_EVENT }
-  ): void {}
+  ): void {
+    const event = Event.fromName(gameInput.event);
+    if (!event.canPlay(this, gameInput)) {
+      throw new Error("Cannot play this event");
+    }
+
+    // take the event action
+    event.play(this, gameInput);
+
+    // Update game state
+    const player = this.getActivePlayer();
+    const claimedEvent = player.claimedEvents[gameInput.event];
+
+    if (!claimedEvent) {
+      throw new Error("Event wasn't claimed properly");
+    }
+    claimedEvent.hasWorker = true;
+    player.numAvailableWorkers--;
+    this.eventsMap[gameInput.event] = player.playerId;
+  }
 
   public handleVisitDestinationCardGameInput(
     gameInput: GameInput & { inputType: GameInputType.VISIT_DESTINATION_CARD }

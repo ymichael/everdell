@@ -14,7 +14,7 @@ import { Card } from "./card";
 import { CardStack, emptyCardStack } from "./cardStack";
 import { Location, initialLocationsMap } from "./location";
 import { Event, initialEventMap } from "./event";
-import { initialShuffledDeck } from "./deck";
+import { initialDeck } from "./deck";
 import cloneDeep from "lodash/cloneDeep";
 
 const MEADOW_SIZE = 8;
@@ -195,7 +195,13 @@ export class GameState {
     });
   }
 
-  static initialGameState({ players }: { players: Player[] }): GameState {
+  static initialGameState({
+    players,
+    shuffleDeck = true,
+  }: {
+    players: Player[];
+    shuffleDeck?: boolean;
+  }): GameState {
     if (players.length < 2) {
       throw new Error(`Unable to create a game with ${players.length} players`);
     }
@@ -203,12 +209,16 @@ export class GameState {
     const gameState = new GameState({
       players,
       meadowCards: [],
-      deck: initialShuffledDeck(),
+      deck: initialDeck(),
       discardPile: emptyCardStack(),
       locationsMap: initialLocationsMap(players.length),
       eventsMap: initialEventMap(),
       pendingGameInputs: [],
     });
+
+    if (shuffleDeck) {
+      gameState.deck.shuffle();
+    }
 
     // Players draw cards
     players.forEach((p, idx) => {

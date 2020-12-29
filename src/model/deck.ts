@@ -52,7 +52,7 @@ const baseCardsToCount: Partial<Record<CardName, number>> = {
   [CardName.WOODCARVER]: 3,
 };
 
-export const initialShuffledDeck = (): CardStack => {
+export const initialDeck = (): CardStack => {
   const cardStack = new CardStack({ cards: [] });
   ((Object.entries(baseCardsToCount) as unknown) as [
     CardName,
@@ -62,6 +62,5 @@ export const initialShuffledDeck = (): CardStack => {
       cardStack.addToStack(cardName);
     }
   });
-  cardStack.shuffle();
   return cardStack;
 };

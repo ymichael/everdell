@@ -17,6 +17,7 @@ export function testInitialGameState(
     noForestLocations?: boolean;
     noSpecialEvents?: boolean;
     meadowCards?: CardName[];
+    shuffleDeck?: boolean;
   } = {}
 ): GameState {
   const {
@@ -25,6 +26,7 @@ export function testInitialGameState(
     meadowCards = [],
     noForestLocations = true,
     noSpecialEvents = true,
+    shuffleDeck = false,
   } = opts;
   const players = [];
   for (let i = 0; i < numPlayers; i++) {
@@ -32,6 +34,7 @@ export function testInitialGameState(
   }
   const gameState = GameState.initialGameState({
     players,
+    shuffleDeck,
   });
   while (gameState.meadowCards.length) {
     gameState.meadowCards.pop();

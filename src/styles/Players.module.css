@@ -1,0 +1,39 @@
+.status_box {
+  height: 80px;
+  width: fit-content;
+  border: solid 1px black;
+  display: flex;
+  margin: 5px 0;
+}
+
+.status_box_item {
+  padding: 5px;
+}
+
+.status_box_item_resource_list {
+  height: 100%;
+  display: flex;
+  padding: 0 5px;
+  border-left: solid 1px black;
+}
+
+.status_box_item_resource {
+  padding: 0 5px;
+  display: flex;
+  flex-direction: column;
+}
+
+.status_box_item_resource_icon {
+  width: 25px;
+  height: 25px;
+  position: relative;
+  display: inline-block;
+  font-weight: 800;
+}
+
+.status_box_item_resource_count {
+  display: inline-block;
+  font-size: 15px;
+  padding-top: 5px;
+  text-align: center;
+}

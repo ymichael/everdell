@@ -102,56 +102,73 @@ export class GameState {
     return GameState.fromJSON(this.toJSON(true /* includePrivate */));
   }
 
+  private handlePlayCardGameInput(
+    gameInput: GameInput & { inputType: GameInputType.PLAY_CARD }
+  ): void {
+    const card = Card.fromName(gameInput.card);
+    if (!card) {
+      throw new Error("Invalid card");
+    }
+    if (!card.canPlay(this, gameInput)) {
+      throw new Error("Cannot take action");
+    }
+    if (gameInput.fromMeadow) {
+      this.removeCardFromMeadow(gameInput.card);
+      this.replenishMeadow();
+    } else {
+      this.getActivePlayer().removeCardFromHand(gameInput.card);
+    }
+    card.play(this, gameInput);
+  }
+
+  private handlePlaceWorkerGameInput(
+    gameInput: GameInput & { inputType: GameInputType.PLACE_WORKER }
+  ): void {
+    const location = Location.fromName(gameInput.location);
+    if (!location) {
+      throw new Error("Invalid location");
+    }
+    if (!location.canPlay(this, gameInput)) {
+      throw new Error("Cannot take action");
+    }
+
+    // Take location effect
+    location.play(this, gameInput);
+
+    // Update game state
+    const player = this.getActivePlayer();
+    player.numAvailableWorkers--;
+    this.locationsMap[gameInput.location]!.push(player.playerId);
+  }
+
+  private handleMultiStepGameInput(
+    gameInput: GameInput & { inputType: GameInputType.MULTI_STEP }
+  ): void {
+    if (gameInput.prevInputType === GameInputType.PLAY_CARD) {
+      const card = Card.fromName(gameInput.card);
+      if (!card) {
+        throw new Error("Invalid card");
+      }
+      if (!card.canPlay(this, gameInput)) {
+        throw new Error("Cannot take action");
+      }
+      card.play(this, gameInput);
+    } else {
+      throw new Error(`Unhandled game input: ${JSON.stringify(gameInput)}`);
+    }
+  }
+
   next(gameInput: GameInput): GameState {
     const nextGameState = this.clone();
-    let player: Player;
     switch (gameInput.inputType) {
       case GameInputType.PLAY_CARD:
-        const card = Card.fromName(gameInput.card);
-        if (!card) {
-          throw new Error("Invalid card");
-        }
-        if (!card.canPlay(nextGameState, gameInput)) {
-          throw new Error("Cannot take action");
-        }
-        if (gameInput.fromMeadow) {
-          nextGameState.removeCardFromMeadow(gameInput.card);
-          nextGameState.replenishMeadow();
-        } else {
-          nextGameState.getActivePlayer().removeCardFromHand(gameInput.card);
-        }
-        card.play(nextGameState, gameInput);
+        nextGameState.handlePlayCardGameInput(gameInput);
         break;
       case GameInputType.PLACE_WORKER:
-        const location = Location.fromName(gameInput.location);
-        if (!location) {
-          throw new Error("Invalid location");
-        }
-        if (!location.canPlay(nextGameState, gameInput)) {
-          throw new Error("Cannot take action");
-        }
-
-        // Take location effect
-        location.play(nextGameState, gameInput);
-
-        // Update game state
-        player = nextGameState.getActivePlayer();
-        player.numAvailableWorkers--;
-        nextGameState.locationsMap[gameInput.location]!.push(player.playerId);
+        nextGameState.handlePlaceWorkerGameInput(gameInput);
         break;
       case GameInputType.MULTI_STEP:
-        if (gameInput.prevInputType === GameInputType.PLAY_CARD) {
-          const card = Card.fromName(gameInput.card);
-          if (!card) {
-            throw new Error("Invalid card");
-          }
-          if (!card.canPlay(nextGameState, gameInput)) {
-            throw new Error("Cannot take action");
-          }
-          card.play(nextGameState, gameInput);
-        } else {
-          throw new Error(`Unhandled game input: ${JSON.stringify(gameInput)}`);
-        }
+        nextGameState.handleMultiStepGameInput(gameInput);
         break;
       case GameInputType.VISIT_DESTINATION_CARD:
         break;

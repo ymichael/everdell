@@ -711,26 +711,10 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       CardName.POSTAL_PIGEON,
     ]),
     pointsInner: (gameState: GameState, playerId: string) => {
-      const players = gameState.players;
-
-      if (!players) {
-        throw new Error("Invalid list of players");
-      }
-
       let numHusbandWifePairs = 0;
-
-      for (const player in players) {
-        const playedCards = gameState.getPlayer(player).playedCards;
-        if (!playedCards) {
-          throw new Error("Invalid list of played cards");
-        }
-        const playedHusbands = playedCards[CardName.HUSBAND] || [];
-        const playedWifes = playedCards[CardName.WIFE] || [];
-
-        numHusbandWifePairs =
-          numHusbandWifePairs +
-          Math.min(playedHusbands.length, playedWifes.length);
-      }
+      gameState.players.forEach((player) => {
+        numHusbandWifePairs += player.numHusbandWifePairs();
+      });
       return numHusbandWifePairs * 3;
     },
   }),

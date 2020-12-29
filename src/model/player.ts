@@ -485,7 +485,7 @@ export class Player {
     return outstandingOwedSum === 0;
   }
 
-  isPaymentOptionsValid(cardName: CardName, gameInput: GameInput): boolean {
+  isPaymentOptionsValid(gameInput: GameInput): boolean {
     if (gameInput.inputType !== GameInputType.PLAY_CARD) {
       throw new Error("Invalid input type");
     }
@@ -503,6 +503,11 @@ export class Player {
       if (!Card.fromName(paymentOptions.cardToDungeon).isCritter) {
         throw new Error("Invalid paymentOptions: can only dungeon critter");
       }
+      return this.isPaidResourcesValid(
+        paymentResources,
+        cardToPlay.baseCost,
+        "ANY"
+      );
     }
     if (paymentOptions.cardToUse) {
       const cardToUse = Card.fromName(paymentOptions.cardToUse);
@@ -517,12 +522,22 @@ export class Player {
             `Invalid paymentOptions: Cannot use Crane on ${cardToPlay.name}`
           );
         }
+        return this.isPaidResourcesValid(
+          paymentResources,
+          cardToPlay.baseCost,
+          "ANY"
+        );
       } else if (paymentOptions.cardToUse === CardName.INNKEEPER) {
         if (!cardToPlay.isCritter) {
           throw new Error(
             `Invalid paymentOptions: Cannot use Innkeeper on ${cardToPlay.name}`
           );
         }
+        return this.isPaidResourcesValid(
+          paymentResources,
+          cardToPlay.baseCost,
+          ResourceType.BERRY
+        );
       } else if (paymentOptions.cardToUse === CardName.INN) {
         // TODO check if we can place a worker here
         if (!gameInput.fromMeadow) {
@@ -530,6 +545,11 @@ export class Player {
             `Invalid paymentOptions: Cannot use Inn on non-meadow card`
           );
         }
+        return this.isPaidResourcesValid(
+          paymentResources,
+          cardToPlay.baseCost,
+          "ANY"
+        );
       } else if (paymentOptions.cardToUse === CardName.QUEEN) {
         // TODO check if we can place a worker here
         if (cardToPlay.baseVP > 3) {
@@ -544,7 +564,7 @@ export class Player {
         );
       }
     }
-    return false;
+    return this.isPaidResourcesValid(paymentResources, cardToPlay.baseCost);
   }
 
   spendResources({

@@ -722,16 +722,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       let numHusbandWifePairs = 0;
 
       for (let player in players) {
-        let playedCards = gameState.getPlayer(player).playedCards;
-        if (!playedCards) {
-          throw new Error("Invalid list of played cards");
-        }
-        let playedHusbands = playedCards[CardName.HUSBAND] || [];
-        let playedWifes = playedCards[CardName.WIFE] || [];
-
         numHusbandWifePairs =
           numHusbandWifePairs +
-          Math.min(playedHusbands.length, playedWifes.length);
+          gameState.getPlayer(player).numHusbandWifePairs();
       }
       return numHusbandWifePairs * 3;
     },

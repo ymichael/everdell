@@ -198,12 +198,9 @@ describe("Card", () => {
         ];
         player.gainResources(card.baseCost);
         expect(player.getNumResource(ResourceType.VP)).to.be(0);
-        try {
+        expect(() => {
           gameState.next(gameInput);
-          expect("Execption to be raised").to.be(null);
-        } catch (e) {
-          // ignore
-        }
+        }).to.throwException(/too many cards/);
         expect(player.getNumResource(ResourceType.VP)).to.be(0);
       });
     });

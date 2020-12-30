@@ -5,9 +5,16 @@ import { FormikProps, Formik, Form, Field, FieldArray, useField } from "formik";
 
 import styles from "../styles/GameInputBox.module.css";
 import { GameState } from "../model/gameState";
-import { GameInputType, GameInput, CardName } from "../model/types";
+import {
+  ResourceType,
+  GameInputType,
+  GameInput,
+  CardName,
+} from "../model/types";
 import { Player } from "../model/player";
+import { Card as CardModel } from "../model/card";
 import { GameBlock } from "./common";
+import { ResourceTypeIcon } from "./assets";
 import Card from "./Card";
 
 const GameInputBoxWaiting: React.FC<{ activePlayer: Player }> = ({
@@ -30,9 +37,93 @@ const gameInputSortOrder: Record<GameInputType, number> = {
   [GameInputType.GAME_END]: 5,
 };
 
-// const ResourceTypeValueInput = ({ resourceType }: { ResourceType }) => {
-//   return <></>;
-// };
+const ResourceTypeValueInput = ({
+  resourceType,
+  name,
+}: {
+  resourceType: ResourceType;
+  name: string;
+}) => {
+  const [field, meta, helpers] = useField(name);
+  return (
+    <div className={styles.resource_type_value_input_wrapper}>
+      <div className={styles.resource_type_value_input_icon}>
+        <ResourceTypeIcon resourceType={resourceType} />
+      </div>
+      <input
+        type="number"
+        defaultValue={meta.value}
+        onChange={(e) => {
+          helpers.setValue(e.target.value);
+        }}
+        className={styles.resource_type_value_input_input}
+      />
+    </div>
+  );
+};
+
+const CardPaymentForm = ({
+  gameInput,
+  name,
+}: {
+  gameInput: GameInput;
+  name: string;
+}) => {
+  if (gameInput.inputType !== GameInputType.PLAY_CARD) {
+    return <></>;
+  }
+  const card = CardModel.fromName(gameInput.card);
+  const [field, meta, helpers] = useField(name);
+  return (
+    <div className={styles.card_payment_form}>
+      <p>Resources to spend:</p>
+      <div className={styles.resource_type_value_list}>
+        <ResourceTypeValueInput
+          name={`${name}.resources.BERRY`}
+          resourceType={ResourceType.BERRY}
+        />
+        <ResourceTypeValueInput
+          name={`${name}.resources.TWIG`}
+          resourceType={ResourceType.TWIG}
+        />
+        <ResourceTypeValueInput
+          name={`${name}.resources.RESIN`}
+          resourceType={ResourceType.RESIN}
+        />
+        <ResourceTypeValueInput
+          name={`${name}.resources.PEBBLE`}
+          resourceType={ResourceType.PEBBLE}
+        />
+      </div>
+      {card.isCritter && card.associatedCard && (
+        <>
+          <p>Use Associated Construction:</p>
+          <label>
+            <Field type={"checkbox"} name={`${name}.useAssociatedCard`} />
+            Use {card.associatedCard} to play {card.name}
+          </label>
+        </>
+      )}
+      <p>Card to use:</p>
+      {[
+        CardName.QUEEN,
+        CardName.INNKEEPER,
+        CardName.INN,
+        CardName.CRANE,
+        "None",
+      ].map((cardToUse, idx) => (
+        <label key={idx}>
+          <Field
+            type="radio"
+            name="gameInput.paymentOptions.cardToUse"
+            value={cardToUse}
+          />
+          {cardToUse}
+        </label>
+      ))}
+    </div>
+  );
+};
 
 const GameInputPlayCardSelector = ({
   gameInputs = [],
@@ -71,7 +162,12 @@ const GameInputPlayCardSelector = ({
                       _idx: idx,
                       clientOptions: {},
                       paymentOptions: {
-                        resources: {},
+                        resources: {
+                          [ResourceType.BERRY]: 0,
+                          [ResourceType.TWIG]: 0,
+                          [ResourceType.RESIN]: 0,
+                          [ResourceType.PEBBLE]: 0,
+                        },
                       },
                     });
                   }}
@@ -92,59 +188,10 @@ const GameInputPlayCardSelector = ({
         </div>
       </div>
       {meta.value && (
-        <div>
-          <p>
-            Berry:{" "}
-            <Field
-              type="number"
-              value="0"
-              name={"gameInput.paymentOptions.resources.BERRY"}
-            />
-          </p>
-          <p>
-            Resin:{" "}
-            <Field
-              type="number"
-              value="0"
-              name={"gameInput.paymentOptions.resources.RESIN"}
-            />
-          </p>
-          <p>
-            Pebble:{" "}
-            <Field
-              type="number"
-              value="0"
-              name={"gameInput.paymentOptions.resources.PEBBLE"}
-            />
-          </p>
-          <p>
-            Twig:{" "}
-            <Field
-              type="number"
-              value="0"
-              name={"gameInput.paymentOptions.resources.TWIG"}
-            />
-          </p>
-          <div>
-            <div>Card to use: </div>
-            {[
-              CardName.QUEEN,
-              CardName.INNKEEPER,
-              CardName.INN,
-              CardName.CRANE,
-              "None",
-            ].map((cardToUse, idx) => (
-              <label key={idx}>
-                <Field
-                  type="radio"
-                  name="gameInput.paymentOptions.cardToUse"
-                  value={cardToUse}
-                />
-                {cardToUse}
-              </label>
-            ))}
-          </div>
-        </div>
+        <CardPaymentForm
+          gameInput={meta.value as GameInput}
+          name={"gameInput.paymentOptions"}
+        />
       )}
     </div>
   );

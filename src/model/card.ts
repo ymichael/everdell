@@ -137,7 +137,7 @@ export class Card<TCardType extends CardType = CardType>
         return false;
       }
       return player.canAffordCard(this.name, gameInput.fromMeadow);
-    } else if (gameInput.inputType === GameInputType.MULTI_STEP) {
+    } else if (gameInput.inputType === GameInputType.SELECT_CARD) {
       return true;
     } else {
       throw new Error("Invalid game input: ${gameInput}");
@@ -167,12 +167,8 @@ export class Card<TCardType extends CardType = CardType>
           this.playInner(gameState, gameInput);
         }
       }
-    } else if (gameInput.inputType === GameInputType.MULTI_STEP) {
-      this.playCardEffects(gameState, gameInput);
-    } else if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
-      this.playCardEffects(gameState, gameInput);
     } else {
-      throw new Error("Invalid game input type");
+      this.playCardEffects(gameState, gameInput);
     }
   }
 
@@ -833,15 +829,15 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         if (gameState.pendingGameInputs.length !== 0) {
           throw new Error("Should not have any pending game input");
         }
-        const revealedCards = [gameState.drawCard(), gameState.drawCard()];
+        const cardOptions = [gameState.drawCard(), gameState.drawCard()];
         const player = gameState.getActivePlayer();
         gameState.pendingGameInputs = [
-          ...revealedCards
+          ...cardOptions
             .map((card) => ({
-              inputType: GameInputType.MULTI_STEP as const,
+              inputType: GameInputType.SELECT_CARD as const,
               prevInputType: GameInputType.PLAY_CARD as const,
               card: CardName.POSTAL_PIGEON as const,
-              revealedCards,
+              cardOptions,
               pickedCard: card,
             }))
             .filter((gameInput) => {
@@ -852,26 +848,26 @@ const CARD_REGISTRY: Record<CardName, Card> = {
               return player.canAddToCity(gameInput.pickedCard);
             }),
           {
-            inputType: GameInputType.MULTI_STEP,
+            inputType: GameInputType.SELECT_CARD,
             prevInputType: GameInputType.PLAY_CARD,
             card: CardName.POSTAL_PIGEON,
-            revealedCards,
+            cardOptions,
             pickedCard: null,
           },
         ];
       } else if (
-        gameInput.inputType === GameInputType.MULTI_STEP &&
+        gameInput.inputType === GameInputType.SELECT_CARD &&
         gameInput.prevInputType === GameInputType.PLAY_CARD &&
         gameInput.card === CardName.POSTAL_PIGEON
       ) {
         gameState.pendingGameInputs = [];
         const player = gameState.getActivePlayer();
-        const revealedCards = [...gameInput.revealedCards];
+        const cardOptions = [...gameInput.cardOptions];
         if (gameInput.pickedCard) {
           player.addToCity(gameInput.pickedCard);
-          revealedCards.splice(revealedCards.indexOf(gameInput.pickedCard), 1);
+          cardOptions.splice(cardOptions.indexOf(gameInput.pickedCard), 1);
         }
-        revealedCards.forEach((cardName) => {
+        cardOptions.forEach((cardName) => {
           gameState.discardPile.addToStack(cardName);
         });
       } else {

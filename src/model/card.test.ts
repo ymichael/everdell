@@ -284,24 +284,24 @@ describe("Card", () => {
         expect(gameState2.pendingGameInputs).to.eql([
           {
             card: "POSTAL_PIGEON",
-            inputType: "MULTI_STEP",
+            inputType: "SELECT_CARD",
             pickedCard: "MINE",
             prevInputType: "PLAY_CARD",
-            revealedCards: ["MINE", "FARM"],
+            cardOptions: ["MINE", "FARM"],
           },
           {
             card: "POSTAL_PIGEON",
-            inputType: "MULTI_STEP",
+            inputType: "SELECT_CARD",
             pickedCard: "FARM",
             prevInputType: "PLAY_CARD",
-            revealedCards: ["MINE", "FARM"],
+            cardOptions: ["MINE", "FARM"],
           },
           {
             card: "POSTAL_PIGEON",
-            inputType: "MULTI_STEP",
+            inputType: "SELECT_CARD",
             pickedCard: null,
             prevInputType: "PLAY_CARD",
-            revealedCards: ["MINE", "FARM"],
+            cardOptions: ["MINE", "FARM"],
           },
         ]);
 
@@ -343,10 +343,10 @@ describe("Card", () => {
         expect(gameState2.pendingGameInputs).to.eql([
           {
             card: "POSTAL_PIGEON",
-            inputType: "MULTI_STEP",
+            inputType: "SELECT_CARD",
             pickedCard: null,
             prevInputType: "PLAY_CARD",
-            revealedCards: ["KING", "QUEEN"],
+            cardOptions: ["KING", "QUEEN"],
           },
         ]);
       });

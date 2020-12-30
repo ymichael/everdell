@@ -79,9 +79,8 @@ export enum GameInputType {
   PREPARE_FOR_SEASON = "PREPARE_FOR_SEASON",
   GAME_END = "GAME_END",
 
-  // Special input type used for inputs that require multiple steps
-  // eg. postal pigeon, undertaker etc
-  MULTI_STEP = "MULTI_STEP",
+  SELECT_CARD = "SELECT_CARD",
+  DISCARD_CARDS = "DISCARD_CARDS",
 }
 
 export type GameInputPlaceWorker = {
@@ -221,13 +220,24 @@ export type GameInputSimple =
   | GameInputGameEnd
   | GameInputPrepareForSeason;
 
-export type GameInputMultiStep = {
-  inputType: GameInputType.MULTI_STEP;
-  prevInputType: GameInputType.PLAY_CARD;
-  card: CardName.POSTAL_PIGEON;
-  revealedCards: CardName[];
-  pickedCard: CardName | null;
+export type GameInputDiscardCards = {
+  inputType: GameInputType.DISCARD_CARDS;
+  prevInputType: GameInputType;
+  minCards: number;
+  maxCards: number;
+  location?: LocationName;
+  cardsToDiscard?: CardName[];
 };
+
+export type GameInputSelectCard = {
+  inputType: GameInputType.SELECT_CARD;
+  prevInputType: GameInputType;
+  cardOptions: CardName[];
+  pickedCard: CardName | null;
+  card?: CardName;
+};
+
+export type GameInputMultiStep = GameInputSelectCard | GameInputDiscardCards;
 
 export type GameInput = GameInputSimple | GameInputMultiStep;
 

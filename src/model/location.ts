@@ -171,28 +171,28 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     name: LocationName.JOURNEY_FIVE,
     type: LocationType.JOURNEY,
     occupancy: LocationOccupancy.EXCLUSIVE,
-    playInner: playInnerJourneyFactory(5),
+    playInner: playInnerJourneyFactory(LocationName.JOURNEY_FIVE, 5),
     canPlayInner: canPlayInnerJourneyFactory(5),
   }),
   [LocationName.JOURNEY_FOUR]: new Location({
     name: LocationName.JOURNEY_FOUR,
     type: LocationType.JOURNEY,
     occupancy: LocationOccupancy.EXCLUSIVE,
-    playInner: playInnerJourneyFactory(4),
+    playInner: playInnerJourneyFactory(LocationName.JOURNEY_FOUR, 4),
     canPlayInner: canPlayInnerJourneyFactory(4),
   }),
   [LocationName.JOURNEY_THREE]: new Location({
     name: LocationName.JOURNEY_THREE,
     type: LocationType.JOURNEY,
     occupancy: LocationOccupancy.EXCLUSIVE,
-    playInner: playInnerJourneyFactory(3),
+    playInner: playInnerJourneyFactory(LocationName.JOURNEY_THREE, 3),
     canPlayInner: canPlayInnerJourneyFactory(3),
   }),
   [LocationName.JOURNEY_TWO]: new Location({
     name: LocationName.JOURNEY_TWO,
     type: LocationType.JOURNEY,
     occupancy: LocationOccupancy.UNLIMITED,
-    playInner: playInnerJourneyFactory(2),
+    playInner: playInnerJourneyFactory(LocationName.JOURNEY_TWO, 2),
     canPlayInner: canPlayInnerJourneyFactory(2),
   }),
   [LocationName.BASIC_ONE_BERRY]: new Location({
@@ -388,34 +388,38 @@ export const initialLocationsMap = (
 /**
  * Helpers
  */
-function playInnerJourneyFactory(numPoints: number): GameStatePlayFn {
+function playInnerJourneyFactory(
+  location: LocationName,
+  numPoints: number
+): GameStatePlayFn {
   return (gameState: GameState, gameInput: GameInput) => {
-    // gameState.pendingGameInputs.push({
-    //   inputType: GameInputType.DISCARD_CARDS,
-    //   numToDiscard: numPoints,
-    // });
-
-    throw new Error("Not Implemented");
-    // const player = gameState.getActivePlayer();
-    // if (gameInput.inputType !== GameInputType.PLACE_WORKER) {
-    //   throw new Error("Invalid input type");
-    // }
-    // if (!gameInput.clientOptions) {
-    //   throw new Error("Invalid input");
-    // }
-    // if (player.cardsInHand.length < numPoints) {
-    //   throw new Error("Insufficient cards for journey");
-    // }
-    // if (gameInput.clientOptions.cardsToDiscard?.length !== numPoints) {
-    //   throw new Error("Must specify cards to discard for journey");
-    // }
-    // gameInput.clientOptions.cardsToDiscard.forEach((card: CardName) => {
-    //   player.removeCardFromHand(card);
-    //   gameState.discardPile.addToStack(card);
-    // });
-    // player.gainResources({
-    //   [ResourceType.VP]: numPoints,
-    // });
+    if (gameInput.inputType === GameInputType.PLACE_WORKER) {
+      gameState.pendingGameInputs.push({
+        inputType: GameInputType.DISCARD_CARDS,
+        prevInputType: GameInputType.PLACE_WORKER,
+        location: location,
+        minCards: numPoints,
+        maxCards: numPoints,
+      });
+    } else if (gameInput.inputType === GameInputType.DISCARD_CARDS) {
+      if (!gameInput.cardsToDiscard) {
+        throw new Error("invalid input");
+      }
+      if (gameInput.cardsToDiscard.length !== numPoints) {
+        throw new Error("Discarded incorrect number of cards");
+      }
+      const player = gameState.getActivePlayer();
+      gameInput.cardsToDiscard.forEach((card: CardName) => {
+        player.removeCardFromHand(card);
+        gameState.discardPile.addToStack(card);
+      });
+      player.gainResources({
+        [ResourceType.VP]: numPoints,
+      });
+      gameState.pendingGameInputs = [];
+    } else {
+      throw new Error(`Invalid inputType: ${gameInput.inputType}`);
+    }
   };
 }
 

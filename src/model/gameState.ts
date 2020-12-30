@@ -2,6 +2,10 @@ import {
   Season,
   GameInputType,
   GameInput,
+  GameInputPlayCard,
+  GameInputClaimEvent,
+  GameInputPlaceWorker,
+  GameInputVisitDestinationCard,
   GameInputMultiStep,
   CardName,
   EventName,
@@ -105,9 +109,7 @@ export class GameState {
     return GameState.fromJSON(this.toJSON(true /* includePrivate */));
   }
 
-  private handlePlayCardGameInput(
-    gameInput: GameInput & { inputType: GameInputType.PLAY_CARD }
-  ): void {
+  private handlePlayCardGameInput(gameInput: GameInputPlayCard): void {
     const card = Card.fromName(gameInput.card);
     const player = this.getActivePlayer();
     if (!card.canPlay(this, gameInput)) {
@@ -126,9 +128,7 @@ export class GameState {
     card.play(this, gameInput);
   }
 
-  private handlePlaceWorkerGameInput(
-    gameInput: GameInput & { inputType: GameInputType.PLACE_WORKER }
-  ): void {
+  private handlePlaceWorkerGameInput(gameInput: GameInputPlaceWorker): void {
     const location = Location.fromName(gameInput.location);
     if (!location.canPlay(this, gameInput)) {
       throw new Error("Cannot take action");
@@ -143,26 +143,39 @@ export class GameState {
     this.locationsMap[gameInput.location]!.push(player.playerId);
   }
 
-  private handleMultiStepGameInput(
-    gameInput: GameInput & { inputType: GameInputType.MULTI_STEP }
-  ): void {
+  private handleMultiStepGameInput(gameInput: GameInputMultiStep): void {
     if (gameInput.prevInputType === GameInputType.PLAY_CARD) {
-      const card = Card.fromName(gameInput.card);
-      if (!card) {
-        throw new Error("Invalid card");
+      if (gameInput.inputType === GameInputType.SELECT_CARD) {
+        if (!gameInput.card) {
+          throw new Error("Invalid input: missing card");
+        }
+        const card = Card.fromName(gameInput.card);
+        if (!card.canPlay(this, gameInput)) {
+          throw new Error("Cannot take action");
+        }
+        card.play(this, gameInput);
+        return;
       }
-      if (!card.canPlay(this, gameInput)) {
-        throw new Error("Cannot take action");
-      }
-      card.play(this, gameInput);
-    } else {
-      throw new Error(`Unhandled game input: ${JSON.stringify(gameInput)}`);
     }
+
+    if (gameInput.prevInputType === GameInputType.PLACE_WORKER) {
+      if (gameInput.inputType === GameInputType.DISCARD_CARDS) {
+        if (!gameInput.location) {
+          throw new Error("Invalid input: missing location");
+        }
+        const location = Location.fromName(gameInput.location);
+        if (!location.canPlay(this, gameInput)) {
+          throw new Error("Cannot take action");
+        }
+        location.play(this, gameInput);
+        return;
+      }
+    }
+
+    throw new Error(`Unhandled game input: ${JSON.stringify(gameInput)}`);
   }
 
-  public handleClaimEventGameInput(
-    gameInput: GameInput & { inputType: GameInputType.CLAIM_EVENT }
-  ): void {
+  public handleClaimEventGameInput(gameInput: GameInputClaimEvent): void {
     const event = Event.fromName(gameInput.event);
     if (!event.canPlay(this, gameInput)) {
       throw new Error("Cannot play this event");
@@ -184,7 +197,7 @@ export class GameState {
   }
 
   public handleVisitDestinationCardGameInput(
-    gameInput: GameInput & { inputType: GameInputType.VISIT_DESTINATION_CARD }
+    gameInput: GameInputVisitDestinationCard
   ): void {
     const card = Card.fromName(gameInput.card);
     const cardOwner = this.getPlayer(gameInput.playerId);
@@ -249,11 +262,12 @@ export class GameState {
       case GameInputType.PLACE_WORKER:
         nextGameState.handlePlaceWorkerGameInput(gameInput);
         break;
-      case GameInputType.MULTI_STEP:
-        nextGameState.handleMultiStepGameInput(gameInput);
-        break;
       case GameInputType.VISIT_DESTINATION_CARD:
         nextGameState.handleVisitDestinationCardGameInput(gameInput);
+        break;
+      case GameInputType.SELECT_CARD:
+      case GameInputType.DISCARD_CARDS:
+        nextGameState.handleMultiStepGameInput(gameInput);
         break;
       default:
         throw new Error(`Unhandled game input: ${JSON.stringify(gameInput)}`);

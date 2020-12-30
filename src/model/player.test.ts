@@ -630,4 +630,18 @@ describe("Player", () => {
       expect(workersAtLocation).to.eql([player2.playerId]);
     });
   });
+
+  describe("placing workers on storehouse", () => {
+    it("Storehouse is not a destination card, but can have a worker placed on it", () => {
+      const player = gameState.getActivePlayer();
+      player.playedCards[CardName.STOREHOUSE] = [{}];
+      player.playedCards[CardName.INN] = [{}];
+
+      const closedDestinations = player.getAvailableClosedDestinationCards();
+      expect(closedDestinations).to.eql([CardName.STOREHOUSE]);
+
+      const allDestinations = player.getAllAvailableDestinationCards();
+      expect(allDestinations.length).to.eql(2);
+    });
+  });
 });

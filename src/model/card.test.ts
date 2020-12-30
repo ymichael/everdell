@@ -59,6 +59,16 @@ describe("Card", () => {
       const isOpenDestination = card.isOpenDestination;
       expect(isOpenDestination).to.be(false);
     });
+
+    it("Storehouse is not a destination card, but can have a worker placed on it", () => {
+      let card = Card.fromName(CardName.STOREHOUSE);
+      expect(card.cardType).to.be(CardType.PRODUCTION);
+      expect(card.canTakeWorker()).to.be(true);
+
+      card = Card.fromName(CardName.POST_OFFICE);
+      expect(card.cardType).to.be(CardType.DESTINATION);
+      expect(card.canTakeWorker()).to.be(true);
+    });
   });
 
   describe("Card Specific", () => {

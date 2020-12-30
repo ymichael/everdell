@@ -1,9 +1,9 @@
 import { GameJSON } from "../model/jsonTypes";
+import { GameBlock } from "./common";
 
 const GameAdmin = ({ game }: { game: GameJSON }) => {
   return (
-    <>
-      <h1>Game id: {game.gameId}</h1>
+    <GameBlock title={"Game Created"}>
       <p>Copy links to share with other players:</p>
       <ul>
         {game.gameState.players.map((p: any, idx: number) => (
@@ -14,7 +14,8 @@ const GameAdmin = ({ game }: { game: GameJSON }) => {
           </li>
         ))}
       </ul>
-    </>
+      <i>Game ID: {game.gameId}</i>
+    </GameBlock>
   );
 };
 

@@ -50,7 +50,7 @@ const ResourceTypeValueInput: React.FC<{
       </div>
       <input
         type="number"
-        defaultValue={meta.value}
+        value={meta.value}
         onChange={(e) => {
           helpers.setValue(e.target.value);
         }}
@@ -60,69 +60,114 @@ const ResourceTypeValueInput: React.FC<{
   );
 };
 
+const ResourcesToSpend: React.FC<{
+  name: string;
+  viewingPlayer: Player;
+}> = ({ name, viewingPlayer }) => {
+  return (
+    <>
+      <p>Resources to spend:</p>
+      <div className={styles.resource_type_value_list}>
+        <ResourceTypeValueInput
+          name={`${name}.BERRY`}
+          resourceType={ResourceType.BERRY}
+        />
+        <ResourceTypeValueInput
+          name={`${name}.TWIG`}
+          resourceType={ResourceType.TWIG}
+        />
+        <ResourceTypeValueInput
+          name={`${name}.RESIN`}
+          resourceType={ResourceType.RESIN}
+        />
+        <ResourceTypeValueInput
+          name={`${name}.PEBBLE`}
+          resourceType={ResourceType.PEBBLE}
+        />
+      </div>
+    </>
+  );
+};
+
+const OptionToUseAssociatedCard: React.FC<{
+  gameInput: GameInput & { inputType: GameInputType.PLAY_CARD };
+  name: string;
+  viewingPlayer: Player;
+}> = ({ gameInput, name, viewingPlayer }) => {
+  const card = CardModel.fromName(gameInput.card);
+  if (
+    !(
+      card.isCritter &&
+      ((card.associatedCard &&
+        viewingPlayer.hasUnusedByCritterConstruction(card.associatedCard)) ||
+        viewingPlayer.hasUnusedByCritterConstruction(CardName.EVERTREE))
+    )
+  ) {
+    return <></>;
+  }
+  return (
+    <>
+      <p>Use Associated Construction:</p>
+      <label>
+        <Field type={"checkbox"} name={name} />
+        Use {card.associatedCard} to play {card.name}
+      </label>
+    </>
+  );
+};
+
 const CardPaymentForm: React.FC<{
   gameInput: GameInput;
   name: string;
-}> = ({ gameInput, name }) => {
+  viewingPlayer: Player;
+}> = ({ gameInput, name, viewingPlayer }) => {
   if (gameInput.inputType !== GameInputType.PLAY_CARD) {
     return <></>;
   }
   const card = CardModel.fromName(gameInput.card);
-  const [field, meta, helpers] = useField(name);
+  const [cardToUseField, cardToUseMeta, cardToUseHelpers] = useField(
+    `${name}.cardToUse`
+  );
   return (
     <div className={styles.card_payment_form}>
-      <p>Resources to spend:</p>
-      <div className={styles.resource_type_value_list}>
-        <ResourceTypeValueInput
-          name={`${name}.resources.BERRY`}
-          resourceType={ResourceType.BERRY}
-        />
-        <ResourceTypeValueInput
-          name={`${name}.resources.TWIG`}
-          resourceType={ResourceType.TWIG}
-        />
-        <ResourceTypeValueInput
-          name={`${name}.resources.RESIN`}
-          resourceType={ResourceType.RESIN}
-        />
-        <ResourceTypeValueInput
-          name={`${name}.resources.PEBBLE`}
-          resourceType={ResourceType.PEBBLE}
-        />
-      </div>
-      {card.isCritter && card.associatedCard && (
-        <>
-          <p>Use Associated Construction:</p>
-          <label>
-            <Field type={"checkbox"} name={`${name}.useAssociatedCard`} />
-            Use {card.associatedCard} to play {card.name}
-          </label>
-        </>
-      )}
+      <ResourcesToSpend
+        name={`${name}.resources`}
+        viewingPlayer={viewingPlayer}
+      />
+      <OptionToUseAssociatedCard
+        gameInput={gameInput}
+        name={`${name}.useAssociatedCard`}
+        viewingPlayer={viewingPlayer}
+      />
       <p>Card to use:</p>
-      {[
-        CardName.QUEEN,
-        CardName.INNKEEPER,
-        CardName.INN,
-        CardName.CRANE,
-        "None",
-      ].map((cardToUse, idx) => (
-        <label key={idx}>
-          <Field
-            type="radio"
-            name="gameInput.paymentOptions.cardToUse"
-            value={cardToUse}
-          />
-          {cardToUse}
-        </label>
-      ))}
+      {[CardName.QUEEN, CardName.INNKEEPER, CardName.INN, CardName.CRANE, null]
+        .filter(
+          (cardToUse) => !cardToUse || viewingPlayer.hasPlayedCard(cardToUse)
+        )
+        .map((cardToUse, idx) => {
+          return (
+            <label key={idx}>
+              <Field
+                type="radio"
+                name="gameInput.paymentOptions.cardToUse"
+                value={cardToUse || "NONE"}
+                checked={cardToUse === cardToUseMeta.value}
+                onChange={() => {
+                  cardToUseHelpers.setValue(cardToUse);
+                }}
+              />
+              {cardToUse || "NONE"}
+            </label>
+          );
+        })}
     </div>
   );
 };
 
 const GameInputPlayCardSelector: React.FC<{
   gameInputs?: GameInput[];
-}> = ({ gameInputs = [] }) => {
+  viewingPlayer: Player;
+}> = ({ gameInputs = [], viewingPlayer }) => {
   const [field, meta, helpers] = useField("gameInput");
   return (
     <div className={styles.selector}>
@@ -155,6 +200,7 @@ const GameInputPlayCardSelector: React.FC<{
                       _idx: idx,
                       clientOptions: {},
                       paymentOptions: {
+                        cardToUse: null,
                         resources: {
                           [ResourceType.BERRY]: 0,
                           [ResourceType.TWIG]: 0,
@@ -184,6 +230,7 @@ const GameInputPlayCardSelector: React.FC<{
         <CardPaymentForm
           gameInput={meta.value as GameInput}
           name={"gameInput.paymentOptions"}
+          viewingPlayer={viewingPlayer}
         />
       )}
     </div>
@@ -298,6 +345,7 @@ const GameInputBox: React.FC<{
                         {inputType === values.selectedInputType &&
                           (inputType === GameInputType.PLAY_CARD ? (
                             <GameInputPlayCardSelector
+                              viewingPlayer={viewingPlayer}
                               gameInputs={inputTypeToInputs[inputType]}
                             />
                           ) : (

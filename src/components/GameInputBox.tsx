@@ -29,8 +29,7 @@ const GameInputBoxWaiting: React.FC<{ activePlayer: Player }> = ({
   );
 };
 
-const gameInputSortOrder: Record<GameInputType, number> = {
-  [GameInputType.MULTI_STEP]: -1,
+const gameInputSortOrder: Partial<Record<GameInputType, number>> = {
   [GameInputType.CLAIM_EVENT]: 0,
   [GameInputType.PLAY_CARD]: 1,
   [GameInputType.PLACE_WORKER]: 2,
@@ -165,7 +164,7 @@ const GameInputBox: React.FC<{
     inputTypeToInputs
   ) as GameInputType[];
   inputTypesOrdered.sort((a, b) =>
-    gameInputSortOrder[a] < gameInputSortOrder[b] ? -1 : 1
+    (gameInputSortOrder[a] || 10) < (gameInputSortOrder[b] || 10) ? -1 : 1
   );
 
   return (

@@ -116,54 +116,55 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     type: LocationType.HAVEN,
     occupancy: LocationOccupancy.UNLIMITED,
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      if (gameInput.inputType !== GameInputType.PLACE_WORKER) {
-        throw new Error("Invalid input type");
-      }
-      if (!gameInput.clientOptions) {
-        throw new Error("Invalid input");
-      }
-      if (
-        !(
-          gameInput.clientOptions.cardsToDiscard &&
-          gameInput.clientOptions.resourcesToGain
-        )
-      ) {
-        throw new Error("Invalid game input");
-      }
+      throw new Error("Not Implemented");
+      // if (gameInput.inputType !== GameInputType.PLACE_WORKER) {
+      //   throw new Error("Invalid input type");
+      // }
+      // if (!gameInput.clientOptions) {
+      //   throw new Error("Invalid input");
+      // }
+      // if (
+      //   !(
+      //     gameInput.clientOptions.cardsToDiscard &&
+      //     gameInput.clientOptions.resourcesToGain
+      //   )
+      // ) {
+      //   throw new Error("Invalid game input");
+      // }
 
-      const numToDiscard = gameInput.clientOptions.cardsToDiscard.length;
-      const numResourcesToGain = Math.floor(numToDiscard / 2);
-      const resourcesToGain = gameInput.clientOptions.resourcesToGain;
+      // const numToDiscard = gameInput.clientOptions.cardsToDiscard.length;
+      // const numResourcesToGain = Math.floor(numToDiscard / 2);
+      // const resourcesToGain = gameInput.clientOptions.resourcesToGain;
 
-      let gainingNumResources = 0;
-      (Object.entries(resourcesToGain) as [ResourceType, number][]).forEach(
-        ([resourceType, count]) => {
-          if (
-            [
-              ResourceType.TWIG,
-              ResourceType.BERRY,
-              ResourceType.PEBBLE,
-              ResourceType.RESIN,
-            ].indexOf(resourceType) === -1
-          ) {
-            throw new Error(`Cannot gain: ${resourceType} from the haven`);
-          }
-          gainingNumResources += count;
-        }
-      );
+      // let gainingNumResources = 0;
+      // (Object.entries(resourcesToGain) as [ResourceType, number][]).forEach(
+      //   ([resourceType, count]) => {
+      //     if (
+      //       [
+      //         ResourceType.TWIG,
+      //         ResourceType.BERRY,
+      //         ResourceType.PEBBLE,
+      //         ResourceType.RESIN,
+      //       ].indexOf(resourceType) === -1
+      //     ) {
+      //       throw new Error(`Cannot gain: ${resourceType} from the haven`);
+      //     }
+      //     gainingNumResources += count;
+      //   }
+      // );
 
-      if (gainingNumResources !== numResourcesToGain) {
-        throw new Error(
-          `Mismatch resources: can gain: ${numResourcesToGain}, gaining: ${gainingNumResources}`
-        );
-      }
+      // if (gainingNumResources !== numResourcesToGain) {
+      //   throw new Error(
+      //     `Mismatch resources: can gain: ${numResourcesToGain}, gaining: ${gainingNumResources}`
+      //   );
+      // }
 
-      const player = gameState.getActivePlayer();
-      gameInput.clientOptions.cardsToDiscard.forEach((card: CardName) => {
-        player.removeCardFromHand(card);
-        gameState.discardPile.addToStack(card);
-      });
-      player.gainResources(resourcesToGain);
+      // const player = gameState.getActivePlayer();
+      // gameInput.clientOptions.cardsToDiscard.forEach((card: CardName) => {
+      //   player.removeCardFromHand(card);
+      //   gameState.discardPile.addToStack(card);
+      // });
+      // player.gainResources(resourcesToGain);
     },
   }),
   [LocationName.JOURNEY_FIVE]: new Location({
@@ -387,29 +388,34 @@ export const initialLocationsMap = (
 /**
  * Helpers
  */
-
 function playInnerJourneyFactory(numPoints: number): GameStatePlayFn {
   return (gameState: GameState, gameInput: GameInput) => {
-    const player = gameState.getActivePlayer();
-    if (gameInput.inputType !== GameInputType.PLACE_WORKER) {
-      throw new Error("Invalid input type");
-    }
-    if (!gameInput.clientOptions) {
-      throw new Error("Invalid input");
-    }
-    if (player.cardsInHand.length < numPoints) {
-      throw new Error("Insufficient cards for journey");
-    }
-    if (gameInput.clientOptions.cardsToDiscard?.length !== numPoints) {
-      throw new Error("Must specify cards to discard for journey");
-    }
-    gameInput.clientOptions.cardsToDiscard.forEach((card: CardName) => {
-      player.removeCardFromHand(card);
-      gameState.discardPile.addToStack(card);
-    });
-    player.gainResources({
-      [ResourceType.VP]: numPoints,
-    });
+    // gameState.pendingGameInputs.push({
+    //   inputType: GameInputType.DISCARD_CARDS,
+    //   numToDiscard: numPoints,
+    // });
+
+    throw new Error("Not Implemented");
+    // const player = gameState.getActivePlayer();
+    // if (gameInput.inputType !== GameInputType.PLACE_WORKER) {
+    //   throw new Error("Invalid input type");
+    // }
+    // if (!gameInput.clientOptions) {
+    //   throw new Error("Invalid input");
+    // }
+    // if (player.cardsInHand.length < numPoints) {
+    //   throw new Error("Insufficient cards for journey");
+    // }
+    // if (gameInput.clientOptions.cardsToDiscard?.length !== numPoints) {
+    //   throw new Error("Must specify cards to discard for journey");
+    // }
+    // gameInput.clientOptions.cardsToDiscard.forEach((card: CardName) => {
+    //   player.removeCardFromHand(card);
+    //   gameState.discardPile.addToStack(card);
+    // });
+    // player.gainResources({
+    //   [ResourceType.VP]: numPoints,
+    // });
   };
 }
 

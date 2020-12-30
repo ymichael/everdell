@@ -87,15 +87,6 @@ export enum GameInputType {
 export type GameInputPlaceWorker = {
   inputType: GameInputType.PLACE_WORKER;
   location: LocationName;
-  clientOptions?: {
-    cardsToDiscard?: CardName[];
-    resourcesToGain?: {
-      [ResourceType.TWIG]?: number;
-      [ResourceType.BERRY]?: number;
-      [ResourceType.PEBBLE]?: number;
-      [ResourceType.RESIN]?: number;
-    };
-  };
 };
 
 export type GameInputVisitDestinationCard = {
@@ -214,17 +205,21 @@ export type GameInputClaimEvent = {
   };
 };
 
+export type GameInputGameEnd = {
+  inputType: GameInputType.GAME_END;
+};
+
+export type GameInputPrepareForSeason = {
+  inputType: GameInputType.PREPARE_FOR_SEASON;
+};
+
 export type GameInputSimple =
   | GameInputPlaceWorker
   | GameInputVisitDestinationCard
   | GameInputPlayCard
   | GameInputClaimEvent
-  | {
-      inputType: GameInputType.GAME_END;
-    }
-  | {
-      inputType: GameInputType.PREPARE_FOR_SEASON;
-    };
+  | GameInputGameEnd
+  | GameInputPrepareForSeason;
 
 export type GameInputMultiStep = {
   inputType: GameInputType.MULTI_STEP;

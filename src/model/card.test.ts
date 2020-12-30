@@ -433,5 +433,58 @@ describe("Card", () => {
         expect(player.getNumResource(ResourceType.PEBBLE)).to.be(1);
       });
     });
+
+    describe(CardName.FOOL, () => {
+      it("should allow the player to select player to target", () => {
+        const card = Card.fromName(CardName.FOOL);
+        const gameInput = playCardInput(card.name);
+        let player = gameState.getActivePlayer();
+        const targetPlayerId = gameState.players[1].playerId;
+
+        // Make sure we can play this card
+        player.gainResources(card.baseCost);
+        player.cardsInHand.push(card.name);
+
+        expect(gameState.pendingGameInputs).to.eql([]);
+        expect(player.hasPlayedCard(card.name)).to.be(false);
+
+        const gameState2 = gameState.next(gameInput);
+
+        // Active player remains the same
+        expect(player.playerId).to.be(gameState2.getActivePlayer().playerId);
+        expect(player.hasPlayedCard(card.name)).to.be(false);
+        expect(gameState2.pendingGameInputs).to.eql([
+          {
+            inputType: GameInputType.SELECT_PLAYER,
+            prevInputType: GameInputType.PLAY_CARD,
+            cardContext: CardName.FOOL,
+            mustSelectOne: true,
+            playerOptions: [targetPlayerId],
+            clientOptions: {
+              selectedPlayer: null,
+            },
+          },
+        ]);
+
+        player = gameState2.getPlayer(player.playerId);
+        expect(player.playerId).to.be(gameState2.getActivePlayer().playerId);
+
+        const gameState3 = gameState2.next({
+          inputType: GameInputType.SELECT_PLAYER,
+          prevInputType: GameInputType.PLAY_CARD,
+          cardContext: CardName.FOOL,
+          mustSelectOne: true,
+          playerOptions: [targetPlayerId],
+          clientOptions: {
+            selectedPlayer: targetPlayerId,
+          },
+        });
+        player = gameState3.getPlayer(player.playerId);
+        expect(player.hasPlayedCard(card.name)).to.be(false);
+        expect(
+          gameState3.getPlayer(targetPlayerId).hasPlayedCard(card.name)
+        ).to.be(true);
+      });
+    });
   });
 });

@@ -80,6 +80,7 @@ export enum GameInputType {
   GAME_END = "GAME_END",
 
   SELECT_CARD = "SELECT_CARD",
+  SELECT_PLAYER = "SELECT_PLAYER",
   DISCARD_CARDS = "DISCARD_CARDS",
 }
 
@@ -226,6 +227,17 @@ export type GameInputDiscardCards = {
   cardsToDiscard?: CardName[];
 };
 
+export type GameInputSelectPlayer = {
+  inputType: GameInputType.SELECT_PLAYER;
+  prevInputType: GameInputType;
+  cardContext?: CardName;
+  playerOptions: string[];
+  mustSelectOne: boolean;
+  clientOptions: {
+    selectedPlayer: string | null;
+  };
+};
+
 export type GameInputSelectCard = {
   inputType: GameInputType.SELECT_CARD;
   prevInputType: GameInputType;
@@ -238,7 +250,10 @@ export type GameInputSelectCard = {
   };
 };
 
-export type GameInputMultiStep = GameInputSelectCard | GameInputDiscardCards;
+export type GameInputMultiStep =
+  | GameInputSelectCard
+  | GameInputDiscardCards
+  | GameInputSelectPlayer;
 
 export type GameInput = GameInputSimple | GameInputMultiStep;
 

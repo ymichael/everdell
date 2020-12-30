@@ -137,10 +137,13 @@ export class Card<TCardType extends CardType = CardType>
         return false;
       }
       return player.canAffordCard(this.name, gameInput.fromMeadow);
-    } else if (gameInput.inputType === GameInputType.SELECT_CARD) {
+    } else if (
+      gameInput.inputType === GameInputType.SELECT_CARD ||
+      gameInput.inputType === GameInputType.SELECT_PLAYER
+    ) {
       return true;
     } else {
-      throw new Error("Invalid game input: ${gameInput}");
+      throw new Error(`Invalid game input: ${gameInput.inputType}`);
     }
   }
 
@@ -498,6 +501,34 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: false,
     associatedCard: CardName.FAIRGROUNDS,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.PLAY_CARD) {
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_PLAYER,
+          prevInputType: gameInput.inputType,
+          cardContext: CardName.FOOL,
+          playerOptions: gameState.players
+            .filter((p) => p.playerId !== player.playerId)
+            .map((p) => p.playerId),
+          mustSelectOne: true,
+          clientOptions: {
+            selectedPlayer: null,
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_PLAYER) {
+        gameState.pendingGameInputs = [];
+        if (!gameInput.clientOptions.selectedPlayer) {
+          throw new Error("invalid input");
+        }
+        const selectedPlayer = gameState.getPlayer(
+          gameInput.clientOptions.selectedPlayer
+        );
+        selectedPlayer.addToCity(CardName.FOOL);
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
+      }
+    },
   }),
   [CardName.GENERAL_STORE]: new Card({
     name: CardName.GENERAL_STORE,

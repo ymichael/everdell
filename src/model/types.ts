@@ -127,9 +127,6 @@ export type GameInputPlayCard = {
   fromMeadow: boolean;
 
   clientOptions?: {
-    // fool, miner mole
-    targetPlayerId?: string;
-
     // bard, post office
     cardsToDiscard?: CardName[];
 

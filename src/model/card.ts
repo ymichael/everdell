@@ -147,15 +147,7 @@ export class Card<TCardType extends CardType = CardType>
   play(gameState: GameState, gameInput: GameInput): void {
     const player = gameState.getActivePlayer();
     if (gameInput.inputType === GameInputType.PLAY_CARD) {
-      if (this.name === CardName.FOOL) {
-        if (gameInput.clientOptions?.targetPlayerId) {
-          gameState
-            .getPlayer(gameInput.clientOptions?.targetPlayerId)
-            .addToCity(this.name);
-        } else {
-          throw new Error("Invalid input");
-        }
-      } else {
+      if (this.name !== CardName.FOOL) {
         player.addToCity(this.name);
       }
       if (
@@ -666,27 +658,28 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     associatedCard: CardName.MINE,
     resourcesToGain: {},
     productionInner: (gameState: GameState, gameInput: GameInput) => {
-      if (gameInput.inputType !== GameInputType.PLAY_CARD) {
-        throw new Error("Invalid input type");
-      }
-      if (
-        !gameInput.clientOptions?.targetCard ||
-        !gameInput.clientOptions?.targetPlayerId
-      ) {
-        throw new Error("Invalid input");
-      }
-      const targetPlayer = gameState.getPlayer(
-        gameInput.clientOptions?.targetPlayerId
-      );
-      if (!targetPlayer.hasPlayedCard(gameInput.clientOptions?.targetCard)) {
-        throw new Error("Invalid input");
-      }
-      const targetCard = Card.fromName(gameInput.clientOptions?.targetCard);
-      if (targetCard.cardType !== CardType.PRODUCTION) {
-        throw new Error("Invalid input");
-      }
-      // TODO fix this so that we compute things like no. of farms
-      targetCard.gainProduction(gameState, gameInput);
+      throw new Error("Not implemented");
+      // if (gameInput.inputType !== GameInputType.PLAY_CARD) {
+      //   throw new Error("Invalid input type");
+      // }
+      // if (
+      //   !gameInput.clientOptions?.targetCard ||
+      //   !gameInput.clientOptions?.targetPlayerId
+      // ) {
+      //   throw new Error("Invalid input");
+      // }
+      // const targetPlayer = gameState.getPlayer(
+      //   gameInput.clientOptions?.targetPlayerId
+      // );
+      // if (!targetPlayer.hasPlayedCard(gameInput.clientOptions?.targetCard)) {
+      //   throw new Error("Invalid input");
+      // }
+      // const targetCard = Card.fromName(gameInput.clientOptions?.targetCard);
+      // if (targetCard.cardType !== CardType.PRODUCTION) {
+      //   throw new Error("Invalid input");
+      // }
+      // // TODO fix this so that we compute things like no. of farms
+      // targetCard.gainProduction(gameState, gameInput);
     },
   }),
   [CardName.MONASTERY]: new Card({
@@ -702,27 +695,28 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: true,
     associatedCard: CardName.MONK,
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      if (gameInput.inputType !== GameInputType.VISIT_DESTINATION_CARD) {
-        throw new Error("Invalid input type");
-      }
-      if (
-        !gameInput.clientOptions?.targetPlayerId ||
-        !gameInput.clientOptions?.resourcesToSpend
-      ) {
-        throw new Error("Invalid input");
-      }
-      if (sumResources(gameInput.clientOptions?.resourcesToSpend) !== 2) {
-        throw new Error("Invalid input");
-      }
-      const targetPlayer = gameState.getPlayer(
-        gameInput.clientOptions?.targetPlayerId
-      );
-      const player = gameState.getActivePlayer();
-      player.spendResources(gameInput.clientOptions?.resourcesToSpend);
-      targetPlayer.gainResources(gameInput.clientOptions?.resourcesToSpend);
-      player.gainResources({
-        [ResourceType.VP]: 2,
-      });
+      throw new Error("Not implemented");
+      // if (gameInput.inputType !== GameInputType.VISIT_DESTINATION_CARD) {
+      //   throw new Error("Invalid input type");
+      // }
+      // if (
+      //   !gameInput.clientOptions?.targetPlayerId ||
+      //   !gameInput.clientOptions?.resourcesToSpend
+      // ) {
+      //   throw new Error("Invalid input");
+      // }
+      // if (sumResources(gameInput.clientOptions?.resourcesToSpend) !== 2) {
+      //   throw new Error("Invalid input");
+      // }
+      // const targetPlayer = gameState.getPlayer(
+      //   gameInput.clientOptions?.targetPlayerId
+      // );
+      // const player = gameState.getActivePlayer();
+      // player.spendResources(gameInput.clientOptions?.resourcesToSpend);
+      // targetPlayer.gainResources(gameInput.clientOptions?.resourcesToSpend);
+      // player.gainResources({
+      //   [ResourceType.VP]: 2,
+      // });
     },
   }),
   [CardName.MONK]: new Card({
@@ -735,33 +729,34 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     associatedCard: CardName.MONASTERY,
     resourcesToGain: {},
     productionInner: (gameState: GameState, gameInput: GameInput) => {
-      if (gameInput.inputType !== GameInputType.PLAY_CARD) {
-        throw new Error("Invalid input type");
-      }
-      if (
-        !gameInput.clientOptions?.resourcesToSpend ||
-        !gameInput.clientOptions?.targetPlayerId
-      ) {
-        throw new Error("Invalid input");
-      }
-      const numBerries =
-        gameInput.clientOptions?.resourcesToSpend?.[ResourceType.BERRY] || 0;
-      if (numBerries > 2) {
-        throw new Error("Invalid input");
-      }
-      const targetPlayer = gameState.getPlayer(
-        gameInput.clientOptions?.targetPlayerId
-      );
-      const player = gameState.getActivePlayer();
-      player.spendResources({
-        [ResourceType.BERRY]: numBerries,
-      });
-      targetPlayer.gainResources({
-        [ResourceType.BERRY]: numBerries,
-      });
-      player.gainResources({
-        [ResourceType.VP]: numBerries * 2,
-      });
+      throw new Error("Not implemented");
+      // if (gameInput.inputType !== GameInputType.PLAY_CARD) {
+      //   throw new Error("Invalid input type");
+      // }
+      // if (
+      //   !gameInput.clientOptions?.resourcesToSpend ||
+      //   !gameInput.clientOptions?.targetPlayerId
+      // ) {
+      //   throw new Error("Invalid input");
+      // }
+      // const numBerries =
+      //   gameInput.clientOptions?.resourcesToSpend?.[ResourceType.BERRY] || 0;
+      // if (numBerries > 2) {
+      //   throw new Error("Invalid input");
+      // }
+      // const targetPlayer = gameState.getPlayer(
+      //   gameInput.clientOptions?.targetPlayerId
+      // );
+      // const player = gameState.getActivePlayer();
+      // player.spendResources({
+      //   [ResourceType.BERRY]: numBerries,
+      // });
+      // targetPlayer.gainResources({
+      //   [ResourceType.BERRY]: numBerries,
+      // });
+      // player.gainResources({
+      //   [ResourceType.VP]: numBerries * 2,
+      // });
     },
   }),
   [CardName.PALACE]: new Card({

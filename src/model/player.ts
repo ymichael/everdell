@@ -715,6 +715,7 @@ export class Player {
       this.resources[ResourceType.RESIN] += RESIN;
     }
   }
+
   recallAllWorkers(gameState: GameState) {
     if (this.numAvailableWorkers != 0) {
       throw new Error(
@@ -727,6 +728,7 @@ export class Player {
     if (!players) {
       throw new Error("Invalid player list");
     }
+
     players.forEach((player) => {
       // get destination cards with workers
       let destinationCardsWithWorkers = player.getDestinationCardsWithWorkers();
@@ -793,6 +795,7 @@ export class Player {
         this.numAvailableWorkers + (currNumWorkers - workersAtLocation.length);
     });
   }
+
   toJSON(includePrivate: boolean): PlayerJSON {
     return cloneDeep({
       name: this.name,

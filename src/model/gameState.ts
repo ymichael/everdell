@@ -32,7 +32,7 @@ const STARTING_PLAYER_HAND_SIZE = 5;
 
 export class GameState {
   private _activePlayerId: Player["playerId"];
-  public pendingGameInputs: GameInputMultiStep[];
+  readonly pendingGameInputs: GameInputMultiStep[];
   readonly players: Player[];
   readonly meadowCards: CardName[];
   readonly discardPile: CardStack;
@@ -146,17 +146,26 @@ export class GameState {
     this.locationsMap[gameInput.location]!.push(player.playerId);
   }
 
-  private handleMultiStepGameInput(gameInput: GameInputMultiStep): void {
-    if (
-      !this.pendingGameInputs.some((pendingGameInput) => {
-        return isEqual(
-          omit(pendingGameInput, ["clientOptions"]),
-          omit(gameInput, ["clientOptions"])
-        );
-      })
-    ) {
-      throw new Error("Invalid multi-step input");
+  private removeMultiStepGameInput(gameInput: GameInputMultiStep): void {
+    const found = this.pendingGameInputs.find((pendingGameInput) => {
+      return isEqual(
+        omit(pendingGameInput, ["clientOptions"]),
+        omit(gameInput, ["clientOptions"])
+      );
+    });
+    if (!found) {
+      throw new Error(`Invalid multi-step input`);
     }
+    const idx = this.pendingGameInputs.indexOf(found);
+    if (idx === -1) {
+      throw new Error(`Invalid multi-step input`);
+    } else {
+      this.pendingGameInputs.splice(idx, 1);
+    }
+  }
+
+  private handleMultiStepGameInput(gameInput: GameInputMultiStep): void {
+    this.removeMultiStepGameInput(gameInput);
 
     if (gameInput.prevInputType === GameInputType.PLAY_CARD) {
       if (

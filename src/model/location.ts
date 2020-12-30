@@ -416,7 +416,6 @@ function playInnerJourneyFactory(
       player.gainResources({
         [ResourceType.VP]: numPoints,
       });
-      gameState.pendingGameInputs = [];
     } else {
       throw new Error(`Invalid inputType: ${gameInput.inputType}`);
     }

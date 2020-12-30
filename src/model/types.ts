@@ -131,9 +131,6 @@ export type GameInputPlayCard = {
     // bard, post office
     cardsToDiscard?: CardName[];
 
-    // chip sweep, miner mole, ruins
-    targetCard?: CardName;
-
     // husband, peddler
     resourcesToGain?: {
       [ResourceType.VP]?: number;

@@ -501,6 +501,12 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: false,
     associatedCard: CardName.FAIRGROUNDS,
+    canPlayInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      return gameState.players
+        .filter((p) => p.playerId !== player.playerId)
+        .some((p) => p.canAddToCity(CardName.FOOL));
+    },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.PLAY_CARD) {
@@ -517,7 +523,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           },
         });
       } else if (gameInput.inputType === GameInputType.SELECT_PLAYER) {
-        gameState.pendingGameInputs = [];
         if (!gameInput.clientOptions.selectedPlayer) {
           throw new Error("invalid input");
         }
@@ -902,7 +907,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         gameInput.prevInputType === GameInputType.PLAY_CARD &&
         gameInput.cardContext === CardName.POSTAL_PIGEON
       ) {
-        gameState.pendingGameInputs = [];
         const player = gameState.getActivePlayer();
         const cardOptionsUnfiltered = [...gameInput.cardOptionsUnfiltered];
         if (gameInput.clientOptions.selectedCard) {
@@ -977,21 +981,42 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       return hasConstruction;
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      if (gameInput.inputType !== GameInputType.PLAY_CARD) {
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.PLAY_CARD) {
+        const cardOptions: CardName[] = [];
+        player.forEachPlayedCard(({ cardName }) => {
+          const card = Card.fromName(cardName);
+          if (card.isConstruction) {
+            cardOptions.push(cardName);
+          }
+        });
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_CARD,
+          prevInputType: GameInputType.PLAY_CARD,
+          cardOptions,
+          cardOptionsUnfiltered: cardOptions,
+          cardContext: CardName.RUINS,
+          mustSelectOne: true,
+          clientOptions: {
+            selectedCard: null,
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_CARD) {
+        if (
+          !gameInput.clientOptions.selectedCard ||
+          !player.hasPlayedCard(gameInput.clientOptions.selectedCard)
+        ) {
+          throw new Error("Invalid input");
+        }
+        const targetCard = Card.fromName(gameInput.clientOptions.selectedCard);
+        if (!targetCard.isConstruction) {
+          throw new Error("Cannot ruins non-construction");
+        }
+        player.removeCardFromCity(gameState, targetCard.name, true);
+        player.drawCards(gameState, 2);
+      } else {
         throw new Error("Invalid input type");
       }
-      if (!gameInput.clientOptions?.targetCard) {
-        throw new Error("Invalid input");
-      }
-
-      const player = gameState.getActivePlayer();
-      const card = Card.fromName(gameInput.clientOptions?.targetCard);
-      if (!card.isConstruction) {
-        throw new Error("Can only ruin constructions");
-      }
-      player.removeCardFromCity(gameState, gameInput.clientOptions?.targetCard);
-      player.gainResources(card.baseCost);
-      player.drawCards(gameState, 2);
     },
   }),
   [CardName.SCHOOL]: new Card({
@@ -1112,28 +1137,29 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: true,
     associatedCard: CardName.DOCTOR,
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      if (gameInput.inputType !== GameInputType.VISIT_DESTINATION_CARD) {
-        throw new Error("Invalid input type");
-      }
-      if (
-        !gameInput.clientOptions?.targetCard ||
-        !gameInput.clientOptions?.resourcesToGain ||
-        sumResources(gameInput.clientOptions?.resourcesToGain) !== 0 ||
-        gameInput.clientOptions?.resourcesToGain[ResourceType.VP]
-      ) {
-        throw new Error("Invalid input");
-      }
-      const player = gameState.getActivePlayer();
-      const card = Card.fromName(gameInput.clientOptions?.targetCard);
-      if (!card.isConstruction) {
-        throw new Error("Can only ruin constructions");
-      }
-      player.removeCardFromCity(gameState, gameInput.clientOptions?.targetCard);
-      player.gainResources(card.baseCost);
-      player.gainResources(gameInput.clientOptions?.resourcesToGain);
-      player.gainResources({
-        [ResourceType.VP]: 1,
-      });
+      throw new Error("Not implemented");
+      // if (gameInput.inputType !== GameInputType.VISIT_DESTINATION_CARD) {
+      //   throw new Error("Invalid input type");
+      // }
+      // if (
+      //   !gameInput.clientOptions?.targetCard ||
+      //   !gameInput.clientOptions?.resourcesToGain ||
+      //   sumResources(gameInput.clientOptions?.resourcesToGain) !== 0 ||
+      //   gameInput.clientOptions?.resourcesToGain[ResourceType.VP]
+      // ) {
+      //   throw new Error("Invalid input");
+      // }
+      // const player = gameState.getActivePlayer();
+      // const card = Card.fromName(gameInput.clientOptions?.targetCard);
+      // if (!card.isConstruction) {
+      //   throw new Error("Can only ruin constructions");
+      // }
+      // player.removeCardFromCity(gameState, gameInput.clientOptions?.targetCard);
+      // player.gainResources(card.baseCost);
+      // player.gainResources(gameInput.clientOptions?.resourcesToGain);
+      // player.gainResources({
+      //   [ResourceType.VP]: 1,
+      // });
     },
   }),
   [CardName.WANDERER]: new Card({

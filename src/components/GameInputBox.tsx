@@ -2,6 +2,7 @@ import * as React from "react";
 import omit from "lodash/omit";
 import isEqual from "lodash/isEqual";
 import { FormikProps, Formik, Form, Field, FieldArray, useField } from "formik";
+import CardPayment from "./CardPayment";
 
 import styles from "../styles/GameInputBox.module.css";
 import { GameState } from "../model/gameState";
@@ -36,132 +37,6 @@ const gameInputSortOrder: Record<GameInputType, number> = {
   [GameInputType.VISIT_DESTINATION_CARD]: 3,
   [GameInputType.PREPARE_FOR_SEASON]: 4,
   [GameInputType.GAME_END]: 5,
-};
-
-const ResourceTypeValueInput: React.FC<{
-  resourceType: ResourceType;
-  name: string;
-}> = ({ resourceType, name }) => {
-  const [field, meta, helpers] = useField(name);
-  return (
-    <div className={styles.resource_type_value_input_wrapper}>
-      <div className={styles.resource_type_value_input_icon}>
-        <ResourceTypeIcon resourceType={resourceType} />
-      </div>
-      <input
-        type="number"
-        value={meta.value}
-        onChange={(e) => {
-          helpers.setValue(e.target.value);
-        }}
-        className={styles.resource_type_value_input_input}
-      />
-    </div>
-  );
-};
-
-const ResourcesToSpend: React.FC<{
-  name: string;
-  viewingPlayer: Player;
-}> = ({ name, viewingPlayer }) => {
-  return (
-    <>
-      <p>Resources to spend:</p>
-      <div className={styles.resource_type_value_list}>
-        <ResourceTypeValueInput
-          name={`${name}.BERRY`}
-          resourceType={ResourceType.BERRY}
-        />
-        <ResourceTypeValueInput
-          name={`${name}.TWIG`}
-          resourceType={ResourceType.TWIG}
-        />
-        <ResourceTypeValueInput
-          name={`${name}.RESIN`}
-          resourceType={ResourceType.RESIN}
-        />
-        <ResourceTypeValueInput
-          name={`${name}.PEBBLE`}
-          resourceType={ResourceType.PEBBLE}
-        />
-      </div>
-    </>
-  );
-};
-
-const OptionToUseAssociatedCard: React.FC<{
-  gameInput: GameInput & { inputType: GameInputType.PLAY_CARD };
-  name: string;
-  viewingPlayer: Player;
-}> = ({ gameInput, name, viewingPlayer }) => {
-  const card = CardModel.fromName(gameInput.card);
-  if (
-    !(
-      card.isCritter &&
-      ((card.associatedCard &&
-        viewingPlayer.hasUnusedByCritterConstruction(card.associatedCard)) ||
-        viewingPlayer.hasUnusedByCritterConstruction(CardName.EVERTREE))
-    )
-  ) {
-    return <></>;
-  }
-  return (
-    <>
-      <p>Use Associated Construction:</p>
-      <label>
-        <Field type={"checkbox"} name={name} />
-        Use {card.associatedCard} to play {card.name}
-      </label>
-    </>
-  );
-};
-
-const CardPaymentForm: React.FC<{
-  gameInput: GameInput;
-  name: string;
-  viewingPlayer: Player;
-}> = ({ gameInput, name, viewingPlayer }) => {
-  if (gameInput.inputType !== GameInputType.PLAY_CARD) {
-    return <></>;
-  }
-  const card = CardModel.fromName(gameInput.card);
-  const [cardToUseField, cardToUseMeta, cardToUseHelpers] = useField(
-    `${name}.cardToUse`
-  );
-  return (
-    <div className={styles.card_payment_form}>
-      <ResourcesToSpend
-        name={`${name}.resources`}
-        viewingPlayer={viewingPlayer}
-      />
-      <OptionToUseAssociatedCard
-        gameInput={gameInput}
-        name={`${name}.useAssociatedCard`}
-        viewingPlayer={viewingPlayer}
-      />
-      <p>Card to use:</p>
-      {[CardName.QUEEN, CardName.INNKEEPER, CardName.INN, CardName.CRANE, null]
-        .filter(
-          (cardToUse) => !cardToUse || viewingPlayer.hasPlayedCard(cardToUse)
-        )
-        .map((cardToUse, idx) => {
-          return (
-            <label key={idx}>
-              <Field
-                type="radio"
-                name="gameInput.paymentOptions.cardToUse"
-                value={cardToUse || "NONE"}
-                checked={cardToUse === cardToUseMeta.value}
-                onChange={() => {
-                  cardToUseHelpers.setValue(cardToUse);
-                }}
-              />
-              {cardToUse || "NONE"}
-            </label>
-          );
-        })}
-    </div>
-  );
 };
 
 const GameInputPlayCardSelector: React.FC<{
@@ -227,7 +102,7 @@ const GameInputPlayCardSelector: React.FC<{
         </div>
       </div>
       {meta.value && (
-        <CardPaymentForm
+        <CardPayment
           gameInput={meta.value as GameInput}
           name={"gameInput.paymentOptions"}
           viewingPlayer={viewingPlayer}

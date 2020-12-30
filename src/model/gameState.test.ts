@@ -159,7 +159,7 @@ describe("GameState", () => {
       expect(player2.numAvailableWorkers).to.be(2);
 
       // player1 should be able to claim event
-      let gameInput: GameInput = {
+      const gameInput: GameInput = {
         inputType: GameInputType.CLAIM_EVENT as const,
         event: EventName.BASIC_FOUR_PRODUCTION_TAGS,
       };

@@ -1,5 +1,4 @@
 import expect from "expect.js";
-import { Player } from "./player";
 import { Card } from "./card";
 import { GameState } from "./gameState";
 import { testInitialGameState } from "./testHelpers";
@@ -313,9 +312,15 @@ describe("Player", () => {
       });
 
       // TODO
-      it("QUEEN", () => {});
-      it("CRANE", () => {});
-      it("INN", () => {});
+      xit("QUEEN", () => {
+        throw new Error("Not Implemented yet");
+      });
+      xit("CRANE", () => {
+        throw new Error("Not Implemented yet");
+      });
+      xit("INN", () => {
+        throw new Error("Not Implemented yet");
+      });
     });
   });
 

@@ -155,7 +155,7 @@ export class Player {
   removeCardFromCity(
     gameState: GameState,
     cardName: CardName,
-    addToDiscardPile: boolean = true
+    addToDiscardPile = true
   ): CardName[] {
     if (this.playedCards[cardName]) {
       this.playedCards[cardName]!.pop();
@@ -206,7 +206,7 @@ export class Player {
   }
 
   getPlayedCardType(cardType: CardType): CardName[] {
-    let playedCardsOfType: CardName[] = [];
+    const playedCardsOfType: CardName[] = [];
     this.forEachPlayedCard(({ cardName }) => {
       const card = Card.fromName(cardName as CardName);
       if (card.cardType === cardType) {
@@ -219,10 +219,10 @@ export class Player {
   // returns all destination cards that a player has played that have
   // room for another worker
   getAllAvailableDestinationCards(): CardName[] {
-    let allAvailableDestinationCards: CardName[] = [];
+    const allAvailableDestinationCards: CardName[] = [];
 
     this.forEachPlayedCard(({ cardName }) => {
-      let card = Card.fromName(cardName as CardName);
+      const card = Card.fromName(cardName as CardName);
       if (card.cardType === CardType.DESTINATION) {
         if (this.hasSpaceOnDestinationCard(cardName)) {
           allAvailableDestinationCards.push(cardName);
@@ -236,10 +236,10 @@ export class Player {
   // returns all non-Open destination cards that were played by player and
   // are available for them to put a worker on
   getAvailableClosedDestinationCards(): CardName[] {
-    let availableDestinationCards: CardName[] = [];
+    const availableDestinationCards: CardName[] = [];
 
     this.forEachPlayedCard(({ cardName }) => {
-      let card = Card.fromName(cardName as CardName);
+      const card = Card.fromName(cardName as CardName);
       if (card.cardType === CardType.DESTINATION && !card.isOpenDestination) {
         if (this.hasSpaceOnDestinationCard(cardName)) {
           availableDestinationCards.push(cardName);
@@ -252,8 +252,8 @@ export class Player {
   // returns all destination cards played by this player that are "open"
   // and are available to take other workers
   getAvailableOpenDestinationCards(): CardName[] {
-    let openDestinationCards = this.getOpenDestinationCards();
-    let openAvailableDestinations: CardName[] = [];
+    const openDestinationCards = this.getOpenDestinationCards();
+    const openAvailableDestinations: CardName[] = [];
 
     openDestinationCards.forEach((cardName) => {
       if (this.hasSpaceOnDestinationCard(cardName)) {
@@ -266,10 +266,10 @@ export class Player {
 
   // returns all destination cards played by this player that are "open"
   getOpenDestinationCards(): CardName[] {
-    let openDestinationCards: CardName[] = [];
+    const openDestinationCards: CardName[] = [];
 
     this.forEachPlayedCard(({ cardName }) => {
-      let card = Card.fromName(cardName as CardName);
+      const card = Card.fromName(cardName as CardName);
       if (card.cardType === CardType.DESTINATION && !!card.isOpenDestination) {
         openDestinationCards.push(cardName);
       }
@@ -413,7 +413,7 @@ export class Player {
     cardCost: CardCost,
     // Discounts are exclusive so we use a single argument to represent them
     discount: ResourceType.BERRY | "ANY" | null = null,
-    errorIfOverpay: boolean = true
+    errorIfOverpay = true
   ): boolean {
     const needToPay = {
       [ResourceType.TWIG]: cardCost[ResourceType.TWIG] || 0,
@@ -505,6 +505,7 @@ export class Player {
 
     this.spendResources(paymentResources);
     if (paymentOptions.cardToDungeon) {
+      throw new Error("Not Implemented yet");
     } else if (paymentOptions.cardToUse) {
       switch (paymentOptions.cardToUse) {
         case CardName.CRANE:
@@ -559,7 +560,6 @@ export class Player {
       );
     }
     if (paymentOptions.cardToUse) {
-      const cardToUse = Card.fromName(paymentOptions.cardToUse);
       if (!this.hasPlayedCard(paymentOptions.cardToUse)) {
         throw new Error(
           `Invalid paymentOptions: cannot use ${paymentOptions.cardToUse}`

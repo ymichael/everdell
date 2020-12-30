@@ -1,6 +1,7 @@
 import sqlite3 from "sqlite3";
 import path from "path";
 import fs from "fs";
+import { GameJSON } from "./jsonTypes";
 
 const dbPath = process.env.DB_PATH;
 if (!dbPath) {
@@ -107,7 +108,7 @@ export class DB {
     });
   }
 
-  getGameJSONById(gameId: string): Promise<object | null> {
+  getGameJSONById(gameId: string): Promise<GameJSON | null> {
     return new Promise((resolve, reject) => {
       this.db.get(
         "SELECT game game FROM games WHERE game_id = ?",
@@ -135,7 +136,7 @@ export class DB {
 
 export const getGameJSONById = async (
   gameId: string
-): Promise<object | null> => {
+): Promise<GameJSON | null> => {
   const db = DB.getInstance();
   await db.createGamesTableIfNotExists();
   return db.getGameJSONById(gameId);
@@ -143,7 +144,7 @@ export const getGameJSONById = async (
 
 export const saveGameJSONById = async (
   gameId: string,
-  gameJSON: object
+  gameJSON: GameJSON
 ): Promise<void> => {
   const db = DB.getInstance();
   await db.createGamesTableIfNotExists();

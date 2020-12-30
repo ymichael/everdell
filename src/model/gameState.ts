@@ -11,6 +11,7 @@ import {
   PlayerIdsToAvailableDestinationCards,
   ResourceType,
 } from "./types";
+import { GameStateJSON, PlayerJSON } from "./jsonTypes";
 import { Player } from "./player";
 import { Card } from "./card";
 import { CardStack, emptyCardStack } from "./cardStack";
@@ -66,7 +67,7 @@ export class GameState {
     return this._activePlayerId;
   }
 
-  toJSON(includePrivate: boolean): object {
+  toJSON(includePrivate: boolean): GameStateJSON {
     return cloneDeep({
       activePlayerId: this.activePlayerId,
       players: this.players.map((p) => p.toJSON(includePrivate)),

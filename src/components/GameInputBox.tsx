@@ -222,7 +222,7 @@ const GameInputDefaultSelector: React.FC<{
 const GameInputBox: React.FC<{
   gameId: string;
   gameState: any;
-  viewingPlayer: any;
+  viewingPlayer: Player;
 }> = ({ gameId, gameState, viewingPlayer }) => {
   const gameStateImpl = GameState.fromJSON(gameState);
   const activePlayerImpl = gameStateImpl.getActivePlayer();
@@ -264,7 +264,7 @@ const GameInputBox: React.FC<{
               body: JSON.stringify({
                 gameId,
                 playerId: viewingPlayer.playerId,
-                playerSecret: viewingPlayer.playerSecret,
+                playerSecret: viewingPlayer.playerSecretUNSAFE,
                 gameInput: values.gameInput,
               }),
             });

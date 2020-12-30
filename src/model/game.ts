@@ -2,6 +2,7 @@ import { generate as uuid } from "short-uuid";
 import { Player, createPlayer } from "./player";
 import { GameState } from "./gameState";
 import { GameInput } from "./types";
+import { GameJSON } from "./jsonTypes";
 import { getGameJSONById, saveGameJSONById } from "./db";
 import { emitGameUpdate } from "./gameUpdates";
 import cloneDeep from "lodash/cloneDeep";
@@ -38,9 +39,10 @@ class Game {
     emitGameUpdate(this.gameId);
   }
 
-  toJSON(includePrivate: boolean): object {
+  toJSON(includePrivate: boolean): GameJSON {
     return cloneDeep({
       gameId: this.gameId,
+      gameSecret: "",
       gameState: this.gameState.toJSON(includePrivate),
       ...(includePrivate
         ? {
@@ -56,7 +58,7 @@ class Game {
     );
   }
 
-  static fromJSON(gameJSON: any): Game | null {
+  static fromJSON(gameJSON: GameJSON): Game {
     return new Game(
       gameJSON.gameId,
       gameJSON.gameSecret,

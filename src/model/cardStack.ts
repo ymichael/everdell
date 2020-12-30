@@ -1,4 +1,5 @@
 import { CardName } from "./types";
+import { CardStackJSON } from "./jsonTypes";
 import shuffle from "lodash/shuffle";
 import cloneDeep from "lodash/cloneDeep";
 
@@ -35,14 +36,15 @@ export class CardStack {
     this.cards.push(cardName);
   }
 
-  toJSON(includePrivate: boolean): object {
+  toJSON(includePrivate: boolean): CardStackJSON {
     return cloneDeep({
       numCards: this.cards.length,
+      cards: [],
       ...(includePrivate ? { cards: this.cards } : {}),
     });
   }
 
-  static fromJSON(cardStackJSON: any): CardStack {
+  static fromJSON(cardStackJSON: CardStackJSON): CardStack {
     return new CardStack(cardStackJSON);
   }
 }

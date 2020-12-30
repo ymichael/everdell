@@ -10,6 +10,7 @@ import {
   PlayedCardInfo,
   PlayedEventInfo,
 } from "./types";
+import { PlayerJSON } from "./jsonTypes";
 import cloneDeep from "lodash/cloneDeep";
 import { GameState } from "./gameState";
 import { Card } from "./card";
@@ -689,7 +690,7 @@ export class Player {
     }
   }
 
-  toJSON(includePrivate: boolean): object {
+  toJSON(includePrivate: boolean): PlayerJSON {
     return cloneDeep({
       name: this.name,
       playerId: this.playerId,
@@ -699,6 +700,8 @@ export class Player {
       numWorkers: this.numWorkers,
       numAvailableWorkers: this.numAvailableWorkers,
       currentSeason: this.currentSeason,
+      claimedEvents: this.claimedEvents,
+      cardsInHand: [],
       ...(includePrivate
         ? {
             playerSecret: this.playerSecret,
@@ -708,7 +711,7 @@ export class Player {
     });
   }
 
-  static fromJSON(playerJSON: any): Player {
+  static fromJSON(playerJSON: PlayerJSON): Player {
     const player = new Player(playerJSON);
     return player;
   }

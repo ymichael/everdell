@@ -1,10 +1,22 @@
 import * as React from "react";
 import { useState, useCallback, useEffect } from "react";
+
 import Meadow from "./Meadow";
 import Players from "./Players";
 import GameInputBox from "./GameInputBox";
+import { Player } from "../model/player";
+import { CardName } from "../model/types";
+import { PlayerJSON } from "../model/jsonTypes";
 
-const Game: React.FC<{ game: any; viewingPlayer: any }> = (props) => {
+const Game: React.FC<{
+  game: {
+    gameId: string;
+    gameState: {
+      meadowCards: CardName[];
+    };
+  };
+  viewingPlayer: PlayerJSON;
+}> = (props) => {
   const [game, setGame] = useState(props.game);
   const [viewingPlayer, setViewingPlayer] = useState(props.viewingPlayer);
   const updateGameAndViewingPlayer = useCallback(
@@ -35,15 +47,16 @@ const Game: React.FC<{ game: any; viewingPlayer: any }> = (props) => {
     };
   }, [gameId, playerId, playerSecret]);
 
+  const viewingPlayerImpl = Player.fromJSON(viewingPlayer);
   return (
     <>
       <Meadow meadowCards={gameState.meadowCards} />
       <GameInputBox
         gameId={gameId}
         gameState={gameState}
-        viewingPlayer={viewingPlayer}
+        viewingPlayer={viewingPlayerImpl}
       />
-      <Players viewingPlayer={viewingPlayer} gameState={gameState} />
+      <Players viewingPlayer={viewingPlayerImpl} gameState={gameState} />
       <hr />
       <div>
         <h2>DEBUG</h2>

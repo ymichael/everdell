@@ -13,22 +13,6 @@ import {
 
 import { Card } from "./card";
 
-export function playGainResourceFactory({
-  resourceMap,
-  numCardsToDraw = 0,
-}: {
-  resourceMap: ResourceMap;
-  numCardsToDraw?: number;
-}): GameStatePlayFn {
-  return (gameState: GameState, gameInput: GameInput) => {
-    const player = gameState.getActivePlayer();
-    player.gainResources(resourceMap);
-    if (numCardsToDraw !== 0) {
-      player.drawCards(gameState, numCardsToDraw);
-    }
-  };
-}
-
 export function playSpendResourceToGetVPFactory({
   resourceType,
   maxToSpend,

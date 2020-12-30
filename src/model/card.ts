@@ -18,7 +18,6 @@ import {
 } from "./gameState";
 import { Location } from "./location";
 import {
-  playGainResourceFactory,
   playSpendResourceToGetVPFactory,
   sumResources,
   getPointsPerRarityLabel,
@@ -42,7 +41,7 @@ export class Card<TCardType extends CardType = CardType>
   readonly isOpenDestination: boolean;
 
   readonly productionInner: GameStatePlayFn | undefined;
-  readonly productionResources: ProductionResourceMap | undefined;
+  readonly resourcesToGain: ProductionResourceMap | undefined;
 
   constructor({
     name,
@@ -52,7 +51,7 @@ export class Card<TCardType extends CardType = CardType>
     isUnique,
     isConstruction,
     associatedCard,
-    productionResources,
+    resourcesToGain,
     productionInner,
     isOpenDestination = false, // if the destination is an open destination
     playInner, // called when the card is played
@@ -74,11 +73,11 @@ export class Card<TCardType extends CardType = CardType>
     pointsInner?: (gameState: GameState, playerId: string) => number;
   } & (TCardType extends CardType.PRODUCTION
     ? {
-        productionResources: ProductionResourceMap;
+        resourcesToGain: ProductionResourceMap;
         productionInner?: GameStatePlayFn | undefined;
       }
     : {
-        productionResources?: undefined;
+        resourcesToGain?: ProductionResourceMap;
         productionInner?: undefined;
       })) {
     this.name = name;
@@ -97,7 +96,7 @@ export class Card<TCardType extends CardType = CardType>
 
     // Production cards
     this.productionInner = productionInner;
-    this.productionResources = productionResources;
+    this.resourcesToGain = resourcesToGain;
   }
 
   getPlayedCardInfo(): PlayedCardInfo {
@@ -159,10 +158,11 @@ export class Card<TCardType extends CardType = CardType>
       } else {
         player.addToCity(this.name);
       }
-      if (this.cardType === CardType.PRODUCTION) {
+      if (
+        this.cardType === CardType.PRODUCTION ||
+        this.cardType === CardType.TRAVELER
+      ) {
         this.gainProduction(gameState, gameInput);
-      }
-      if (this.cardType === CardType.TRAVELER) {
         if (this.playInner) {
           this.playInner(gameState, gameInput);
         }
@@ -177,14 +177,11 @@ export class Card<TCardType extends CardType = CardType>
   }
 
   gainProduction(gameState: GameState, gameInput: GameInput): void {
-    if (this.cardType !== CardType.PRODUCTION) {
-      throw new Error("Non-production cards cannot gain production");
-    }
     const player = gameState.getActivePlayer();
-    if (this.productionResources) {
-      player.gainResources(this.productionResources);
-      if (this.productionResources.CARD) {
-        player.drawCards(gameState, this.productionResources.CARD);
+    if (this.resourcesToGain) {
+      player.gainResources(this.resourcesToGain);
+      if (this.resourcesToGain.CARD) {
+        player.drawCards(gameState, this.resourcesToGain.CARD);
       }
     }
     if (this.productionInner) {
@@ -266,7 +263,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: false,
     associatedCard: CardName.TWIG_BARGE,
-    productionResources: {},
+    resourcesToGain: {},
     productionInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       const playedFarms = player.playedCards[CardName.FARM];
@@ -354,7 +351,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: false,
     associatedCard: CardName.RESIN_REFINERY,
-    productionResources: {},
+    resourcesToGain: {},
     productionInner: (gameState: GameState, gameInput: GameInput) => {
       if (gameInput.inputType !== GameInputType.PLAY_CARD) {
         throw new Error("Invalid input type");
@@ -417,7 +414,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: false,
     associatedCard: CardName.UNIVERSITY,
-    productionResources: {},
+    resourcesToGain: {},
     productionInner: playSpendResourceToGetVPFactory({
       resourceType: ResourceType.BERRY,
       maxToSpend: 3,
@@ -466,7 +463,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: true,
     associatedCard: CardName.FOOL,
-    productionResources: {
+    resourcesToGain: {
       CARD: 2,
     },
   }),
@@ -478,7 +475,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: true,
     associatedCard: null,
-    productionResources: {
+    resourcesToGain: {
       [ResourceType.BERRY]: 1,
     },
   }),
@@ -499,7 +496,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: true,
     associatedCard: CardName.SHOPKEEPER,
-    productionResources: {
+    resourcesToGain: {
       [ResourceType.BERRY]: 1,
     },
     productionInner: (gameState: GameState) => {
@@ -526,7 +523,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: false,
     associatedCard: CardName.FARM,
-    productionResources: {},
+    resourcesToGain: {},
     productionInner: (gameState: GameState, gameInput: GameInput) => {
       if (gameInput.inputType !== GameInputType.PLAY_CARD) {
         throw new Error("Invalid input type");
@@ -636,7 +633,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: true,
     associatedCard: CardName.MINER_MOLE,
-    productionResources: {
+    resourcesToGain: {
       [ResourceType.PEBBLE]: 1,
     },
   }),
@@ -648,7 +645,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: false,
     associatedCard: CardName.MINE,
-    productionResources: {},
+    resourcesToGain: {},
     productionInner: (gameState: GameState, gameInput: GameInput) => {
       if (gameInput.inputType !== GameInputType.PLAY_CARD) {
         throw new Error("Invalid input type");
@@ -717,7 +714,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: false,
     associatedCard: CardName.MONASTERY,
-    productionResources: {},
+    resourcesToGain: {},
     productionInner: (gameState: GameState, gameInput: GameInput) => {
       if (gameInput.inputType !== GameInputType.PLAY_CARD) {
         throw new Error("Invalid input type");
@@ -771,7 +768,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: false,
     associatedCard: CardName.RUINS,
-    productionResources: {},
+    resourcesToGain: {},
     productionInner: (gameState: GameState, gameInput: GameInput) => {
       if (gameInput.inputType !== GameInputType.PLAY_CARD) {
         throw new Error("Invalid input type");
@@ -914,7 +911,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: true,
     associatedCard: CardName.CHIP_SWEEP,
-    productionResources: {
+    resourcesToGain: {
       [ResourceType.RESIN]: 1,
     },
   }),
@@ -1000,7 +997,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: true,
     associatedCard: CardName.WOODCARVER,
-    productionResources: {},
+    resourcesToGain: {},
     playedCardInfoInner: () => ({
       resources: {
         [ResourceType.TWIG]: 0,
@@ -1021,7 +1018,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: false,
     associatedCard: CardName.SCHOOL,
-    productionResources: {},
+    resourcesToGain: {},
     playInner: (gameState: GameState, gameInput: GameInput) => {
       throw new Error("Not Implemented");
     },
@@ -1049,7 +1046,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: true,
     associatedCard: CardName.BARGE_TOAD,
-    productionResources: {
+    resourcesToGain: {
       [ResourceType.TWIG]: 2,
     },
   }),
@@ -1106,7 +1103,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: false,
     associatedCard: CardName.LOOKOUT,
-    playInner: playGainResourceFactory({ resourceMap: {}, numCardsToDraw: 3 }),
+    resourcesToGain: {
+      CARD: 3,
+    },
   }),
   [CardName.WIFE]: new Card({
     name: CardName.WIFE,
@@ -1130,7 +1129,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: false,
     associatedCard: CardName.STOREHOUSE,
-    productionResources: {},
+    resourcesToGain: {},
     playInner: playSpendResourceToGetVPFactory({
       resourceType: ResourceType.TWIG,
       maxToSpend: 3,

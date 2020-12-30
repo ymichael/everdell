@@ -146,6 +146,31 @@ describe("Card", () => {
       });
     });
 
+    describe(CardName.WANDERER, () => {
+      it("should gain 3 cards when played", () => {
+        const card = Card.fromName(CardName.WANDERER);
+        const gameInput = playCardInput(card.name);
+        let player = gameState.getActivePlayer();
+
+        gameState.deck.addToStack(CardName.FARM);
+        gameState.deck.addToStack(CardName.FARM);
+        gameState.deck.addToStack(CardName.FARM);
+
+        player.cardsInHand.push(card.name);
+        player.gainResources(card.baseCost);
+        expect(player.cardsInHand).to.eql([card.name]);
+
+        const nextGameState = gameState.next(gameInput);
+        player = nextGameState.getPlayer(player.playerId);
+        expect(player.getNumResource(ResourceType.BERRY)).to.be(0);
+        expect(player.cardsInHand).to.eql([
+          CardName.FARM,
+          CardName.FARM,
+          CardName.FARM,
+        ]);
+      });
+    });
+
     describe(CardName.GENERAL_STORE, () => {
       it("should gain 1 berry when played (w/o farm)", () => {
         const card = Card.fromName(CardName.GENERAL_STORE);

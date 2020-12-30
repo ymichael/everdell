@@ -16,7 +16,6 @@ import {
   GameStatePlayFn,
   GameStateCanPlayFn,
 } from "./gameState";
-import { playGainResourceFactory } from "./gameStatePlayHelpers";
 import shuffle from "lodash/shuffle";
 
 export class Location implements GameStatePlayable {

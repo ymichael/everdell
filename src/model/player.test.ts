@@ -4,7 +4,13 @@ import { Card } from "./card";
 import { GameState } from "./gameState";
 import { testInitialGameState } from "./testHelpers";
 import { sumResources } from "./gameStatePlayHelpers";
-import { ResourceType, CardName, GameInput, GameInputType } from "./types";
+import {
+  ResourceType,
+  CardName,
+  GameInput,
+  GameInputType,
+  LocationName,
+} from "./types";
 
 const playCardInput = (
   card: CardName,
@@ -560,6 +566,63 @@ describe("Player", () => {
         expect(player.hasPlayedCard(CardName.WIFE)).to.be(true);
         expect(player.hasPlayedCard(CardName.INNKEEPER)).to.be(false);
       });
+    });
+  });
+
+  describe("recallAllWorkers", () => {
+    it("recalling workers", () => {
+      const player = gameState.getActivePlayer();
+      player.numAvailableWorkers = 0;
+
+      const player1 = gameState.players[0];
+      const player2 = gameState.players[1];
+
+      // Player 1 has 1 worker on lookout, 1 worker on monastery, and
+      // 1 worker on a location
+      player1.playedCards[CardName.LOOKOUT] = [{ workers: [player1.playerId] }];
+      player1.playedCards[CardName.MONASTERY] = [
+        { workers: [player1.playerId] },
+      ];
+      player1.playedCards[CardName.FARM] = [{}, {}];
+
+      gameState.locationsMap[LocationName.BASIC_ONE_BERRY] = [
+        player2.playerId,
+        player1.playerId,
+      ];
+
+      player2.playedCards[CardName.MINE] = [{}, {}];
+      player2.playedCards[CardName.FARM] = [{}, {}];
+
+      player.recallAllWorkers(gameState);
+
+      expect(player1.numAvailableWorkers).to.be(2);
+
+      // should no longer have a worker on the lookout
+      const playedCards = player1.playedCards;
+      const lookout = playedCards[CardName.LOOKOUT];
+      if (!lookout) {
+        throw new Error("monastery card hasn't been played");
+      }
+      let workers = lookout[0].workers || [];
+      expect(workers.length).to.be(0);
+
+      // expect that there is still a worker in the monastery
+      const monastery = playedCards[CardName.MONASTERY];
+      if (!monastery) {
+        throw new Error("monastery card hasn't been played");
+      }
+      if (monastery.length > 1) {
+        throw new Error("can't have more than one monastery in city");
+      }
+      workers = monastery[0].workers || [];
+      expect(workers.length).to.be(1);
+
+      // there shouldn't be a worker at the location
+
+      const workersAtLocation =
+        gameState.locationsMap[LocationName.BASIC_ONE_BERRY] || [];
+      expect(workersAtLocation.length).to.be(1);
+      expect(workersAtLocation).to.eql([player2.playerId]);
     });
   });
 });

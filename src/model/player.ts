@@ -9,6 +9,7 @@ import {
   GameInputType,
   PlayedCardInfo,
   PlayedEventInfo,
+  LocationName,
 } from "./types";
 import cloneDeep from "lodash/cloneDeep";
 import { GameState } from "./gameState";
@@ -16,6 +17,7 @@ import { Card } from "./card";
 import { Event } from "./event";
 import { generate as uuid } from "short-uuid";
 import { sumResources } from "./gameStatePlayHelpers";
+import pull from "lodash/pull";
 
 const MAX_HAND_SIZE = 8;
 const MAX_CITY_SIZE = 15;
@@ -230,6 +232,30 @@ export class Player {
     });
 
     return allAvailableDestinationCards;
+  }
+
+  // returns all destination cards that have a worker on them
+  getDestinationCardsWithWorkers(): CardName[] {
+    let destinationCardsWithWorkers: CardName[] = [];
+
+    this.forEachPlayedCard(({ cardName }) => {
+      let card = Card.fromName(cardName as CardName);
+      if (card.cardType === CardType.DESTINATION) {
+        const cardInfos = this.playedCards[cardName];
+        if (!cardInfos) {
+          throw new Error("invalid card infos");
+        }
+        cardInfos.forEach((playedCard) => {
+          const workers = playedCard.workers || [];
+          const maxWorkers = playedCard.maxWorkers || 1;
+          if (workers.length > 0) {
+            destinationCardsWithWorkers.push(cardName);
+          }
+        });
+      }
+    });
+
+    return destinationCardsWithWorkers;
   }
 
   // returns all non-Open destination cards that were played by player and
@@ -685,6 +711,85 @@ export class Player {
     if (RESIN) {
       this.resources[ResourceType.RESIN] += RESIN;
     }
+  }
+
+  recallAllWorkers(gameState: GameState) {
+    if (this.numAvailableWorkers != 0) {
+      throw new Error(
+        "cannot recall all workers if you still have available workers"
+      );
+    }
+
+    // get workers from destination cards (including other players')
+    const players = gameState.players;
+    if (!players) {
+      throw new Error("Invalid player list");
+    }
+    players.forEach((player) => {
+      // get destination cards with workers
+      let destinationCardsWithWorkers = player.getDestinationCardsWithWorkers();
+
+      // don't recall workers from cemetary or monestary
+      destinationCardsWithWorkers = destinationCardsWithWorkers.filter(
+        (cardName) => {
+          const card = Card.fromName(cardName);
+          return (
+            card.name != CardName.CEMETARY && card.name != CardName.MONASTERY
+          );
+        }
+      );
+
+      // check if any of the workers belong to the current player
+      destinationCardsWithWorkers.forEach((cardName) => {
+        const playedCards = player.playedCards;
+        if (!playedCards) {
+          throw new Error("invalid list of played cards");
+        }
+
+        const cardInfos = playedCards[cardName];
+        if (!cardInfos) {
+          throw new Error("invalid list of played card info");
+        }
+        cardInfos.forEach((cardInfo) => {
+          // get workers and original number of workers on the card
+          let workers = cardInfo.workers || [];
+          const currNumWorkers = workers.length;
+
+          // pull workers with matching playerId off of the card
+          // this mutates the array
+          workers = pull(workers, this.playerId);
+
+          this.numAvailableWorkers =
+            this.numAvailableWorkers + (currNumWorkers - workers.length);
+        });
+      });
+    });
+
+    // get workers from events you've claimed
+    Object.keys(this.claimedEvents).forEach((eventName) => {
+      const eventInfo = this.claimedEvents[eventName as EventName];
+      if (!eventInfo) {
+        throw new Error("event info is undefined");
+      }
+      const eventHasWorker = eventInfo.hasWorker || false;
+      if (eventHasWorker) {
+        this.numAvailableWorkers++;
+        eventInfo.hasWorker = false;
+      }
+    });
+
+    // get workers from locations
+    const locationsMap = gameState.locationsMap;
+    Object.keys(locationsMap).forEach((locationName) => {
+      // similar to pull workers from cards
+      let workersAtLocation = locationsMap[locationName as LocationName] || [];
+      const currNumWorkers = workersAtLocation.length;
+
+      workersAtLocation = pull(workersAtLocation, this.playerId);
+
+      this.numAvailableWorkers =
+        this.numAvailableWorkers + (currNumWorkers - workersAtLocation.length);
+    });
   }
 
   toJSON(includePrivate: boolean): object {

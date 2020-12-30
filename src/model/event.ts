@@ -734,7 +734,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         player.getNumResource(ResourceType.BERRY) >= 2
       );
     },
-    // play up to 2 critters from your city beneath this event
+    // pay 2 berries and discard 2 cards from city
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType !== GameInputType.CLAIM_EVENT) {
@@ -759,7 +759,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         player.removeCardFromCity(
           gameState,
           cardName as CardName,
-          false /* addToDiscardPile */
+          true /* addToDiscardPile */
         );
       }
       // Remove berries from player's supply

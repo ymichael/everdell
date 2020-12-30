@@ -19,8 +19,8 @@ const ResourceTypeValueInput: React.FC<{
 }> = ({ resourceType, name }) => {
   const [field, meta, helpers] = useField(name);
   return (
-    <div className={styles.resource_type_value_input_wrapper}>
-      <div className={styles.resource_type_value_input_icon}>
+    <div className={styles.resource_input}>
+      <div className={styles.resource_icon}>
         <ResourceTypeIcon resourceType={resourceType} />
       </div>
       <input
@@ -29,7 +29,7 @@ const ResourceTypeValueInput: React.FC<{
         onChange={(e) => {
           helpers.setValue(e.target.value);
         }}
-        className={styles.resource_type_value_input_input}
+        className={styles.resource_input_el}
       />
     </div>
   );
@@ -42,7 +42,7 @@ const ResourcesToSpend: React.FC<{
   return (
     <>
       <p>Resources to spend:</p>
-      <div className={styles.resource_type_value_list}>
+      <div className={styles.resource_input_list}>
         <ResourceTypeValueInput
           name={`${name}.BERRY`}
           resourceType={ResourceType.BERRY}

@@ -1,0 +1,44 @@
+.container {
+  height: 100px;
+  width: 200px;
+  border-radius: 5px;
+  position: relative;
+
+  border: 1px solid #bbb;
+  box-shadow: 1px 1px #eee;
+  overflow: hidden;
+  margin: 10px;
+}
+
+.location_name {
+  padding: 10px;
+  font-weight: bold;
+  font-size: 12px;
+  text-align: center;
+  color: #ffffff;
+}
+
+.color_basic {
+  background: #88a55e;
+}
+
+.color_forest {
+  background: #4e5627;
+}
+
+.color_haven {
+  background: #ddcf9d;
+}
+
+.color_journey {
+  background: #bb9e66;
+}
+
+.location_type {
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 10px;
+  font-weight: 700;
+  margin-top: 20px;
+  color: #ffffff;
+}

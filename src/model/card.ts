@@ -267,7 +267,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: false,
     associatedCard: CardName.TWIG_BARGE,
     resourcesToGain: {},
-    productionInner: (gameState: GameState, gameInput: GameInput) => {
+    productionInner: (gameState: GameState) => {
       const player = gameState.getActivePlayer();
       const playedFarms = player.playedCards[CardName.FARM];
       if (playedFarms) {
@@ -355,22 +355,38 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: false,
     associatedCard: CardName.RESIN_REFINERY,
     resourcesToGain: {},
-    productionInner: (gameState: GameState, gameInput: GameInput) => {
-      if (gameInput.inputType !== GameInputType.PLAY_CARD) {
-        throw new Error("Invalid input type");
-      }
-      if (!gameInput.clientOptions?.targetCard) {
-        throw new Error("Invalid input");
-      }
+    playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
-      if (!player.hasPlayedCard(gameInput.clientOptions?.targetCard)) {
-        throw new Error("Invalid input");
+      if (gameInput.inputType === GameInputType.SELECT_CARD) {
+        if (
+          !gameInput.clientOptions.selectedCard ||
+          !player.hasPlayedCard(gameInput.clientOptions.selectedCard)
+        ) {
+          throw new Error("Invalid input");
+        }
+        const targetCard = Card.fromName(gameInput.clientOptions.selectedCard);
+        if (targetCard.cardType !== CardType.PRODUCTION) {
+          throw new Error("Invalid input");
+        }
+        targetCard.gainProduction(gameState, gameInput);
       }
-      const targetCard = Card.fromName(gameInput.clientOptions?.targetCard);
-      if (targetCard.cardType !== CardType.PRODUCTION) {
-        throw new Error("Invalid input");
-      }
-      targetCard.gainProduction(gameState, gameInput);
+    },
+    productionInner: (gameState: GameState) => {
+      const player = gameState.getActivePlayer();
+      const cardOptions = player
+        .getPlayedCardByType(CardType.PRODUCTION)
+        .filter((cardName) => cardName !== CardName.CHIP_SWEEP);
+      gameState.pendingGameInputs.push({
+        inputType: GameInputType.SELECT_CARD,
+        prevInputType: GameInputType.PLAY_CARD,
+        cardOptions,
+        cardOptionsUnfiltered: cardOptions,
+        cardContext: CardName.CHIP_SWEEP,
+        mustSelectOne: true,
+        clientOptions: {
+          selectedCard: null,
+        },
+      });
     },
   }),
   [CardName.CLOCK_TOWER]: new Card({
@@ -838,43 +854,39 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         }
         const cardOptions = [gameState.drawCard(), gameState.drawCard()];
         const player = gameState.getActivePlayer();
-        gameState.pendingGameInputs = [
-          ...cardOptions
-            .map((card) => ({
-              inputType: GameInputType.SELECT_CARD as const,
-              prevInputType: GameInputType.PLAY_CARD as const,
-              card: CardName.POSTAL_PIGEON as const,
-              cardOptions,
-              pickedCard: card,
-            }))
-            .filter((gameInput) => {
-              const revealedCard = Card.fromName(gameInput.pickedCard);
-              if (revealedCard.baseVP > 3) {
-                return false;
-              }
-              return player.canAddToCity(gameInput.pickedCard);
-            }),
-          {
-            inputType: GameInputType.SELECT_CARD,
-            prevInputType: GameInputType.PLAY_CARD,
-            card: CardName.POSTAL_PIGEON,
-            cardOptions,
-            pickedCard: null,
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_CARD,
+          prevInputType: GameInputType.PLAY_CARD,
+          cardContext: CardName.POSTAL_PIGEON,
+          mustSelectOne: false,
+          cardOptions: cardOptions.filter((cardName) => {
+            const cardOption = Card.fromName(cardName);
+            if (cardOption.baseVP > 3) {
+              return false;
+            }
+            return player.canAddToCity(cardName);
+          }),
+          cardOptionsUnfiltered: cardOptions,
+          clientOptions: {
+            selectedCard: null,
           },
-        ];
+        });
       } else if (
         gameInput.inputType === GameInputType.SELECT_CARD &&
         gameInput.prevInputType === GameInputType.PLAY_CARD &&
-        gameInput.card === CardName.POSTAL_PIGEON
+        gameInput.cardContext === CardName.POSTAL_PIGEON
       ) {
         gameState.pendingGameInputs = [];
         const player = gameState.getActivePlayer();
-        const cardOptions = [...gameInput.cardOptions];
-        if (gameInput.pickedCard) {
-          player.addToCity(gameInput.pickedCard);
-          cardOptions.splice(cardOptions.indexOf(gameInput.pickedCard), 1);
+        const cardOptionsUnfiltered = [...gameInput.cardOptionsUnfiltered];
+        if (gameInput.clientOptions.selectedCard) {
+          player.addToCity(gameInput.clientOptions.selectedCard);
+          cardOptionsUnfiltered.splice(
+            cardOptionsUnfiltered.indexOf(gameInput.clientOptions.selectedCard),
+            1
+          );
         }
-        cardOptions.forEach((cardName) => {
+        cardOptionsUnfiltered.forEach((cardName) => {
           gameState.discardPile.addToStack(cardName);
         });
       } else {

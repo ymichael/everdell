@@ -293,32 +293,32 @@ describe("Card", () => {
         expect(player.playerId).to.be(gameState2.getActivePlayer().playerId);
         expect(gameState2.pendingGameInputs).to.eql([
           {
-            card: "POSTAL_PIGEON",
-            inputType: "SELECT_CARD",
-            pickedCard: "MINE",
-            prevInputType: "PLAY_CARD",
-            cardOptions: ["MINE", "FARM"],
-          },
-          {
-            card: "POSTAL_PIGEON",
-            inputType: "SELECT_CARD",
-            pickedCard: "FARM",
-            prevInputType: "PLAY_CARD",
-            cardOptions: ["MINE", "FARM"],
-          },
-          {
-            card: "POSTAL_PIGEON",
-            inputType: "SELECT_CARD",
-            pickedCard: null,
-            prevInputType: "PLAY_CARD",
-            cardOptions: ["MINE", "FARM"],
+            inputType: GameInputType.SELECT_CARD,
+            prevInputType: GameInputType.PLAY_CARD,
+            cardContext: CardName.POSTAL_PIGEON,
+            mustSelectOne: false,
+            cardOptions: [CardName.MINE, CardName.FARM],
+            cardOptionsUnfiltered: [CardName.MINE, CardName.FARM],
+            clientOptions: {
+              selectedCard: null,
+            },
           },
         ]);
 
         player = gameState2.getActivePlayer();
         expect(player.hasPlayedCard(card.name)).to.be(true);
 
-        const gameState3 = gameState2.next(gameState2.pendingGameInputs[0]);
+        const gameState3 = gameState2.next({
+          inputType: GameInputType.SELECT_CARD,
+          prevInputType: GameInputType.PLAY_CARD,
+          cardContext: CardName.POSTAL_PIGEON,
+          mustSelectOne: false,
+          cardOptions: [CardName.MINE, CardName.FARM],
+          cardOptionsUnfiltered: [CardName.MINE, CardName.FARM],
+          clientOptions: {
+            selectedCard: CardName.MINE,
+          },
+        });
 
         // Active player changes
         expect(player.playerId).to.not.be(
@@ -340,8 +340,8 @@ describe("Card", () => {
         player.cardsInHand.push(card.name);
 
         // Add cards that have too high vp
-        gameState.deck.addToStack(CardName.QUEEN);
         gameState.deck.addToStack(CardName.KING);
+        gameState.deck.addToStack(CardName.QUEEN);
 
         expect(gameState.discardPile.length).to.eql(0);
         expect(gameState.pendingGameInputs).to.eql([]);
@@ -352,13 +352,85 @@ describe("Card", () => {
         expect(player.playerId).to.be(gameState2.getActivePlayer().playerId);
         expect(gameState2.pendingGameInputs).to.eql([
           {
-            card: "POSTAL_PIGEON",
-            inputType: "SELECT_CARD",
-            pickedCard: null,
-            prevInputType: "PLAY_CARD",
-            cardOptions: ["KING", "QUEEN"],
+            cardContext: CardName.POSTAL_PIGEON,
+            inputType: GameInputType.SELECT_CARD,
+            prevInputType: GameInputType.PLAY_CARD,
+            mustSelectOne: false,
+            cardOptions: [],
+            cardOptionsUnfiltered: [CardName.QUEEN, CardName.KING],
+            clientOptions: {
+              selectedCard: null,
+            },
           },
         ]);
+      });
+    });
+
+    describe(CardName.CHIP_SWEEP, () => {
+      it("should allow the player to select a card to play", () => {
+        const card = Card.fromName(CardName.CHIP_SWEEP);
+        const gameInput = playCardInput(card.name);
+        let player = gameState.getActivePlayer();
+        player.addToCity(CardName.MINE);
+        player.addToCity(CardName.FARM);
+
+        // Make sure we can play this card
+        player.gainResources(card.baseCost);
+        player.cardsInHand.push(card.name);
+
+        expect(gameState.pendingGameInputs).to.eql([]);
+        expect(player.hasPlayedCard(card.name)).to.be(false);
+        expect(player.getNumResource(ResourceType.PEBBLE)).to.be(0);
+
+        const gameState2 = gameState.next(gameInput);
+        // Active player remains the same
+        expect(player.playerId).to.be(gameState2.getActivePlayer().playerId);
+        expect(gameState2.pendingGameInputs).to.eql([
+          {
+            inputType: GameInputType.SELECT_CARD,
+            prevInputType: GameInputType.PLAY_CARD,
+            cardContext: CardName.CHIP_SWEEP,
+            mustSelectOne: true,
+            cardOptions: [CardName.MINE, CardName.FARM],
+            cardOptionsUnfiltered: [CardName.MINE, CardName.FARM],
+            clientOptions: {
+              selectedCard: null,
+            },
+          },
+        ]);
+
+        player = gameState2.getPlayer(player.playerId);
+        expect(player.playerId).to.be(gameState2.getActivePlayer().playerId);
+        expect(player.hasPlayedCard(card.name)).to.be(true);
+        expect(player.getNumResource(ResourceType.PEBBLE)).to.be(0);
+
+        expect(() => {
+          gameState2.next({
+            inputType: GameInputType.SELECT_CARD,
+            prevInputType: GameInputType.PLAY_CARD,
+            cardContext: CardName.POSTAL_PIGEON,
+            mustSelectOne: true,
+            cardOptions: [CardName.MINE, CardName.FARM],
+            cardOptionsUnfiltered: [CardName.MINE, CardName.FARM],
+            clientOptions: {
+              selectedCard: CardName.MINE,
+            },
+          });
+        }).to.throwException(/invalid multi-step input/i);
+
+        const gameState3 = gameState2.next({
+          inputType: GameInputType.SELECT_CARD,
+          prevInputType: GameInputType.PLAY_CARD,
+          cardContext: CardName.CHIP_SWEEP,
+          mustSelectOne: true,
+          cardOptions: [CardName.MINE, CardName.FARM],
+          cardOptionsUnfiltered: [CardName.MINE, CardName.FARM],
+          clientOptions: {
+            selectedCard: CardName.MINE,
+          },
+        });
+        player = gameState3.getPlayer(player.playerId);
+        expect(player.getNumResource(ResourceType.PEBBLE)).to.be(1);
       });
     });
   });

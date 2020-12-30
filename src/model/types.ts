@@ -232,9 +232,13 @@ export type GameInputDiscardCards = {
 export type GameInputSelectCard = {
   inputType: GameInputType.SELECT_CARD;
   prevInputType: GameInputType;
+  cardContext?: CardName;
   cardOptions: CardName[];
-  pickedCard: CardName | null;
-  card?: CardName;
+  cardOptionsUnfiltered: CardName[];
+  mustSelectOne: boolean;
+  clientOptions: {
+    selectedCard: CardName | null;
+  };
 };
 
 export type GameInputMultiStep = GameInputSelectCard | GameInputDiscardCards;

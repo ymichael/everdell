@@ -22,7 +22,10 @@ import { CardStack, emptyCardStack } from "./cardStack";
 import { Location, initialLocationsMap } from "./location";
 import { Event, initialEventMap } from "./event";
 import { initialDeck } from "./deck";
+
 import cloneDeep from "lodash/cloneDeep";
+import isEqual from "lodash/isEqual";
+import omit from "lodash/omit";
 
 const MEADOW_SIZE = 8;
 const STARTING_PLAYER_HAND_SIZE = 5;
@@ -144,12 +147,23 @@ export class GameState {
   }
 
   private handleMultiStepGameInput(gameInput: GameInputMultiStep): void {
+    if (
+      !this.pendingGameInputs.some((pendingGameInput) => {
+        return isEqual(
+          omit(pendingGameInput, ["clientOptions"]),
+          omit(gameInput, ["clientOptions"])
+        );
+      })
+    ) {
+      throw new Error("Invalid multi-step input");
+    }
+
     if (gameInput.prevInputType === GameInputType.PLAY_CARD) {
       if (gameInput.inputType === GameInputType.SELECT_CARD) {
-        if (!gameInput.card) {
+        if (!gameInput.cardContext) {
           throw new Error("Invalid input: missing card");
         }
-        const card = Card.fromName(gameInput.card);
+        const card = Card.fromName(gameInput.cardContext);
         if (!card.canPlay(this, gameInput)) {
           throw new Error("Cannot take action");
         }

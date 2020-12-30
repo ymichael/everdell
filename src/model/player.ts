@@ -183,6 +183,17 @@ export class Player {
     return this.resources[resourceType];
   }
 
+  getPlayedCardByType(cardType: CardType): CardName[] {
+    const cards: CardName[] = [];
+    this.forEachPlayedCard(({ cardName }) => {
+      const card = Card.fromName(cardName);
+      if (card.cardType == cardType) {
+        cards.push(cardName);
+      }
+    });
+    return cards;
+  }
+
   forEachPlayedCard(
     cb: (x: { cardName: CardName; playedCardInfo: PlayedCardInfo }) => void
   ): void {

@@ -11,6 +11,7 @@ import {
   GameInput,
   CardName,
 } from "../model/types";
+import { GameStateJSON } from "../model/jsonTypes";
 import { Player } from "../model/player";
 import { Card as CardModel } from "../model/card";
 import { GameBlock } from "./common";
@@ -221,7 +222,7 @@ const GameInputDefaultSelector: React.FC<{
 
 const GameInputBox: React.FC<{
   gameId: string;
-  gameState: any;
+  gameState: GameStateJSON;
   viewingPlayer: Player;
 }> = ({ gameId, gameState, viewingPlayer }) => {
   const gameStateImpl = GameState.fromJSON(gameState);

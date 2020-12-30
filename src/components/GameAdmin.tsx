@@ -1,4 +1,6 @@
-const GameAdmin = ({ game }: { game: any }) => {
+import { GameJSON } from "../model/jsonTypes";
+
+const GameAdmin = ({ game }: { game: GameJSON }) => {
   return (
     <>
       <h1>Game id: {game.gameId}</h1>

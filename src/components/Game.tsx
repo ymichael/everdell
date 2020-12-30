@@ -6,15 +6,10 @@ import Players from "./Players";
 import GameInputBox from "./GameInputBox";
 import { Player } from "../model/player";
 import { CardName } from "../model/types";
-import { PlayerJSON } from "../model/jsonTypes";
+import { GameJSON, PlayerJSON } from "../model/jsonTypes";
 
 const Game: React.FC<{
-  game: {
-    gameId: string;
-    gameState: {
-      meadowCards: CardName[];
-    };
-  };
+  game: GameJSON;
   viewingPlayer: PlayerJSON;
 }> = (props) => {
   const [game, setGame] = useState(props.game);

@@ -4,11 +4,12 @@
 
 .play_card_list {
   display: flex;
-  max-width: 1090px;
+  flex-wrap: wrap;
 }
 
 .play_card_list_item_wrapper {
   position: relative;
+  margin-bottom: 20px;
 }
 
 .play_card_list_item {

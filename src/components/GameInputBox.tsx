@@ -30,6 +30,10 @@ const gameInputSortOrder: Record<GameInputType, number> = {
   [GameInputType.GAME_END]: 5,
 };
 
+// const ResourceTypeValueInput = ({ resourceType }: { ResourceType }) => {
+//   return <></>;
+// };
+
 const GameInputPlayCardSelector = ({
   gameInputs = [],
 }: {
@@ -89,7 +93,6 @@ const GameInputPlayCardSelector = ({
       </div>
       {meta.value && (
         <div>
-          <pre>{JSON.stringify(meta.value, null, 2)}</pre>
           <p>
             Berry:{" "}
             <Field

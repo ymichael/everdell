@@ -15,7 +15,7 @@ var colorClassMap = {
 // determine rarity label, which is unique vs. common and
 // critter vs. construction
 const getRarityLabel = (card: CardModel) => {
-  var rarity = card.isUnique ? "Rare" : "Common";
+  var rarity = card.isUnique ? "Unique" : "Common";
   var category = card.isCritter ? "Critter" : "Construction";
   return rarity + " " + category;
 };

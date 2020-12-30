@@ -60,6 +60,10 @@ export enum ResourceType {
 
 export type ResourceMap = Partial<Record<ResourceType, number>>;
 
+export type ProductionResourceMap = ResourceMap & {
+  CARD?: number;
+};
+
 export type CardCost = {
   [ResourceType.TWIG]?: number;
   [ResourceType.BERRY]?: number;

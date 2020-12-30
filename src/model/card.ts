@@ -1,6 +1,6 @@
 import {
   ResourceType,
-  ResourceMap,
+  ProductionResourceMap,
   LocationType,
   CardCost,
   CardType,
@@ -42,11 +42,7 @@ export class Card<TCardType extends CardType = CardType>
   readonly isOpenDestination: boolean;
 
   readonly productionInner: GameStatePlayFn | undefined;
-  readonly productionResources:
-    | (ResourceMap & {
-        CARD?: number;
-      })
-    | undefined;
+  readonly productionResources: ProductionResourceMap | undefined;
 
   constructor({
     name,
@@ -78,9 +74,7 @@ export class Card<TCardType extends CardType = CardType>
     pointsInner?: (gameState: GameState, playerId: string) => number;
   } & (TCardType extends CardType.PRODUCTION
     ? {
-        productionResources: ResourceMap & {
-          CARD?: number;
-        };
+        productionResources: ProductionResourceMap;
         productionInner?: GameStatePlayFn | undefined;
       }
     : {

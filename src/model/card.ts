@@ -198,6 +198,13 @@ export class Card<TCardType extends CardType = CardType>
     );
   }
 
+  canTakeWorker(): boolean {
+    return (
+      this.cardType === CardType.DESTINATION ||
+      this.name === CardName.STOREHOUSE
+    );
+  }
+
   static fromName(name: CardName): Card {
     if (!CARD_REGISTRY[name]) {
       throw new Error(`Invalid Card name: ${name}`);

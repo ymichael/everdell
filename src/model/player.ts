@@ -225,7 +225,7 @@ export class Player {
 
     this.forEachPlayedCard(({ cardName }) => {
       const card = Card.fromName(cardName as CardName);
-      if (card.cardType === CardType.DESTINATION) {
+      if (card.canTakeWorker()) {
         if (this.hasSpaceOnDestinationCard(cardName)) {
           allAvailableDestinationCards.push(cardName);
         }
@@ -235,13 +235,13 @@ export class Player {
     return allAvailableDestinationCards;
   }
 
-  // returns all destination cards that have a worker on them
+  // returns all destination cards (including storehouse) that have a worker on them
   getDestinationCardsWithWorkers(): CardName[] {
     let destinationCardsWithWorkers: CardName[] = [];
 
     this.forEachPlayedCard(({ cardName }) => {
       let card = Card.fromName(cardName as CardName);
-      if (card.cardType === CardType.DESTINATION) {
+      if (card.canTakeWorker()) {
         const cardInfos = this.playedCards[cardName];
         if (!cardInfos) {
           throw new Error("invalid card infos");
@@ -259,14 +259,14 @@ export class Player {
     return destinationCardsWithWorkers;
   }
 
-  // returns all non-Open destination cards that were played by player and
+  // returns all non-Open destination or storehouse cards that were played by player and
   // are available for them to put a worker on
   getAvailableClosedDestinationCards(): CardName[] {
     const availableDestinationCards: CardName[] = [];
 
     this.forEachPlayedCard(({ cardName }) => {
       const card = Card.fromName(cardName as CardName);
-      if (card.cardType === CardType.DESTINATION && !card.isOpenDestination) {
+      if (card.canTakeWorker() && !card.isOpenDestination) {
         if (this.hasSpaceOnDestinationCard(cardName)) {
           availableDestinationCards.push(cardName);
         }
@@ -296,7 +296,7 @@ export class Player {
 
     this.forEachPlayedCard(({ cardName }) => {
       const card = Card.fromName(cardName as CardName);
-      if (card.cardType === CardType.DESTINATION && !!card.isOpenDestination) {
+      if (card.canTakeWorker() && !!card.isOpenDestination) {
         openDestinationCards.push(cardName);
       }
     });
@@ -715,6 +715,7 @@ export class Player {
       this.resources[ResourceType.RESIN] += RESIN;
     }
   }
+
   recallAllWorkers(gameState: GameState) {
     if (this.numAvailableWorkers != 0) {
       throw new Error(
@@ -727,6 +728,7 @@ export class Player {
     if (!players) {
       throw new Error("Invalid player list");
     }
+
     players.forEach((player) => {
       // get destination cards with workers
       let destinationCardsWithWorkers = player.getDestinationCardsWithWorkers();
@@ -793,6 +795,7 @@ export class Player {
         this.numAvailableWorkers + (currNumWorkers - workersAtLocation.length);
     });
   }
+
   toJSON(includePrivate: boolean): PlayerJSON {
     return cloneDeep({
       name: this.name,

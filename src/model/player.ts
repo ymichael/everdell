@@ -11,6 +11,7 @@ import {
   PlayedEventInfo,
   LocationName,
 } from "./types";
+import { PlayerJSON } from "./jsonTypes";
 import cloneDeep from "lodash/cloneDeep";
 import { GameState } from "./gameState";
 import { Card } from "./card";
@@ -54,21 +55,21 @@ export class Player {
     claimedEvents = {},
   }: {
     name: string;
-    playerSecret: string;
-    playerId: string;
-    playedCards: Partial<Record<CardName, PlayedCardInfo[]>>;
-    cardsInHand: CardName[];
-    resources: {
+    playerSecret?: string;
+    playerId?: string;
+    playedCards?: Partial<Record<CardName, PlayedCardInfo[]>>;
+    cardsInHand?: CardName[];
+    resources?: {
       [ResourceType.VP]: number;
       [ResourceType.TWIG]: number;
       [ResourceType.BERRY]: number;
       [ResourceType.PEBBLE]: number;
       [ResourceType.RESIN]: number;
     };
-    currentSeason: Season;
-    numWorkers: number;
-    numAvailableWorkers: number;
-    claimedEvents: Partial<Record<EventName, PlayedEventInfo>>;
+    currentSeason?: Season;
+    numWorkers?: number;
+    numAvailableWorkers?: number;
+    claimedEvents?: Partial<Record<EventName, PlayedEventInfo>>;
   }) {
     this.playerId = playerId;
     this.playerSecret = playerSecret;
@@ -111,8 +112,8 @@ export class Player {
     }
     let didOccupy = false;
     (this.playedCards[card.name] || []).forEach((playedCardInfo) => {
-      if (!didOccupy && !playedCardInfo.isOccupied) {
-        playedCardInfo.isOccupied = true;
+      if (!didOccupy && !playedCardInfo.usedForCritter) {
+        playedCardInfo.usedForCritter = true;
         didOccupy = true;
       }
     });
@@ -156,7 +157,7 @@ export class Player {
   removeCardFromCity(
     gameState: GameState,
     cardName: CardName,
-    addToDiscardPile: boolean = true
+    addToDiscardPile = true
   ): CardName[] {
     if (this.playedCards[cardName]) {
       this.playedCards[cardName]!.pop();
@@ -207,7 +208,7 @@ export class Player {
   }
 
   getPlayedCardType(cardType: CardType): CardName[] {
-    let playedCardsOfType: CardName[] = [];
+    const playedCardsOfType: CardName[] = [];
     this.forEachPlayedCard(({ cardName }) => {
       const card = Card.fromName(cardName as CardName);
       if (card.cardType === cardType) {
@@ -220,10 +221,10 @@ export class Player {
   // returns all destination cards that a player has played that have
   // room for another worker
   getAllAvailableDestinationCards(): CardName[] {
-    let allAvailableDestinationCards: CardName[] = [];
+    const allAvailableDestinationCards: CardName[] = [];
 
     this.forEachPlayedCard(({ cardName }) => {
-      let card = Card.fromName(cardName as CardName);
+      const card = Card.fromName(cardName as CardName);
       if (card.cardType === CardType.DESTINATION) {
         if (this.hasSpaceOnDestinationCard(cardName)) {
           allAvailableDestinationCards.push(cardName);
@@ -261,10 +262,10 @@ export class Player {
   // returns all non-Open destination cards that were played by player and
   // are available for them to put a worker on
   getAvailableClosedDestinationCards(): CardName[] {
-    let availableDestinationCards: CardName[] = [];
+    const availableDestinationCards: CardName[] = [];
 
     this.forEachPlayedCard(({ cardName }) => {
-      let card = Card.fromName(cardName as CardName);
+      const card = Card.fromName(cardName as CardName);
       if (card.cardType === CardType.DESTINATION && !card.isOpenDestination) {
         if (this.hasSpaceOnDestinationCard(cardName)) {
           availableDestinationCards.push(cardName);
@@ -277,8 +278,8 @@ export class Player {
   // returns all destination cards played by this player that are "open"
   // and are available to take other workers
   getAvailableOpenDestinationCards(): CardName[] {
-    let openDestinationCards = this.getOpenDestinationCards();
-    let openAvailableDestinations: CardName[] = [];
+    const openDestinationCards = this.getOpenDestinationCards();
+    const openAvailableDestinations: CardName[] = [];
 
     openDestinationCards.forEach((cardName) => {
       if (this.hasSpaceOnDestinationCard(cardName)) {
@@ -291,10 +292,10 @@ export class Player {
 
   // returns all destination cards played by this player that are "open"
   getOpenDestinationCards(): CardName[] {
-    let openDestinationCards: CardName[] = [];
+    const openDestinationCards: CardName[] = [];
 
     this.forEachPlayedCard(({ cardName }) => {
-      let card = Card.fromName(cardName as CardName);
+      const card = Card.fromName(cardName as CardName);
       if (card.cardType === CardType.DESTINATION && !!card.isOpenDestination) {
         openDestinationCards.push(cardName);
       }
@@ -319,10 +320,12 @@ export class Player {
     });
   }
 
-  hasUnoccupiedConstruction(cardName: CardName): boolean {
+  hasUnusedByCritterConstruction(cardName: CardName): boolean {
     return !!(
       Card.fromName(cardName).isConstruction &&
-      this.playedCards[cardName]?.some((playedCard) => !playedCard.isOccupied)
+      this.playedCards[cardName]?.some(
+        (playedCard) => !playedCard.usedForCritter
+      )
     );
   }
 
@@ -386,12 +389,12 @@ export class Player {
 
     // Check if you have the associated construction if card is a critter
     if (card.isCritter) {
-      if (this.hasUnoccupiedConstruction(CardName.EVERTREE)) {
+      if (this.hasUnusedByCritterConstruction(CardName.EVERTREE)) {
         return true;
       }
       if (
         card.associatedCard &&
-        this.hasUnoccupiedConstruction(card.associatedCard)
+        this.hasUnusedByCritterConstruction(card.associatedCard)
       ) {
         return true;
       }
@@ -436,7 +439,7 @@ export class Player {
     cardCost: CardCost,
     // Discounts are exclusive so we use a single argument to represent them
     discount: ResourceType.BERRY | "ANY" | null = null,
-    errorIfOverpay: boolean = true
+    errorIfOverpay = true
   ): boolean {
     const needToPay = {
       [ResourceType.TWIG]: cardCost[ResourceType.TWIG] || 0,
@@ -528,6 +531,7 @@ export class Player {
 
     this.spendResources(paymentResources);
     if (paymentOptions.cardToDungeon) {
+      throw new Error("Not Implemented yet");
     } else if (paymentOptions.cardToUse) {
       switch (paymentOptions.cardToUse) {
         case CardName.CRANE:
@@ -582,7 +586,6 @@ export class Player {
       );
     }
     if (paymentOptions.cardToUse) {
-      const cardToUse = Card.fromName(paymentOptions.cardToUse);
       if (!this.hasPlayedCard(paymentOptions.cardToUse)) {
         throw new Error(
           `Invalid paymentOptions: cannot use ${paymentOptions.cardToUse}`
@@ -712,7 +715,6 @@ export class Player {
       this.resources[ResourceType.RESIN] += RESIN;
     }
   }
-
   recallAllWorkers(gameState: GameState) {
     if (this.numAvailableWorkers != 0) {
       throw new Error(
@@ -791,8 +793,7 @@ export class Player {
         this.numAvailableWorkers + (currNumWorkers - workersAtLocation.length);
     });
   }
-
-  toJSON(includePrivate: boolean): object {
+  toJSON(includePrivate: boolean): PlayerJSON {
     return cloneDeep({
       name: this.name,
       playerId: this.playerId,
@@ -802,6 +803,8 @@ export class Player {
       numWorkers: this.numWorkers,
       numAvailableWorkers: this.numAvailableWorkers,
       currentSeason: this.currentSeason,
+      claimedEvents: this.claimedEvents,
+      cardsInHand: [],
       ...(includePrivate
         ? {
             playerSecret: this.playerSecret,
@@ -811,7 +814,7 @@ export class Player {
     });
   }
 
-  static fromJSON(playerJSON: any): Player {
+  static fromJSON(playerJSON: PlayerJSON): Player {
     const player = new Player(playerJSON);
     return player;
   }
@@ -820,21 +823,6 @@ export class Player {
 export const createPlayer = (name: string): Player => {
   const player = new Player({
     name,
-    playerSecret: uuid(),
-    playerId: uuid(),
-    playedCards: {},
-    cardsInHand: [],
-    resources: {
-      [ResourceType.VP]: 0,
-      [ResourceType.TWIG]: 0,
-      [ResourceType.BERRY]: 0,
-      [ResourceType.PEBBLE]: 0,
-      [ResourceType.RESIN]: 0,
-    },
-    currentSeason: Season.WINTER,
-    numWorkers: 2,
-    numAvailableWorkers: 2,
-    claimedEvents: {},
   });
   return player;
 };

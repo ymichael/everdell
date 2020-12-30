@@ -2,9 +2,14 @@ import expect from "expect.js";
 import { Event } from "./event";
 import { GameState } from "./gameState";
 import { testInitialGameState } from "./testHelpers";
-import { EventName, GameInputType, GameInput, CardName } from "./types";
+import {
+  EventName,
+  GameInputType,
+  GameInputClaimEvent,
+  CardName,
+} from "./types";
 
-const claimEventInput = (event: EventName): GameInput => {
+const claimEventInput = (event: EventName): GameInputClaimEvent => {
   return {
     inputType: GameInputType.CLAIM_EVENT,
     event,

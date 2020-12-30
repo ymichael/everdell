@@ -8,6 +8,7 @@ import {
   GameInput,
   GameInputType,
   Season,
+  ProductionResourceMap,
 } from "./types";
 import {
   GameState,
@@ -15,27 +16,29 @@ import {
   GameStatePlayFn,
   GameStateCanPlayFn,
 } from "./gameState";
-import { playGainResourceFactory } from "./gameStatePlayHelpers";
 import shuffle from "lodash/shuffle";
 
 export class Location implements GameStatePlayable {
   readonly name: LocationName;
   readonly type: LocationType;
+  readonly resourcesToGain: ProductionResourceMap;
   readonly occupancy: LocationOccupancy;
-  readonly playInner: GameStatePlayFn;
+  readonly playInner: GameStatePlayFn | undefined;
   readonly canPlayInner: GameStateCanPlayFn | undefined;
 
   constructor({
     name,
     type,
     occupancy,
+    resourcesToGain,
     playInner,
     canPlayInner,
   }: {
     name: LocationName;
     type: LocationType;
     occupancy: LocationOccupancy;
-    playInner: GameStatePlayFn;
+    playInner?: GameStatePlayFn;
+    resourcesToGain?: ProductionResourceMap;
     canPlayInner?: GameStateCanPlayFn;
   }) {
     this.name = name;
@@ -43,6 +46,7 @@ export class Location implements GameStatePlayable {
     this.occupancy = occupancy;
     this.playInner = playInner;
     this.canPlayInner = canPlayInner;
+    this.resourcesToGain = resourcesToGain || {};
   }
 
   canPlay(gameState: GameState, gameInput: GameInput): boolean {
@@ -73,7 +77,16 @@ export class Location implements GameStatePlayable {
     if (!this.canPlay(gameState, gameInput)) {
       throw new Error(`Unable to visit location ${this.name}`);
     }
-    this.playInner(gameState, gameInput);
+    if (this.playInner) {
+      this.playInner(gameState, gameInput);
+    }
+    if (this.resourcesToGain) {
+      const player = gameState.getActivePlayer();
+      player.gainResources(this.resourcesToGain);
+      if (this.resourcesToGain.CARD) {
+        player.drawCards(gameState, this.resourcesToGain.CARD);
+      }
+    }
   }
 
   static fromName(name: LocationName): Location {
@@ -185,78 +198,78 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     name: LocationName.BASIC_ONE_BERRY,
     type: LocationType.BASIC,
     occupancy: LocationOccupancy.UNLIMITED,
-    playInner: playGainResourceFactory({
-      resourceMap: { [ResourceType.BERRY]: 1 },
-    }),
+    resourcesToGain: {
+      [ResourceType.BERRY]: 1,
+    },
   }),
   [LocationName.BASIC_ONE_BERRY_AND_ONE_CARD]: new Location({
     name: LocationName.BASIC_ONE_BERRY_AND_ONE_CARD,
     type: LocationType.BASIC,
     occupancy: LocationOccupancy.EXCLUSIVE,
-    playInner: playGainResourceFactory({
-      resourceMap: { [ResourceType.BERRY]: 1 },
-      numCardsToDraw: 1,
-    }),
+    resourcesToGain: {
+      [ResourceType.BERRY]: 1,
+      CARD: 1,
+    },
   }),
   [LocationName.BASIC_ONE_RESIN_AND_ONE_CARD]: new Location({
     name: LocationName.BASIC_ONE_RESIN_AND_ONE_CARD,
     type: LocationType.BASIC,
     occupancy: LocationOccupancy.UNLIMITED,
-    playInner: playGainResourceFactory({
-      resourceMap: { [ResourceType.RESIN]: 1 },
-      numCardsToDraw: 1,
-    }),
+    resourcesToGain: {
+      [ResourceType.RESIN]: 1,
+      CARD: 1,
+    },
   }),
   [LocationName.BASIC_ONE_STONE]: new Location({
     name: LocationName.BASIC_ONE_STONE,
     type: LocationType.BASIC,
     occupancy: LocationOccupancy.EXCLUSIVE,
-    playInner: playGainResourceFactory({
-      resourceMap: { [ResourceType.PEBBLE]: 1 },
-    }),
+    resourcesToGain: {
+      [ResourceType.PEBBLE]: 1,
+    },
   }),
   [LocationName.BASIC_THREE_TWIGS]: new Location({
     name: LocationName.BASIC_THREE_TWIGS,
     type: LocationType.BASIC,
     occupancy: LocationOccupancy.EXCLUSIVE,
-    playInner: playGainResourceFactory({
-      resourceMap: { [ResourceType.TWIG]: 3 },
-    }),
+    resourcesToGain: {
+      [ResourceType.TWIG]: 3,
+    },
   }),
   [LocationName.BASIC_TWO_CARDS_AND_ONE_VP]: new Location({
     name: LocationName.BASIC_TWO_CARDS_AND_ONE_VP,
     type: LocationType.BASIC,
     occupancy: LocationOccupancy.UNLIMITED,
-    playInner: playGainResourceFactory({
-      resourceMap: { [ResourceType.VP]: 1 },
-      numCardsToDraw: 2,
-    }),
+    resourcesToGain: {
+      CARD: 2,
+      [ResourceType.VP]: 1,
+    },
   }),
   [LocationName.BASIC_TWO_RESIN]: new Location({
     name: LocationName.BASIC_TWO_RESIN,
     type: LocationType.BASIC,
     occupancy: LocationOccupancy.EXCLUSIVE,
-    playInner: playGainResourceFactory({
-      resourceMap: { [ResourceType.RESIN]: 2 },
-    }),
+    resourcesToGain: {
+      [ResourceType.RESIN]: 2,
+    },
   }),
   [LocationName.BASIC_TWO_TWIGS_AND_ONE_CARD]: new Location({
     name: LocationName.BASIC_TWO_TWIGS_AND_ONE_CARD,
     type: LocationType.BASIC,
     occupancy: LocationOccupancy.UNLIMITED,
-    playInner: playGainResourceFactory({
-      resourceMap: { [ResourceType.RESIN]: 2 },
-      numCardsToDraw: 1,
-    }),
+    resourcesToGain: {
+      [ResourceType.TWIG]: 2,
+      CARD: 1,
+    },
   }),
   [LocationName.FOREST_TWO_BERRY_ONE_CARD]: new Location({
     name: LocationName.FOREST_TWO_BERRY_ONE_CARD,
     type: LocationType.FOREST,
     occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
-    playInner: playGainResourceFactory({
-      resourceMap: { [ResourceType.BERRY]: 2 },
-      numCardsToDraw: 1,
-    }),
+    resourcesToGain: {
+      [ResourceType.BERRY]: 2,
+      CARD: 1,
+    },
   }),
   [LocationName.FOREST_TWO_WILD]: new Location({
     name: LocationName.FOREST_TWO_WILD,
@@ -286,43 +299,37 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     name: LocationName.FOREST_ONE_PEBBLE_THREE_CARD,
     type: LocationType.FOREST,
     occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
-    playInner: playGainResourceFactory({
-      resourceMap: { [ResourceType.PEBBLE]: 1 },
-      numCardsToDraw: 3,
-    }),
+    resourcesToGain: {
+      [ResourceType.PEBBLE]: 1,
+      CARD: 3,
+    },
   }),
   [LocationName.FOREST_ONE_TWIG_RESIN_BERRY]: new Location({
     name: LocationName.FOREST_ONE_TWIG_RESIN_BERRY,
     type: LocationType.FOREST,
     occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
-    playInner: playGainResourceFactory({
-      resourceMap: {
-        [ResourceType.TWIG]: 1,
-        [ResourceType.RESIN]: 1,
-        [ResourceType.BERRY]: 1,
-      },
-    }),
+    resourcesToGain: {
+      [ResourceType.TWIG]: 1,
+      [ResourceType.RESIN]: 1,
+      [ResourceType.BERRY]: 1,
+    },
   }),
   [LocationName.FOREST_THREE_BERRY]: new Location({
     name: LocationName.FOREST_THREE_BERRY,
     type: LocationType.FOREST,
     occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
-    playInner: playGainResourceFactory({
-      resourceMap: {
-        [ResourceType.BERRY]: 3,
-      },
-    }),
+    resourcesToGain: {
+      [ResourceType.BERRY]: 3,
+    },
   }),
   [LocationName.FOREST_TWO_RESIN_ONE_TWIG]: new Location({
     name: LocationName.FOREST_TWO_RESIN_ONE_TWIG,
     type: LocationType.FOREST,
     occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
-    playInner: playGainResourceFactory({
-      resourceMap: {
-        [ResourceType.TWIG]: 1,
-        [ResourceType.RESIN]: 2,
-      },
-    }),
+    resourcesToGain: {
+      [ResourceType.RESIN]: 2,
+      [ResourceType.TWIG]: 1,
+    },
   }),
   [LocationName.FOREST_TWO_CARDS_ONE_WILD]: new Location({
     name: LocationName.FOREST_TWO_CARDS_ONE_WILD,

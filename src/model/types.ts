@@ -60,6 +60,10 @@ export enum ResourceType {
 
 export type ResourceMap = Partial<Record<ResourceType, number>>;
 
+export type ProductionResourceMap = ResourceMap & {
+  CARD?: number;
+};
+
 export type CardCost = {
   [ResourceType.TWIG]?: number;
   [ResourceType.BERRY]?: number;
@@ -80,132 +84,141 @@ export enum GameInputType {
   MULTI_STEP = "MULTI_STEP",
 }
 
+export type GameInputPlaceWorker = {
+  inputType: GameInputType.PLACE_WORKER;
+  location: LocationName;
+  clientOptions?: {
+    cardsToDiscard?: CardName[];
+    resourcesToGain?: {
+      [ResourceType.TWIG]?: number;
+      [ResourceType.BERRY]?: number;
+      [ResourceType.PEBBLE]?: number;
+      [ResourceType.RESIN]?: number;
+    };
+  };
+};
+
+export type GameInputVisitDestinationCard = {
+  inputType: GameInputType.VISIT_DESTINATION_CARD;
+  card: CardName;
+  playerId: string;
+  clientOptions?: {
+    // lookout
+    location?: LocationName;
+
+    // monastery
+    targetPlayerId?: string;
+
+    // monastery
+    resourcesToSpend?: {
+      [ResourceType.TWIG]?: number;
+      [ResourceType.BERRY]?: number;
+      [ResourceType.PEBBLE]?: number;
+      [ResourceType.RESIN]?: number;
+    };
+
+    // university
+    targetCard?: CardName;
+
+    // university
+    resourcesToGain?: {
+      [ResourceType.TWIG]?: number;
+      [ResourceType.BERRY]?: number;
+      [ResourceType.PEBBLE]?: number;
+      [ResourceType.RESIN]?: number;
+      [ResourceType.VP]?: number;
+    };
+  };
+};
+
+export type GameInputPlayCard = {
+  inputType: GameInputType.PLAY_CARD;
+  card: CardName;
+  fromMeadow: boolean;
+
+  clientOptions?: {
+    // fool, miner mole
+    targetPlayerId?: string;
+
+    // bard, post office
+    cardsToDiscard?: CardName[];
+
+    // chip sweep, miner mole, ruins
+    targetCard?: CardName;
+
+    // husband, peddler
+    resourcesToGain?: {
+      [ResourceType.VP]?: number;
+      [ResourceType.TWIG]?: number;
+      [ResourceType.BERRY]?: number;
+      [ResourceType.PEBBLE]?: number;
+      [ResourceType.RESIN]?: number;
+    };
+
+    // wood carver, docter, peddler
+    resourcesToSpend?: {
+      [ResourceType.VP]?: number;
+      [ResourceType.TWIG]?: number;
+      [ResourceType.BERRY]?: number;
+      [ResourceType.PEBBLE]?: number;
+      [ResourceType.RESIN]?: number;
+    };
+  };
+
+  // How to pay?
+  paymentOptions?: {
+    cardToDungeon?: CardName;
+
+    useAssociatedCard?: boolean;
+
+    // Eg crane, innkeeper, queen
+    cardToUse?:
+      | CardName.QUEEN
+      | CardName.INNKEEPER
+      | CardName.CRANE
+      | CardName.INN
+      | null;
+
+    resources: {
+      [ResourceType.TWIG]?: number;
+      [ResourceType.BERRY]?: number;
+      [ResourceType.PEBBLE]?: number;
+      [ResourceType.RESIN]?: number;
+    };
+  };
+};
+
+export type GameInputClaimEvent = {
+  inputType: GameInputType.CLAIM_EVENT;
+  event: EventName;
+  clientOptions?: {
+    // eg, placing cards underneath event
+    cardsToUse?: CardName[];
+
+    // eg, place berries on event
+    resourcesToSpend?: {
+      [ResourceType.TWIG]?: number;
+      [ResourceType.BERRY]?: number;
+      [ResourceType.PEBBLE]?: number;
+      [ResourceType.RESIN]?: number;
+    };
+
+    resourcesToGain?: {
+      [ResourceType.TWIG]?: number;
+      [ResourceType.BERRY]?: number;
+      [ResourceType.PEBBLE]?: number;
+      [ResourceType.RESIN]?: number;
+    };
+
+    // TODO: add resources to opponents
+  };
+};
+
 export type GameInputSimple =
-  | {
-      inputType: GameInputType.PLACE_WORKER;
-      location: LocationName;
-      clientOptions?: {
-        cardsToDiscard?: CardName[];
-        resourcesToGain?: {
-          [ResourceType.TWIG]?: number;
-          [ResourceType.BERRY]?: number;
-          [ResourceType.PEBBLE]?: number;
-          [ResourceType.RESIN]?: number;
-        };
-      };
-    }
-  | {
-      inputType: GameInputType.VISIT_DESTINATION_CARD;
-      card: CardName;
-      playerId: string;
-      clientOptions?: {
-        // lookout
-        location?: LocationName;
-
-        // monastery
-        targetPlayerId?: string;
-
-        // monastery
-        resourcesToSpend?: {
-          [ResourceType.TWIG]?: number;
-          [ResourceType.BERRY]?: number;
-          [ResourceType.PEBBLE]?: number;
-          [ResourceType.RESIN]?: number;
-        };
-
-        // university
-        targetCard?: CardName;
-
-        // university
-        resourcesToGain?: {
-          [ResourceType.TWIG]?: number;
-          [ResourceType.BERRY]?: number;
-          [ResourceType.PEBBLE]?: number;
-          [ResourceType.RESIN]?: number;
-          [ResourceType.VP]?: number;
-        };
-      };
-    }
-  | {
-      inputType: GameInputType.PLAY_CARD;
-      card: CardName;
-      fromMeadow: boolean;
-      clientOptions?: {
-        // fool, miner mole
-        targetPlayerId?: string;
-
-        // bard, post office
-        cardsToDiscard?: CardName[];
-
-        // chip sweep, miner mole, ruins
-        targetCard?: CardName;
-
-        // husband, peddler
-        resourcesToGain?: {
-          [ResourceType.VP]?: number;
-          [ResourceType.TWIG]?: number;
-          [ResourceType.BERRY]?: number;
-          [ResourceType.PEBBLE]?: number;
-          [ResourceType.RESIN]?: number;
-        };
-
-        // wood carver, docter, peddler
-        resourcesToSpend?: {
-          [ResourceType.VP]?: number;
-          [ResourceType.TWIG]?: number;
-          [ResourceType.BERRY]?: number;
-          [ResourceType.PEBBLE]?: number;
-          [ResourceType.RESIN]?: number;
-        };
-      };
-
-      // How to pay?
-      paymentOptions?: {
-        cardToDungeon?: CardName;
-
-        useAssociatedCard?: boolean;
-
-        // Eg crane, innkeeper, queen
-        cardToUse?:
-          | CardName.QUEEN
-          | CardName.INNKEEPER
-          | CardName.CRANE
-          | CardName.INN
-          | null;
-
-        resources: {
-          [ResourceType.TWIG]?: number;
-          [ResourceType.BERRY]?: number;
-          [ResourceType.PEBBLE]?: number;
-          [ResourceType.RESIN]?: number;
-        };
-      };
-    }
-  | {
-      inputType: GameInputType.CLAIM_EVENT;
-      event: EventName;
-      clientOptions?: {
-        // eg, placing cards underneath event
-        cardsToUse?: CardName[];
-
-        // eg, place berries on event
-        resourcesToSpend?: {
-          [ResourceType.TWIG]?: number;
-          [ResourceType.BERRY]?: number;
-          [ResourceType.PEBBLE]?: number;
-          [ResourceType.RESIN]?: number;
-        };
-
-        resourcesToGain?: {
-          [ResourceType.TWIG]?: number;
-          [ResourceType.BERRY]?: number;
-          [ResourceType.PEBBLE]?: number;
-          [ResourceType.RESIN]?: number;
-        };
-
-        // TODO: add resources to opponents
-      };
-    }
+  | GameInputPlaceWorker
+  | GameInputVisitDestinationCard
+  | GameInputPlayCard
+  | GameInputClaimEvent
   | {
       inputType: GameInputType.GAME_END;
     }
@@ -318,7 +331,7 @@ export type EventNameToPlayerId = Partial<
 
 export type PlayedCardInfo = {
   // constructions
-  isOccupied?: boolean;
+  usedForCritter?: boolean;
 
   // clocktower, storehouse
   resources?: {

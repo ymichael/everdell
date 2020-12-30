@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useRouter } from "next/router";
 import { Formik, Form, Field, FieldArray } from "formik";
+import { GameBlock } from "./common";
 
 let playerIdx = 0;
 const getDummyPlayer = (name: string = "") => {
@@ -15,8 +16,7 @@ const GameBuilder: React.FC = () => {
   const router = useRouter();
 
   return (
-    <>
-      <h1>Create Game</h1>
+    <GameBlock title={"Create Game"}>
       <Formik
         initialValues={{
           players: [getDummyPlayer("Player 1"), getDummyPlayer("Player 2")],
@@ -39,7 +39,8 @@ const GameBuilder: React.FC = () => {
           }
           actions.setSubmitting(false);
         }}
-        render={({ values }) => {
+      >
+        {({ values }) => {
           const players = values.players || [];
           const numPlayers = players.length;
           return (
@@ -48,7 +49,7 @@ const GameBuilder: React.FC = () => {
                 name="players"
                 render={(arrayHelpers) => (
                   <div>
-                    <h2>Players</h2>
+                    <p>Players</p>
                     {numPlayers > 0 ? (
                       players.map((player, idx) => (
                         <div key={idx}>
@@ -97,8 +98,8 @@ const GameBuilder: React.FC = () => {
             </Form>
           );
         }}
-      />
-    </>
+      </Formik>
+    </GameBlock>
   );
 };
 

@@ -11,6 +11,7 @@ import {
   PlayerIdsToAvailableDestinationCards,
   ResourceType,
 } from "./types";
+import { GameStateJSON } from "./jsonTypes";
 import { Player } from "./player";
 import { Card } from "./card";
 import { CardStack, emptyCardStack } from "./cardStack";
@@ -18,7 +19,6 @@ import { Location, initialLocationsMap } from "./location";
 import { Event, initialEventMap } from "./event";
 import { initialDeck } from "./deck";
 import cloneDeep from "lodash/cloneDeep";
-import findIndex from "lodash/findIndex";
 
 const MEADOW_SIZE = 8;
 const STARTING_PLAYER_HAND_SIZE = 5;
@@ -66,7 +66,7 @@ export class GameState {
     return this._activePlayerId;
   }
 
-  toJSON(includePrivate: boolean): object {
+  toJSON(includePrivate: boolean): GameStateJSON {
     return cloneDeep({
       activePlayerId: this.activePlayerId,
       players: this.players.map((p) => p.toJSON(includePrivate)),
@@ -199,16 +199,10 @@ export class GameState {
       throw new Error("Not enough workers");
     }
 
-    let availableDestinationCards: CardName[] = [];
-    if (activePlayerOwnsCard) {
-      availableDestinationCards = activePlayer.getAllAvailableDestinationCards();
-    } else {
-      if (!card.isOpenDestination) {
-        throw new Error(
-          "Cannot place worker on non-open destination owned by another player"
-        );
-      }
-      availableDestinationCards = cardOwner.getAvailableOpenDestinationCards();
+    if (!activePlayerOwnsCard && !card.isOpenDestination) {
+      throw new Error(
+        "Cannot place worker on non-open destination owned by another player"
+      );
     }
 
     // check that player can place worker on this card + card is still playable
@@ -273,7 +267,7 @@ export class GameState {
     return nextGameState;
   }
 
-  static fromJSON(gameStateJSON: any): GameState {
+  static fromJSON(gameStateJSON: GameStateJSON): GameState {
     return new GameState({
       ...gameStateJSON,
       deck: CardStack.fromJSON(gameStateJSON.deck),
@@ -383,11 +377,11 @@ export class GameState {
   };
 
   private getAvailableDestinationCardGameInputs = (): GameInput[] => {
-    let destinationCardsToPlayers: PlayerIdsToAvailableDestinationCards = {};
+    const destinationCardsToPlayers: PlayerIdsToAvailableDestinationCards = {};
 
     // get open destination cards of other players
     this.players.forEach((player) => {
-      let availableDestinationCards: CardName[] = player.getAvailableOpenDestinationCards();
+      const availableDestinationCards: CardName[] = player.getAvailableOpenDestinationCards();
 
       const playerId = player.playerId;
 
@@ -396,17 +390,17 @@ export class GameState {
 
     const activePlayer = this.getActivePlayer();
     const activePlayerId: string = this.activePlayerId;
-    let availableClosedDestinationCards = activePlayer.getAvailableClosedDestinationCards();
+    const availableClosedDestinationCards = activePlayer.getAvailableClosedDestinationCards();
     destinationCardsToPlayers[activePlayerId].push(
       ...availableClosedDestinationCards
     );
 
     // create the game inputs for these cards
-    let gameInputs: GameInput[] = [];
-    let playerIds = Object.keys(destinationCardsToPlayers);
+    const gameInputs: GameInput[] = [];
+    const playerIds = Object.keys(destinationCardsToPlayers);
 
     playerIds.forEach((player) => {
-      let cards = destinationCardsToPlayers[player];
+      const cards = destinationCardsToPlayers[player];
       cards.forEach((cardName) => {
         gameInputs.push({
           inputType: GameInputType.VISIT_DESTINATION_CARD as const,

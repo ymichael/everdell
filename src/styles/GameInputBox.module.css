@@ -1,0 +1,42 @@
+.selector {
+  padding: 20px;
+}
+
+.play_card_list {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.play_card_list_item_wrapper {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.play_card_list_item {
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.play_card_list_item_selected {
+  opacity: 0.5;
+}
+
+.card_selected_overlay_check {
+  top: -5px;
+  left: -5px;
+  position: absolute;
+  border-radius: 99px;
+  background-color: white;
+  border: solid 4px black;
+  z-index: 20;
+  font-size: 18px;
+  padding: 6px 8px;
+}
+
+.play_card_list_item_label {
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 14px;
+}

@@ -1,11 +1,23 @@
 import * as React from "react";
-
 import omit from "lodash/omit";
+import isEqual from "lodash/isEqual";
+import { FormikProps, Formik, Form, Field, FieldArray, useField } from "formik";
+import CardPayment from "./CardPayment";
+
+import styles from "../styles/GameInputBox.module.css";
 import { GameState } from "../model/gameState";
-import { GameInputType, GameInput } from "../model/types";
-import { Formik, Form, Field, FieldArray } from "formik";
+import {
+  ResourceType,
+  GameInputType,
+  GameInput,
+  CardName,
+} from "../model/types";
+import { GameStateJSON } from "../model/jsonTypes";
 import { Player } from "../model/player";
+import { Card as CardModel } from "../model/card";
 import { GameBlock } from "./common";
+import { ResourceTypeIcon } from "./assets";
+import Card from "./Card";
 
 const GameInputBoxWaiting: React.FC<{ activePlayer: Player }> = ({
   activePlayer,
@@ -27,7 +39,114 @@ const gameInputSortOrder: Record<GameInputType, number> = {
   [GameInputType.GAME_END]: 5,
 };
 
-const GameInputBox: React.FC<any> = ({ gameId, gameState, viewingPlayer }) => {
+const GameInputPlayCardSelector: React.FC<{
+  gameInputs?: GameInput[];
+  viewingPlayer: Player;
+}> = ({ gameInputs = [], viewingPlayer }) => {
+  const [field, meta, helpers] = useField("gameInput");
+  return (
+    <div className={styles.selector}>
+      <div role="group">
+        <p>Choose a card to play:</p>
+        <div className={styles.play_card_list}>
+          {gameInputs.map((gameInput, idx) => {
+            if (gameInput.inputType !== GameInputType.PLAY_CARD) {
+              return <></>;
+            }
+            const isSelected =
+              meta.value &&
+              meta.value.inputType === gameInput.inputType &&
+              meta.value.card === gameInput.card &&
+              meta.value.fromMeadow === gameInput.fromMeadow &&
+              meta.value._idx === idx;
+            return (
+              <div key={idx} className={styles.play_card_list_item_wrapper}>
+                <div
+                  key={idx}
+                  className={[
+                    styles.play_card_list_item,
+                    isSelected && styles.play_card_list_item_selected,
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                  onClick={() => {
+                    helpers.setValue({
+                      ...gameInput,
+                      _idx: idx,
+                      clientOptions: {},
+                      paymentOptions: {
+                        cardToUse: null,
+                        resources: {
+                          [ResourceType.BERRY]: 0,
+                          [ResourceType.TWIG]: 0,
+                          [ResourceType.RESIN]: 0,
+                          [ResourceType.PEBBLE]: 0,
+                        },
+                      },
+                    });
+                  }}
+                >
+                  <Card name={gameInput.card} />
+                  {gameInput.fromMeadow && (
+                    <div className={styles.play_card_list_item_label}>
+                      (Meadow)
+                    </div>
+                  )}
+                </div>
+                {isSelected && (
+                  <div className={styles.card_selected_overlay_check}>✔</div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+      {meta.value && (
+        <CardPayment
+          gameInput={meta.value as GameInput}
+          name={"gameInput.paymentOptions"}
+          viewingPlayer={viewingPlayer}
+        />
+      )}
+    </div>
+  );
+};
+
+const GameInputDefaultSelector: React.FC<{
+  gameInputs?: GameInput[];
+}> = ({ gameInputs = [] }) => {
+  const [field, meta, helpers] = useField("gameInput");
+  return (
+    <div role="group" className={styles.selector}>
+      {gameInputs.map((gameInput, idx) => {
+        return (
+          <div key={idx}>
+            <label>
+              <input
+                type="radio"
+                name="gameInput"
+                onChange={() => {
+                  helpers.setValue(gameInput);
+                }}
+              />
+              {JSON.stringify(
+                omit(gameInput, ["playerId", "inputType"]),
+                null,
+                2
+              )}
+            </label>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+const GameInputBox: React.FC<{
+  gameId: string;
+  gameState: GameStateJSON;
+  viewingPlayer: Player;
+}> = ({ gameId, gameState, viewingPlayer }) => {
   const gameStateImpl = GameState.fromJSON(gameState);
   const activePlayerImpl = gameStateImpl.getActivePlayer();
 
@@ -51,7 +170,7 @@ const GameInputBox: React.FC<any> = ({ gameId, gameState, viewingPlayer }) => {
 
   return (
     <GameBlock title={"Game Input"}>
-      <>
+      <div>
         <p>Perform an action:</p>
         <Formik
           initialValues={{
@@ -68,8 +187,8 @@ const GameInputBox: React.FC<any> = ({ gameId, gameState, viewingPlayer }) => {
               body: JSON.stringify({
                 gameId,
                 playerId: viewingPlayer.playerId,
-                playerSecret: viewingPlayer.playerSecret,
-                gameInput: JSON.parse(values.gameInput as any),
+                playerSecret: viewingPlayer.playerSecretUNSAFE,
+                gameInput: values.gameInput,
               }),
             });
             const json = await response.json();
@@ -77,9 +196,11 @@ const GameInputBox: React.FC<any> = ({ gameId, gameState, viewingPlayer }) => {
               alert(json.error);
             }
           }}
-          render={({ values }) => {
+        >
+          {({ values, setFieldValue }) => {
             return (
               <Form>
+                <pre>{JSON.stringify(values, null, 2)}</pre>
                 <div role="group">
                   {inputTypesOrdered.map((inputType) => {
                     return (
@@ -89,36 +210,24 @@ const GameInputBox: React.FC<any> = ({ gameId, gameState, viewingPlayer }) => {
                             type="radio"
                             name="selectedInputType"
                             value={inputType}
+                            onChange={() => {
+                              setFieldValue("selectedInputType", inputType);
+                              setFieldValue("gameInput", null);
+                            }}
                           />
                           {inputType}
                         </label>
-                        {inputType === values.selectedInputType && (
-                          <div role="group" style={{ padding: 20 }}>
-                            {inputTypeToInputs[inputType]?.map(
-                              (gameInput, idx) => {
-                                return (
-                                  <div key={idx}>
-                                    <label>
-                                      <Field
-                                        type="radio"
-                                        name="gameInput"
-                                        value={JSON.stringify(gameInput)}
-                                      />
-                                      {JSON.stringify(
-                                        omit(gameInput, [
-                                          "playerId",
-                                          "inputType",
-                                        ]),
-                                        null,
-                                        2
-                                      )}
-                                    </label>
-                                  </div>
-                                );
-                              }
-                            )}
-                          </div>
-                        )}
+                        {inputType === values.selectedInputType &&
+                          (inputType === GameInputType.PLAY_CARD ? (
+                            <GameInputPlayCardSelector
+                              viewingPlayer={viewingPlayer}
+                              gameInputs={inputTypeToInputs[inputType]}
+                            />
+                          ) : (
+                            <GameInputDefaultSelector
+                              gameInputs={inputTypeToInputs[inputType]}
+                            />
+                          ))}
                       </div>
                     );
                   })}
@@ -129,8 +238,8 @@ const GameInputBox: React.FC<any> = ({ gameId, gameState, viewingPlayer }) => {
               </Form>
             );
           }}
-        />
-      </>
+        </Formik>
+      </div>
     </GameBlock>
   );
 };

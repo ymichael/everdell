@@ -1,5 +1,4 @@
 import expect from "expect.js";
-import { Player } from "./player";
 import { Card } from "./card";
 import { GameState } from "./gameState";
 import { testInitialGameState } from "./testHelpers";
@@ -7,15 +6,15 @@ import { sumResources } from "./gameStatePlayHelpers";
 import {
   ResourceType,
   CardName,
-  GameInput,
   GameInputType,
+  GameInputPlayCard,
   LocationName,
 } from "./types";
 
 const playCardInput = (
   card: CardName,
   overrides: any = {}
-): GameInput & { inputType: GameInputType.PLAY_CARD } => {
+): GameInputPlayCard => {
   return {
     inputType: GameInputType.PLAY_CARD as const,
     card,
@@ -319,9 +318,15 @@ describe("Player", () => {
       });
 
       // TODO
-      it("QUEEN", () => {});
-      it("CRANE", () => {});
-      it("INN", () => {});
+      xit("QUEEN", () => {
+        throw new Error("Not Implemented yet");
+      });
+      xit("CRANE", () => {
+        throw new Error("Not Implemented yet");
+      });
+      xit("INN", () => {
+        throw new Error("Not Implemented yet");
+      });
     });
   });
 

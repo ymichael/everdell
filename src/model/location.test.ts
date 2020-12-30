@@ -6,11 +6,12 @@ import {
   Season,
   LocationName,
   GameInputType,
-  GameInput,
+  GameInputPlaceWorker,
   CardName,
+  ResourceType,
 } from "./types";
 
-const placeWorkerInput = (location: LocationName): GameInput => {
+const placeWorkerInput = (location: LocationName): GameInputPlaceWorker => {
   return {
     inputType: GameInputType.PLACE_WORKER,
     location,
@@ -73,6 +74,33 @@ describe("Location", () => {
       expect(location.canPlay(gameState2, gameInput)).to.be(true);
       const gameState3 = gameState2.next(gameInput);
       expect(location.canPlay(gameState3, gameInput)).to.be(false);
+    });
+  });
+
+  describe("BASIC_ONE_BERRY_AND_ONE_CARD", () => {
+    it("should give the player 1 berry and on card after placing worker", () => {
+      const location = Location.fromName(
+        LocationName.BASIC_ONE_BERRY_AND_ONE_CARD
+      );
+      const gameInput = placeWorkerInput(location.name);
+
+      expect(location.canPlay(gameState, gameInput)).to.be(true);
+
+      let player = gameState.getActivePlayer();
+      gameState.deck.addToStack(CardName.FARM);
+
+      expect(player.numAvailableWorkers).to.be(2);
+      expect(player.getNumResource(ResourceType.BERRY)).to.be(0);
+      expect(player.cardsInHand).to.eql([]);
+
+      const nextGameState = gameState.next(gameInput);
+      expect(location.canPlay(nextGameState, gameInput)).to.be(false);
+      expect(location.canPlay(nextGameState, gameInput)).to.be(false);
+
+      player = nextGameState.getPlayer(player.playerId);
+      expect(player.numAvailableWorkers).to.be(1);
+      expect(player.getNumResource(ResourceType.BERRY)).to.be(1);
+      expect(player.cardsInHand).to.eql([CardName.FARM]);
     });
   });
 

@@ -42,7 +42,6 @@ const Game: React.FC<{ game: any; viewingPlayer: any }> = (props) => {
         gameId={gameId}
         gameState={gameState}
         viewingPlayer={viewingPlayer}
-        updateGameAndViewingPlayer={updateGameAndViewingPlayer}
       />
       <Players viewingPlayer={viewingPlayer} gameState={gameState} />
       <hr />

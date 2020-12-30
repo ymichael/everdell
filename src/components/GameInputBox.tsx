@@ -37,13 +37,10 @@ const gameInputSortOrder: Record<GameInputType, number> = {
   [GameInputType.GAME_END]: 5,
 };
 
-const ResourceTypeValueInput = ({
-  resourceType,
-  name,
-}: {
+const ResourceTypeValueInput: React.FC<{
   resourceType: ResourceType;
   name: string;
-}) => {
+}> = ({ resourceType, name }) => {
   const [field, meta, helpers] = useField(name);
   return (
     <div className={styles.resource_type_value_input_wrapper}>
@@ -62,13 +59,10 @@ const ResourceTypeValueInput = ({
   );
 };
 
-const CardPaymentForm = ({
-  gameInput,
-  name,
-}: {
+const CardPaymentForm: React.FC<{
   gameInput: GameInput;
   name: string;
-}) => {
+}> = ({ gameInput, name }) => {
   if (gameInput.inputType !== GameInputType.PLAY_CARD) {
     return <></>;
   }
@@ -125,11 +119,9 @@ const CardPaymentForm = ({
   );
 };
 
-const GameInputPlayCardSelector = ({
-  gameInputs = [],
-}: {
+const GameInputPlayCardSelector: React.FC<{
   gameInputs?: GameInput[];
-}) => {
+}> = ({ gameInputs = [] }) => {
   const [field, meta, helpers] = useField("gameInput");
   return (
     <div className={styles.selector}>
@@ -197,11 +189,9 @@ const GameInputPlayCardSelector = ({
   );
 };
 
-const GameInputDefaultSelector = ({
-  gameInputs = [],
-}: {
+const GameInputDefaultSelector: React.FC<{
   gameInputs?: GameInput[];
-}) => {
+}> = ({ gameInputs = [] }) => {
   const [field, meta, helpers] = useField("gameInput");
   return (
     <div role="group" className={styles.selector}>
@@ -229,7 +219,11 @@ const GameInputDefaultSelector = ({
   );
 };
 
-const GameInputBox: React.FC<any> = ({ gameId, gameState, viewingPlayer }) => {
+const GameInputBox: React.FC<{
+  gameId: string;
+  gameState: any;
+  viewingPlayer: any;
+}> = ({ gameId, gameState, viewingPlayer }) => {
   const gameStateImpl = GameState.fromJSON(gameState);
   const activePlayerImpl = gameStateImpl.getActivePlayer();
 

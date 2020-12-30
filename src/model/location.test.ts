@@ -6,11 +6,11 @@ import {
   Season,
   LocationName,
   GameInputType,
-  GameInput,
+  GameInputPlaceWorker,
   CardName,
 } from "./types";
 
-const placeWorkerInput = (location: LocationName): GameInput => {
+const placeWorkerInput = (location: LocationName): GameInputPlaceWorker => {
   return {
     inputType: GameInputType.PLACE_WORKER,
     location,

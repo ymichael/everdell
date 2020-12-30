@@ -7,11 +7,14 @@ import {
   CardType,
   ResourceType,
   GameInputType,
-  GameInput,
+  GameInputPlayCard,
   CardName,
 } from "./types";
 
-const playCardInput = (card: CardName, overrides: any = {}): GameInput => {
+const playCardInput = (
+  card: CardName,
+  overrides: any = {}
+): GameInputPlayCard => {
   return merge(
     {
       inputType: GameInputType.PLAY_CARD,

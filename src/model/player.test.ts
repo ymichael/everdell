@@ -3,12 +3,17 @@ import { Card } from "./card";
 import { GameState } from "./gameState";
 import { testInitialGameState } from "./testHelpers";
 import { sumResources } from "./gameStatePlayHelpers";
-import { ResourceType, CardName, GameInput, GameInputType } from "./types";
+import {
+  ResourceType,
+  CardName,
+  GameInputPlayCard,
+  GameInputType,
+} from "./types";
 
 const playCardInput = (
   card: CardName,
   overrides: any = {}
-): GameInput & { inputType: GameInputType.PLAY_CARD } => {
+): GameInputPlayCard => {
   return {
     inputType: GameInputType.PLAY_CARD as const,
     card,

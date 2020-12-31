@@ -9,6 +9,7 @@ export enum GameInputType {
   SELECT_CARD = "SELECT_CARD",
   SELECT_MULTIPLE_CARDS = "SELECT_MULTIPLE_CARDS",
   SELECT_PLAYER = "SELECT_PLAYER",
+  SELECT_RESOURCES = "SELECT_RESOURCES",
   DISCARD_CARDS = "DISCARD_CARDS",
 }
 
@@ -54,32 +55,7 @@ export type GameInputPlayCard = {
   inputType: GameInputType.PLAY_CARD;
   card: CardName;
   fromMeadow: boolean;
-
-  clientOptions?: {
-    // bard, post office
-    cardsToDiscard?: CardName[];
-
-    // husband, peddler
-    resourcesToGain?: {
-      [ResourceType.VP]?: number;
-      [ResourceType.TWIG]?: number;
-      [ResourceType.BERRY]?: number;
-      [ResourceType.PEBBLE]?: number;
-      [ResourceType.RESIN]?: number;
-    };
-
-    // wood carver, docter, peddler
-    resourcesToSpend?: {
-      [ResourceType.VP]?: number;
-      [ResourceType.TWIG]?: number;
-      [ResourceType.BERRY]?: number;
-      [ResourceType.PEBBLE]?: number;
-      [ResourceType.RESIN]?: number;
-    };
-  };
-
-  // How to pay?
-  paymentOptions?: {
+  paymentOptions: {
     cardToDungeon?: CardName;
 
     useAssociatedCard?: boolean;
@@ -148,8 +124,11 @@ export type GameInputDiscardCards = {
   prevInputType: GameInputType;
   minCards: number;
   maxCards: number;
-  location?: LocationName;
-  cardsToDiscard?: CardName[];
+  locationContext?: LocationName;
+  cardContext?: CardName;
+  clientOptions: {
+    cardsToDiscard: CardName[];
+  };
 };
 
 export type GameInputSelectPlayer = {
@@ -186,11 +165,21 @@ export type GameInputSelectMultipleCards = {
     selectedCards: CardName[] | null;
   };
 };
+export type GameInputSelectResources = {
+  inputType: GameInputType.SELECT_RESOURCES;
+  prevInputType: GameInputType;
+  cardContext?: CardName;
+  numResources: number;
+  clientOptions: {
+    resources: CardCost;
+  };
+};
 
 export type GameInputMultiStep =
   | GameInputSelectCard
   | GameInputSelectMultipleCards
   | GameInputDiscardCards
+  | GameInputSelectResources
   | GameInputSelectPlayer;
 
 export type GameInput = GameInputSimple | GameInputMultiStep;

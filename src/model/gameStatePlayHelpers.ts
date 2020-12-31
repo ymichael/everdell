@@ -21,26 +21,27 @@ export function playSpendResourceToGetVPFactory({
   maxToSpend: number;
 }): GameStatePlayFn {
   return (gameState: GameState, gameInput: GameInput) => {
-    if (gameInput.inputType !== GameInputType.PLAY_CARD) {
-      throw new Error("Invalid input type");
-    }
-    if (!gameInput.clientOptions?.resourcesToSpend) {
-      throw new Error("Invalid input");
-    }
-    const player = gameState.getActivePlayer();
-    const numToSpend =
-      gameInput.clientOptions.resourcesToSpend[resourceType] || 0;
-    if (numToSpend > maxToSpend) {
-      throw new Error(
-        `Too many resources, max: ${maxToSpend}, got: ${numToSpend}`
-      );
-    }
-    player.spendResources({
-      [resourceType]: numToSpend,
-    });
-    player.gainResources({
-      [ResourceType.VP]: numToSpend,
-    });
+    throw new Error("Not Implemented");
+    // if (gameInput.inputType !== GameInputType.PLAY_CARD) {
+    //   throw new Error("Invalid input type");
+    // }
+    // if (!gameInput.clientOptions?.resourcesToSpend) {
+    //   throw new Error("Invalid input");
+    // }
+    // const player = gameState.getActivePlayer();
+    // const numToSpend =
+    //   gameInput.clientOptions.resourcesToSpend[resourceType] || 0;
+    // if (numToSpend > maxToSpend) {
+    //   throw new Error(
+    //     `Too many resources, max: ${maxToSpend}, got: ${numToSpend}`
+    //   );
+    // }
+    // player.spendResources({
+    //   [resourceType]: numToSpend,
+    // });
+    // player.gainResources({
+    //   [ResourceType.VP]: numToSpend,
+    // });
   };
 }
 

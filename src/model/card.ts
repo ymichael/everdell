@@ -139,7 +139,9 @@ export class Card<TCardType extends CardType = CardType>
       return player.canAffordCard(this.name, gameInput.fromMeadow);
     } else if (
       gameInput.inputType === GameInputType.SELECT_CARD ||
-      gameInput.inputType === GameInputType.SELECT_PLAYER
+      gameInput.inputType === GameInputType.SELECT_PLAYER ||
+      gameInput.inputType === GameInputType.DISCARD_CARDS ||
+      gameInput.inputType === GameInputType.SELECT_RESOURCES
     ) {
       return true;
     } else {
@@ -235,21 +237,33 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: false,
     associatedCard: CardName.THEATRE,
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      if (gameInput.inputType !== GameInputType.PLAY_CARD) {
-        throw new Error("Invalid input type");
-      }
       const player = gameState.getActivePlayer();
-      if (gameInput.clientOptions?.cardsToDiscard) {
-        if (gameInput.clientOptions.cardsToDiscard.length > 5) {
-          throw new Error("Discarding too many cards");
+      if (gameInput.inputType === GameInputType.PLAY_CARD) {
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.DISCARD_CARDS,
+          prevInputType: gameInput.inputType,
+          minCards: 0,
+          maxCards: 5,
+          cardContext: CardName.BARD,
+          clientOptions: {
+            cardsToDiscard: [],
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.DISCARD_CARDS) {
+        if (gameInput.clientOptions?.cardsToDiscard) {
+          if (gameInput.clientOptions.cardsToDiscard.length > 5) {
+            throw new Error("Discarding too many cards");
+          }
+          gameInput.clientOptions.cardsToDiscard.forEach((cardName) => {
+            player.removeCardFromHand(cardName);
+            gameState.discardPile.addToStack(cardName);
+          });
+          player.gainResources({
+            [ResourceType.VP]: gameInput.clientOptions?.cardsToDiscard.length,
+          });
         }
-        gameInput.clientOptions.cardsToDiscard.forEach((cardName) => {
-          player.removeCardFromHand(cardName);
-          gameState.discardPile.addToStack(cardName);
-        });
-        player.gainResources({
-          [ResourceType.VP]: gameInput.clientOptions?.cardsToDiscard.length,
-        });
+      } else {
+        throw new Error(`Unexpected input type ${gameInput.inputType}`);
       }
     },
   }),
@@ -571,29 +585,38 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: false,
     associatedCard: CardName.FARM,
     resourcesToGain: {},
-    productionInner: (gameState: GameState, gameInput: GameInput) => {
-      if (gameInput.inputType !== GameInputType.PLAY_CARD) {
-        throw new Error("Invalid input type");
-      }
-      if (
-        !gameInput.clientOptions?.resourcesToGain ||
-        gameInput.clientOptions?.resourcesToGain[ResourceType.VP]
-      ) {
-        throw new Error("Invalid input");
-      }
+    playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
-      const playedHusbands = player.playedCards[CardName.HUSBAND] || [];
-      const playedWifes = player.playedCards[CardName.WIFE] || [];
-      if (playedHusbands.length <= playedWifes.length) {
-        const numToGain = sumResources(gameInput.clientOptions.resourcesToGain);
-        if (numToGain !== 1) {
-          throw new Error(
-            `Invalid resourcesToGain: ${JSON.stringify(
-              gameInput.clientOptions
-            )}`
-          );
+      if (gameInput.inputType === GameInputType.SELECT_RESOURCES) {
+        const resources = gameInput.clientOptions?.resources;
+        if (!resources || (resources as any)[ResourceType.VP]) {
+          throw new Error("Invalid input");
         }
-        player.gainResources(gameInput.clientOptions.resourcesToGain);
+        const numToGain = sumResources(resources);
+        if (numToGain !== 1) {
+          throw new Error(`Invalid resources: ${JSON.stringify(resources)}`);
+        }
+        player.gainResources(resources);
+      }
+    },
+    productionInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.PLAY_CARD) {
+        const playedHusbands = player.playedCards[CardName.HUSBAND] || [];
+        const playedWifes = player.playedCards[CardName.WIFE] || [];
+        if (playedHusbands.length <= playedWifes.length) {
+          gameState.pendingGameInputs.push({
+            inputType: GameInputType.SELECT_RESOURCES,
+            prevInputType: gameInput.inputType,
+            cardContext: CardName.HUSBAND,
+            numResources: 1,
+            clientOptions: {
+              resources: {},
+            },
+          });
+        }
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
       }
     },
   }),
@@ -820,27 +843,28 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     associatedCard: CardName.RUINS,
     resourcesToGain: {},
     productionInner: (gameState: GameState, gameInput: GameInput) => {
-      if (gameInput.inputType !== GameInputType.PLAY_CARD) {
-        throw new Error("Invalid input type");
-      }
-      if (
-        !gameInput.clientOptions?.resourcesToSpend ||
-        !gameInput.clientOptions?.resourcesToGain ||
-        gameInput.clientOptions?.resourcesToGain[ResourceType.VP] ||
-        gameInput.clientOptions?.resourcesToSpend[ResourceType.VP]
-      ) {
-        throw new Error("Invalid input");
-      }
+      throw new Error("Not Implemented");
+      // if (gameInput.inputType !== GameInputType.PLAY_CARD) {
+      //   throw new Error("Invalid input type");
+      // }
+      // if (
+      //   !gameInput.clientOptions?.resourcesToSpend ||
+      //   !gameInput.clientOptions?.resourcesToGain ||
+      //   gameInput.clientOptions?.resourcesToGain[ResourceType.VP] ||
+      //   gameInput.clientOptions?.resourcesToSpend[ResourceType.VP]
+      // ) {
+      //   throw new Error("Invalid input");
+      // }
 
-      const numSpend = gameInput.clientOptions?.resourcesToSpend;
-      const numGain = gameInput.clientOptions?.resourcesToGain;
-      if (numSpend > 2 || numGain !== numSpend) {
-        throw new Error("Invalid input");
-      }
+      // const numSpend = gameInput.clientOptions?.resourcesToSpend;
+      // const numGain = gameInput.clientOptions?.resourcesToGain;
+      // if (numSpend > 2 || numGain !== numSpend) {
+      //   throw new Error("Invalid input");
+      // }
 
-      const player = gameState.getActivePlayer();
-      player.spendResources(gameInput.clientOptions?.resourcesToSpend);
-      player.gainResources(gameInput.clientOptions?.resourcesToGain);
+      // const player = gameState.getActivePlayer();
+      // player.spendResources(gameInput.clientOptions?.resourcesToSpend);
+      // player.gainResources(gameInput.clientOptions?.resourcesToGain);
     },
   }),
   [CardName.POST_OFFICE]: new Card({
@@ -853,21 +877,22 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     associatedCard: CardName.POSTAL_PIGEON,
     isOpenDestination: true,
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      if (gameInput.inputType !== GameInputType.PLAY_CARD) {
-        throw new Error("Invalid input type");
-      }
-      if (
-        !gameInput.clientOptions?.cardsToDiscard ||
-        gameInput.clientOptions?.cardsToDiscard.length !== 2
-      ) {
-        throw new Error("Invalid input");
-      }
-      const player = gameState.getActivePlayer();
-      gameInput.clientOptions.cardsToDiscard.forEach((cardName) => {
-        player.removeCardFromHand(cardName);
-        gameState.discardPile.addToStack(cardName);
-      });
-      player.drawMaxCards(gameState);
+      throw new Error("Not Implemented");
+      // if (gameInput.inputType !== GameInputType.PLAY_CARD) {
+      //   throw new Error("Invalid input type");
+      // }
+      // if (
+      //   !gameInput.clientOptions?.cardsToDiscard ||
+      //   gameInput.clientOptions?.cardsToDiscard.length !== 2
+      // ) {
+      //   throw new Error("Invalid input");
+      // }
+      // const player = gameState.getActivePlayer();
+      // gameInput.clientOptions.cardsToDiscard.forEach((cardName) => {
+      //   player.removeCardFromHand(cardName);
+      //   gameState.discardPile.addToStack(cardName);
+      // });
+      // player.drawMaxCards(gameState);
     },
   }),
   [CardName.POSTAL_PIGEON]: new Card({

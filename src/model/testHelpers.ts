@@ -1,3 +1,4 @@
+import expect from "expect.js";
 import { GameState } from "./gameState";
 import { createPlayer } from "./player";
 import { Location } from "./location";
@@ -8,7 +9,9 @@ import {
   LocationType,
   EventName,
   EventType,
+  GameInput,
 } from "./types";
+import omit from "lodash/omit";
 
 export function testInitialGameState(
   opts: {
@@ -63,3 +66,31 @@ export function testInitialGameState(
   }
   return gameState;
 }
+
+export const multiStepGameInputTest = (
+  gameState: GameState,
+  pendingGameInputs: GameInput[]
+): GameState => {
+  let currGameState = gameState;
+  let player = currGameState.getActivePlayer();
+
+  // Sanity check
+  expect(currGameState.pendingGameInputs).to.eql([]);
+
+  pendingGameInputs.forEach((gameInput, idx) => {
+    const isLastInput = idx === pendingGameInputs.length - 1;
+    currGameState = currGameState.next(gameInput);
+    if (!isLastInput) {
+      expect(
+        currGameState.pendingGameInputs.map((x) => omit(x, ["clientOptions"]))
+      ).to.eql([omit(pendingGameInputs[idx + 1], ["clientOptions"])]);
+      expect(player.playerId).to.be(currGameState.getActivePlayer().playerId);
+    } else {
+      expect(currGameState.pendingGameInputs).to.eql([]);
+      expect(player.playerId).to.not.be(
+        currGameState.getActivePlayer().playerId
+      );
+    }
+  });
+  return currGameState;
+};

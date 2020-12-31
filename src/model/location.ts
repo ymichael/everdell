@@ -397,19 +397,23 @@ function playInnerJourneyFactory(
       gameState.pendingGameInputs.push({
         inputType: GameInputType.DISCARD_CARDS,
         prevInputType: GameInputType.PLACE_WORKER,
-        location: location,
+        locationContext: location,
         minCards: numPoints,
         maxCards: numPoints,
+        clientOptions: {
+          cardsToDiscard: [],
+        },
       });
     } else if (gameInput.inputType === GameInputType.DISCARD_CARDS) {
-      if (!gameInput.cardsToDiscard) {
+      const cardsToDiscard = gameInput.clientOptions?.cardsToDiscard;
+      if (!cardsToDiscard) {
         throw new Error("invalid input");
       }
-      if (gameInput.cardsToDiscard.length !== numPoints) {
+      if (cardsToDiscard.length !== numPoints) {
         throw new Error("Discarded incorrect number of cards");
       }
       const player = gameState.getActivePlayer();
-      gameInput.cardsToDiscard.forEach((card: CardName) => {
+      cardsToDiscard.forEach((card: CardName) => {
         player.removeCardFromHand(card);
         gameState.discardPile.addToStack(card);
       });

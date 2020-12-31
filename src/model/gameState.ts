@@ -170,6 +170,8 @@ export class GameState {
     if (gameInput.prevInputType === GameInputType.PLAY_CARD) {
       if (
         gameInput.inputType === GameInputType.SELECT_CARD ||
+        gameInput.inputType === GameInputType.DISCARD_CARDS ||
+        gameInput.inputType === GameInputType.SELECT_RESOURCES ||
         gameInput.inputType === GameInputType.SELECT_PLAYER
       ) {
         if (!gameInput.cardContext) {
@@ -186,10 +188,10 @@ export class GameState {
 
     if (gameInput.prevInputType === GameInputType.PLACE_WORKER) {
       if (gameInput.inputType === GameInputType.DISCARD_CARDS) {
-        if (!gameInput.location) {
+        if (!gameInput.locationContext) {
           throw new Error("Invalid input: missing location");
         }
-        const location = Location.fromName(gameInput.location);
+        const location = Location.fromName(gameInput.locationContext);
         if (!location.canPlay(this, gameInput)) {
           throw new Error("Cannot take action");
         }
@@ -310,6 +312,7 @@ export class GameState {
       case GameInputType.SELECT_CARD:
       case GameInputType.SELECT_MULTIPLE_CARDS:
       case GameInputType.SELECT_PLAYER:
+      case GameInputType.SELECT_RESOURCES:
       case GameInputType.DISCARD_CARDS:
         nextGameState.handleMultiStepGameInput(gameInput);
         break;
@@ -508,6 +511,9 @@ export class GameState {
             playerId,
             card: cardName,
             fromMeadow: true,
+            paymentOptions: {
+              resources: {},
+            },
           };
         })
         .filter((gameInput) =>
@@ -520,6 +526,9 @@ export class GameState {
             playerId,
             card: cardName,
             fromMeadow: false,
+            paymentOptions: {
+              resources: {},
+            },
           };
         })
         .filter((gameInput) =>

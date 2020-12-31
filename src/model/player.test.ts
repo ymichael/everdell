@@ -574,7 +574,7 @@ describe("Player", () => {
     });
   });
 
-  describe("recallAllWorkers", () => {
+  describe("recallWorkers", () => {
     it("keeps workers on MONASTERY", () => {
       const player = gameState.getActivePlayer();
       expect(player.numAvailableWorkers).to.be(2);
@@ -598,7 +598,7 @@ describe("Player", () => {
         }
       });
 
-      player.recallAllWorkers(gameState);
+      player.recallWorkers(gameState);
 
       expect(player.numAvailableWorkers).to.be(1);
 

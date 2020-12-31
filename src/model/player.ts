@@ -30,7 +30,8 @@ export class Player {
   public name: string;
   public playerId: string;
   public cardsInHand: CardName[];
-  public currentSeason: Season;
+
+  private _currentSeason: Season;
 
   private resources: Record<ResourceType, number>;
   readonly playedCards: Partial<Record<CardName, PlayedCardInfo[]>>;
@@ -80,7 +81,7 @@ export class Player {
     this.playedCards = playedCards;
     this.cardsInHand = cardsInHand;
     this.resources = resources;
-    this.currentSeason = currentSeason;
+    this._currentSeason = currentSeason;
     this.numWorkers = numWorkers;
     this.claimedEvents = claimedEvents;
     this.placedWorkers = placedWorkers;
@@ -767,7 +768,7 @@ export class Player {
     }
   }
 
-  recallAllWorkers(gameState: GameState) {
+  recallWorkers(gameState: GameState) {
     if (this.numAvailableWorkers !== 0) {
       throw new Error("Still have available workers");
     }
@@ -824,6 +825,25 @@ export class Player {
         return false;
       }
     );
+  }
+
+  get currentSeason(): Season {
+    return this._currentSeason;
+  }
+
+  nextSeason(): void {
+    if (this._currentSeason === Season.WINTER) {
+      this._currentSeason = Season.SPRING;
+      this.numWorkers = 3;
+    } else if (this._currentSeason === Season.SPRING) {
+      this._currentSeason = Season.SUMMER;
+      this.numWorkers = 4;
+    } else if (this._currentSeason === Season.SUMMER) {
+      this._currentSeason = Season.AUTUMN;
+      this.numWorkers = 6;
+    } else {
+      throw new Error("Already in the last season");
+    }
   }
 
   toJSON(includePrivate: boolean): PlayerJSON {

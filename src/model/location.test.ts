@@ -383,32 +383,50 @@ describe("Location", () => {
   ].forEach((locationName) => {
     describe(`JOURNEY: ${locationName}`, () => {
       it("cannot be played until autumn", () => {
+        const player = gameState.getActivePlayer();
         const location = Location.fromName(locationName);
         const gameInput = placeWorkerInput(locationName);
-        expect(gameState.getActivePlayer().currentSeason).to.be(Season.WINTER);
-        expect(location.canPlay(gameState, gameInput)).to.be(false);
-        gameState.getActivePlayer().currentSeason = Season.AUTUMN;
-        gameState.getActivePlayer().cardsInHand = [
+        player.cardsInHand = [
           CardName.FARM,
           CardName.FARM,
           CardName.FARM,
           CardName.FARM,
           CardName.FARM,
         ];
+
+        expect(player.currentSeason).to.be(Season.WINTER);
+        expect(location.canPlay(gameState, gameInput)).to.be(false);
+
+        player.nextSeason();
+        expect(player.currentSeason).to.be(Season.SPRING);
+        expect(location.canPlay(gameState, gameInput)).to.be(false);
+
+        player.nextSeason();
+        expect(player.currentSeason).to.be(Season.SUMMER);
+        expect(location.canPlay(gameState, gameInput)).to.be(false);
+
+        player.nextSeason();
+        expect(player.currentSeason).to.be(Season.AUTUMN);
         expect(location.canPlay(gameState, gameInput)).to.be(true);
       });
 
       it("requires X cards in hand", () => {
         const location = Location.fromName(locationName);
         const gameInput = placeWorkerInput(locationName);
-        expect(gameState.getActivePlayer().currentSeason).to.be(Season.WINTER);
+        const player = gameState.getActivePlayer();
+
+        expect(player.currentSeason).to.be(Season.WINTER);
+        player.nextSeason();
+        player.nextSeason();
+        player.nextSeason();
+        expect(player.currentSeason).to.be(Season.AUTUMN);
+
         expect(location.canPlay(gameState, gameInput)).to.be(false);
 
-        gameState.getActivePlayer().currentSeason = Season.AUTUMN;
-        gameState.getActivePlayer().cardsInHand = [CardName.RUINS];
+        player.cardsInHand = [CardName.RUINS];
         expect(location.canPlay(gameState, gameInput)).to.be(false);
 
-        gameState.getActivePlayer().cardsInHand = [
+        player.cardsInHand = [
           CardName.FARM,
           CardName.FARM,
           CardName.FARM,

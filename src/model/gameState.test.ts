@@ -77,63 +77,64 @@ describe("GameState", () => {
     });
   });
 
-  xdescribe("visiting destination cards", () => {
-    // it("should handle visit destination card", () => {
-    //   // player1 is the active player
-    //   const player1 = gameState.players[0];
-    //   const player2 = gameState.players[1];
-    //   player1.addToCity(CardName.INN);
-    //   player1.addToCity(CardName.LOOKOUT);
-    //   player1.addToCity(CardName.QUEEN);
-    //   player2.addToCity(CardName.INN);
-    //   player2.addToCity(CardName.POST_OFFICE);
-    //   player2.addToCity(CardName.FARM);
-    //   player2.addToCity(CardName.LOOKOUT);
-    //   expect(player1.numAvailableWorkers).to.be(2);
-    //   expect(player2.numAvailableWorkers).to.be(2);
-    //   // active player tries to visit one of their own cards
-    //   let gameInput: GameInput = {
-    //     inputType: GameInputType.VISIT_DESTINATION_CARD as const,
-    //     playerId: player1.playerId,
-    //     card: CardName.LOOKOUT,
-    //     clientOptions: {
-    //       location: LocationName.BASIC_ONE_BERRY,
-    //     },
-    //   };
-    //   gameState.handleVisitDestinationCardGameInput(gameInput);
-    //   expect(player1.numAvailableWorkers).to.be(1);
-    //   const lookout = player1.playedCards[CardName.LOOKOUT];
-    //   if (!lookout) {
-    //     throw new Error("undefined card");
-    //   }
-    //   const workersOnLookout = lookout[0].workers || [];
-    //   expect(workersOnLookout.length).to.be(1);
-    //   // player1 cannot play another worker on lookout since it's occupied
-    //   expect(() => {
-    //     gameState.handleVisitDestinationCardGameInput(gameInput as any);
-    //   }).to.throwException(/open space/i);
-    //   // player1 cannot play on a closed location of player2
-    //   gameInput = {
-    //     inputType: GameInputType.VISIT_DESTINATION_CARD as const,
-    //     playerId: player2.playerId,
-    //     card: CardName.LOOKOUT,
-    //     clientOptions: {
-    //       location: LocationName.BASIC_ONE_BERRY,
-    //     },
-    //   };
-    //   expect(() => {
-    //     gameState.handleVisitDestinationCardGameInput(gameInput as any);
-    //   }).to.throwException(/Cannot place worker/i);
-    //   // player1 can play on an open location of player2
-    //   gameInput = {
-    //     inputType: GameInputType.VISIT_DESTINATION_CARD as const,
-    //     playerId: player2.playerId,
-    //     card: CardName.INN,
-    //   };
-    //   // TODO: bring this test back when open destinations are implemented
-    //   //gameState.handleVisitDestinationCardGameInput(gameInput as any);
-    //   //expect(player1.numAvailableWorkers).to.be(0);
-    // });
+  describe("visiting destination cards", () => {
+    xit("should handle visit destination card", () => {
+      // player1 is the active player
+      const player1 = gameState.players[0];
+      const player2 = gameState.players[1];
+      player1.addToCity(CardName.INN);
+      player1.addToCity(CardName.LOOKOUT);
+      player1.addToCity(CardName.QUEEN);
+      player2.addToCity(CardName.INN);
+      player2.addToCity(CardName.POST_OFFICE);
+      player2.addToCity(CardName.FARM);
+      player2.addToCity(CardName.LOOKOUT);
+      expect(player1.numAvailableWorkers).to.be(2);
+      expect(player2.numAvailableWorkers).to.be(2);
+
+      // active player tries to visit one of their own cards
+      //   let gameInput: GameInput = {
+      //     inputType: GameInputType.VISIT_DESTINATION_CARD as const,
+      //     playerId: player1.playerId,
+      //     card: CardName.LOOKOUT,
+      //     clientOptions: {
+      //       location: LocationName.BASIC_ONE_BERRY,
+      //     },
+      //   };
+      //   gameState.handleVisitDestinationCardGameInput(gameInput);
+      //   expect(player1.numAvailableWorkers).to.be(1);
+      //   const lookout = player1.playedCards[CardName.LOOKOUT];
+      //   if (!lookout) {
+      //     throw new Error("undefined card");
+      //   }
+      //   const workersOnLookout = lookout[0].workers || [];
+      //   expect(workersOnLookout.length).to.be(1);
+      //   // player1 cannot play another worker on lookout since it's occupied
+      //   expect(() => {
+      //     gameState.handleVisitDestinationCardGameInput(gameInput as any);
+      //   }).to.throwException(/open space/i);
+      //   // player1 cannot play on a closed location of player2
+      //   gameInput = {
+      //     inputType: GameInputType.VISIT_DESTINATION_CARD as const,
+      //     playerId: player2.playerId,
+      //     card: CardName.LOOKOUT,
+      //     clientOptions: {
+      //       location: LocationName.BASIC_ONE_BERRY,
+      //     },
+      //   };
+      //   expect(() => {
+      //     gameState.handleVisitDestinationCardGameInput(gameInput as any);
+      //   }).to.throwException(/Cannot place worker/i);
+      //   // player1 can play on an open location of player2
+      //   gameInput = {
+      //     inputType: GameInputType.VISIT_DESTINATION_CARD as const,
+      //     playerId: player2.playerId,
+      //     card: CardName.INN,
+      //   };
+      //   // TODO: bring this test back when open destinations are implemented
+      //   //gameState.handleVisitDestinationCardGameInput(gameInput as any);
+      //   //expect(player1.numAvailableWorkers).to.be(0);
+    });
   });
 
   describe("claiming events", () => {

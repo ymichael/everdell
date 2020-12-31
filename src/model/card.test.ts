@@ -404,6 +404,15 @@ describe("Card", () => {
         ];
         player.addToCity(CardName.POST_OFFICE);
 
+        expect(player.numAvailableWorkers).to.be(2);
+        expect(player.getPlayedCardInfos(CardName.POST_OFFICE)).to.eql([
+          {
+            maxWorkers: 1,
+            usedForCritter: false,
+            workers: [],
+          },
+        ]);
+
         for (let i = 0; i < 8; i++) {
           gameState.deck.addToStack(CardName.MINER_MOLE);
         }
@@ -459,6 +468,14 @@ describe("Card", () => {
 
         player = gameState2.getPlayer(player.playerId);
         targetPlayer = gameState2.getPlayer(targetPlayer.playerId);
+        expect(player.numAvailableWorkers).to.be(1);
+        expect(player.getPlayedCardInfos(CardName.POST_OFFICE)).to.eql([
+          {
+            maxWorkers: 1,
+            usedForCritter: false,
+            workers: [player.playerId],
+          },
+        ]);
         expect(targetPlayer.cardsInHand).to.eql([
           CardName.MINE,
           CardName.QUEEN,

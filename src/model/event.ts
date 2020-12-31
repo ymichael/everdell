@@ -507,9 +507,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
 
       if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
         let critterCardsInHand: CardName[] = [];
-
-        const playedCards = player.cardsInHand;
-        playedCards.forEach((cardName) => {
+        player.cardsInHand.forEach((cardName) => {
           const card = Card.fromName(cardName as CardName);
           if (card.isCritter) {
             critterCardsInHand.push(card.name);
@@ -587,24 +585,15 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       if (!eventInfo) {
         throw new Error("Cannot find event info");
       }
-
-      const playedCards = player.playedCards;
-      if (!playedCards) {
-        throw new Error("no cards in city");
+      if (player.numPlayedCards() === 0) {
+        throw new Error("No cards in city");
       }
-
-      const dungeon = playedCards[CardName.DUNGEON];
-      if (!dungeon) {
+      const playedDungeons = player.getPlayedCardInfos(CardName.DUNGEON);
+      if (playedDungeons.length === 0) {
         throw new Error("No dungeon in city");
       }
-
-      if (dungeon.length > 1) {
-        throw new Error("Cannot have more than one dungeon");
-      }
-
       // you can only have one dungeon in your city
-      const cardsInDungeon = dungeon[0].pairedCards;
-
+      const cardsInDungeon = playedDungeons[0].pairedCards;
       if (!cardsInDungeon) {
         throw new Error("Invalid dungeon card list");
       }

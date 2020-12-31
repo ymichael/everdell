@@ -11,6 +11,7 @@ export enum GameInputType {
   SELECT_PLAYER = "SELECT_PLAYER",
   SELECT_RESOURCES = "SELECT_RESOURCES",
   SELECT_LOCATION = "SELECT_LOCATION",
+  SELECT_WORKER_LOCATION = "SELECT_WORKER_LOCATION",
   DISCARD_CARDS = "DISCARD_CARDS",
 }
 
@@ -147,6 +148,20 @@ export type GameInputSelectResources = {
   };
 };
 
+export type GameInputSelectWorkerLocation = {
+  inputType: GameInputType.SELECT_WORKER_LOCATION;
+  prevInputType: GameInputType;
+  options: PlacedWorkerInfo[];
+
+  locationContext?: LocationName;
+  cardContext?: CardName;
+  eventContext?: EventName;
+
+  clientOptions: {
+    selectedWorkerLocation: PlacedWorkerInfo | null;
+  };
+};
+
 export type GameInputSelectLocation = {
   inputType: GameInputType.SELECT_LOCATION;
   prevInputType: GameInputType;
@@ -162,19 +177,20 @@ export type GameInputSelectLocation = {
   };
 };
 
-export type GameInputMultiStep = {
-  eventContext?: EventName;
-  cardContext?: CardName;
-  locationContext?: LocationName;
-  prevInput?: GameInput;
-} & (
+export type GameInputMultiStep = (
   | GameInputSelectCard
   | GameInputSelectMultipleCards
   | GameInputDiscardCards
   | GameInputSelectResources
   | GameInputSelectPlayer
   | GameInputSelectLocation
-);
+  | GameInputSelectWorkerLocation
+) & {
+  eventContext?: EventName;
+  cardContext?: CardName;
+  locationContext?: LocationName;
+  prevInput?: GameInput;
+};
 
 export type GameInput = GameInputSimple | GameInputMultiStep;
 

@@ -1179,23 +1179,44 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: false,
     associatedCard: CardName.DUNGEON,
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not implemented");
-      // if (gameInput.inputType === GameInputType.PLAY_CARD) {
-      //   // If you have workers deployed
-      //   const locations: LocationName[] = [];
-      //   gameState.pendingGameInputs.push({
-      //     inputType: GameInputType.SELECT_LOCATION,
-      //     prevInputType: gameInput.inputType,
-      //     locationOptions: locations,
-      //     cardContext: CardName.RANGER,
-      //     clientOptions: {
-      //       selectedLocation: null,
-      //     },
-      //   });
-      // } else if (gameInput.inputType === GameInputType.SELECT_LOCATION) {
-      // } else {
-      //   throw new Error(`Unexpected input type: ${gameInput.inputType}`);
-      // }
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.PLAY_CARD) {
+        const recallableWorkers = player.getRecallableWorkers();
+        if (recallableWorkers.length !== 0) {
+          gameState.pendingGameInputs.push({
+            inputType: GameInputType.SELECT_WORKER_LOCATION,
+            prevInputType: gameInput.inputType,
+            options: recallableWorkers,
+            cardContext: CardName.RANGER,
+            clientOptions: {
+              selectedWorkerLocation: null,
+            },
+          });
+        }
+      } else if (gameInput.inputType === GameInputType.SELECT_WORKER_LOCATION) {
+        if (!gameInput.clientOptions.selectedWorkerLocation) {
+          throw new Error("Invalid input");
+        }
+        if (gameInput.prevInputType === GameInputType.PLAY_CARD) {
+          player.recallWorker(
+            gameState,
+            gameInput.clientOptions.selectedWorkerLocation
+          );
+          gameState.pendingGameInputs.push({
+            inputType: GameInputType.SELECT_WORKER_LOCATION,
+            prevInputType: gameInput.inputType,
+            options: [], // TODO
+            cardContext: CardName.RANGER,
+            clientOptions: {
+              selectedWorkerLocation: null,
+            },
+          });
+        } else {
+          // TODO
+        }
+      } else {
+        throw new Error(`Invalid input type: ${gameInput}`);
+      }
     },
   }),
   [CardName.RESIN_REFINERY]: new Card({

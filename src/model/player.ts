@@ -743,63 +743,79 @@ export class Player {
     }
   }
 
-  recallWorkers(gameState: GameState) {
+  isRecallableWorker(placedWorkerInfo: PlacedWorkerInfo): boolean {
+    // Don't remove workers from these cards.
+    if (
+      placedWorkerInfo.cardDestination &&
+      (placedWorkerInfo.cardDestination.card === CardName.CEMETARY ||
+        placedWorkerInfo.cardDestination.card === CardName.MONASTERY)
+    ) {
+      return false;
+    }
+    return true;
+  }
+
+  getRecallableWorkers(): PlacedWorkerInfo[] {
+    return this.placedWorkers.filter(this.isRecallableWorker);
+  }
+
+  recallWorker(gameState: GameState, placedWorkerInfo: PlacedWorkerInfo): void {
+    if (!this.isRecallableWorker(placedWorkerInfo)) {
+      throw new Error("Cannot recall worker");
+    }
+
+    const { location, cardDestination, event } = placedWorkerInfo;
+    // Update gameState/other objects
+    if (location) {
+      const workers = gameState.locationsMap[location];
+      if (!workers) {
+        throw new Error(`Couldn't find location ${location}`);
+      }
+      const idx = workers.indexOf(this.playerId);
+      if (idx !== -1) {
+        workers.splice(idx, 1);
+      } else {
+        throw new Error(`Couldn't find worker at location: ${location}`);
+      }
+    } else if (event) {
+      // Don't need to do anything for event
+    } else if (cardDestination) {
+      const cardOwner = gameState.getPlayer(cardDestination.playerId);
+      let removedWorker = false;
+      cardOwner
+        .getPlayedCardInfos(cardDestination.card)
+        .forEach(({ workers = [] }) => {
+          if (!removedWorker) {
+            const idx = workers.indexOf(this.playerId);
+            if (idx !== -1) {
+              workers.splice(idx, 1);
+              removedWorker = true;
+            }
+          }
+        });
+      if (!removedWorker) {
+        throw new Error(
+          `Couldn't find worker at cardDestination: ${JSON.stringify(
+            cardDestination
+          )}`
+        );
+      }
+    } else {
+    }
+  }
+
+  recallWorkers(gameState: GameState): void {
     if (this.numAvailableWorkers !== 0) {
       throw new Error("Still have available workers");
     }
-
-    this.placedWorkers = this.placedWorkers.filter(
-      ({ location, cardDestination, event }) => {
-        // Don't remove workers from these cards.
-        if (
-          cardDestination &&
-          (cardDestination.card === CardName.CEMETARY ||
-            cardDestination.card === CardName.MONASTERY)
-        ) {
-          return true;
-        }
-
-        // Update gameState/other objects
-        if (location) {
-          const workers = gameState.locationsMap[location];
-          if (!workers) {
-            throw new Error(`Couldn't find location ${location}`);
-          }
-          const idx = workers.indexOf(this.playerId);
-          if (idx !== -1) {
-            workers.splice(idx, 1);
-          } else {
-            throw new Error(`Couldn't find worker at location: ${location}`);
-          }
-        } else if (event) {
-          // Don't need to do anything for event
-        } else if (cardDestination) {
-          const cardOwner = gameState.getPlayer(cardDestination.playerId);
-          let removedWorker = false;
-          cardOwner
-            .getPlayedCardInfos(cardDestination.card)
-            .forEach(({ workers = [] }) => {
-              if (!removedWorker) {
-                const idx = workers.indexOf(this.playerId);
-                if (idx !== -1) {
-                  workers.splice(idx, 1);
-                  removedWorker = true;
-                }
-              }
-            });
-          if (!removedWorker) {
-            throw new Error(
-              `Couldn't find worker at cardDestination: ${JSON.stringify(
-                cardDestination
-              )}`
-            );
-          }
-        } else {
-        }
-
+    this.placedWorkers = this.placedWorkers.filter((placedWorkerInfo) => {
+      if (this.isRecallableWorker(placedWorkerInfo)) {
+        this.recallWorker(gameState, placedWorkerInfo);
         return false;
+      } else {
+        return true;
       }
-    );
+    });
   }
 
   get currentSeason(): Season {

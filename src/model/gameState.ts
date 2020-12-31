@@ -30,6 +30,10 @@ import omit from "lodash/omit";
 const MEADOW_SIZE = 8;
 const STARTING_PLAYER_HAND_SIZE = 5;
 
+function assertUnreachable(x: never, msg: string): never {
+  throw new Error(msg);
+}
+
 export class GameState {
   private _activePlayerId: Player["playerId"];
   readonly pendingGameInputs: GameInputMultiStep[];
@@ -238,6 +242,7 @@ export class GameState {
         break;
       case GameInputType.SELECT_CARD:
       case GameInputType.SELECT_LOCATION:
+      case GameInputType.SELECT_WORKER_LOCATION:
       case GameInputType.SELECT_MULTIPLE_CARDS:
       case GameInputType.SELECT_PLAYER:
       case GameInputType.SELECT_RESOURCES:
@@ -247,8 +252,14 @@ export class GameState {
       case GameInputType.CLAIM_EVENT:
         nextGameState.handleClaimEventGameInput(gameInput);
         break;
+      case GameInputType.GAME_END:
+      case GameInputType.PREPARE_FOR_SEASON:
+        throw new Error("Not Implemented");
       default:
-        throw new Error(`Unhandled game input: ${JSON.stringify(gameInput)}`);
+        assertUnreachable(
+          gameInput,
+          `Unhandled game input: ${JSON.stringify(gameInput)}`
+        );
     }
 
     // If there's pending game inputs, don't go to the next player.

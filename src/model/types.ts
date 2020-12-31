@@ -53,32 +53,7 @@ export type GameInputPlayCard = {
   inputType: GameInputType.PLAY_CARD;
   card: CardName;
   fromMeadow: boolean;
-
-  clientOptions?: {
-    // bard, post office
-    cardsToDiscard?: CardName[];
-
-    // husband, peddler
-    resourcesToGain?: {
-      [ResourceType.VP]?: number;
-      [ResourceType.TWIG]?: number;
-      [ResourceType.BERRY]?: number;
-      [ResourceType.PEBBLE]?: number;
-      [ResourceType.RESIN]?: number;
-    };
-
-    // wood carver, docter, peddler
-    resourcesToSpend?: {
-      [ResourceType.VP]?: number;
-      [ResourceType.TWIG]?: number;
-      [ResourceType.BERRY]?: number;
-      [ResourceType.PEBBLE]?: number;
-      [ResourceType.RESIN]?: number;
-    };
-  };
-
-  // How to pay?
-  paymentOptions?: {
+  paymentOptions: {
     cardToDungeon?: CardName;
 
     useAssociatedCard?: boolean;

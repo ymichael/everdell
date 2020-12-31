@@ -488,6 +488,9 @@ export class GameState {
             playerId,
             card: cardName,
             fromMeadow: true,
+            paymentOptions: {
+              resources: {},
+            },
           };
         })
         .filter((gameInput) =>
@@ -500,6 +503,9 @@ export class GameState {
             playerId,
             card: cardName,
             fromMeadow: false,
+            paymentOptions: {
+              resources: {},
+            },
           };
         })
         .filter((gameInput) =>

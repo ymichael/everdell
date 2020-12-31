@@ -5,6 +5,7 @@ import { testInitialGameState, multiStepGameInputTest } from "./testHelpers";
 import {
   Season,
   LocationName,
+  LocationType,
   GameInputType,
   GameInputPlaceWorker,
   CardName,
@@ -230,6 +231,147 @@ describe("Location", () => {
       expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(1);
       expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(2);
       expect(player.cardsInHand.length).to.be(1);
+    });
+  });
+
+  describe("FOREST_DISCARD_ANY_THEN_DRAW_TWO_PER_CARD", () => {
+    it("player can visit FOREST_DISCARD_ANY_THEN_DRAW_TWO_PER_CARD", () => {
+      const location = Location.fromName(
+        LocationName.FOREST_DISCARD_ANY_THEN_DRAW_TWO_PER_CARD
+      );
+      const gameInput = placeWorkerInput(location.name);
+      gameState.locationsMap[
+        LocationName.FOREST_DISCARD_ANY_THEN_DRAW_TWO_PER_CARD
+      ] = [];
+      let player = gameState.getActivePlayer();
+      player.addCardToHand(gameState, CardName.BARD);
+      player.addCardToHand(gameState, CardName.INN);
+      player.addCardToHand(gameState, CardName.FOOL);
+      player.addCardToHand(gameState, CardName.BARGE_TOAD);
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.HUSBAND);
+
+      expect(location.canPlay(gameState, gameInput)).to.be(true);
+      expect(player.cardsInHand.length).to.be(6);
+
+      gameState = multiStepGameInputTest(gameState, [
+        gameInput,
+        {
+          inputType: GameInputType.DISCARD_CARDS,
+          prevInputType: GameInputType.PLACE_WORKER,
+          locationContext:
+            LocationName.FOREST_DISCARD_ANY_THEN_DRAW_TWO_PER_CARD,
+          minCards: 0,
+          maxCards: 8,
+          clientOptions: {
+            cardsToDiscard: [
+              CardName.FARM,
+              CardName.FOOL,
+              CardName.INN,
+              CardName.BARD,
+            ],
+          },
+        },
+      ]);
+
+      player = gameState.getPlayer(player.playerId);
+
+      // player gained 8 cards but already had 2 in hand + can't have more than 8 cards in hand
+      expect(player.cardsInHand.length).to.be(8);
+    });
+  });
+
+  describe("HAVEN", () => {
+    it("player can visit the haven", () => {
+      const location = Location.fromName(LocationName.HAVEN);
+      const gameInput = placeWorkerInput(location.name);
+      gameState.locationsMap[LocationName.HAVEN] = [];
+      let player = gameState.getActivePlayer();
+      player.addCardToHand(gameState, CardName.BARD);
+      player.addCardToHand(gameState, CardName.INN);
+      player.addCardToHand(gameState, CardName.FOOL);
+      player.addCardToHand(gameState, CardName.BARGE_TOAD);
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.HUSBAND);
+
+      expect(location.canPlay(gameState, gameInput)).to.be(true);
+      expect(player.cardsInHand.length).to.be(6);
+      expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
+
+      gameState = multiStepGameInputTest(gameState, [
+        gameInput,
+        {
+          inputType: GameInputType.DISCARD_CARDS,
+          prevInputType: GameInputType.PLACE_WORKER,
+          locationContext: LocationName.HAVEN,
+          minCards: 0,
+          maxCards: 8,
+          clientOptions: {
+            cardsToDiscard: [
+              CardName.FARM,
+              CardName.FOOL,
+              CardName.INN,
+              CardName.BARD,
+            ],
+          },
+        },
+        {
+          inputType: GameInputType.SELECT_RESOURCES,
+          prevInputType: GameInputType.DISCARD_CARDS,
+          locationContext: LocationName.HAVEN,
+          maxResources: 2,
+          minResources: 0,
+          clientOptions: {
+            resources: {
+              [ResourceType.TWIG]: 1,
+              [ResourceType.RESIN]: 1,
+            },
+          },
+        },
+      ]);
+
+      player = gameState.getPlayer(player.playerId);
+
+      // player gained 8 cards but already had 2 in hand + can't have more than 8 cards in hand
+      expect(player.cardsInHand.length).to.be(2);
+
+      expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
+    });
+  });
+
+  describe("FOREST_COPY_BASIC_ONE_CARD", () => {
+    it("player can visit FOREST_COPY_BASIC_ONE_CARD", () => {
+      const location = Location.fromName(
+        LocationName.FOREST_COPY_BASIC_ONE_CARD
+      );
+      const gameInput = placeWorkerInput(location.name);
+      gameState.locationsMap[LocationName.FOREST_COPY_BASIC_ONE_CARD] = [];
+      let player = gameState.getActivePlayer();
+      player.addCardToHand(gameState, CardName.BARD);
+      player.addCardToHand(gameState, CardName.INN);
+
+      expect(location.canPlay(gameState, gameInput)).to.be(true);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+
+      gameState = multiStepGameInputTest(gameState, [
+        gameInput,
+        {
+          inputType: GameInputType.SELECT_LOCATION,
+          prevInputType: GameInputType.PLACE_WORKER,
+          locationContext: LocationName.FOREST_COPY_BASIC_ONE_CARD,
+          locationOptions: Location.byType(LocationType.BASIC),
+          clientOptions: {
+            selectedLocation: LocationName.BASIC_ONE_BERRY,
+          },
+        },
+      ]);
+
+      player = gameState.getPlayer(player.playerId);
+
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
+      expect(player.cardsInHand.length).to.be(3);
     });
   });
 

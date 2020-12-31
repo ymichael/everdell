@@ -90,7 +90,10 @@ export class Location implements GameStatePlayable {
     if (this.playInner) {
       this.playInner(gameState, gameInput);
     }
-    if (gameInput.inputType === GameInputType.PLACE_WORKER) {
+    if (
+      gameInput.inputType === GameInputType.PLACE_WORKER ||
+      gameInput.inputType === GameInputType.SELECT_LOCATION
+    ) {
       if (this.resourcesToGain) {
         const player = gameState.getActivePlayer();
         player.gainResources(this.resourcesToGain);
@@ -128,55 +131,67 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     type: LocationType.HAVEN,
     occupancy: LocationOccupancy.UNLIMITED,
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
-      // if (gameInput.inputType !== GameInputType.PLACE_WORKER) {
-      //   throw new Error("Invalid input type");
-      // }
-      // if (!gameInput.clientOptions) {
-      //   throw new Error("Invalid input");
-      // }
-      // if (
-      //   !(
-      //     gameInput.clientOptions.cardsToDiscard &&
-      //     gameInput.clientOptions.resourcesToGain
-      //   )
-      // ) {
-      //   throw new Error("Invalid game input");
-      // }
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.PLACE_WORKER) {
+        if (player.cardsInHand.length < 1) {
+          throw new Error("must have cards to discard");
+        }
 
-      // const numToDiscard = gameInput.clientOptions.cardsToDiscard.length;
-      // const numResourcesToGain = Math.floor(numToDiscard / 2);
-      // const resourcesToGain = gameInput.clientOptions.resourcesToGain;
+        // ask player how many cards to discard
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.DISCARD_CARDS,
+          prevInputType: GameInputType.PLACE_WORKER,
+          locationContext: LocationName.HAVEN,
+          minCards: 0,
+          maxCards: 8,
+          clientOptions: {
+            cardsToDiscard: [],
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.DISCARD_CARDS) {
+        const cardsToDiscard = gameInput.clientOptions.cardsToDiscard;
 
-      // let gainingNumResources = 0;
-      // (Object.entries(resourcesToGain) as [ResourceType, number][]).forEach(
-      //   ([resourceType, count]) => {
-      //     if (
-      //       [
-      //         ResourceType.TWIG,
-      //         ResourceType.BERRY,
-      //         ResourceType.PEBBLE,
-      //         ResourceType.RESIN,
-      //       ].indexOf(resourceType) === -1
-      //     ) {
-      //       throw new Error(`Cannot gain: ${resourceType} from the haven`);
-      //     }
-      //     gainingNumResources += count;
-      //   }
-      // );
+        if (!cardsToDiscard) {
+          throw new Error("invalid list of cards to discard");
+        }
 
-      // if (gainingNumResources !== numResourcesToGain) {
-      //   throw new Error(
-      //     `Mismatch resources: can gain: ${numResourcesToGain}, gaining: ${gainingNumResources}`
-      //   );
-      // }
+        // discard the cards
+        cardsToDiscard.forEach((cardName) => {
+          player.removeCardFromHand(cardName);
+        });
+        // ask player how many cards to discard
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_RESOURCES,
+          prevInputType: GameInputType.DISCARD_CARDS,
+          locationContext: LocationName.HAVEN,
+          minResources: 0,
+          maxResources: cardsToDiscard.length / 2,
+          clientOptions: {
+            resources: {},
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_RESOURCES) {
+        const resources = gameInput.clientOptions.resources;
+        if (!resources) {
+          throw new Error("invalid input");
+        }
+        // count total number of resources
 
-      // const player = gameState.getActivePlayer();
-      // gameInput.clientOptions.cardsToDiscard.forEach((card: CardName) => {
-      //   player.removeCardFromHand(card);
-      //   gameState.discardPile.addToStack(card);
-      // });
-      // player.gainResources(resourcesToGain);
+        const numResources =
+          (resources[ResourceType.BERRY] || 0) +
+          (resources[ResourceType.TWIG] || 0) +
+          (resources[ResourceType.RESIN] || 0) +
+          (resources[ResourceType.PEBBLE] || 0);
+
+        if (numResources > gameInput.maxResources) {
+          throw new Error("Can only gain 1 resource per 2 cards discarded");
+        }
+
+        // gain requested resources
+        player.gainResources(resources);
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
+      }
     },
   }),
   [LocationName.JOURNEY_FIVE]: new Location({
@@ -329,20 +344,86 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
       }
     },
   }),
+  // discard any number of cards and then draw 2 cards per card discarded
   [LocationName.FOREST_DISCARD_ANY_THEN_DRAW_TWO_PER_CARD]: new Location({
     name: LocationName.FOREST_DISCARD_ANY_THEN_DRAW_TWO_PER_CARD,
     type: LocationType.FOREST,
     occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
-    playInner: () => {
-      throw new Error("Not Implemented");
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.PLACE_WORKER) {
+        if (player.cardsInHand.length < 1) {
+          throw new Error("must have cards to discard");
+        }
+
+        // ask player how many cards to discard
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.DISCARD_CARDS,
+          prevInputType: GameInputType.PLACE_WORKER,
+          locationContext:
+            LocationName.FOREST_DISCARD_ANY_THEN_DRAW_TWO_PER_CARD,
+          minCards: 0,
+          maxCards: 8,
+          clientOptions: {
+            cardsToDiscard: [],
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.DISCARD_CARDS) {
+        const cardsToDiscard = gameInput.clientOptions.cardsToDiscard;
+
+        if (!cardsToDiscard) {
+          throw new Error("invalid list of cards to discard");
+        }
+
+        // discard the cards
+        cardsToDiscard.forEach((cardName) => {
+          player.removeCardFromHand(cardName);
+        });
+
+        // draw 2 cards per card discarded
+        player.drawCards(gameState, cardsToDiscard.length * 2);
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
+      }
     },
   }),
+  // copy one basic location and draw one card
   [LocationName.FOREST_COPY_BASIC_ONE_CARD]: new Location({
     name: LocationName.FOREST_COPY_BASIC_ONE_CARD,
     type: LocationType.FOREST,
     occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
-    playInner: () => {
-      throw new Error("Not Implemented");
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.PLACE_WORKER) {
+        player.drawCards(gameState, 1);
+
+        // ask player which location they want to copy
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_LOCATION,
+          prevInputType: GameInputType.PLACE_WORKER,
+          locationContext: LocationName.FOREST_COPY_BASIC_ONE_CARD,
+          locationOptions: Location.byType(LocationType.BASIC),
+          clientOptions: {
+            selectedLocation: null,
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_LOCATION) {
+        const selectedLocation = gameInput.clientOptions.selectedLocation;
+
+        if (!selectedLocation) {
+          throw new Error("Invalid location selected");
+        }
+
+        const location = Location.fromName(selectedLocation);
+
+        if (location.type !== LocationType.BASIC) {
+          throw new Error("can only copy a basic location");
+        }
+
+        location.play(gameState, gameInput);
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
+      }
     },
   }),
   [LocationName.FOREST_ONE_PEBBLE_THREE_CARD]: new Location({

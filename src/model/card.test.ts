@@ -119,7 +119,7 @@ describe("Card", () => {
         player = nextGameState.getPlayer(player.playerId);
 
         expect(player.cardsInHand).to.eql([]);
-        expect(player.hasPlayedCard(CardName.FARM)).to.be(true);
+        expect(player.hasCardInCity(CardName.FARM)).to.be(true);
         expect(player.getNumResource(ResourceType.TWIG)).to.be(0);
         expect(player.getNumResource(ResourceType.RESIN)).to.be(0);
       });
@@ -825,8 +825,8 @@ describe("Card", () => {
 
         expect(gameState.discardPile.length).to.eql(0);
         expect(gameState.pendingGameInputs).to.eql([]);
-        expect(player.hasPlayedCard(card.name)).to.be(false);
-        expect(player.hasPlayedCard(CardName.MINE)).to.be(false);
+        expect(player.hasCardInCity(card.name)).to.be(false);
+        expect(player.hasCardInCity(CardName.MINE)).to.be(false);
 
         const gameState3 = multiStepGameInputTest(gameState, [
           playCardInput(card.name),
@@ -844,8 +844,8 @@ describe("Card", () => {
         ]);
 
         player = gameState3.getPlayer(player.playerId);
-        expect(player.hasPlayedCard(card.name)).to.be(true);
-        expect(player.hasPlayedCard(CardName.MINE)).to.be(true);
+        expect(player.hasCardInCity(card.name)).to.be(true);
+        expect(player.hasCardInCity(CardName.MINE)).to.be(true);
         expect(gameState3.discardPile.length).to.eql(1);
         expect(gameState3.pendingGameInputs).to.eql([]);
       });
@@ -862,8 +862,8 @@ describe("Card", () => {
 
         expect(gameState.discardPile.length).to.eql(0);
         expect(gameState.pendingGameInputs).to.eql([]);
-        expect(player.hasPlayedCard(card.name)).to.be(false);
-        expect(player.hasPlayedCard(CardName.MINE)).to.be(false);
+        expect(player.hasCardInCity(card.name)).to.be(false);
+        expect(player.hasCardInCity(CardName.MINE)).to.be(false);
 
         const gameState3 = multiStepGameInputTest(gameState, [
           playCardInput(card.name),
@@ -881,7 +881,7 @@ describe("Card", () => {
         ]);
 
         player = gameState3.getPlayer(player.playerId);
-        expect(player.hasPlayedCard(card.name)).to.be(true);
+        expect(player.hasCardInCity(card.name)).to.be(true);
         expect(gameState3.discardPile.length).to.eql(2);
       });
     });
@@ -899,7 +899,7 @@ describe("Card", () => {
         player.gainResources(card.baseCost);
         player.cardsInHand.push(card.name);
 
-        expect(player.hasPlayedCard(card.name)).to.be(false);
+        expect(player.hasCardInCity(card.name)).to.be(false);
         expect(player.getNumResource(ResourceType.PEBBLE)).to.be(0);
 
         const gameState3 = multiStepGameInputTest(gameState, [
@@ -947,9 +947,9 @@ describe("Card", () => {
         ]);
 
         player = gameState3.getPlayer(player.playerId);
-        expect(player.hasPlayedCard(card.name)).to.be(false);
+        expect(player.hasCardInCity(card.name)).to.be(false);
         expect(
-          gameState3.getPlayer(targetPlayerId).hasPlayedCard(card.name)
+          gameState3.getPlayer(targetPlayerId).hasCardInCity(card.name)
         ).to.be(true);
       });
     });

@@ -288,10 +288,10 @@ describe("Event", () => {
       player = gameState.getPlayer(player.playerId);
 
       // check to make sure the right cards are still in the city
-      expect(player.hasPlayedCard(CardName.UNDERTAKER)).to.eql(false);
-      expect(player.hasPlayedCard(CardName.FARM)).to.eql(false);
-      expect(player.hasPlayedCard(CardName.BARGE_TOAD)).to.eql(true);
-      expect(player.hasPlayedCard(CardName.CASTLE)).to.eql(true);
+      expect(player.hasCardInCity(CardName.UNDERTAKER)).to.eql(false);
+      expect(player.hasCardInCity(CardName.FARM)).to.eql(false);
+      expect(player.hasCardInCity(CardName.BARGE_TOAD)).to.eql(true);
+      expect(player.hasCardInCity(CardName.CASTLE)).to.eql(true);
 
       // check that player paid their berries
       expect(player.getNumResource(ResourceType.BERRY)).to.be(0);
@@ -350,11 +350,11 @@ describe("Event", () => {
       player = gameState.getPlayer(player.playerId);
 
       // check to make sure the right cards are still in the city
-      expect(player.hasPlayedCard(CardName.RANGER)).to.eql(false);
-      expect(player.hasPlayedCard(CardName.POSTAL_PIGEON)).to.eql(false);
-      expect(player.hasPlayedCard(CardName.WIFE)).to.eql(true);
-      expect(player.hasPlayedCard(CardName.QUEEN)).to.eql(true);
-      expect(player.hasPlayedCard(CardName.COURTHOUSE)).to.eql(true);
+      expect(player.hasCardInCity(CardName.RANGER)).to.eql(false);
+      expect(player.hasCardInCity(CardName.POSTAL_PIGEON)).to.eql(false);
+      expect(player.hasCardInCity(CardName.WIFE)).to.eql(true);
+      expect(player.hasCardInCity(CardName.QUEEN)).to.eql(true);
+      expect(player.hasCardInCity(CardName.COURTHOUSE)).to.eql(true);
     });
   });
 
@@ -395,7 +395,7 @@ describe("Event", () => {
       player = gameState.getPlayer(player.playerId);
 
       // check to make sure the right cards are still in the city
-      expect(player.hasPlayedCard(CardName.LOOKOUT)).to.eql(true);
+      expect(player.hasCardInCity(CardName.LOOKOUT)).to.eql(true);
 
       expect(player.getNumResource(ResourceType.TWIG)).to.be(0);
     });
@@ -438,7 +438,7 @@ describe("Event", () => {
       player = gameState.getPlayer(player.playerId);
 
       // check to make sure the right cards are still in the city
-      expect(player.hasPlayedCard(CardName.BARD)).to.eql(true);
+      expect(player.hasCardInCity(CardName.BARD)).to.eql(true);
 
       expect(player.getNumResource(ResourceType.BERRY)).to.be(2);
     });
@@ -489,7 +489,7 @@ describe("Event", () => {
       player = gameState.getPlayer(player.playerId);
 
       // check to make sure the right cards are still in the city
-      expect(player.hasPlayedCard(CardName.PEDDLER)).to.eql(true);
+      expect(player.hasCardInCity(CardName.PEDDLER)).to.eql(true);
 
       expect(player.getNumResource(ResourceType.TWIG)).to.be(2);
       expect(player.getNumResource(ResourceType.RESIN)).to.be(0);
@@ -538,7 +538,7 @@ describe("Event", () => {
       player = gameState.getPlayer(player.playerId);
 
       // check to make sure the right cards are still in the city
-      expect(player.hasPlayedCard(CardName.CHAPEL)).to.eql(true);
+      expect(player.hasCardInCity(CardName.CHAPEL)).to.eql(true);
 
       expect(player.getNumResource(ResourceType.TWIG)).to.be(1);
       expect(player.getNumResource(ResourceType.RESIN)).to.be(1);

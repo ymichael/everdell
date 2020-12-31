@@ -87,6 +87,25 @@ export class Player {
     return this.playerSecret;
   }
 
+  drawCards(gameState: GameState, count: number): void {
+    for (let i = 0; i < count; i++) {
+      const drawnCard = gameState.drawCard();
+      this.addCardToHand(gameState, drawnCard);
+    }
+  }
+
+  drawMaxCards(gameState: GameState): void {
+    this.drawCards(gameState, MAX_HAND_SIZE - this.cardsInHand.length);
+  }
+
+  addCardToHand(gameState: GameState, cardName: CardName): void {
+    if (this.cardsInHand.length < MAX_HAND_SIZE) {
+      this.cardsInHand.push(cardName);
+    } else {
+      gameState.discardPile.addToStack(cardName);
+    }
+  }
+
   removeCardFromHand(cardName: CardName): void {
     const idx = this.cardsInHand.indexOf(cardName);
     if (idx === -1) {
@@ -105,26 +124,29 @@ export class Player {
     this.playedCards[cardName]!.push(card.getPlayedCardInfo());
   }
 
-  useConstructionToPlayCritter(cardName: CardName): void {
-    const card = Card.fromName(cardName);
-    if (!card.isConstruction) {
-      throw new Error("Can only occupy construction");
+  removeCardFromCity(
+    gameState: GameState,
+    cardName: CardName,
+    addToDiscardPile = true
+  ): CardName[] {
+    if (this.playedCards[cardName]) {
+      this.playedCards[cardName]!.pop();
+    } else {
+      throw new Error(`Unable to remove ${cardName}`);
     }
-    let didOccupy = false;
-    this.getPlayedCardInfos(cardName).forEach((playedCardInfo) => {
-      if (!didOccupy && !playedCardInfo.usedForCritter) {
-        playedCardInfo.usedForCritter = true;
-        didOccupy = true;
-      }
-    });
-    if (!didOccupy) {
-      throw new Error("No unoccupied construction found");
+    // TODO: handle cards that contain other cards (eg. dungeon)
+    const removedCards = [cardName];
+    if (addToDiscardPile) {
+      removedCards.forEach((card) => {
+        gameState.discardPile.addToStack(card);
+      });
     }
+    return removedCards;
   }
 
   canAddToCity(cardName: CardName): boolean {
     const card = Card.fromName(cardName);
-    if (card.isUnique && this.hasPlayedCard(card.name)) {
+    if (card.isUnique && this.hasCardInCity(card.name)) {
       return false;
     }
 
@@ -148,30 +170,31 @@ export class Player {
     return numOccupiedSpacesInCity <= MAX_CITY_SIZE;
   }
 
+  hasCardInCity(cardName: CardName): boolean {
+    return this.getPlayedCardInfos(cardName).length !== 0;
+  }
+
+  useConstructionToPlayCritter(cardName: CardName): void {
+    const card = Card.fromName(cardName);
+    if (!card.isConstruction) {
+      throw new Error("Can only occupy construction");
+    }
+    let didOccupy = false;
+    this.getPlayedCardInfos(cardName).forEach((playedCardInfo) => {
+      if (!didOccupy && !playedCardInfo.usedForCritter) {
+        playedCardInfo.usedForCritter = true;
+        didOccupy = true;
+      }
+    });
+    if (!didOccupy) {
+      throw new Error("No unoccupied construction found");
+    }
+  }
+
   numHusbandWifePairs(): number {
     const numHusbands = (this.playedCards[CardName.HUSBAND] || []).length;
     const numWifes = (this.playedCards[CardName.WIFE] || []).length;
     return Math.min(numHusbands, numWifes);
-  }
-
-  removeCardFromCity(
-    gameState: GameState,
-    cardName: CardName,
-    addToDiscardPile = true
-  ): CardName[] {
-    if (this.playedCards[cardName]) {
-      this.playedCards[cardName]!.pop();
-    } else {
-      throw new Error(`Unable to remove ${cardName}`);
-    }
-    // TODO: handle cards that contain other cards (eg. dungeon)
-    const removedCards = [cardName];
-    if (addToDiscardPile) {
-      removedCards.forEach((card) => {
-        gameState.discardPile.addToStack(card);
-      });
-    }
-    return removedCards;
   }
 
   claimEvent(eventName: EventName): void {
@@ -307,10 +330,6 @@ export class Player {
     return playedCardInfos || [];
   }
 
-  hasPlayedCard(cardName: CardName): boolean {
-    return this.getPlayedCardInfos(cardName).length !== 0;
-  }
-
   getNumPlayedCards(): number {
     let total = 0;
     this.forEachPlayedCard(() => {
@@ -335,7 +354,7 @@ export class Player {
     }
 
     const numDungeoned = playedDungeon.pairedCards?.length || 0;
-    const maxDungeoned = this.hasPlayedCard(CardName.RANGER) ? 2 : 1;
+    const maxDungeoned = this.hasCardInCity(CardName.RANGER) ? 2 : 1;
 
     // Need to have a critter to dungeon
     const playedCritters = this.getPlayedCritters();
@@ -383,7 +402,7 @@ export class Player {
     }
     const card = Card.fromName(cardName);
     cityOwner = cityOwner || this;
-    if (!cityOwner.hasPlayedCard(cardName)) {
+    if (!cityOwner.hasCardInCity(cardName)) {
       return false;
     }
     if (cityOwner.playerId !== this.playerId && !card.isOpenDestination) {
@@ -393,7 +412,7 @@ export class Player {
   }
 
   hasSpaceOnDestinationCard(cardName: CardName): boolean {
-    if (!this.hasPlayedCard(cardName)) {
+    if (!this.hasCardInCity(cardName)) {
       return false;
     }
     return !!this.getPlayedCardInfos(cardName).some((playedCard) => {
@@ -401,25 +420,6 @@ export class Player {
       const maxWorkers = playedCard.maxWorkers || 1;
       return workers.length < maxWorkers;
     });
-  }
-
-  drawMaxCards(gameState: GameState): void {
-    this.drawCards(gameState, MAX_HAND_SIZE - this.cardsInHand.length);
-  }
-
-  drawCards(gameState: GameState, count: number): void {
-    for (let i = 0; i < count; i++) {
-      const drawnCard = gameState.drawCard();
-      this.addCardToHand(gameState, drawnCard);
-    }
-  }
-
-  addCardToHand(gameState: GameState, cardName: CardName): void {
-    if (this.cardsInHand.length < MAX_HAND_SIZE) {
-      this.cardsInHand.push(cardName);
-    } else {
-      gameState.discardPile.addToStack(cardName);
-    }
   }
 
   canAffordCard(cardName: CardName, isMeadowCard: boolean): boolean {
@@ -447,7 +447,7 @@ export class Player {
     if (
       card.baseCost[ResourceType.BERRY] &&
       card.isCritter &&
-      this.hasPlayedCard(CardName.INNKEEPER) &&
+      this.hasCardInCity(CardName.INNKEEPER) &&
       this.isPaidResourcesValid(
         this.resources,
         card.baseCost,
@@ -463,7 +463,7 @@ export class Player {
       // Inn
       (isMeadowCard && this.canPlaceWorkerOnCard(CardName.INN)) ||
       // Crane
-      (card.isConstruction && this.hasPlayedCard(CardName.CRANE));
+      (card.isConstruction && this.hasCardInCity(CardName.CRANE));
     return this.isPaidResourcesValid(
       this.resources,
       card.baseCost,
@@ -537,7 +537,7 @@ export class Player {
     }
 
     // Can only use judge if no other discounts are in effect
-    if (!discount && this.hasPlayedCard(CardName.JUDGE)) {
+    if (!discount && this.hasCardInCity(CardName.JUDGE)) {
       if (outstandingOwedSum === 1) {
         if (payingWithRemainerSum >= 1) {
           if (errorIfOverpay && payingWithRemainerSum !== 1) {
@@ -624,7 +624,7 @@ export class Player {
       );
     }
     if (paymentOptions.cardToUse) {
-      if (!this.hasPlayedCard(paymentOptions.cardToUse)) {
+      if (!this.hasCardInCity(paymentOptions.cardToUse)) {
         throw new Error(
           `Invalid paymentOptions: cannot use ${paymentOptions.cardToUse}`
         );

@@ -419,7 +419,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     canPlayInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       const cards = [CardName.UNDERTAKER, CardName.BARGE_TOAD];
-      return cards.every((card) => player.hasPlayedCard(card)) &&
+      return cards.every((card) => player.hasCardInCity(card)) &&
         gameInput.inputType === GameInputType.CLAIM_EVENT
         ? player.getNumResource(ResourceType.BERRY) >= 2
         : true;
@@ -1041,6 +1041,6 @@ export const initialEventMap = (): EventNameToPlayerId => {
 function canPlayInnerRequiresCards(cards: CardName[]): GameStateCanPlayFn {
   return (gameState: GameState, gameInput: GameInput) => {
     const player = gameState.getActivePlayer();
-    return cards.every((card) => player.hasPlayedCard(card));
+    return cards.every((card) => player.hasCardInCity(card));
   };
 }

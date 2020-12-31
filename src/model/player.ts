@@ -105,7 +105,7 @@ export class Player {
     this.playedCards[cardName]!.push(card.getPlayedCardInfo());
   }
 
-  occupyConstruction(cardName: CardName): void {
+  useConstructionToPlayCritter(cardName: CardName): void {
     const card = Card.fromName(cardName);
     if (!card.isConstruction) {
       throw new Error("Can only occupy construction");

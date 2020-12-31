@@ -54,7 +54,7 @@ describe("Player", () => {
         player.canAffordCard(CardName.HUSBAND, false /* isMeadow */)
       ).to.be(true);
       // Occupy the farm
-      player.occupyConstruction(CardName.FARM);
+      player.useConstructionToPlayCritter(CardName.FARM);
       expect(
         player.canAffordCard(CardName.HUSBAND, false /* isMeadow */)
       ).to.be(false);

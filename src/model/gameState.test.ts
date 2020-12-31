@@ -7,6 +7,7 @@ import {
   LocationName,
   EventName,
 } from "./types";
+import { Event } from "./event";
 import { testInitialGameState } from "./testHelpers";
 
 describe("GameState", () => {
@@ -140,7 +141,7 @@ describe("GameState", () => {
   describe("claiming events", () => {
     it("claim 4 production tags events", () => {
       // player1 is the active player
-      const player1 = gameState.players[0];
+      let player1 = gameState.getActivePlayer();
       const player2 = gameState.players[1];
 
       player1.addToCity(CardName.MINE);
@@ -160,8 +161,8 @@ describe("GameState", () => {
         inputType: GameInputType.CLAIM_EVENT as const,
         event: EventName.BASIC_FOUR_PRODUCTION_TAGS,
       };
-
-      gameState.handleClaimEventGameInput(gameInput);
+      gameState = gameState.next(gameInput);
+      player1 = gameState.getPlayer(player1.playerId);
 
       expect(player1.numAvailableWorkers).to.be(1);
       expect(
@@ -169,11 +170,8 @@ describe("GameState", () => {
       ).to.be(true);
 
       // player2 should not be able to claim event
-      gameState.nextPlayer();
-
-      expect(() => {
-        gameState.handleClaimEventGameInput(gameInput as any);
-      }).to.throwException(/cannot play/i);
+      let event = Event.fromName(EventName.BASIC_FOUR_PRODUCTION_TAGS);
+      expect(event.canPlay(gameState, gameInput)).to.be(false);
     });
   });
 });

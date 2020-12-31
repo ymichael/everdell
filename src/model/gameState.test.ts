@@ -6,8 +6,10 @@ import {
   GameInputType,
   LocationName,
   EventName,
+  ResourceType,
 } from "./types";
-import { testInitialGameState } from "./testHelpers";
+import { Event } from "./event";
+import { testInitialGameState, multiStepGameInputTest } from "./testHelpers";
 
 describe("GameState", () => {
   let gameState: GameState;
@@ -78,6 +80,38 @@ describe("GameState", () => {
   });
 
   describe("visiting destination cards", () => {
+    it("can visit LOOKOUT card", () => {
+      let player1 = gameState.getActivePlayer();
+      player1.addToCity(CardName.LOOKOUT);
+
+      expect(player1.numAvailableWorkers).to.be(2);
+      expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+
+      gameState = multiStepGameInputTest(gameState, [
+        {
+          inputType: GameInputType.VISIT_DESTINATION_CARD,
+          playerId: player1.playerId,
+          card: CardName.LOOKOUT,
+        },
+        {
+          inputType: GameInputType.SELECT_LOCATION,
+          prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+          cardContext: CardName.LOOKOUT,
+          locationOptions: (Object.keys(
+            gameState.locationsMap
+          ) as unknown) as LocationName[],
+          clientOptions: {
+            selectedLocation: LocationName.BASIC_ONE_BERRY,
+          },
+        },
+      ]);
+
+      player1 = gameState.getPlayer(player1.playerId);
+
+      expect(player1.numAvailableWorkers).to.be(1);
+      expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
+    });
+
     xit("should handle visit destination card", () => {
       // player1 is the active player
       const player1 = gameState.players[0];
@@ -140,7 +174,7 @@ describe("GameState", () => {
   describe("claiming events", () => {
     it("claim 4 production tags events", () => {
       // player1 is the active player
-      const player1 = gameState.players[0];
+      let player1 = gameState.getActivePlayer();
       const player2 = gameState.players[1];
 
       player1.addToCity(CardName.MINE);
@@ -160,8 +194,8 @@ describe("GameState", () => {
         inputType: GameInputType.CLAIM_EVENT as const,
         event: EventName.BASIC_FOUR_PRODUCTION_TAGS,
       };
-
-      gameState.handleClaimEventGameInput(gameInput);
+      gameState = gameState.next(gameInput);
+      player1 = gameState.getPlayer(player1.playerId);
 
       expect(player1.numAvailableWorkers).to.be(1);
       expect(
@@ -169,11 +203,8 @@ describe("GameState", () => {
       ).to.be(true);
 
       // player2 should not be able to claim event
-      gameState.nextPlayer();
-
-      expect(() => {
-        gameState.handleClaimEventGameInput(gameInput as any);
-      }).to.throwException(/cannot play/i);
+      let event = Event.fromName(EventName.BASIC_FOUR_PRODUCTION_TAGS);
+      expect(event.canPlay(gameState, gameInput)).to.be(false);
     });
   });
 });

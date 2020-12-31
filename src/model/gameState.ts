@@ -196,7 +196,7 @@ export class GameState {
     throw new Error(`Unhandled game input: ${JSON.stringify(gameInput)}`);
   }
 
-  public handleClaimEventGameInput(gameInput: GameInputClaimEvent): void {
+  private handleClaimEventGameInput(gameInput: GameInputClaimEvent): void {
     const event = Event.fromName(gameInput.event);
     if (!event.canPlay(this, gameInput)) {
       throw new Error("Cannot play this event");
@@ -205,7 +205,7 @@ export class GameState {
     this.eventsMap[gameInput.event] = this._activePlayerId;
   }
 
-  public handleVisitDestinationCardGameInput(
+  private handleVisitDestinationCardGameInput(
     gameInput: GameInputVisitDestinationCard
   ): void {
     const card = Card.fromName(gameInput.card);

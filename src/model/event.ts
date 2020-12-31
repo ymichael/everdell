@@ -159,7 +159,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
   [EventName.BASIC_THREE_TRAVELER]: new Event({
     name: EventName.BASIC_THREE_TRAVELER,
     type: EventType.BASIC,
-    baseVP: 0,
+    baseVP: 3,
     canPlayInner: (gameState: GameState) => {
       const player = gameState.getActivePlayer();
       return player.getNumCardType(CardType.TRAVELER) >= 3;
@@ -190,7 +190,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
   [EventName.SPECIAL_A_WEE_RUN_CITY]: new Event({
     name: EventName.SPECIAL_A_WEE_RUN_CITY,
     type: EventType.SPECIAL,
-    baseVP: 0,
+    baseVP: 4,
     canPlayInner: (gameState: GameState, gameInput: GameInput) => {
       return false;
     },
@@ -205,9 +205,6 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     */
     // bring back one of your deployed workers
     // TODO: add playInner
-    pointsInner: (gameState: GameState, playerId: string) => {
-      return 4;
-    },
   }),
   [EventName.SPECIAL_AN_EVENING_OF_FIREWORKS]: new Event({
     name: EventName.SPECIAL_AN_EVENING_OF_FIREWORKS,

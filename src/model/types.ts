@@ -54,24 +54,6 @@ export type GameInputPlayCard = {
 export type GameInputClaimEvent = {
   inputType: GameInputType.CLAIM_EVENT;
   event: EventName;
-  clientOptions?: {
-    // eg, placing cards underneath event
-    //cardsToUse?: CardName[];
-    // eg, place berries on event
-    // resourcesToSpend?: {
-    //   [ResourceType.TWIG]?: number;
-    //   [ResourceType.BERRY]?: number;
-    //   [ResourceType.PEBBLE]?: number;
-    //   [ResourceType.RESIN]?: number;
-    // };
-    // resourcesToGain?: {
-    //   [ResourceType.TWIG]?: number;
-    //   [ResourceType.BERRY]?: number;
-    //   [ResourceType.PEBBLE]?: number;
-    //   [ResourceType.RESIN]?: number;
-    // };
-    // TODO: add resources to opponents
-  };
 };
 
 export type GameInputGameEnd = {

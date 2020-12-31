@@ -110,7 +110,6 @@ describe("Location", () => {
       const gameInput = placeWorkerInput(location.name);
       gameState.locationsMap[LocationName.FOREST_TWO_WILD] = [];
       let player = gameState.getActivePlayer();
-      console.log(gameState.locationsMap);
 
       expect(location.canPlay(gameState, gameInput)).to.be(true);
 
@@ -146,7 +145,6 @@ describe("Location", () => {
       const gameInput = placeWorkerInput(location.name);
       gameState.locationsMap[LocationName.FOREST_TWO_CARDS_ONE_WILD] = [];
       let player = gameState.getActivePlayer();
-      console.log(gameState.locationsMap);
 
       expect(location.canPlay(gameState, gameInput)).to.be(true);
       expect(player.cardsInHand.length).to.be(0);
@@ -171,6 +169,61 @@ describe("Location", () => {
 
       expect(player.getNumResource(ResourceType.TWIG)).to.be(1);
       expect(player.cardsInHand.length).to.be(2);
+    });
+  });
+
+  describe("FOREST_DISCARD_UP_TO_THREE_CARDS_TO_GAIN_WILD_PER_CARD", () => {
+    it("player can discard cards and get resources", () => {
+      const location = Location.fromName(
+        LocationName.FOREST_DISCARD_UP_TO_THREE_CARDS_TO_GAIN_WILD_PER_CARD
+      );
+      const gameInput = placeWorkerInput(location.name);
+      gameState.locationsMap[
+        LocationName.FOREST_DISCARD_UP_TO_THREE_CARDS_TO_GAIN_WILD_PER_CARD
+      ] = [];
+      let player = gameState.getActivePlayer();
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.HUSBAND);
+      player.addCardToHand(gameState, CardName.WIFE);
+      player.addCardToHand(gameState, CardName.WIFE);
+
+      expect(location.canPlay(gameState, gameInput)).to.be(true);
+      expect(player.cardsInHand.length).to.be(4);
+
+      gameState = multiStepGameInputTest(gameState, [
+        gameInput,
+        {
+          inputType: GameInputType.DISCARD_CARDS,
+          prevInputType: GameInputType.PLACE_WORKER,
+          locationContext:
+            LocationName.FOREST_DISCARD_UP_TO_THREE_CARDS_TO_GAIN_WILD_PER_CARD,
+          minCards: 0,
+          maxCards: 3,
+          clientOptions: {
+            cardsToDiscard: [CardName.FARM, CardName.WIFE, CardName.WIFE],
+          },
+        },
+        {
+          inputType: GameInputType.SELECT_RESOURCES,
+          prevInputType: GameInputType.DISCARD_CARDS,
+          locationContext:
+            LocationName.FOREST_DISCARD_UP_TO_THREE_CARDS_TO_GAIN_WILD_PER_CARD,
+          maxResources: 3,
+          minResources: 0,
+          clientOptions: {
+            resources: {
+              [ResourceType.TWIG]: 1,
+              [ResourceType.RESIN]: 2,
+            },
+          },
+        },
+      ]);
+
+      player = gameState.getPlayer(player.playerId);
+
+      expect(player.getNumResource(ResourceType.TWIG)).to.be(1);
+      expect(player.getNumResource(ResourceType.RESIN)).to.be(2);
+      expect(player.cardsInHand.length).to.be(1);
     });
   });
 

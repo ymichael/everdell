@@ -84,7 +84,6 @@ export class Location implements GameStatePlayable {
   }
 
   play(gameState: GameState, gameInput: GameInput): void {
-    console.log(gameInput);
     if (!this.canPlay(gameState, gameInput)) {
       throw new Error(`Unable to visit location ${this.name}`);
     }
@@ -431,8 +430,73 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
       name: LocationName.FOREST_DISCARD_UP_TO_THREE_CARDS_TO_GAIN_WILD_PER_CARD,
       type: LocationType.FOREST,
       occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
-      playInner: () => {
-        throw new Error("Not Implemented");
+      playInner: (gameState: GameState, gameInput: GameInput) => {
+        const player = gameState.getActivePlayer();
+        if (gameInput.inputType === GameInputType.PLACE_WORKER) {
+          if (player.cardsInHand.length < 1) {
+            throw new Error("must have cards to discard");
+          }
+
+          // ask player how many cards to discard
+          gameState.pendingGameInputs.push({
+            inputType: GameInputType.DISCARD_CARDS,
+            prevInputType: GameInputType.PLACE_WORKER,
+            locationContext:
+              LocationName.FOREST_DISCARD_UP_TO_THREE_CARDS_TO_GAIN_WILD_PER_CARD,
+            minCards: 0,
+            maxCards: 3,
+            clientOptions: {
+              cardsToDiscard: [] as CardName[],
+            },
+          });
+        } else if (gameInput.inputType === GameInputType.DISCARD_CARDS) {
+          const cardsToDiscard = gameInput.clientOptions.cardsToDiscard;
+
+          if (!cardsToDiscard) {
+            throw new Error("invalid list of cards to discard");
+          }
+
+          // ask the player what resource they want to gain
+          gameState.pendingGameInputs.push({
+            inputType: GameInputType.SELECT_RESOURCES,
+            prevInputType: GameInputType.DISCARD_CARDS,
+            locationContext:
+              LocationName.FOREST_DISCARD_UP_TO_THREE_CARDS_TO_GAIN_WILD_PER_CARD,
+            maxResources: cardsToDiscard.length,
+            minResources: 0,
+            clientOptions: {
+              resources: [] as CardCost,
+            },
+          });
+
+          // discard the cards
+          cardsToDiscard.forEach((cardName) => {
+            player.removeCardFromHand(cardName);
+          });
+        } else if (gameInput.inputType === GameInputType.SELECT_RESOURCES) {
+          const resources = gameInput.clientOptions.resources;
+          if (!resources) {
+            throw new Error("invalid input");
+          }
+
+          // count total number of resources
+          const numResources =
+            (resources[ResourceType.BERRY] || 0) +
+            (resources[ResourceType.TWIG] || 0) +
+            (resources[ResourceType.RESIN] || 0) +
+            (resources[ResourceType.PEBBLE] || 0);
+
+          if (numResources > gameInput.maxResources) {
+            throw new Error(
+              "Can't gain more resources than the number of cards discarded"
+            );
+          }
+
+          // gain requested resources
+          player.gainResources(resources);
+        } else {
+          throw new Error(`Invalid input type ${gameInput.inputType}`);
+        }
       },
     }
   ),

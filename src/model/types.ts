@@ -23,33 +23,6 @@ export type GameInputVisitDestinationCard = {
   inputType: GameInputType.VISIT_DESTINATION_CARD;
   card: CardName;
   playerId: string;
-  clientOptions?: {
-    // lookout
-    location?: LocationName;
-
-    // monastery
-    targetPlayerId?: string;
-
-    // monastery
-    resourcesToSpend?: {
-      [ResourceType.TWIG]?: number;
-      [ResourceType.BERRY]?: number;
-      [ResourceType.PEBBLE]?: number;
-      [ResourceType.RESIN]?: number;
-    };
-
-    // university
-    targetCard?: CardName;
-
-    // university
-    resourcesToGain?: {
-      [ResourceType.TWIG]?: number;
-      [ResourceType.BERRY]?: number;
-      [ResourceType.PEBBLE]?: number;
-      [ResourceType.RESIN]?: number;
-      [ResourceType.VP]?: number;
-    };
-  };
 };
 
 export type GameInputPlayCard = {

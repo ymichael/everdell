@@ -669,22 +669,23 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: true,
     associatedCard: CardName.WANDERER,
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      if (gameInput.inputType !== GameInputType.VISIT_DESTINATION_CARD) {
-        throw new Error("Invalid input type");
-      }
-      if (!gameInput.clientOptions?.location) {
-        throw new Error("Invalid input");
-      }
-      const location = Location.fromName(gameInput.clientOptions?.location);
-      if (
-        !(
-          location.type === LocationType.FOREST ||
-          location.type === LocationType.BASIC
-        )
-      ) {
-        throw new Error(`Cannot copy ${location.name}`);
-      }
-      location.play(gameState, gameInput);
+      throw new Error("Not implemented");
+      // if (gameInput.inputType !== GameInputType.VISIT_DESTINATION_CARD) {
+      //   throw new Error("Invalid input type");
+      // }
+      // if (!gameInput.clientOptions?.location) {
+      //   throw new Error("Invalid input");
+      // }
+      // const location = Location.fromName(gameInput.clientOptions?.location);
+      // if (
+      //   !(
+      //     location.type === LocationType.FOREST ||
+      //     location.type === LocationType.BASIC
+      //   )
+      // ) {
+      //   throw new Error(`Cannot copy ${location.name}`);
+      // }
+      // location.play(gameState, gameInput);
     },
   }),
   [CardName.MINE]: new Card({

@@ -353,7 +353,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           maxToSelect: 2,
           minToSelect: 0,
           clientOptions: {
-            selectedCards: null,
+            selectedCards: [],
           },
         });
       } else if (gameInput.inputType === GameInputType.SELECT_MULTIPLE_CARDS) {
@@ -434,7 +434,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           maxToSelect: 2,
           minToSelect: 0,
           clientOptions: {
-            selectedCards: null,
+            selectedCards: [],
           },
         });
       } else if (gameInput.inputType === GameInputType.SELECT_MULTIPLE_CARDS) {

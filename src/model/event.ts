@@ -96,9 +96,8 @@ export class Event implements GameStatePlayable {
       throw new Error("Invalid game input type");
     }
     const player = gameState.getActivePlayer();
-
     if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
-      player.claimEvent(this.name);
+      player.placeWorkerOnEvent(this.name);
     }
 
     this.playEventEffects(gameState, gameInput);

@@ -186,7 +186,8 @@ describe("Event", () => {
       player = gameState2.getActivePlayer();
       expect(
         player.claimedEvents[EventName.SPECIAL_GRADUATION_OF_SCHOLARS]
-      ).to.eql({ storedCards: [], hasWorker: true });
+      ).to.eql({ storedCards: [] });
+
       expect(gameState2.pendingGameInputs).to.eql([
         {
           inputType: GameInputType.SELECT_MULTIPLE_CARDS,
@@ -236,7 +237,6 @@ describe("Event", () => {
         player.claimedEvents[EventName.SPECIAL_GRADUATION_OF_SCHOLARS]
       ).to.eql({
         storedCards: ["POSTAL_PIGEON", "HUSBAND", "WIFE"],
-        hasWorker: true,
       });
     });
   });

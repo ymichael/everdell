@@ -296,9 +296,6 @@ export type PlayedCardInfo = {
 };
 
 export type PlayedEventInfo = {
-  // whether the event card has a worker on it
-  hasWorker?: boolean;
-
   // events that store resources
   storedResources?: {
     [ResourceType.TWIG]?: number;
@@ -309,6 +306,15 @@ export type PlayedEventInfo = {
 
   // certain events
   storedCards?: string[];
+};
+
+export type PlacedWorkerInfo = {
+  location?: LocationName;
+  cardDestination?: {
+    card: CardName;
+    playerId: string;
+  };
+  event?: EventName;
 };
 
 export type PlayerIdsToAvailableDestinationCards = {

@@ -1382,5 +1382,115 @@ describe("Card", () => {
         expect(player2.cardsInHand).to.eql([CardName.FARM]);
       });
     });
+
+    describe(CardName.UNDERTAKER, () => {
+      it("undertaker should allow player to take card from meadow", () => {
+        const cards = [
+          CardName.KING,
+          CardName.QUEEN,
+          CardName.POSTAL_PIGEON,
+          CardName.POSTAL_PIGEON,
+          CardName.FARM,
+          CardName.HUSBAND,
+          CardName.CHAPEL,
+          CardName.MONK,
+        ];
+        gameState = testInitialGameState({ meadowCards: cards });
+
+        const topOfDeck = [
+          CardName.SCHOOL,
+          CardName.TEACHER,
+          CardName.WIFE,
+          CardName.DOCTOR,
+        ];
+        topOfDeck.reverse();
+        topOfDeck.forEach((cardName) => {
+          gameState.deck.addToStack(cardName);
+        });
+
+        let player = gameState.getActivePlayer();
+        const card = Card.fromName(CardName.UNDERTAKER);
+
+        expect(player.cardsInHand).to.eql([]);
+        expect(gameState.meadowCards.indexOf(CardName.DOCTOR)).to.be.lessThan(
+          0
+        );
+
+        // Make sure we can play this card
+        player.gainResources(card.baseCost);
+        player.cardsInHand.push(card.name);
+
+        gameState = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+          {
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: GameInputType.PLAY_CARD,
+            cardContext: CardName.UNDERTAKER,
+            cardOptions: [
+              CardName.KING,
+              CardName.QUEEN,
+              CardName.POSTAL_PIGEON,
+              CardName.POSTAL_PIGEON,
+              CardName.FARM,
+              CardName.HUSBAND,
+              CardName.CHAPEL,
+              CardName.MONK,
+            ],
+            cardOptionsUnfiltered: [
+              CardName.KING,
+              CardName.QUEEN,
+              CardName.POSTAL_PIGEON,
+              CardName.POSTAL_PIGEON,
+              CardName.FARM,
+              CardName.HUSBAND,
+              CardName.CHAPEL,
+              CardName.MONK,
+            ],
+            maxToSelect: 3,
+            minToSelect: 3,
+            clientOptions: {
+              selectedCards: [CardName.QUEEN, CardName.KING, CardName.CHAPEL],
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: GameInputType.SELECT_CARDS,
+            cardContext: card.name,
+            cardOptions: [
+              CardName.POSTAL_PIGEON,
+              CardName.POSTAL_PIGEON,
+              CardName.FARM,
+              CardName.HUSBAND,
+              CardName.MONK,
+              CardName.SCHOOL,
+              CardName.TEACHER,
+              CardName.WIFE,
+            ],
+            cardOptionsUnfiltered: [
+              CardName.POSTAL_PIGEON,
+              CardName.POSTAL_PIGEON,
+              CardName.FARM,
+              CardName.HUSBAND,
+              CardName.MONK,
+              CardName.SCHOOL,
+              CardName.TEACHER,
+              CardName.WIFE,
+            ],
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              selectedCards: [CardName.TEACHER],
+            },
+          },
+        ]);
+
+        player = gameState.getPlayer(player.playerId);
+
+        expect(player.cardsInHand).to.eql([CardName.TEACHER]);
+        expect(
+          gameState.meadowCards.indexOf(CardName.DOCTOR)
+        ).to.be.greaterThan(0);
+      });
+    });
   });
 });

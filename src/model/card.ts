@@ -1728,8 +1728,71 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: false,
     associatedCard: CardName.CEMETARY,
+    // Discard 3 meadow, replace, draw 1 meadow
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.PLAY_CARD) {
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: GameInputType.PLAY_CARD,
+          cardOptions: gameState.meadowCards,
+          cardOptionsUnfiltered: gameState.meadowCards,
+          maxToSelect: 3,
+          minToSelect: 3,
+          cardContext: CardName.UNDERTAKER,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_CARDS &&
+        gameInput.prevInputType === GameInputType.PLAY_CARD
+      ) {
+        // discard the cards from the meadow + replenish
+        const selectedCards = gameInput.clientOptions.selectedCards;
+        if (selectedCards.length !== 3) {
+          throw new Error("must choose exactly 3 cards to remove from meadow");
+        }
+
+        selectedCards.forEach((cardName) => {
+          gameState.removeCardFromMeadow(cardName);
+          gameState.discardPile.addToStack(cardName);
+        });
+
+        gameState.replenishMeadow();
+
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: GameInputType.SELECT_CARDS,
+          cardOptions: gameState.meadowCards,
+          cardOptionsUnfiltered: gameState.meadowCards,
+          maxToSelect: 1,
+          minToSelect: 1,
+          cardContext: CardName.UNDERTAKER,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_CARDS &&
+        gameInput.prevInputType === GameInputType.SELECT_CARDS
+      ) {
+        // add this card to player's hand + replenish meadow
+        const selectedCards = gameInput.clientOptions.selectedCards;
+        if (selectedCards.length !== 1) {
+          throw new Error("may only choose 1 card from meadow");
+        }
+
+        const card = selectedCards[0];
+        gameState.removeCardFromMeadow(card);
+        gameState.replenishMeadow();
+
+        player.addCardToHand(gameState, card);
+      } else {
+        throw new Error(
+          "Unexpected input type ${gameInput.inputType} with previous input type ${gameInput.prevInputType}"
+        );
+      }
     },
   }),
   [CardName.UNIVERSITY]: new Card({

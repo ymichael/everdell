@@ -166,7 +166,7 @@ export class Player {
     });
 
     // Only count each husband/wife pair once
-    numOccupiedSpacesInCity -= this.numHusbandWifePairs();
+    numOccupiedSpacesInCity -= this.getNumHusbandWifePairs();
     return numOccupiedSpacesInCity <= MAX_CITY_SIZE;
   }
 
@@ -191,7 +191,7 @@ export class Player {
     }
   }
 
-  numHusbandWifePairs(): number {
+  getNumHusbandWifePairs(): number {
     const numHusbands = (this.playedCards[CardName.HUSBAND] || []).length;
     const numWifes = (this.playedCards[CardName.WIFE] || []).length;
     return Math.min(numHusbands, numWifes);
@@ -241,6 +241,14 @@ export class Player {
     });
   }
 
+  getNumCardsInCity(): number {
+    let total = 0;
+    this.forEachPlayedCard(() => {
+      total += 1;
+    });
+    return total;
+  }
+
   getNumCardType(cardType: CardType): number {
     let numCards = 0;
     this.forEachPlayedCard(({ cardName }) => {
@@ -250,17 +258,6 @@ export class Player {
       }
     });
     return numCards;
-  }
-
-  getPlayedCardType(cardType: CardType): CardName[] {
-    const playedCardsOfType: CardName[] = [];
-    this.forEachPlayedCard(({ cardName }) => {
-      const card = Card.fromName(cardName as CardName);
-      if (card.cardType === cardType) {
-        playedCardsOfType.push(cardName);
-      }
-    });
-    return playedCardsOfType;
   }
 
   getAllDestinationCards(): CardName[] {
@@ -328,14 +325,6 @@ export class Player {
   getPlayedCardInfos(cardName: CardName): PlayedCardInfo[] {
     const playedCardInfos = this.playedCards[cardName];
     return playedCardInfos || [];
-  }
-
-  getNumPlayedCards(): number {
-    let total = 0;
-    this.forEachPlayedCard(() => {
-      total += 1;
-    });
-    return total;
   }
 
   hasUnusedByCritterConstruction(cardName: CardName): boolean {

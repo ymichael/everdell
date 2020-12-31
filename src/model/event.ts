@@ -483,11 +483,11 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       CardName.POSTAL_PIGEON,
     ]),
     pointsInner: (gameState: GameState, playerId: string) => {
-      let numHusbandWifePairs = 0;
+      let getNumHusbandWifePairs = 0;
       gameState.players.forEach((player) => {
-        numHusbandWifePairs += player.numHusbandWifePairs();
+        getNumHusbandWifePairs += player.getNumHusbandWifePairs();
       });
-      return numHusbandWifePairs * 3;
+      return getNumHusbandWifePairs * 3;
     },
   }),
   [EventName.SPECIAL_GRADUATION_OF_SCHOLARS]: new Event({
@@ -585,7 +585,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       if (!eventInfo) {
         throw new Error("Cannot find event info");
       }
-      if (player.getNumPlayedCards() === 0) {
+      if (player.getNumCardsInCity() === 0) {
         throw new Error("No cards in city");
       }
       const playedDungeons = player.getPlayedCardInfos(CardName.DUNGEON);

@@ -111,7 +111,7 @@ export class Player {
       throw new Error("Can only occupy construction");
     }
     let didOccupy = false;
-    (this.playedCards[card.name] || []).forEach((playedCardInfo) => {
+    this.getPlayedCardInfos(cardName).forEach((playedCardInfo) => {
       if (!didOccupy && !playedCardInfo.usedForCritter) {
         playedCardInfo.usedForCritter = true;
         didOccupy = true;
@@ -325,34 +325,21 @@ export class Player {
     return openDestinationCards;
   }
 
-  hasPlayedCard(cardName: CardName): boolean {
-    const playedCardInfos = this.playedCards[cardName];
-    return !!playedCardInfos && playedCardInfos.length !== 0;
-  }
-
-  numPlayedCards(): number {
-    let total = 0;
-    this.forEachPlayedCard(() => {
-      total += 1;
-    });
-    return total;
-  }
-
   getPlayedCardInfos(cardName: CardName): PlayedCardInfo[] {
     const playedCardInfos = this.playedCards[cardName];
     return playedCardInfos || [];
   }
 
-  hasSpaceOnDestinationCard(cardName: CardName): boolean {
-    if (!this.hasPlayedCard(cardName)) {
-      return false;
-    }
+  hasPlayedCard(cardName: CardName): boolean {
+    return this.getPlayedCardInfos(cardName).length !== 0;
+  }
 
-    return !!this.playedCards[cardName]?.some((playedCard) => {
-      const workers = playedCard.workers || [];
-      const maxWorkers = playedCard.maxWorkers || 1;
-      return workers.length < maxWorkers;
+  getNumPlayedCards(): number {
+    let total = 0;
+    this.forEachPlayedCard(() => {
+      total += 1;
     });
+    return total;
   }
 
   hasUnusedByCritterConstruction(cardName: CardName): boolean {
@@ -374,13 +361,11 @@ export class Player {
     const maxDungeoned = this.playedCards[CardName.RANGER] ? 2 : 1;
 
     // Need to have a critter to dungeon
+    const playedCritters = this.getPlayedCritters();
+    console.log(playedCritters);
     if (
-      !(Object.keys(this.playedCards) as CardName[]).some((cardName) => {
-        const card = Card.fromName(cardName);
-        return (
-          card.isCritter && (numDungeoned == 0 || cardName !== CardName.RANGER)
-        );
-      })
+      playedCritters.length === 0 ||
+      (playedCritters.length === 1 && playedCritters[0] === CardName.RANGER)
     ) {
       return false;
     }
@@ -428,10 +413,17 @@ export class Player {
     if (cityOwner.playerId !== this.playerId && !card.isOpenDestination) {
       return false;
     }
-    return cityOwner.getPlayedCardInfos(cardName).some((playedCard) => {
+    return cityOwner.hasSpaceOnDestinationCard(cardName);
+  }
+
+  hasSpaceOnDestinationCard(cardName: CardName): boolean {
+    if (!this.hasPlayedCard(cardName)) {
+      return false;
+    }
+    return !!this.getPlayedCardInfos(cardName).some((playedCard) => {
+      const workers = playedCard.workers || [];
       const maxWorkers = playedCard.maxWorkers || 1;
-      const numWorkers = playedCard.workers?.length || 0;
-      return numWorkers < maxWorkers;
+      return workers.length < maxWorkers;
     });
   }
 

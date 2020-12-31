@@ -585,7 +585,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       if (!eventInfo) {
         throw new Error("Cannot find event info");
       }
-      if (player.numPlayedCards() === 0) {
+      if (player.getNumPlayedCards() === 0) {
         throw new Error("No cards in city");
       }
       const playedDungeons = player.getPlayedCardInfos(CardName.DUNGEON);

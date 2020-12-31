@@ -516,7 +516,7 @@ describe("Player", () => {
       player.addToCity(CardName.LOOKOUT);
 
       availableOpenDestinationCards = player.getAvailableOpenDestinationCards();
-      expect(player.numPlayedCards()).to.be(3);
+      expect(player.getNumPlayedCards()).to.be(3);
 
       expect(availableOpenDestinationCards.length).to.be(2);
     });

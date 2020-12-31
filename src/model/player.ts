@@ -387,11 +387,15 @@ export class Player {
   drawCards(gameState: GameState, count: number): void {
     for (let i = 0; i < count; i++) {
       const drawnCard = gameState.drawCard();
-      if (this.cardsInHand.length < MAX_HAND_SIZE) {
-        this.cardsInHand.push(drawnCard);
-      } else {
-        gameState.discardPile.addToStack(drawnCard);
-      }
+      this.addCardToHand(gameState, drawnCard);
+    }
+  }
+
+  addCardToHand(gameState: GameState, cardName: CardName): void {
+    if (this.cardsInHand.length < MAX_HAND_SIZE) {
+      this.cardsInHand.push(cardName);
+    } else {
+      gameState.discardPile.addToStack(cardName);
     }
   }
 

@@ -175,7 +175,7 @@ export type GameInputSelectMultipleCards = {
   locationContext?: LocationName;
 
   clientOptions: {
-    selectedCards: CardName[] | null;
+    selectedCards: CardName[];
   };
 };
 

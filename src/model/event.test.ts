@@ -199,7 +199,7 @@ describe("Event", () => {
           maxToSelect: 3,
           minToSelect: 0,
           clientOptions: {
-            selectedCards: null,
+            selectedCards: [],
           },
         },
       ]);

@@ -134,20 +134,14 @@ export class Card<TCardType extends CardType = CardType>
       ) {
         return false;
       }
-      if (this.canPlayInner && !this.canPlayInner(gameState, gameInput)) {
+      if (!player.canAffordCard(this.name, gameInput.fromMeadow)) {
         return false;
       }
-      return player.canAffordCard(this.name, gameInput.fromMeadow);
-    } else if (
-      gameInput.inputType === GameInputType.SELECT_CARD ||
-      gameInput.inputType === GameInputType.SELECT_PLAYER ||
-      gameInput.inputType === GameInputType.DISCARD_CARDS ||
-      gameInput.inputType === GameInputType.SELECT_RESOURCES
-    ) {
-      return true;
-    } else {
-      throw new Error(`Invalid game input: ${gameInput.inputType}`);
     }
+    if (this.canPlayInner && !this.canPlayInner(gameState, gameInput)) {
+      return false;
+    }
+    return true;
   }
 
   play(gameState: GameState, gameInput: GameInput): void {
@@ -993,23 +987,82 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: true,
     associatedCard: CardName.POSTAL_PIGEON,
     isOpenDestination: true,
+    canPlayInner: (gameState: GameState, gameInput: GameInput) => {
+      if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
+        // Need at least 2 cards to visit this card
+        const player = gameState.getActivePlayer();
+        return player.cardsInHand.length >= 2;
+      }
+      return true;
+    },
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
-      // if (gameInput.inputType !== GameInputType.PLAY_CARD) {
-      //   throw new Error("Invalid input type");
-      // }
-      // if (
-      //   !gameInput.clientOptions?.cardsToDiscard ||
-      //   gameInput.clientOptions?.cardsToDiscard.length !== 2
-      // ) {
-      //   throw new Error("Invalid input");
-      // }
-      // const player = gameState.getActivePlayer();
-      // gameInput.clientOptions.cardsToDiscard.forEach((cardName) => {
-      //   player.removeCardFromHand(cardName);
-      //   gameState.discardPile.addToStack(cardName);
-      // });
-      // player.drawMaxCards(gameState);
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_PLAYER,
+          prevInputType: gameInput.inputType,
+          cardContext: CardName.POST_OFFICE,
+          playerOptions: gameState.players
+            .filter((p) => p.playerId !== player.playerId)
+            .map((p) => p.playerId),
+          mustSelectOne: true,
+          clientOptions: {
+            selectedPlayer: null,
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_PLAYER) {
+        if (!gameInput.clientOptions.selectedPlayer) {
+          throw new Error("Must select a player");
+        }
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_MULTIPLE_CARDS,
+          prevInputType: gameInput.inputType,
+          prevInput: gameInput,
+          cardContext: CardName.POST_OFFICE,
+          cardOptions: player.cardsInHand,
+          maxToSelect: 2,
+          minToSelect: 2,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_MULTIPLE_CARDS) {
+        if (
+          gameInput.prevInput &&
+          gameInput.prevInput.inputType === GameInputType.SELECT_PLAYER
+        ) {
+          if (!gameInput.prevInput.clientOptions.selectedPlayer) {
+            throw new Error("Invalid input");
+          }
+          if (gameInput.clientOptions.selectedCards.length !== 2) {
+            throw new Error("Must select 2 cards");
+          }
+          const selectedPlayer = gameState.getPlayer(
+            gameInput.prevInput.clientOptions.selectedPlayer
+          );
+          gameInput.clientOptions.selectedCards.forEach((cardName) => {
+            player.removeCardFromHand(cardName);
+            selectedPlayer.addCardToHand(gameState, cardName);
+          });
+          gameState.pendingGameInputs.push({
+            inputType: GameInputType.SELECT_MULTIPLE_CARDS,
+            prevInputType: gameInput.inputType,
+            cardContext: CardName.POST_OFFICE,
+            cardOptions: player.cardsInHand,
+            maxToSelect: player.cardsInHand.length,
+            minToSelect: 0,
+            clientOptions: {
+              selectedCards: [],
+            },
+          });
+        } else {
+          gameInput.clientOptions.selectedCards.forEach((cardName) => {
+            player.removeCardFromHand(cardName);
+            gameState.discardPile.addToStack(cardName);
+          });
+          player.drawMaxCards(gameState);
+        }
+      }
     },
   }),
   [CardName.POSTAL_PIGEON]: new Card({

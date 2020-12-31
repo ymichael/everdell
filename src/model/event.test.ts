@@ -399,4 +399,57 @@ describe("Event", () => {
       expect(player.getNumResource(ResourceType.TWIG)).to.be(0);
     });
   });
+
+  describe(EventName.SPECIAL_UNDER_NEW_MANAGEMENT, () => {
+    it("game state", () => {
+      const event = Event.fromName(EventName.SPECIAL_UNDER_NEW_MANAGEMENT);
+      let player = gameState.getActivePlayer();
+      const gameInput = claimEventInput(event.name);
+
+      gameState.eventsMap[EventName.SPECIAL_UNDER_NEW_MANAGEMENT] = null;
+
+      player.playedCards[CardName.PEDDLER] = [{}];
+      player.playedCards[CardName.GENERAL_STORE] = [{}];
+      player.gainResources({
+        [ResourceType.TWIG]: 3,
+        [ResourceType.RESIN]: 1,
+        [ResourceType.PEBBLE]: 2,
+      });
+
+      // check if the player can claim the event
+      expect(event.canPlay(gameState, gameInput)).to.be(true);
+
+      // try to claim the event + check that you get the correct game state back
+      expect(gameState.pendingGameInputs).to.eql([]);
+      expect(
+        player.claimedEvents[EventName.SPECIAL_UNDER_NEW_MANAGEMENT]
+      ).to.be(undefined);
+
+      gameState = multiStepGameInputTest(gameState, [
+        gameInput,
+        {
+          inputType: GameInputType.SELECT_RESOURCES,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          eventContext: EventName.SPECIAL_UNDER_NEW_MANAGEMENT,
+          maxResources: 3,
+          minResources: 0,
+          clientOptions: {
+            resources: {
+              [ResourceType.TWIG]: 1,
+              [ResourceType.RESIN]: 1,
+              [ResourceType.PEBBLE]: 1,
+            },
+          },
+        },
+      ]);
+      player = gameState.getPlayer(player.playerId);
+
+      // check to make sure the right cards are still in the city
+      expect(player.hasPlayedCard(CardName.PEDDLER)).to.eql(true);
+
+      expect(player.getNumResource(ResourceType.TWIG)).to.be(2);
+      expect(player.getNumResource(ResourceType.RESIN)).to.be(0);
+      expect(player.getNumResource(ResourceType.PEBBLE)).to.be(1);
+    });
+  });
 });

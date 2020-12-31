@@ -6,6 +6,7 @@ import {
   GameInputClaimEvent,
   GameInputPlaceWorker,
   GameInputVisitDestinationCard,
+  GameInputPrepareForSeason,
   GameInputMultiStep,
   CardName,
   EventName,
@@ -16,6 +17,7 @@ import {
   ResourceType,
   GameInputWorkerPlacementTypes,
   WorkerPlacementInfo,
+  PlayerStatus,
 } from "./types";
 import { GameStateJSON } from "./jsonTypes";
 import { Player } from "./player";
@@ -199,6 +201,22 @@ export class GameState {
       return;
     }
 
+    if (
+      gameInput.prevInputType === GameInputType.PREPARE_FOR_SEASON &&
+      gameInput.inputType === GameInputType.SELECT_CARDS
+    ) {
+      const selectedCards = gameInput.clientOptions.selectedCards;
+      if (selectedCards.length !== 2) {
+        throw new Error("Invalid input");
+      }
+      const player = this.getActivePlayer();
+      selectedCards.forEach((cardName) => {
+        this.removeCardFromMeadow(cardName);
+        player.addCardToHand(this, cardName);
+      });
+      this.replenishMeadow();
+    }
+
     throw new Error(`Unhandled game input: ${JSON.stringify(gameInput)}`);
   }
 
@@ -251,6 +269,45 @@ export class GameState {
     }
   }
 
+  handlePrepareForSeason(gameInput: GameInputPrepareForSeason): void {
+    const player = this.getActivePlayer();
+
+    if (player.playerStatus !== PlayerStatus.DURING_SEASON) {
+      throw new Error(`Unexpected playerStatus: ${player.playerStatus}`);
+    }
+
+    player.playerStatus = PlayerStatus.PREPARING_FOR_SEASON;
+
+    if (player.hasCardInCity(CardName.CLOCK_TOWER)) {
+      const clocktower = Card.fromName(CardName.CLOCK_TOWER);
+      clocktower.play(this, gameInput);
+    }
+  }
+
+  private prepareForSeason(player: Player, gameInput: GameInput): void {
+    if (
+      player.currentSeason === Season.WINTER ||
+      player.currentSeason === Season.SUMMER
+    ) {
+      player.activateProduction(this, gameInput);
+    } else {
+      this.pendingGameInputs.push({
+        inputType: GameInputType.SELECT_CARDS,
+        prevInputType: GameInputType.PREPARE_FOR_SEASON,
+        cardContext: CardName.POST_OFFICE,
+        cardOptions: this.meadowCards,
+        maxToSelect: 2,
+        minToSelect: 2,
+        clientOptions: {
+          selectedCards: [],
+        },
+      });
+    }
+    player.playerStatus = PlayerStatus.DURING_SEASON;
+    player.recallWorkers(this);
+    player.nextSeason();
+  }
+
   next(gameInput: GameInput): GameState {
     const nextGameState = this.clone();
     switch (gameInput.inputType) {
@@ -272,8 +329,10 @@ export class GameState {
       case GameInputType.DISCARD_CARDS:
         nextGameState.handleMultiStepGameInput(gameInput);
         break;
-      case GameInputType.GAME_END:
       case GameInputType.PREPARE_FOR_SEASON:
+        nextGameState.handlePrepareForSeason(gameInput);
+        break;
+      case GameInputType.GAME_END:
         throw new Error("Not Implemented");
       default:
         assertUnreachable(
@@ -282,7 +341,17 @@ export class GameState {
         );
     }
 
-    // If there's pending game inputs, don't go to the next player.
+    const player = nextGameState.getActivePlayer();
+
+    // A player is preparing for season, complete that first.
+    if (
+      nextGameState.pendingGameInputs.length === 0 &&
+      player.playerStatus === PlayerStatus.PREPARING_FOR_SEASON
+    ) {
+      nextGameState.prepareForSeason(player, gameInput);
+    }
+
+    // If there are no more pending game inputs go to the next player.
     if (nextGameState.pendingGameInputs.length === 0) {
       nextGameState.nextPlayer();
     }
@@ -459,6 +528,7 @@ export class GameState {
     } else if (player.currentSeason !== Season.AUTUMN) {
       possibleGameInputs.push({
         inputType: GameInputType.PREPARE_FOR_SEASON,
+        phase: "START",
       });
     } else {
       possibleGameInputs.push({

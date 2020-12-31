@@ -11,6 +11,7 @@ import {
   PlayedEventInfo,
   WorkerPlacementInfo,
   LocationName,
+  PlayerStatus,
 } from "./types";
 import { PlayerJSON } from "./jsonTypes";
 import cloneDeep from "lodash/cloneDeep";
@@ -40,6 +41,8 @@ export class Player {
   private numWorkers: number;
   private placedWorkers: WorkerPlacementInfo[];
 
+  public playerStatus: PlayerStatus;
+
   constructor({
     name,
     playerSecret = uuid(),
@@ -57,6 +60,7 @@ export class Player {
     numWorkers = 2,
     claimedEvents = {},
     placedWorkers = [],
+    playerStatus = PlayerStatus.DURING_SEASON,
   }: {
     name: string;
     playerSecret?: string;
@@ -74,6 +78,7 @@ export class Player {
     numWorkers?: number;
     claimedEvents?: Partial<Record<EventName, PlayedEventInfo>>;
     placedWorkers?: WorkerPlacementInfo[];
+    playerStatus?: PlayerStatus;
   }) {
     this.playerId = playerId;
     this.playerSecret = playerSecret;
@@ -85,6 +90,7 @@ export class Player {
     this.numWorkers = numWorkers;
     this.claimedEvents = claimedEvents;
     this.placedWorkers = placedWorkers;
+    this.playerStatus = playerStatus;
   }
 
   get playerSecretUNSAFE(): string {
@@ -356,6 +362,13 @@ export class Player {
 
   get numAvailableWorkers(): number {
     return this.numWorkers - this.placedWorkers.length;
+  }
+
+  activateProduction(gameState: GameState, gameInput: GameInput): void {
+    this.getAllPlayedCardsByType(CardType.PRODUCTION).forEach((playedCard) => {
+      const card = Card.fromName(playedCard.cardName);
+      card.gainProduction(gameState, gameInput, this);
+    });
   }
 
   placeWorkerOnLocation(location: LocationName): void {
@@ -913,6 +926,7 @@ export class Player {
       claimedEvents: this.claimedEvents,
       cardsInHand: [],
       placedWorkers: this.placedWorkers,
+      playerStatus: this.playerStatus,
       ...(includePrivate
         ? {
             playerSecret: this.playerSecret,

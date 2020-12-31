@@ -1,4 +1,5 @@
 import {
+  GameInputPlaceWorker,
   ResourceType,
   ProductionResourceMap,
   LocationType,
@@ -456,6 +457,69 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         [ResourceType.VP]: 3,
       },
     },
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      const playedClockTower = player.getPlayedCardInfos(
+        CardName.CLOCK_TOWER
+      )?.[0];
+      if (!playedClockTower || !playedClockTower.resources?.[ResourceType.VP]) {
+        return;
+      }
+      if (gameInput.inputType === GameInputType.PREPARE_FOR_SEASON) {
+        const basicAndForestLocationInputs: GameInputPlaceWorker[] = [];
+        player.getRecallableWorkers().forEach((workerInfo) => {
+          if (!workerInfo.location) {
+            return;
+          }
+          const location = Location.fromName(workerInfo.location);
+          if (
+            location.type !== LocationType.BASIC &&
+            location.type !== LocationType.FOREST
+          ) {
+            return;
+          }
+          basicAndForestLocationInputs.push({
+            inputType: GameInputType.PLACE_WORKER,
+            location: location.name,
+          });
+        });
+        if (basicAndForestLocationInputs.length !== 0) {
+          gameState.pendingGameInputs.push({
+            inputType: GameInputType.SELECT_WORKER_PLACEMENT,
+            prevInputType: gameInput.inputType,
+            options: basicAndForestLocationInputs,
+            cardContext: CardName.COURTHOUSE,
+            mustSelectOne: false,
+            clientOptions: {
+              selectedInput: null,
+            },
+          });
+        }
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_WORKER_PLACEMENT
+      ) {
+        const selectedInput = gameInput.clientOptions.selectedInput;
+        if (selectedInput) {
+          if (selectedInput.inputType !== GameInputType.PLACE_WORKER) {
+            throw new Error("Invalid input");
+          }
+          const location = Location.fromName(selectedInput.location);
+          if (
+            location.type !== LocationType.BASIC &&
+            location.type !== LocationType.FOREST
+          ) {
+            throw new Error("Can only active basic / forest locations");
+          }
+          const locationsMap = gameState.locationsMap[location.name];
+          if (!locationsMap || locationsMap.indexOf(player.playerId) === -1) {
+            throw new Error("Can't find worker at location");
+          }
+          location.play(gameState, gameInput);
+          playedClockTower.resources[ResourceType.VP] =
+            (playedClockTower.resources[ResourceType.VP] || 0) - 1;
+        }
+      }
+    },
   }),
   [CardName.COURTHOUSE]: new Card({
     name: CardName.COURTHOUSE,
@@ -697,23 +761,19 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       cardOwner: Player
     ) => {
       const player = gameState.getActivePlayer();
-      if (gameInput.inputType === GameInputType.PLAY_CARD) {
-        const playedHusbands = cardOwner.getPlayedCardInfos(CardName.HUSBAND);
-        const playedWifes = cardOwner.getPlayedCardInfos(CardName.WIFE);
-        if (playedHusbands.length <= playedWifes.length) {
-          gameState.pendingGameInputs.push({
-            inputType: GameInputType.SELECT_RESOURCES,
-            prevInputType: gameInput.inputType,
-            cardContext: CardName.HUSBAND,
-            maxResources: 1,
-            minResources: 1,
-            clientOptions: {
-              resources: {},
-            },
-          });
-        }
-      } else {
-        throw new Error(`Invalid input type ${gameInput.inputType}`);
+      const playedHusbands = cardOwner.getPlayedCardInfos(CardName.HUSBAND);
+      const playedWifes = cardOwner.getPlayedCardInfos(CardName.WIFE);
+      if (playedHusbands.length <= playedWifes.length) {
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_RESOURCES,
+          prevInputType: gameInput.inputType,
+          cardContext: CardName.HUSBAND,
+          maxResources: 1,
+          minResources: 1,
+          clientOptions: {
+            resources: {},
+          },
+        });
       }
     },
   }),
@@ -932,53 +992,49 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     },
     productionInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
-      if (gameInput.inputType === GameInputType.PLAY_CARD) {
-        // If another player has a miner mole, we can copy any card in the game.
-        const canMinerMoleMinerMole = gameState.players
-          .filter((x) => x.playerId !== player.playerId)
-          .some((x) => x.hasCardInCity(CardName.MINER_MOLE));
+      // If another player has a miner mole, we can copy any card in the game.
+      const canMinerMoleMinerMole = gameState.players
+        .filter((x) => x.playerId !== player.playerId)
+        .some((x) => x.hasCardInCity(CardName.MINER_MOLE));
 
-        const productionPlayedCards: PlayedCardInfo[] = [];
-        gameState.players.forEach((p) => {
-          if (p.playerId === player.playerId) {
-            if (canMinerMoleMinerMole) {
-              productionPlayedCards.push(
-                ...p.getAllPlayedCardsByType(CardType.PRODUCTION)
-              );
-            }
-          } else {
+      const productionPlayedCards: PlayedCardInfo[] = [];
+      gameState.players.forEach((p) => {
+        if (p.playerId === player.playerId) {
+          if (canMinerMoleMinerMole) {
             productionPlayedCards.push(
               ...p.getAllPlayedCardsByType(CardType.PRODUCTION)
             );
           }
-        });
+        } else {
+          productionPlayedCards.push(
+            ...p.getAllPlayedCardsByType(CardType.PRODUCTION)
+          );
+        }
+      });
 
-        gameState.pendingGameInputs.push({
-          inputType: GameInputType.SELECT_PLAYED_CARDS,
-          prevInputType: gameInput.inputType,
-          cardContext: CardName.MINER_MOLE,
-          cardOptions: productionPlayedCards.filter((playedCardInfo) => {
-            // Filter out useless cards to copy
-            if (
-              playedCardInfo.cardName === CardName.STOREHOUSE &&
-              playedCardInfo.cardOwnerId !== player.playerId
-            ) {
-              return false;
-            }
-            return (
-              playedCardInfo.cardName !== CardName.MINER_MOLE &&
-              playedCardInfo.cardName !== CardName.CHIP_SWEEP
-            );
-          }),
-          maxToSelect: 1,
-          minToSelect: 1,
-          clientOptions: {
-            selectedCards: [],
-          },
-        });
-      } else {
-        throw new Error(`Unexpected input type: ${gameInput.inputType}`);
-      }
+      gameState.pendingGameInputs.push({
+        inputType: GameInputType.SELECT_PLAYED_CARDS,
+        prevInputType: gameInput.inputType,
+        cardContext: CardName.MINER_MOLE,
+        cardOptions: productionPlayedCards.filter((playedCardInfo) => {
+          // Filter out useless cards to copy
+          if (
+            playedCardInfo.cardName === CardName.STOREHOUSE &&
+            playedCardInfo.cardOwnerId !== player.playerId
+          ) {
+            return false;
+          }
+          return (
+            playedCardInfo.cardName !== CardName.MINER_MOLE &&
+            playedCardInfo.cardName !== CardName.CHIP_SWEEP
+          );
+        }),
+        maxToSelect: 1,
+        minToSelect: 1,
+        clientOptions: {
+          selectedCards: [],
+        },
+      });
     },
   }),
   [CardName.MONASTERY]: new Card({
@@ -1085,48 +1141,20 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     },
     productionInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
-      if (gameInput.inputType === GameInputType.PLAY_CARD) {
-        if (player.getNumResourcesByType(ResourceType.BERRY) === 0) {
-          return;
-        }
-        gameState.pendingGameInputs.push({
-          inputType: GameInputType.SELECT_RESOURCES,
-          prevInputType: gameInput.inputType,
-          maxResources: 2,
-          minResources: 0,
-          specificResource: ResourceType.BERRY,
-          cardContext: CardName.MONK,
-          clientOptions: {
-            resources: {},
-          },
-        });
-      } else {
-        throw new Error("Invalid input type");
+      if (player.getNumResourcesByType(ResourceType.BERRY) === 0) {
+        return;
       }
-      // if (
-      //   !gameInput.clientOptions?.resourcesToSpend ||
-      //   !gameInput.clientOptions?.targetPlayerId
-      // ) {
-      //   throw new Error("Invalid input");
-      // }
-      // const numBerries =
-      //   gameInput.clientOptions?.resourcesToSpend?.[ResourceType.BERRY] || 0;
-      // if (numBerries > 2) {
-      //   throw new Error("Invalid input");
-      // }
-      // const targetPlayer = gameState.getPlayer(
-      //   gameInput.clientOptions?.targetPlayerId
-      // );
-      // const player = gameState.getActivePlayer();
-      // player.spendResources({
-      //   [ResourceType.BERRY]: numBerries,
-      // });
-      // targetPlayer.gainResources({
-      //   [ResourceType.BERRY]: numBerries,
-      // });
-      // player.gainResources({
-      //   [ResourceType.VP]: numBerries * 2,
-      // });
+      gameState.pendingGameInputs.push({
+        inputType: GameInputType.SELECT_RESOURCES,
+        prevInputType: gameInput.inputType,
+        maxResources: 2,
+        minResources: 0,
+        specificResource: ResourceType.BERRY,
+        cardContext: CardName.MONK,
+        clientOptions: {
+          resources: {},
+        },
+      });
     },
   }),
   [CardName.PALACE]: new Card({
@@ -1189,40 +1217,18 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     },
     productionInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
-      if (gameInput.inputType === GameInputType.PLAY_CARD) {
-        if (player.getNumResources() !== 0) {
-          gameState.pendingGameInputs.push({
-            inputType: GameInputType.SELECT_RESOURCES,
-            prevInputType: gameInput.inputType,
-            cardContext: CardName.PEDDLER,
-            maxResources: 2,
-            minResources: 0,
-            clientOptions: {
-              resources: {},
-            },
-          });
-        }
-      } else {
-        throw new Error(`Invalid input type ${gameInput.inputType}`);
+      if (player.getNumResources() !== 0) {
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_RESOURCES,
+          prevInputType: gameInput.inputType,
+          cardContext: CardName.PEDDLER,
+          maxResources: 2,
+          minResources: 0,
+          clientOptions: {
+            resources: {},
+          },
+        });
       }
-      // if (
-      //   !gameInput.clientOptions?.resourcesToSpend ||
-      //   !gameInput.clientOptions?.resourcesToGain ||
-      //   gameInput.clientOptions?.resourcesToGain[ResourceType.VP] ||
-      //   gameInput.clientOptions?.resourcesToSpend[ResourceType.VP]
-      // ) {
-      //   throw new Error("Invalid input");
-      // }
-
-      // const numSpend = gameInput.clientOptions?.resourcesToSpend;
-      // const numGain = gameInput.clientOptions?.resourcesToGain;
-      // if (numSpend > 2 || numGain !== numSpend) {
-      //   throw new Error("Invalid input");
-      // }
-
-      // const player = gameState.getActivePlayer();
-      // player.spendResources(gameInput.clientOptions?.resourcesToSpend);
-      // player.gainResources(gameInput.clientOptions?.resourcesToGain);
     },
   }),
   [CardName.POST_OFFICE]: new Card({
@@ -1424,6 +1430,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
               }
             }),
             cardContext: CardName.RANGER,
+            mustSelectOne: true,
             clientOptions: {
               selectedInput: null,
             },
@@ -1458,6 +1465,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             prevInputType: gameInput.inputType,
             options: gameState.getEligibleWorkerPlacementGameInputs(),
             cardContext: CardName.RANGER,
+            mustSelectOne: true,
             clientOptions: {
               selectedInput: null,
             },

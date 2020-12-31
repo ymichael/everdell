@@ -552,6 +552,7 @@ describe("Card", () => {
             inputType: GameInputType.SELECT_WORKER_PLACEMENT,
             prevInputType: GameInputType.PLAY_CARD,
             cardContext: CardName.RANGER,
+            mustSelectOne: true,
             clientOptions: {
               selectedInput: {
                 inputType: GameInputType.PLACE_WORKER,
@@ -569,6 +570,7 @@ describe("Card", () => {
             inputType: GameInputType.SELECT_WORKER_PLACEMENT,
             prevInputType: GameInputType.SELECT_WORKER_PLACEMENT,
             cardContext: CardName.RANGER,
+            mustSelectOne: true,
             options: [
               {
                 inputType: GameInputType.PLACE_WORKER,

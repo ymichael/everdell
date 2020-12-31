@@ -64,6 +64,7 @@ export type GameInputGameEnd = {
 
 export type GameInputPrepareForSeason = {
   inputType: GameInputType.PREPARE_FOR_SEASON;
+  phase: "START" | "PRODUCTION" | "END";
 };
 
 export type GameInputWorkerPlacementTypes =
@@ -160,6 +161,8 @@ export type GameInputSelectWorkerPlacement = {
   inputType: GameInputType.SELECT_WORKER_PLACEMENT;
   prevInputType: GameInputType;
   options: GameInputWorkerPlacementTypes[];
+
+  mustSelectOne: boolean;
 
   locationContext?: LocationName;
   cardContext?: CardName;
@@ -458,3 +461,9 @@ export type CardCost = {
   [ResourceType.PEBBLE]?: number;
   [ResourceType.RESIN]?: number;
 };
+
+export enum PlayerStatus {
+  DURING_SEASON = "DURING_SEASON",
+  PREPARING_FOR_SEASON = "PREPARING_FOR_SEASON",
+  GAME_ENDED = "GAME_ENDED",
+}

@@ -5,6 +5,7 @@ import {
   ResourceType,
   PlayedCardInfo,
   PlayedEventInfo,
+  PlayerStatus,
   WorkerPlacementInfo,
   GameInputMultiStep,
   EventNameToPlayerId,
@@ -50,4 +51,5 @@ export type PlayerJSON = {
   numWorkers: number;
   claimedEvents: Partial<Record<EventName, PlayedEventInfo>>;
   placedWorkers: WorkerPlacementInfo[];
+  playerStatus: PlayerStatus;
 };

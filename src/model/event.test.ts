@@ -149,4 +149,92 @@ describe("Event", () => {
       expect(Object.keys(player.claimedEvents).length == 1);
     });
   });
+
+  describe(EventName.SPECIAL_GRADUATION_OF_SCHOLARS, () => {
+    it("game state", () => {
+      const event = Event.fromName(EventName.SPECIAL_GRADUATION_OF_SCHOLARS);
+      let player = gameState.getActivePlayer();
+      const gameInput = claimEventInput(event.name);
+
+      gameState.eventsMap[EventName.SPECIAL_GRADUATION_OF_SCHOLARS] = null;
+      player.playedCards[CardName.TEACHER] = [{}];
+      player.playedCards[CardName.UNIVERSITY] = [{}];
+
+      player.cardsInHand = [
+        CardName.POSTAL_PIGEON,
+        CardName.HUSBAND,
+        CardName.WIFE,
+        CardName.FOOL,
+        CardName.FARM,
+      ];
+
+      // check if the player can claim the event
+
+      // try to claim the event + check that you get the correct game state back
+      expect(gameState.pendingGameInputs).to.eql([]);
+      expect(
+        player.claimedEvents[EventName.SPECIAL_GRADUATION_OF_SCHOLARS]
+      ).to.be(undefined);
+
+      expect(event.canPlay(gameState, gameInput)).to.be(true);
+
+      const gameState2 = gameState.next(gameInput);
+      expect(player.playerId).to.be(gameState2.getActivePlayer().playerId);
+      player = gameState2.getActivePlayer();
+      expect(
+        player.claimedEvents[EventName.SPECIAL_GRADUATION_OF_SCHOLARS]
+      ).to.eql({ storedCards: [], hasWorker: true });
+      expect(gameState2.pendingGameInputs).to.eql([
+        {
+          inputType: GameInputType.SELECT_MULTIPLE_CARDS,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          context: EventName.SPECIAL_GRADUATION_OF_SCHOLARS,
+          // Farm isn't an option for this event because it's not a critter
+          cardOptions: [
+            CardName.POSTAL_PIGEON,
+            CardName.HUSBAND,
+            CardName.WIFE,
+            CardName.FOOL,
+          ],
+          maxToSelect: 3,
+          minToSelect: 0,
+          clientOptions: {
+            selectedCards: null,
+          },
+        },
+      ]);
+
+      const gameState3 = gameState2.next({
+        inputType: GameInputType.SELECT_MULTIPLE_CARDS,
+        prevInputType: GameInputType.CLAIM_EVENT,
+        context: EventName.SPECIAL_GRADUATION_OF_SCHOLARS,
+        cardOptions: [
+          CardName.POSTAL_PIGEON,
+          CardName.HUSBAND,
+          CardName.WIFE,
+          CardName.FOOL,
+        ],
+        maxToSelect: 3,
+        minToSelect: 0,
+        clientOptions: {
+          selectedCards: [
+            CardName.POSTAL_PIGEON,
+            CardName.HUSBAND,
+            CardName.WIFE,
+          ],
+        },
+      });
+
+      expect(player.playerId).to.not.be(gameState3.getActivePlayer().playerId);
+
+      player = gameState3.getPlayer(player.playerId);
+
+      expect(
+        player.claimedEvents[EventName.SPECIAL_GRADUATION_OF_SCHOLARS]
+      ).to.eql({
+        storedCards: ["POSTAL_PIGEON", "HUSBAND", "WIFE"],
+        hasWorker: true,
+      });
+    });
+  });
 });

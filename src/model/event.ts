@@ -64,8 +64,12 @@ export class Event implements GameStatePlayable {
       return false;
     }
 
-    // check whether the event has been playedCards
-    if (gameState.eventsMap[this.name]) {
+    // check whether the event has been playedCards and we're not taking
+    // a second action
+    if (
+      gameState.eventsMap[this.name] &&
+      gameInput.inputType == GameInputType.CLAIM_EVENT
+    ) {
       return false;
     }
 
@@ -82,11 +86,17 @@ export class Event implements GameStatePlayable {
   }
 
   play(gameState: GameState, gameInput: GameInput): void {
-    if (gameInput.inputType !== GameInputType.CLAIM_EVENT) {
+    if (
+      gameInput.inputType !== GameInputType.CLAIM_EVENT &&
+      gameInput.inputType !== GameInputType.SELECT_MULTIPLE_CARDS
+    ) {
       throw new Error("Invalid game input type");
     }
     const player = gameState.getActivePlayer();
-    player.claimEvent(this.name);
+
+    if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
+      player.claimEvent(this.name);
+    }
 
     this.playEventEffects(gameState, gameInput);
   }
@@ -321,39 +331,48 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     }),
     // play up to 2 critters from your city beneath this event
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      const player = gameState.getActivePlayer();
-      if (gameInput.inputType !== GameInputType.CLAIM_EVENT) {
-        throw new Error("Invalid input type");
-      }
-      if (!gameInput.clientOptions) {
-        throw new Error("Invalid input");
-      }
-      const cardsToUse = gameInput.clientOptions.cardsToUse;
-      if (cardsToUse && cardsToUse.length > 2) {
-        throw new Error("Too many cards");
-      }
+      // if game input is CLAIM_EVENT
+      // select 2 cards
+      // push SELECT_CARDS as a pending game input
 
-      for (const cardName in cardsToUse) {
-        const card = Card.fromName(cardName as CardName);
-        if (!card.isCritter) {
-          throw new Error("Can only put Critters beneath this event");
-        }
-      }
-      const eventInfo =
-        player?.claimedEvents[EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES];
-      if (!eventInfo) {
-        throw new Error("Cannot find event info");
-      }
-
+      // if game input is SELECT CARDS with prev input as CLAIM_EVENT
       // remove cards from city
-      for (const cardName in cardsToUse) {
-        player.removeCardFromCity(
-          gameState,
-          cardName as CardName,
-          false /* addToDiscardPile */
-        );
-        (eventInfo.storedCards = eventInfo.storedCards || []).push(cardName);
-      }
+
+      throw new Error("not implemented");
+      // const player = gameState.getActivePlayer();
+      // if (gameInput.inputType !== GameInputType.CLAIM_EVENT) {
+      //   throw new Error("Invalid input type");
+      // }
+      // if (!gameInput.clientOptions) {
+      //   throw new Error("Invalid input");
+      // }
+      // const cardsToUse = gameInput.clientOptions.cardsToUse;
+
+      // if (cardsToUse && cardsToUse.length > 2) {
+      //   throw new Error("Too many cards");
+      // }
+
+      // for (const cardName in cardsToUse) {
+      //   const card = Card.fromName(cardName as CardName);
+      //   if (!card.isCritter) {
+      //     throw new Error("Can only put Critters beneath this event");
+      //   }
+      // }
+      // const eventInfo =
+      //   player?.claimedEvents[EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES];
+      // if (!eventInfo) {
+      //   throw new Error("Cannot find event info");
+      // }
+
+      // // remove cards from city
+      // for (const cardName in cardsToUse) {
+      //   player.removeCardFromCity(
+      //     gameState,
+      //     cardName as CardName,
+      //     false /* addToDiscardPile */
+      //   );
+      //   (eventInfo.storedCards = eventInfo.storedCards || []).push(cardName);
+      // }
     },
     // 3 points per critter beneath event
     pointsInner: (gameState: GameState, playerId: string) => {
@@ -381,34 +400,35 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     },
     // pay 2 berries and discard 2 cards from city
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      const player = gameState.getActivePlayer();
-      if (gameInput.inputType !== GameInputType.CLAIM_EVENT) {
-        throw new Error("Invalid input type");
-      }
-      if (!gameInput.clientOptions) {
-        throw new Error("Invalid input");
-      }
-      const cardsToUse = gameInput.clientOptions.cardsToUse;
-      if (cardsToUse && cardsToUse.length > 2) {
-        throw new Error("Too many cards");
-      }
+      throw new Error("not implemented");
+      // const player = gameState.getActivePlayer();
+      // if (gameInput.inputType !== GameInputType.CLAIM_EVENT) {
+      //   throw new Error("Invalid input type");
+      // }
+      // if (!gameInput.clientOptions) {
+      //   throw new Error("Invalid input");
+      // }
+      // const cardsToUse = gameInput.clientOptions.cardsToUse;
+      // if (cardsToUse && cardsToUse.length > 2) {
+      //   throw new Error("Too many cards");
+      // }
 
-      const eventInfo =
-        player?.claimedEvents[EventName.SPECIAL_CROAK_WART_CURE];
-      if (!eventInfo) {
-        throw new Error("Cannot find event info");
-      }
+      // const eventInfo =
+      //   player?.claimedEvents[EventName.SPECIAL_CROAK_WART_CURE];
+      // if (!eventInfo) {
+      //   throw new Error("Cannot find event info");
+      // }
 
-      // Remove cards from city
-      for (const cardName in cardsToUse) {
-        player.removeCardFromCity(
-          gameState,
-          cardName as CardName,
-          true /* addToDiscardPile */
-        );
-      }
-      // Remove berries from player's supply
-      player.spendResources({ [ResourceType.BERRY]: 2 });
+      // // Remove cards from city
+      // for (const cardName in cardsToUse) {
+      //   player.removeCardFromCity(
+      //     gameState,
+      //     cardName as CardName,
+      //     true /* addToDiscardPile */
+      //   );
+      // }
+      // // Remove berries from player's supply
+      // player.spendResources({ [ResourceType.BERRY]: 2 });
     },
   }),
   [EventName.SPECIAL_FLYING_DOCTOR_SERVICE]: new Event({
@@ -440,35 +460,93 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     }),
     // play up to 3 critters from your hand beneath this event
     playInner: (gameState: GameState, gameInput: GameInput) => {
+      // if game input is CLAIM_EVENT
+      // select 2 cards
+      // push SELECT_CARDS as a pending game input
+
+      // if game input is SELECT CARDS with prev input as CLAIM_EVENT
+      // remove cards from your hand
+
       const player = gameState.getActivePlayer();
-      if (gameInput.inputType !== GameInputType.CLAIM_EVENT) {
-        throw new Error("Invalid input type");
-      }
-      if (!gameInput.clientOptions) {
-        throw new Error("Invalid input");
-      }
-      const cardsToUse = gameInput.clientOptions.cardsToUse;
-      if (cardsToUse && cardsToUse.length > 3) {
-        throw new Error("Too many cards");
-      }
 
-      for (const cardName in cardsToUse) {
-        const card = Card.fromName(cardName as CardName);
-        if (!card.isCritter) {
-          throw new Error("Can only put Critters beneath this event");
+      if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
+        let critterCardsInHand: CardName[] = [];
+
+        const playedCards = player.cardsInHand;
+        playedCards.forEach((cardName) => {
+          const card = Card.fromName(cardName as CardName);
+          if (card.isCritter) {
+            critterCardsInHand.push(card.name);
+          }
+          return card.isCritter;
+        });
+
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_MULTIPLE_CARDS,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          context: EventName.SPECIAL_GRADUATION_OF_SCHOLARS,
+          cardOptions: critterCardsInHand,
+          maxToSelect: 3,
+          minToSelect: 0,
+          clientOptions: {
+            selectedCards: null,
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_MULTIPLE_CARDS) {
+        if (!gameInput.clientOptions.selectedCards) {
+          throw new Error("invalid input");
         }
-      }
-      const eventInfo =
-        player?.claimedEvents[EventName.SPECIAL_GRADUATION_OF_SCHOLARS];
-      if (!eventInfo) {
-        throw new Error("Cannot find event info");
+        const cardsToUse = gameInput.clientOptions.selectedCards;
+
+        if (cardsToUse.length > 3) {
+          throw new Error("Too many cards");
+        }
+
+        cardsToUse.forEach((cardName) => {
+          const card = Card.fromName(cardName as CardName);
+          if (!card.isCritter) {
+            throw new Error("Can only put Critters beneath this event");
+          }
+        });
+
+        const eventInfo =
+          player.claimedEvents[EventName.SPECIAL_GRADUATION_OF_SCHOLARS];
+        if (!eventInfo) {
+          throw new Error("Cannot find event info");
+        }
+
+        // remove cards from hand
+        cardsToUse.forEach((cardName) => {
+          player.removeCardFromHand(cardName as CardName);
+          (eventInfo.storedCards = eventInfo.storedCards || []).push(cardName);
+        });
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
       }
 
-      // remove cards from hand
-      for (const cardName in cardsToUse) {
-        player.removeCardFromHand(cardName as CardName);
-        (eventInfo.storedCards = eventInfo.storedCards || []).push(cardName);
-      }
+      // if (gameInput.inputType === GameInputType.PLAY_CARD) {
+      //   gameState.pendingGameInputs.push({
+      //     inputType: GameInputType.SELECT_PLAYER,
+      //     prevInputType: gameInput.inputType,
+      //     cardContext: CardName.FOOL,
+      //     playerOptions: gameState.players
+      //       .filter((p) => p.playerId !== player.playerId)
+      //       .map((p) => p.playerId),
+      //     mustSelectOne: true,
+      //     clientOptions: {
+      //       selectedPlayer: null,
+      //     },
+      //   });
+      // }
+
+      //throw new Error("not implemented");
+      // const player = gameState.getActivePlayer();
+      // if (gameInput.inputType !== GameInputType.CLAIM_EVENT) {
+      //   throw new Error("Invalid input type");
+      // }
+      // if (!gameInput.clientOptions) {
+      //   throw new Error("Invalid input");
+      // }
     },
     // 2 points per critter beneath event
     pointsInner: (gameState: GameState, playerId: string) => {

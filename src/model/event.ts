@@ -126,7 +126,6 @@ export class Event implements GameStatePlayable {
   }
 }
 
-// TODO: add worker placement rules
 const EVENT_REGISTRY: Record<EventName, Event> = {
   [EventName.BASIC_FOUR_PRODUCTION_TAGS]: new Event({
     name: EventName.BASIC_FOUR_PRODUCTION_TAGS,
@@ -180,6 +179,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       CardName.SHOPKEEPER,
       CardName.POST_OFFICE,
     ]),
+    // may give opponents up to a total of 3 resources
     */
     // TODO: add playInner
     // TODO: add pointsInner
@@ -201,6 +201,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       CardName.CLOCK_TOWER,
     ]),
     */
+    // bring back one of your deployed workers
     // TODO: add playInner
     pointsInner: (gameState: GameState, playerId: string) => {
       return 4;
@@ -300,6 +301,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     playedEventInfoInner: () => ({
       storedCards: [],
     }),
+    // Reveal 5 cards. You may draw any or place any beneath this event
     // TODO: add playInner
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);

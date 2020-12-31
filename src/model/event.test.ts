@@ -291,6 +291,69 @@ describe("Event", () => {
       expect(player.hasPlayedCard(CardName.FARM)).to.eql(false);
       expect(player.hasPlayedCard(CardName.BARGE_TOAD)).to.eql(true);
       expect(player.hasPlayedCard(CardName.CASTLE)).to.eql(true);
+
+      // check that player paid their berries
+      expect(player.getNumResource(ResourceType.BERRY)).to.be(0);
+    });
+  });
+
+  describe(EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES, () => {
+    it("game state", () => {
+      const event = Event.fromName(
+        EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES
+      );
+      let player = gameState.getActivePlayer();
+      const gameInput = claimEventInput(event.name);
+
+      gameState.eventsMap[
+        EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES
+      ] = null;
+
+      player.playedCards[CardName.COURTHOUSE] = [{}];
+      player.playedCards[CardName.RANGER] = [{}];
+      player.playedCards[CardName.FARM] = [{}];
+      player.playedCards[CardName.POSTAL_PIGEON] = [{}];
+      player.playedCards[CardName.WIFE] = [{}];
+      player.playedCards[CardName.QUEEN] = [{}];
+
+      // check if the player can claim the event
+      expect(event.canPlay(gameState, gameInput)).to.be(true);
+
+      // try to claim the event + check that you get the correct game state back
+      expect(gameState.pendingGameInputs).to.eql([]);
+      expect(
+        player.claimedEvents[EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES]
+      ).to.be(undefined);
+
+      gameState = multiStepGameInputTest(gameState, [
+        gameInput,
+        {
+          inputType: GameInputType.SELECT_MULTIPLE_CARDS,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          eventContext: EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES,
+          cardOptions: [
+            CardName.RANGER,
+            CardName.POSTAL_PIGEON,
+            CardName.WIFE,
+            CardName.QUEEN,
+          ],
+          maxToSelect: 2,
+          minToSelect: 0,
+          clientOptions: {
+            // these are the cards the player wants to remove
+            // from their city
+            selectedCards: [CardName.POSTAL_PIGEON, CardName.RANGER],
+          },
+        },
+      ]);
+      player = gameState.getPlayer(player.playerId);
+
+      // check to make sure the right cards are still in the city
+      expect(player.hasPlayedCard(CardName.RANGER)).to.eql(false);
+      expect(player.hasPlayedCard(CardName.POSTAL_PIGEON)).to.eql(false);
+      expect(player.hasPlayedCard(CardName.WIFE)).to.eql(true);
+      expect(player.hasPlayedCard(CardName.QUEEN)).to.eql(true);
+      expect(player.hasPlayedCard(CardName.COURTHOUSE)).to.eql(true);
     });
   });
 });

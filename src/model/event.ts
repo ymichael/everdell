@@ -331,48 +331,67 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     }),
     // play up to 2 critters from your city beneath this event
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      // if game input is CLAIM_EVENT
-      // select 2 cards
-      // push SELECT_CARDS as a pending game input
+      const player = gameState.getActivePlayer();
 
-      // if game input is SELECT CARDS with prev input as CLAIM_EVENT
-      // remove cards from city
+      if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
+        let crittersInCity: CardName[] = [];
 
-      throw new Error("not implemented");
-      // const player = gameState.getActivePlayer();
-      // if (gameInput.inputType !== GameInputType.CLAIM_EVENT) {
-      //   throw new Error("Invalid input type");
-      // }
-      // if (!gameInput.clientOptions) {
-      //   throw new Error("Invalid input");
-      // }
-      // const cardsToUse = gameInput.clientOptions.cardsToUse;
+        const playedCards = Object.keys(player.playedCards) as CardName[];
+        playedCards.forEach((cardName) => {
+          const card = Card.fromName(cardName as CardName);
+          if (card.isCritter) {
+            crittersInCity.push(card.name);
+          }
+          return card.isCritter;
+        });
 
-      // if (cardsToUse && cardsToUse.length > 2) {
-      //   throw new Error("Too many cards");
-      // }
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_MULTIPLE_CARDS,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          eventContext: EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES,
+          cardOptions: crittersInCity,
+          maxToSelect: 2,
+          minToSelect: 0,
+          clientOptions: {
+            selectedCards: null,
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_MULTIPLE_CARDS) {
+        if (!gameInput.clientOptions.selectedCards) {
+          throw new Error("invalid input");
+        }
 
-      // for (const cardName in cardsToUse) {
-      //   const card = Card.fromName(cardName as CardName);
-      //   if (!card.isCritter) {
-      //     throw new Error("Can only put Critters beneath this event");
-      //   }
-      // }
-      // const eventInfo =
-      //   player?.claimedEvents[EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES];
-      // if (!eventInfo) {
-      //   throw new Error("Cannot find event info");
-      // }
+        const cardsToUse = gameInput.clientOptions.selectedCards;
 
-      // // remove cards from city
-      // for (const cardName in cardsToUse) {
-      //   player.removeCardFromCity(
-      //     gameState,
-      //     cardName as CardName,
-      //     false /* addToDiscardPile */
-      //   );
-      //   (eventInfo.storedCards = eventInfo.storedCards || []).push(cardName);
-      // }
+        if (cardsToUse.length > 2) {
+          throw new Error("Too many cards");
+        }
+
+        cardsToUse.forEach((cardName) => {
+          const card = Card.fromName(cardName as CardName);
+          if (!card.isCritter) {
+            throw new Error("Can only put Critters beneath this event");
+          }
+        });
+
+        const eventInfo =
+          player.claimedEvents[EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES];
+        if (!eventInfo) {
+          throw new Error("Cannot find event info");
+        }
+
+        // remove cards from city and put under event
+        cardsToUse.forEach((cardName) => {
+          player.removeCardFromCity(
+            gameState,
+            cardName as CardName,
+            false /* addToDiscardPile */
+          );
+          (eventInfo.storedCards = eventInfo.storedCards || []).push(cardName);
+        });
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
+      }
     },
     // 3 points per critter beneath event
     pointsInner: (gameState: GameState, playerId: string) => {

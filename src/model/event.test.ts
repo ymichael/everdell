@@ -409,8 +409,8 @@ describe("Event", () => {
 
       gameState.eventsMap[EventName.SPECIAL_PERFORMER_IN_RESIDENCE] = null;
 
-      player.playedCards[CardName.BARD] = [{}];
-      player.playedCards[CardName.INN] = [{}];
+      player.addToCity(CardName.BARD);
+      player.addToCity(CardName.INN);
       player.gainResources({ [ResourceType.BERRY]: 5 });
 
       // check if the player can claim the event
@@ -452,8 +452,8 @@ describe("Event", () => {
 
       gameState.eventsMap[EventName.SPECIAL_UNDER_NEW_MANAGEMENT] = null;
 
-      player.playedCards[CardName.PEDDLER] = [{}];
-      player.playedCards[CardName.GENERAL_STORE] = [{}];
+      player.addToCity(CardName.PEDDLER);
+      player.addToCity(CardName.GENERAL_STORE);
       player.gainResources({
         [ResourceType.TWIG]: 3,
         [ResourceType.RESIN]: 1,
@@ -504,7 +504,8 @@ describe("Event", () => {
 
       gameState.eventsMap[EventName.SPECIAL_PRISTINE_CHAPEL_CEILING] = null;
 
-      player.playedCards[CardName.WOODCARVER] = [{}];
+      player.addToCity(CardName.WOODCARVER);
+
       player.playedCards[CardName.CHAPEL] = [
         { resources: { [ResourceType.VP]: 2 } },
       ];

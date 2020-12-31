@@ -784,15 +784,13 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         }
         const cardOwner = gameState.getPlayer(selectedCards[0].cardOwnerId);
         const targetCard = Card.fromName(selectedCards[0].cardName);
-        if (
-          cardOwner.hasCardInCity(selectedCards[0].cardName) ||
-          targetCard.cardType !== CardType.PRODUCTION
-        ) {
-          throw new Error("Invalid input");
+        if (!cardOwner.hasCardInCity(selectedCards[0].cardName)) {
+          throw new Error("Can't find card to copy");
+        }
+        if (targetCard.cardType !== CardType.PRODUCTION) {
+          throw new Error("Can only copy production cards");
         }
         targetCard.gainProduction(gameState, gameInput, cardOwner);
-      } else {
-        throw new Error(`Unexpected input type: ${gameInput.inputType}`);
       }
     },
     productionInner: (gameState: GameState, gameInput: GameInput) => {
@@ -801,9 +799,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         // If another player has a miner mole, we can copy any card in the game.
         const canMinerMoleMinerMole = gameState.players
           .filter((x) => x.playerId !== player.playerId)
-          .some((x) => {
-            x.hasCardInCity(CardName.MINER_MOLE);
-          });
+          .some((x) => x.hasCardInCity(CardName.MINER_MOLE));
 
         const productionPlayedCards: PlayedCardInfo[] = [];
         gameState.players.forEach((p) => {

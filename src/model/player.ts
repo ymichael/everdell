@@ -240,89 +240,66 @@ export class Player {
     return playedCardsOfType;
   }
 
-  // returns all destination cards that a player has played that have
-  // room for another worker
-  getAllAvailableDestinationCards(): CardName[] {
-    const allAvailableDestinationCards: CardName[] = [];
-
+  getAllDestinationCards(): CardName[] {
+    const ret: CardName[] = [];
     this.forEachPlayedCard(({ cardName }) => {
       const card = Card.fromName(cardName as CardName);
       if (card.canTakeWorker()) {
-        if (this.hasSpaceOnDestinationCard(cardName)) {
-          allAvailableDestinationCards.push(cardName);
-        }
+        ret.push(cardName);
       }
     });
+    return ret;
+  }
 
-    return allAvailableDestinationCards;
+  // returns all destination cards that a player has played that have
+  // room for another worker
+  getAllAvailableDestinationCards(): CardName[] {
+    return this.getAllDestinationCards().filter((cardName) => {
+      return this.hasSpaceOnDestinationCard(cardName);
+    });
   }
 
   // returns all destination cards (including storehouse) that have a worker on them
   getDestinationCardsWithWorkers(): CardName[] {
-    let destinationCardsWithWorkers: CardName[] = [];
-
-    this.forEachPlayedCard(({ cardName }) => {
-      let card = Card.fromName(cardName as CardName);
-      if (card.canTakeWorker()) {
-        const cardInfos = this.playedCards[cardName];
-        if (!cardInfos) {
-          throw new Error("invalid card infos");
-        }
-        cardInfos.forEach((playedCard) => {
-          const workers = playedCard.workers || [];
-          const maxWorkers = playedCard.maxWorkers || 1;
-          if (workers.length > 0) {
-            destinationCardsWithWorkers.push(cardName);
-          }
-        });
+    const destinationCardsWithWorkers: CardName[] = [];
+    this.forEachPlayedCard(({ cardName, playedCardInfo }) => {
+      const card = Card.fromName(cardName);
+      if (!card.canTakeWorker()) {
+        return;
+      }
+      const workers = playedCardInfo.workers || [];
+      const maxWorkers = playedCardInfo.maxWorkers || 1;
+      if (workers.length > 0) {
+        destinationCardsWithWorkers.push(cardName);
       }
     });
-
     return destinationCardsWithWorkers;
   }
 
   // returns all non-Open destination or storehouse cards that were played by player and
   // are available for them to put a worker on
   getAvailableClosedDestinationCards(): CardName[] {
-    const availableDestinationCards: CardName[] = [];
-
-    this.forEachPlayedCard(({ cardName }) => {
-      const card = Card.fromName(cardName as CardName);
-      if (card.canTakeWorker() && !card.isOpenDestination) {
-        if (this.hasSpaceOnDestinationCard(cardName)) {
-          availableDestinationCards.push(cardName);
-        }
-      }
+    return this.getAllAvailableDestinationCards().filter((cardName) => {
+      const card = Card.fromName(cardName);
+      return !card.isOpenDestination;
     });
-    return availableDestinationCards;
   }
 
   // returns all destination cards played by this player that are "open"
   // and are available to take other workers
   getAvailableOpenDestinationCards(): CardName[] {
-    const openDestinationCards = this.getOpenDestinationCards();
-    const openAvailableDestinations: CardName[] = [];
-
-    openDestinationCards.forEach((cardName) => {
-      if (this.hasSpaceOnDestinationCard(cardName)) {
-        openAvailableDestinations.push(cardName);
-      }
+    return this.getAllAvailableDestinationCards().filter((cardName) => {
+      const card = Card.fromName(cardName);
+      return card.isOpenDestination;
     });
-
-    return openAvailableDestinations;
   }
 
   // returns all destination cards played by this player that are "open"
   getOpenDestinationCards(): CardName[] {
-    const openDestinationCards: CardName[] = [];
-
-    this.forEachPlayedCard(({ cardName }) => {
-      const card = Card.fromName(cardName as CardName);
-      if (card.canTakeWorker() && !!card.isOpenDestination) {
-        openDestinationCards.push(cardName);
-      }
+    return this.getAllDestinationCards().filter((cardName) => {
+      const card = Card.fromName(cardName);
+      return card.isOpenDestination;
     });
-    return openDestinationCards;
   }
 
   getPlayedCardInfos(cardName: CardName): PlayedCardInfo[] {
@@ -358,11 +335,10 @@ export class Player {
     }
 
     const numDungeoned = playedDungeon.pairedCards?.length || 0;
-    const maxDungeoned = this.playedCards[CardName.RANGER] ? 2 : 1;
+    const maxDungeoned = this.hasPlayedCard(CardName.RANGER) ? 2 : 1;
 
     // Need to have a critter to dungeon
     const playedCritters = this.getPlayedCritters();
-    console.log(playedCritters);
     if (
       playedCritters.length === 0 ||
       (playedCritters.length === 1 && playedCritters[0] === CardName.RANGER)

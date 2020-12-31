@@ -542,7 +542,7 @@ describe("Card", () => {
         };
 
         const selectCardsToGiveAway = {
-          inputType: GameInputType.SELECT_MULTIPLE_CARDS as const,
+          inputType: GameInputType.SELECT_CARDS as const,
           prevInputType: GameInputType.SELECT_PLAYER as const,
           prevInput: selectPlayer,
           cardContext: CardName.POST_OFFICE,
@@ -555,8 +555,8 @@ describe("Card", () => {
         };
 
         const selectCardsToDiscard = {
-          inputType: GameInputType.SELECT_MULTIPLE_CARDS as const,
-          prevInputType: GameInputType.SELECT_MULTIPLE_CARDS as const,
+          inputType: GameInputType.SELECT_CARDS as const,
+          prevInputType: GameInputType.SELECT_CARDS as const,
           cardContext: CardName.POST_OFFICE,
           cardOptions: [CardName.FARM, CardName.KING],
           maxToSelect: 2,
@@ -941,14 +941,15 @@ describe("Card", () => {
         const gameState3 = multiStepGameInputTest(gameState, [
           playCardInput(card.name),
           {
-            inputType: GameInputType.SELECT_CARD,
+            inputType: GameInputType.SELECT_CARDS,
             prevInputType: GameInputType.PLAY_CARD,
             cardContext: CardName.POSTAL_PIGEON,
-            mustSelectOne: false,
+            maxToSelect: 1,
+            minToSelect: 0,
             cardOptions: [CardName.MINE, CardName.FARM],
             cardOptionsUnfiltered: [CardName.MINE, CardName.FARM],
             clientOptions: {
-              selectedCard: CardName.MINE,
+              selectedCards: [CardName.MINE],
             },
           },
         ]);
@@ -978,14 +979,15 @@ describe("Card", () => {
         const gameState3 = multiStepGameInputTest(gameState, [
           playCardInput(card.name),
           {
-            inputType: GameInputType.SELECT_CARD,
+            inputType: GameInputType.SELECT_CARDS,
             prevInputType: GameInputType.PLAY_CARD,
             cardContext: CardName.POSTAL_PIGEON,
-            mustSelectOne: false,
+            maxToSelect: 1,
+            minToSelect: 0,
             cardOptions: [],
             cardOptionsUnfiltered: [CardName.QUEEN, CardName.KING],
             clientOptions: {
-              selectedCard: null,
+              selectedCards: [],
             },
           },
         ]);
@@ -1015,14 +1017,14 @@ describe("Card", () => {
         const gameState3 = multiStepGameInputTest(gameState, [
           playCardInput(card.name),
           {
-            inputType: GameInputType.SELECT_CARD,
+            inputType: GameInputType.SELECT_CARDS,
             prevInputType: GameInputType.PLAY_CARD,
             cardContext: CardName.CHIP_SWEEP,
-            mustSelectOne: true,
+            maxToSelect: 1,
+            minToSelect: 1,
             cardOptions: [CardName.MINE, CardName.FARM],
-            cardOptionsUnfiltered: [CardName.MINE, CardName.FARM],
             clientOptions: {
-              selectedCard: CardName.MINE,
+              selectedCards: [CardName.MINE],
             },
           },
         ]);

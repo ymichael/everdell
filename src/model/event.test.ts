@@ -190,7 +190,7 @@ describe("Event", () => {
 
       expect(gameState2.pendingGameInputs).to.eql([
         {
-          inputType: GameInputType.SELECT_MULTIPLE_CARDS,
+          inputType: GameInputType.SELECT_CARDS,
           prevInputType: GameInputType.CLAIM_EVENT,
           eventContext: EventName.SPECIAL_GRADUATION_OF_SCHOLARS,
           // Farm isn't an option for this event because it's not a critter
@@ -209,7 +209,7 @@ describe("Event", () => {
       ]);
 
       const gameState3 = gameState2.next({
-        inputType: GameInputType.SELECT_MULTIPLE_CARDS,
+        inputType: GameInputType.SELECT_CARDS,
         prevInputType: GameInputType.CLAIM_EVENT,
         eventContext: EventName.SPECIAL_GRADUATION_OF_SCHOLARS,
         cardOptions: [
@@ -267,7 +267,7 @@ describe("Event", () => {
       gameState = multiStepGameInputTest(gameState, [
         gameInput,
         {
-          inputType: GameInputType.SELECT_MULTIPLE_CARDS,
+          inputType: GameInputType.SELECT_CARDS,
           prevInputType: GameInputType.CLAIM_EVENT,
           eventContext: EventName.SPECIAL_CROAK_WART_CURE,
           cardOptions: [
@@ -329,7 +329,7 @@ describe("Event", () => {
       gameState = multiStepGameInputTest(gameState, [
         gameInput,
         {
-          inputType: GameInputType.SELECT_MULTIPLE_CARDS,
+          inputType: GameInputType.SELECT_CARDS,
           prevInputType: GameInputType.CLAIM_EVENT,
           eventContext: EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES,
           cardOptions: [
@@ -627,7 +627,7 @@ describe("Event", () => {
       gameState = multiStepGameInputTest(gameState, [
         gameInput,
         {
-          inputType: GameInputType.SELECT_MULTIPLE_CARDS,
+          inputType: GameInputType.SELECT_CARDS,
           prevInputType: GameInputType.CLAIM_EVENT,
           eventContext: EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED,
           maxToSelect: 5,

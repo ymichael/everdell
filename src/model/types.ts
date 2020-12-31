@@ -6,8 +6,8 @@ export enum GameInputType {
   PREPARE_FOR_SEASON = "PREPARE_FOR_SEASON",
   GAME_END = "GAME_END",
 
-  SELECT_CARD = "SELECT_CARD",
-  SELECT_MULTIPLE_CARDS = "SELECT_MULTIPLE_CARDS",
+  SELECT_CARDS = "SELECT_CARDS",
+  SELECT_PLAYED_CARDS = "SELECT_PLAYED_CARDS",
   SELECT_PLAYER = "SELECT_PLAYER",
   SELECT_RESOURCES = "SELECT_RESOURCES",
   SELECT_LOCATION = "SELECT_LOCATION",
@@ -104,25 +104,27 @@ export type GameInputSelectPlayer = {
   };
 };
 
-export type GameInputSelectCard = {
-  inputType: GameInputType.SELECT_CARD;
+export type GameInputSelectCards = {
+  inputType: GameInputType.SELECT_CARDS;
   prevInputType: GameInputType;
   cardOptions: CardName[];
-  cardOptionsUnfiltered: CardName[];
-  mustSelectOne: boolean;
+  cardOptionsUnfiltered?: CardName[];
+
+  maxToSelect: number;
+  minToSelect: number;
 
   locationContext?: LocationName;
   cardContext?: CardName;
 
   clientOptions: {
-    selectedCard: CardName | null;
+    selectedCards: CardName[];
   };
 };
 
-export type GameInputSelectMultipleCards = {
-  inputType: GameInputType.SELECT_MULTIPLE_CARDS;
+export type GameInputSelectPlayedCards = {
+  inputType: GameInputType.SELECT_PLAYED_CARDS;
   prevInputType: GameInputType;
-  cardOptions: CardName[];
+  options: PlayedCardInfo[];
   maxToSelect: number;
   minToSelect: number;
 
@@ -131,7 +133,7 @@ export type GameInputSelectMultipleCards = {
   locationContext?: LocationName;
 
   clientOptions: {
-    selectedCards: CardName[];
+    selectedCards: PlayedCardInfo[];
   };
 };
 
@@ -181,8 +183,8 @@ export type GameInputSelectLocation = {
 };
 
 export type GameInputMultiStep = (
-  | GameInputSelectCard
-  | GameInputSelectMultipleCards
+  | GameInputSelectCards
+  | GameInputSelectPlayedCards
   | GameInputDiscardCards
   | GameInputSelectResources
   | GameInputSelectPlayer

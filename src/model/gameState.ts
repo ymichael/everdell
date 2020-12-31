@@ -262,10 +262,10 @@ export class GameState {
       case GameInputType.CLAIM_EVENT:
         nextGameState.handleWorkerPlacementGameInput(gameInput);
         break;
-      case GameInputType.SELECT_CARD:
+      case GameInputType.SELECT_CARDS:
+      case GameInputType.SELECT_PLAYED_CARDS:
       case GameInputType.SELECT_LOCATION:
       case GameInputType.SELECT_WORKER_PLACEMENT:
-      case GameInputType.SELECT_MULTIPLE_CARDS:
       case GameInputType.SELECT_PLAYER:
       case GameInputType.SELECT_RESOURCES:
       case GameInputType.DISCARD_CARDS:

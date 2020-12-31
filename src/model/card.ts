@@ -378,14 +378,16 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     resourcesToGain: {},
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
-      if (gameInput.inputType === GameInputType.SELECT_CARD) {
+      if (gameInput.inputType === GameInputType.SELECT_CARDS) {
+        const selectedCards = gameInput.clientOptions.selectedCards;
         if (
-          !gameInput.clientOptions.selectedCard ||
-          !player.hasCardInCity(gameInput.clientOptions.selectedCard)
+          !selectedCards ||
+          selectedCards.length !== 1 ||
+          !player.hasCardInCity(selectedCards[0])
         ) {
           throw new Error("Invalid input");
         }
-        const targetCard = Card.fromName(gameInput.clientOptions.selectedCard);
+        const targetCard = Card.fromName(selectedCards[0]);
         if (targetCard.cardType !== CardType.PRODUCTION) {
           throw new Error("Invalid input");
         }
@@ -398,14 +400,14 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         .getPlayedCardByType(CardType.PRODUCTION)
         .filter((cardName) => cardName !== CardName.CHIP_SWEEP);
       gameState.pendingGameInputs.push({
-        inputType: GameInputType.SELECT_CARD,
+        inputType: GameInputType.SELECT_CARDS,
         prevInputType: GameInputType.PLAY_CARD,
         cardOptions,
-        cardOptionsUnfiltered: cardOptions,
         cardContext: CardName.CHIP_SWEEP,
-        mustSelectOne: true,
+        maxToSelect: 1,
+        minToSelect: 1,
         clientOptions: {
-          selectedCard: null,
+          selectedCards: [],
         },
       });
     },
@@ -749,9 +751,13 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     associatedCard: CardName.MINE,
     resourcesToGain: {},
     productionInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not implemented");
-      // if (gameInput.inputType !== GameInputType.PLAY_CARD) {
-      //   throw new Error("Invalid input type");
+      if (gameInput.inputType !== GameInputType.PLAY_CARD) {
+        //   throw new Error("Invalid input type");
+        // gameState.pendingGameInputs.push({
+        // })
+      } else {
+        throw new Error(`Unexpected input type: ${gameInput.inputType}`);
+      }
       // }
       // if (
       //   !gameInput.clientOptions?.targetCard ||
@@ -1054,7 +1060,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           throw new Error("Must select a player");
         }
         gameState.pendingGameInputs.push({
-          inputType: GameInputType.SELECT_MULTIPLE_CARDS,
+          inputType: GameInputType.SELECT_CARDS,
           prevInputType: gameInput.inputType,
           prevInput: gameInput,
           cardContext: CardName.POST_OFFICE,
@@ -1065,7 +1071,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             selectedCards: [],
           },
         });
-      } else if (gameInput.inputType === GameInputType.SELECT_MULTIPLE_CARDS) {
+      } else if (gameInput.inputType === GameInputType.SELECT_CARDS) {
         if (
           gameInput.prevInput &&
           gameInput.prevInput.inputType === GameInputType.SELECT_PLAYER
@@ -1084,7 +1090,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             selectedPlayer.addCardToHand(gameState, cardName);
           });
           gameState.pendingGameInputs.push({
-            inputType: GameInputType.SELECT_MULTIPLE_CARDS,
+            inputType: GameInputType.SELECT_CARDS,
             prevInputType: gameInput.inputType,
             cardContext: CardName.POST_OFFICE,
             cardOptions: player.cardsInHand,
@@ -1120,10 +1126,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         const cardOptions = [gameState.drawCard(), gameState.drawCard()];
         const player = gameState.getActivePlayer();
         gameState.pendingGameInputs.push({
-          inputType: GameInputType.SELECT_CARD,
+          inputType: GameInputType.SELECT_CARDS,
           prevInputType: GameInputType.PLAY_CARD,
           cardContext: CardName.POSTAL_PIGEON,
-          mustSelectOne: false,
+          maxToSelect: 1,
+          minToSelect: 0,
           cardOptions: cardOptions.filter((cardName) => {
             const cardOption = Card.fromName(cardName);
             if (cardOption.baseVP > 3) {
@@ -1133,20 +1140,24 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           }),
           cardOptionsUnfiltered: cardOptions,
           clientOptions: {
-            selectedCard: null,
+            selectedCards: [],
           },
         });
       } else if (
-        gameInput.inputType === GameInputType.SELECT_CARD &&
+        gameInput.inputType === GameInputType.SELECT_CARDS &&
         gameInput.prevInputType === GameInputType.PLAY_CARD &&
-        gameInput.cardContext === CardName.POSTAL_PIGEON
+        gameInput.cardContext === CardName.POSTAL_PIGEON &&
+        gameInput.cardOptionsUnfiltered
       ) {
         const player = gameState.getActivePlayer();
         const cardOptionsUnfiltered = [...gameInput.cardOptionsUnfiltered];
-        if (gameInput.clientOptions.selectedCard) {
-          player.addToCity(gameInput.clientOptions.selectedCard);
+        const selectedCards = gameInput.clientOptions.selectedCards;
+        if (selectedCards.length > 1) {
+          throw new Error("Too many cards");
+        } else if (selectedCards.length === 1) {
+          player.addToCity(selectedCards[0]);
           cardOptionsUnfiltered.splice(
-            cardOptionsUnfiltered.indexOf(gameInput.clientOptions.selectedCard),
+            cardOptionsUnfiltered.indexOf(selectedCards[0]),
             1
           );
         }
@@ -1300,24 +1311,26 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           }
         });
         gameState.pendingGameInputs.push({
-          inputType: GameInputType.SELECT_CARD,
+          inputType: GameInputType.SELECT_CARDS,
           prevInputType: GameInputType.PLAY_CARD,
           cardOptions,
-          cardOptionsUnfiltered: cardOptions,
           cardContext: CardName.RUINS,
-          mustSelectOne: true,
+          maxToSelect: 1,
+          minToSelect: 1,
           clientOptions: {
-            selectedCard: null,
+            selectedCards: [],
           },
         });
-      } else if (gameInput.inputType === GameInputType.SELECT_CARD) {
+      } else if (gameInput.inputType === GameInputType.SELECT_CARDS) {
+        const selectedCards = gameInput.clientOptions.selectedCards;
         if (
-          !gameInput.clientOptions.selectedCard ||
-          !player.hasCardInCity(gameInput.clientOptions.selectedCard)
+          !selectedCards ||
+          selectedCards.length !== 0 ||
+          !player.hasCardInCity(selectedCards[0])
         ) {
           throw new Error("Invalid input");
         }
-        const targetCard = Card.fromName(gameInput.clientOptions.selectedCard);
+        const targetCard = Card.fromName(selectedCards[0]);
         if (!targetCard.isConstruction) {
           throw new Error("Cannot ruins non-construction");
         }

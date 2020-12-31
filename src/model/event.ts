@@ -90,7 +90,7 @@ export class Event implements GameStatePlayable {
   play(gameState: GameState, gameInput: GameInput): void {
     if (
       gameInput.inputType !== GameInputType.CLAIM_EVENT &&
-      gameInput.inputType !== GameInputType.SELECT_MULTIPLE_CARDS &&
+      gameInput.inputType !== GameInputType.SELECT_CARDS &&
       gameInput.inputType !== GameInputType.SELECT_RESOURCES
     ) {
       throw new Error("Invalid game input type");
@@ -309,7 +309,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     //     const cardOptions = [gameState.drawCard(), gameState.drawCard()];
     //     const player = gameState.getActivePlayer();
     //     gameState.pendingGameInputs.push({
-    //       inputType: GameInputType.SELECT_CARD,
+    //       inputType: GameInputType.SELECT_CARDS,
     //       prevInputType: GameInputType.PLAY_CARD,
     //       cardContext: CardName.POSTAL_PIGEON,
     //       mustSelectOne: false,
@@ -326,7 +326,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     //       },
     //     });
     //   } else if (
-    //     gameInput.inputType === GameInputType.SELECT_CARD &&
+    //     gameInput.inputType === GameInputType.SELECT_CARDS &&
     //     gameInput.prevInputType === GameInputType.PLAY_CARD &&
     //     gameInput.cardContext === CardName.POSTAL_PIGEON
     //   ) {
@@ -361,7 +361,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         ];
 
         gameState.pendingGameInputs.push({
-          inputType: GameInputType.SELECT_MULTIPLE_CARDS,
+          inputType: GameInputType.SELECT_CARDS,
           prevInputType: GameInputType.CLAIM_EVENT,
           eventContext: EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED,
           maxToSelect: 5,
@@ -372,7 +372,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           },
         });
       } else if (
-        gameInput.inputType === GameInputType.SELECT_MULTIPLE_CARDS &&
+        gameInput.inputType === GameInputType.SELECT_CARDS &&
         gameInput.prevInputType === GameInputType.CLAIM_EVENT &&
         gameInput.eventContext === EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED
       ) {
@@ -458,7 +458,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         const crittersInCity = player.getPlayedCritters();
 
         gameState.pendingGameInputs.push({
-          inputType: GameInputType.SELECT_MULTIPLE_CARDS,
+          inputType: GameInputType.SELECT_CARDS,
           prevInputType: GameInputType.CLAIM_EVENT,
           eventContext: EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES,
           cardOptions: crittersInCity,
@@ -468,7 +468,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
             selectedCards: [],
           },
         });
-      } else if (gameInput.inputType === GameInputType.SELECT_MULTIPLE_CARDS) {
+      } else if (gameInput.inputType === GameInputType.SELECT_CARDS) {
         if (!gameInput.clientOptions.selectedCards) {
           throw new Error("invalid input");
         }
@@ -539,7 +539,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
 
         // ask player to choose which cards to discard
         gameState.pendingGameInputs.push({
-          inputType: GameInputType.SELECT_MULTIPLE_CARDS,
+          inputType: GameInputType.SELECT_CARDS,
           prevInputType: GameInputType.CLAIM_EVENT,
           eventContext: EventName.SPECIAL_CROAK_WART_CURE,
           cardOptions: Object.keys(player.playedCards) as CardName[],
@@ -549,7 +549,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
             selectedCards: [],
           },
         });
-      } else if (gameInput.inputType === GameInputType.SELECT_MULTIPLE_CARDS) {
+      } else if (gameInput.inputType === GameInputType.SELECT_CARDS) {
         if (!gameInput.clientOptions.selectedCards) {
           throw new Error("invalid input");
         }
@@ -621,7 +621,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         });
 
         gameState.pendingGameInputs.push({
-          inputType: GameInputType.SELECT_MULTIPLE_CARDS,
+          inputType: GameInputType.SELECT_CARDS,
           prevInputType: GameInputType.CLAIM_EVENT,
           eventContext: EventName.SPECIAL_GRADUATION_OF_SCHOLARS,
           cardOptions: critterCardsInHand,
@@ -631,7 +631,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
             selectedCards: [],
           },
         });
-      } else if (gameInput.inputType === GameInputType.SELECT_MULTIPLE_CARDS) {
+      } else if (gameInput.inputType === GameInputType.SELECT_CARDS) {
         if (!gameInput.clientOptions.selectedCards) {
           throw new Error("invalid input");
         }

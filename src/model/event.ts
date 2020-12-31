@@ -477,7 +477,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_MULTIPLE_CARDS,
           prevInputType: GameInputType.CLAIM_EVENT,
-          context: EventName.SPECIAL_GRADUATION_OF_SCHOLARS,
+          eventContext: EventName.SPECIAL_GRADUATION_OF_SCHOLARS,
           cardOptions: critterCardsInHand,
           maxToSelect: 3,
           minToSelect: 0,

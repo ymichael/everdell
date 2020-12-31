@@ -188,7 +188,7 @@ describe("Event", () => {
         {
           inputType: GameInputType.SELECT_MULTIPLE_CARDS,
           prevInputType: GameInputType.CLAIM_EVENT,
-          context: EventName.SPECIAL_GRADUATION_OF_SCHOLARS,
+          eventContext: EventName.SPECIAL_GRADUATION_OF_SCHOLARS,
           // Farm isn't an option for this event because it's not a critter
           cardOptions: [
             CardName.POSTAL_PIGEON,
@@ -207,7 +207,7 @@ describe("Event", () => {
       const gameState3 = gameState2.next({
         inputType: GameInputType.SELECT_MULTIPLE_CARDS,
         prevInputType: GameInputType.CLAIM_EVENT,
-        context: EventName.SPECIAL_GRADUATION_OF_SCHOLARS,
+        eventContext: EventName.SPECIAL_GRADUATION_OF_SCHOLARS,
         cardOptions: [
           CardName.POSTAL_PIGEON,
           CardName.HUSBAND,

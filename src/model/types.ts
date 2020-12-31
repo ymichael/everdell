@@ -165,10 +165,14 @@ export type GameInputSelectCard = {
 export type GameInputSelectMultipleCards = {
   inputType: GameInputType.SELECT_MULTIPLE_CARDS;
   prevInputType: GameInputType;
-  context?: EventName | CardName;
   cardOptions: CardName[];
   maxToSelect: number;
   minToSelect: number;
+
+  eventContext?: EventName;
+  cardContext?: CardName;
+  locationContext?: LocationName;
+
   clientOptions: {
     selectedCards: CardName[] | null;
   };
@@ -188,8 +192,9 @@ export type GameInputSelectResources = {
 };
 
 export type GameInputMultiStep = {
-  locationContext?: LocationName;
+  eventContext?: EventName;
   cardContext?: CardName;
+  locationContext?: LocationName;
 } & (
   | GameInputSelectCard
   | GameInputSelectMultipleCards

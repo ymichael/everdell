@@ -23,13 +23,14 @@ import {
   sumResources,
   getPointsPerRarityLabel,
 } from "./gameStatePlayHelpers";
+import cloneDeep from "lodash/cloneDeep";
 
 export class Card<TCardType extends CardType = CardType>
   implements GameStatePlayable {
   readonly playInner: GameStatePlayFn | undefined;
   readonly canPlayInner: GameStateCanPlayFn | undefined;
-  readonly playedCardInfoInner:
-    | (() => Partial<Omit<PlayedCardInfo, "playerId">>)
+  readonly playedCardInfoDefault:
+    | Partial<Omit<PlayedCardInfo, "playerId">>
     | undefined;
   readonly pointsInner: GameStateCountPointsFn | undefined;
 
@@ -59,7 +60,7 @@ export class Card<TCardType extends CardType = CardType>
     isOpenDestination = false, // if the destination is an open destination
     playInner, // called when the card is played
     canPlayInner, // called when we check canPlay function
-    playedCardInfoInner, // used for cards that accumulate other cards or resources
+    playedCardInfoDefault,
     pointsInner, // computed if specified + added to base points
   }: {
     name: CardName;
@@ -72,7 +73,7 @@ export class Card<TCardType extends CardType = CardType>
     isOpenDestination?: boolean;
     playInner?: GameStatePlayFn;
     canPlayInner?: GameStateCanPlayFn;
-    playedCardInfoInner?: () => Partial<Omit<PlayedCardInfo, "playerId">>;
+    playedCardInfoDefault?: Partial<Omit<PlayedCardInfo, "playerId">>;
     pointsInner?: (gameState: GameState, playerId: string) => number;
   } & (TCardType extends CardType.PRODUCTION
     ? {
@@ -94,7 +95,7 @@ export class Card<TCardType extends CardType = CardType>
     this.isOpenDestination = isOpenDestination;
     this.playInner = playInner;
     this.canPlayInner = canPlayInner;
-    this.playedCardInfoInner = playedCardInfoInner;
+    this.playedCardInfoDefault = playedCardInfoDefault;
     this.pointsInner = pointsInner;
 
     // Production cards
@@ -116,7 +117,7 @@ export class Card<TCardType extends CardType = CardType>
     }
     return {
       ...ret,
-      ...(this.playedCardInfoInner ? this.playedCardInfoInner() : {}),
+      ...cloneDeep(this.playedCardInfoDefault || {}),
     };
   }
 
@@ -331,11 +332,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: true,
     associatedCard: CardName.SHEPHERD,
-    playedCardInfoInner: () => ({
+    playedCardInfoDefault: {
       resources: {
         [ResourceType.VP]: 0,
       },
-    }),
+    },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       if (gameInput.inputType !== GameInputType.VISIT_DESTINATION_CARD) {
         throw new Error("Invalid input type");
@@ -404,11 +405,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: true,
     associatedCard: CardName.HISTORIAN,
-    playedCardInfoInner: () => ({
+    playedCardInfoDefault: {
       resources: {
         [ResourceType.VP]: 3,
       },
-    }),
+    },
   }),
   [CardName.COURTHOUSE]: new Card({
     name: CardName.COURTHOUSE,
@@ -454,9 +455,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: true,
     associatedCard: CardName.RANGER,
-    playedCardInfoInner: () => ({
+    playedCardInfoDefault: {
       pairedCards: [],
-    }),
+    },
   }),
   [CardName.EVERTREE]: new Card({
     name: CardName.EVERTREE,
@@ -1316,14 +1317,14 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: true,
     associatedCard: CardName.WOODCARVER,
     resourcesToGain: {},
-    playedCardInfoInner: () => ({
+    playedCardInfoDefault: {
       resources: {
         [ResourceType.TWIG]: 0,
         [ResourceType.RESIN]: 0,
         [ResourceType.PEBBLE]: 0,
         [ResourceType.BERRY]: 0,
       },
-    }),
+    },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       throw new Error("Not Implemented");
     },

@@ -71,7 +71,7 @@ export const multiStepGameInputTest = (
   gameState: GameState,
   pendingGameInputs: GameInput[]
 ): GameState => {
-  let currGameState = gameState;
+  let currGameState = gameState.clone();
   let player = currGameState.getActivePlayer();
 
   // Sanity check

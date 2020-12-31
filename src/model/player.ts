@@ -30,7 +30,8 @@ export class Player {
   public name: string;
   public playerId: string;
   public cardsInHand: CardName[];
-  public currentSeason: Season;
+
+  private _currentSeason: Season;
 
   private resources: Record<ResourceType, number>;
   readonly playedCards: Partial<Record<CardName, PlayedCardInfo[]>>;
@@ -80,7 +81,7 @@ export class Player {
     this.playedCards = playedCards;
     this.cardsInHand = cardsInHand;
     this.resources = resources;
-    this.currentSeason = currentSeason;
+    this._currentSeason = currentSeason;
     this.numWorkers = numWorkers;
     this.claimedEvents = claimedEvents;
     this.placedWorkers = placedWorkers;
@@ -374,12 +375,28 @@ export class Player {
       throw new Error(`Cannot place worker on ${cardName}`);
     }
     cityOwner = cityOwner || this;
-    this.placeWorkerCommon({
-      cardDestination: {
-        card: cardName,
-        playerId: cityOwner.playerId,
-      },
-    });
+    const cardDestination = {
+      card: cardName,
+      playerId: cityOwner.playerId,
+    };
+    this.placeWorkerCommon({ cardDestination });
+
+    let placedWorker = false;
+    cityOwner
+      .getPlayedCardInfos(cardName)
+      .forEach(({ maxWorkers = 1, workers = [] }) => {
+        if (!placedWorker && workers.length < maxWorkers) {
+          workers.push(this.playerId);
+          placedWorker = true;
+        }
+      });
+    if (!placedWorker) {
+      throw new Error(
+        `Couldn't place worker at cardDestination: ${JSON.stringify(
+          cardDestination
+        )}`
+      );
+    }
 
     const playedCards = cityOwner.getPlayedCardInfos(cardName);
     if (playedCards.length === 0) {
@@ -399,7 +416,7 @@ export class Player {
     }
   }
 
-  placeWorkerCommon(placedWorkerInfo: PlacedWorkerInfo): void {
+  private placeWorkerCommon(placedWorkerInfo: PlacedWorkerInfo): void {
     if (this.numAvailableWorkers === 0) {
       throw new Error(`Cannot place worker`);
     }
@@ -767,7 +784,7 @@ export class Player {
     }
   }
 
-  recallAllWorkers(gameState: GameState) {
+  recallWorkers(gameState: GameState) {
     if (this.numAvailableWorkers !== 0) {
       throw new Error("Still have available workers");
     }
@@ -804,7 +821,7 @@ export class Player {
             .getPlayedCardInfos(cardDestination.card)
             .forEach(({ workers = [] }) => {
               if (!removedWorker) {
-                const idx = workers.indexOf(cardDestination.playerId);
+                const idx = workers.indexOf(this.playerId);
                 if (idx !== -1) {
                   workers.splice(idx, 1);
                   removedWorker = true;
@@ -824,6 +841,25 @@ export class Player {
         return false;
       }
     );
+  }
+
+  get currentSeason(): Season {
+    return this._currentSeason;
+  }
+
+  nextSeason(): void {
+    if (this._currentSeason === Season.WINTER) {
+      this._currentSeason = Season.SPRING;
+      this.numWorkers = 3;
+    } else if (this._currentSeason === Season.SPRING) {
+      this._currentSeason = Season.SUMMER;
+      this.numWorkers = 4;
+    } else if (this._currentSeason === Season.SUMMER) {
+      this._currentSeason = Season.AUTUMN;
+      this.numWorkers = 6;
+    } else {
+      throw new Error("Already in the last season");
+    }
   }
 
   toJSON(includePrivate: boolean): PlayerJSON {

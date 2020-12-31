@@ -574,10 +574,47 @@ describe("Player", () => {
     });
   });
 
-  describe("recallAllWorkers", () => {
-    it("keeps workers on MONASTERY", () => {
+  describe("recallWorkers", () => {
+    it("error is still have workers", () => {
       const player = gameState.getActivePlayer();
       expect(player.numAvailableWorkers).to.be(2);
+      expect(() => {
+        player.recallWorkers(gameState);
+      }).to.throwException(/still have available workers/i);
+    });
+
+    it("remove workers from other player's cards", () => {
+      const player1 = gameState.getActivePlayer();
+      const player2 = gameState.players[1];
+
+      expect(player1.numAvailableWorkers).to.be(2);
+      expect(player1.canPlaceWorkerOnCard(CardName.INN, player2)).to.be(false);
+
+      // Player 1 has a worker on player 2's INN
+      player2.addToCity(CardName.INN);
+      expect(player1.canPlaceWorkerOnCard(CardName.INN, player2)).to.be(true);
+      player1.placeWorkerOnCard(CardName.INN, player2);
+
+      // No more space
+      expect(player1.canPlaceWorkerOnCard(CardName.INN, player2)).to.be(false);
+
+      gameState.locationsMap[LocationName.BASIC_ONE_STONE]!.push(
+        player1.playerId
+      );
+      player1.placeWorkerOnLocation(LocationName.BASIC_ONE_STONE);
+      expect(player1.numAvailableWorkers).to.be(0);
+
+      player1.recallWorkers(gameState);
+      expect(player1.numAvailableWorkers).to.be(2);
+      expect(gameState.locationsMap[LocationName.BASIC_ONE_STONE]).to.eql([]);
+    });
+
+    it("keeps workers on MONASTERY & CEMETARY", () => {
+      const player = gameState.getActivePlayer();
+
+      expect(player.numAvailableWorkers).to.be(2);
+      player.nextSeason();
+      expect(player.numAvailableWorkers).to.be(3);
 
       // Player has 1 worker on lookout, 1 worker on monastery
       player.addToCity(CardName.LOOKOUT);
@@ -586,28 +623,32 @@ describe("Player", () => {
       player.addToCity(CardName.MONASTERY);
       player.placeWorkerOnCard(CardName.MONASTERY);
 
+      player.addToCity(CardName.CEMETARY);
+      player.placeWorkerOnCard(CardName.CEMETARY);
+
       player.addToCity(CardName.FARM);
       player.addToCity(CardName.FARM);
 
       player.forEachPlayedCard(({ cardName, workers = [] }) => {
-        if (cardName === CardName.LOOKOUT) {
+        if (
+          cardName === CardName.LOOKOUT ||
+          cardName === CardName.CEMETARY ||
+          cardName === CardName.MONASTERY
+        ) {
           expect(workers).to.eql([player.playerId]);
-        }
-        if (cardName === CardName.MONASTERY) {
-          expect(workers).to.eql([player.playerId]);
+        } else {
+          expect(workers).to.eql([]);
         }
       });
 
-      player.recallAllWorkers(gameState);
-
+      player.recallWorkers(gameState);
       expect(player.numAvailableWorkers).to.be(1);
 
       player.forEachPlayedCard(({ cardName, workers = [] }) => {
-        if (cardName === CardName.LOOKOUT) {
-          expect(workers).to.eql([]);
-        }
-        if (cardName === CardName.MONASTERY) {
+        if (cardName === CardName.CEMETARY || cardName === CardName.MONASTERY) {
           expect(workers).to.eql([player.playerId]);
+        } else {
+          expect(workers).to.eql([]);
         }
       });
     });

@@ -6,11 +6,12 @@ export enum GameInputType {
   PREPARE_FOR_SEASON = "PREPARE_FOR_SEASON",
   GAME_END = "GAME_END",
 
-  SELECT_CARD = "SELECT_CARD",
-  SELECT_MULTIPLE_CARDS = "SELECT_MULTIPLE_CARDS",
+  SELECT_CARDS = "SELECT_CARDS",
+  SELECT_PLAYED_CARDS = "SELECT_PLAYED_CARDS",
   SELECT_PLAYER = "SELECT_PLAYER",
   SELECT_RESOURCES = "SELECT_RESOURCES",
   SELECT_LOCATION = "SELECT_LOCATION",
+  SELECT_WORKER_PLACEMENT = "SELECT_WORKER_PLACEMENT",
   DISCARD_CARDS = "DISCARD_CARDS",
   SELECT_PAYMENT_FOR_CARD = "SELECT_PAYMENT_FOR_CARD",
 }
@@ -23,7 +24,7 @@ export type GameInputPlaceWorker = {
 export type GameInputVisitDestinationCard = {
   inputType: GameInputType.VISIT_DESTINATION_CARD;
   card: CardName;
-  playerId: string;
+  cardOwnerId: string;
 };
 
 export type GameInputPlayCard = {
@@ -65,11 +66,14 @@ export type GameInputPrepareForSeason = {
   inputType: GameInputType.PREPARE_FOR_SEASON;
 };
 
-export type GameInputSimple =
-  | GameInputPlaceWorker
-  | GameInputVisitDestinationCard
-  | GameInputPlayCard
+export type GameInputWorkerPlacementTypes =
   | GameInputClaimEvent
+  | GameInputPlaceWorker
+  | GameInputVisitDestinationCard;
+
+export type GameInputSimple =
+  | GameInputWorkerPlacementTypes
+  | GameInputPlayCard
   | GameInputGameEnd
   | GameInputPrepareForSeason;
 
@@ -101,25 +105,27 @@ export type GameInputSelectPlayer = {
   };
 };
 
-export type GameInputSelectCard = {
-  inputType: GameInputType.SELECT_CARD;
+export type GameInputSelectCards = {
+  inputType: GameInputType.SELECT_CARDS;
   prevInputType: GameInputType;
   cardOptions: CardName[];
-  cardOptionsUnfiltered: CardName[];
-  mustSelectOne: boolean;
+  cardOptionsUnfiltered?: CardName[];
+
+  maxToSelect: number;
+  minToSelect: number;
 
   locationContext?: LocationName;
   cardContext?: CardName;
 
   clientOptions: {
-    selectedCard: CardName | null;
+    selectedCards: CardName[];
   };
 };
 
-export type GameInputSelectMultipleCards = {
-  inputType: GameInputType.SELECT_MULTIPLE_CARDS;
+export type GameInputSelectPlayedCards = {
+  inputType: GameInputType.SELECT_PLAYED_CARDS;
   prevInputType: GameInputType;
-  cardOptions: CardName[];
+  cardOptions: PlayedCardInfo[];
   maxToSelect: number;
   minToSelect: number;
 
@@ -128,7 +134,7 @@ export type GameInputSelectMultipleCards = {
   locationContext?: LocationName;
 
   clientOptions: {
-    selectedCards: CardName[];
+    selectedCards: PlayedCardInfo[];
   };
 };
 
@@ -145,6 +151,20 @@ export type GameInputSelectResources = {
 
   clientOptions: {
     resources: CardCost;
+  };
+};
+
+export type GameInputSelectWorkerPlacement = {
+  inputType: GameInputType.SELECT_WORKER_PLACEMENT;
+  prevInputType: GameInputType;
+  options: GameInputWorkerPlacementTypes[];
+
+  locationContext?: LocationName;
+  cardContext?: CardName;
+  eventContext?: EventName;
+
+  clientOptions: {
+    selectedInput: GameInputWorkerPlacementTypes | null;
   };
 };
 
@@ -204,20 +224,21 @@ export type GameInputSelectPaymentForCard = {
   };
 };
 
-export type GameInputMultiStep = {
-  eventContext?: EventName;
-  cardContext?: CardName;
-  locationContext?: LocationName;
-  prevInput?: GameInput;
-} & (
-  | GameInputSelectCard
-  | GameInputSelectMultipleCards
+export type GameInputMultiStep = (
+  | GameInputSelectCards
+  | GameInputSelectPlayedCards
   | GameInputDiscardCards
   | GameInputSelectResources
   | GameInputSelectPlayer
   | GameInputSelectLocation
   | GameInputSelectPaymentForCard
-);
+  | GameInputSelectWorkerPlacement
+) & {
+  eventContext?: EventName;
+  cardContext?: CardName;
+  locationContext?: LocationName;
+  prevInput?: GameInput;
+};
 
 export type GameInput = GameInputSimple | GameInputMultiStep;
 
@@ -334,7 +355,7 @@ export type PlayedCardInfo = {
   workers?: string[];
 
   // dungeon
-  pairedCards?: string[];
+  pairedCards?: CardName[];
 };
 
 export type PlayedEventInfo = {
@@ -350,11 +371,11 @@ export type PlayedEventInfo = {
   storedCards?: string[];
 };
 
-export type PlacedWorkerInfo = {
+export type WorkerPlacementInfo = {
   location?: LocationName;
   cardDestination?: {
     card: CardName;
-    playerId: string;
+    cardOwnerId: string;
   };
   event?: EventName;
 };

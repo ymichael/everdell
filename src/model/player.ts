@@ -9,7 +9,7 @@ import {
   GameInputType,
   PlayedCardInfo,
   PlayedEventInfo,
-  PlacedWorkerInfo,
+  WorkerPlacementInfo,
   LocationName,
 } from "./types";
 import { PlayerJSON } from "./jsonTypes";
@@ -19,7 +19,7 @@ import { Card } from "./card";
 import { Event } from "./event";
 import { generate as uuid } from "short-uuid";
 import { sumResources } from "./gameStatePlayHelpers";
-import pull from "lodash/pull";
+import isEqual from "lodash/isEqual";
 
 const MAX_HAND_SIZE = 8;
 const MAX_CITY_SIZE = 15;
@@ -38,7 +38,7 @@ export class Player {
   readonly claimedEvents: Partial<Record<EventName, PlayedEventInfo>>;
 
   private numWorkers: number;
-  private placedWorkers: PlacedWorkerInfo[];
+  private placedWorkers: WorkerPlacementInfo[];
 
   constructor({
     name,
@@ -73,7 +73,7 @@ export class Player {
     currentSeason?: Season;
     numWorkers?: number;
     claimedEvents?: Partial<Record<EventName, PlayedEventInfo>>;
-    placedWorkers?: PlacedWorkerInfo[];
+    placedWorkers?: WorkerPlacementInfo[];
   }) {
     this.playerId = playerId;
     this.playerSecret = playerSecret;
@@ -130,16 +130,31 @@ export class Player {
 
   removeCardFromCity(
     gameState: GameState,
-    cardName: CardName,
+    playedCardInfo: PlayedCardInfo,
     addToDiscardPile = true
   ): CardName[] {
-    if (this.playedCards[cardName]) {
-      this.playedCards[cardName]!.pop();
-    } else {
-      throw new Error(`Unable to remove ${cardName}`);
+    const { cardName, pairedCards = [] } = playedCardInfo;
+
+    const playedCards = this.playedCards[cardName];
+    if (!playedCards) {
+      throw new Error(`Unable to remove ${JSON.stringify(playedCardInfo)}`);
     }
-    // TODO: handle cards that contain other cards (eg. dungeon)
-    const removedCards = [cardName];
+
+    // Get the actual object so we can splice it out.
+    const playedCardInfo_ = playedCards.find((x) => isEqual(x, playedCardInfo));
+    if (!playedCardInfo_) {
+      throw new Error(`Unable to find ${JSON.stringify(playedCardInfo)}`);
+    }
+    const idx = playedCards.indexOf(playedCardInfo_);
+    if (idx === -1) {
+      throw new Error(`Unable to find ${JSON.stringify(playedCardInfo)}`);
+    }
+
+    // Remove playedCard
+    playedCards.splice(idx, 1);
+
+    // Some cards that contain other cards (eg. dungeon)
+    const removedCards: CardName[] = [cardName, ...pairedCards];
     if (addToDiscardPile) {
       removedCards.forEach((card) => {
         gameState.discardPile.addToStack(card);
@@ -209,12 +224,12 @@ export class Player {
     return this.resources[resourceType];
   }
 
-  getPlayedCritters(): CardName[] {
-    const crittersInCity: CardName[] = [];
-    this.forEachPlayedCard(({ cardName }) => {
-      const card = Card.fromName(cardName as CardName);
+  getPlayedCritters(): PlayedCardInfo[] {
+    const crittersInCity: PlayedCardInfo[] = [];
+    this.forEachPlayedCard((playedCardInfo) => {
+      const card = Card.fromName(playedCardInfo.cardName);
       if (card.isCritter) {
-        crittersInCity.push(card.name);
+        crittersInCity.push(playedCardInfo);
       }
     });
     return crittersInCity;
@@ -289,6 +304,12 @@ export class Player {
     });
   }
 
+  getAllPlayedCards(): PlayedCardInfo[] {
+    const ret: PlayedCardInfo[] = [];
+    this.forEachPlayedCard((x) => ret.push(x));
+    return ret;
+  }
+
   getPlayedCardInfos(cardName: CardName): PlayedCardInfo[] {
     const playedCardInfos = this.playedCards[cardName];
     return playedCardInfos || [];
@@ -308,19 +329,17 @@ export class Player {
     if (!playedDungeon) {
       return false;
     }
-
     const numDungeoned = playedDungeon.pairedCards?.length || 0;
     const maxDungeoned = this.hasCardInCity(CardName.RANGER) ? 2 : 1;
-
     // Need to have a critter to dungeon
     const playedCritters = this.getPlayedCritters();
     if (
       playedCritters.length === 0 ||
-      (playedCritters.length === 1 && playedCritters[0] === CardName.RANGER)
+      (playedCritters.length === 1 &&
+        playedCritters[0].cardName === CardName.RANGER)
     ) {
       return false;
     }
-
     return numDungeoned < maxDungeoned;
   }
 
@@ -351,7 +370,7 @@ export class Player {
     }
     const cardDestination = {
       card: cardName,
-      playerId: cardOwner.playerId,
+      cardOwnerId: cardOwner.playerId,
     };
     this.placeWorkerCommon({ cardDestination });
 
@@ -374,11 +393,11 @@ export class Player {
     }
   }
 
-  private placeWorkerCommon(placedWorkerInfo: PlacedWorkerInfo): void {
+  private placeWorkerCommon(workerPlacementInfo: WorkerPlacementInfo): void {
     if (this.numAvailableWorkers === 0) {
       throw new Error(`Cannot place worker`);
     }
-    this.placedWorkers.push(placedWorkerInfo);
+    this.placedWorkers.push(workerPlacementInfo);
   }
 
   canPlaceWorkerOnCard(
@@ -567,10 +586,20 @@ export class Player {
     } else if (paymentOptions.cardToUse) {
       switch (paymentOptions.cardToUse) {
         case CardName.CRANE:
-          this.removeCardFromCity(gameState, paymentOptions.cardToUse);
+          const playedCrane = this.getPlayedCardInfos(CardName.CRANE)?.[0];
+          if (!playedCrane) {
+            throw new Error("Can't find played crane");
+          }
+          this.removeCardFromCity(gameState, playedCrane);
           break;
         case CardName.INNKEEPER:
-          this.removeCardFromCity(gameState, paymentOptions.cardToUse);
+          const playedInnkeeper = this.getPlayedCardInfos(
+            CardName.INNKEEPER
+          )?.[0];
+          if (!playedInnkeeper) {
+            throw new Error("Can't find played innkeeper");
+          }
+          this.removeCardFromCity(gameState, playedInnkeeper);
           break;
         case CardName.QUEEN:
         case CardName.INN:
@@ -748,63 +777,98 @@ export class Player {
     }
   }
 
-  recallWorkers(gameState: GameState) {
+  isRecallableWorker(WorkerPlacementInfo: WorkerPlacementInfo): boolean {
+    // Don't remove workers from these cards.
+    if (
+      WorkerPlacementInfo.cardDestination &&
+      (WorkerPlacementInfo.cardDestination.card === CardName.CEMETARY ||
+        WorkerPlacementInfo.cardDestination.card === CardName.MONASTERY)
+    ) {
+      return false;
+    }
+    return true;
+  }
+
+  getRecallableWorkers(): WorkerPlacementInfo[] {
+    return this.placedWorkers.filter(this.isRecallableWorker);
+  }
+
+  recallWorker(
+    gameState: GameState,
+    workerPlacementInfo: WorkerPlacementInfo,
+    removeFromPlacedWorkers: boolean = true
+  ): void {
+    if (!this.isRecallableWorker(workerPlacementInfo)) {
+      throw new Error("Cannot recall worker");
+    }
+    const toRemove:
+      | WorkerPlacementInfo
+      | undefined = this.placedWorkers.find((placedWorker) =>
+      isEqual(placedWorker, workerPlacementInfo)
+    );
+    if (!toRemove) {
+      throw new Error("Cannot find worker");
+    }
+    if (removeFromPlacedWorkers) {
+      this.placedWorkers.splice(this.placedWorkers.indexOf(toRemove), 1);
+    }
+    const { location, cardDestination, event } = toRemove;
+    // Update gameState/other objects
+    if (location) {
+      const workers = gameState.locationsMap[location];
+      if (!workers) {
+        throw new Error(`Couldn't find location ${location}`);
+      }
+      const idx = workers.indexOf(this.playerId);
+      if (idx !== -1) {
+        workers.splice(idx, 1);
+      } else {
+        throw new Error(`Couldn't find worker at location: ${location}`);
+      }
+    } else if (event) {
+      // Don't need to do anything for event
+    } else if (cardDestination) {
+      const cardOwner = gameState.getPlayer(cardDestination.cardOwnerId);
+      let removedWorker = false;
+      cardOwner
+        .getPlayedCardInfos(cardDestination.card)
+        .forEach(({ workers = [] }) => {
+          if (!removedWorker) {
+            const idx = workers.indexOf(this.playerId);
+            if (idx !== -1) {
+              workers.splice(idx, 1);
+              removedWorker = true;
+            }
+          }
+        });
+      if (!removedWorker) {
+        throw new Error(
+          `Couldn't find worker at cardDestination: ${JSON.stringify(
+            cardDestination
+          )}`
+        );
+      }
+    } else {
+      throw new Error("Unexpected worker placement");
+    }
+  }
+
+  recallWorkers(gameState: GameState): void {
     if (this.numAvailableWorkers !== 0) {
       throw new Error("Still have available workers");
     }
-
-    this.placedWorkers = this.placedWorkers.filter(
-      ({ location, cardDestination, event }) => {
-        // Don't remove workers from these cards.
-        if (
-          cardDestination &&
-          (cardDestination.card === CardName.CEMETARY ||
-            cardDestination.card === CardName.MONASTERY)
-        ) {
-          return true;
-        }
-
-        // Update gameState/other objects
-        if (location) {
-          const workers = gameState.locationsMap[location];
-          if (!workers) {
-            throw new Error(`Couldn't find location ${location}`);
-          }
-          const idx = workers.indexOf(this.playerId);
-          if (idx !== -1) {
-            workers.splice(idx, 1);
-          } else {
-            throw new Error(`Couldn't find worker at location: ${location}`);
-          }
-        } else if (event) {
-          // Don't need to do anything for event
-        } else if (cardDestination) {
-          const cardOwner = gameState.getPlayer(cardDestination.playerId);
-          let removedWorker = false;
-          cardOwner
-            .getPlayedCardInfos(cardDestination.card)
-            .forEach(({ workers = [] }) => {
-              if (!removedWorker) {
-                const idx = workers.indexOf(this.playerId);
-                if (idx !== -1) {
-                  workers.splice(idx, 1);
-                  removedWorker = true;
-                }
-              }
-            });
-          if (!removedWorker) {
-            throw new Error(
-              `Couldn't find worker at cardDestination: ${JSON.stringify(
-                cardDestination
-              )}`
-            );
-          }
-        } else {
-        }
-
+    this.placedWorkers = this.placedWorkers.filter((workerPlacementInfo) => {
+      if (this.isRecallableWorker(workerPlacementInfo)) {
+        this.recallWorker(
+          gameState,
+          workerPlacementInfo,
+          false /* removedFromPlacedWorkers */
+        );
         return false;
+      } else {
+        return true;
       }
-    );
+    });
   }
 
   get currentSeason(): Season {

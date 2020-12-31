@@ -5,7 +5,7 @@ import {
   ResourceType,
   PlayedCardInfo,
   PlayedEventInfo,
-  PlacedWorkerInfo,
+  WorkerPlacementInfo,
   GameInputMultiStep,
   EventNameToPlayerId,
   LocationNameToPlayerIds,
@@ -49,5 +49,5 @@ export type PlayerJSON = {
   currentSeason: Season;
   numWorkers: number;
   claimedEvents: Partial<Record<EventName, PlayedEventInfo>>;
-  placedWorkers: PlacedWorkerInfo[];
+  placedWorkers: WorkerPlacementInfo[];
 };

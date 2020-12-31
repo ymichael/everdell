@@ -90,7 +90,7 @@ describe("GameState", () => {
       gameState = multiStepGameInputTest(gameState, [
         {
           inputType: GameInputType.VISIT_DESTINATION_CARD,
-          playerId: player1.playerId,
+          cardOwnerId: player1.playerId,
           card: CardName.LOOKOUT,
         },
         {

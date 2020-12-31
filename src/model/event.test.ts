@@ -152,7 +152,7 @@ describe("Event", () => {
     });
   });
 
-  describe(EventName.SPECIAL_CROAK_WART_CURE, () => {
+  describe(EventName.SPECIAL_GRADUATION_OF_SCHOLARS, () => {
     it("game state", () => {
       const event = Event.fromName(EventName.SPECIAL_GRADUATION_OF_SCHOLARS);
       let player = gameState.getActivePlayer();
@@ -190,7 +190,7 @@ describe("Event", () => {
 
       expect(gameState2.pendingGameInputs).to.eql([
         {
-          inputType: GameInputType.SELECT_MULTIPLE_CARDS,
+          inputType: GameInputType.SELECT_CARDS,
           prevInputType: GameInputType.CLAIM_EVENT,
           eventContext: EventName.SPECIAL_GRADUATION_OF_SCHOLARS,
           // Farm isn't an option for this event because it's not a critter
@@ -209,7 +209,7 @@ describe("Event", () => {
       ]);
 
       const gameState3 = gameState2.next({
-        inputType: GameInputType.SELECT_MULTIPLE_CARDS,
+        inputType: GameInputType.SELECT_CARDS,
         prevInputType: GameInputType.CLAIM_EVENT,
         eventContext: EventName.SPECIAL_GRADUATION_OF_SCHOLARS,
         cardOptions: [
@@ -267,21 +267,19 @@ describe("Event", () => {
       gameState = multiStepGameInputTest(gameState, [
         gameInput,
         {
-          inputType: GameInputType.SELECT_MULTIPLE_CARDS,
+          inputType: GameInputType.SELECT_PLAYED_CARDS,
           prevInputType: GameInputType.CLAIM_EVENT,
           eventContext: EventName.SPECIAL_CROAK_WART_CURE,
-          cardOptions: [
-            CardName.UNDERTAKER,
-            CardName.BARGE_TOAD,
-            CardName.FARM,
-            CardName.CASTLE,
-          ],
+          cardOptions: player.getAllPlayedCards(),
           maxToSelect: 2,
           minToSelect: 0,
           clientOptions: {
             // these are the cards the player wants to remove
             // from their city
-            selectedCards: [CardName.UNDERTAKER, CardName.FARM],
+            selectedCards: [
+              ...player.getPlayedCardInfos(CardName.UNDERTAKER),
+              ...player.getPlayedCardInfos(CardName.FARM),
+            ],
           },
         },
       ]);
@@ -329,21 +327,18 @@ describe("Event", () => {
       gameState = multiStepGameInputTest(gameState, [
         gameInput,
         {
-          inputType: GameInputType.SELECT_MULTIPLE_CARDS,
+          inputType: GameInputType.SELECT_PLAYED_CARDS,
           prevInputType: GameInputType.CLAIM_EVENT,
           eventContext: EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES,
-          cardOptions: [
-            CardName.RANGER,
-            CardName.POSTAL_PIGEON,
-            CardName.WIFE,
-            CardName.QUEEN,
-          ],
+          cardOptions: player.getPlayedCritters(),
           maxToSelect: 2,
           minToSelect: 0,
           clientOptions: {
-            // these are the cards the player wants to remove
-            // from their city
-            selectedCards: [CardName.POSTAL_PIGEON, CardName.RANGER],
+            // These are the cards the player wants to remove from their city
+            selectedCards: [
+              ...player.getPlayedCardInfos(CardName.POSTAL_PIGEON),
+              ...player.getPlayedCardInfos(CardName.RANGER),
+            ],
           },
         },
       ]);
@@ -627,7 +622,7 @@ describe("Event", () => {
       gameState = multiStepGameInputTest(gameState, [
         gameInput,
         {
-          inputType: GameInputType.SELECT_MULTIPLE_CARDS,
+          inputType: GameInputType.SELECT_CARDS,
           prevInputType: GameInputType.CLAIM_EVENT,
           eventContext: EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED,
           maxToSelect: 5,

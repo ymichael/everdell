@@ -73,6 +73,10 @@ export const multiStepGameInputTest = (
 ): GameState => {
   let currGameState = gameState;
   let player = currGameState.getActivePlayer();
+
+  // Sanity check
+  expect(currGameState.pendingGameInputs).to.eql([]);
+
   pendingGameInputs.forEach((gameInput, idx) => {
     const isLastInput = idx === pendingGameInputs.length - 1;
     currGameState = currGameState.next(gameInput);

@@ -448,8 +448,9 @@ describe("Card", () => {
     describe(CardName.CHIP_SWEEP, () => {
       it("should allow the player to select a card to play", () => {
         const card = Card.fromName(CardName.CHIP_SWEEP);
-        const gameInput = playCardInput(card.name);
+
         let player = gameState.getActivePlayer();
+
         player.addToCity(CardName.MINE);
         player.addToCity(CardName.FARM);
 
@@ -457,14 +458,11 @@ describe("Card", () => {
         player.gainResources(card.baseCost);
         player.cardsInHand.push(card.name);
 
-        expect(gameState.pendingGameInputs).to.eql([]);
         expect(player.hasPlayedCard(card.name)).to.be(false);
         expect(player.getNumResource(ResourceType.PEBBLE)).to.be(0);
 
-        const gameState2 = gameState.next(gameInput);
-        // Active player remains the same
-        expect(player.playerId).to.be(gameState2.getActivePlayer().playerId);
-        expect(gameState2.pendingGameInputs).to.eql([
+        const gameState3 = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
           {
             inputType: GameInputType.SELECT_CARD,
             prevInputType: GameInputType.PLAY_CARD,
@@ -473,41 +471,11 @@ describe("Card", () => {
             cardOptions: [CardName.MINE, CardName.FARM],
             cardOptionsUnfiltered: [CardName.MINE, CardName.FARM],
             clientOptions: {
-              selectedCard: null,
+              selectedCard: CardName.MINE,
             },
           },
         ]);
 
-        player = gameState2.getPlayer(player.playerId);
-        expect(player.playerId).to.be(gameState2.getActivePlayer().playerId);
-        expect(player.hasPlayedCard(card.name)).to.be(true);
-        expect(player.getNumResource(ResourceType.PEBBLE)).to.be(0);
-
-        expect(() => {
-          gameState2.next({
-            inputType: GameInputType.SELECT_CARD,
-            prevInputType: GameInputType.PLAY_CARD,
-            cardContext: CardName.POSTAL_PIGEON,
-            mustSelectOne: true,
-            cardOptions: [CardName.MINE, CardName.FARM],
-            cardOptionsUnfiltered: [CardName.MINE, CardName.FARM],
-            clientOptions: {
-              selectedCard: CardName.MINE,
-            },
-          });
-        }).to.throwException(/invalid multi-step input/i);
-
-        const gameState3 = gameState2.next({
-          inputType: GameInputType.SELECT_CARD,
-          prevInputType: GameInputType.PLAY_CARD,
-          cardContext: CardName.CHIP_SWEEP,
-          mustSelectOne: true,
-          cardOptions: [CardName.MINE, CardName.FARM],
-          cardOptionsUnfiltered: [CardName.MINE, CardName.FARM],
-          clientOptions: {
-            selectedCard: CardName.MINE,
-          },
-        });
         player = gameState3.getPlayer(player.playerId);
         expect(player.getNumResource(ResourceType.PEBBLE)).to.be(1);
       });
@@ -515,24 +483,16 @@ describe("Card", () => {
 
     describe(CardName.FOOL, () => {
       it("should allow the player to select player to target", () => {
-        const card = Card.fromName(CardName.FOOL);
-        const gameInput = playCardInput(card.name);
         let player = gameState.getActivePlayer();
         const targetPlayerId = gameState.players[1].playerId;
+        const card = Card.fromName(CardName.FOOL);
 
         // Make sure we can play this card
         player.gainResources(card.baseCost);
         player.cardsInHand.push(card.name);
 
-        expect(gameState.pendingGameInputs).to.eql([]);
-        expect(player.hasPlayedCard(card.name)).to.be(false);
-
-        const gameState2 = gameState.next(gameInput);
-
-        // Active player remains the same
-        expect(player.playerId).to.be(gameState2.getActivePlayer().playerId);
-        expect(player.hasPlayedCard(card.name)).to.be(false);
-        expect(gameState2.pendingGameInputs).to.eql([
+        const gameState3 = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
           {
             inputType: GameInputType.SELECT_PLAYER,
             prevInputType: GameInputType.PLAY_CARD,
@@ -540,24 +500,11 @@ describe("Card", () => {
             mustSelectOne: true,
             playerOptions: [targetPlayerId],
             clientOptions: {
-              selectedPlayer: null,
+              selectedPlayer: targetPlayerId,
             },
           },
         ]);
 
-        player = gameState2.getPlayer(player.playerId);
-        expect(player.playerId).to.be(gameState2.getActivePlayer().playerId);
-
-        const gameState3 = gameState2.next({
-          inputType: GameInputType.SELECT_PLAYER,
-          prevInputType: GameInputType.PLAY_CARD,
-          cardContext: CardName.FOOL,
-          mustSelectOne: true,
-          playerOptions: [targetPlayerId],
-          clientOptions: {
-            selectedPlayer: targetPlayerId,
-          },
-        });
         player = gameState3.getPlayer(player.playerId);
         expect(player.hasPlayedCard(card.name)).to.be(false);
         expect(

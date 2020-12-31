@@ -143,6 +143,8 @@ export type GameInputSelectResources = {
   prevInputType: GameInputType;
   maxResources: number;
   minResources: number;
+
+  excludeResource?: ResourceType;
   specificResource?: ResourceType;
 
   locationContext?: LocationName;

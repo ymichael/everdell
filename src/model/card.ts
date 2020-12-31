@@ -176,6 +176,14 @@ export class Card<TCardType extends CardType = CardType>
           this.playInner(gameState, gameInput);
         }
       }
+      [CardName.HISTORIAN, CardName.SHOPKEEPER, CardName.COURTHOUSE].forEach(
+        (cardName) => {
+          if (player.hasCardInCity(cardName)) {
+            const card = Card.fromName(cardName);
+            card.playCardEffects(gameState, gameInput);
+          }
+        }
+      );
     } else {
       this.playCardEffects(gameState, gameInput);
     }
@@ -461,6 +469,40 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: true,
     associatedCard: CardName.JUDGE,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      if (
+        gameInput.inputType === GameInputType.PLAY_CARD &&
+        gameInput.card !== CardName.COURTHOUSE &&
+        Card.fromName(gameInput.card).isConstruction
+      ) {
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_RESOURCES,
+          prevInputType: gameInput.inputType,
+          cardContext: CardName.COURTHOUSE,
+          maxResources: 1,
+          minResources: 1,
+          excludeResource: ResourceType.BERRY,
+          clientOptions: {
+            resources: {},
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_RESOURCES) {
+        const resources = gameInput.clientOptions?.resources;
+        if (
+          !resources ||
+          resources[ResourceType.BERRY] ||
+          (resources as any)[ResourceType.VP]
+        ) {
+          throw new Error("Invalid input");
+        }
+        const numToGain = sumResources(resources);
+        if (numToGain !== 1) {
+          throw new Error(`Invalid resources: ${JSON.stringify(resources)}`);
+        }
+        player.gainResources(resources);
+      }
+    },
   }),
   [CardName.CRANE]: new Card({
     name: CardName.CRANE,
@@ -616,6 +658,15 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: false,
     associatedCard: CardName.CLOCK_TOWER,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      if (
+        gameInput.inputType === GameInputType.PLAY_CARD &&
+        gameInput.card !== CardName.HISTORIAN
+      ) {
+        player.drawCards(gameState, 1);
+      }
+    },
   }),
   [CardName.HUSBAND]: new Card({
     name: CardName.HUSBAND,
@@ -1524,6 +1575,18 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: false,
     associatedCard: CardName.GENERAL_STORE,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      if (
+        gameInput.inputType === GameInputType.PLAY_CARD &&
+        gameInput.card !== CardName.SHOPKEEPER &&
+        Card.fromName(gameInput.card).isCritter
+      ) {
+        player.gainResources({
+          [ResourceType.BERRY]: 1,
+        });
+      }
+    },
   }),
   [CardName.STOREHOUSE]: new Card({
     name: CardName.STOREHOUSE,

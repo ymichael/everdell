@@ -160,6 +160,153 @@ describe("Card", () => {
       });
     });
 
+    describe(CardName.HISTORIAN, () => {
+      it("should draw a card if player plays a construction", () => {
+        let player = gameState.getActivePlayer();
+        player.addToCity(CardName.HISTORIAN);
+
+        const cardToPlay = Card.fromName(CardName.MINE);
+        player.cardsInHand = [cardToPlay.name];
+        player.gainResources(cardToPlay.baseCost);
+
+        gameState.deck.addToStack(CardName.KING);
+
+        const gameState2 = multiStepGameInputTest(gameState, [
+          playCardInput(cardToPlay.name),
+        ]);
+
+        player = gameState2.getPlayer(player.playerId);
+        expect(player.cardsInHand).to.eql([CardName.KING]);
+      });
+
+      it("should draw a card if player plays a critter", () => {
+        let player = gameState.getActivePlayer();
+        player.addToCity(CardName.HISTORIAN);
+
+        const cardToPlay = Card.fromName(CardName.SHOPKEEPER);
+        player.cardsInHand = [cardToPlay.name];
+        player.gainResources(cardToPlay.baseCost);
+
+        gameState.deck.addToStack(CardName.KING);
+
+        const gameState2 = multiStepGameInputTest(gameState, [
+          playCardInput(cardToPlay.name),
+        ]);
+
+        player = gameState2.getPlayer(player.playerId);
+        expect(player.cardsInHand).to.eql([CardName.KING]);
+      });
+
+      it("should not draw a card when the player plays the historian", () => {
+        let player = gameState.getActivePlayer();
+
+        const cardToPlay = Card.fromName(CardName.HISTORIAN);
+        player.cardsInHand = [cardToPlay.name];
+        player.gainResources(cardToPlay.baseCost);
+
+        const gameState2 = multiStepGameInputTest(gameState, [
+          playCardInput(cardToPlay.name),
+        ]);
+        player = gameState2.getPlayer(player.playerId);
+        expect(player.cardsInHand).to.eql([]);
+      });
+    });
+
+    describe(CardName.SHOPKEEPER, () => {
+      it("should do nothing if player plays a construction", () => {
+        let player = gameState.getActivePlayer();
+        player.addToCity(CardName.SHOPKEEPER);
+
+        const cardToPlay = Card.fromName(CardName.MINE);
+        player.cardsInHand = [cardToPlay.name];
+        player.gainResources(cardToPlay.baseCost);
+
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+        const gameState2 = multiStepGameInputTest(gameState, [
+          playCardInput(cardToPlay.name),
+        ]);
+
+        player = gameState2.getPlayer(player.playerId);
+        expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(1);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+      });
+
+      it("should gain a berry if player plays a critter", () => {
+        let player = gameState.getActivePlayer();
+        player.addToCity(CardName.SHOPKEEPER);
+
+        const cardToPlay = Card.fromName(CardName.QUEEN);
+        player.cardsInHand = [cardToPlay.name];
+        player.gainResources(cardToPlay.baseCost);
+
+        const gameState2 = multiStepGameInputTest(gameState, [
+          playCardInput(cardToPlay.name),
+        ]);
+
+        player = gameState2.getPlayer(player.playerId);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
+      });
+
+      it("should not gain a berry when playing a shopkeeper", () => {
+        let player = gameState.getActivePlayer();
+
+        const cardToPlay = Card.fromName(CardName.SHOPKEEPER);
+        player.cardsInHand = [cardToPlay.name];
+        player.gainResources(cardToPlay.baseCost);
+
+        const gameState2 = multiStepGameInputTest(gameState, [
+          playCardInput(cardToPlay.name),
+        ]);
+
+        player = gameState2.getPlayer(player.playerId);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+      });
+    });
+
+    describe(CardName.COURTHOUSE, () => {
+      it("should do nothing is player plays a critter", () => {
+        const player = gameState.getActivePlayer();
+        player.addToCity(CardName.COURTHOUSE);
+
+        const cardToPlay = Card.fromName(CardName.HUSBAND);
+        player.cardsInHand = [cardToPlay.name];
+        player.gainResources(cardToPlay.baseCost);
+        multiStepGameInputTest(gameState, [playCardInput(cardToPlay.name)]);
+      });
+
+      it("should ask to gain a non berry resource after a construction is played", () => {
+        let player = gameState.getActivePlayer();
+        player.addToCity(CardName.COURTHOUSE);
+
+        const cardToPlay = Card.fromName(CardName.FARM);
+        player.cardsInHand = [cardToPlay.name];
+        player.gainResources(cardToPlay.baseCost);
+        expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+
+        const gameState2 = multiStepGameInputTest(gameState, [
+          playCardInput(cardToPlay.name),
+          {
+            cardContext: CardName.COURTHOUSE,
+            inputType: GameInputType.SELECT_RESOURCES,
+            prevInputType: GameInputType.PLAY_CARD,
+            excludeResource: ResourceType.BERRY,
+            clientOptions: {
+              resources: {
+                [ResourceType.PEBBLE]: 1,
+              },
+            },
+            maxResources: 1,
+            minResources: 1,
+          },
+        ]);
+
+        player = gameState2.getPlayer(player.playerId);
+        expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(1);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
+      });
+    });
+
     describe(CardName.WANDERER, () => {
       it("should gain 3 cards when played", () => {
         const card = Card.fromName(CardName.WANDERER);

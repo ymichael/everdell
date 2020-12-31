@@ -212,6 +212,15 @@ export class Card<TCardType extends CardType = CardType>
     return 0;
   }
 
+  getNumResourcesInCost(): number {
+    return (
+      (this.baseCost[ResourceType.BERRY] || 0) +
+      (this.baseCost[ResourceType.TWIG] || 0) +
+      (this.baseCost[ResourceType.RESIN] || 0) +
+      (this.baseCost[ResourceType.PEBBLE] || 0)
+    );
+  }
+
   static fromName(name: CardName): Card {
     if (!CARD_REGISTRY[name]) {
       throw new Error(`Invalid Card name: ${name}`);
@@ -642,8 +651,78 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: true,
     associatedCard: CardName.INNKEEPER,
     isOpenDestination: true,
+    // Play meadow card for 3 less resources
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
+        // add pending input to select 1 card from the list of meadow cards
+
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_CARD,
+          prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+          cardOptions: gameState.meadowCards,
+          cardOptionsUnfiltered: gameState.meadowCards,
+          mustSelectOne: true,
+          cardContext: CardName.INN,
+          clientOptions: {
+            selectedCard: null,
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_CARD) {
+        const selectedCard = gameInput.clientOptions.selectedCard;
+
+        if (!selectedCard) {
+          throw new Error("no card selected");
+        }
+
+        if (gameState.meadowCards.indexOf(selectedCard) < 0) {
+          throw new Error("must select card from meadow when playing inn");
+        }
+
+        // discount cost by 3
+        // have player play card to city
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_PAYMENT_FOR_CARD,
+          prevInputType: GameInputType.SELECT_CARD,
+          cardContext: CardName.INN,
+          cardToBuy: selectedCard as CardName,
+          clientOptions: { resources: {} },
+          paymentOptions: {
+            cardToUse: CardName.INN,
+            resources: {},
+          },
+        });
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_PAYMENT_FOR_CARD
+      ) {
+        if (!gameInput.paymentOptions) {
+          throw new Error("invalid payment options");
+        }
+
+        if (!gameInput.clientOptions) {
+          throw new Error("invalid client options");
+        }
+        gameInput.paymentOptions.resources = gameInput.clientOptions.resources;
+
+        const card = Card.fromName(gameInput.cardToBuy);
+
+        if (
+          !player.isPaidResourcesValid(
+            gameInput.paymentOptions.resources,
+            card.baseCost,
+            "ANY"
+          )
+        ) {
+          throw new Error("invalid list of resources for payment");
+        }
+
+        player.payForCard(gameState, gameInput);
+        player.addToCity(CardName.KING);
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
+      }
+
+      //throw new Error("Not Implemented");
     },
   }),
   [CardName.INNKEEPER]: new Card({

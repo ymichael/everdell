@@ -12,6 +12,7 @@ export enum GameInputType {
   SELECT_RESOURCES = "SELECT_RESOURCES",
   SELECT_LOCATION = "SELECT_LOCATION",
   DISCARD_CARDS = "DISCARD_CARDS",
+  SELECT_PAYMENT_FOR_CARD = "SELECT_PAYMENT_FOR_CARD",
 }
 
 export type GameInputPlaceWorker = {
@@ -162,6 +163,47 @@ export type GameInputSelectLocation = {
   };
 };
 
+export type GameInputSelectPaymentForCard = {
+  inputType: GameInputType.SELECT_PAYMENT_FOR_CARD;
+  prevInputType: GameInputType;
+
+  locationContext?: LocationName;
+  // if cardContext is specified, must use that card
+  cardContext?: CardName;
+  cardToBuy: CardName;
+
+  // player specified number of resources
+  clientOptions: {
+    resources: {
+      [ResourceType.TWIG]?: number;
+      [ResourceType.BERRY]?: number;
+      [ResourceType.PEBBLE]?: number;
+      [ResourceType.RESIN]?: number;
+    };
+  };
+
+  paymentOptions: {
+    cardToDungeon?: CardName;
+
+    useAssociatedCard?: boolean;
+
+    // Eg crane, innkeeper, queen
+    cardToUse?:
+      | CardName.QUEEN
+      | CardName.INNKEEPER
+      | CardName.CRANE
+      | CardName.INN
+      | null;
+
+    resources: {
+      [ResourceType.TWIG]?: number;
+      [ResourceType.BERRY]?: number;
+      [ResourceType.PEBBLE]?: number;
+      [ResourceType.RESIN]?: number;
+    };
+  };
+};
+
 export type GameInputMultiStep = {
   eventContext?: EventName;
   cardContext?: CardName;
@@ -174,6 +216,7 @@ export type GameInputMultiStep = {
   | GameInputSelectResources
   | GameInputSelectPlayer
   | GameInputSelectLocation
+  | GameInputSelectPaymentForCard
 );
 
 export type GameInput = GameInputSimple | GameInputMultiStep;

@@ -453,6 +453,7 @@ export class Player {
       (isMeadowCard && this.canPlaceWorkerOnCard(CardName.INN)) ||
       // Crane
       (card.isConstruction && this.hasCardInCity(CardName.CRANE));
+
     return this.isPaidResourcesValid(
       this.resources,
       card.baseCost,
@@ -548,7 +549,11 @@ export class Player {
 
   payForCard(
     gameState: GameState,
-    gameInput: GameInput & { inputType: GameInputType.PLAY_CARD }
+    gameInput: GameInput & {
+      inputType:
+        | GameInputType.PLAY_CARD
+        | GameInputType.SELECT_PAYMENT_FOR_CARD;
+    }
   ): void {
     if (!gameInput.paymentOptions || !gameInput.paymentOptions.resources) {
       throw new Error("Invalid input");
@@ -568,10 +573,10 @@ export class Player {
           this.removeCardFromCity(gameState, paymentOptions.cardToUse);
           break;
         case CardName.QUEEN:
-          // TODO place worker
-          break;
         case CardName.INN:
-          // TODO place worker
+          if (gameInput.inputType === GameInputType.PLAY_CARD) {
+            this.placeWorkerOnCard(paymentOptions.cardToUse);
+          }
           break;
         default:
           throw new Error(`Unexpected card: ${paymentOptions.cardToUse}`);

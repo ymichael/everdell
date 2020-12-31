@@ -239,6 +239,7 @@ export class GameState {
       case GameInputType.SELECT_CARD:
       case GameInputType.SELECT_LOCATION:
       case GameInputType.SELECT_MULTIPLE_CARDS:
+      case GameInputType.SELECT_PAYMENT_FOR_CARD:
       case GameInputType.SELECT_PLAYER:
       case GameInputType.SELECT_RESOURCES:
       case GameInputType.DISCARD_CARDS:

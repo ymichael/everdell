@@ -1,76 +1,3 @@
-// All known cards
-export enum CardName {
-  ARCHITECT = "ARCHITECT",
-  BARD = "BARD",
-  BARGE_TOAD = "BARGE_TOAD",
-  CASTLE = "CASTLE",
-  CEMETARY = "CEMETARY",
-  CHAPEL = "CHAPEL",
-  CHIP_SWEEP = "CHIP_SWEEP",
-  CLOCK_TOWER = "CLOCK_TOWER",
-  COURTHOUSE = "COURTHOUSE",
-  CRANE = "CRANE",
-  DOCTOR = "DOCTOR",
-  DUNGEON = "DUNGEON",
-  EVERTREE = "EVERTREE",
-  FAIRGROUNDS = "FAIRGROUNDS",
-  FARM = "FARM",
-  FOOL = "FOOL",
-  GENERAL_STORE = "GENERAL_STORE",
-  HISTORIAN = "HISTORIAN",
-  HUSBAND = "HUSBAND",
-  INN = "INN",
-  INNKEEPER = "INNKEEPER",
-  JUDGE = "JUDGE",
-  KING = "KING",
-  LOOKOUT = "LOOKOUT",
-  MINE = "MINE",
-  MINER_MOLE = "MINER_MOLE",
-  MONASTERY = "MONASTERY",
-  MONK = "MONK",
-  PALACE = "PALACE",
-  PEDDLER = "PEDDLER",
-  POST_OFFICE = "POST_OFFICE",
-  POSTAL_PIGEON = "POSTAL_PIGEON",
-  QUEEN = "QUEEN",
-  RANGER = "RANGER",
-  RESIN_REFINERY = "RESIN_REFINERY",
-  RUINS = "RUINS",
-  SCHOOL = "SCHOOL",
-  SHEPHERD = "SHEPHERD",
-  SHOPKEEPER = "SHOPKEEPER",
-  STOREHOUSE = "STOREHOUSE",
-  TEACHER = "TEACHER",
-  THEATRE = "THEATRE",
-  TWIG_BARGE = "TWIG_BARGE",
-  UNDERTAKER = "UNDERTAKER",
-  UNIVERSITY = "UNIVERSITY",
-  WANDERER = "WANDERER",
-  WIFE = "WIFE",
-  WOODCARVER = "WOODCARVER",
-}
-
-export enum ResourceType {
-  TWIG = "TWIG",
-  RESIN = "RESIN",
-  BERRY = "BERRY",
-  PEBBLE = "PEBBLE",
-  VP = "VP",
-}
-
-export type ResourceMap = Partial<Record<ResourceType, number>>;
-
-export type ProductionResourceMap = ResourceMap & {
-  CARD?: number;
-};
-
-export type CardCost = {
-  [ResourceType.TWIG]?: number;
-  [ResourceType.BERRY]?: number;
-  [ResourceType.PEBBLE]?: number;
-  [ResourceType.RESIN]?: number;
-};
-
 export enum GameInputType {
   PLAY_CARD = "PLAY_CARD",
   PLACE_WORKER = "PLACE_WORKER",
@@ -386,4 +313,77 @@ export type PlayedEventInfo = {
 
 export type PlayerIdsToAvailableDestinationCards = {
   [playerId: string]: CardName[];
+};
+
+// All known cards
+export enum CardName {
+  ARCHITECT = "ARCHITECT",
+  BARD = "BARD",
+  BARGE_TOAD = "BARGE_TOAD",
+  CASTLE = "CASTLE",
+  CEMETARY = "CEMETARY",
+  CHAPEL = "CHAPEL",
+  CHIP_SWEEP = "CHIP_SWEEP",
+  CLOCK_TOWER = "CLOCK_TOWER",
+  COURTHOUSE = "COURTHOUSE",
+  CRANE = "CRANE",
+  DOCTOR = "DOCTOR",
+  DUNGEON = "DUNGEON",
+  EVERTREE = "EVERTREE",
+  FAIRGROUNDS = "FAIRGROUNDS",
+  FARM = "FARM",
+  FOOL = "FOOL",
+  GENERAL_STORE = "GENERAL_STORE",
+  HISTORIAN = "HISTORIAN",
+  HUSBAND = "HUSBAND",
+  INN = "INN",
+  INNKEEPER = "INNKEEPER",
+  JUDGE = "JUDGE",
+  KING = "KING",
+  LOOKOUT = "LOOKOUT",
+  MINE = "MINE",
+  MINER_MOLE = "MINER_MOLE",
+  MONASTERY = "MONASTERY",
+  MONK = "MONK",
+  PALACE = "PALACE",
+  PEDDLER = "PEDDLER",
+  POST_OFFICE = "POST_OFFICE",
+  POSTAL_PIGEON = "POSTAL_PIGEON",
+  QUEEN = "QUEEN",
+  RANGER = "RANGER",
+  RESIN_REFINERY = "RESIN_REFINERY",
+  RUINS = "RUINS",
+  SCHOOL = "SCHOOL",
+  SHEPHERD = "SHEPHERD",
+  SHOPKEEPER = "SHOPKEEPER",
+  STOREHOUSE = "STOREHOUSE",
+  TEACHER = "TEACHER",
+  THEATRE = "THEATRE",
+  TWIG_BARGE = "TWIG_BARGE",
+  UNDERTAKER = "UNDERTAKER",
+  UNIVERSITY = "UNIVERSITY",
+  WANDERER = "WANDERER",
+  WIFE = "WIFE",
+  WOODCARVER = "WOODCARVER",
+}
+
+export enum ResourceType {
+  TWIG = "TWIG",
+  RESIN = "RESIN",
+  BERRY = "BERRY",
+  PEBBLE = "PEBBLE",
+  VP = "VP",
+}
+
+export type ResourceMap = Partial<Record<ResourceType, number>>;
+
+export type ProductionResourceMap = ResourceMap & {
+  CARD?: number;
+};
+
+export type CardCost = {
+  [ResourceType.TWIG]?: number;
+  [ResourceType.BERRY]?: number;
+  [ResourceType.PEBBLE]?: number;
+  [ResourceType.RESIN]?: number;
 };

@@ -273,12 +273,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     resourcesToGain: {},
     productionInner: (gameState: GameState) => {
       const player = gameState.getActivePlayer();
-      const playedFarms = player.playedCards[CardName.FARM];
-      if (playedFarms) {
-        player.gainResources({
-          [ResourceType.TWIG]: 2 * playedFarms.length,
-        });
-      }
+      const playedFarms = player.getPlayedCardInfos(CardName.FARM);
+      player.gainResources({
+        [ResourceType.TWIG]: 2 * playedFarms.length,
+      });
     },
   }),
   [CardName.CASTLE]: new Card({
@@ -339,14 +337,15 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         throw new Error("Invalid input type");
       }
       const player = gameState.getActivePlayer();
-      const playedCard = player.playedCards[CardName.SHEPHERD]?.[0];
-      if (!playedCard) {
+      const playedShepherds = player.getPlayedCardInfos(CardName.SHEPHERD);
+      if (playedShepherds.length === 0) {
         throw new Error("Invalid action");
       }
-      (playedCard.resources![ResourceType.VP] as number) += 1;
+      const playedShepherd = playedShepherds[0];
+      (playedShepherd.resources![ResourceType.VP] as number) += 1;
       player.drawCards(
         gameState,
-        playedCard.resources![ResourceType.VP] as number
+        playedShepherd.resources![ResourceType.VP] as number
       );
     },
   }),
@@ -597,8 +596,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     productionInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.PLAY_CARD) {
-        const playedHusbands = player.playedCards[CardName.HUSBAND] || [];
-        const playedWifes = player.playedCards[CardName.WIFE] || [];
+        const playedHusbands = player.getPlayedCardInfos(CardName.HUSBAND);
+        const playedWifes = player.getPlayedCardInfos(CardName.WIFE);
         if (playedHusbands.length <= playedWifes.length) {
           gameState.pendingGameInputs.push({
             inputType: GameInputType.SELECT_RESOURCES,

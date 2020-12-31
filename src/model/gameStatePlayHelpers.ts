@@ -58,17 +58,13 @@ export function getPointsPerRarityLabel({
 }): GameStateCountPointsFn {
   return (gameState: GameState, playerId: string) => {
     const player = gameState.getPlayer(playerId);
-    const playedCards = player.playedCards;
-    if (!playedCards) {
-      throw new Error("Invalid list of played cards");
-    }
     let numCardsToCount = 0;
-    for (const cardName in playedCards) {
+    player.forEachPlayedCard(({ cardName }) => {
       const card = Card.fromName(cardName as CardName);
-      if (card.isCritter == isCritter && card.isUnique == isUnique) {
+      if (card.isCritter === isCritter && card.isUnique === isUnique) {
         numCardsToCount++;
       }
-    }
+    });
     return numCardsToCount;
   };
 }

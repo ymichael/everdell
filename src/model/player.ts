@@ -183,6 +183,17 @@ export class Player {
     return this.resources[resourceType];
   }
 
+  getPlayedCritters(): CardName[] {
+    const crittersInCity: CardName[] = [];
+    this.forEachPlayedCard(({ cardName }) => {
+      const card = Card.fromName(cardName as CardName);
+      if (card.isCritter) {
+        crittersInCity.push(card.name);
+      }
+    });
+    return crittersInCity;
+  }
+
   getPlayedCardByType(cardType: CardType): CardName[] {
     const cards: CardName[] = [];
     this.forEachPlayedCard(({ cardName }) => {
@@ -319,6 +330,19 @@ export class Player {
     return !!playedCardInfos && playedCardInfos.length !== 0;
   }
 
+  numPlayedCards(): number {
+    let total = 0;
+    this.forEachPlayedCard(() => {
+      total += 1;
+    });
+    return total;
+  }
+
+  getPlayedCardInfos(cardName: CardName): PlayedCardInfo[] {
+    const playedCardInfos = this.playedCards[cardName];
+    return playedCardInfos || [];
+  }
+
   hasSpaceOnDestinationCard(cardName: CardName): boolean {
     if (!this.hasPlayedCard(cardName)) {
       return false;
@@ -364,16 +388,47 @@ export class Player {
     return numDungeoned < maxDungeoned;
   }
 
-  canPlaceWorkerOnCard(cardName: CardName): boolean {
+  placeWorkerOnCard(cardName: CardName, cityOwner: Player | null = null): void {
+    if (!this.canPlaceWorkerOnCard(cardName, cityOwner)) {
+      throw new Error(`Cannot place worker on ${cardName}`);
+    }
+    this.numAvailableWorkers -= 1;
+    cityOwner = cityOwner || this;
+
+    const playedCards = cityOwner.getPlayedCardInfos(cardName);
+    if (playedCards.length === 0) {
+      throw new Error("Can't find played cards");
+    }
+
+    // Put the given playerId's worker on the card
+    for (let i = 0; i < playedCards.length; i++) {
+      const cardInfo = playedCards[i];
+      const workers = cardInfo.workers || [];
+      const maxWorkers = cardInfo.maxWorkers || 1;
+      if (workers.length < maxWorkers) {
+        cardInfo.workers = cardInfo.workers || [];
+        cardInfo.workers.push(this.playerId);
+        break;
+      }
+    }
+  }
+
+  canPlaceWorkerOnCard(
+    cardName: CardName,
+    cityOwner: Player | null = null
+  ): boolean {
     if (this.numAvailableWorkers <= 0) {
       return false;
     }
-
     const card = Card.fromName(cardName);
-    if (!this.playedCards[cardName] || !!card.isOpenDestination) {
+    cityOwner = cityOwner || this;
+    if (!cityOwner.hasPlayedCard(cardName)) {
       return false;
     }
-    return this.playedCards[cardName]!.some((playedCard) => {
+    if (cityOwner.playerId !== this.playerId && !card.isOpenDestination) {
+      return false;
+    }
+    return cityOwner.getPlayedCardInfos(cardName).some((playedCard) => {
       const maxWorkers = playedCard.maxWorkers || 1;
       const numWorkers = playedCard.workers?.length || 0;
       return numWorkers < maxWorkers;

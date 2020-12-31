@@ -516,7 +516,7 @@ describe("Player", () => {
       player.addToCity(CardName.LOOKOUT);
 
       availableOpenDestinationCards = player.getAvailableOpenDestinationCards();
-      expect(Object.keys(player.playedCards).length).to.be(3);
+      expect(player.numPlayedCards()).to.be(3);
 
       expect(availableOpenDestinationCards.length).to.be(2);
     });
@@ -577,17 +577,17 @@ describe("Player", () => {
   describe("recallAllWorkers", () => {
     it("recalling workers", () => {
       const player = gameState.getActivePlayer();
-      player.numAvailableWorkers = 0;
-
       const player1 = gameState.players[0];
       const player2 = gameState.players[1];
 
       // Player 1 has 1 worker on lookout, 1 worker on monastery, and
       // 1 worker on a location
-      player1.playedCards[CardName.LOOKOUT] = [{ workers: [player1.playerId] }];
-      player1.playedCards[CardName.MONASTERY] = [
-        { workers: [player1.playerId] },
-      ];
+      player1.addToCity(CardName.LOOKOUT);
+      player1.placeWorkerOnCard(CardName.LOOKOUT);
+
+      player1.addToCity(CardName.MONASTERY);
+      player1.placeWorkerOnCard(CardName.MONASTERY);
+
       player1.addToCity(CardName.FARM);
       player1.addToCity(CardName.FARM);
 

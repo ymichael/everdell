@@ -350,16 +350,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       const player = gameState.getActivePlayer();
 
       if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
-        let crittersInCity: CardName[] = [];
-
-        const playedCards = Object.keys(player.playedCards) as CardName[];
-        playedCards.forEach((cardName) => {
-          const card = Card.fromName(cardName as CardName);
-          if (card.isCritter) {
-            crittersInCity.push(card.name);
-          }
-          return card.isCritter;
-        });
+        const crittersInCity = player.getPlayedCritters();
 
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_MULTIPLE_CARDS,

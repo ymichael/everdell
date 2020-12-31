@@ -1,12 +1,13 @@
 import expect from "expect.js";
 import { Event } from "./event";
 import { GameState } from "./gameState";
-import { testInitialGameState } from "./testHelpers";
+import { testInitialGameState, multiStepGameInputTest } from "./testHelpers";
 import {
   EventName,
   GameInputType,
   GameInputClaimEvent,
   CardName,
+  ResourceType,
 } from "./types";
 
 const claimEventInput = (event: EventName): GameInputClaimEvent => {
@@ -150,7 +151,7 @@ describe("Event", () => {
     });
   });
 
-  describe(EventName.SPECIAL_GRADUATION_OF_SCHOLARS, () => {
+  describe(EventName.SPECIAL_CROAK_WART_CURE, () => {
     it("game state", () => {
       const event = Event.fromName(EventName.SPECIAL_GRADUATION_OF_SCHOLARS);
       let player = gameState.getActivePlayer();
@@ -169,6 +170,7 @@ describe("Event", () => {
       ];
 
       // check if the player can claim the event
+      expect(event.canPlay(gameState, gameInput)).to.be(true);
 
       // try to claim the event + check that you get the correct game state back
       expect(gameState.pendingGameInputs).to.eql([]);
@@ -235,6 +237,60 @@ describe("Event", () => {
         storedCards: ["POSTAL_PIGEON", "HUSBAND", "WIFE"],
         hasWorker: true,
       });
+    });
+  });
+
+  describe(EventName.SPECIAL_CROAK_WART_CURE, () => {
+    it("game state", () => {
+      const event = Event.fromName(EventName.SPECIAL_CROAK_WART_CURE);
+      let player = gameState.getActivePlayer();
+      const gameInput = claimEventInput(event.name);
+
+      gameState.eventsMap[EventName.SPECIAL_CROAK_WART_CURE] = null;
+      player.gainResources({ [ResourceType.BERRY]: 2 });
+
+      player.playedCards[CardName.UNDERTAKER] = [{}];
+      player.playedCards[CardName.BARGE_TOAD] = [{}];
+      player.playedCards[CardName.FARM] = [{}];
+      player.playedCards[CardName.CASTLE] = [{}];
+
+      // check if the player can claim the event
+      expect(event.canPlay(gameState, gameInput)).to.be(true);
+
+      // try to claim the event + check that you get the correct game state back
+      expect(gameState.pendingGameInputs).to.eql([]);
+      expect(player.claimedEvents[EventName.SPECIAL_CROAK_WART_CURE]).to.be(
+        undefined
+      );
+
+      gameState = multiStepGameInputTest(gameState, [
+        gameInput,
+        {
+          inputType: GameInputType.SELECT_MULTIPLE_CARDS,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          eventContext: EventName.SPECIAL_CROAK_WART_CURE,
+          cardOptions: [
+            CardName.UNDERTAKER,
+            CardName.BARGE_TOAD,
+            CardName.FARM,
+            CardName.CASTLE,
+          ],
+          maxToSelect: 2,
+          minToSelect: 0,
+          clientOptions: {
+            // these are the cards the player wants to remove
+            // from their city
+            selectedCards: [CardName.UNDERTAKER, CardName.FARM],
+          },
+        },
+      ]);
+      player = gameState.getPlayer(player.playerId);
+
+      // check to make sure the right cards are still in the city
+      expect(player.hasPlayedCard(CardName.UNDERTAKER)).to.eql(false);
+      expect(player.hasPlayedCard(CardName.FARM)).to.eql(false);
+      expect(player.hasPlayedCard(CardName.BARGE_TOAD)).to.eql(true);
+      expect(player.hasPlayedCard(CardName.CASTLE)).to.eql(true);
     });
   });
 });

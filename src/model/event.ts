@@ -393,42 +393,59 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     canPlayInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       const cards = [CardName.UNDERTAKER, CardName.BARGE_TOAD];
-      return (
-        cards.every((card) => player.hasPlayedCard(card)) &&
-        player.getNumResource(ResourceType.BERRY) >= 2
-      );
+      return cards.every((card) => player.hasPlayedCard(card)) &&
+        gameInput.inputType === GameInputType.CLAIM_EVENT
+        ? player.getNumResource(ResourceType.BERRY) >= 2
+        : true;
     },
     // pay 2 berries and discard 2 cards from city
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("not implemented");
-      // const player = gameState.getActivePlayer();
-      // if (gameInput.inputType !== GameInputType.CLAIM_EVENT) {
-      //   throw new Error("Invalid input type");
-      // }
-      // if (!gameInput.clientOptions) {
-      //   throw new Error("Invalid input");
-      // }
-      // const cardsToUse = gameInput.clientOptions.cardsToUse;
-      // if (cardsToUse && cardsToUse.length > 2) {
-      //   throw new Error("Too many cards");
-      // }
+      const player = gameState.getActivePlayer();
 
-      // const eventInfo =
-      //   player?.claimedEvents[EventName.SPECIAL_CROAK_WART_CURE];
-      // if (!eventInfo) {
-      //   throw new Error("Cannot find event info");
-      // }
+      if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
+        // Remove berries from player's supply
+        player.spendResources({ [ResourceType.BERRY]: 2 });
 
-      // // Remove cards from city
-      // for (const cardName in cardsToUse) {
-      //   player.removeCardFromCity(
-      //     gameState,
-      //     cardName as CardName,
-      //     true /* addToDiscardPile */
-      //   );
-      // }
-      // // Remove berries from player's supply
-      // player.spendResources({ [ResourceType.BERRY]: 2 });
+        // ask player to choose which cards to discard
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_MULTIPLE_CARDS,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          eventContext: EventName.SPECIAL_CROAK_WART_CURE,
+          cardOptions: Object.keys(player.playedCards) as CardName[],
+          maxToSelect: 2,
+          minToSelect: 0,
+          clientOptions: {
+            selectedCards: null,
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_MULTIPLE_CARDS) {
+        if (!gameInput.clientOptions.selectedCards) {
+          throw new Error("invalid input");
+        }
+        const cardOptions = gameInput.clientOptions.selectedCards;
+        if (cardOptions.length > 2) {
+          throw new Error("Too many cards");
+        }
+
+        const eventInfo =
+          player.claimedEvents[EventName.SPECIAL_CROAK_WART_CURE];
+        if (!eventInfo) {
+          throw new Error("Cannot find event info");
+        }
+
+        // TODO: handle case where you have multiple played cards with
+        // the same name
+        // Remove cards from city
+        cardOptions.forEach((cardName) => {
+          player.removeCardFromCity(
+            gameState,
+            cardName as CardName,
+            true /* addToDiscardPile */
+          );
+        });
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
+      }
     },
   }),
   [EventName.SPECIAL_FLYING_DOCTOR_SERVICE]: new Event({
@@ -489,6 +506,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         if (!gameInput.clientOptions.selectedCards) {
           throw new Error("invalid input");
         }
+
         const cardsToUse = gameInput.clientOptions.selectedCards;
 
         if (cardsToUse.length > 3) {

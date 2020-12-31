@@ -399,7 +399,7 @@ export class Player {
     }
   }
 
-  placeWorkerCommon(placedWorkerInfo: PlacedWorkerInfo): void {
+  private placeWorkerCommon(placedWorkerInfo: PlacedWorkerInfo): void {
     if (this.numAvailableWorkers === 0) {
       throw new Error(`Cannot place worker`);
     }

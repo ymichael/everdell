@@ -373,6 +373,110 @@ describe("Card", () => {
       });
     });
 
+    describe(CardName.POST_OFFICE, () => {
+      it("should not be visitable if player has less than 2 cards", () => {
+        const card = Card.fromName(CardName.POST_OFFICE);
+        const player = gameState.getActivePlayer();
+
+        player.cardsInHand = [];
+        player.addToCity(CardName.POST_OFFICE);
+
+        const visitDestinationInput = {
+          inputType: GameInputType.VISIT_DESTINATION_CARD as const,
+          card: CardName.POST_OFFICE,
+          playerId: player.playerId,
+        };
+
+        expect(card.canPlay(gameState, visitDestinationInput)).to.be(false);
+        player.cardsInHand = [CardName.FARM, CardName.MONK];
+        expect(card.canPlay(gameState, visitDestinationInput)).to.be(true);
+      });
+
+      it("should give another player 2 cards and draw max cards", () => {
+        const card = Card.fromName(CardName.POST_OFFICE);
+        let player = gameState.getActivePlayer();
+        let targetPlayer = gameState.players[1];
+
+        player.cardsInHand = [
+          CardName.FARM,
+          CardName.MINE,
+          CardName.QUEEN,
+          CardName.KING,
+        ];
+        player.addToCity(CardName.POST_OFFICE);
+
+        for (let i = 0; i < 8; i++) {
+          gameState.deck.addToStack(CardName.MINER_MOLE);
+        }
+
+        const visitDestinationInput = {
+          inputType: GameInputType.VISIT_DESTINATION_CARD as const,
+          card: CardName.POST_OFFICE,
+          playerId: player.playerId,
+        };
+
+        const selectPlayer = {
+          inputType: GameInputType.SELECT_PLAYER as const,
+          prevInputType: GameInputType.VISIT_DESTINATION_CARD as const,
+          cardContext: CardName.POST_OFFICE,
+          playerOptions: [targetPlayer.playerId],
+          mustSelectOne: true,
+          clientOptions: {
+            selectedPlayer: targetPlayer.playerId,
+          },
+        };
+
+        const selectCardsToGiveAway = {
+          inputType: GameInputType.SELECT_MULTIPLE_CARDS as const,
+          prevInputType: GameInputType.SELECT_PLAYER as const,
+          prevInput: selectPlayer,
+          cardContext: CardName.POST_OFFICE,
+          cardOptions: player.cardsInHand,
+          maxToSelect: 2,
+          minToSelect: 2,
+          clientOptions: {
+            selectedCards: [CardName.MINE, CardName.QUEEN],
+          },
+        };
+
+        const selectCardsToDiscard = {
+          inputType: GameInputType.SELECT_MULTIPLE_CARDS as const,
+          prevInputType: GameInputType.SELECT_MULTIPLE_CARDS as const,
+          cardContext: CardName.POST_OFFICE,
+          cardOptions: [CardName.FARM, CardName.KING],
+          maxToSelect: 2,
+          minToSelect: 0,
+          clientOptions: {
+            selectedCards: [CardName.FARM, CardName.KING],
+          },
+        };
+
+        const gameState2 = multiStepGameInputTest(gameState, [
+          visitDestinationInput,
+          selectPlayer,
+          selectCardsToGiveAway,
+          selectCardsToDiscard,
+        ]);
+
+        player = gameState2.getPlayer(player.playerId);
+        targetPlayer = gameState2.getPlayer(targetPlayer.playerId);
+        expect(targetPlayer.cardsInHand).to.eql([
+          CardName.MINE,
+          CardName.QUEEN,
+        ]);
+        expect(player.cardsInHand).to.eql([
+          CardName.MINER_MOLE,
+          CardName.MINER_MOLE,
+          CardName.MINER_MOLE,
+          CardName.MINER_MOLE,
+          CardName.MINER_MOLE,
+          CardName.MINER_MOLE,
+          CardName.MINER_MOLE,
+          CardName.MINER_MOLE,
+        ]);
+      });
+    });
+
     describe(CardName.PEDDLER, () => {
       it("should do nothing if no resources", () => {
         const card = Card.fromName(CardName.PEDDLER);

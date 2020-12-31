@@ -6,9 +6,10 @@ import {
   GameInputType,
   LocationName,
   EventName,
+  ResourceType,
 } from "./types";
 import { Event } from "./event";
-import { testInitialGameState } from "./testHelpers";
+import { testInitialGameState, multiStepGameInputTest } from "./testHelpers";
 
 describe("GameState", () => {
   let gameState: GameState;
@@ -79,6 +80,38 @@ describe("GameState", () => {
   });
 
   describe("visiting destination cards", () => {
+    it("can visit LOOKOUT card", () => {
+      let player1 = gameState.getActivePlayer();
+      player1.addToCity(CardName.LOOKOUT);
+
+      expect(player1.numAvailableWorkers).to.be(2);
+      expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+
+      gameState = multiStepGameInputTest(gameState, [
+        {
+          inputType: GameInputType.VISIT_DESTINATION_CARD,
+          playerId: player1.playerId,
+          card: CardName.LOOKOUT,
+        },
+        {
+          inputType: GameInputType.SELECT_LOCATION,
+          prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+          cardContext: CardName.LOOKOUT,
+          locationOptions: (Object.keys(
+            gameState.locationsMap
+          ) as unknown) as LocationName[],
+          clientOptions: {
+            selectedLocation: LocationName.BASIC_ONE_BERRY,
+          },
+        },
+      ]);
+
+      player1 = gameState.getPlayer(player1.playerId);
+
+      expect(player1.numAvailableWorkers).to.be(1);
+      expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
+    });
+
     xit("should handle visit destination card", () => {
       // player1 is the active player
       const player1 = gameState.players[0];

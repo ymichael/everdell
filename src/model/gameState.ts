@@ -205,7 +205,7 @@ export class GameState {
     this.eventsMap[gameInput.event] = this._activePlayerId;
   }
 
-  public handleVisitDestinationCardGameInput(
+  private handleVisitDestinationCardGameInput(
     gameInput: GameInputVisitDestinationCard
   ): void {
     const card = Card.fromName(gameInput.card);

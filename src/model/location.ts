@@ -53,24 +53,33 @@ export class Location implements GameStatePlayable {
     if (!(this.name in gameState.locationsMap)) {
       return false;
     }
-    if (gameState.getActivePlayer().numAvailableWorkers <= 0) {
-      return false;
+    if (gameInput.inputType === GameInputType.PLACE_WORKER) {
+      if (gameState.getActivePlayer().numAvailableWorkers <= 0) {
+        return false;
+      }
+      if (this.occupancy === LocationOccupancy.EXCLUSIVE) {
+        if (gameState.locationsMap[this.name]!.length !== 0) {
+          return false;
+        }
+      } else if (this.occupancy === LocationOccupancy.EXCLUSIVE_FOUR) {
+        if (
+          !(
+            gameState.locationsMap[this.name]!.length <
+            (gameState.players.length < 4 ? 1 : 2)
+          )
+        ) {
+          return false;
+        }
+      } else if (this.occupancy === LocationOccupancy.UNLIMITED) {
+        // Do nothing
+      } else {
+        throw new Error(`Unexpected occupancy: ${this.occupancy}`);
+      }
     }
     if (this.canPlayInner && !this.canPlayInner(gameState, gameInput)) {
       return false;
     }
-    if (this.occupancy === LocationOccupancy.EXCLUSIVE) {
-      return gameState.locationsMap[this.name]!.length === 0;
-    } else if (this.occupancy === LocationOccupancy.EXCLUSIVE_FOUR) {
-      return (
-        gameState.locationsMap[this.name]!.length <
-        (gameState.players.length < 4 ? 1 : 2)
-      );
-    } else if (this.occupancy === LocationOccupancy.UNLIMITED) {
-      return true;
-    } else {
-      throw new Error(`Unexpected occupancy: ${this.occupancy}`);
-    }
+    return true;
   }
 
   play(gameState: GameState, gameInput: GameInput): void {

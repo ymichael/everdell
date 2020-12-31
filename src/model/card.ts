@@ -18,12 +18,15 @@ import {
   GameStateCountPointsFn,
 } from "./gameState";
 import { Location } from "./location";
+import { Player } from "./player";
 import {
   playSpendResourceToGetVPFactory,
   sumResources,
   getPointsPerRarityLabel,
 } from "./gameStatePlayHelpers";
 import cloneDeep from "lodash/cloneDeep";
+
+type MaxWorkersInnerFn = (cardOwner: Player) => number;
 
 export class Card<TCardType extends CardType = CardType>
   implements GameStatePlayable {
@@ -46,6 +49,7 @@ export class Card<TCardType extends CardType = CardType>
 
   readonly productionInner: GameStatePlayFn | undefined;
   readonly resourcesToGain: ProductionResourceMap | undefined;
+  readonly maxWorkersInner: MaxWorkersInnerFn | undefined;
 
   constructor({
     name,
@@ -62,6 +66,7 @@ export class Card<TCardType extends CardType = CardType>
     canPlayInner, // called when we check canPlay function
     playedCardInfoDefault,
     pointsInner, // computed if specified + added to base points
+    maxWorkersInner,
   }: {
     name: CardName;
     baseCost: CardCost;
@@ -75,6 +80,7 @@ export class Card<TCardType extends CardType = CardType>
     canPlayInner?: GameStateCanPlayFn;
     playedCardInfoDefault?: Partial<Omit<PlayedCardInfo, "playerId">>;
     pointsInner?: (gameState: GameState, playerId: string) => number;
+    maxWorkersInner?: MaxWorkersInnerFn;
   } & (TCardType extends CardType.PRODUCTION
     ? {
         resourcesToGain: ProductionResourceMap;
@@ -101,6 +107,8 @@ export class Card<TCardType extends CardType = CardType>
     // Production cards
     this.productionInner = productionInner;
     this.resourcesToGain = resourcesToGain;
+
+    this.maxWorkersInner = maxWorkersInner;
   }
 
   getPlayedCardInfo(playerId: string): PlayedCardInfo {
@@ -113,7 +121,6 @@ export class Card<TCardType extends CardType = CardType>
     }
     if (this.cardType == CardType.DESTINATION) {
       ret.workers = [];
-      ret.maxWorkers = 1;
     }
     return {
       ...ret,
@@ -195,11 +202,17 @@ export class Card<TCardType extends CardType = CardType>
     );
   }
 
-  canTakeWorker(): boolean {
-    return (
+  getMaxWorkers(cardOwner: Player): number {
+    if (
       this.cardType === CardType.DESTINATION ||
       this.name === CardName.STOREHOUSE
-    );
+    ) {
+      if (this.maxWorkersInner) {
+        return this.maxWorkersInner(cardOwner);
+      }
+      return 1;
+    }
+    return 0;
   }
 
   static fromName(name: CardName): Card {

@@ -44,7 +44,7 @@ describe("Card", () => {
     });
   });
 
-  describe("Open / closed destinations", () => {
+  describe("Card destinations", () => {
     it("Inn should be marked as an open destination", () => {
       const card = Card.fromName(CardName.INN);
       expect(card.cardType).to.be(CardType.DESTINATION);
@@ -64,11 +64,14 @@ describe("Card", () => {
     it("Storehouse is not a destination card, but can have a worker placed on it", () => {
       let card = Card.fromName(CardName.STOREHOUSE);
       expect(card.cardType).to.be(CardType.PRODUCTION);
-      expect(card.canTakeWorker()).to.be(true);
+      expect(card.getMaxWorkers(gameState.getActivePlayer())).to.be(1);
 
       card = Card.fromName(CardName.POST_OFFICE);
       expect(card.cardType).to.be(CardType.DESTINATION);
-      expect(card.canTakeWorker()).to.be(true);
+      expect(card.getMaxWorkers(gameState.getActivePlayer())).to.be(1);
+
+      card = Card.fromName(CardName.FARM);
+      expect(card.getMaxWorkers(gameState.getActivePlayer())).to.be(0);
     });
   });
 
@@ -410,7 +413,6 @@ describe("Card", () => {
           {
             playerId: player.playerId,
             cardName: CardName.POST_OFFICE,
-            maxWorkers: 1,
             usedForCritter: false,
             workers: [],
           },
@@ -476,7 +478,6 @@ describe("Card", () => {
           {
             playerId: player.playerId,
             cardName: CardName.POST_OFFICE,
-            maxWorkers: 1,
             usedForCritter: false,
             workers: [player.playerId],
           },

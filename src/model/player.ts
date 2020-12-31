@@ -250,7 +250,7 @@ export class Player {
   getNumCardType(cardType: CardType): number {
     let numCards = 0;
     this.forEachPlayedCard(({ cardName }) => {
-      const card = Card.fromName(cardName as CardName);
+      const card = Card.fromName(cardName);
       if (card.cardType === cardType) {
         numCards += 1;
       }
@@ -258,38 +258,17 @@ export class Player {
     return numCards;
   }
 
-  getAllDestinationCards(): CardName[] {
+  // returns all destination cards that a player has played that have
+  // room for another worker
+  getAllAvailableDestinationCards(): CardName[] {
     const ret: CardName[] = [];
-    this.forEachPlayedCard(({ cardName }) => {
-      const card = Card.fromName(cardName as CardName);
-      if (card.canTakeWorker()) {
+    this.forEachPlayedCard(({ cardName, workers = [] }) => {
+      const card = Card.fromName(cardName);
+      if (card.getMaxWorkers(this) > workers.length) {
         ret.push(cardName);
       }
     });
     return ret;
-  }
-
-  // returns all destination cards that a player has played that have
-  // room for another worker
-  getAllAvailableDestinationCards(): CardName[] {
-    return this.getAllDestinationCards().filter((cardName) => {
-      return this.hasSpaceOnDestinationCard(cardName);
-    });
-  }
-
-  // returns all destination cards (including storehouse) that have a worker on them
-  getDestinationCardsWithWorkers(): CardName[] {
-    const destinationCardsWithWorkers: CardName[] = [];
-    this.forEachPlayedCard(({ cardName, workers = [], maxWorkers = 1 }) => {
-      const card = Card.fromName(cardName);
-      if (!card.canTakeWorker()) {
-        return;
-      }
-      if (workers.length > 0) {
-        destinationCardsWithWorkers.push(cardName);
-      }
-    });
-    return destinationCardsWithWorkers;
   }
 
   // returns all non-Open destination or storehouse cards that were played by player and
@@ -305,14 +284,6 @@ export class Player {
   // and are available to take other workers
   getAvailableOpenDestinationCards(): CardName[] {
     return this.getAllAvailableDestinationCards().filter((cardName) => {
-      const card = Card.fromName(cardName);
-      return card.isOpenDestination;
-    });
-  }
-
-  // returns all destination cards played by this player that are "open"
-  getOpenDestinationCards(): CardName[] {
-    return this.getAllDestinationCards().filter((cardName) => {
       const card = Card.fromName(cardName);
       return card.isOpenDestination;
     });
@@ -370,22 +341,26 @@ export class Player {
     this.claimedEvents[eventName] = event.getPlayedEventInfo();
   }
 
-  placeWorkerOnCard(cardName: CardName, cityOwner: Player | null = null): void {
-    if (!this.canPlaceWorkerOnCard(cardName, cityOwner)) {
+  placeWorkerOnCard(
+    cardName: CardName,
+    _cardOwner: Player | null = null
+  ): void {
+    const cardOwner = _cardOwner || this;
+    if (!this.canPlaceWorkerOnCard(cardName, cardOwner)) {
       throw new Error(`Cannot place worker on ${cardName}`);
     }
-    cityOwner = cityOwner || this;
     const cardDestination = {
       card: cardName,
-      playerId: cityOwner.playerId,
+      playerId: cardOwner.playerId,
     };
     this.placeWorkerCommon({ cardDestination });
 
     let placedWorker = false;
-    cityOwner
+    cardOwner
       .getPlayedCardInfos(cardName)
-      .forEach(({ maxWorkers = 1, workers = [] }) => {
-        if (!placedWorker && workers.length < maxWorkers) {
+      .forEach(({ cardName, workers = [] }) => {
+        const card = Card.fromName(cardName);
+        if (!placedWorker && workers.length < card.getMaxWorkers(cardOwner)) {
           workers.push(this.playerId);
           placedWorker = true;
         }
@@ -396,23 +371,6 @@ export class Player {
           cardDestination
         )}`
       );
-    }
-
-    const playedCards = cityOwner.getPlayedCardInfos(cardName);
-    if (playedCards.length === 0) {
-      throw new Error("Can't find played cards");
-    }
-
-    // Put the given playerId's worker on the card
-    for (let i = 0; i < playedCards.length; i++) {
-      const cardInfo = playedCards[i];
-      const workers = cardInfo.workers || [];
-      const maxWorkers = cardInfo.maxWorkers || 1;
-      if (workers.length < maxWorkers) {
-        cardInfo.workers = cardInfo.workers || [];
-        cardInfo.workers.push(this.playerId);
-        break;
-      }
     }
   }
 
@@ -425,31 +383,32 @@ export class Player {
 
   canPlaceWorkerOnCard(
     cardName: CardName,
-    cityOwner: Player | null = null
+    _cardOwner: Player | null = null
   ): boolean {
+    const cardOwner = _cardOwner || this;
     if (this.numAvailableWorkers <= 0) {
       return false;
     }
     const card = Card.fromName(cardName);
-    cityOwner = cityOwner || this;
-    if (!cityOwner.hasCardInCity(cardName)) {
+    if (!cardOwner.hasCardInCity(cardName)) {
       return false;
     }
-    if (cityOwner.playerId !== this.playerId && !card.isOpenDestination) {
+    if (cardOwner.playerId !== this.playerId && !card.isOpenDestination) {
       return false;
     }
-    return cityOwner.hasSpaceOnDestinationCard(cardName);
+    return cardOwner.hasSpaceOnDestinationCard(cardName);
   }
 
   hasSpaceOnDestinationCard(cardName: CardName): boolean {
     if (!this.hasCardInCity(cardName)) {
       return false;
     }
-    return !!this.getPlayedCardInfos(cardName).some((playedCard) => {
-      const workers = playedCard.workers || [];
-      const maxWorkers = playedCard.maxWorkers || 1;
-      return workers.length < maxWorkers;
-    });
+    return !!this.getPlayedCardInfos(cardName).some(
+      ({ workers = [], cardName }) => {
+        const card = Card.fromName(cardName);
+        return card.getMaxWorkers(this) > workers.length;
+      }
+    );
   }
 
   canAffordCard(cardName: CardName, isMeadowCard: boolean): boolean {
@@ -815,9 +774,9 @@ export class Player {
         } else if (event) {
           // Don't need to do anything for event
         } else if (cardDestination) {
-          const cityOwner = gameState.getPlayer(cardDestination.playerId);
+          const cardOwner = gameState.getPlayer(cardDestination.playerId);
           let removedWorker = false;
-          cityOwner
+          cardOwner
             .getPlayedCardInfos(cardDestination.card)
             .forEach(({ workers = [] }) => {
               if (!removedWorker) {

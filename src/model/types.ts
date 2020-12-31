@@ -289,7 +289,6 @@ export type PlayedCardInfo = {
 
   // queen, inn etc
   workers?: string[];
-  maxWorkers?: number;
 
   // dungeon
   pairedCards?: string[];

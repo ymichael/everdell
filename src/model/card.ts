@@ -363,7 +363,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       if (gameInput.inputType === GameInputType.SELECT_CARD) {
         if (
           !gameInput.clientOptions.selectedCard ||
-          !player.hasPlayedCard(gameInput.clientOptions.selectedCard)
+          !player.hasCardInCity(gameInput.clientOptions.selectedCard)
         ) {
           throw new Error("Invalid input");
         }
@@ -557,7 +557,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     productionInner: (gameState: GameState) => {
       const player = gameState.getActivePlayer();
       player.gainResources({
-        [ResourceType.BERRY]: player.hasPlayedCard(CardName.FARM) ? 1 : 0,
+        [ResourceType.BERRY]: player.hasCardInCity(CardName.FARM) ? 1 : 0,
       });
     },
   }),
@@ -726,7 +726,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       // const targetPlayer = gameState.getPlayer(
       //   gameInput.clientOptions?.targetPlayerId
       // );
-      // if (!targetPlayer.hasPlayedCard(gameInput.clientOptions?.targetCard)) {
+      // if (!targetPlayer.hasCardInCity(gameInput.clientOptions?.targetCard)) {
       //   throw new Error("Invalid input");
       // }
       // const targetCard = Card.fromName(gameInput.clientOptions?.targetCard);
@@ -1215,7 +1215,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       } else if (gameInput.inputType === GameInputType.SELECT_CARD) {
         if (
           !gameInput.clientOptions.selectedCard ||
-          !player.hasPlayedCard(gameInput.clientOptions.selectedCard)
+          !player.hasCardInCity(gameInput.clientOptions.selectedCard)
         ) {
           throw new Error("Invalid input");
         }

@@ -54,7 +54,7 @@ describe("Player", () => {
         player.canAffordCard(CardName.HUSBAND, false /* isMeadow */)
       ).to.be(true);
       // Occupy the farm
-      player.occupyConstruction(CardName.FARM);
+      player.useConstructionToPlayCritter(CardName.FARM);
       expect(
         player.canAffordCard(CardName.HUSBAND, false /* isMeadow */)
       ).to.be(false);
@@ -516,7 +516,7 @@ describe("Player", () => {
       player.addToCity(CardName.LOOKOUT);
 
       availableOpenDestinationCards = player.getAvailableOpenDestinationCards();
-      expect(player.numPlayedCards()).to.be(3);
+      expect(player.getNumCardsInCity()).to.be(3);
 
       expect(availableOpenDestinationCards.length).to.be(2);
     });
@@ -537,15 +537,15 @@ describe("Player", () => {
 
         player.addToCity(CardName.CRANE);
         player.cardsInHand = [card.name];
-        expect(player.hasPlayedCard(CardName.CRANE)).to.be(true);
+        expect(player.hasCardInCity(CardName.CRANE)).to.be(true);
         expect(card.canPlay(gameState, gameInput)).to.be(true);
         expect(player.cardsInHand).to.not.eql([]);
         const nextGameState = gameState.next(gameInput);
         player = nextGameState.getPlayer(player.playerId);
 
         expect(player.cardsInHand).to.eql([]);
-        expect(player.hasPlayedCard(CardName.FARM)).to.be(true);
-        expect(player.hasPlayedCard(CardName.CRANE)).to.be(false);
+        expect(player.hasCardInCity(CardName.FARM)).to.be(true);
+        expect(player.hasCardInCity(CardName.CRANE)).to.be(false);
       });
 
       it("should remove INNKEEPER from city after using it", () => {
@@ -561,15 +561,15 @@ describe("Player", () => {
 
         player.addToCity(CardName.INNKEEPER);
         player.cardsInHand = [card.name];
-        expect(player.hasPlayedCard(CardName.INNKEEPER)).to.be(true);
+        expect(player.hasCardInCity(CardName.INNKEEPER)).to.be(true);
         expect(card.canPlay(gameState, gameInput)).to.be(true);
         expect(player.cardsInHand).to.not.eql([]);
         const nextGameState = gameState.next(gameInput);
         player = nextGameState.getPlayer(player.playerId);
 
         expect(player.cardsInHand).to.eql([]);
-        expect(player.hasPlayedCard(CardName.WIFE)).to.be(true);
-        expect(player.hasPlayedCard(CardName.INNKEEPER)).to.be(false);
+        expect(player.hasCardInCity(CardName.WIFE)).to.be(true);
+        expect(player.hasCardInCity(CardName.INNKEEPER)).to.be(false);
       });
     });
   });

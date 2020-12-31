@@ -102,7 +102,7 @@ const CardToUseForm: React.FC<{
       <p>Card to use:</p>
       {[CardName.QUEEN, CardName.INNKEEPER, CardName.INN, CardName.CRANE, null]
         .filter(
-          (cardToUse) => !cardToUse || viewingPlayer.hasPlayedCard(cardToUse)
+          (cardToUse) => !cardToUse || viewingPlayer.hasCardInCity(cardToUse)
         )
         .map((cardToUse, idx) => {
           return (

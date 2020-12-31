@@ -1178,5 +1178,75 @@ describe("Card", () => {
       //   ]);
       // });
     });
+
+    describe(CardName.INN, () => {
+      it("inn should allow player buy card from meadow", () => {
+        const cards = [
+          CardName.KING,
+          CardName.QUEEN,
+          CardName.POSTAL_PIGEON,
+          CardName.POSTAL_PIGEON,
+          CardName.FARM,
+          CardName.HUSBAND,
+          CardName.CHAPEL,
+          CardName.MONK,
+        ];
+        gameState = testInitialGameState({ meadowCards: cards });
+
+        let player = gameState.getActivePlayer();
+        const card = Card.fromName(CardName.INN);
+
+        // Make sure we can play this card
+        player.gainResources(card.baseCost);
+        player.gainResources({ [ResourceType.BERRY]: 4 });
+        player.cardsInHand.push(card.name);
+        player.addToCity(CardName.INN);
+
+        expect(player.numAvailableWorkers).to.be(2);
+        expect(player.hasCardInCity(CardName.KING)).to.be(false);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(4);
+
+        gameState = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardOwnerId: player.playerId,
+            card: CardName.INN,
+          },
+          {
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardContext: CardName.INN,
+            cardOptions: gameState.meadowCards,
+            cardOptionsUnfiltered: gameState.meadowCards,
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              selectedCards: [CardName.KING],
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_PAYMENT_FOR_CARD,
+            prevInputType: GameInputType.SELECT_CARDS,
+            cardContext: card.name,
+            cardToBuy: CardName.KING,
+            clientOptions: {
+              resources: {
+                [ResourceType.BERRY]: 3,
+              },
+            },
+            paymentOptions: {
+              cardToUse: CardName.INN,
+              resources: {},
+            },
+          },
+        ]);
+
+        player = gameState.getPlayer(player.playerId);
+
+        expect(player.numAvailableWorkers).to.be(1);
+        expect(player.hasCardInCity(CardName.KING)).to.be(true);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
+      });
+    });
   });
 });

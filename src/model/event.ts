@@ -460,13 +460,6 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     }),
     // play up to 3 critters from your hand beneath this event
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      // if game input is CLAIM_EVENT
-      // select 2 cards
-      // push SELECT_CARDS as a pending game input
-
-      // if game input is SELECT CARDS with prev input as CLAIM_EVENT
-      // remove cards from your hand
-
       const player = gameState.getActivePlayer();
 
       if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
@@ -523,30 +516,6 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       } else {
         throw new Error(`Invalid input type ${gameInput.inputType}`);
       }
-
-      // if (gameInput.inputType === GameInputType.PLAY_CARD) {
-      //   gameState.pendingGameInputs.push({
-      //     inputType: GameInputType.SELECT_PLAYER,
-      //     prevInputType: gameInput.inputType,
-      //     cardContext: CardName.FOOL,
-      //     playerOptions: gameState.players
-      //       .filter((p) => p.playerId !== player.playerId)
-      //       .map((p) => p.playerId),
-      //     mustSelectOne: true,
-      //     clientOptions: {
-      //       selectedPlayer: null,
-      //     },
-      //   });
-      // }
-
-      //throw new Error("not implemented");
-      // const player = gameState.getActivePlayer();
-      // if (gameInput.inputType !== GameInputType.CLAIM_EVENT) {
-      //   throw new Error("Invalid input type");
-      // }
-      // if (!gameInput.clientOptions) {
-      //   throw new Error("Invalid input");
-      // }
     },
     // 2 points per critter beneath event
     pointsInner: (gameState: GameState, playerId: string) => {

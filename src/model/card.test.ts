@@ -2,7 +2,7 @@ import expect from "expect.js";
 import { Card } from "./card";
 import { GameState } from "./gameState";
 import merge from "lodash/merge";
-import { testInitialGameState } from "./testHelpers";
+import { testInitialGameState, multiStepGameInputTest } from "./testHelpers";
 import {
   CardType,
   ResourceType,
@@ -335,78 +335,39 @@ describe("Card", () => {
     describe(CardName.HUSBAND, () => {
       it("should do nothing if there's no available wife", () => {
         const card = Card.fromName(CardName.HUSBAND);
-        const gameInput = playCardInput(card.name);
-        let player = gameState.getActivePlayer();
-
+        const player = gameState.getActivePlayer();
         // Add husband & wife to city
         player.addToCity(CardName.WIFE);
         player.addToCity(CardName.HUSBAND);
 
         player.cardsInHand = [CardName.HUSBAND];
         player.gainResources(card.baseCost);
-
-        const gameState2 = gameState.next(gameInput);
-        player = gameState2.getPlayer(player.playerId);
-        expect(player.playerId).to.not.be(
-          gameState2.getActivePlayer().playerId
-        );
-        expect(gameState2.pendingGameInputs).to.eql([]);
+        multiStepGameInputTest(gameState, [playCardInput(card.name)]);
       });
 
       it("should gain a wild resource if there's a available wife", () => {
         const card = Card.fromName(CardName.HUSBAND);
-        const gameInput = playCardInput(card.name);
         let player = gameState.getActivePlayer();
 
         player.cardsInHand = [CardName.HUSBAND];
         player.addToCity(CardName.WIFE);
         player.gainResources(card.baseCost);
 
-        const gameState2 = gameState.next(gameInput);
-        player = gameState2.getPlayer(player.playerId);
-        expect(player.playerId).to.be(gameState2.getActivePlayer().playerId);
-        expect(gameState2.pendingGameInputs).to.eql([
+        const gameState2 = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
           {
             inputType: GameInputType.SELECT_RESOURCES,
             prevInputType: GameInputType.PLAY_CARD,
             cardContext: CardName.HUSBAND,
             numResources: 1,
             clientOptions: {
-              resources: {},
+              resources: {
+                [ResourceType.BERRY]: 1,
+              },
             },
           },
         ]);
-
-        expect(() => {
-          gameState2.next({
-            inputType: GameInputType.SELECT_RESOURCES,
-            prevInputType: GameInputType.PLAY_CARD,
-            cardContext: CardName.HUSBAND,
-            numResources: 1,
-            clientOptions: {
-              resources: {
-                [ResourceType.BERRY]: 5,
-              },
-            },
-          });
-        }).to.throwException(/invalid resources/i);
-
-        const gameState3 = gameState2.next({
-          inputType: GameInputType.SELECT_RESOURCES,
-          prevInputType: GameInputType.PLAY_CARD,
-          cardContext: CardName.HUSBAND,
-          numResources: 1,
-          clientOptions: {
-            resources: {
-              [ResourceType.BERRY]: 1,
-            },
-          },
-        });
-        // Active player changes
-        expect(player.playerId).to.not.be(
-          gameState3.getActivePlayer().playerId
-        );
-        player = gameState3.getPlayer(player.playerId);
+        player = gameState2.getPlayer(player.playerId);
         expect(player.getNumResource(ResourceType.BERRY)).to.be(1);
       });
     });
@@ -414,7 +375,6 @@ describe("Card", () => {
     describe(CardName.POSTAL_PIGEON, () => {
       it("should allow the player to select a card to play", () => {
         const card = Card.fromName(CardName.POSTAL_PIGEON);
-        const gameInput = playCardInput(card.name);
         let player = gameState.getActivePlayer();
         player.gainResources(card.baseCost);
         player.cardsInHand.push(card.name);
@@ -427,10 +387,8 @@ describe("Card", () => {
         expect(player.hasPlayedCard(card.name)).to.be(false);
         expect(player.hasPlayedCard(CardName.MINE)).to.be(false);
 
-        const gameState2 = gameState.next(gameInput);
-        // Active player remains the same
-        expect(player.playerId).to.be(gameState2.getActivePlayer().playerId);
-        expect(gameState2.pendingGameInputs).to.eql([
+        const gameState3 = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
           {
             inputType: GameInputType.SELECT_CARD,
             prevInputType: GameInputType.PLAY_CARD,
@@ -439,30 +397,10 @@ describe("Card", () => {
             cardOptions: [CardName.MINE, CardName.FARM],
             cardOptionsUnfiltered: [CardName.MINE, CardName.FARM],
             clientOptions: {
-              selectedCard: null,
+              selectedCard: CardName.MINE,
             },
           },
         ]);
-
-        player = gameState2.getActivePlayer();
-        expect(player.hasPlayedCard(card.name)).to.be(true);
-
-        const gameState3 = gameState2.next({
-          inputType: GameInputType.SELECT_CARD,
-          prevInputType: GameInputType.PLAY_CARD,
-          cardContext: CardName.POSTAL_PIGEON,
-          mustSelectOne: false,
-          cardOptions: [CardName.MINE, CardName.FARM],
-          cardOptionsUnfiltered: [CardName.MINE, CardName.FARM],
-          clientOptions: {
-            selectedCard: CardName.MINE,
-          },
-        });
-
-        // Active player changes
-        expect(player.playerId).to.not.be(
-          gameState3.getActivePlayer().playerId
-        );
 
         player = gameState3.getPlayer(player.playerId);
         expect(player.hasPlayedCard(card.name)).to.be(true);
@@ -473,8 +411,7 @@ describe("Card", () => {
 
       it("should only allow the player to select eligible cards", () => {
         const card = Card.fromName(CardName.POSTAL_PIGEON);
-        const gameInput = playCardInput(card.name);
-        const player = gameState.getActivePlayer();
+        let player = gameState.getActivePlayer();
         player.gainResources(card.baseCost);
         player.cardsInHand.push(card.name);
 
@@ -485,15 +422,14 @@ describe("Card", () => {
         expect(gameState.discardPile.length).to.eql(0);
         expect(gameState.pendingGameInputs).to.eql([]);
         expect(player.hasPlayedCard(card.name)).to.be(false);
+        expect(player.hasPlayedCard(CardName.MINE)).to.be(false);
 
-        const gameState2 = gameState.next(gameInput);
-        // Active player remains the same
-        expect(player.playerId).to.be(gameState2.getActivePlayer().playerId);
-        expect(gameState2.pendingGameInputs).to.eql([
+        const gameState3 = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
           {
-            cardContext: CardName.POSTAL_PIGEON,
             inputType: GameInputType.SELECT_CARD,
             prevInputType: GameInputType.PLAY_CARD,
+            cardContext: CardName.POSTAL_PIGEON,
             mustSelectOne: false,
             cardOptions: [],
             cardOptionsUnfiltered: [CardName.QUEEN, CardName.KING],
@@ -502,6 +438,10 @@ describe("Card", () => {
             },
           },
         ]);
+
+        player = gameState3.getPlayer(player.playerId);
+        expect(player.hasPlayedCard(card.name)).to.be(true);
+        expect(gameState3.discardPile.length).to.eql(2);
       });
     });
 

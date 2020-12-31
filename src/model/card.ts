@@ -139,7 +139,8 @@ export class Card<TCardType extends CardType = CardType>
       return player.canAffordCard(this.name, gameInput.fromMeadow);
     } else if (
       gameInput.inputType === GameInputType.SELECT_CARD ||
-      gameInput.inputType === GameInputType.SELECT_PLAYER
+      gameInput.inputType === GameInputType.SELECT_PLAYER ||
+      gameInput.inputType === GameInputType.DISCARD_CARDS
     ) {
       return true;
     } else {
@@ -235,23 +236,34 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: false,
     associatedCard: CardName.THEATRE,
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
-      // if (gameInput.inputType !== GameInputType.PLAY_CARD) {
-      //   throw new Error("Invalid input type");
-      // }
-      // const player = gameState.getActivePlayer();
-      // if (gameInput.clientOptions?.cardsToDiscard) {
-      //   if (gameInput.clientOptions.cardsToDiscard.length > 5) {
-      //     throw new Error("Discarding too many cards");
-      //   }
-      //   gameInput.clientOptions.cardsToDiscard.forEach((cardName) => {
-      //     player.removeCardFromHand(cardName);
-      //     gameState.discardPile.addToStack(cardName);
-      //   });
-      //   player.gainResources({
-      //     [ResourceType.VP]: gameInput.clientOptions?.cardsToDiscard.length,
-      //   });
-      // }
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.PLAY_CARD) {
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.DISCARD_CARDS,
+          prevInputType: gameInput.inputType,
+          minCards: 0,
+          maxCards: 5,
+          cardContext: CardName.BARD,
+          clientOptions: {
+            cardsToDiscard: [],
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.DISCARD_CARDS) {
+        if (gameInput.clientOptions?.cardsToDiscard) {
+          if (gameInput.clientOptions.cardsToDiscard.length > 5) {
+            throw new Error("Discarding too many cards");
+          }
+          gameInput.clientOptions.cardsToDiscard.forEach((cardName) => {
+            player.removeCardFromHand(cardName);
+            gameState.discardPile.addToStack(cardName);
+          });
+          player.gainResources({
+            [ResourceType.VP]: gameInput.clientOptions?.cardsToDiscard.length,
+          });
+        }
+      } else {
+        throw new Error(`Unexpected input type ${gameInput.inputType}`);
+      }
     },
   }),
   [CardName.BARGE_TOAD]: new Card({

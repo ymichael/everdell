@@ -122,8 +122,11 @@ export type GameInputDiscardCards = {
   prevInputType: GameInputType;
   minCards: number;
   maxCards: number;
-  location?: LocationName;
-  cardsToDiscard?: CardName[];
+  locationContext?: LocationName;
+  cardContext?: CardName;
+  clientOptions: {
+    cardsToDiscard: CardName[];
+  };
 };
 
 export type GameInputSelectPlayer = {

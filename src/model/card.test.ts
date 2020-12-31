@@ -220,40 +220,53 @@ describe("Card", () => {
     describe(CardName.BARD, () => {
       it("should gain vp corresponding to no. of discarded cards", () => {
         const card = Card.fromName(CardName.BARD);
-        const gameInput = playCardInput(card.name, {
+        const gameInput = playCardInput(card.name);
+        let player = gameState.getActivePlayer();
+
+        player.cardsInHand = [CardName.BARD, CardName.FARM, CardName.RUINS];
+
+        player.gainResources(card.baseCost);
+        expect(player.getNumResource(ResourceType.VP)).to.be(0);
+
+        const gameState2 = gameState.next(gameInput);
+        player = gameState2.getPlayer(player.playerId);
+        expect(player.playerId).to.be(gameState2.getActivePlayer().playerId);
+        expect(gameState2.pendingGameInputs).to.eql([
+          {
+            inputType: GameInputType.DISCARD_CARDS,
+            prevInputType: GameInputType.PLAY_CARD,
+            cardContext: CardName.BARD,
+            minCards: 0,
+            maxCards: 5,
+            clientOptions: {
+              cardsToDiscard: [],
+            },
+          },
+        ]);
+
+        const gameState3 = gameState2.next({
+          inputType: GameInputType.DISCARD_CARDS,
+          prevInputType: GameInputType.PLAY_CARD,
+          cardContext: CardName.BARD,
+          minCards: 0,
+          maxCards: 5,
           clientOptions: {
             cardsToDiscard: [CardName.FARM, CardName.RUINS],
           },
         });
-        const player = gameState.getActivePlayer();
-        player.cardsInHand = [CardName.BARD, CardName.FARM, CardName.RUINS];
-        player.gainResources(card.baseCost);
-        expect(player.getNumResource(ResourceType.VP)).to.be(0);
-
-        const nextGameState = gameState.next(gameInput);
-        expect(
-          nextGameState
-            .getPlayer(player.playerId)
-            .getNumResource(ResourceType.VP)
-        ).to.be(2);
-        expect(nextGameState.getPlayer(player.playerId).cardsInHand).to.eql([]);
+        player = gameState3.getPlayer(player.playerId);
+        expect(player.playerId).to.not.be(
+          gameState3.getActivePlayer().playerId
+        );
+        expect(player.getNumResource(ResourceType.VP)).to.be(2);
+        expect(player.cardsInHand).to.eql([]);
       });
 
       it("should not allow more than 5 discarded cards", () => {
         const card = Card.fromName(CardName.BARD);
-        const gameInput = playCardInput(card.name, {
-          clientOptions: {
-            cardsToDiscard: [
-              CardName.FARM,
-              CardName.RUINS,
-              CardName.FARM,
-              CardName.RUINS,
-              CardName.FARM,
-              CardName.RUINS,
-            ],
-          },
-        });
-        const player = gameState.getActivePlayer();
+        const gameInput = playCardInput(card.name);
+
+        let player = gameState.getActivePlayer();
         player.cardsInHand = [
           CardName.BARD,
           CardName.FARM,
@@ -265,9 +278,56 @@ describe("Card", () => {
         ];
         player.gainResources(card.baseCost);
         expect(player.getNumResource(ResourceType.VP)).to.be(0);
+
+        const gameState2 = gameState.next(gameInput);
+        player = gameState2.getPlayer(player.playerId);
+        expect(player.playerId).to.be(gameState2.getActivePlayer().playerId);
+        expect(gameState2.pendingGameInputs).to.eql([
+          {
+            inputType: GameInputType.DISCARD_CARDS,
+            prevInputType: GameInputType.PLAY_CARD,
+            cardContext: CardName.BARD,
+            minCards: 0,
+            maxCards: 5,
+            clientOptions: {
+              cardsToDiscard: [],
+            },
+          },
+        ]);
+
         expect(() => {
-          gameState.next(gameInput);
+          gameState2.next({
+            inputType: GameInputType.DISCARD_CARDS,
+            prevInputType: GameInputType.PLAY_CARD,
+            cardContext: CardName.BARD,
+            minCards: 0,
+            maxCards: 5,
+            clientOptions: {
+              cardsToDiscard: [
+                CardName.BARD,
+                CardName.FARM,
+                CardName.RUINS,
+                CardName.FARM,
+                CardName.RUINS,
+                CardName.FARM,
+              ],
+            },
+          });
         }).to.throwException(/too many cards/);
+
+        expect(() => {
+          gameState2.next({
+            inputType: GameInputType.DISCARD_CARDS,
+            prevInputType: GameInputType.PLAY_CARD,
+            cardContext: CardName.BARD,
+            minCards: 0,
+            maxCards: 5,
+            clientOptions: {
+              // Player doesn't have queen
+              cardsToDiscard: [CardName.QUEEN],
+            },
+          });
+        }).to.throwException(/unable to discard/i);
         expect(player.getNumResource(ResourceType.VP)).to.be(0);
       });
     });

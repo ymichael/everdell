@@ -170,6 +170,7 @@ export class GameState {
     if (gameInput.prevInputType === GameInputType.PLAY_CARD) {
       if (
         gameInput.inputType === GameInputType.SELECT_CARD ||
+        gameInput.inputType === GameInputType.DISCARD_CARDS ||
         gameInput.inputType === GameInputType.SELECT_PLAYER
       ) {
         if (!gameInput.cardContext) {
@@ -186,10 +187,10 @@ export class GameState {
 
     if (gameInput.prevInputType === GameInputType.PLACE_WORKER) {
       if (gameInput.inputType === GameInputType.DISCARD_CARDS) {
-        if (!gameInput.location) {
+        if (!gameInput.locationContext) {
           throw new Error("Invalid input: missing location");
         }
-        const location = Location.fromName(gameInput.location);
+        const location = Location.fromName(gameInput.locationContext);
         if (!location.canPlay(this, gameInput)) {
           throw new Error("Cannot take action");
         }

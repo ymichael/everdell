@@ -27,6 +27,11 @@ import {
 import cloneDeep from "lodash/cloneDeep";
 
 type MaxWorkersInnerFn = (cardOwner: Player) => number;
+type ProductionInnerFn = (
+  gameState: GameState,
+  gameInput: GameInput,
+  cardOwner: Player
+) => void;
 
 export class Card<TCardType extends CardType = CardType>
   implements GameStatePlayable {
@@ -47,7 +52,7 @@ export class Card<TCardType extends CardType = CardType>
   readonly associatedCard: CardName | null;
   readonly isOpenDestination: boolean;
 
-  readonly productionInner: GameStatePlayFn | undefined;
+  readonly productionInner: ProductionInnerFn | undefined;
   readonly resourcesToGain: ProductionResourceMap | undefined;
   readonly maxWorkersInner: MaxWorkersInnerFn | undefined;
 
@@ -84,7 +89,7 @@ export class Card<TCardType extends CardType = CardType>
   } & (TCardType extends CardType.PRODUCTION
     ? {
         resourcesToGain: ProductionResourceMap;
-        productionInner?: GameStatePlayFn | undefined;
+        productionInner?: ProductionInnerFn | undefined;
       }
     : {
         resourcesToGain?: ProductionResourceMap;
@@ -113,7 +118,7 @@ export class Card<TCardType extends CardType = CardType>
 
   getPlayedCardInfo(playerId: string): PlayedCardInfo {
     const ret: PlayedCardInfo = {
-      playerId,
+      cardOwnerId: playerId,
       cardName: this.name,
     };
     if (this.isConstruction) {
@@ -166,7 +171,7 @@ export class Card<TCardType extends CardType = CardType>
         this.cardType === CardType.PRODUCTION ||
         this.cardType === CardType.TRAVELER
       ) {
-        this.gainProduction(gameState, gameInput);
+        this.gainProduction(gameState, gameInput, player);
         if (this.playInner) {
           this.playInner(gameState, gameInput);
         }
@@ -176,7 +181,11 @@ export class Card<TCardType extends CardType = CardType>
     }
   }
 
-  gainProduction(gameState: GameState, gameInput: GameInput): void {
+  gainProduction(
+    gameState: GameState,
+    gameInput: GameInput,
+    cardOwner: Player
+  ): void {
     const player = gameState.getActivePlayer();
     if (this.resourcesToGain) {
       player.gainResources(this.resourcesToGain);
@@ -185,7 +194,7 @@ export class Card<TCardType extends CardType = CardType>
       }
     }
     if (this.productionInner) {
-      this.productionInner(gameState, gameInput);
+      this.productionInner(gameState, gameInput, cardOwner);
     }
   }
 
@@ -286,7 +295,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: false,
     associatedCard: CardName.TWIG_BARGE,
     resourcesToGain: {},
-    productionInner: (gameState: GameState) => {
+    productionInner: (
+      gameState: GameState,
+      gameInput: GameInput,
+      cardOwner: Player
+    ) => {
       const player = gameState.getActivePlayer();
       const playedFarms = player.getPlayedCardInfos(CardName.FARM);
       player.gainResources({
@@ -378,29 +391,30 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     resourcesToGain: {},
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
-      if (gameInput.inputType === GameInputType.SELECT_CARDS) {
+      if (gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS) {
         const selectedCards = gameInput.clientOptions.selectedCards;
         if (
           !selectedCards ||
           selectedCards.length !== 1 ||
-          !player.hasCardInCity(selectedCards[0])
+          !selectedCards[0].cardName ||
+          !player.hasCardInCity(selectedCards[0].cardName)
         ) {
           throw new Error("Invalid input");
         }
-        const targetCard = Card.fromName(selectedCards[0]);
+        const targetCard = Card.fromName(selectedCards[0].cardName);
         if (targetCard.cardType !== CardType.PRODUCTION) {
           throw new Error("Invalid input");
         }
-        targetCard.gainProduction(gameState, gameInput);
+        targetCard.gainProduction(gameState, gameInput, player);
       }
     },
     productionInner: (gameState: GameState) => {
       const player = gameState.getActivePlayer();
       const cardOptions = player
-        .getPlayedCardByType(CardType.PRODUCTION)
-        .filter((cardName) => cardName !== CardName.CHIP_SWEEP);
+        .getAllPlayedCardsByType(CardType.PRODUCTION)
+        .filter(({ cardName }) => cardName !== CardName.CHIP_SWEEP);
       gameState.pendingGameInputs.push({
-        inputType: GameInputType.SELECT_CARDS,
+        inputType: GameInputType.SELECT_PLAYED_CARDS,
         prevInputType: GameInputType.PLAY_CARD,
         cardOptions,
         cardContext: CardName.CHIP_SWEEP,
@@ -574,10 +588,14 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     resourcesToGain: {
       [ResourceType.BERRY]: 1,
     },
-    productionInner: (gameState: GameState) => {
+    productionInner: (
+      gameState: GameState,
+      gameInput: GameInput,
+      cardOwner: Player
+    ) => {
       const player = gameState.getActivePlayer();
       player.gainResources({
-        [ResourceType.BERRY]: player.hasCardInCity(CardName.FARM) ? 1 : 0,
+        [ResourceType.BERRY]: cardOwner.hasCardInCity(CardName.FARM) ? 1 : 0,
       });
     },
   }),
@@ -613,11 +631,15 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         player.gainResources(resources);
       }
     },
-    productionInner: (gameState: GameState, gameInput: GameInput) => {
+    productionInner: (
+      gameState: GameState,
+      gameInput: GameInput,
+      cardOwner: Player
+    ) => {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.PLAY_CARD) {
-        const playedHusbands = player.getPlayedCardInfos(CardName.HUSBAND);
-        const playedWifes = player.getPlayedCardInfos(CardName.WIFE);
+        const playedHusbands = cardOwner.getPlayedCardInfos(CardName.HUSBAND);
+        const playedWifes = cardOwner.getPlayedCardInfos(CardName.WIFE);
         if (playedHusbands.length <= playedWifes.length) {
           gameState.pendingGameInputs.push({
             inputType: GameInputType.SELECT_RESOURCES,
@@ -750,33 +772,80 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: false,
     associatedCard: CardName.MINE,
     resourcesToGain: {},
-    productionInner: (gameState: GameState, gameInput: GameInput) => {
-      if (gameInput.inputType !== GameInputType.PLAY_CARD) {
-        //   throw new Error("Invalid input type");
-        // gameState.pendingGameInputs.push({
-        // })
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      if (gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS) {
+        const selectedCards = gameInput.clientOptions.selectedCards;
+        if (
+          !selectedCards ||
+          selectedCards.length !== 1 ||
+          !selectedCards[0].cardName
+        ) {
+          throw new Error("Invalid input");
+        }
+        const cardOwner = gameState.getPlayer(selectedCards[0].cardOwnerId);
+        const targetCard = Card.fromName(selectedCards[0].cardName);
+        if (
+          cardOwner.hasCardInCity(selectedCards[0].cardName) ||
+          targetCard.cardType !== CardType.PRODUCTION
+        ) {
+          throw new Error("Invalid input");
+        }
+        targetCard.gainProduction(gameState, gameInput, cardOwner);
       } else {
         throw new Error(`Unexpected input type: ${gameInput.inputType}`);
       }
-      // }
-      // if (
-      //   !gameInput.clientOptions?.targetCard ||
-      //   !gameInput.clientOptions?.targetPlayerId
-      // ) {
-      //   throw new Error("Invalid input");
-      // }
-      // const targetPlayer = gameState.getPlayer(
-      //   gameInput.clientOptions?.targetPlayerId
-      // );
-      // if (!targetPlayer.hasCardInCity(gameInput.clientOptions?.targetCard)) {
-      //   throw new Error("Invalid input");
-      // }
-      // const targetCard = Card.fromName(gameInput.clientOptions?.targetCard);
-      // if (targetCard.cardType !== CardType.PRODUCTION) {
-      //   throw new Error("Invalid input");
-      // }
-      // // TODO fix this so that we compute things like no. of farms
-      // targetCard.gainProduction(gameState, gameInput);
+    },
+    productionInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.PLAY_CARD) {
+        // If another player has a miner mole, we can copy any card in the game.
+        const canMinerMoleMinerMole = gameState.players
+          .filter((x) => x.playerId !== player.playerId)
+          .some((x) => {
+            x.hasCardInCity(CardName.MINER_MOLE);
+          });
+
+        const productionPlayedCards: PlayedCardInfo[] = [];
+        gameState.players.forEach((p) => {
+          if (p.playerId === player.playerId) {
+            if (canMinerMoleMinerMole) {
+              productionPlayedCards.push(
+                ...p.getAllPlayedCardsByType(CardType.PRODUCTION)
+              );
+            }
+          } else {
+            productionPlayedCards.push(
+              ...p.getAllPlayedCardsByType(CardType.PRODUCTION)
+            );
+          }
+        });
+
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          prevInputType: gameInput.inputType,
+          cardContext: CardName.MINER_MOLE,
+          cardOptions: productionPlayedCards.filter((playedCardInfo) => {
+            // Filter out useless cards to copy
+            if (
+              playedCardInfo.cardName === CardName.STOREHOUSE &&
+              playedCardInfo.cardOwnerId !== player.playerId
+            ) {
+              return false;
+            }
+            return (
+              playedCardInfo.cardName !== CardName.MINER_MOLE &&
+              playedCardInfo.cardName !== CardName.CHIP_SWEEP
+            );
+          }),
+          maxToSelect: 1,
+          minToSelect: 1,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else {
+        throw new Error(`Unexpected input type: ${gameInput.inputType}`);
+      }
     },
   }),
   [CardName.MONASTERY]: new Card({

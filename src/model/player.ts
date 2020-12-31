@@ -235,7 +235,7 @@ export class Player {
     return crittersInCity;
   }
 
-  getPlayedCardByType(cardType: CardType): CardName[] {
+  getPlayedCardNamesByType(cardType: CardType): CardName[] {
     const cards: CardName[] = [];
     this.forEachPlayedCard(({ cardName }) => {
       const card = Card.fromName(cardName);
@@ -307,6 +307,17 @@ export class Player {
   getAllPlayedCards(): PlayedCardInfo[] {
     const ret: PlayedCardInfo[] = [];
     this.forEachPlayedCard((x) => ret.push(x));
+    return ret;
+  }
+
+  getAllPlayedCardsByType(cardType: CardType): PlayedCardInfo[] {
+    const ret: PlayedCardInfo[] = [];
+    this.forEachPlayedCard((playedCardInfo) => {
+      const card = Card.fromName(playedCardInfo.cardName);
+      if (card.cardType === cardType) {
+        ret.push(playedCardInfo);
+      }
+    });
     return ret;
   }
 

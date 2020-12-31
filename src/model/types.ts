@@ -293,7 +293,7 @@ export type EventNameToPlayerId = Partial<
 >;
 
 export type PlayedCardInfo = {
-  playerId: string;
+  cardOwnerId: string;
   cardName: CardName;
 
   // constructions

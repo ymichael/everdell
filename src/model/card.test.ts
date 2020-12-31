@@ -513,7 +513,7 @@ describe("Card", () => {
         expect(player.numAvailableWorkers).to.be(2);
         expect(player.getPlayedCardInfos(CardName.POST_OFFICE)).to.eql([
           {
-            playerId: player.playerId,
+            cardOwnerId: player.playerId,
             cardName: CardName.POST_OFFICE,
             usedForCritter: false,
             workers: [],
@@ -578,7 +578,7 @@ describe("Card", () => {
         expect(player.numAvailableWorkers).to.be(1);
         expect(player.getPlayedCardInfos(CardName.POST_OFFICE)).to.eql([
           {
-            playerId: player.playerId,
+            cardOwnerId: player.playerId,
             cardName: CardName.POST_OFFICE,
             usedForCritter: false,
             workers: [player.playerId],
@@ -1017,14 +1017,17 @@ describe("Card", () => {
         const gameState3 = multiStepGameInputTest(gameState, [
           playCardInput(card.name),
           {
-            inputType: GameInputType.SELECT_CARDS,
+            inputType: GameInputType.SELECT_PLAYED_CARDS,
             prevInputType: GameInputType.PLAY_CARD,
             cardContext: CardName.CHIP_SWEEP,
             maxToSelect: 1,
             minToSelect: 1,
-            cardOptions: [CardName.MINE, CardName.FARM],
+            cardOptions: [
+              ...player.getPlayedCardInfos(CardName.MINE),
+              ...player.getPlayedCardInfos(CardName.FARM),
+            ],
             clientOptions: {
-              selectedCards: [CardName.MINE],
+              selectedCards: player.getPlayedCardInfos(CardName.MINE),
             },
           },
         ]);

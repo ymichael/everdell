@@ -28,7 +28,9 @@ export class Card<TCardType extends CardType = CardType>
   implements GameStatePlayable {
   readonly playInner: GameStatePlayFn | undefined;
   readonly canPlayInner: GameStateCanPlayFn | undefined;
-  readonly playedCardInfoInner: (() => PlayedCardInfo) | undefined;
+  readonly playedCardInfoInner:
+    | (() => Partial<Omit<PlayedCardInfo, "playerId">>)
+    | undefined;
   readonly pointsInner: GameStateCountPointsFn | undefined;
 
   readonly name: CardName;
@@ -70,7 +72,7 @@ export class Card<TCardType extends CardType = CardType>
     isOpenDestination?: boolean;
     playInner?: GameStatePlayFn;
     canPlayInner?: GameStateCanPlayFn;
-    playedCardInfoInner?: () => PlayedCardInfo;
+    playedCardInfoInner?: () => Partial<Omit<PlayedCardInfo, "playerId">>;
     pointsInner?: (gameState: GameState, playerId: string) => number;
   } & (TCardType extends CardType.PRODUCTION
     ? {
@@ -100,8 +102,11 @@ export class Card<TCardType extends CardType = CardType>
     this.resourcesToGain = resourcesToGain;
   }
 
-  getPlayedCardInfo(): PlayedCardInfo {
-    const ret: PlayedCardInfo = {};
+  getPlayedCardInfo(playerId: string): PlayedCardInfo {
+    const ret: PlayedCardInfo = {
+      playerId,
+      cardName: this.name,
+    };
     if (this.isConstruction) {
       ret.usedForCritter = false;
     }
@@ -109,7 +114,6 @@ export class Card<TCardType extends CardType = CardType>
       ret.workers = [];
       ret.maxWorkers = 1;
     }
-
     return {
       ...ret,
       ...(this.playedCardInfoInner ? this.playedCardInfoInner() : {}),

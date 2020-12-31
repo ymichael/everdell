@@ -272,6 +272,9 @@ export type EventNameToPlayerId = Partial<
 >;
 
 export type PlayedCardInfo = {
+  playerId: string;
+  cardName: CardName;
+
   // constructions
   usedForCritter?: boolean;
 

@@ -121,7 +121,7 @@ export class Player {
     }
     const card = Card.fromName(cardName);
     this.playedCards[cardName] = this.playedCards[cardName] || [];
-    this.playedCards[cardName]!.push(card.getPlayedCardInfo());
+    this.playedCards[cardName]!.push(card.getPlayedCardInfo(this.playerId));
   }
 
   removeCardFromCity(
@@ -228,17 +228,12 @@ export class Player {
     return cards;
   }
 
-  forEachPlayedCard(
-    cb: (x: { cardName: CardName; playedCardInfo: PlayedCardInfo }) => void
-  ): void {
-    (Object.entries(this.playedCards) as [
-      CardName,
-      PlayedCardInfo[]
-    ][]).forEach(([cardName, playedCards]) => {
-      playedCards.forEach((playedCardInfo) => {
-        cb({ cardName, playedCardInfo });
-      });
-    });
+  forEachPlayedCard(callback: (playedCardInfo: PlayedCardInfo) => void): void {
+    (Object.values(this.playedCards) as PlayedCardInfo[][]).forEach(
+      (playedCards) => {
+        playedCards.forEach(callback);
+      }
+    );
   }
 
   getNumCardsInCity(): number {
@@ -282,13 +277,11 @@ export class Player {
   // returns all destination cards (including storehouse) that have a worker on them
   getDestinationCardsWithWorkers(): CardName[] {
     const destinationCardsWithWorkers: CardName[] = [];
-    this.forEachPlayedCard(({ cardName, playedCardInfo }) => {
+    this.forEachPlayedCard(({ cardName, workers = [], maxWorkers = 1 }) => {
       const card = Card.fromName(cardName);
       if (!card.canTakeWorker()) {
         return;
       }
-      const workers = playedCardInfo.workers || [];
-      const maxWorkers = playedCardInfo.maxWorkers || 1;
       if (workers.length > 0) {
         destinationCardsWithWorkers.push(cardName);
       }

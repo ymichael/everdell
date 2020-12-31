@@ -505,10 +505,10 @@ describe("Event", () => {
       gameState.eventsMap[EventName.SPECIAL_PRISTINE_CHAPEL_CEILING] = null;
 
       player.addToCity(CardName.WOODCARVER);
-
-      player.playedCards[CardName.CHAPEL] = [
-        { resources: { [ResourceType.VP]: 2 } },
-      ];
+      player.addToCity(CardName.CHAPEL);
+      player.getPlayedCardInfos(CardName.CHAPEL).forEach((info) => {
+        info.resources = { [ResourceType.VP]: 2 };
+      });
 
       // check if the player can claim the event
       expect(event.canPlay(gameState, gameInput)).to.be(true);

@@ -407,6 +407,8 @@ describe("Card", () => {
         expect(player.numAvailableWorkers).to.be(2);
         expect(player.getPlayedCardInfos(CardName.POST_OFFICE)).to.eql([
           {
+            playerId: player.playerId,
+            cardName: CardName.POST_OFFICE,
             maxWorkers: 1,
             usedForCritter: false,
             workers: [],
@@ -471,6 +473,8 @@ describe("Card", () => {
         expect(player.numAvailableWorkers).to.be(1);
         expect(player.getPlayedCardInfos(CardName.POST_OFFICE)).to.eql([
           {
+            playerId: player.playerId,
+            cardName: CardName.POST_OFFICE,
             maxWorkers: 1,
             usedForCritter: false,
             workers: [player.playerId],

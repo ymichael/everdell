@@ -400,6 +400,49 @@ describe("Event", () => {
     });
   });
 
+  describe(EventName.SPECIAL_PERFORMER_IN_RESIDENCE, () => {
+    it("game state", () => {
+      const event = Event.fromName(EventName.SPECIAL_PERFORMER_IN_RESIDENCE);
+      let player = gameState.getActivePlayer();
+      const gameInput = claimEventInput(event.name);
+
+      gameState.eventsMap[EventName.SPECIAL_PERFORMER_IN_RESIDENCE] = null;
+
+      player.playedCards[CardName.BARD] = [{}];
+      player.playedCards[CardName.INN] = [{}];
+      player.gainResources({ [ResourceType.BERRY]: 5 });
+
+      // check if the player can claim the event
+      expect(event.canPlay(gameState, gameInput)).to.be(true);
+
+      // try to claim the event + check that you get the correct game state back
+      expect(gameState.pendingGameInputs).to.eql([]);
+      expect(
+        player.claimedEvents[EventName.SPECIAL_PERFORMER_IN_RESIDENCE]
+      ).to.be(undefined);
+
+      gameState = multiStepGameInputTest(gameState, [
+        gameInput,
+        {
+          inputType: GameInputType.SELECT_RESOURCES,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          eventContext: EventName.SPECIAL_PERFORMER_IN_RESIDENCE,
+          maxResources: 3,
+          minResources: 0,
+          clientOptions: {
+            resources: { [ResourceType.BERRY]: 3 },
+          },
+        },
+      ]);
+      player = gameState.getPlayer(player.playerId);
+
+      // check to make sure the right cards are still in the city
+      expect(player.hasPlayedCard(CardName.BARD)).to.eql(true);
+
+      expect(player.getNumResource(ResourceType.BERRY)).to.be(2);
+    });
+  });
+
   describe(EventName.SPECIAL_UNDER_NEW_MANAGEMENT, () => {
     it("game state", () => {
       const event = Event.fromName(EventName.SPECIAL_UNDER_NEW_MANAGEMENT);

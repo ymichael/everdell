@@ -203,13 +203,10 @@ export class Card<TCardType extends CardType = CardType>
   }
 
   getMaxWorkers(cardOwner: Player): number {
-    if (
-      this.cardType === CardType.DESTINATION ||
-      this.name === CardName.STOREHOUSE
-    ) {
-      if (this.maxWorkersInner) {
-        return this.maxWorkersInner(cardOwner);
-      }
+    if (this.maxWorkersInner) {
+      return this.maxWorkersInner(cardOwner);
+    }
+    if (this.cardType === CardType.DESTINATION) {
       return 1;
     }
     return 0;
@@ -320,6 +317,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: true,
     associatedCard: CardName.UNDERTAKER,
+    maxWorkersInner: (cardOwner: Player) => {
+      return cardOwner.hasCardInCity(CardName.UNDERTAKER) ? 2 : 1;
+    },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       if (gameInput.inputType !== GameInputType.VISIT_DESTINATION_CARD) {
         throw new Error("Invalid input type");
@@ -804,6 +804,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: true,
     associatedCard: CardName.MONK,
+    maxWorkersInner: (cardOwner: Player) => {
+      return cardOwner.hasCardInCity(CardName.MONK) ? 2 : 1;
+    },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       throw new Error("Not implemented");
       // if (gameInput.inputType !== GameInputType.VISIT_DESTINATION_CARD) {
@@ -1330,6 +1333,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: true,
     associatedCard: CardName.WOODCARVER,
     resourcesToGain: {},
+    maxWorkersInner: () => 1,
     playedCardInfoDefault: {
       resources: {
         [ResourceType.TWIG]: 0,

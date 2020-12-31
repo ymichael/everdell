@@ -724,8 +724,6 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       } else {
         throw new Error(`Invalid input type ${gameInput.inputType}`);
       }
-
-      throw new Error("Not Implemented");
     },
     // 2 points per berry on event
     pointsInner: (gameState: GameState, playerId: string) => {

@@ -398,6 +398,22 @@ describe("Event", () => {
       expect(player.hasCardInCity(CardName.LOOKOUT)).to.eql(true);
 
       expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+
+      // check that correct resources are on card
+      const eventInfo =
+        player.claimedEvents[EventName.SPECIAL_AN_EVENING_OF_FIREWORKS];
+
+      if (!eventInfo) {
+        throw new Error("invalid event info");
+      }
+      const storedResources = eventInfo.storedResources;
+
+      if (!storedResources) {
+        throw new Error("invalid list of stored resources");
+      }
+      expect(storedResources).to.eql({
+        [ResourceType.TWIG]: 3,
+      });
     });
   });
 
@@ -441,6 +457,22 @@ describe("Event", () => {
       expect(player.hasCardInCity(CardName.BARD)).to.eql(true);
 
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
+
+      // check that correct resources are on card
+      const eventInfo =
+        player.claimedEvents[EventName.SPECIAL_PERFORMER_IN_RESIDENCE];
+
+      if (!eventInfo) {
+        throw new Error("invalid event info");
+      }
+      const storedResources = eventInfo.storedResources;
+
+      if (!storedResources) {
+        throw new Error("invalid list of stored resources");
+      }
+      expect(storedResources).to.eql({
+        [ResourceType.BERRY]: 3,
+      });
     });
   });
 
@@ -494,6 +526,24 @@ describe("Event", () => {
       expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(2);
       expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
       expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(1);
+
+      // check that correct resources are on card
+      const eventInfo =
+        player.claimedEvents[EventName.SPECIAL_UNDER_NEW_MANAGEMENT];
+
+      if (!eventInfo) {
+        throw new Error("invalid event info");
+      }
+      const storedResources = eventInfo.storedResources;
+
+      if (!storedResources) {
+        throw new Error("invalid list of stored resources");
+      }
+      expect(storedResources).to.eql({
+        [ResourceType.TWIG]: 1,
+        [ResourceType.RESIN]: 1,
+        [ResourceType.PEBBLE]: 1,
+      });
     });
   });
   describe(EventName.SPECIAL_PRISTINE_CHAPEL_CEILING, () => {
@@ -542,6 +592,81 @@ describe("Event", () => {
 
       expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(1);
       expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
+    });
+  });
+
+  describe(EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED, () => {
+    it("game state", () => {
+      const event = Event.fromName(
+        EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED
+      );
+      let player = gameState.getActivePlayer();
+      const gameInput = claimEventInput(event.name);
+
+      gameState.eventsMap[EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED] = null;
+
+      player.addToCity(CardName.HISTORIAN);
+      player.addToCity(CardName.RUINS);
+
+      // add cards to deck so we know what cards were drawn
+      gameState.deck.addToStack(CardName.KING);
+      gameState.deck.addToStack(CardName.QUEEN);
+      gameState.deck.addToStack(CardName.POSTAL_PIGEON);
+      gameState.deck.addToStack(CardName.FOOL);
+      gameState.deck.addToStack(CardName.QUEEN);
+
+      // check if the player can claim the event
+      expect(event.canPlay(gameState, gameInput)).to.be(true);
+
+      // try to claim the event + check that you get the correct game state back
+      expect(gameState.pendingGameInputs).to.eql([]);
+      expect(
+        player.claimedEvents[EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED]
+      ).to.be(undefined);
+
+      gameState = multiStepGameInputTest(gameState, [
+        gameInput,
+        {
+          inputType: GameInputType.SELECT_MULTIPLE_CARDS,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          eventContext: EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED,
+          maxToSelect: 5,
+          minToSelect: 0,
+          cardOptions: [
+            CardName.QUEEN,
+            CardName.FOOL,
+            CardName.POSTAL_PIGEON,
+            CardName.QUEEN,
+            CardName.KING,
+          ],
+          clientOptions: {
+            selectedCards: [],
+          },
+        },
+      ]);
+      player = gameState.getPlayer(player.playerId);
+
+      // player should have 0 cards in hand
+      expect(player.cardsInHand.length).to.be(0);
+
+      const eventInfo =
+        player.claimedEvents[EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED];
+
+      if (!eventInfo) {
+        throw new Error("invalid event info");
+      }
+      const storedCards = eventInfo.storedCards;
+
+      if (!storedCards) {
+        throw new Error("invalid list of stored cards");
+      }
+      expect(storedCards).to.eql([
+        CardName.QUEEN,
+        CardName.FOOL,
+        CardName.POSTAL_PIGEON,
+        CardName.QUEEN,
+        CardName.KING,
+      ]);
     });
   });
 });

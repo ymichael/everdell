@@ -59,12 +59,12 @@ export type GameInputClaimEvent = {
     //cardsToUse?: CardName[];
 
     // eg, place berries on event
-    resourcesToSpend?: {
-      [ResourceType.TWIG]?: number;
-      [ResourceType.BERRY]?: number;
-      [ResourceType.PEBBLE]?: number;
-      [ResourceType.RESIN]?: number;
-    };
+    // resourcesToSpend?: {
+    //   [ResourceType.TWIG]?: number;
+    //   [ResourceType.BERRY]?: number;
+    //   [ResourceType.PEBBLE]?: number;
+    //   [ResourceType.RESIN]?: number;
+    // };
 
     resourcesToGain?: {
       [ResourceType.TWIG]?: number;
@@ -161,6 +161,7 @@ export type GameInputSelectResources = {
 
   locationContext?: LocationName;
   cardContext?: CardName;
+  eventContext?: EventName;
 
   clientOptions: {
     resources: CardCost;

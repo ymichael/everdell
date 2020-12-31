@@ -356,4 +356,47 @@ describe("Event", () => {
       expect(player.hasPlayedCard(CardName.COURTHOUSE)).to.eql(true);
     });
   });
+
+  describe(EventName.SPECIAL_AN_EVENING_OF_FIREWORKS, () => {
+    it("game state", () => {
+      const event = Event.fromName(EventName.SPECIAL_AN_EVENING_OF_FIREWORKS);
+      let player = gameState.getActivePlayer();
+      const gameInput = claimEventInput(event.name);
+
+      gameState.eventsMap[EventName.SPECIAL_AN_EVENING_OF_FIREWORKS] = null;
+
+      player.playedCards[CardName.LOOKOUT] = [{}];
+      player.playedCards[CardName.MINER_MOLE] = [{}];
+      player.gainResources({ [ResourceType.TWIG]: 3 });
+
+      // check if the player can claim the event
+      expect(event.canPlay(gameState, gameInput)).to.be(true);
+
+      // try to claim the event + check that you get the correct game state back
+      expect(gameState.pendingGameInputs).to.eql([]);
+      expect(
+        player.claimedEvents[EventName.SPECIAL_AN_EVENING_OF_FIREWORKS]
+      ).to.be(undefined);
+
+      gameState = multiStepGameInputTest(gameState, [
+        gameInput,
+        {
+          inputType: GameInputType.SELECT_RESOURCES,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          eventContext: EventName.SPECIAL_AN_EVENING_OF_FIREWORKS,
+          maxResources: 3,
+          minResources: 0,
+          clientOptions: {
+            resources: { [ResourceType.TWIG]: 3 },
+          },
+        },
+      ]);
+      player = gameState.getPlayer(player.playerId);
+
+      // check to make sure the right cards are still in the city
+      expect(player.hasPlayedCard(CardName.LOOKOUT)).to.eql(true);
+
+      expect(player.getNumResource(ResourceType.TWIG)).to.be(0);
+    });
+  });
 });

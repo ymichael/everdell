@@ -8,6 +8,7 @@ import {
   GameInputType,
   PlayedEventInfo,
   ResourceType,
+  CardCost,
 } from "./types";
 import { Card } from "./card";
 import {
@@ -88,7 +89,8 @@ export class Event implements GameStatePlayable {
   play(gameState: GameState, gameInput: GameInput): void {
     if (
       gameInput.inputType !== GameInputType.CLAIM_EVENT &&
-      gameInput.inputType !== GameInputType.SELECT_MULTIPLE_CARDS
+      gameInput.inputType !== GameInputType.SELECT_MULTIPLE_CARDS &&
+      gameInput.inputType !== GameInputType.SELECT_RESOURCES
     ) {
       throw new Error("Invalid game input type");
     }
@@ -223,38 +225,53 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     // place up to 3 twigs on event
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
-      if (gameInput.inputType !== GameInputType.CLAIM_EVENT) {
-        throw new Error("Invalid input type");
-      }
-      if (!gameInput.clientOptions) {
-        throw new Error("Invalid input");
-      }
-      const eventInfo =
-        player?.claimedEvents[EventName.SPECIAL_AN_EVENING_OF_FIREWORKS];
-      if (!eventInfo) {
-        throw new Error("Cannot find event info");
-      }
 
-      const resources = gameInput.clientOptions.resourcesToSpend;
-      if (!resources) {
-        throw new Error("Invalid resources list");
-      }
-      const numTwigsToSpend = resources[ResourceType.TWIG];
-      if (!numTwigsToSpend) {
-        throw new Error("Invalid number of twigs");
-      }
-      if (numTwigsToSpend > 3) {
-        throw new Error("Cannot place more than 3 twigs on this card");
-      }
+      if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
+        // ask player how many twigs to add to card
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_RESOURCES,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          eventContext: EventName.SPECIAL_AN_EVENING_OF_FIREWORKS,
+          maxResources: 3,
+          minResources: 0,
+          clientOptions: {
+            resources: [] as CardCost,
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_RESOURCES) {
+        const resources = gameInput.clientOptions.resources;
+        if (!resources) {
+          throw new Error("invalid input");
+        }
 
-      // add twigs to this event
-      eventInfo.storedResources = eventInfo.storedResources || {
-        [ResourceType.TWIG]: 0,
-      };
-      eventInfo.storedResources[ResourceType.TWIG] = numTwigsToSpend;
+        const numTwigs = resources[ResourceType.TWIG];
 
-      // remove twigs from player's supply
-      player.spendResources({ [ResourceType.TWIG]: numTwigsToSpend });
+        if (!numTwigs) {
+          throw new Error("must provide number of twigs");
+        }
+
+        if (numTwigs > 3) {
+          throw new Error("too many twigs");
+        }
+
+        const eventInfo =
+          player.claimedEvents[EventName.SPECIAL_AN_EVENING_OF_FIREWORKS];
+
+        if (!eventInfo) {
+          throw new Error("Cannot find event info");
+        }
+
+        // add twigs to this event
+        eventInfo.storedResources = eventInfo.storedResources || {
+          [ResourceType.TWIG]: 0,
+        };
+        eventInfo.storedResources[ResourceType.TWIG] = numTwigs;
+
+        // remove twigs from player's supply
+        player.spendResources({ [ResourceType.TWIG]: numTwigs });
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
+      }
     },
     // 2 points per twig on event
     pointsInner: (gameState: GameState, playerId: string) => {
@@ -662,39 +679,40 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     }),
     // place up to 3 berries on event
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      const player = gameState.getActivePlayer();
-      if (gameInput.inputType !== GameInputType.CLAIM_EVENT) {
-        throw new Error("Invalid input type");
-      }
-      if (!gameInput.clientOptions) {
-        throw new Error("Invalid input");
-      }
-      const eventInfo =
-        player?.claimedEvents[EventName.SPECIAL_PERFORMER_IN_RESIDENCE];
-      if (!eventInfo) {
-        throw new Error("Cannot find event info");
-      }
+      throw new Error("Not Implemented");
+      // const player = gameState.getActivePlayer();
+      // if (gameInput.inputType !== GameInputType.CLAIM_EVENT) {
+      //   throw new Error("Invalid input type");
+      // }
+      // if (!gameInput.clientOptions) {
+      //   throw new Error("Invalid input");
+      // }
+      // const eventInfo =
+      //   player?.claimedEvents[EventName.SPECIAL_PERFORMER_IN_RESIDENCE];
+      // if (!eventInfo) {
+      //   throw new Error("Cannot find event info");
+      // }
 
-      const resources = gameInput.clientOptions.resourcesToSpend;
-      if (!resources) {
-        throw new Error("Invalid resources list");
-      }
-      const numBerriesToSpend = resources[ResourceType.BERRY];
-      if (!numBerriesToSpend) {
-        throw new Error("Invalid number of berries");
-      }
-      if (numBerriesToSpend > 3) {
-        throw new Error("Cannot place more than 3 berries on this card");
-      }
+      // const resources = gameInput.clientOptions.resourcesToSpend;
+      // if (!resources) {
+      //   throw new Error("Invalid resources list");
+      // }
+      // const numBerriesToSpend = resources[ResourceType.BERRY];
+      // if (!numBerriesToSpend) {
+      //   throw new Error("Invalid number of berries");
+      // }
+      // if (numBerriesToSpend > 3) {
+      //   throw new Error("Cannot place more than 3 berries on this card");
+      // }
 
-      // add berries to this event
-      eventInfo.storedResources = eventInfo.storedResources || {
-        [ResourceType.BERRY]: 0,
-      };
-      eventInfo.storedResources[ResourceType.BERRY] = numBerriesToSpend;
+      // // add berries to this event
+      // eventInfo.storedResources = eventInfo.storedResources || {
+      //   [ResourceType.BERRY]: 0,
+      // };
+      // eventInfo.storedResources[ResourceType.BERRY] = numBerriesToSpend;
 
-      // remove berries from player's supply
-      player.spendResources({ [ResourceType.BERRY]: numBerriesToSpend });
+      // // remove berries from player's supply
+      // player.spendResources({ [ResourceType.BERRY]: numBerriesToSpend });
     },
     // 2 points per berry on event
     pointsInner: (gameState: GameState, playerId: string) => {
@@ -920,29 +938,30 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     }),
     // place up to 3 resources on event
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      const player = gameState.getActivePlayer();
-      if (gameInput.inputType !== GameInputType.CLAIM_EVENT) {
-        throw new Error("Invalid input type");
-      }
-      if (!gameInput.clientOptions) {
-        throw new Error("Invalid input");
-      }
-      const eventInfo =
-        player?.claimedEvents[EventName.SPECIAL_UNDER_NEW_MANAGEMENT];
-      if (!eventInfo) {
-        throw new Error("Cannot find event info");
-      }
+      throw new Error("Not Implemented");
+      // const player = gameState.getActivePlayer();
+      // if (gameInput.inputType !== GameInputType.CLAIM_EVENT) {
+      //   throw new Error("Invalid input type");
+      // }
+      // if (!gameInput.clientOptions) {
+      //   throw new Error("Invalid input");
+      // }
+      // const eventInfo =
+      //   player?.claimedEvents[EventName.SPECIAL_UNDER_NEW_MANAGEMENT];
+      // if (!eventInfo) {
+      //   throw new Error("Cannot find event info");
+      // }
 
-      const resourcesToSpend = gameInput.clientOptions.resourcesToSpend;
-      if (!resourcesToSpend) {
-        throw new Error("Invalid resources list");
-      }
+      // const resourcesToSpend = gameInput.clientOptions.resourcesToSpend;
+      // if (!resourcesToSpend) {
+      //   throw new Error("Invalid resources list");
+      // }
 
-      // add resources to this event
-      eventInfo.storedResources = resourcesToSpend;
+      // // add resources to this event
+      // eventInfo.storedResources = resourcesToSpend;
 
-      // remove resources from player's supply
-      player.spendResources(resourcesToSpend);
+      // // remove resources from player's supply
+      // player.spendResources(resourcesToSpend);
     },
     // 1 pt per twig and berry, 2 pt per resin and pebble
     pointsInner: (gameState: GameState, playerId: string) => {

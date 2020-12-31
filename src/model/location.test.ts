@@ -38,7 +38,13 @@ describe("Location", () => {
       const location = Location.fromName(LocationName.BASIC_ONE_BERRY);
       const gameInput = placeWorkerInput(location.name);
       expect(location.canPlay(gameState, gameInput)).to.be(true);
-      gameState.getActivePlayer().numAvailableWorkers = 0;
+
+      const player = gameState.getActivePlayer();
+      const numAvailableWorkers = player.numAvailableWorkers;
+      for (var i = 0; i < numAvailableWorkers; i++) {
+        // Place workers on unlimited location
+        player.placeWorkerOnLocation(LocationName.BASIC_TWO_CARDS_AND_ONE_VP);
+      }
       expect(location.canPlay(gameState, gameInput)).to.be(false);
     });
   });

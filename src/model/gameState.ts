@@ -137,12 +137,11 @@ export class GameState {
       throw new Error("Cannot take action");
     }
 
-    // Take location effect
+    const player = this.getActivePlayer();
+    player.placeWorkerOnLocation(gameInput.location);
+
     location.play(this, gameInput);
 
-    // Update game state
-    const player = this.getActivePlayer();
-    player.numAvailableWorkers--;
     this.locationsMap[gameInput.location]!.push(player.playerId);
   }
 
@@ -202,20 +201,8 @@ export class GameState {
     if (!event.canPlay(this, gameInput)) {
       throw new Error("Cannot play this event");
     }
-
-    // take the event action
     event.play(this, gameInput);
-
-    // Update game state
-    const player = this.getActivePlayer();
-    const claimedEvent = player.claimedEvents[gameInput.event];
-
-    if (!claimedEvent) {
-      throw new Error("Event wasn't claimed properly");
-    }
-    claimedEvent.hasWorker = true;
-    player.numAvailableWorkers--;
-    this.eventsMap[gameInput.event] = player.playerId;
+    this.eventsMap[gameInput.event] = this._activePlayerId;
   }
 
   public handleVisitDestinationCardGameInput(

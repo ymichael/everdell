@@ -575,62 +575,41 @@ describe("Player", () => {
   });
 
   describe("recallAllWorkers", () => {
-    it("recalling workers", () => {
+    it("keeps workers on MONASTERY", () => {
       const player = gameState.getActivePlayer();
-      const player1 = gameState.players[0];
-      const player2 = gameState.players[1];
+      expect(player.numAvailableWorkers).to.be(2);
 
-      // Player 1 has 1 worker on lookout, 1 worker on monastery, and
-      // 1 worker on a location
-      player1.addToCity(CardName.LOOKOUT);
-      player1.placeWorkerOnCard(CardName.LOOKOUT);
+      // Player has 1 worker on lookout, 1 worker on monastery
+      player.addToCity(CardName.LOOKOUT);
+      player.placeWorkerOnCard(CardName.LOOKOUT);
 
-      player1.addToCity(CardName.MONASTERY);
-      player1.placeWorkerOnCard(CardName.MONASTERY);
+      player.addToCity(CardName.MONASTERY);
+      player.placeWorkerOnCard(CardName.MONASTERY);
 
-      player1.addToCity(CardName.FARM);
-      player1.addToCity(CardName.FARM);
+      player.addToCity(CardName.FARM);
+      player.addToCity(CardName.FARM);
 
-      gameState.locationsMap[LocationName.BASIC_ONE_BERRY] = [
-        player2.playerId,
-        player1.playerId,
-      ];
-
-      player2.addToCity(CardName.MINE);
-      player2.addToCity(CardName.MINE);
-      player2.addToCity(CardName.FARM);
-      player2.addToCity(CardName.FARM);
+      player.forEachPlayedCard(({ cardName, workers = [] }) => {
+        if (cardName === CardName.LOOKOUT) {
+          expect(workers).to.eql([player.playerId]);
+        }
+        if (cardName === CardName.MONASTERY) {
+          expect(workers).to.eql([player.playerId]);
+        }
+      });
 
       player.recallAllWorkers(gameState);
 
-      expect(player1.numAvailableWorkers).to.be(2);
+      expect(player.numAvailableWorkers).to.be(1);
 
-      // should no longer have a worker on the lookout
-      const playedCards = player1.playedCards;
-      const lookout = playedCards[CardName.LOOKOUT];
-      if (!lookout) {
-        throw new Error("monastery card hasn't been played");
-      }
-      let workers = lookout[0].workers || [];
-      expect(workers.length).to.be(0);
-
-      // expect that there is still a worker in the monastery
-      const monastery = playedCards[CardName.MONASTERY];
-      if (!monastery) {
-        throw new Error("monastery card hasn't been played");
-      }
-      if (monastery.length > 1) {
-        throw new Error("can't have more than one monastery in city");
-      }
-      workers = monastery[0].workers || [];
-      expect(workers.length).to.be(1);
-
-      // there shouldn't be a worker at the location
-
-      const workersAtLocation =
-        gameState.locationsMap[LocationName.BASIC_ONE_BERRY] || [];
-      expect(workersAtLocation.length).to.be(1);
-      expect(workersAtLocation).to.eql([player2.playerId]);
+      player.forEachPlayedCard(({ cardName, workers = [] }) => {
+        if (cardName === CardName.LOOKOUT) {
+          expect(workers).to.eql([]);
+        }
+        if (cardName === CardName.MONASTERY) {
+          expect(workers).to.eql([player.playerId]);
+        }
+      });
     });
   });
 

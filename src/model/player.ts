@@ -9,6 +9,7 @@ import {
   GameInputType,
   PlayedCardInfo,
   PlayedEventInfo,
+  PlacedWorkerInfo,
   LocationName,
 } from "./types";
 import { PlayerJSON } from "./jsonTypes";
@@ -30,12 +31,13 @@ export class Player {
   public playerId: string;
   public cardsInHand: CardName[];
   public currentSeason: Season;
-  public numWorkers: number;
-  public numAvailableWorkers: number;
 
   private resources: Record<ResourceType, number>;
   readonly playedCards: Partial<Record<CardName, PlayedCardInfo[]>>;
   readonly claimedEvents: Partial<Record<EventName, PlayedEventInfo>>;
+
+  private numWorkers: number;
+  private placedWorkers: PlacedWorkerInfo[];
 
   constructor({
     name,
@@ -52,8 +54,8 @@ export class Player {
     },
     currentSeason = Season.WINTER,
     numWorkers = 2,
-    numAvailableWorkers = 2,
     claimedEvents = {},
+    placedWorkers = [],
   }: {
     name: string;
     playerSecret?: string;
@@ -69,8 +71,8 @@ export class Player {
     };
     currentSeason?: Season;
     numWorkers?: number;
-    numAvailableWorkers?: number;
     claimedEvents?: Partial<Record<EventName, PlayedEventInfo>>;
+    placedWorkers?: PlacedWorkerInfo[];
   }) {
     this.playerId = playerId;
     this.playerSecret = playerSecret;
@@ -80,8 +82,8 @@ export class Player {
     this.resources = resources;
     this.currentSeason = currentSeason;
     this.numWorkers = numWorkers;
-    this.numAvailableWorkers = numAvailableWorkers;
     this.claimedEvents = claimedEvents;
+    this.placedWorkers = placedWorkers;
   }
 
   get playerSecretUNSAFE(): string {
@@ -196,11 +198,6 @@ export class Player {
     const numHusbands = (this.playedCards[CardName.HUSBAND] || []).length;
     const numWifes = (this.playedCards[CardName.WIFE] || []).length;
     return Math.min(numHusbands, numWifes);
-  }
-
-  claimEvent(eventName: EventName): void {
-    const event = Event.fromName(eventName);
-    this.claimedEvents[eventName] = event.getPlayedEventInfo();
   }
 
   getNumResources(): number {
@@ -355,12 +352,34 @@ export class Player {
     return numDungeoned < maxDungeoned;
   }
 
+  get numAvailableWorkers(): number {
+    return this.numWorkers - this.placedWorkers.length;
+  }
+
+  placeWorkerOnLocation(location: LocationName): void {
+    this.placeWorkerCommon({
+      location,
+    });
+  }
+
+  placeWorkerOnEvent(eventName: EventName): void {
+    this.placeWorkerCommon({ event: eventName });
+
+    const event = Event.fromName(eventName);
+    this.claimedEvents[eventName] = event.getPlayedEventInfo();
+  }
+
   placeWorkerOnCard(cardName: CardName, cityOwner: Player | null = null): void {
     if (!this.canPlaceWorkerOnCard(cardName, cityOwner)) {
       throw new Error(`Cannot place worker on ${cardName}`);
     }
-    this.numAvailableWorkers -= 1;
     cityOwner = cityOwner || this;
+    this.placeWorkerCommon({
+      cardDestination: {
+        card: cardName,
+        playerId: cityOwner.playerId,
+      },
+    });
 
     const playedCards = cityOwner.getPlayedCardInfos(cardName);
     if (playedCards.length === 0) {
@@ -378,6 +397,13 @@ export class Player {
         break;
       }
     }
+  }
+
+  placeWorkerCommon(placedWorkerInfo: PlacedWorkerInfo): void {
+    if (this.numAvailableWorkers === 0) {
+      throw new Error(`Cannot place worker`);
+    }
+    this.placedWorkers.push(placedWorkerInfo);
   }
 
   canPlaceWorkerOnCard(
@@ -742,83 +768,62 @@ export class Player {
   }
 
   recallAllWorkers(gameState: GameState) {
-    if (this.numAvailableWorkers != 0) {
-      throw new Error(
-        "cannot recall all workers if you still have available workers"
-      );
+    if (this.numAvailableWorkers !== 0) {
+      throw new Error("Still have available workers");
     }
 
-    // get workers from destination cards (including other players')
-    const players = gameState.players;
-    if (!players) {
-      throw new Error("Invalid player list");
-    }
-
-    players.forEach((player) => {
-      // get destination cards with workers
-      let destinationCardsWithWorkers = player.getDestinationCardsWithWorkers();
-
-      // don't recall workers from cemetary or monestary
-      destinationCardsWithWorkers = destinationCardsWithWorkers.filter(
-        (cardName) => {
-          const card = Card.fromName(cardName);
-          return (
-            card.name != CardName.CEMETARY && card.name != CardName.MONASTERY
-          );
-        }
-      );
-
-      // check if any of the workers belong to the current player
-      destinationCardsWithWorkers.forEach((cardName) => {
-        const playedCards = player.playedCards;
-        if (!playedCards) {
-          throw new Error("invalid list of played cards");
+    this.placedWorkers = this.placedWorkers.filter(
+      ({ location, cardDestination, event }) => {
+        // Don't remove workers from these cards.
+        if (
+          cardDestination &&
+          (cardDestination.card === CardName.CEMETARY ||
+            cardDestination.card === CardName.MONASTERY)
+        ) {
+          return true;
         }
 
-        const cardInfos = playedCards[cardName];
-        if (!cardInfos) {
-          throw new Error("invalid list of played card info");
+        // Update gameState/other objects
+        if (location) {
+          const workers = gameState.locationsMap[location];
+          if (!workers) {
+            throw new Error(`Couldn't find location ${location}`);
+          }
+          const idx = workers.indexOf(this.playerId);
+          if (idx !== -1) {
+            workers.splice(idx, 1);
+          } else {
+            throw new Error(`Couldn't find worker at location: ${location}`);
+          }
+        } else if (event) {
+          // Don't need to do anything for event
+        } else if (cardDestination) {
+          const cityOwner = gameState.getPlayer(cardDestination.playerId);
+          let removedWorker = false;
+          cityOwner
+            .getPlayedCardInfos(cardDestination.card)
+            .forEach(({ workers = [] }) => {
+              if (!removedWorker) {
+                const idx = workers.indexOf(cardDestination.playerId);
+                if (idx !== -1) {
+                  workers.splice(idx, 1);
+                  removedWorker = true;
+                }
+              }
+            });
+          if (!removedWorker) {
+            throw new Error(
+              `Couldn't find worker at cardDestination: ${JSON.stringify(
+                cardDestination
+              )}`
+            );
+          }
+        } else {
         }
-        cardInfos.forEach((cardInfo) => {
-          // get workers and original number of workers on the card
-          let workers = cardInfo.workers || [];
-          const currNumWorkers = workers.length;
 
-          // pull workers with matching playerId off of the card
-          // this mutates the array
-          workers = pull(workers, this.playerId);
-
-          this.numAvailableWorkers =
-            this.numAvailableWorkers + (currNumWorkers - workers.length);
-        });
-      });
-    });
-
-    // get workers from events you've claimed
-    Object.keys(this.claimedEvents).forEach((eventName) => {
-      const eventInfo = this.claimedEvents[eventName as EventName];
-      if (!eventInfo) {
-        throw new Error("event info is undefined");
+        return false;
       }
-      const eventHasWorker = eventInfo.hasWorker || false;
-      if (eventHasWorker) {
-        this.numAvailableWorkers++;
-        eventInfo.hasWorker = false;
-      }
-    });
-
-    // get workers from locations
-    const locationsMap = gameState.locationsMap;
-    Object.keys(locationsMap).forEach((locationName) => {
-      // similar to pull workers from cards
-      let workersAtLocation = locationsMap[locationName as LocationName] || [];
-      const currNumWorkers = workersAtLocation.length;
-
-      workersAtLocation = pull(workersAtLocation, this.playerId);
-
-      this.numAvailableWorkers =
-        this.numAvailableWorkers + (currNumWorkers - workersAtLocation.length);
-    });
+    );
   }
 
   toJSON(includePrivate: boolean): PlayerJSON {
@@ -829,10 +834,10 @@ export class Player {
       numCardsInHand: this.cardsInHand.length,
       resources: this.resources,
       numWorkers: this.numWorkers,
-      numAvailableWorkers: this.numAvailableWorkers,
       currentSeason: this.currentSeason,
       claimedEvents: this.claimedEvents,
       cardsInHand: [],
+      placedWorkers: this.placedWorkers,
       ...(includePrivate
         ? {
             playerSecret: this.playerSecret,

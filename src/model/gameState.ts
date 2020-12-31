@@ -171,6 +171,7 @@ export class GameState {
       if (
         gameInput.inputType === GameInputType.SELECT_CARD ||
         gameInput.inputType === GameInputType.DISCARD_CARDS ||
+        gameInput.inputType === GameInputType.SELECT_RESOURCES ||
         gameInput.inputType === GameInputType.SELECT_PLAYER
       ) {
         if (!gameInput.cardContext) {
@@ -294,6 +295,7 @@ export class GameState {
         break;
       case GameInputType.SELECT_CARD:
       case GameInputType.SELECT_PLAYER:
+      case GameInputType.SELECT_RESOURCES:
       case GameInputType.DISCARD_CARDS:
         nextGameState.handleMultiStepGameInput(gameInput);
         break;

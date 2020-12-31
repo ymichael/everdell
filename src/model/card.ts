@@ -140,7 +140,8 @@ export class Card<TCardType extends CardType = CardType>
     } else if (
       gameInput.inputType === GameInputType.SELECT_CARD ||
       gameInput.inputType === GameInputType.SELECT_PLAYER ||
-      gameInput.inputType === GameInputType.DISCARD_CARDS
+      gameInput.inputType === GameInputType.DISCARD_CARDS ||
+      gameInput.inputType === GameInputType.SELECT_RESOURCES
     ) {
       return true;
     } else {
@@ -584,31 +585,39 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: false,
     associatedCard: CardName.FARM,
     resourcesToGain: {},
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.SELECT_RESOURCES) {
+        const resources = gameInput.clientOptions?.resources;
+        if (!resources || (resources as any)[ResourceType.VP]) {
+          throw new Error("Invalid input");
+        }
+        const numToGain = sumResources(resources);
+        if (numToGain !== 1) {
+          throw new Error(`Invalid resources: ${JSON.stringify(resources)}`);
+        }
+        player.gainResources(resources);
+      }
+    },
     productionInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
-      // if (gameInput.inputType !== GameInputType.PLAY_CARD) {
-      //   throw new Error("Invalid input type");
-      // }
-      // if (
-      //   !gameInput.clientOptions?.resourcesToGain ||
-      //   gameInput.clientOptions?.resourcesToGain[ResourceType.VP]
-      // ) {
-      //   throw new Error("Invalid input");
-      // }
-      // const player = gameState.getActivePlayer();
-      // const playedHusbands = player.playedCards[CardName.HUSBAND] || [];
-      // const playedWifes = player.playedCards[CardName.WIFE] || [];
-      // if (playedHusbands.length <= playedWifes.length) {
-      //   const numToGain = sumResources(gameInput.clientOptions.resourcesToGain);
-      //   if (numToGain !== 1) {
-      //     throw new Error(
-      //       `Invalid resourcesToGain: ${JSON.stringify(
-      //         gameInput.clientOptions
-      //       )}`
-      //     );
-      //   }
-      //   player.gainResources(gameInput.clientOptions.resourcesToGain);
-      // }
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.PLAY_CARD) {
+        const playedHusbands = player.playedCards[CardName.HUSBAND] || [];
+        const playedWifes = player.playedCards[CardName.WIFE] || [];
+        if (playedHusbands.length <= playedWifes.length) {
+          gameState.pendingGameInputs.push({
+            inputType: GameInputType.SELECT_RESOURCES,
+            prevInputType: gameInput.inputType,
+            cardContext: CardName.HUSBAND,
+            numResources: 1,
+            clientOptions: {
+              resources: {},
+            },
+          });
+        }
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
+      }
     },
   }),
   [CardName.INN]: new Card({

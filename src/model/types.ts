@@ -8,6 +8,7 @@ export enum GameInputType {
 
   SELECT_CARD = "SELECT_CARD",
   SELECT_PLAYER = "SELECT_PLAYER",
+  SELECT_RESOURCES = "SELECT_RESOURCES",
   DISCARD_CARDS = "DISCARD_CARDS",
 }
 
@@ -152,9 +153,20 @@ export type GameInputSelectCard = {
   };
 };
 
+export type GameInputSelectResources = {
+  inputType: GameInputType.SELECT_RESOURCES;
+  prevInputType: GameInputType;
+  cardContext?: CardName;
+  numResources: number;
+  clientOptions: {
+    resources: CardCost;
+  };
+};
+
 export type GameInputMultiStep =
   | GameInputSelectCard
   | GameInputDiscardCards
+  | GameInputSelectResources
   | GameInputSelectPlayer;
 
 export type GameInput = GameInputSimple | GameInputMultiStep;

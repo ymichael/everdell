@@ -18,6 +18,7 @@ import {
   GameStateCanPlayFn,
 } from "./gameState";
 import shuffle from "lodash/shuffle";
+import pull from "lodash/pull";
 
 export class Event implements GameStatePlayable {
   readonly playInner: GameStatePlayFn | undefined;
@@ -258,9 +259,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         }
 
         // add twigs to this event
-        eventInfo.storedResources = eventInfo.storedResources || {
-          [ResourceType.TWIG]: 0,
-        };
+        eventInfo.storedResources = resources;
         eventInfo.storedResources[ResourceType.TWIG] = numTwigs;
 
         // remove twigs from player's supply
@@ -298,11 +297,118 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED,
     type: EventType.SPECIAL,
     baseVP: 0,
-    canPlayInner: (gameState: GameState, gameInput: GameInput) => {
-      return false;
-    },
+    canPlayInner: canPlayInnerRequiresCards([
+      CardName.HISTORIAN,
+      CardName.RUINS,
+    ]),
+
+    // if (gameInput.inputType === GameInputType.PLAY_CARD) {
+    //     if (gameState.pendingGameInputs.length !== 0) {
+    //       throw new Error("Should not have any pending game input");
+    //     }
+    //     const cardOptions = [gameState.drawCard(), gameState.drawCard()];
+    //     const player = gameState.getActivePlayer();
+    //     gameState.pendingGameInputs.push({
+    //       inputType: GameInputType.SELECT_CARD,
+    //       prevInputType: GameInputType.PLAY_CARD,
+    //       cardContext: CardName.POSTAL_PIGEON,
+    //       mustSelectOne: false,
+    //       cardOptions: cardOptions.filter((cardName) => {
+    //         const cardOption = Card.fromName(cardName);
+    //         if (cardOption.baseVP > 3) {
+    //           return false;
+    //         }
+    //         return player.canAddToCity(cardName);
+    //       }),
+    //       cardOptionsUnfiltered: cardOptions,
+    //       clientOptions: {
+    //         selectedCard: null,
+    //       },
+    //     });
+    //   } else if (
+    //     gameInput.inputType === GameInputType.SELECT_CARD &&
+    //     gameInput.prevInputType === GameInputType.PLAY_CARD &&
+    //     gameInput.cardContext === CardName.POSTAL_PIGEON
+    //   ) {
+    //     const player = gameState.getActivePlayer();
+    //     const cardOptionsUnfiltered = [...gameInput.cardOptionsUnfiltered];
+    //     if (gameInput.clientOptions.selectedCard) {
+    //       player.addToCity(gameInput.clientOptions.selectedCard);
+    //       cardOptionsUnfiltered.splice(
+    //         cardOptionsUnfiltered.indexOf(gameInput.clientOptions.selectedCard),
+    //         1
+    //       );
+    //     }
+    //     cardOptionsUnfiltered.forEach((cardName) => {
+    //       gameState.discardPile.addToStack(cardName);
+    //     });
+    //   } else {
+    //     throw new Error("Invalid game input");
+    //   }
+    // },
+
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
+      const player = gameState.getActivePlayer();
+
+      if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
+        // reveal 5 cards
+        const cardOptions = [
+          gameState.drawCard(),
+          gameState.drawCard(),
+          gameState.drawCard(),
+          gameState.drawCard(),
+          gameState.drawCard(),
+        ];
+
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_MULTIPLE_CARDS,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          eventContext: EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED,
+          maxToSelect: 5,
+          minToSelect: 0,
+          cardOptions: cardOptions,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_MULTIPLE_CARDS &&
+        gameInput.prevInputType === GameInputType.CLAIM_EVENT &&
+        gameInput.eventContext === EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED
+      ) {
+        if (!gameInput.clientOptions.selectedCards) {
+          throw new Error("invalid input");
+        }
+
+        const selectedCards = gameInput.clientOptions.selectedCards;
+
+        if (selectedCards.length > 5) {
+          throw new Error("Too many cards");
+        }
+
+        const eventInfo =
+          player.claimedEvents[EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED];
+        if (!eventInfo) {
+          throw new Error("Cannot find event info");
+        }
+
+        let remainingCards = gameInput.cardOptions;
+
+        // add selected cards to player's hand
+        selectedCards.forEach((cardName) => {
+          player.addCardToHand(gameState, cardName);
+
+          // if card is added to player's hand, remove it from cards
+          // that will go under event
+          remainingCards = pull(remainingCards, cardName);
+        });
+
+        remainingCards.forEach((cardName) => {
+          (eventInfo.storedCards = eventInfo.storedCards || []).push(cardName);
+        });
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
+      }
     },
 
     /*
@@ -693,9 +799,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         }
 
         // add berries to this event
-        eventInfo.storedResources = eventInfo.storedResources || {
-          [ResourceType.BERRY]: 0,
-        };
+        eventInfo.storedResources = resources;
         eventInfo.storedResources[ResourceType.BERRY] = numBerries;
 
         // remove berries from player's supply
@@ -926,7 +1030,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       const player = gameState.getActivePlayer();
 
       if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
-        // ask player how many berries to add to card
+        // ask player how many resources to add to card
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_RESOURCES,
           prevInputType: GameInputType.CLAIM_EVENT,
@@ -963,12 +1067,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         }
 
         // add berries to this event
-        eventInfo.storedResources = eventInfo.storedResources || {
-          [ResourceType.TWIG]: resources[ResourceType.TWIG] || 0,
-          [ResourceType.RESIN]: resources[ResourceType.RESIN] || 0,
-          [ResourceType.PEBBLE]: resources[ResourceType.PEBBLE] || 0,
-          [ResourceType.BERRY]: resources[ResourceType.BERRY] || 0,
-        };
+        eventInfo.storedResources = resources;
 
         // remove berries from player's supply
         player.spendResources({

@@ -9,6 +9,7 @@ import {
   GameInputType,
   GameInputPlayCard,
   CardName,
+  LocationName,
 } from "./types";
 
 const playCardInput = (
@@ -958,6 +959,30 @@ describe("Card", () => {
           gameState3.getPlayer(targetPlayerId).hasCardInCity(card.name)
         ).to.be(true);
       });
+    });
+
+    describe(CardName.LOOKOUT, () => {
+      // it("should allow the player to copy a location", () => {
+      //   let player = gameState.getActivePlayer();
+      //   const card = Card.fromName(CardName.LOOKOUT);
+      //   // make sure player can player card
+      //   player.gainResources(card.baseCost);
+      //   player.cardsInHand.push(card.name);
+      //   gameState = multiStepGameInputTest(gameState, [
+      //     playCardInput(card.name),
+      //     {
+      //       inputType: GameInputType.SELECT_LOCATION,
+      //       prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+      //       cardContext: card.name,
+      //       locationOptions: (Object.keys(
+      //         gameState.locationsMap
+      //       ) as unknown) as LocationName[],
+      //       clientOptions: {
+      //         selectedLocation: LocationName.BASIC_ONE_BERRY,
+      //       },
+      //     },
+      //   ]);
+      // });
     });
   });
 });

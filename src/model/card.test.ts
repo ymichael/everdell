@@ -513,7 +513,7 @@ describe("Card", () => {
         expect(player.numAvailableWorkers).to.be(2);
         expect(player.getPlayedCardInfos(CardName.POST_OFFICE)).to.eql([
           {
-            playerId: player.playerId,
+            cardOwnerId: player.playerId,
             cardName: CardName.POST_OFFICE,
             usedForCritter: false,
             workers: [],
@@ -578,7 +578,7 @@ describe("Card", () => {
         expect(player.numAvailableWorkers).to.be(1);
         expect(player.getPlayedCardInfos(CardName.POST_OFFICE)).to.eql([
           {
-            playerId: player.playerId,
+            cardOwnerId: player.playerId,
             cardName: CardName.POST_OFFICE,
             usedForCritter: false,
             workers: [player.playerId],
@@ -1017,20 +1017,109 @@ describe("Card", () => {
         const gameState3 = multiStepGameInputTest(gameState, [
           playCardInput(card.name),
           {
-            inputType: GameInputType.SELECT_CARDS,
+            inputType: GameInputType.SELECT_PLAYED_CARDS,
             prevInputType: GameInputType.PLAY_CARD,
             cardContext: CardName.CHIP_SWEEP,
             maxToSelect: 1,
             minToSelect: 1,
-            cardOptions: [CardName.MINE, CardName.FARM],
+            cardOptions: [
+              ...player.getPlayedCardInfos(CardName.MINE),
+              ...player.getPlayedCardInfos(CardName.FARM),
+            ],
             clientOptions: {
-              selectedCards: [CardName.MINE],
+              selectedCards: player.getPlayedCardInfos(CardName.MINE),
             },
           },
         ]);
 
         player = gameState3.getPlayer(player.playerId);
         expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(1);
+      });
+    });
+
+    describe(CardName.MINER_MOLE, () => {
+      it("should allow the player to copy another player's production card", () => {
+        const card = Card.fromName(CardName.MINER_MOLE);
+
+        let player1 = gameState.getActivePlayer();
+        let player2 = gameState.players[1];
+
+        player2.addToCity(CardName.GENERAL_STORE);
+        player2.addToCity(CardName.FARM);
+
+        // Make sure we can play this card
+        player1.gainResources(card.baseCost);
+        player1.cardsInHand.push(card.name);
+
+        expect(player1.hasCardInCity(card.name)).to.be(false);
+
+        const gameState2 = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+          {
+            inputType: GameInputType.SELECT_PLAYED_CARDS,
+            prevInputType: GameInputType.PLAY_CARD,
+            cardContext: CardName.MINER_MOLE,
+            maxToSelect: 1,
+            minToSelect: 1,
+            cardOptions: [
+              ...player2.getPlayedCardInfos(CardName.GENERAL_STORE),
+              ...player2.getPlayedCardInfos(CardName.FARM),
+            ],
+            clientOptions: {
+              selectedCards: player2.getPlayedCardInfos(CardName.GENERAL_STORE),
+            },
+          },
+        ]);
+
+        player1 = gameState2.getPlayer(player1.playerId);
+
+        // 2 berries because player 2 has a farm
+        expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
+      });
+
+      it("should allow the player to copy another player's miner mole", () => {
+        const card = Card.fromName(CardName.MINER_MOLE);
+
+        let player1 = gameState.getActivePlayer();
+        let player2 = gameState.players[1];
+
+        player1.addToCity(CardName.FARM);
+        player1.addToCity(CardName.CHIP_SWEEP);
+        player1.addToCity(CardName.GENERAL_STORE);
+
+        player2.addToCity(CardName.MINER_MOLE);
+        player2.addToCity(CardName.CHIP_SWEEP);
+        player2.addToCity(CardName.GENERAL_STORE);
+
+        // Make sure we can play this card
+        player1.gainResources(card.baseCost);
+        player1.cardsInHand.push(card.name);
+
+        expect(player1.hasCardInCity(card.name)).to.be(false);
+
+        const gameState2 = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+          {
+            inputType: GameInputType.SELECT_PLAYED_CARDS,
+            prevInputType: GameInputType.PLAY_CARD,
+            cardContext: CardName.MINER_MOLE,
+            maxToSelect: 1,
+            minToSelect: 1,
+            cardOptions: [
+              ...player1.getPlayedCardInfos(CardName.FARM),
+              ...player1.getPlayedCardInfos(CardName.GENERAL_STORE),
+              ...player2.getPlayedCardInfos(CardName.GENERAL_STORE),
+            ],
+            clientOptions: {
+              selectedCards: player1.getPlayedCardInfos(CardName.GENERAL_STORE),
+            },
+          },
+        ]);
+
+        player1 = gameState2.getPlayer(player1.playerId);
+
+        // 2 berries because player 1 has a farm
+        expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
       });
     });
 

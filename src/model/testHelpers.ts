@@ -44,7 +44,7 @@ export function testInitialGameState(
   }
   gameState.meadowCards.push(...meadowCards);
   gameState.players.forEach((player) => {
-    player.cardsInHand = cardsInHand;
+    player.cardsInHand = [...cardsInHand];
   });
   if (noForestLocations) {
     (Object.keys(gameState.locationsMap) as LocationName[]).forEach(

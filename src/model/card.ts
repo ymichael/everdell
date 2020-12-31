@@ -25,6 +25,7 @@ import {
   getPointsPerRarityLabel,
 } from "./gameStatePlayHelpers";
 import cloneDeep from "lodash/cloneDeep";
+import pull from "lodash/pull";
 
 type MaxWorkersInnerFn = (cardOwner: Player) => number;
 type ProductionInnerFn = (
@@ -1614,8 +1615,82 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: false,
     associatedCard: CardName.SCHOOL,
     resourcesToGain: {},
+    // draw 2 cards + give 1 to an opponent
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.PLAY_CARD) {
+        const cardOptions = [gameState.drawCard(), gameState.drawCard()];
+
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: GameInputType.PLAY_CARD,
+          cardOptions: cardOptions,
+          cardOptionsUnfiltered: cardOptions,
+          maxToSelect: 1,
+          minToSelect: 1,
+          cardContext: CardName.TEACHER,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_CARDS) {
+        if (!gameInput.clientOptions.selectedCards) {
+          throw new Error("invalid selected cards");
+        }
+
+        if (gameInput.clientOptions.selectedCards.length !== 1) {
+          throw new Error("incorrect number of cards selected");
+        }
+
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_PLAYER,
+          prevInputType: GameInputType.SELECT_CARDS,
+          prevInput: gameInput,
+          playerOptions: gameState.players
+            .filter((p) => p.playerId !== player.playerId)
+            .map((p) => p.playerId),
+          mustSelectOne: true,
+          cardContext: CardName.TEACHER,
+          clientOptions: {
+            selectedPlayer: null,
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_PLAYER) {
+        if (
+          !gameInput.prevInput ||
+          gameInput.prevInput.inputType !== GameInputType.SELECT_CARDS
+        ) {
+          throw new Error("Invalid input");
+        }
+
+        const selectedPlayer = gameInput.clientOptions.selectedPlayer;
+        if (!selectedPlayer) {
+          throw new Error("must select a player");
+        }
+
+        if (
+          !gameState.getPlayer(selectedPlayer) ||
+          selectedPlayer === player.playerId
+        ) {
+          throw new Error("invalid playerId provided");
+        }
+        const cardName = gameInput.prevInput.clientOptions.selectedCards[0];
+        const card = Card.fromName(cardName as CardName);
+
+        gameState.getPlayer(selectedPlayer).addCardToHand(gameState, card.name);
+
+        let keptCard = gameInput.prevInput.cardOptions;
+
+        keptCard = pull(keptCard, card.name);
+
+        if (keptCard.length !== 1) {
+          throw new Error("issue getting card to keep");
+        }
+
+        player.addCardToHand(gameState, keptCard[0] as CardName);
+      } else {
+        throw new Error("Invalid input type");
+      }
     },
   }),
   [CardName.THEATRE]: new Card({

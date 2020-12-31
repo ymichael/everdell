@@ -1316,5 +1316,71 @@ describe("Card", () => {
         expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(5);
       });
     });
+
+    describe(CardName.TEACHER, () => {
+      it("allow player to give cards to other player using teacher", () => {
+        let player1 = gameState.players[0];
+        let player2 = gameState.players[1];
+        const card = Card.fromName(CardName.TEACHER);
+
+        const topOfDeck = [CardName.FARM, CardName.QUEEN];
+        topOfDeck.reverse();
+        topOfDeck.forEach((cardName) => {
+          gameState.deck.addToStack(cardName);
+        });
+
+        // Make sure we can play this card
+        player1.gainResources(card.baseCost);
+        player1.addCardToHand(gameState, card.name);
+
+        expect(player1.cardsInHand.length).to.be(1);
+        expect(player2.cardsInHand.length).to.be(0);
+
+        gameState = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+          {
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: GameInputType.PLAY_CARD,
+            cardContext: CardName.TEACHER,
+            cardOptions: [CardName.FARM, CardName.QUEEN],
+            cardOptionsUnfiltered: [CardName.FARM, CardName.QUEEN],
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              selectedCards: [CardName.FARM],
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_PLAYER,
+            prevInputType: GameInputType.SELECT_CARDS,
+            prevInput: {
+              inputType: GameInputType.SELECT_CARDS,
+              prevInputType: GameInputType.PLAY_CARD,
+              cardContext: CardName.TEACHER,
+              cardOptions: [CardName.FARM, CardName.QUEEN],
+              cardOptionsUnfiltered: [CardName.FARM, CardName.QUEEN],
+              maxToSelect: 1,
+              minToSelect: 1,
+              clientOptions: {
+                selectedCards: [CardName.FARM],
+              },
+            },
+            playerOptions: [player2.playerId],
+            mustSelectOne: true,
+            cardContext: CardName.TEACHER,
+            clientOptions: {
+              selectedPlayer: player2.playerId,
+            },
+          },
+        ]);
+
+        player1 = gameState.getPlayer(player1.playerId);
+        player2 = gameState.getPlayer(player2.playerId);
+
+        expect(player1.cardsInHand).to.eql([CardName.QUEEN]);
+
+        expect(player2.cardsInHand).to.eql([CardName.FARM]);
+      });
+    });
   });
 });

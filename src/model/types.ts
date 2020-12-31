@@ -7,6 +7,7 @@ export enum GameInputType {
   GAME_END = "GAME_END",
 
   SELECT_CARD = "SELECT_CARD",
+  SELECT_MULTIPLE_CARDS = "SELECT_MULTIPLE_CARDS",
   SELECT_PLAYER = "SELECT_PLAYER",
   SELECT_RESOURCES = "SELECT_RESOURCES",
   DISCARD_CARDS = "DISCARD_CARDS",
@@ -81,7 +82,7 @@ export type GameInputClaimEvent = {
   event: EventName;
   clientOptions?: {
     // eg, placing cards underneath event
-    cardsToUse?: CardName[];
+    //cardsToUse?: CardName[];
 
     // eg, place berries on event
     resourcesToSpend?: {
@@ -161,6 +162,17 @@ export type GameInputSelectCard = {
   };
 };
 
+export type GameInputSelectMultipleCards = {
+  inputType: GameInputType.SELECT_MULTIPLE_CARDS;
+  prevInputType: GameInputType;
+  context?: EventName | CardName;
+  cardOptions: CardName[];
+  maxToSelect: number;
+  minToSelect: number;
+  clientOptions: {
+    selectedCards: CardName[] | null;
+  };
+};
 export type GameInputSelectResources = {
   inputType: GameInputType.SELECT_RESOURCES;
   prevInputType: GameInputType;
@@ -180,6 +192,7 @@ export type GameInputMultiStep = {
   cardContext?: CardName;
 } & (
   | GameInputSelectCard
+  | GameInputSelectMultipleCards
   | GameInputDiscardCards
   | GameInputSelectResources
   | GameInputSelectPlayer

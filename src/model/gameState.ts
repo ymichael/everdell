@@ -185,6 +185,22 @@ export class GameState {
       return;
     }
 
+    if (gameInput.prevInputType === GameInputType.CLAIM_EVENT) {
+      if (gameInput.inputType === GameInputType.SELECT_MULTIPLE_CARDS) {
+        if (!gameInput.context) {
+          throw new Error("Invalid input: missing event");
+        }
+        const event = Event.fromName(gameInput.context as EventName);
+
+        if (!event.canPlay(this, gameInput)) {
+          throw new Error("cannot take this action");
+        }
+
+        event.play(this, gameInput);
+        return;
+      }
+    }
+
     throw new Error(`Unhandled game input: ${JSON.stringify(gameInput)}`);
   }
 
@@ -279,10 +295,14 @@ export class GameState {
         nextGameState.handleVisitDestinationCardGameInput(gameInput);
         break;
       case GameInputType.SELECT_CARD:
+      case GameInputType.SELECT_MULTIPLE_CARDS:
       case GameInputType.SELECT_PLAYER:
       case GameInputType.SELECT_RESOURCES:
       case GameInputType.DISCARD_CARDS:
         nextGameState.handleMultiStepGameInput(gameInput);
+        break;
+      case GameInputType.CLAIM_EVENT:
+        nextGameState.handleClaimEventGameInput(gameInput);
         break;
       default:
         throw new Error(`Unhandled game input: ${JSON.stringify(gameInput)}`);

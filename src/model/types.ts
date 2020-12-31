@@ -57,7 +57,6 @@ export type GameInputClaimEvent = {
   clientOptions?: {
     // eg, placing cards underneath event
     //cardsToUse?: CardName[];
-
     // eg, place berries on event
     // resourcesToSpend?: {
     //   [ResourceType.TWIG]?: number;
@@ -65,14 +64,12 @@ export type GameInputClaimEvent = {
     //   [ResourceType.PEBBLE]?: number;
     //   [ResourceType.RESIN]?: number;
     // };
-
-    resourcesToGain?: {
-      [ResourceType.TWIG]?: number;
-      [ResourceType.BERRY]?: number;
-      [ResourceType.PEBBLE]?: number;
-      [ResourceType.RESIN]?: number;
-    };
-
+    // resourcesToGain?: {
+    //   [ResourceType.TWIG]?: number;
+    //   [ResourceType.BERRY]?: number;
+    //   [ResourceType.PEBBLE]?: number;
+    //   [ResourceType.RESIN]?: number;
+    // };
     // TODO: add resources to opponents
   };
 };

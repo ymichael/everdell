@@ -760,19 +760,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     // draw 1 card and receive 1 resource for each VP on your chapel
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
-      if (gameInput.inputType !== GameInputType.CLAIM_EVENT) {
-        throw new Error("Invalid input type");
-      }
-
-      if (!gameInput.clientOptions) {
-        throw new Error("Invalid input");
-      }
-      const eventInfo =
-        player.claimedEvents[EventName.SPECIAL_PRISTINE_CHAPEL_CEILING];
-      if (!eventInfo) {
-        throw new Error("Cannot find event info");
-      }
-
+      // get number of VP on chapel
       const playedCards = player.playedCards;
       if (!playedCards) {
         throw new Error("no cards in city");
@@ -794,34 +782,46 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
 
       const numVP = chapelResources[ResourceType.VP] || 0;
 
-      player.drawCards(gameState, numVP);
-      const resourcesToGain = gameInput.clientOptions.resourcesToGain;
+      if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
+        player.drawCards(gameState, numVP);
 
-      if (!resourcesToGain) {
-        throw new Error("No resources to gain specified");
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_RESOURCES,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          eventContext: EventName.SPECIAL_PRISTINE_CHAPEL_CEILING,
+          maxResources: numVP,
+          minResources: 0,
+          clientOptions: {
+            resources: [] as CardCost,
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_RESOURCES) {
+        const resources = gameInput.clientOptions.resources;
+        if (!resources) {
+          throw new Error("invalid input");
+        }
+        // count total number of resources
+
+        const numResources =
+          (resources[ResourceType.BERRY] || 0) +
+          (resources[ResourceType.TWIG] || 0) +
+          (resources[ResourceType.RESIN] || 0) +
+          (resources[ResourceType.PEBBLE] || 0);
+
+        if (numResources > numVP) {
+          throw new Error("Can't gain more resources than VP on the Chapel");
+        }
+
+        // gain requested resources
+        player.gainResources({
+          [ResourceType.TWIG]: resources[ResourceType.TWIG] || 0,
+          [ResourceType.RESIN]: resources[ResourceType.RESIN] || 0,
+          [ResourceType.PEBBLE]: resources[ResourceType.PEBBLE] || 0,
+          [ResourceType.BERRY]: resources[ResourceType.BERRY] || 0,
+        });
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
       }
-
-      // check to make sure we're not trying to gain too many resources
-      if (
-        !resourcesToGain[ResourceType.BERRY] ||
-        !resourcesToGain[ResourceType.TWIG] ||
-        !resourcesToGain[ResourceType.RESIN] ||
-        !resourcesToGain[ResourceType.PEBBLE]
-      ) {
-        throw new Error("Resource is undefined");
-      }
-
-      const totalGainedResources =
-        (resourcesToGain[ResourceType.BERRY] || 0) +
-        (resourcesToGain[ResourceType.TWIG] || 0) +
-        (resourcesToGain[ResourceType.RESIN] || 0) +
-        (resourcesToGain[ResourceType.PEBBLE] || 0);
-
-      if (totalGainedResources > numVP) {
-        throw new Error("Can't gain more resources than VP on the Chapel");
-      }
-
-      player.gainResources(resourcesToGain);
     },
     // 2 points for VP on the chapel
     pointsInner: (gameState: GameState, playerId: string) => {

@@ -188,7 +188,7 @@ export class GameState {
     if (gameInput.eventContext) {
       const event = Event.fromName(gameInput.eventContext as EventName);
       if (!event.canPlay(this, gameInput)) {
-        throw new Error("cannot take this action");
+        throw new Error("event cannot be played");
       }
       event.play(this, gameInput);
       return;

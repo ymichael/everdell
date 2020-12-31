@@ -79,6 +79,7 @@ export const multiStepGameInputTest = (
 
   pendingGameInputs.forEach((gameInput, idx) => {
     const isLastInput = idx === pendingGameInputs.length - 1;
+
     currGameState = currGameState.next(gameInput);
     if (!isLastInput) {
       expect(

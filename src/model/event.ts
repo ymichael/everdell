@@ -793,12 +793,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         }
 
         // gain requested resources
-        player.gainResources({
-          [ResourceType.TWIG]: resources[ResourceType.TWIG] || 0,
-          [ResourceType.RESIN]: resources[ResourceType.RESIN] || 0,
-          [ResourceType.PEBBLE]: resources[ResourceType.PEBBLE] || 0,
-          [ResourceType.BERRY]: resources[ResourceType.BERRY] || 0,
-        });
+        player.gainResources(resources);
       } else {
         throw new Error(`Invalid input type ${gameInput.inputType}`);
       }

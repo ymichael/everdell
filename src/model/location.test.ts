@@ -138,6 +138,42 @@ describe("Location", () => {
     });
   });
 
+  describe("FOREST_TWO_CARDS_ONE_WILD", () => {
+    it("player draws 2 cards + gets 1 wild resource", () => {
+      const location = Location.fromName(
+        LocationName.FOREST_TWO_CARDS_ONE_WILD
+      );
+      const gameInput = placeWorkerInput(location.name);
+      gameState.locationsMap[LocationName.FOREST_TWO_CARDS_ONE_WILD] = [];
+      let player = gameState.getActivePlayer();
+      console.log(gameState.locationsMap);
+
+      expect(location.canPlay(gameState, gameInput)).to.be(true);
+      expect(player.cardsInHand.length).to.be(0);
+
+      gameState = multiStepGameInputTest(gameState, [
+        gameInput,
+        {
+          inputType: GameInputType.SELECT_RESOURCES,
+          prevInputType: GameInputType.PLACE_WORKER,
+          locationContext: LocationName.FOREST_TWO_CARDS_ONE_WILD,
+          maxResources: 1,
+          minResources: 0,
+          clientOptions: {
+            resources: {
+              [ResourceType.TWIG]: 1,
+            },
+          },
+        },
+      ]);
+
+      player = gameState.getPlayer(player.playerId);
+
+      expect(player.getNumResource(ResourceType.TWIG)).to.be(1);
+      expect(player.cardsInHand.length).to.be(2);
+    });
+  });
+
   [
     LocationName.JOURNEY_TWO,
     LocationName.JOURNEY_THREE,

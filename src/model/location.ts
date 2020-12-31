@@ -386,8 +386,44 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     name: LocationName.FOREST_TWO_CARDS_ONE_WILD,
     type: LocationType.FOREST,
     occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
-    playInner: () => {
-      throw new Error("Not Implemented");
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.PLACE_WORKER) {
+        player.drawCards(gameState, 2);
+
+        // ask the player what resource they want to gain
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_RESOURCES,
+          prevInputType: GameInputType.PLACE_WORKER,
+          locationContext: LocationName.FOREST_TWO_CARDS_ONE_WILD,
+          maxResources: 1,
+          minResources: 0,
+          clientOptions: {
+            resources: [] as CardCost,
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_RESOURCES) {
+        const resources = gameInput.clientOptions.resources;
+        if (!resources) {
+          throw new Error("invalid input");
+        }
+
+        // count total number of resources
+        const numResources =
+          (resources[ResourceType.BERRY] || 0) +
+          (resources[ResourceType.TWIG] || 0) +
+          (resources[ResourceType.RESIN] || 0) +
+          (resources[ResourceType.PEBBLE] || 0);
+
+        if (numResources > 1) {
+          throw new Error("Can't gain more than 1 resource");
+        }
+
+        // gain requested resources
+        player.gainResources(resources);
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
+      }
     },
   }),
   [LocationName.FOREST_DISCARD_UP_TO_THREE_CARDS_TO_GAIN_WILD_PER_CARD]: new Location(

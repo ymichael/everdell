@@ -2,6 +2,7 @@ import {
   ResourceType,
   ProductionResourceMap,
   LocationType,
+  LocationName,
   CardCost,
   CardType,
   CardName,
@@ -788,11 +789,79 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: false,
     associatedCard: CardName.MONASTERY,
     resourcesToGain: {},
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.SELECT_RESOURCES) {
+        const numBerries =
+          gameInput.clientOptions.resources[ResourceType.BERRY] || 0;
+        if (numBerries === 0) {
+          return;
+        }
+        if (numBerries > 2) {
+          throw new Error("Too many berries");
+        }
+        player.spendResources({
+          [ResourceType.BERRY]: numBerries,
+        });
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_PLAYER,
+          prevInputType: gameInput.inputType,
+          prevInput: gameInput,
+          cardContext: CardName.MONK,
+          playerOptions: gameState.players
+            .filter((p) => p.playerId !== player.playerId)
+            .map((p) => p.playerId),
+          mustSelectOne: true,
+          clientOptions: {
+            selectedPlayer: null,
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_PLAYER) {
+        if (
+          !gameInput.prevInput ||
+          gameInput.prevInput.inputType !== GameInputType.SELECT_RESOURCES
+        ) {
+          throw new Error("Invalid input");
+        }
+        if (!gameInput.clientOptions.selectedPlayer) {
+          throw new Error("Invalid input");
+        }
+        if (gameInput.clientOptions.selectedPlayer === player.playerId) {
+          throw new Error("Invalid input");
+        }
+        const numBerries =
+          gameInput.prevInput.clientOptions.resources[ResourceType.BERRY] || 0;
+        const targetPlayer = gameState.getPlayer(
+          gameInput.clientOptions.selectedPlayer
+        );
+        targetPlayer.gainResources({
+          [ResourceType.BERRY]: numBerries,
+        });
+        player.gainResources({
+          [ResourceType.VP]: 2 * numBerries,
+        });
+      }
+    },
     productionInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not implemented");
-      // if (gameInput.inputType !== GameInputType.PLAY_CARD) {
-      //   throw new Error("Invalid input type");
-      // }
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.PLAY_CARD) {
+        if (player.getNumResource(ResourceType.BERRY) === 0) {
+          return;
+        }
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_RESOURCES,
+          prevInputType: gameInput.inputType,
+          maxResources: 2,
+          minResources: 0,
+          specificResource: ResourceType.BERRY,
+          cardContext: CardName.MONK,
+          clientOptions: {
+            resources: {},
+          },
+        });
+      } else {
+        throw new Error("Invalid input type");
+      }
       // if (
       //   !gameInput.clientOptions?.resourcesToSpend ||
       //   !gameInput.clientOptions?.targetPlayerId
@@ -1018,7 +1087,23 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: false,
     associatedCard: CardName.DUNGEON,
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
+      throw new Error("Not implemented");
+      // if (gameInput.inputType === GameInputType.PLAY_CARD) {
+      //   // If you have workers deployed
+      //   const locations: LocationName[] = [];
+      //   gameState.pendingGameInputs.push({
+      //     inputType: GameInputType.SELECT_LOCATION,
+      //     prevInputType: gameInput.inputType,
+      //     locationOptions: locations,
+      //     cardContext: CardName.RANGER,
+      //     clientOptions: {
+      //       selectedLocation: null,
+      //     },
+      //   });
+      // } else if (gameInput.inputType === GameInputType.SELECT_LOCATION) {
+      // } else {
+      //   throw new Error(`Unexpected input type: ${gameInput.inputType}`);
+      // }
     },
   }),
   [CardName.RESIN_REFINERY]: new Card({

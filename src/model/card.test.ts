@@ -490,6 +490,209 @@ describe("Card", () => {
       });
     });
 
+    describe(CardName.MONK, () => {
+      it("should do nothing if no resources", () => {
+        const card = Card.fromName(CardName.MONK);
+        const player = gameState.getActivePlayer();
+
+        player.cardsInHand = [CardName.MONK];
+        player.gainResources(card.baseCost);
+        multiStepGameInputTest(gameState, [playCardInput(card.name)]);
+      });
+
+      it("should allow player to give up 2 berries for vp", () => {
+        const card = Card.fromName(CardName.MONK);
+        let player = gameState.getActivePlayer();
+        expect(player.getNumResource(ResourceType.VP)).to.be(0);
+
+        player.cardsInHand = [CardName.MONK];
+        player.gainResources(card.baseCost);
+        player.gainResources({
+          [ResourceType.BERRY]: 2,
+        });
+
+        const selectResourceGameInput = {
+          inputType: GameInputType.SELECT_RESOURCES as const,
+          prevInputType: GameInputType.PLAY_CARD as const,
+          cardContext: CardName.MONK,
+          maxResources: 2,
+          minResources: 0,
+          specificResource: ResourceType.BERRY,
+          clientOptions: {
+            resources: {
+              [ResourceType.BERRY]: 2,
+            },
+          },
+        };
+
+        const targetPlayerId = gameState.players[1].playerId;
+        expect(
+          gameState.getPlayer(targetPlayerId).getNumResource(ResourceType.BERRY)
+        ).to.be(0);
+        const gameState2 = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+          selectResourceGameInput,
+          {
+            inputType: GameInputType.SELECT_PLAYER,
+            prevInputType: GameInputType.SELECT_RESOURCES,
+            prevInput: selectResourceGameInput,
+            cardContext: CardName.MONK,
+            mustSelectOne: true,
+            playerOptions: [targetPlayerId],
+            clientOptions: {
+              selectedPlayer: targetPlayerId,
+            },
+          },
+        ]);
+        player = gameState2.getPlayer(player.playerId);
+        expect(player.getNumResource(ResourceType.BERRY)).to.be(0);
+        expect(player.getNumResource(ResourceType.VP)).to.be(4);
+        expect(
+          gameState2
+            .getPlayer(targetPlayerId)
+            .getNumResource(ResourceType.BERRY)
+        ).to.be(2);
+      });
+
+      it("should not allow player to give up non-existent berries", () => {
+        const card = Card.fromName(CardName.MONK);
+        let player = gameState.getActivePlayer();
+        expect(player.getNumResource(ResourceType.VP)).to.be(0);
+
+        player.cardsInHand = [CardName.MONK];
+        player.gainResources(card.baseCost);
+        player.gainResources({
+          [ResourceType.BERRY]: 1,
+        });
+
+        const selectResourceGameInput = {
+          inputType: GameInputType.SELECT_RESOURCES as const,
+          prevInputType: GameInputType.PLAY_CARD as const,
+          cardContext: CardName.MONK,
+          maxResources: 2,
+          minResources: 0,
+          specificResource: ResourceType.BERRY,
+          clientOptions: {
+            resources: {
+              [ResourceType.BERRY]: 2,
+            },
+          },
+        };
+
+        const targetPlayerId = gameState.players[1].playerId;
+
+        expect(() => {
+          multiStepGameInputTest(gameState, [
+            playCardInput(card.name),
+            selectResourceGameInput,
+            {
+              inputType: GameInputType.SELECT_PLAYER,
+              prevInputType: GameInputType.SELECT_RESOURCES,
+              prevInput: selectResourceGameInput,
+              cardContext: CardName.MONK,
+              mustSelectOne: true,
+              playerOptions: [targetPlayerId],
+              clientOptions: {
+                selectedPlayer: targetPlayerId,
+              },
+            },
+          ]);
+        }).to.throwException(/insufficient/i);
+      });
+
+      it("should not allow player to give more than 2 resources", () => {
+        const card = Card.fromName(CardName.MONK);
+        let player = gameState.getActivePlayer();
+        expect(player.getNumResource(ResourceType.VP)).to.be(0);
+
+        player.cardsInHand = [CardName.MONK];
+        player.gainResources(card.baseCost);
+        player.gainResources({
+          [ResourceType.BERRY]: 4,
+        });
+
+        const selectResourceGameInput = {
+          inputType: GameInputType.SELECT_RESOURCES as const,
+          prevInputType: GameInputType.PLAY_CARD as const,
+          cardContext: CardName.MONK,
+          maxResources: 2,
+          minResources: 0,
+          specificResource: ResourceType.BERRY,
+          clientOptions: {
+            resources: {
+              [ResourceType.BERRY]: 4,
+            },
+          },
+        };
+
+        const targetPlayerId = gameState.players[1].playerId;
+
+        expect(() => {
+          multiStepGameInputTest(gameState, [
+            playCardInput(card.name),
+            selectResourceGameInput,
+            {
+              inputType: GameInputType.SELECT_PLAYER,
+              prevInputType: GameInputType.SELECT_RESOURCES,
+              prevInput: selectResourceGameInput,
+              cardContext: CardName.MONK,
+              mustSelectOne: true,
+              playerOptions: [targetPlayerId],
+              clientOptions: {
+                selectedPlayer: targetPlayerId,
+              },
+            },
+          ]);
+        }).to.throwException(/too many/i);
+      });
+
+      it("should not allow player to give themselves berries", () => {
+        const card = Card.fromName(CardName.MONK);
+        let player = gameState.getActivePlayer();
+        expect(player.getNumResource(ResourceType.VP)).to.be(0);
+
+        player.cardsInHand = [CardName.MONK];
+        player.gainResources(card.baseCost);
+        player.gainResources({
+          [ResourceType.BERRY]: 4,
+        });
+
+        const selectResourceGameInput = {
+          inputType: GameInputType.SELECT_RESOURCES as const,
+          prevInputType: GameInputType.PLAY_CARD as const,
+          cardContext: CardName.MONK,
+          maxResources: 2,
+          minResources: 0,
+          specificResource: ResourceType.BERRY,
+          clientOptions: {
+            resources: {
+              [ResourceType.BERRY]: 2,
+            },
+          },
+        };
+
+        const targetPlayerId = gameState.players[1].playerId;
+
+        expect(() => {
+          multiStepGameInputTest(gameState, [
+            playCardInput(card.name),
+            selectResourceGameInput,
+            {
+              inputType: GameInputType.SELECT_PLAYER,
+              prevInputType: GameInputType.SELECT_RESOURCES,
+              prevInput: selectResourceGameInput,
+              cardContext: CardName.MONK,
+              mustSelectOne: true,
+              playerOptions: [targetPlayerId],
+              clientOptions: {
+                selectedPlayer: player.playerId,
+              },
+            },
+          ]);
+        }).to.throwException(/invalid/i);
+      });
+    });
+
     describe(CardName.POSTAL_PIGEON, () => {
       it("should allow the player to select a card to play", () => {
         const card = Card.fromName(CardName.POSTAL_PIGEON);

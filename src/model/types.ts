@@ -10,6 +10,7 @@ export enum GameInputType {
   SELECT_MULTIPLE_CARDS = "SELECT_MULTIPLE_CARDS",
   SELECT_PLAYER = "SELECT_PLAYER",
   SELECT_RESOURCES = "SELECT_RESOURCES",
+  SELECT_LOCATION = "SELECT_LOCATION",
   DISCARD_CARDS = "DISCARD_CARDS",
 }
 
@@ -177,11 +178,13 @@ export type GameInputSelectMultipleCards = {
     selectedCards: CardName[] | null;
   };
 };
+
 export type GameInputSelectResources = {
   inputType: GameInputType.SELECT_RESOURCES;
   prevInputType: GameInputType;
   maxResources: number;
   minResources: number;
+  specificResource?: ResourceType;
 
   locationContext?: LocationName;
   cardContext?: CardName;
@@ -191,16 +194,33 @@ export type GameInputSelectResources = {
   };
 };
 
+export type GameInputSelectLocation = {
+  inputType: GameInputType.SELECT_LOCATION;
+  prevInputType: GameInputType;
+
+  locationOptions: LocationName[];
+
+  locationContext?: LocationName;
+  cardContext?: CardName;
+  eventContext?: EventName;
+
+  clientOptions: {
+    selectedLocation: LocationName | null;
+  };
+};
+
 export type GameInputMultiStep = {
   eventContext?: EventName;
   cardContext?: CardName;
   locationContext?: LocationName;
+  prevInput?: GameInput;
 } & (
   | GameInputSelectCard
   | GameInputSelectMultipleCards
   | GameInputDiscardCards
   | GameInputSelectResources
   | GameInputSelectPlayer
+  | GameInputSelectLocation
 );
 
 export type GameInput = GameInputSimple | GameInputMultiStep;

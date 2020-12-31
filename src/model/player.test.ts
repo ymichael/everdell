@@ -497,9 +497,9 @@ describe("Player", () => {
 
       expect(availableClosedDestinationCards.length).to.be(0);
 
-      player.playedCards[CardName.INN] = [{}];
-      player.playedCards[CardName.LOOKOUT] = [{}];
-      player.playedCards[CardName.QUEEN] = [{}];
+      player.addToCity(CardName.INN);
+      player.addToCity(CardName.LOOKOUT);
+      player.addToCity(CardName.QUEEN);
 
       availableClosedDestinationCards = player.getAvailableClosedDestinationCards();
 
@@ -511,9 +511,9 @@ describe("Player", () => {
 
       expect(availableOpenDestinationCards.length).to.be(0);
 
-      player.playedCards[CardName.INN] = [{}];
-      player.playedCards[CardName.POST_OFFICE] = [{}];
-      player.playedCards[CardName.LOOKOUT] = [{}];
+      player.addToCity(CardName.INN);
+      player.addToCity(CardName.POST_OFFICE);
+      player.addToCity(CardName.LOOKOUT);
 
       availableOpenDestinationCards = player.getAvailableOpenDestinationCards();
       expect(Object.keys(player.playedCards).length).to.be(3);
@@ -588,15 +588,18 @@ describe("Player", () => {
       player1.playedCards[CardName.MONASTERY] = [
         { workers: [player1.playerId] },
       ];
-      player1.playedCards[CardName.FARM] = [{}, {}];
+      player1.addToCity(CardName.FARM);
+      player1.addToCity(CardName.FARM);
 
       gameState.locationsMap[LocationName.BASIC_ONE_BERRY] = [
         player2.playerId,
         player1.playerId,
       ];
 
-      player2.playedCards[CardName.MINE] = [{}, {}];
-      player2.playedCards[CardName.FARM] = [{}, {}];
+      player2.addToCity(CardName.MINE);
+      player2.addToCity(CardName.MINE);
+      player2.addToCity(CardName.FARM);
+      player2.addToCity(CardName.FARM);
 
       player.recallAllWorkers(gameState);
 
@@ -634,8 +637,8 @@ describe("Player", () => {
   describe("placing workers on storehouse", () => {
     it("Storehouse is not a destination card, but can have a worker placed on it", () => {
       const player = gameState.getActivePlayer();
-      player.playedCards[CardName.STOREHOUSE] = [{}];
-      player.playedCards[CardName.INN] = [{}];
+      player.addToCity(CardName.STOREHOUSE);
+      player.addToCity(CardName.INN);
 
       const closedDestinations = player.getAvailableClosedDestinationCards();
       expect(closedDestinations).to.eql([CardName.STOREHOUSE]);

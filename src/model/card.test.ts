@@ -187,7 +187,6 @@ describe("Card", () => {
         const gameInput = playCardInput(card.name);
         const player = gameState.getActivePlayer();
 
-        player.playedCards = {};
         player.cardsInHand.push(card.name);
         player.gainResources(card.baseCost);
         expect(player.getNumResource(ResourceType.BERRY)).to.be(0);

@@ -28,7 +28,7 @@ export class Player {
 
   public name: string;
   public playerId: string;
-  public playedCards: Partial<Record<CardName, PlayedCardInfo[]>>;
+  readonly playedCards: Partial<Record<CardName, PlayedCardInfo[]>>;
   public cardsInHand: CardName[];
   readonly resources: Record<ResourceType, number>;
   public currentSeason: Season;

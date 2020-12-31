@@ -82,13 +82,13 @@ describe("GameState", () => {
     //   // player1 is the active player
     //   const player1 = gameState.players[0];
     //   const player2 = gameState.players[1];
-    //   player1.playedCards[CardName.INN] = [{}];
-    //   player1.playedCards[CardName.LOOKOUT] = [{}];
-    //   player1.playedCards[CardName.QUEEN] = [{}];
-    //   player2.playedCards[CardName.INN] = [{}];
-    //   player2.playedCards[CardName.POST_OFFICE] = [{}];
-    //   player2.playedCards[CardName.FARM] = [{}];
-    //   player2.playedCards[CardName.LOOKOUT] = [{}];
+    //   player1.addToCity(CardName.INN);
+    //   player1.addToCity(CardName.LOOKOUT);
+    //   player1.addToCity(CardName.QUEEN);
+    //   player2.addToCity(CardName.INN);
+    //   player2.addToCity(CardName.POST_OFFICE);
+    //   player2.addToCity(CardName.FARM);
+    //   player2.addToCity(CardName.LOOKOUT);
     //   expect(player1.numAvailableWorkers).to.be(2);
     //   expect(player2.numAvailableWorkers).to.be(2);
     //   // active player tries to visit one of their own cards
@@ -142,11 +142,14 @@ describe("GameState", () => {
       const player1 = gameState.players[0];
       const player2 = gameState.players[1];
 
-      player1.playedCards[CardName.MINE] = [{}, {}];
-      player1.playedCards[CardName.FARM] = [{}, {}];
-
-      player2.playedCards[CardName.MINE] = [{}, {}];
-      player2.playedCards[CardName.FARM] = [{}, {}];
+      player1.addToCity(CardName.MINE);
+      player1.addToCity(CardName.MINE);
+      player1.addToCity(CardName.FARM);
+      player1.addToCity(CardName.FARM);
+      player2.addToCity(CardName.MINE);
+      player2.addToCity(CardName.MINE);
+      player2.addToCity(CardName.FARM);
+      player2.addToCity(CardName.FARM);
 
       expect(player1.numAvailableWorkers).to.be(2);
       expect(player2.numAvailableWorkers).to.be(2);

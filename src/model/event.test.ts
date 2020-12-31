@@ -37,11 +37,13 @@ describe("Event", () => {
       const event = Event.fromName(EventName.BASIC_FOUR_PRODUCTION_TAGS);
       const gameInput = claimEventInput(event.name);
       const player = gameState.getActivePlayer();
-      player.playedCards = {};
+
       expect(event.canPlay(gameState, gameInput)).to.be(false);
 
-      player.playedCards[CardName.MINE] = [{}, {}];
-      player.playedCards[CardName.FARM] = [{}, {}];
+      player.addToCity(CardName.MINE);
+      player.addToCity(CardName.MINE);
+      player.addToCity(CardName.FARM);
+      player.addToCity(CardName.FARM);
       expect(event.canPlay(gameState, gameInput)).to.be(true);
 
       expect(Object.keys(player.claimedEvents).length == 0);
@@ -57,12 +59,11 @@ describe("Event", () => {
       const event = Event.fromName(EventName.BASIC_THREE_DESTINATION);
       const gameInput = claimEventInput(event.name);
       const player = gameState.getActivePlayer();
-      player.playedCards = {};
       expect(event.canPlay(gameState, gameInput)).to.be(false);
 
-      player.playedCards[CardName.UNIVERSITY] = [{}];
-      player.playedCards[CardName.QUEEN] = [{}];
-      player.playedCards[CardName.LOOKOUT] = [{}];
+      player.addToCity(CardName.UNIVERSITY);
+      player.addToCity(CardName.QUEEN);
+      player.addToCity(CardName.LOOKOUT);
       expect(event.canPlay(gameState, gameInput)).to.be(true);
 
       expect(Object.keys(player.claimedEvents).length == 0);
@@ -78,11 +79,11 @@ describe("Event", () => {
       const event = Event.fromName(EventName.BASIC_THREE_TRAVELER);
       const gameInput = claimEventInput(event.name);
       const player = gameState.getActivePlayer();
-      player.playedCards = {};
       expect(event.canPlay(gameState, gameInput)).to.be(false);
 
-      player.playedCards[CardName.WANDERER] = [{}, {}];
-      player.playedCards[CardName.RANGER] = [{}];
+      player.addToCity(CardName.WANDERER);
+      player.addToCity(CardName.WANDERER);
+      player.addToCity(CardName.RANGER);
       expect(event.canPlay(gameState, gameInput)).to.be(true);
 
       expect(Object.keys(player.claimedEvents).length == 0);
@@ -98,12 +99,11 @@ describe("Event", () => {
       const event = Event.fromName(EventName.BASIC_THREE_GOVERNANCE);
       const gameInput = claimEventInput(event.name);
       const player = gameState.getActivePlayer();
-      player.playedCards = {};
       expect(event.canPlay(gameState, gameInput)).to.be(false);
 
-      player.playedCards[CardName.JUDGE] = [{}];
-      player.playedCards[CardName.HISTORIAN] = [{}];
-      player.playedCards[CardName.INNKEEPER] = [{}];
+      player.addToCity(CardName.JUDGE);
+      player.addToCity(CardName.HISTORIAN);
+      player.addToCity(CardName.INNKEEPER);
       expect(event.canPlay(gameState, gameInput)).to.be(true);
 
       expect(Object.keys(player.claimedEvents).length == 0);
@@ -122,25 +122,26 @@ describe("Event", () => {
 
       gameState.eventsMap[EventName.SPECIAL_THE_EVERDELL_GAMES] = null;
 
-      player.playedCards = {};
       expect(event.canPlay(gameState, gameInput)).to.be(false);
 
-      player.playedCards[CardName.JUDGE] = [{}];
-      player.playedCards[CardName.HISTORIAN] = [{}];
+      player.addToCity(CardName.JUDGE);
+      player.addToCity(CardName.HISTORIAN);
       expect(event.canPlay(gameState, gameInput)).to.be(false);
 
-      player.playedCards[CardName.FARM] = [{}, {}];
+      player.addToCity(CardName.FARM);
+      player.addToCity(CardName.FARM);
       expect(event.canPlay(gameState, gameInput)).to.be(false);
 
-      player.playedCards[CardName.WANDERER] = [{}, {}];
+      player.addToCity(CardName.WANDERER);
+      player.addToCity(CardName.WANDERER);
       expect(event.canPlay(gameState, gameInput)).to.be(false);
 
-      player.playedCards[CardName.QUEEN] = [{}];
-      player.playedCards[CardName.LOOKOUT] = [{}];
+      player.addToCity(CardName.QUEEN);
+      player.addToCity(CardName.LOOKOUT);
       expect(event.canPlay(gameState, gameInput)).to.be(false);
 
-      player.playedCards[CardName.KING] = [{}];
-      player.playedCards[CardName.WIFE] = [{}];
+      player.addToCity(CardName.KING);
+      player.addToCity(CardName.WIFE);
       expect(event.canPlay(gameState, gameInput)).to.be(true);
 
       expect(Object.keys(player.claimedEvents).length == 0);
@@ -158,8 +159,8 @@ describe("Event", () => {
       const gameInput = claimEventInput(event.name);
 
       gameState.eventsMap[EventName.SPECIAL_GRADUATION_OF_SCHOLARS] = null;
-      player.playedCards[CardName.TEACHER] = [{}];
-      player.playedCards[CardName.UNIVERSITY] = [{}];
+      player.addToCity(CardName.TEACHER);
+      player.addToCity(CardName.UNIVERSITY);
 
       player.cardsInHand = [
         CardName.POSTAL_PIGEON,
@@ -249,10 +250,10 @@ describe("Event", () => {
       gameState.eventsMap[EventName.SPECIAL_CROAK_WART_CURE] = null;
       player.gainResources({ [ResourceType.BERRY]: 2 });
 
-      player.playedCards[CardName.UNDERTAKER] = [{}];
-      player.playedCards[CardName.BARGE_TOAD] = [{}];
-      player.playedCards[CardName.FARM] = [{}];
-      player.playedCards[CardName.CASTLE] = [{}];
+      player.addToCity(CardName.UNDERTAKER);
+      player.addToCity(CardName.BARGE_TOAD);
+      player.addToCity(CardName.FARM);
+      player.addToCity(CardName.CASTLE);
 
       // check if the player can claim the event
       expect(event.canPlay(gameState, gameInput)).to.be(true);
@@ -309,12 +310,12 @@ describe("Event", () => {
         EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES
       ] = null;
 
-      player.playedCards[CardName.COURTHOUSE] = [{}];
-      player.playedCards[CardName.RANGER] = [{}];
-      player.playedCards[CardName.FARM] = [{}];
-      player.playedCards[CardName.POSTAL_PIGEON] = [{}];
-      player.playedCards[CardName.WIFE] = [{}];
-      player.playedCards[CardName.QUEEN] = [{}];
+      player.addToCity(CardName.COURTHOUSE);
+      player.addToCity(CardName.RANGER);
+      player.addToCity(CardName.FARM);
+      player.addToCity(CardName.POSTAL_PIGEON);
+      player.addToCity(CardName.WIFE);
+      player.addToCity(CardName.QUEEN);
 
       // check if the player can claim the event
       expect(event.canPlay(gameState, gameInput)).to.be(true);
@@ -365,8 +366,8 @@ describe("Event", () => {
 
       gameState.eventsMap[EventName.SPECIAL_AN_EVENING_OF_FIREWORKS] = null;
 
-      player.playedCards[CardName.LOOKOUT] = [{}];
-      player.playedCards[CardName.MINER_MOLE] = [{}];
+      player.addToCity(CardName.LOOKOUT);
+      player.addToCity(CardName.MINER_MOLE);
       player.gainResources({ [ResourceType.TWIG]: 3 });
 
       // check if the player can claim the event

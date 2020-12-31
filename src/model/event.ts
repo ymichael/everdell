@@ -232,7 +232,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           maxResources: 3,
           minResources: 0,
           clientOptions: {
-            resources: [] as CardCost,
+            resources: {},
           },
         });
       } else if (gameInput.inputType === GameInputType.SELECT_RESOURCES) {
@@ -667,7 +667,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           maxResources: 3,
           minResources: 0,
           clientOptions: {
-            resources: [] as CardCost,
+            resources: {},
           },
         });
       } else if (gameInput.inputType === GameInputType.SELECT_RESOURCES) {
@@ -772,7 +772,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           maxResources: numVP,
           minResources: 0,
           clientOptions: {
-            resources: [] as CardCost,
+            resources: {},
           },
         });
       } else if (gameInput.inputType === GameInputType.SELECT_RESOURCES) {
@@ -935,7 +935,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           maxResources: 3,
           minResources: 0,
           clientOptions: {
-            resources: [] as CardCost,
+            resources: {},
           },
         });
       } else if (gameInput.inputType === GameInputType.SELECT_RESOURCES) {

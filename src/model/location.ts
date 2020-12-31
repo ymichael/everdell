@@ -299,7 +299,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
           maxResources: 2,
           minResources: 0,
           clientOptions: {
-            resources: [] as CardCost,
+            resources: {},
           },
         });
       } else if (gameInput.inputType === GameInputType.SELECT_RESOURCES) {
@@ -398,7 +398,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
           maxResources: 1,
           minResources: 0,
           clientOptions: {
-            resources: [] as CardCost,
+            resources: {},
           },
         });
       } else if (gameInput.inputType === GameInputType.SELECT_RESOURCES) {
@@ -446,7 +446,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
             minCards: 0,
             maxCards: 3,
             clientOptions: {
-              cardsToDiscard: [] as CardName[],
+              cardsToDiscard: [],
             },
           });
         } else if (gameInput.inputType === GameInputType.DISCARD_CARDS) {
@@ -465,7 +465,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
             maxResources: cardsToDiscard.length,
             minResources: 0,
             clientOptions: {
-              resources: [] as CardCost,
+              resources: {},
             },
           });
 

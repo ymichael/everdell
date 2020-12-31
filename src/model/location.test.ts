@@ -227,6 +227,53 @@ describe("Location", () => {
     });
   });
 
+  describe.only("FOREST_DISCARD_ANY_THEN_DRAW_TWO_PER_CARD", () => {
+    it("player can visit FOREST_DISCARD_ANY_THEN_DRAW_TWO_PER_CARD", () => {
+      const location = Location.fromName(
+        LocationName.FOREST_DISCARD_ANY_THEN_DRAW_TWO_PER_CARD
+      );
+      const gameInput = placeWorkerInput(location.name);
+      gameState.locationsMap[
+        LocationName.FOREST_DISCARD_ANY_THEN_DRAW_TWO_PER_CARD
+      ] = [];
+      let player = gameState.getActivePlayer();
+      player.addCardToHand(gameState, CardName.BARD);
+      player.addCardToHand(gameState, CardName.INN);
+      player.addCardToHand(gameState, CardName.FOOL);
+      player.addCardToHand(gameState, CardName.BARGE_TOAD);
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.HUSBAND);
+
+      expect(location.canPlay(gameState, gameInput)).to.be(true);
+      expect(player.cardsInHand.length).to.be(6);
+
+      gameState = multiStepGameInputTest(gameState, [
+        gameInput,
+        {
+          inputType: GameInputType.DISCARD_CARDS,
+          prevInputType: GameInputType.PLACE_WORKER,
+          locationContext:
+            LocationName.FOREST_DISCARD_ANY_THEN_DRAW_TWO_PER_CARD,
+          minCards: 0,
+          maxCards: 8,
+          clientOptions: {
+            cardsToDiscard: [
+              CardName.FARM,
+              CardName.FOOL,
+              CardName.INN,
+              CardName.BARD,
+            ],
+          },
+        },
+      ]);
+
+      player = gameState.getPlayer(player.playerId);
+
+      // player gained 8 cards but already had 2 in hand + can't have more than 8 cards in hand
+      expect(player.cardsInHand.length).to.be(8);
+    });
+  });
+
   [
     LocationName.JOURNEY_TWO,
     LocationName.JOURNEY_THREE,

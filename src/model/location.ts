@@ -329,12 +329,47 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
       }
     },
   }),
+  // discard any number of cards and then draw 2 cards per card discarded
   [LocationName.FOREST_DISCARD_ANY_THEN_DRAW_TWO_PER_CARD]: new Location({
     name: LocationName.FOREST_DISCARD_ANY_THEN_DRAW_TWO_PER_CARD,
     type: LocationType.FOREST,
     occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
-    playInner: () => {
-      throw new Error("Not Implemented");
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.PLACE_WORKER) {
+        if (player.cardsInHand.length < 1) {
+          throw new Error("must have cards to discard");
+        }
+
+        // ask player how many cards to discard
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.DISCARD_CARDS,
+          prevInputType: GameInputType.PLACE_WORKER,
+          locationContext:
+            LocationName.FOREST_DISCARD_ANY_THEN_DRAW_TWO_PER_CARD,
+          minCards: 0,
+          maxCards: 8,
+          clientOptions: {
+            cardsToDiscard: [],
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.DISCARD_CARDS) {
+        const cardsToDiscard = gameInput.clientOptions.cardsToDiscard;
+
+        if (!cardsToDiscard) {
+          throw new Error("invalid list of cards to discard");
+        }
+
+        // discard the cards
+        cardsToDiscard.forEach((cardName) => {
+          player.removeCardFromHand(cardName);
+        });
+
+        // draw 2 cards per card discarded
+        player.drawCards(gameState, cardsToDiscard.length * 2);
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
+      }
     },
   }),
   [LocationName.FOREST_COPY_BASIC_ONE_CARD]: new Location({

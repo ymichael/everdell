@@ -713,17 +713,19 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           throw new Error("Cannot find event info");
         }
 
-        // add twigs to this event
+        // add berries to this event
         eventInfo.storedResources = eventInfo.storedResources || {
-          [ResourceType.TWIG]: 0,
+          [ResourceType.BERRY]: 0,
         };
         eventInfo.storedResources[ResourceType.BERRY] = numBerries;
 
-        // remove twigs from player's supply
+        // remove berries from player's supply
         player.spendResources({ [ResourceType.BERRY]: numBerries });
       } else {
         throw new Error(`Invalid input type ${gameInput.inputType}`);
       }
+
+      throw new Error("Not Implemented");
     },
     // 2 points per berry on event
     pointsInner: (gameState: GameState, playerId: string) => {

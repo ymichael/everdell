@@ -106,11 +106,11 @@ describe("Card", () => {
         const gameInput = playCardInput(card.name);
         let player = gameState.getActivePlayer();
 
-        expect(player.getNumResource(ResourceType.TWIG)).to.be(0);
-        expect(player.getNumResource(ResourceType.RESIN)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
         player.gainResources(card.baseCost);
-        expect(player.getNumResource(ResourceType.TWIG)).to.be(2);
-        expect(player.getNumResource(ResourceType.RESIN)).to.be(1);
+        expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(2);
+        expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
 
         player.cardsInHand = [card.name];
         expect(card.canPlay(gameState, gameInput)).to.be(true);
@@ -120,8 +120,8 @@ describe("Card", () => {
 
         expect(player.cardsInHand).to.eql([]);
         expect(player.hasCardInCity(CardName.FARM)).to.be(true);
-        expect(player.getNumResource(ResourceType.TWIG)).to.be(0);
-        expect(player.getNumResource(ResourceType.RESIN)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
       });
 
       it("should be able to pay for the card to play it", () => {
@@ -131,8 +131,8 @@ describe("Card", () => {
 
         player.cardsInHand.push(card.name);
 
-        expect(player.getNumResource(ResourceType.TWIG)).to.be(0);
-        expect(player.getNumResource(ResourceType.RESIN)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
         expect(card.canPlay(gameState, gameInput)).to.be(false);
 
         player.gainResources(card.baseCost);
@@ -146,12 +146,12 @@ describe("Card", () => {
 
         player.cardsInHand.push(card.name);
         player.gainResources(card.baseCost);
-        expect(player.getNumResource(ResourceType.BERRY)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
         const nextGameState = gameState.next(gameInput);
         expect(
           nextGameState
             .getPlayer(player.playerId)
-            .getNumResource(ResourceType.BERRY)
+            .getNumResourcesByType(ResourceType.BERRY)
         ).to.be(1);
       });
     });
@@ -172,7 +172,7 @@ describe("Card", () => {
 
         const nextGameState = gameState.next(gameInput);
         player = nextGameState.getPlayer(player.playerId);
-        expect(player.getNumResource(ResourceType.BERRY)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
         expect(player.cardsInHand).to.eql([
           CardName.FARM,
           CardName.FARM,
@@ -189,12 +189,12 @@ describe("Card", () => {
 
         player.cardsInHand.push(card.name);
         player.gainResources(card.baseCost);
-        expect(player.getNumResource(ResourceType.BERRY)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
         const nextGameState = gameState.next(gameInput);
         expect(
           nextGameState
             .getPlayer(player.playerId)
-            .getNumResource(ResourceType.BERRY)
+            .getNumResourcesByType(ResourceType.BERRY)
         ).to.be(1);
       });
 
@@ -206,12 +206,12 @@ describe("Card", () => {
         player.addToCity(CardName.FARM);
         player.cardsInHand.push(card.name);
         player.gainResources(card.baseCost);
-        expect(player.getNumResource(ResourceType.BERRY)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
         const nextGameState = gameState.next(gameInput);
         expect(
           nextGameState
             .getPlayer(player.playerId)
-            .getNumResource(ResourceType.BERRY)
+            .getNumResourcesByType(ResourceType.BERRY)
         ).to.be(2);
       });
     });
@@ -225,7 +225,7 @@ describe("Card", () => {
         player.cardsInHand = [CardName.BARD, CardName.FARM, CardName.RUINS];
 
         player.gainResources(card.baseCost);
-        expect(player.getNumResource(ResourceType.VP)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
 
         const gameState2 = gameState.next(gameInput);
         player = gameState2.getPlayer(player.playerId);
@@ -257,7 +257,7 @@ describe("Card", () => {
         expect(player.playerId).to.not.be(
           gameState3.getActivePlayer().playerId
         );
-        expect(player.getNumResource(ResourceType.VP)).to.be(2);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(2);
         expect(player.cardsInHand).to.eql([]);
       });
 
@@ -276,7 +276,7 @@ describe("Card", () => {
           CardName.RUINS,
         ];
         player.gainResources(card.baseCost);
-        expect(player.getNumResource(ResourceType.VP)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
 
         const gameState2 = gameState.next(gameInput);
         player = gameState2.getPlayer(player.playerId);
@@ -327,7 +327,7 @@ describe("Card", () => {
             },
           });
         }).to.throwException(/unable to discard/i);
-        expect(player.getNumResource(ResourceType.VP)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
       });
     });
 
@@ -368,7 +368,7 @@ describe("Card", () => {
           },
         ]);
         player = gameState2.getPlayer(player.playerId);
-        expect(player.getNumResource(ResourceType.BERRY)).to.be(1);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
       });
     });
 
@@ -547,9 +547,9 @@ describe("Card", () => {
           },
         ]);
         player = gameState2.getPlayer(player.playerId);
-        expect(player.getNumResource(ResourceType.BERRY)).to.be(2);
-        expect(player.getNumResource(ResourceType.PEBBLE)).to.be(0);
-        expect(player.getNumResource(ResourceType.RESIN)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
+        expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
       });
 
       it("should not allow player to swap 2 non-existent resources", () => {
@@ -627,7 +627,7 @@ describe("Card", () => {
       it("should allow player to give up 2 berries for vp", () => {
         const card = Card.fromName(CardName.MONK);
         let player = gameState.getActivePlayer();
-        expect(player.getNumResource(ResourceType.VP)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
 
         player.cardsInHand = [CardName.MONK];
         player.gainResources(card.baseCost);
@@ -651,7 +651,9 @@ describe("Card", () => {
 
         const targetPlayerId = gameState.players[1].playerId;
         expect(
-          gameState.getPlayer(targetPlayerId).getNumResource(ResourceType.BERRY)
+          gameState
+            .getPlayer(targetPlayerId)
+            .getNumResourcesByType(ResourceType.BERRY)
         ).to.be(0);
         const gameState2 = multiStepGameInputTest(gameState, [
           playCardInput(card.name),
@@ -669,19 +671,19 @@ describe("Card", () => {
           },
         ]);
         player = gameState2.getPlayer(player.playerId);
-        expect(player.getNumResource(ResourceType.BERRY)).to.be(0);
-        expect(player.getNumResource(ResourceType.VP)).to.be(4);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(4);
         expect(
           gameState2
             .getPlayer(targetPlayerId)
-            .getNumResource(ResourceType.BERRY)
+            .getNumResourcesByType(ResourceType.BERRY)
         ).to.be(2);
       });
 
       it("should not allow player to give up non-existent berries", () => {
         const card = Card.fromName(CardName.MONK);
         let player = gameState.getActivePlayer();
-        expect(player.getNumResource(ResourceType.VP)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
 
         player.cardsInHand = [CardName.MONK];
         player.gainResources(card.baseCost);
@@ -727,7 +729,7 @@ describe("Card", () => {
       it("should not allow player to give more than 2 resources", () => {
         const card = Card.fromName(CardName.MONK);
         let player = gameState.getActivePlayer();
-        expect(player.getNumResource(ResourceType.VP)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
 
         player.cardsInHand = [CardName.MONK];
         player.gainResources(card.baseCost);
@@ -773,7 +775,7 @@ describe("Card", () => {
       it("should not allow player to give themselves berries", () => {
         const card = Card.fromName(CardName.MONK);
         let player = gameState.getActivePlayer();
-        expect(player.getNumResource(ResourceType.VP)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
 
         player.cardsInHand = [CardName.MONK];
         player.gainResources(card.baseCost);
@@ -904,7 +906,7 @@ describe("Card", () => {
         player.cardsInHand.push(card.name);
 
         expect(player.hasCardInCity(card.name)).to.be(false);
-        expect(player.getNumResource(ResourceType.PEBBLE)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
 
         const gameState3 = multiStepGameInputTest(gameState, [
           playCardInput(card.name),
@@ -922,7 +924,7 @@ describe("Card", () => {
         ]);
 
         player = gameState3.getPlayer(player.playerId);
-        expect(player.getNumResource(ResourceType.PEBBLE)).to.be(1);
+        expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(1);
       });
     });
 

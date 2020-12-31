@@ -61,7 +61,7 @@ const PlayerStatus: React.FC<{
                 <ResourceTypeIcon resourceType={resourceType} />
               </div>
               <div className={styles.status_box_item_resource_count}>
-                {player.getNumResource(resourceType)}
+                {player.getNumResourcesByType(resourceType)}
               </div>
             </div>
           ))}

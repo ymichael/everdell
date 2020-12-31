@@ -33,7 +33,7 @@ describe("Player", () => {
   describe("canAffordCard", () => {
     it("have the right resources", () => {
       const player = gameState.getActivePlayer();
-      expect(sumResources(player.resources)).to.be(0);
+      expect(player.getNumResources()).to.be(0);
       expect(player.canAffordCard(CardName.FARM, false /* isMeadow */)).to.be(
         false
       );
@@ -45,7 +45,7 @@ describe("Player", () => {
 
     it("unoccupied associated construction", () => {
       const player = gameState.getActivePlayer();
-      expect(sumResources(player.resources)).to.be(0);
+      expect(player.getNumResources()).to.be(0);
       expect(
         player.canAffordCard(CardName.HUSBAND, false /* isMeadow */)
       ).to.be(false);
@@ -62,7 +62,7 @@ describe("Player", () => {
 
     it("CRANE discount for constructions", () => {
       const player = gameState.getActivePlayer();
-      expect(sumResources(player.resources)).to.be(0);
+      expect(player.getNumResources()).to.be(0);
       expect(player.canAffordCard(CardName.FARM, false /* isMeadow */)).to.be(
         false
       );
@@ -78,7 +78,7 @@ describe("Player", () => {
 
     it("INNKEEPER discount for critters", () => {
       const player = gameState.getActivePlayer();
-      expect(sumResources(player.resources)).to.be(0);
+      expect(player.getNumResources()).to.be(0);
       expect(player.canAffordCard(CardName.WIFE, false /* isMeadow */)).to.be(
         false
       );
@@ -94,7 +94,7 @@ describe("Player", () => {
 
     it("QUEEN discount", () => {
       const player = gameState.getActivePlayer();
-      expect(sumResources(player.resources)).to.be(0);
+      expect(player.getNumResources()).to.be(0);
       expect(player.canAffordCard(CardName.WIFE, false /* isMeadow */)).to.be(
         false
       );
@@ -110,7 +110,7 @@ describe("Player", () => {
 
     it("JUDGE discount", () => {
       const player = gameState.getActivePlayer();
-      expect(sumResources(player.resources)).to.be(0);
+      expect(player.getNumResources()).to.be(0);
       expect(player.canAffordCard(CardName.CRANE, false /* isMeadow */)).to.be(
         false
       );

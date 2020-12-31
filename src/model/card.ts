@@ -222,8 +222,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
       const numPebblesAndResin =
-        player.getNumResource(ResourceType.PEBBLE) +
-        player.getNumResource(ResourceType.RESIN);
+        player.getNumResourcesByType(ResourceType.PEBBLE) +
+        player.getNumResourcesByType(ResourceType.RESIN);
       return numPebblesAndResin > 6 ? 6 : numPebblesAndResin;
     },
   }),
@@ -843,7 +843,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     productionInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.PLAY_CARD) {
-        if (player.getNumResource(ResourceType.BERRY) === 0) {
+        if (player.getNumResourcesByType(ResourceType.BERRY) === 0) {
           return;
         }
         gameState.pendingGameInputs.push({
@@ -947,7 +947,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     productionInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.PLAY_CARD) {
-        if (sumResources(player.resources) !== 0) {
+        if (player.getNumResources() !== 0) {
           gameState.pendingGameInputs.push({
             inputType: GameInputType.SELECT_RESOURCES,
             prevInputType: gameInput.inputType,

@@ -294,7 +294,7 @@ describe("Event", () => {
       expect(player.hasCardInCity(CardName.CASTLE)).to.eql(true);
 
       // check that player paid their berries
-      expect(player.getNumResource(ResourceType.BERRY)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
     });
   });
 
@@ -397,7 +397,7 @@ describe("Event", () => {
       // check to make sure the right cards are still in the city
       expect(player.hasCardInCity(CardName.LOOKOUT)).to.eql(true);
 
-      expect(player.getNumResource(ResourceType.TWIG)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
     });
   });
 
@@ -440,7 +440,7 @@ describe("Event", () => {
       // check to make sure the right cards are still in the city
       expect(player.hasCardInCity(CardName.BARD)).to.eql(true);
 
-      expect(player.getNumResource(ResourceType.BERRY)).to.be(2);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
     });
   });
 
@@ -491,9 +491,9 @@ describe("Event", () => {
       // check to make sure the right cards are still in the city
       expect(player.hasCardInCity(CardName.PEDDLER)).to.eql(true);
 
-      expect(player.getNumResource(ResourceType.TWIG)).to.be(2);
-      expect(player.getNumResource(ResourceType.RESIN)).to.be(0);
-      expect(player.getNumResource(ResourceType.PEBBLE)).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(2);
+      expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(1);
     });
   });
   describe(EventName.SPECIAL_PRISTINE_CHAPEL_CEILING, () => {
@@ -540,8 +540,8 @@ describe("Event", () => {
       // check to make sure the right cards are still in the city
       expect(player.hasCardInCity(CardName.CHAPEL)).to.eql(true);
 
-      expect(player.getNumResource(ResourceType.TWIG)).to.be(1);
-      expect(player.getNumResource(ResourceType.RESIN)).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
     });
   });
 });

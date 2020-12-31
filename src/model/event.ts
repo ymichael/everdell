@@ -421,7 +421,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       const cards = [CardName.UNDERTAKER, CardName.BARGE_TOAD];
       return cards.every((card) => player.hasCardInCity(card)) &&
         gameInput.inputType === GameInputType.CLAIM_EVENT
-        ? player.getNumResource(ResourceType.BERRY) >= 2
+        ? player.getNumResourcesByType(ResourceType.BERRY) >= 2
         : true;
     },
     // pay 2 berries and discard 2 cards from city

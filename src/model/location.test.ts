@@ -90,7 +90,7 @@ describe("Location", () => {
       gameState.deck.addToStack(CardName.FARM);
 
       expect(player.numAvailableWorkers).to.be(2);
-      expect(player.getNumResource(ResourceType.BERRY)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
       expect(player.cardsInHand).to.eql([]);
 
       const nextGameState = gameState.next(gameInput);
@@ -99,7 +99,7 @@ describe("Location", () => {
 
       player = nextGameState.getPlayer(player.playerId);
       expect(player.numAvailableWorkers).to.be(1);
-      expect(player.getNumResource(ResourceType.BERRY)).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
       expect(player.cardsInHand).to.eql([CardName.FARM]);
     });
   });
@@ -132,8 +132,8 @@ describe("Location", () => {
 
       player = gameState.getPlayer(player.playerId);
 
-      expect(player.getNumResource(ResourceType.TWIG)).to.be(1);
-      expect(player.getNumResource(ResourceType.RESIN)).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
     });
   });
 
@@ -167,7 +167,7 @@ describe("Location", () => {
 
       player = gameState.getPlayer(player.playerId);
 
-      expect(player.getNumResource(ResourceType.TWIG)).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(1);
       expect(player.cardsInHand.length).to.be(2);
     });
   });
@@ -221,8 +221,8 @@ describe("Location", () => {
 
       player = gameState.getPlayer(player.playerId);
 
-      expect(player.getNumResource(ResourceType.TWIG)).to.be(1);
-      expect(player.getNumResource(ResourceType.RESIN)).to.be(2);
+      expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(2);
       expect(player.cardsInHand.length).to.be(1);
     });
   });

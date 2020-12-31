@@ -28,13 +28,14 @@ export class Player {
 
   public name: string;
   public playerId: string;
-  readonly playedCards: Partial<Record<CardName, PlayedCardInfo[]>>;
   public cardsInHand: CardName[];
-  readonly resources: Record<ResourceType, number>;
   public currentSeason: Season;
   public numWorkers: number;
   public numAvailableWorkers: number;
-  public claimedEvents: Partial<Record<EventName, PlayedEventInfo>>;
+
+  private resources: Record<ResourceType, number>;
+  readonly playedCards: Partial<Record<CardName, PlayedCardInfo[]>>;
+  readonly claimedEvents: Partial<Record<EventName, PlayedEventInfo>>;
 
   constructor({
     name,
@@ -202,7 +203,11 @@ export class Player {
     this.claimedEvents[eventName] = event.getPlayedEventInfo();
   }
 
-  getNumResource(resourceType: ResourceType): number {
+  getNumResources(): number {
+    return sumResources(this.resources);
+  }
+
+  getNumResourcesByType(resourceType: ResourceType): number {
     return this.resources[resourceType];
   }
 
@@ -584,7 +589,7 @@ export class Player {
     // Validate if player has resources specified by payment options
     (Object.entries(paymentResources) as [ResourceType, number][]).forEach(
       ([resourceType, count]) => {
-        if (this.getNumResource(resourceType) < count) {
+        if (this.getNumResourcesByType(resourceType) < count) {
           throw new Error(`Can't spend ${count} ${resourceType}`);
         }
       }

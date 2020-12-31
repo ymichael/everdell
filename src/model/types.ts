@@ -124,7 +124,7 @@ export type GameInputSelectCards = {
 export type GameInputSelectPlayedCards = {
   inputType: GameInputType.SELECT_PLAYED_CARDS;
   prevInputType: GameInputType;
-  options: PlayedCardInfo[];
+  cardOptions: PlayedCardInfo[];
   maxToSelect: number;
   minToSelect: number;
 
@@ -312,7 +312,7 @@ export type PlayedCardInfo = {
   workers?: string[];
 
   // dungeon
-  pairedCards?: string[];
+  pairedCards?: CardName[];
 };
 
 export type PlayedEventInfo = {

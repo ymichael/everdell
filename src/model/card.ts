@@ -1303,15 +1303,15 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.PLAY_CARD) {
-        const cardOptions: CardName[] = [];
-        player.forEachPlayedCard(({ cardName }) => {
-          const card = Card.fromName(cardName);
+        const cardOptions: PlayedCardInfo[] = [];
+        player.forEachPlayedCard((playedCardInfo) => {
+          const card = Card.fromName(playedCardInfo.cardName);
           if (card.isConstruction) {
-            cardOptions.push(cardName);
+            cardOptions.push(playedCardInfo);
           }
         });
         gameState.pendingGameInputs.push({
-          inputType: GameInputType.SELECT_CARDS,
+          inputType: GameInputType.SELECT_PLAYED_CARDS,
           prevInputType: GameInputType.PLAY_CARD,
           cardOptions,
           cardContext: CardName.RUINS,
@@ -1321,20 +1321,21 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             selectedCards: [],
           },
         });
-      } else if (gameInput.inputType === GameInputType.SELECT_CARDS) {
+      } else if (gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS) {
         const selectedCards = gameInput.clientOptions.selectedCards;
         if (
           !selectedCards ||
           selectedCards.length !== 0 ||
-          !player.hasCardInCity(selectedCards[0])
+          !selectedCards[0].cardName ||
+          !player.hasCardInCity(selectedCards[0].cardName)
         ) {
           throw new Error("Invalid input");
         }
-        const targetCard = Card.fromName(selectedCards[0]);
+        const targetCard = Card.fromName(selectedCards[0].cardName);
         if (!targetCard.isConstruction) {
           throw new Error("Cannot ruins non-construction");
         }
-        player.removeCardFromCity(gameState, targetCard.name, true);
+        player.removeCardFromCity(gameState, selectedCards[0]);
         player.drawCards(gameState, 2);
       } else {
         throw new Error("Invalid input type");

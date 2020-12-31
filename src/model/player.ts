@@ -130,16 +130,31 @@ export class Player {
 
   removeCardFromCity(
     gameState: GameState,
-    cardName: CardName,
+    playedCardInfo: PlayedCardInfo,
     addToDiscardPile = true
   ): CardName[] {
-    if (this.playedCards[cardName]) {
-      this.playedCards[cardName]!.pop();
-    } else {
-      throw new Error(`Unable to remove ${cardName}`);
+    const { cardName, pairedCards = [] } = playedCardInfo;
+
+    const playedCards = this.playedCards[cardName];
+    if (!playedCards) {
+      throw new Error(`Unable to remove ${JSON.stringify(playedCardInfo)}`);
     }
-    // TODO: handle cards that contain other cards (eg. dungeon)
-    const removedCards = [cardName];
+
+    // Get the actual object so we can splice it out.
+    const playedCardInfo_ = playedCards.find((x) => isEqual(x, playedCardInfo));
+    if (!playedCardInfo_) {
+      throw new Error(`Unable to find ${JSON.stringify(playedCardInfo)}`);
+    }
+    const idx = playedCards.indexOf(playedCardInfo_);
+    if (idx === -1) {
+      throw new Error(`Unable to find ${JSON.stringify(playedCardInfo)}`);
+    }
+
+    // Remove playedCard
+    playedCards.splice(idx, 1);
+
+    // Some cards that contain other cards (eg. dungeon)
+    const removedCards: CardName[] = [cardName, ...pairedCards];
     if (addToDiscardPile) {
       removedCards.forEach((card) => {
         gameState.discardPile.addToStack(card);
@@ -209,12 +224,12 @@ export class Player {
     return this.resources[resourceType];
   }
 
-  getPlayedCritters(): CardName[] {
-    const crittersInCity: CardName[] = [];
-    this.forEachPlayedCard(({ cardName }) => {
-      const card = Card.fromName(cardName as CardName);
+  getPlayedCritters(): PlayedCardInfo[] {
+    const crittersInCity: PlayedCardInfo[] = [];
+    this.forEachPlayedCard((playedCardInfo) => {
+      const card = Card.fromName(playedCardInfo.cardName);
       if (card.isCritter) {
-        crittersInCity.push(card.name);
+        crittersInCity.push(playedCardInfo);
       }
     });
     return crittersInCity;
@@ -289,6 +304,12 @@ export class Player {
     });
   }
 
+  getAllPlayedCards(): PlayedCardInfo[] {
+    const ret: PlayedCardInfo[] = [];
+    this.forEachPlayedCard((x) => ret.push(x));
+    return ret;
+  }
+
   getPlayedCardInfos(cardName: CardName): PlayedCardInfo[] {
     const playedCardInfos = this.playedCards[cardName];
     return playedCardInfos || [];
@@ -308,19 +329,17 @@ export class Player {
     if (!playedDungeon) {
       return false;
     }
-
     const numDungeoned = playedDungeon.pairedCards?.length || 0;
     const maxDungeoned = this.hasCardInCity(CardName.RANGER) ? 2 : 1;
-
     // Need to have a critter to dungeon
     const playedCritters = this.getPlayedCritters();
     if (
       playedCritters.length === 0 ||
-      (playedCritters.length === 1 && playedCritters[0] === CardName.RANGER)
+      (playedCritters.length === 1 &&
+        playedCritters[0].cardName === CardName.RANGER)
     ) {
       return false;
     }
-
     return numDungeoned < maxDungeoned;
   }
 
@@ -562,10 +581,20 @@ export class Player {
     } else if (paymentOptions.cardToUse) {
       switch (paymentOptions.cardToUse) {
         case CardName.CRANE:
-          this.removeCardFromCity(gameState, paymentOptions.cardToUse);
+          const playedCrane = this.getPlayedCardInfos(CardName.CRANE)?.[0];
+          if (!playedCrane) {
+            throw new Error("Can't find played crane");
+          }
+          this.removeCardFromCity(gameState, playedCrane);
           break;
         case CardName.INNKEEPER:
-          this.removeCardFromCity(gameState, paymentOptions.cardToUse);
+          const playedInnkeeper = this.getPlayedCardInfos(
+            CardName.INNKEEPER
+          )?.[0];
+          if (!playedInnkeeper) {
+            throw new Error("Can't find played innkeeper");
+          }
+          this.removeCardFromCity(gameState, playedInnkeeper);
           break;
         case CardName.QUEEN:
           // TODO place worker

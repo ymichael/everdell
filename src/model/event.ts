@@ -667,40 +667,54 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     }),
     // place up to 3 berries on event
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
-      // const player = gameState.getActivePlayer();
-      // if (gameInput.inputType !== GameInputType.CLAIM_EVENT) {
-      //   throw new Error("Invalid input type");
-      // }
-      // if (!gameInput.clientOptions) {
-      //   throw new Error("Invalid input");
-      // }
-      // const eventInfo =
-      //   player?.claimedEvents[EventName.SPECIAL_PERFORMER_IN_RESIDENCE];
-      // if (!eventInfo) {
-      //   throw new Error("Cannot find event info");
-      // }
+      const player = gameState.getActivePlayer();
 
-      // const resources = gameInput.clientOptions.resourcesToSpend;
-      // if (!resources) {
-      //   throw new Error("Invalid resources list");
-      // }
-      // const numBerriesToSpend = resources[ResourceType.BERRY];
-      // if (!numBerriesToSpend) {
-      //   throw new Error("Invalid number of berries");
-      // }
-      // if (numBerriesToSpend > 3) {
-      //   throw new Error("Cannot place more than 3 berries on this card");
-      // }
+      if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
+        // ask player how many berries to add to card
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_RESOURCES,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          eventContext: EventName.SPECIAL_PERFORMER_IN_RESIDENCE,
+          maxResources: 3,
+          minResources: 0,
+          clientOptions: {
+            resources: [] as CardCost,
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_RESOURCES) {
+        const resources = gameInput.clientOptions.resources;
+        if (!resources) {
+          throw new Error("invalid input");
+        }
 
-      // // add berries to this event
-      // eventInfo.storedResources = eventInfo.storedResources || {
-      //   [ResourceType.BERRY]: 0,
-      // };
-      // eventInfo.storedResources[ResourceType.BERRY] = numBerriesToSpend;
+        const numBerries = resources[ResourceType.BERRY];
 
-      // // remove berries from player's supply
-      // player.spendResources({ [ResourceType.BERRY]: numBerriesToSpend });
+        if (!numBerries) {
+          throw new Error("must provide number of berries");
+        }
+
+        if (numBerries > 3) {
+          throw new Error("too many berries");
+        }
+
+        const eventInfo =
+          player.claimedEvents[EventName.SPECIAL_PERFORMER_IN_RESIDENCE];
+
+        if (!eventInfo) {
+          throw new Error("Cannot find event info");
+        }
+
+        // add berries to this event
+        eventInfo.storedResources = eventInfo.storedResources || {
+          [ResourceType.BERRY]: 0,
+        };
+        eventInfo.storedResources[ResourceType.BERRY] = numBerries;
+
+        // remove berries from player's supply
+        player.spendResources({ [ResourceType.BERRY]: numBerries });
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
+      }
     },
     // 2 points per berry on event
     pointsInner: (gameState: GameState, playerId: string) => {
@@ -737,19 +751,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     // draw 1 card and receive 1 resource for each VP on your chapel
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
-      if (gameInput.inputType !== GameInputType.CLAIM_EVENT) {
-        throw new Error("Invalid input type");
-      }
-
-      if (!gameInput.clientOptions) {
-        throw new Error("Invalid input");
-      }
-      const eventInfo =
-        player.claimedEvents[EventName.SPECIAL_PRISTINE_CHAPEL_CEILING];
-      if (!eventInfo) {
-        throw new Error("Cannot find event info");
-      }
-
+      // get number of VP on chapel
       const playedCards = player.playedCards;
       if (!playedCards) {
         throw new Error("no cards in city");
@@ -771,34 +773,46 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
 
       const numVP = chapelResources[ResourceType.VP] || 0;
 
-      player.drawCards(gameState, numVP);
-      const resourcesToGain = gameInput.clientOptions.resourcesToGain;
+      if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
+        player.drawCards(gameState, numVP);
 
-      if (!resourcesToGain) {
-        throw new Error("No resources to gain specified");
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_RESOURCES,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          eventContext: EventName.SPECIAL_PRISTINE_CHAPEL_CEILING,
+          maxResources: numVP,
+          minResources: 0,
+          clientOptions: {
+            resources: [] as CardCost,
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_RESOURCES) {
+        const resources = gameInput.clientOptions.resources;
+        if (!resources) {
+          throw new Error("invalid input");
+        }
+        // count total number of resources
+
+        const numResources =
+          (resources[ResourceType.BERRY] || 0) +
+          (resources[ResourceType.TWIG] || 0) +
+          (resources[ResourceType.RESIN] || 0) +
+          (resources[ResourceType.PEBBLE] || 0);
+
+        if (numResources > numVP) {
+          throw new Error("Can't gain more resources than VP on the Chapel");
+        }
+
+        // gain requested resources
+        player.gainResources({
+          [ResourceType.TWIG]: resources[ResourceType.TWIG] || 0,
+          [ResourceType.RESIN]: resources[ResourceType.RESIN] || 0,
+          [ResourceType.PEBBLE]: resources[ResourceType.PEBBLE] || 0,
+          [ResourceType.BERRY]: resources[ResourceType.BERRY] || 0,
+        });
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
       }
-
-      // check to make sure we're not trying to gain too many resources
-      if (
-        !resourcesToGain[ResourceType.BERRY] ||
-        !resourcesToGain[ResourceType.TWIG] ||
-        !resourcesToGain[ResourceType.RESIN] ||
-        !resourcesToGain[ResourceType.PEBBLE]
-      ) {
-        throw new Error("Resource is undefined");
-      }
-
-      const totalGainedResources =
-        (resourcesToGain[ResourceType.BERRY] || 0) +
-        (resourcesToGain[ResourceType.TWIG] || 0) +
-        (resourcesToGain[ResourceType.RESIN] || 0) +
-        (resourcesToGain[ResourceType.PEBBLE] || 0);
-
-      if (totalGainedResources > numVP) {
-        throw new Error("Can't gain more resources than VP on the Chapel");
-      }
-
-      player.gainResources(resourcesToGain);
     },
     // 2 points for VP on the chapel
     pointsInner: (gameState: GameState, playerId: string) => {
@@ -926,30 +940,63 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     }),
     // place up to 3 resources on event
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
-      // const player = gameState.getActivePlayer();
-      // if (gameInput.inputType !== GameInputType.CLAIM_EVENT) {
-      //   throw new Error("Invalid input type");
-      // }
-      // if (!gameInput.clientOptions) {
-      //   throw new Error("Invalid input");
-      // }
-      // const eventInfo =
-      //   player?.claimedEvents[EventName.SPECIAL_UNDER_NEW_MANAGEMENT];
-      // if (!eventInfo) {
-      //   throw new Error("Cannot find event info");
-      // }
+      const player = gameState.getActivePlayer();
 
-      // const resourcesToSpend = gameInput.clientOptions.resourcesToSpend;
-      // if (!resourcesToSpend) {
-      //   throw new Error("Invalid resources list");
-      // }
+      if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
+        // ask player how many berries to add to card
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_RESOURCES,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          eventContext: EventName.SPECIAL_UNDER_NEW_MANAGEMENT,
+          maxResources: 3,
+          minResources: 0,
+          clientOptions: {
+            resources: [] as CardCost,
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_RESOURCES) {
+        const resources = gameInput.clientOptions.resources;
+        if (!resources) {
+          throw new Error("invalid input");
+        }
 
-      // // add resources to this event
-      // eventInfo.storedResources = resourcesToSpend;
+        // count total number of resources
 
-      // // remove resources from player's supply
-      // player.spendResources(resourcesToSpend);
+        const numResources =
+          (resources[ResourceType.BERRY] || 0) +
+          (resources[ResourceType.TWIG] || 0) +
+          (resources[ResourceType.RESIN] || 0) +
+          (resources[ResourceType.PEBBLE] || 0);
+
+        if (numResources > 3) {
+          throw new Error("too many resources");
+        }
+
+        const eventInfo =
+          player.claimedEvents[EventName.SPECIAL_UNDER_NEW_MANAGEMENT];
+
+        if (!eventInfo) {
+          throw new Error("Cannot find event info");
+        }
+
+        // add berries to this event
+        eventInfo.storedResources = eventInfo.storedResources || {
+          [ResourceType.TWIG]: resources[ResourceType.TWIG] || 0,
+          [ResourceType.RESIN]: resources[ResourceType.RESIN] || 0,
+          [ResourceType.PEBBLE]: resources[ResourceType.PEBBLE] || 0,
+          [ResourceType.BERRY]: resources[ResourceType.BERRY] || 0,
+        };
+
+        // remove berries from player's supply
+        player.spendResources({
+          [ResourceType.TWIG]: resources[ResourceType.TWIG] || 0,
+          [ResourceType.RESIN]: resources[ResourceType.RESIN] || 0,
+          [ResourceType.PEBBLE]: resources[ResourceType.PEBBLE] || 0,
+          [ResourceType.BERRY]: resources[ResourceType.BERRY] || 0,
+        });
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
+      }
     },
     // 1 pt per twig and berry, 2 pt per resin and pebble
     pointsInner: (gameState: GameState, playerId: string) => {

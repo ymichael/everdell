@@ -5,6 +5,7 @@ import { testInitialGameState, multiStepGameInputTest } from "./testHelpers";
 import {
   Season,
   LocationName,
+  LocationType,
   GameInputType,
   GameInputPlaceWorker,
   CardName,
@@ -331,6 +332,40 @@ describe("Location", () => {
 
       expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(1);
       expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
+    });
+  });
+
+  describe("FOREST_COPY_BASIC_ONE_CARD", () => {
+    it("player can visit FOREST_COPY_BASIC_ONE_CARD", () => {
+      const location = Location.fromName(
+        LocationName.FOREST_COPY_BASIC_ONE_CARD
+      );
+      const gameInput = placeWorkerInput(location.name);
+      gameState.locationsMap[LocationName.FOREST_COPY_BASIC_ONE_CARD] = [];
+      let player = gameState.getActivePlayer();
+      player.addCardToHand(gameState, CardName.BARD);
+      player.addCardToHand(gameState, CardName.INN);
+
+      expect(location.canPlay(gameState, gameInput)).to.be(true);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+
+      gameState = multiStepGameInputTest(gameState, [
+        gameInput,
+        {
+          inputType: GameInputType.SELECT_LOCATION,
+          prevInputType: GameInputType.PLACE_WORKER,
+          locationContext: LocationName.FOREST_COPY_BASIC_ONE_CARD,
+          locationOptions: Location.byType(LocationType.BASIC),
+          clientOptions: {
+            selectedLocation: LocationName.BASIC_ONE_BERRY,
+          },
+        },
+      ]);
+
+      player = gameState.getPlayer(player.playerId);
+
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
+      expect(player.cardsInHand.length).to.be(3);
     });
   });
 

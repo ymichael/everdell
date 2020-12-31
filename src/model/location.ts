@@ -90,7 +90,10 @@ export class Location implements GameStatePlayable {
     if (this.playInner) {
       this.playInner(gameState, gameInput);
     }
-    if (gameInput.inputType === GameInputType.PLACE_WORKER) {
+    if (
+      gameInput.inputType === GameInputType.PLACE_WORKER ||
+      gameInput.inputType === GameInputType.SELECT_LOCATION
+    ) {
       if (this.resourcesToGain) {
         const player = gameState.getActivePlayer();
         player.gainResources(this.resourcesToGain);
@@ -384,12 +387,43 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
       }
     },
   }),
+  // copy one basic location and draw one card
   [LocationName.FOREST_COPY_BASIC_ONE_CARD]: new Location({
     name: LocationName.FOREST_COPY_BASIC_ONE_CARD,
     type: LocationType.FOREST,
     occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
-    playInner: () => {
-      throw new Error("Not Implemented");
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.PLACE_WORKER) {
+        player.drawCards(gameState, 1);
+
+        // ask player which location they want to copy
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_LOCATION,
+          prevInputType: GameInputType.PLACE_WORKER,
+          locationContext: LocationName.FOREST_COPY_BASIC_ONE_CARD,
+          locationOptions: Location.byType(LocationType.BASIC),
+          clientOptions: {
+            selectedLocation: null,
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_LOCATION) {
+        const selectedLocation = gameInput.clientOptions.selectedLocation;
+
+        if (!selectedLocation) {
+          throw new Error("Invalid location selected");
+        }
+
+        const location = Location.fromName(selectedLocation);
+
+        if (location.type !== LocationType.BASIC) {
+          throw new Error("can only copy a basic location");
+        }
+
+        location.play(gameState, gameInput);
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
+      }
     },
   }),
   [LocationName.FOREST_ONE_PEBBLE_THREE_CARD]: new Location({

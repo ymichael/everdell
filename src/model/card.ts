@@ -673,6 +673,43 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     associatedCard: CardName.WANDERER,
     playInner: (gameState: GameState, gameInput: GameInput) => {
       throw new Error("Not implemented");
+
+      // const player = gameState.getActivePlayer();
+      // if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
+      //   player.drawCards(gameState, 1);
+
+      //   // ask player which location they want to copy
+      //   const possibleLocations = (Object.keys(
+      //     gameState.locationsMap
+      //   ) as unknown) as LocationName[];
+
+      //   gameState.pendingGameInputs.push({
+      //     inputType: GameInputType.SELECT_LOCATION,
+      //     prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+      //     cardContext: CardName.LOOKOUT,
+      //     locationOptions: possibleLocations,
+      //     clientOptions: {
+      //       selectedLocation: null,
+      //     },
+      //   });
+      // } else if (gameInput.inputType === GameInputType.SELECT_LOCATION) {
+      //   const selectedLocation = gameInput.clientOptions.selectedLocation;
+
+      //   if (!selectedLocation) {
+      //     throw new Error("Invalid location selected");
+      //   }
+
+      //   const location = Location.fromName(selectedLocation);
+
+      //   if (!location.canPlay(gameState, gameInput)) {
+      //     throw new Error("location can't be played");
+      //   }
+
+      //   location.play(gameState, gameInput);
+      // } else {
+      //   throw new Error(`Invalid input type ${gameInput.inputType}`);
+      // }
+
       // if (gameInput.inputType !== GameInputType.VISIT_DESTINATION_CARD) {
       //   throw new Error("Invalid input type");
       // }

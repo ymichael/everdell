@@ -676,40 +676,56 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     }),
     // place up to 3 berries on event
     playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+
+      if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
+        // ask player how many berries to add to card
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_RESOURCES,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          eventContext: EventName.SPECIAL_PERFORMER_IN_RESIDENCE,
+          maxResources: 3,
+          minResources: 0,
+          clientOptions: {
+            resources: [] as CardCost,
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_RESOURCES) {
+        const resources = gameInput.clientOptions.resources;
+        if (!resources) {
+          throw new Error("invalid input");
+        }
+
+        const numBerries = resources[ResourceType.BERRY];
+
+        if (!numBerries) {
+          throw new Error("must provide number of berries");
+        }
+
+        if (numBerries > 3) {
+          throw new Error("too many berries");
+        }
+
+        const eventInfo =
+          player.claimedEvents[EventName.SPECIAL_PERFORMER_IN_RESIDENCE];
+
+        if (!eventInfo) {
+          throw new Error("Cannot find event info");
+        }
+
+        // add twigs to this event
+        eventInfo.storedResources = eventInfo.storedResources || {
+          [ResourceType.TWIG]: 0,
+        };
+        eventInfo.storedResources[ResourceType.BERRY] = numBerries;
+
+        // remove twigs from player's supply
+        player.spendResources({ [ResourceType.BERRY]: numBerries });
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
+      }
+
       throw new Error("Not Implemented");
-      // const player = gameState.getActivePlayer();
-      // if (gameInput.inputType !== GameInputType.CLAIM_EVENT) {
-      //   throw new Error("Invalid input type");
-      // }
-      // if (!gameInput.clientOptions) {
-      //   throw new Error("Invalid input");
-      // }
-      // const eventInfo =
-      //   player?.claimedEvents[EventName.SPECIAL_PERFORMER_IN_RESIDENCE];
-      // if (!eventInfo) {
-      //   throw new Error("Cannot find event info");
-      // }
-
-      // const resources = gameInput.clientOptions.resourcesToSpend;
-      // if (!resources) {
-      //   throw new Error("Invalid resources list");
-      // }
-      // const numBerriesToSpend = resources[ResourceType.BERRY];
-      // if (!numBerriesToSpend) {
-      //   throw new Error("Invalid number of berries");
-      // }
-      // if (numBerriesToSpend > 3) {
-      //   throw new Error("Cannot place more than 3 berries on this card");
-      // }
-
-      // // add berries to this event
-      // eventInfo.storedResources = eventInfo.storedResources || {
-      //   [ResourceType.BERRY]: 0,
-      // };
-      // eventInfo.storedResources[ResourceType.BERRY] = numBerriesToSpend;
-
-      // // remove berries from player's supply
-      // player.spendResources({ [ResourceType.BERRY]: numBerriesToSpend });
     },
     // 2 points per berry on event
     pointsInner: (gameState: GameState, playerId: string) => {

@@ -1,7 +1,7 @@
 import expect from "expect.js";
 import { Location } from "./location";
 import { GameState } from "./gameState";
-import { testInitialGameState } from "./testHelpers";
+import { testInitialGameState, multiStepGameInputTest } from "./testHelpers";
 import {
   Season,
   LocationName,
@@ -101,6 +101,40 @@ describe("Location", () => {
       expect(player.numAvailableWorkers).to.be(1);
       expect(player.getNumResource(ResourceType.BERRY)).to.be(1);
       expect(player.cardsInHand).to.eql([CardName.FARM]);
+    });
+  });
+
+  describe("FOREST_TWO_WILD", () => {
+    it("player can specify 2 wild resources", () => {
+      const location = Location.fromName(LocationName.FOREST_TWO_WILD);
+      const gameInput = placeWorkerInput(location.name);
+      gameState.locationsMap[LocationName.FOREST_TWO_WILD] = [];
+      let player = gameState.getActivePlayer();
+      console.log(gameState.locationsMap);
+
+      expect(location.canPlay(gameState, gameInput)).to.be(true);
+
+      gameState = multiStepGameInputTest(gameState, [
+        gameInput,
+        {
+          inputType: GameInputType.SELECT_RESOURCES,
+          prevInputType: GameInputType.PLACE_WORKER,
+          locationContext: LocationName.FOREST_TWO_WILD,
+          maxResources: 2,
+          minResources: 0,
+          clientOptions: {
+            resources: {
+              [ResourceType.TWIG]: 1,
+              [ResourceType.RESIN]: 1,
+            },
+          },
+        },
+      ]);
+
+      player = gameState.getPlayer(player.playerId);
+
+      expect(player.getNumResource(ResourceType.TWIG)).to.be(1);
+      expect(player.getNumResource(ResourceType.RESIN)).to.be(1);
     });
   });
 

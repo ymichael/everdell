@@ -9,6 +9,7 @@ import {
   GameInputType,
   Season,
   ProductionResourceMap,
+  CardCost,
 } from "./types";
 import {
   GameState,
@@ -83,6 +84,7 @@ export class Location implements GameStatePlayable {
   }
 
   play(gameState: GameState, gameInput: GameInput): void {
+    console.log(gameInput);
     if (!this.canPlay(gameState, gameInput)) {
       throw new Error(`Unable to visit location ${this.name}`);
     }
@@ -287,8 +289,45 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     name: LocationName.FOREST_TWO_WILD,
     type: LocationType.FOREST,
     occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
-    playInner: () => {
-      throw new Error("Not Implemented");
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.PLACE_WORKER) {
+        // ask the player what resources they want to gain
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_RESOURCES,
+          prevInputType: GameInputType.PLACE_WORKER,
+          locationContext: LocationName.FOREST_TWO_WILD,
+          maxResources: 2,
+          minResources: 0,
+          clientOptions: {
+            resources: [] as CardCost,
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_RESOURCES) {
+        // check to make sure they're not gaining more than 2
+        // have player gain resource
+
+        const resources = gameInput.clientOptions.resources;
+        if (!resources) {
+          throw new Error("invalid input");
+        }
+        // count total number of resources
+
+        const numResources =
+          (resources[ResourceType.BERRY] || 0) +
+          (resources[ResourceType.TWIG] || 0) +
+          (resources[ResourceType.RESIN] || 0) +
+          (resources[ResourceType.PEBBLE] || 0);
+
+        if (numResources > 2) {
+          throw new Error("Can't gain more than 2 resources");
+        }
+
+        // gain requested resources
+        player.gainResources(resources);
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
+      }
     },
   }),
   [LocationName.FOREST_DISCARD_ANY_THEN_DRAW_TWO_PER_CARD]: new Location({

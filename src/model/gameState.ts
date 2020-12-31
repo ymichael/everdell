@@ -14,6 +14,8 @@ import {
   EventNameToPlayerId,
   PlayerIdsToAvailableDestinationCards,
   ResourceType,
+  GameInputWorkerPlacementTypes,
+  WorkerPlacementInfo,
 } from "./types";
 import { GameStateJSON } from "./jsonTypes";
 import { Player } from "./player";
@@ -141,11 +143,11 @@ export class GameState {
       throw new Error("Cannot take action");
     }
 
-    const player = this.getActivePlayer();
-    player.placeWorkerOnLocation(gameInput.location);
-
+    // Before we place the worker because locations need to check occupancy.
     location.play(this, gameInput);
 
+    const player = this.getActivePlayer();
+    player.placeWorkerOnLocation(gameInput.location);
     this.locationsMap[gameInput.location]!.push(player.playerId);
   }
 
@@ -213,7 +215,7 @@ export class GameState {
     gameInput: GameInputVisitDestinationCard
   ): void {
     const card = Card.fromName(gameInput.card);
-    const cardOwner = this.getPlayer(gameInput.playerId);
+    const cardOwner = this.getPlayer(gameInput.cardOwnerId);
     const activePlayer = this.getActivePlayer();
     const activePlayerOwnsCard = cardOwner.playerId === activePlayer.playerId;
 
@@ -228,6 +230,27 @@ export class GameState {
     card.play(this, gameInput);
   }
 
+  handleWorkerPlacementGameInput(
+    gameInput: GameInputWorkerPlacementTypes
+  ): void {
+    switch (gameInput.inputType) {
+      case GameInputType.CLAIM_EVENT:
+        this.handleClaimEventGameInput(gameInput);
+        break;
+      case GameInputType.PLACE_WORKER:
+        this.handlePlaceWorkerGameInput(gameInput);
+        break;
+      case GameInputType.VISIT_DESTINATION_CARD:
+        this.handleVisitDestinationCardGameInput(gameInput);
+        break;
+      default:
+        assertUnreachable(
+          gameInput,
+          `Unhandled worker placement game input: ${JSON.stringify(gameInput)}`
+        );
+    }
+  }
+
   next(gameInput: GameInput): GameState {
     const nextGameState = this.clone();
     switch (gameInput.inputType) {
@@ -235,22 +258,18 @@ export class GameState {
         nextGameState.handlePlayCardGameInput(gameInput);
         break;
       case GameInputType.PLACE_WORKER:
-        nextGameState.handlePlaceWorkerGameInput(gameInput);
-        break;
       case GameInputType.VISIT_DESTINATION_CARD:
-        nextGameState.handleVisitDestinationCardGameInput(gameInput);
+      case GameInputType.CLAIM_EVENT:
+        nextGameState.handleWorkerPlacementGameInput(gameInput);
         break;
       case GameInputType.SELECT_CARD:
       case GameInputType.SELECT_LOCATION:
-      case GameInputType.SELECT_WORKER_LOCATION:
+      case GameInputType.SELECT_WORKER_PLACEMENT:
       case GameInputType.SELECT_MULTIPLE_CARDS:
       case GameInputType.SELECT_PLAYER:
       case GameInputType.SELECT_RESOURCES:
       case GameInputType.DISCARD_CARDS:
         nextGameState.handleMultiStepGameInput(gameInput);
-        break;
-      case GameInputType.CLAIM_EVENT:
-        nextGameState.handleClaimEventGameInput(gameInput);
         break;
       case GameInputType.GAME_END:
       case GameInputType.PREPARE_FOR_SEASON:
@@ -347,13 +366,23 @@ export class GameState {
     throw new Error("No more cards to draw");
   }
 
-  private getEligibleEventGameInputs = (): GameInput[] => {
+  getEligibleWorkerPlacementGameInputs(): GameInputWorkerPlacementTypes[] {
+    if (this.getActivePlayer().numAvailableWorkers === 0) {
+      return [];
+    }
+    return [
+      ...this.getAvailableLocationGameInputs(),
+      ...this.getEligibleEventGameInputs(),
+      ...this.getAvailableDestinationCardGameInputs(),
+    ];
+  }
+
+  private getEligibleEventGameInputs = (): GameInputClaimEvent[] => {
     const keys = (Object.keys(this.eventsMap) as unknown) as EventName[];
     return keys
       .map((eventName) => {
         return {
           inputType: GameInputType.CLAIM_EVENT as const,
-          playerId: this.activePlayerId,
           event: eventName,
         };
       })
@@ -363,13 +392,12 @@ export class GameState {
       });
   };
 
-  private getAvailableLocationGameInputs = (): GameInput[] => {
+  private getAvailableLocationGameInputs = (): GameInputPlaceWorker[] => {
     const keys = (Object.keys(this.locationsMap) as unknown) as LocationName[];
     return keys
       .map((locationName) => {
         return {
           inputType: GameInputType.PLACE_WORKER as const,
-          playerId: this.activePlayerId,
           location: locationName,
         };
       })
@@ -379,7 +407,7 @@ export class GameState {
       });
   };
 
-  private getAvailableDestinationCardGameInputs = (): GameInput[] => {
+  private getAvailableDestinationCardGameInputs = (): GameInputVisitDestinationCard[] => {
     const destinationCardsToPlayers: PlayerIdsToAvailableDestinationCards = {};
 
     // get open destination cards of other players
@@ -399,15 +427,15 @@ export class GameState {
     );
 
     // create the game inputs for these cards
-    const gameInputs: GameInput[] = [];
+    const gameInputs: GameInputVisitDestinationCard[] = [];
     const playerIds = Object.keys(destinationCardsToPlayers);
 
-    playerIds.forEach((player) => {
-      const cards = destinationCardsToPlayers[player];
+    playerIds.forEach((playerId) => {
+      const cards = destinationCardsToPlayers[playerId];
       cards.forEach((cardName) => {
         gameInputs.push({
           inputType: GameInputType.VISIT_DESTINATION_CARD as const,
-          playerId: this.activePlayerId,
+          cardOwnerId: playerId,
           card: cardName as CardName,
         });
       });
@@ -424,22 +452,17 @@ export class GameState {
     const player = this.getActivePlayer();
     const playerId = player.playerId;
     const possibleGameInputs: GameInput[] = [];
-    if (player.currentSeason === Season.AUTUMN) {
-      possibleGameInputs.push({
-        inputType: GameInputType.GAME_END,
-      });
-    } else {
+
+    if (player.numAvailableWorkers > 0) {
+      possibleGameInputs.push(...this.getEligibleWorkerPlacementGameInputs());
+    } else if (player.currentSeason !== Season.AUTUMN) {
       possibleGameInputs.push({
         inputType: GameInputType.PREPARE_FOR_SEASON,
       });
-    }
-
-    if (player.numAvailableWorkers > 0) {
-      possibleGameInputs.push(...this.getAvailableLocationGameInputs());
-
-      possibleGameInputs.push(...this.getEligibleEventGameInputs());
-
-      possibleGameInputs.push(...this.getAvailableDestinationCardGameInputs());
+    } else {
+      possibleGameInputs.push({
+        inputType: GameInputType.GAME_END,
+      });
     }
 
     possibleGameInputs.push(

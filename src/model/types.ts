@@ -11,7 +11,7 @@ export enum GameInputType {
   SELECT_PLAYER = "SELECT_PLAYER",
   SELECT_RESOURCES = "SELECT_RESOURCES",
   SELECT_LOCATION = "SELECT_LOCATION",
-  SELECT_WORKER_LOCATION = "SELECT_WORKER_LOCATION",
+  SELECT_WORKER_PLACEMENT = "SELECT_WORKER_PLACEMENT",
   DISCARD_CARDS = "DISCARD_CARDS",
 }
 
@@ -23,7 +23,7 @@ export type GameInputPlaceWorker = {
 export type GameInputVisitDestinationCard = {
   inputType: GameInputType.VISIT_DESTINATION_CARD;
   card: CardName;
-  playerId: string;
+  cardOwnerId: string;
 };
 
 export type GameInputPlayCard = {
@@ -65,11 +65,14 @@ export type GameInputPrepareForSeason = {
   inputType: GameInputType.PREPARE_FOR_SEASON;
 };
 
-export type GameInputSimple =
-  | GameInputPlaceWorker
-  | GameInputVisitDestinationCard
-  | GameInputPlayCard
+export type GameInputWorkerPlacementTypes =
   | GameInputClaimEvent
+  | GameInputPlaceWorker
+  | GameInputVisitDestinationCard;
+
+export type GameInputSimple =
+  | GameInputWorkerPlacementTypes
+  | GameInputPlayCard
   | GameInputGameEnd
   | GameInputPrepareForSeason;
 
@@ -148,17 +151,17 @@ export type GameInputSelectResources = {
   };
 };
 
-export type GameInputSelectWorkerLocation = {
-  inputType: GameInputType.SELECT_WORKER_LOCATION;
+export type GameInputSelectWorkerPlacement = {
+  inputType: GameInputType.SELECT_WORKER_PLACEMENT;
   prevInputType: GameInputType;
-  options: PlacedWorkerInfo[];
+  options: GameInputWorkerPlacementTypes[];
 
   locationContext?: LocationName;
   cardContext?: CardName;
   eventContext?: EventName;
 
   clientOptions: {
-    selectedWorkerLocation: PlacedWorkerInfo | null;
+    selectedInput: GameInputWorkerPlacementTypes | null;
   };
 };
 
@@ -184,7 +187,7 @@ export type GameInputMultiStep = (
   | GameInputSelectResources
   | GameInputSelectPlayer
   | GameInputSelectLocation
-  | GameInputSelectWorkerLocation
+  | GameInputSelectWorkerPlacement
 ) & {
   eventContext?: EventName;
   cardContext?: CardName;
@@ -323,11 +326,11 @@ export type PlayedEventInfo = {
   storedCards?: string[];
 };
 
-export type PlacedWorkerInfo = {
+export type WorkerPlacementInfo = {
   location?: LocationName;
   cardDestination?: {
     card: CardName;
-    playerId: string;
+    cardOwnerId: string;
   };
   event?: EventName;
 };

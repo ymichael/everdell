@@ -9,7 +9,7 @@ import {
   GameInputType,
   PlayedCardInfo,
   PlayedEventInfo,
-  PlacedWorkerInfo,
+  WorkerPlacementInfo,
   LocationName,
 } from "./types";
 import { PlayerJSON } from "./jsonTypes";
@@ -19,7 +19,7 @@ import { Card } from "./card";
 import { Event } from "./event";
 import { generate as uuid } from "short-uuid";
 import { sumResources } from "./gameStatePlayHelpers";
-import pull from "lodash/pull";
+import isEqual from "lodash/isEqual";
 
 const MAX_HAND_SIZE = 8;
 const MAX_CITY_SIZE = 15;
@@ -38,7 +38,7 @@ export class Player {
   readonly claimedEvents: Partial<Record<EventName, PlayedEventInfo>>;
 
   private numWorkers: number;
-  private placedWorkers: PlacedWorkerInfo[];
+  private placedWorkers: WorkerPlacementInfo[];
 
   constructor({
     name,
@@ -73,7 +73,7 @@ export class Player {
     currentSeason?: Season;
     numWorkers?: number;
     claimedEvents?: Partial<Record<EventName, PlayedEventInfo>>;
-    placedWorkers?: PlacedWorkerInfo[];
+    placedWorkers?: WorkerPlacementInfo[];
   }) {
     this.playerId = playerId;
     this.playerSecret = playerSecret;
@@ -351,7 +351,7 @@ export class Player {
     }
     const cardDestination = {
       card: cardName,
-      playerId: cardOwner.playerId,
+      cardOwnerId: cardOwner.playerId,
     };
     this.placeWorkerCommon({ cardDestination });
 
@@ -374,11 +374,11 @@ export class Player {
     }
   }
 
-  private placeWorkerCommon(placedWorkerInfo: PlacedWorkerInfo): void {
+  private placeWorkerCommon(workerPlacementInfo: WorkerPlacementInfo): void {
     if (this.numAvailableWorkers === 0) {
       throw new Error(`Cannot place worker`);
     }
-    this.placedWorkers.push(placedWorkerInfo);
+    this.placedWorkers.push(workerPlacementInfo);
   }
 
   canPlaceWorkerOnCard(
@@ -743,28 +743,42 @@ export class Player {
     }
   }
 
-  isRecallableWorker(placedWorkerInfo: PlacedWorkerInfo): boolean {
+  isRecallableWorker(WorkerPlacementInfo: WorkerPlacementInfo): boolean {
     // Don't remove workers from these cards.
     if (
-      placedWorkerInfo.cardDestination &&
-      (placedWorkerInfo.cardDestination.card === CardName.CEMETARY ||
-        placedWorkerInfo.cardDestination.card === CardName.MONASTERY)
+      WorkerPlacementInfo.cardDestination &&
+      (WorkerPlacementInfo.cardDestination.card === CardName.CEMETARY ||
+        WorkerPlacementInfo.cardDestination.card === CardName.MONASTERY)
     ) {
       return false;
     }
     return true;
   }
 
-  getRecallableWorkers(): PlacedWorkerInfo[] {
+  getRecallableWorkers(): WorkerPlacementInfo[] {
     return this.placedWorkers.filter(this.isRecallableWorker);
   }
 
-  recallWorker(gameState: GameState, placedWorkerInfo: PlacedWorkerInfo): void {
-    if (!this.isRecallableWorker(placedWorkerInfo)) {
+  recallWorker(
+    gameState: GameState,
+    workerPlacementInfo: WorkerPlacementInfo,
+    removeFromPlacedWorkers: boolean = true
+  ): void {
+    if (!this.isRecallableWorker(workerPlacementInfo)) {
       throw new Error("Cannot recall worker");
     }
-
-    const { location, cardDestination, event } = placedWorkerInfo;
+    const toRemove:
+      | WorkerPlacementInfo
+      | undefined = this.placedWorkers.find((placedWorker) =>
+      isEqual(placedWorker, workerPlacementInfo)
+    );
+    if (!toRemove) {
+      throw new Error("Cannot find worker");
+    }
+    if (removeFromPlacedWorkers) {
+      this.placedWorkers.splice(this.placedWorkers.indexOf(toRemove), 1);
+    }
+    const { location, cardDestination, event } = toRemove;
     // Update gameState/other objects
     if (location) {
       const workers = gameState.locationsMap[location];
@@ -780,7 +794,7 @@ export class Player {
     } else if (event) {
       // Don't need to do anything for event
     } else if (cardDestination) {
-      const cardOwner = gameState.getPlayer(cardDestination.playerId);
+      const cardOwner = gameState.getPlayer(cardDestination.cardOwnerId);
       let removedWorker = false;
       cardOwner
         .getPlayedCardInfos(cardDestination.card)
@@ -801,6 +815,7 @@ export class Player {
         );
       }
     } else {
+      throw new Error("Unexpected worker placement");
     }
   }
 
@@ -808,9 +823,13 @@ export class Player {
     if (this.numAvailableWorkers !== 0) {
       throw new Error("Still have available workers");
     }
-    this.placedWorkers = this.placedWorkers.filter((placedWorkerInfo) => {
-      if (this.isRecallableWorker(placedWorkerInfo)) {
-        this.recallWorker(gameState, placedWorkerInfo);
+    this.placedWorkers = this.placedWorkers.filter((workerPlacementInfo) => {
+      if (this.isRecallableWorker(workerPlacementInfo)) {
+        this.recallWorker(
+          gameState,
+          workerPlacementInfo,
+          false /* removedFromPlacedWorkers */
+        );
         return false;
       } else {
         return true;

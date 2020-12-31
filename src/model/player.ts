@@ -375,12 +375,28 @@ export class Player {
       throw new Error(`Cannot place worker on ${cardName}`);
     }
     cityOwner = cityOwner || this;
-    this.placeWorkerCommon({
-      cardDestination: {
-        card: cardName,
-        playerId: cityOwner.playerId,
-      },
-    });
+    const cardDestination = {
+      card: cardName,
+      playerId: cityOwner.playerId,
+    };
+    this.placeWorkerCommon({ cardDestination });
+
+    let placedWorker = false;
+    cityOwner
+      .getPlayedCardInfos(cardName)
+      .forEach(({ maxWorkers = 1, workers = [] }) => {
+        if (!placedWorker && workers.length < maxWorkers) {
+          workers.push(this.playerId);
+          placedWorker = true;
+        }
+      });
+    if (!placedWorker) {
+      throw new Error(
+        `Couldn't place worker at cardDestination: ${JSON.stringify(
+          cardDestination
+        )}`
+      );
+    }
 
     const playedCards = cityOwner.getPlayedCardInfos(cardName);
     if (playedCards.length === 0) {
@@ -805,7 +821,7 @@ export class Player {
             .getPlayedCardInfos(cardDestination.card)
             .forEach(({ workers = [] }) => {
               if (!removedWorker) {
-                const idx = workers.indexOf(cardDestination.playerId);
+                const idx = workers.indexOf(this.playerId);
                 if (idx !== -1) {
                   workers.splice(idx, 1);
                   removedWorker = true;

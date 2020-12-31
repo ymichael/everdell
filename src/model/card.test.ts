@@ -359,7 +359,8 @@ describe("Card", () => {
             inputType: GameInputType.SELECT_RESOURCES,
             prevInputType: GameInputType.PLAY_CARD,
             cardContext: CardName.HUSBAND,
-            numResources: 1,
+            maxResources: 1,
+            minResources: 1,
             clientOptions: {
               resources: {
                 [ResourceType.BERRY]: 1,
@@ -369,6 +370,123 @@ describe("Card", () => {
         ]);
         player = gameState2.getPlayer(player.playerId);
         expect(player.getNumResource(ResourceType.BERRY)).to.be(1);
+      });
+    });
+
+    describe(CardName.PEDDLER, () => {
+      it("should do nothing if no resources", () => {
+        const card = Card.fromName(CardName.PEDDLER);
+        const player = gameState.getActivePlayer();
+
+        player.cardsInHand = [CardName.PEDDLER];
+        player.gainResources(card.baseCost);
+        multiStepGameInputTest(gameState, [playCardInput(card.name)]);
+      });
+
+      it("should allow player to swap 2 resources", () => {
+        const card = Card.fromName(CardName.PEDDLER);
+        let player = gameState.getActivePlayer();
+
+        player.cardsInHand = [CardName.PEDDLER];
+        player.gainResources(card.baseCost);
+        player.gainResources({
+          [ResourceType.PEBBLE]: 1,
+          [ResourceType.RESIN]: 1,
+        });
+
+        const gameState2 = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+          {
+            inputType: GameInputType.SELECT_RESOURCES,
+            prevInputType: GameInputType.PLAY_CARD,
+            cardContext: CardName.PEDDLER,
+            maxResources: 2,
+            minResources: 0,
+            clientOptions: {
+              resources: {
+                [ResourceType.PEBBLE]: 1,
+                [ResourceType.RESIN]: 1,
+              },
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_RESOURCES,
+            prevInputType: GameInputType.SELECT_RESOURCES,
+            cardContext: CardName.PEDDLER,
+            maxResources: 2,
+            minResources: 2,
+            clientOptions: {
+              resources: {
+                [ResourceType.BERRY]: 2,
+              },
+            },
+          },
+        ]);
+        player = gameState2.getPlayer(player.playerId);
+        expect(player.getNumResource(ResourceType.BERRY)).to.be(2);
+        expect(player.getNumResource(ResourceType.PEBBLE)).to.be(0);
+        expect(player.getNumResource(ResourceType.RESIN)).to.be(0);
+      });
+
+      it("should not allow player to swap 2 non-existent resources", () => {
+        const card = Card.fromName(CardName.PEDDLER);
+        let player = gameState.getActivePlayer();
+
+        player.cardsInHand = [CardName.PEDDLER];
+        player.gainResources(card.baseCost);
+        player.gainResources({
+          [ResourceType.PEBBLE]: 1,
+          [ResourceType.RESIN]: 1,
+        });
+
+        expect(() => {
+          multiStepGameInputTest(gameState, [
+            playCardInput(card.name),
+            {
+              inputType: GameInputType.SELECT_RESOURCES,
+              prevInputType: GameInputType.PLAY_CARD,
+              cardContext: CardName.PEDDLER,
+              maxResources: 2,
+              minResources: 0,
+              clientOptions: {
+                resources: {
+                  [ResourceType.PEBBLE]: 2,
+                },
+              },
+            },
+          ]);
+        }).to.throwException(/insufficient/i);
+      });
+
+      it("should not allow player to swap more than 2 resources", () => {
+        const card = Card.fromName(CardName.PEDDLER);
+        let player = gameState.getActivePlayer();
+
+        player.cardsInHand = [CardName.PEDDLER];
+        player.gainResources(card.baseCost);
+        player.gainResources({
+          [ResourceType.PEBBLE]: 2,
+          [ResourceType.RESIN]: 2,
+        });
+
+        expect(() => {
+          multiStepGameInputTest(gameState, [
+            playCardInput(card.name),
+            {
+              inputType: GameInputType.SELECT_RESOURCES,
+              prevInputType: GameInputType.PLAY_CARD,
+              cardContext: CardName.PEDDLER,
+              maxResources: 2,
+              minResources: 0,
+              clientOptions: {
+                resources: {
+                  [ResourceType.PEBBLE]: 2,
+                  [ResourceType.RESIN]: 2,
+                },
+              },
+            },
+          ]);
+        }).to.throwException(/too many/i);
       });
     });
 

@@ -123,8 +123,10 @@ export type GameInputDiscardCards = {
   prevInputType: GameInputType;
   minCards: number;
   maxCards: number;
+
   locationContext?: LocationName;
   cardContext?: CardName;
+
   clientOptions: {
     cardsToDiscard: CardName[];
   };
@@ -133,9 +135,12 @@ export type GameInputDiscardCards = {
 export type GameInputSelectPlayer = {
   inputType: GameInputType.SELECT_PLAYER;
   prevInputType: GameInputType;
-  cardContext?: CardName;
   playerOptions: string[];
   mustSelectOne: boolean;
+
+  locationContext?: LocationName;
+  cardContext?: CardName;
+
   clientOptions: {
     selectedPlayer: string | null;
   };
@@ -144,10 +149,13 @@ export type GameInputSelectPlayer = {
 export type GameInputSelectCard = {
   inputType: GameInputType.SELECT_CARD;
   prevInputType: GameInputType;
-  cardContext?: CardName;
   cardOptions: CardName[];
   cardOptionsUnfiltered: CardName[];
   mustSelectOne: boolean;
+
+  locationContext?: LocationName;
+  cardContext?: CardName;
+
   clientOptions: {
     selectedCard: CardName | null;
   };
@@ -156,18 +164,26 @@ export type GameInputSelectCard = {
 export type GameInputSelectResources = {
   inputType: GameInputType.SELECT_RESOURCES;
   prevInputType: GameInputType;
+  maxResources: number;
+  minResources: number;
+
+  locationContext?: LocationName;
   cardContext?: CardName;
-  numResources: number;
+
   clientOptions: {
     resources: CardCost;
   };
 };
 
-export type GameInputMultiStep =
+export type GameInputMultiStep = {
+  locationContext?: LocationName;
+  cardContext?: CardName;
+} & (
   | GameInputSelectCard
   | GameInputDiscardCards
   | GameInputSelectResources
-  | GameInputSelectPlayer;
+  | GameInputSelectPlayer
+);
 
 export type GameInput = GameInputSimple | GameInputMultiStep;
 

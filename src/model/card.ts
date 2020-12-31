@@ -609,7 +609,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             inputType: GameInputType.SELECT_RESOURCES,
             prevInputType: gameInput.inputType,
             cardContext: CardName.HUSBAND,
-            numResources: 1,
+            maxResources: 1,
+            minResources: 1,
             clientOptions: {
               resources: {},
             },
@@ -842,11 +843,58 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: false,
     associatedCard: CardName.RUINS,
     resourcesToGain: {},
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.SELECT_RESOURCES) {
+        if (gameInput.prevInputType === GameInputType.PLAY_CARD) {
+          const numResources = sumResources(gameInput.clientOptions.resources);
+          if (numResources < gameInput.minResources) {
+            throw new Error("Too few resources");
+          } else if (numResources > gameInput.maxResources) {
+            throw new Error("Too many resources");
+          }
+          if (numResources !== 0) {
+            gameState.pendingGameInputs.push({
+              inputType: GameInputType.SELECT_RESOURCES,
+              prevInputType: gameInput.inputType,
+              cardContext: CardName.PEDDLER,
+              maxResources: numResources,
+              minResources: numResources,
+              clientOptions: {
+                resources: {},
+              },
+            });
+            player.spendResources(gameInput.clientOptions.resources);
+          }
+        } else {
+          const numResources = sumResources(gameInput.clientOptions.resources);
+          if (numResources < gameInput.minResources) {
+            throw new Error("Too few resources");
+          } else if (numResources > gameInput.maxResources) {
+            throw new Error("Too many resources");
+          }
+          player.gainResources(gameInput.clientOptions.resources);
+        }
+      }
+    },
     productionInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
-      // if (gameInput.inputType !== GameInputType.PLAY_CARD) {
-      //   throw new Error("Invalid input type");
-      // }
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.PLAY_CARD) {
+        if (sumResources(player.resources) !== 0) {
+          gameState.pendingGameInputs.push({
+            inputType: GameInputType.SELECT_RESOURCES,
+            prevInputType: gameInput.inputType,
+            cardContext: CardName.PEDDLER,
+            maxResources: 2,
+            minResources: 0,
+            clientOptions: {
+              resources: {},
+            },
+          });
+        }
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
+      }
       // if (
       //   !gameInput.clientOptions?.resourcesToSpend ||
       //   !gameInput.clientOptions?.resourcesToGain ||

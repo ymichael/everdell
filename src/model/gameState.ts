@@ -167,37 +167,22 @@ export class GameState {
   private handleMultiStepGameInput(gameInput: GameInputMultiStep): void {
     this.removeMultiStepGameInput(gameInput);
 
-    if (gameInput.prevInputType === GameInputType.PLAY_CARD) {
-      if (
-        gameInput.inputType === GameInputType.SELECT_CARD ||
-        gameInput.inputType === GameInputType.DISCARD_CARDS ||
-        gameInput.inputType === GameInputType.SELECT_RESOURCES ||
-        gameInput.inputType === GameInputType.SELECT_PLAYER
-      ) {
-        if (!gameInput.cardContext) {
-          throw new Error("Invalid input: missing card");
-        }
-        const card = Card.fromName(gameInput.cardContext);
-        if (!card.canPlay(this, gameInput)) {
-          throw new Error("Cannot take action");
-        }
-        card.play(this, gameInput);
-        return;
+    if (gameInput.cardContext) {
+      const card = Card.fromName(gameInput.cardContext);
+      if (!card.canPlay(this, gameInput)) {
+        throw new Error("Cannot take action");
       }
+      card.play(this, gameInput);
+      return;
     }
 
-    if (gameInput.prevInputType === GameInputType.PLACE_WORKER) {
-      if (gameInput.inputType === GameInputType.DISCARD_CARDS) {
-        if (!gameInput.locationContext) {
-          throw new Error("Invalid input: missing location");
-        }
-        const location = Location.fromName(gameInput.locationContext);
-        if (!location.canPlay(this, gameInput)) {
-          throw new Error("Cannot take action");
-        }
-        location.play(this, gameInput);
-        return;
+    if (gameInput.locationContext) {
+      const location = Location.fromName(gameInput.locationContext);
+      if (!location.canPlay(this, gameInput)) {
+        throw new Error("Cannot take action");
       }
+      location.play(this, gameInput);
+      return;
     }
 
     throw new Error(`Unhandled game input: ${JSON.stringify(gameInput)}`);

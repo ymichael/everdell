@@ -726,12 +726,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         }
 
         player.payForCard(gameState, gameInput);
-        player.addToCity(CardName.KING);
+        player.addToCity(card.name);
       } else {
         throw new Error(`Invalid input type ${gameInput.inputType}`);
       }
-
-      //throw new Error("Not Implemented");
     },
   }),
   [CardName.INNKEEPER]: new Card({
@@ -1263,8 +1261,64 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: false,
     associatedCard: CardName.PALACE,
+    // play a card worth up to 3 base VP for free
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
+        // find all cards worth up to 3 baseVP
+
+        let playableCards: CardName[] = [];
+
+        player.cardsInHand.forEach((cardName) => {
+          const card = Card.fromName(cardName as CardName);
+          if (card.baseVP <= 3) {
+            playableCards.push(card.name);
+          }
+        });
+
+        gameState.meadowCards.forEach((cardName) => {
+          const card = Card.fromName(cardName as CardName);
+          if (card.baseVP <= 3) {
+            playableCards.push(card.name);
+          }
+        });
+
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+          cardOptions: playableCards,
+          cardOptionsUnfiltered: playableCards,
+          maxToSelect: 1,
+          minToSelect: 1,
+          cardContext: CardName.QUEEN,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_CARDS) {
+        const selectedCards = gameInput.clientOptions.selectedCards;
+
+        if (!selectedCards) {
+          throw new Error("no card selected");
+        }
+
+        if (selectedCards.length !== 1) {
+          throw new Error("incorrect number of cards selected");
+        }
+
+        const card = Card.fromName(selectedCards[0]);
+
+        if (card.baseVP > 3) {
+          throw new Error(
+            "cannot use Queen to play a card worth more than 3 base VP"
+          );
+        }
+
+        player.addToCity(card.name);
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
+      }
+      //throw new Error("Not Implemented");
     },
   }),
   [CardName.RANGER]: new Card({

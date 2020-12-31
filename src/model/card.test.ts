@@ -1114,7 +1114,7 @@ describe("Card", () => {
         player.addToCity(CardName.INN);
 
         expect(player.numAvailableWorkers).to.be(2);
-        expect(player.hasCardInCity(CardName.KING)).to.be(false);
+        expect(player.hasCardInCity(CardName.QUEEN)).to.be(false);
         expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(4);
 
         gameState = multiStepGameInputTest(gameState, [
@@ -1132,17 +1132,17 @@ describe("Card", () => {
             maxToSelect: 1,
             minToSelect: 1,
             clientOptions: {
-              selectedCards: [CardName.KING],
+              selectedCards: [CardName.QUEEN],
             },
           },
           {
             inputType: GameInputType.SELECT_PAYMENT_FOR_CARD,
             prevInputType: GameInputType.SELECT_CARDS,
             cardContext: card.name,
-            cardToBuy: CardName.KING,
+            cardToBuy: CardName.QUEEN,
             clientOptions: {
               resources: {
-                [ResourceType.BERRY]: 3,
+                [ResourceType.BERRY]: 2,
               },
             },
             paymentOptions: {
@@ -1155,8 +1155,76 @@ describe("Card", () => {
         player = gameState.getPlayer(player.playerId);
 
         expect(player.numAvailableWorkers).to.be(1);
-        expect(player.hasCardInCity(CardName.KING)).to.be(true);
-        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
+        expect(player.hasCardInCity(CardName.QUEEN)).to.be(true);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
+      });
+    });
+
+    describe(CardName.QUEEN, () => {
+      it("allow player to buy card for less than 3 points for free", () => {
+        const cards = [
+          CardName.KING,
+          CardName.QUEEN,
+          CardName.POSTAL_PIGEON,
+          CardName.POSTAL_PIGEON,
+          CardName.FARM,
+          CardName.HUSBAND,
+          CardName.CHAPEL,
+          CardName.MONK,
+        ];
+        gameState = testInitialGameState({ meadowCards: cards });
+
+        let player = gameState.getActivePlayer();
+        const card = Card.fromName(CardName.QUEEN);
+
+        // Make sure we can play this card
+        player.gainResources(card.baseCost);
+        player.cardsInHand.push(card.name);
+        player.addToCity(CardName.QUEEN);
+
+        expect(player.numAvailableWorkers).to.be(2);
+        expect(player.hasCardInCity(CardName.HUSBAND)).to.be(false);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(5);
+
+        gameState = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardOwnerId: player.playerId,
+            card: CardName.QUEEN,
+          },
+          {
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardContext: CardName.QUEEN,
+            cardOptions: [
+              CardName.POSTAL_PIGEON,
+              CardName.POSTAL_PIGEON,
+              CardName.FARM,
+              CardName.HUSBAND,
+              CardName.CHAPEL,
+              CardName.MONK,
+            ],
+            cardOptionsUnfiltered: [
+              CardName.POSTAL_PIGEON,
+              CardName.POSTAL_PIGEON,
+              CardName.FARM,
+              CardName.HUSBAND,
+              CardName.CHAPEL,
+              CardName.MONK,
+            ],
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              selectedCards: [CardName.HUSBAND],
+            },
+          },
+        ]);
+
+        player = gameState.getPlayer(player.playerId);
+
+        expect(player.numAvailableWorkers).to.be(1);
+        expect(player.hasCardInCity(CardName.HUSBAND)).to.be(true);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(5);
       });
     });
   });

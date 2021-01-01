@@ -519,8 +519,6 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     canPlayInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       const cards = [CardName.UNDERTAKER, CardName.BARGE_TOAD];
-      console.log(player.hasCardInCity(CardName.UNDERTAKER));
-      console.log(player.hasCardInCity(CardName.BARGE_TOAD));
       return (
         cards.every((card) => player.hasCardInCity(card)) &&
         (gameInput.inputType === GameInputType.CLAIM_EVENT

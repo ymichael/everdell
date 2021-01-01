@@ -15,13 +15,15 @@ const Game: React.FC<{
   viewingPlayer: PlayerJSON;
 }> = (props) => {
   const [game, setGame] = useState(props.game);
+  const [gameInputs, setGameInputs] = useState(props.gameInputs);
   const [viewingPlayer, setViewingPlayer] = useState(props.viewingPlayer);
   const updateGameAndViewingPlayer = useCallback(
-    ({ game, viewingPlayer }) => {
+    ({ game, viewingPlayer, gameInputs }) => {
       setGame(game);
       setViewingPlayer(viewingPlayer);
+      setGameInputs(gameInputs);
     },
-    [game, viewingPlayer]
+    [game, viewingPlayer, gameInputs]
   );
 
   const { gameId, gameState } = game;
@@ -51,7 +53,7 @@ const Game: React.FC<{
       <GameInputBox
         gameId={gameId}
         gameState={gameState}
-        gameInputs={props.gameInputs}
+        gameInputs={gameInputs}
         viewingPlayer={viewingPlayerImpl}
       />
       <Players viewingPlayer={viewingPlayerImpl} gameState={gameState} />

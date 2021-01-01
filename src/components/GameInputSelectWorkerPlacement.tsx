@@ -20,7 +20,6 @@ const GameInputSelectWorkerPlacement: React.FC<{
       <>
         <ul>
           {gameInput.options.map((workerOption: any, idx) => {
-            console.log(workerOption);
             return (
               <li
                 key={idx}

@@ -54,11 +54,17 @@ export default async (
       });
       return;
     }
+
+    const isActivePlayer = playerId === game.getActivePlayer().playerId;
+
     const payload = {
       game: game.toJSON(false /* includePrivate */),
+
       viewingPlayer: game
         .getPlayer(playerId as string)
         .toJSON(true /* includePrivate */),
+
+      gameInputs: isActivePlayer ? game.getGameInputs() : [],
     };
     res.write(`data: ${JSON.stringify(payload)}\n\n`);
   };

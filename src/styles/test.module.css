@@ -1,0 +1,9 @@
+.items {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: -10px;
+}
+
+.filter {
+  padding: 20px;
+}

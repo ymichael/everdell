@@ -30,6 +30,7 @@ export class Event implements GameStatePlayable {
   readonly name: EventName;
   readonly type: EventType;
   readonly baseVP: number;
+  readonly requiredCards: CardName[] | undefined;
   // every event has requirements to play,
   // but not all events result in an action when played
   readonly canPlayCheckInner: GameStateCanPlayCheckFn;
@@ -38,6 +39,7 @@ export class Event implements GameStatePlayable {
     name,
     type,
     baseVP,
+    requiredCards,
     playInner, // called when the card is played
     canPlayCheckInner, // called when we check canPlay function
     playedEventInfoInner, // used for cards that accumulate other cards or resources
@@ -46,6 +48,7 @@ export class Event implements GameStatePlayable {
     name: EventName;
     type: EventType;
     baseVP: number;
+    requiredCards?: CardName[];
     canPlayCheckInner: GameStateCanPlayCheckFn;
     playInner?: GameStatePlayFn;
     playedEventInfoInner?: () => PlayedEventInfo;
@@ -54,6 +57,7 @@ export class Event implements GameStatePlayable {
     this.name = name;
     this.type = type;
     this.baseVP = baseVP;
+    this.requiredCards = requiredCards;
     this.canPlayCheckInner = canPlayCheckInner;
     this.playInner = playInner;
     this.playedEventInfoInner = playedEventInfoInner;
@@ -244,6 +248,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_AN_EVENING_OF_FIREWORKS,
     type: EventType.SPECIAL,
     baseVP: 0,
+    requiredCards: [CardName.LOOKOUT, CardName.MINER_MOLE],
     canPlayCheckInner: canPlayCheckInnerRequiresCards([
       CardName.LOOKOUT,
       CardName.MINER_MOLE,
@@ -331,6 +336,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED,
     type: EventType.SPECIAL,
     baseVP: 0,
+    requiredCards: [CardName.HISTORIAN, CardName.RUINS],
     canPlayCheckInner: canPlayCheckInnerRequiresCards([
       CardName.HISTORIAN,
       CardName.RUINS,
@@ -398,13 +404,6 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         throw new Error(`Invalid input type ${gameInput.inputType}`);
       }
     },
-
-    /*
-    canPlayCheckInnerRequiresCards([
-      CardName.HISTORIAN,
-      CardName.RUINS,
-    ]),
-    */
     playedEventInfoInner: () => ({
       storedCards: [],
     }),
@@ -431,6 +430,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES,
     type: EventType.SPECIAL,
     baseVP: 0,
+    requiredCards: [CardName.COURTHOUSE, CardName.RANGER],
     canPlayCheckInner: canPlayCheckInnerRequiresCards([
       CardName.COURTHOUSE,
       CardName.RANGER,
@@ -576,6 +576,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_FLYING_DOCTOR_SERVICE,
     type: EventType.SPECIAL,
     baseVP: 0,
+    requiredCards: [CardName.DOCTOR, CardName.POSTAL_PIGEON],
     canPlayCheckInner: canPlayCheckInnerRequiresCards([
       CardName.DOCTOR,
       CardName.POSTAL_PIGEON,
@@ -592,6 +593,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_GRADUATION_OF_SCHOLARS,
     type: EventType.SPECIAL,
     baseVP: 0,
+    requiredCards: [CardName.TEACHER, CardName.UNIVERSITY],
     canPlayCheckInner: canPlayCheckInnerRequiresCards([
       CardName.TEACHER,
       CardName.UNIVERSITY,
@@ -673,6 +675,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_MINISTERING_TO_MISCREANTS,
     type: EventType.SPECIAL,
     baseVP: 0,
+    requiredCards: [CardName.MONK, CardName.DUNGEON],
     canPlayCheckInner: canPlayCheckInnerRequiresCards([
       CardName.MONK,
       CardName.DUNGEON,
@@ -706,6 +709,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_PATH_OF_THE_PILGRIMS,
     type: EventType.SPECIAL,
     baseVP: 0,
+    requiredCards: [CardName.MONASTERY, CardName.WANDERER],
     canPlayCheckInner: canPlayCheckInnerRequiresCards([
       CardName.MONASTERY,
       CardName.WANDERER,
@@ -748,6 +752,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_PERFORMER_IN_RESIDENCE,
     type: EventType.SPECIAL,
     baseVP: 0,
+    requiredCards: [CardName.INN, CardName.BARD],
     canPlayCheckInner: canPlayCheckInnerRequiresCards([
       CardName.INN,
       CardName.BARD,
@@ -835,6 +840,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_PRISTINE_CHAPEL_CEILING,
     type: EventType.SPECIAL,
     baseVP: 0,
+    requiredCards: [CardName.WOODCARVER, CardName.CHAPEL],
     canPlayCheckInner: canPlayCheckInnerRequiresCards([
       CardName.WOODCARVER,
       CardName.CHAPEL,
@@ -938,6 +944,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_REMEMBERING_THE_FALLEN,
     type: EventType.SPECIAL,
     baseVP: 0,
+    requiredCards: [CardName.CEMETARY, CardName.SHEPHERD],
     canPlayCheckInner: canPlayCheckInnerRequiresCards([
       CardName.CEMETARY,
       CardName.SHEPHERD,
@@ -981,6 +988,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_TAX_RELIEF,
     type: EventType.SPECIAL,
     baseVP: 0,
+    requiredCards: [CardName.JUDGE, CardName.QUEEN],
     canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
       return "Not Implemented";
     },
@@ -1022,6 +1030,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_UNDER_NEW_MANAGEMENT,
     type: EventType.SPECIAL,
     baseVP: 0,
+    requiredCards: [CardName.PEDDLER, CardName.GENERAL_STORE],
     canPlayCheckInner: canPlayCheckInnerRequiresCards([
       CardName.PEDDLER,
       CardName.GENERAL_STORE,

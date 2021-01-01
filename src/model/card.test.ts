@@ -1352,7 +1352,7 @@ describe("Card", () => {
         player.addToCity(CardName.INN);
 
         expect(player.numAvailableWorkers).to.be(2);
-        expect(player.hasCardInCity(CardName.KING)).to.be(false);
+        expect(player.hasCardInCity(CardName.QUEEN)).to.be(false);
         expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(4);
 
         gameState = multiStepGameInputTest(gameState, [
@@ -1370,17 +1370,17 @@ describe("Card", () => {
             maxToSelect: 1,
             minToSelect: 1,
             clientOptions: {
-              selectedCards: [CardName.KING],
+              selectedCards: [CardName.QUEEN],
             },
           },
           {
             inputType: GameInputType.SELECT_PAYMENT_FOR_CARD,
             prevInputType: GameInputType.SELECT_CARDS,
             cardContext: card.name,
-            cardToBuy: CardName.KING,
+            cardToBuy: CardName.QUEEN,
             clientOptions: {
               resources: {
-                [ResourceType.BERRY]: 3,
+                [ResourceType.BERRY]: 2,
               },
             },
             paymentOptions: {
@@ -1393,8 +1393,252 @@ describe("Card", () => {
         player = gameState.getPlayer(player.playerId);
 
         expect(player.numAvailableWorkers).to.be(1);
-        expect(player.hasCardInCity(CardName.KING)).to.be(true);
-        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
+        expect(player.hasCardInCity(CardName.QUEEN)).to.be(true);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
+      });
+    });
+
+    describe(CardName.QUEEN, () => {
+      it("allow player to buy card for less than 3 points for free", () => {
+        const cards = [
+          CardName.KING,
+          CardName.QUEEN,
+          CardName.POSTAL_PIGEON,
+          CardName.POSTAL_PIGEON,
+          CardName.FARM,
+          CardName.HUSBAND,
+          CardName.CHAPEL,
+          CardName.MONK,
+        ];
+        gameState = testInitialGameState({ meadowCards: cards });
+
+        let player = gameState.getActivePlayer();
+        const card = Card.fromName(CardName.QUEEN);
+
+        // Make sure we can play this card
+        player.gainResources(card.baseCost);
+        player.cardsInHand.push(card.name);
+        player.addToCity(CardName.QUEEN);
+
+        expect(player.numAvailableWorkers).to.be(2);
+        expect(player.hasCardInCity(CardName.HUSBAND)).to.be(false);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(5);
+
+        gameState = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardOwnerId: player.playerId,
+            card: CardName.QUEEN,
+          },
+          {
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardContext: CardName.QUEEN,
+            cardOptions: [
+              CardName.POSTAL_PIGEON,
+              CardName.POSTAL_PIGEON,
+              CardName.FARM,
+              CardName.HUSBAND,
+              CardName.CHAPEL,
+              CardName.MONK,
+            ],
+            cardOptionsUnfiltered: [
+              CardName.POSTAL_PIGEON,
+              CardName.POSTAL_PIGEON,
+              CardName.FARM,
+              CardName.HUSBAND,
+              CardName.CHAPEL,
+              CardName.MONK,
+            ],
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              selectedCards: [CardName.HUSBAND],
+            },
+          },
+        ]);
+
+        player = gameState.getPlayer(player.playerId);
+
+        expect(player.numAvailableWorkers).to.be(1);
+        expect(player.hasCardInCity(CardName.HUSBAND)).to.be(true);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(5);
+      });
+    });
+
+    describe(CardName.TEACHER, () => {
+      it("allow player to give cards to other player using teacher", () => {
+        let player1 = gameState.players[0];
+        let player2 = gameState.players[1];
+        const card = Card.fromName(CardName.TEACHER);
+
+        const topOfDeck = [CardName.FARM, CardName.QUEEN];
+        topOfDeck.reverse();
+        topOfDeck.forEach((cardName) => {
+          gameState.deck.addToStack(cardName);
+        });
+
+        // Make sure we can play this card
+        player1.gainResources(card.baseCost);
+        player1.addCardToHand(gameState, card.name);
+
+        expect(player1.cardsInHand.length).to.be(1);
+        expect(player2.cardsInHand.length).to.be(0);
+
+        gameState = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+          {
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: GameInputType.PLAY_CARD,
+            cardContext: CardName.TEACHER,
+            cardOptions: [CardName.FARM, CardName.QUEEN],
+            cardOptionsUnfiltered: [CardName.FARM, CardName.QUEEN],
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              selectedCards: [CardName.FARM],
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_PLAYER,
+            prevInputType: GameInputType.SELECT_CARDS,
+            prevInput: {
+              inputType: GameInputType.SELECT_CARDS,
+              prevInputType: GameInputType.PLAY_CARD,
+              cardContext: CardName.TEACHER,
+              cardOptions: [CardName.FARM, CardName.QUEEN],
+              cardOptionsUnfiltered: [CardName.FARM, CardName.QUEEN],
+              maxToSelect: 1,
+              minToSelect: 1,
+              clientOptions: {
+                selectedCards: [CardName.FARM],
+              },
+            },
+            playerOptions: [player2.playerId],
+            mustSelectOne: true,
+            cardContext: CardName.TEACHER,
+            clientOptions: {
+              selectedPlayer: player2.playerId,
+            },
+          },
+        ]);
+
+        player1 = gameState.getPlayer(player1.playerId);
+        player2 = gameState.getPlayer(player2.playerId);
+
+        expect(player1.cardsInHand).to.eql([CardName.QUEEN]);
+
+        expect(player2.cardsInHand).to.eql([CardName.FARM]);
+      });
+    });
+
+    describe(CardName.UNDERTAKER, () => {
+      it("undertaker should allow player to take card from meadow", () => {
+        const cards = [
+          CardName.KING,
+          CardName.QUEEN,
+          CardName.POSTAL_PIGEON,
+          CardName.POSTAL_PIGEON,
+          CardName.FARM,
+          CardName.HUSBAND,
+          CardName.CHAPEL,
+          CardName.MONK,
+        ];
+        gameState = testInitialGameState({ meadowCards: cards });
+
+        const topOfDeck = [
+          CardName.SCHOOL,
+          CardName.TEACHER,
+          CardName.WIFE,
+          CardName.DOCTOR,
+        ];
+        topOfDeck.reverse();
+        topOfDeck.forEach((cardName) => {
+          gameState.deck.addToStack(cardName);
+        });
+
+        let player = gameState.getActivePlayer();
+        const card = Card.fromName(CardName.UNDERTAKER);
+
+        expect(player.cardsInHand).to.eql([]);
+        expect(gameState.meadowCards.indexOf(CardName.DOCTOR)).to.be.lessThan(
+          0
+        );
+
+        // Make sure we can play this card
+        player.gainResources(card.baseCost);
+        player.cardsInHand.push(card.name);
+
+        gameState = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+          {
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: GameInputType.PLAY_CARD,
+            cardContext: CardName.UNDERTAKER,
+            cardOptions: [
+              CardName.KING,
+              CardName.QUEEN,
+              CardName.POSTAL_PIGEON,
+              CardName.POSTAL_PIGEON,
+              CardName.FARM,
+              CardName.HUSBAND,
+              CardName.CHAPEL,
+              CardName.MONK,
+            ],
+            cardOptionsUnfiltered: [
+              CardName.KING,
+              CardName.QUEEN,
+              CardName.POSTAL_PIGEON,
+              CardName.POSTAL_PIGEON,
+              CardName.FARM,
+              CardName.HUSBAND,
+              CardName.CHAPEL,
+              CardName.MONK,
+            ],
+            maxToSelect: 3,
+            minToSelect: 3,
+            clientOptions: {
+              selectedCards: [CardName.QUEEN, CardName.KING, CardName.CHAPEL],
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: GameInputType.SELECT_CARDS,
+            cardContext: card.name,
+            cardOptions: [
+              CardName.POSTAL_PIGEON,
+              CardName.POSTAL_PIGEON,
+              CardName.FARM,
+              CardName.HUSBAND,
+              CardName.MONK,
+              CardName.SCHOOL,
+              CardName.TEACHER,
+              CardName.WIFE,
+            ],
+            cardOptionsUnfiltered: [
+              CardName.POSTAL_PIGEON,
+              CardName.POSTAL_PIGEON,
+              CardName.FARM,
+              CardName.HUSBAND,
+              CardName.MONK,
+              CardName.SCHOOL,
+              CardName.TEACHER,
+              CardName.WIFE,
+            ],
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              selectedCards: [CardName.TEACHER],
+            },
+          },
+        ]);
+
+        player = gameState.getPlayer(player.playerId);
+
+        expect(player.cardsInHand).to.eql([CardName.TEACHER]);
+        expect(
+          gameState.meadowCards.indexOf(CardName.DOCTOR)
+        ).to.be.greaterThan(0);
       });
     });
   });

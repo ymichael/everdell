@@ -26,6 +26,7 @@ import {
   getPointsPerRarityLabel,
 } from "./gameStatePlayHelpers";
 import cloneDeep from "lodash/cloneDeep";
+import pull from "lodash/pull";
 
 type MaxWorkersInnerFn = (cardOwner: Player) => number;
 type ProductionInnerFn = (
@@ -859,12 +860,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         }
 
         player.payForCard(gameState, gameInput);
-        player.addToCity(CardName.KING);
+        player.addToCity(card.name);
       } else {
         throw new Error(`Invalid input type ${gameInput.inputType}`);
       }
-
-      //throw new Error("Not Implemented");
     },
   }),
   [CardName.INNKEEPER]: new Card({
@@ -1385,8 +1384,64 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: false,
     associatedCard: CardName.PALACE,
+    // play a card worth up to 3 base VP for free
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
+        // find all cards worth up to 3 baseVP
+
+        let playableCards: CardName[] = [];
+
+        player.cardsInHand.forEach((cardName) => {
+          const card = Card.fromName(cardName as CardName);
+          if (card.baseVP <= 3) {
+            playableCards.push(card.name);
+          }
+        });
+
+        gameState.meadowCards.forEach((cardName) => {
+          const card = Card.fromName(cardName as CardName);
+          if (card.baseVP <= 3) {
+            playableCards.push(card.name);
+          }
+        });
+
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+          cardOptions: playableCards,
+          cardOptionsUnfiltered: playableCards,
+          maxToSelect: 1,
+          minToSelect: 1,
+          cardContext: CardName.QUEEN,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_CARDS) {
+        const selectedCards = gameInput.clientOptions.selectedCards;
+
+        if (!selectedCards) {
+          throw new Error("no card selected");
+        }
+
+        if (selectedCards.length !== 1) {
+          throw new Error("incorrect number of cards selected");
+        }
+
+        const card = Card.fromName(selectedCards[0]);
+
+        if (card.baseVP > 3) {
+          throw new Error(
+            "cannot use Queen to play a card worth more than 3 base VP"
+          );
+        }
+
+        player.addToCity(card.name);
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
+      }
+      //throw new Error("Not Implemented");
     },
   }),
   [CardName.RANGER]: new Card({
@@ -1631,8 +1686,82 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: false,
     associatedCard: CardName.SCHOOL,
     resourcesToGain: {},
+    // draw 2 cards + give 1 to an opponent
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.PLAY_CARD) {
+        const cardOptions = [gameState.drawCard(), gameState.drawCard()];
+
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: GameInputType.PLAY_CARD,
+          cardOptions: cardOptions,
+          cardOptionsUnfiltered: cardOptions,
+          maxToSelect: 1,
+          minToSelect: 1,
+          cardContext: CardName.TEACHER,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_CARDS) {
+        if (!gameInput.clientOptions.selectedCards) {
+          throw new Error("invalid selected cards");
+        }
+
+        if (gameInput.clientOptions.selectedCards.length !== 1) {
+          throw new Error("incorrect number of cards selected");
+        }
+
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_PLAYER,
+          prevInputType: GameInputType.SELECT_CARDS,
+          prevInput: gameInput,
+          playerOptions: gameState.players
+            .filter((p) => p.playerId !== player.playerId)
+            .map((p) => p.playerId),
+          mustSelectOne: true,
+          cardContext: CardName.TEACHER,
+          clientOptions: {
+            selectedPlayer: null,
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_PLAYER) {
+        if (
+          !gameInput.prevInput ||
+          gameInput.prevInput.inputType !== GameInputType.SELECT_CARDS
+        ) {
+          throw new Error("Invalid input");
+        }
+
+        const selectedPlayer = gameInput.clientOptions.selectedPlayer;
+        if (!selectedPlayer) {
+          throw new Error("must select a player");
+        }
+
+        if (
+          !gameState.getPlayer(selectedPlayer) ||
+          selectedPlayer === player.playerId
+        ) {
+          throw new Error("invalid playerId provided");
+        }
+        const cardName = gameInput.prevInput.clientOptions.selectedCards[0];
+        const card = Card.fromName(cardName as CardName);
+
+        gameState.getPlayer(selectedPlayer).addCardToHand(gameState, card.name);
+
+        let keptCard = gameInput.prevInput.cardOptions;
+
+        keptCard = pull(keptCard, card.name);
+
+        if (keptCard.length !== 1) {
+          throw new Error("issue getting card to keep");
+        }
+
+        player.addCardToHand(gameState, keptCard[0] as CardName);
+      } else {
+        throw new Error("Invalid input type");
+      }
     },
   }),
   [CardName.THEATRE]: new Card({
@@ -1670,8 +1799,71 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: false,
     associatedCard: CardName.CEMETARY,
+    // Discard 3 meadow, replace, draw 1 meadow
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.PLAY_CARD) {
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: GameInputType.PLAY_CARD,
+          cardOptions: gameState.meadowCards,
+          cardOptionsUnfiltered: gameState.meadowCards,
+          maxToSelect: 3,
+          minToSelect: 3,
+          cardContext: CardName.UNDERTAKER,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_CARDS &&
+        gameInput.prevInputType === GameInputType.PLAY_CARD
+      ) {
+        // discard the cards from the meadow + replenish
+        const selectedCards = gameInput.clientOptions.selectedCards;
+        if (selectedCards.length !== 3) {
+          throw new Error("must choose exactly 3 cards to remove from meadow");
+        }
+
+        selectedCards.forEach((cardName) => {
+          gameState.removeCardFromMeadow(cardName);
+          gameState.discardPile.addToStack(cardName);
+        });
+
+        gameState.replenishMeadow();
+
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: GameInputType.SELECT_CARDS,
+          cardOptions: gameState.meadowCards,
+          cardOptionsUnfiltered: gameState.meadowCards,
+          maxToSelect: 1,
+          minToSelect: 1,
+          cardContext: CardName.UNDERTAKER,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_CARDS &&
+        gameInput.prevInputType === GameInputType.SELECT_CARDS
+      ) {
+        // add this card to player's hand + replenish meadow
+        const selectedCards = gameInput.clientOptions.selectedCards;
+        if (selectedCards.length !== 1) {
+          throw new Error("may only choose 1 card from meadow");
+        }
+
+        const card = selectedCards[0];
+        gameState.removeCardFromMeadow(card);
+        gameState.replenishMeadow();
+
+        player.addCardToHand(gameState, card);
+      } else {
+        throw new Error(
+          "Unexpected input type ${gameInput.inputType} with previous input type ${gameInput.prevInputType}"
+        );
+      }
     },
   }),
   [CardName.UNIVERSITY]: new Card({

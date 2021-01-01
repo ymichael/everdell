@@ -1428,7 +1428,69 @@ describe("Card", () => {
     });
 
     describe(CardName.INN, () => {
-      it("inn should allow player buy card from meadow", () => {
+      it("should allow player buy card from meadow without spending resources if cost is <= 3", () => {
+        const cards = [
+          CardName.KING,
+          CardName.QUEEN,
+          CardName.POSTAL_PIGEON,
+          CardName.POSTAL_PIGEON,
+          CardName.FARM,
+          CardName.HUSBAND,
+          CardName.CHAPEL,
+          CardName.MONK,
+        ];
+        gameState = testInitialGameState({ meadowCards: cards });
+
+        let player = gameState.getActivePlayer();
+        const card = Card.fromName(CardName.INN);
+
+        player.addToCity(CardName.INN);
+
+        expect(player.numAvailableWorkers).to.be(2);
+        expect(player.hasCardInCity(CardName.QUEEN)).to.be(false);
+        expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
+
+        gameState = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardOwnerId: player.playerId,
+            card: CardName.INN,
+          },
+          {
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardContext: CardName.INN,
+            cardOptions: gameState.meadowCards,
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              selectedCards: [CardName.FARM],
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_PAYMENT_FOR_CARD,
+            prevInputType: GameInputType.SELECT_CARDS,
+            cardContext: card.name,
+            cardToBuy: CardName.FARM,
+            clientOptions: {
+              resources: {},
+            },
+            paymentOptions: {
+              cardToUse: CardName.INN,
+              resources: {},
+            },
+          },
+        ]);
+
+        player = gameState.getPlayer(player.playerId);
+
+        expect(player.numAvailableWorkers).to.be(1);
+        expect(player.hasCardInCity(CardName.FARM)).to.be(true);
+        expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
+      });
+      it("should allow player buy card from meadow if cost is > 3", () => {
         const cards = [
           CardName.KING,
           CardName.QUEEN,
@@ -1445,9 +1507,7 @@ describe("Card", () => {
         const card = Card.fromName(CardName.INN);
 
         // Make sure we can play this card
-        player.gainResources(card.baseCost);
         player.gainResources({ [ResourceType.BERRY]: 4 });
-        player.cardsInHand.push(card.name);
         player.addToCity(CardName.INN);
 
         expect(player.numAvailableWorkers).to.be(2);
@@ -1493,6 +1553,106 @@ describe("Card", () => {
         expect(player.numAvailableWorkers).to.be(1);
         expect(player.hasCardInCity(CardName.QUEEN)).to.be(true);
         expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
+      });
+      it("should not allow player buy card in hand but not in meadow", () => {
+        const cards = [
+          CardName.KING,
+          CardName.QUEEN,
+          CardName.POSTAL_PIGEON,
+          CardName.POSTAL_PIGEON,
+          CardName.FARM,
+          CardName.HUSBAND,
+          CardName.CHAPEL,
+          CardName.MONK,
+        ];
+        gameState = testInitialGameState({ meadowCards: cards });
+
+        let player = gameState.getActivePlayer();
+        const card = Card.fromName(CardName.INN);
+
+        // Make sure we can play this card
+        player.cardsInHand.push(CardName.WIFE);
+        player.addToCity(CardName.INN);
+
+        expect(player.numAvailableWorkers).to.be(2);
+        expect(player.hasCardInCity(CardName.WIFE)).to.be(false);
+
+        gameState = gameState.next({
+          inputType: GameInputType.VISIT_DESTINATION_CARD,
+          cardOwnerId: player.playerId,
+          card: CardName.INN,
+        });
+
+        expect(() => {
+          gameState.next({
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardContext: CardName.INN,
+            cardOptions: gameState.meadowCards,
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              selectedCards: [CardName.WIFE],
+            },
+          });
+        }).to.throwException(/must select card from meadow/i);
+      });
+      it("should player buy card that exists in hand and meadow", () => {
+        const cards = [
+          CardName.KING,
+          CardName.QUEEN,
+          CardName.POSTAL_PIGEON,
+          CardName.POSTAL_PIGEON,
+          CardName.FARM,
+          CardName.HUSBAND,
+          CardName.CHAPEL,
+          CardName.WIFE,
+        ];
+        gameState = testInitialGameState({ meadowCards: cards });
+
+        let player = gameState.getActivePlayer();
+        const card = Card.fromName(CardName.INN);
+        player.addToCity(CardName.INN);
+        player.cardsInHand.push(CardName.WIFE);
+
+        expect(player.numAvailableWorkers).to.be(2);
+        expect(player.hasCardInCity(CardName.WIFE)).to.be(false);
+
+        gameState = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardOwnerId: player.playerId,
+            card: CardName.INN,
+          },
+          {
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardContext: CardName.INN,
+            cardOptions: gameState.meadowCards,
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              selectedCards: [CardName.WIFE],
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_PAYMENT_FOR_CARD,
+            prevInputType: GameInputType.SELECT_CARDS,
+            cardContext: card.name,
+            cardToBuy: CardName.WIFE,
+            clientOptions: {
+              resources: {},
+            },
+            paymentOptions: {
+              cardToUse: CardName.INN,
+              resources: {},
+            },
+          },
+        ]);
+        player = gameState.getPlayer(player.playerId);
+
+        expect(player.numAvailableWorkers).to.be(1);
+        expect(player.hasCardInCity(CardName.WIFE)).to.be(true);
       });
     });
 

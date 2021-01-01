@@ -908,8 +908,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
-        player.drawCards(gameState, 1);
-
         // ask player which location they want to copy
         const possibleLocations = (Object.keys(
           gameState.locationsMap

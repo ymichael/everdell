@@ -1321,27 +1321,110 @@ describe("Card", () => {
     });
 
     describe(CardName.LOOKOUT, () => {
-      // it("should allow the player to copy a location", () => {
-      //   let player = gameState.getActivePlayer();
-      //   const card = Card.fromName(CardName.LOOKOUT);
-      //   // make sure player can player card
-      //   player.gainResources(card.baseCost);
-      //   player.cardsInHand.push(card.name);
-      //   gameState = multiStepGameInputTest(gameState, [
-      //     playCardInput(card.name),
-      //     {
-      //       inputType: GameInputType.SELECT_LOCATION,
-      //       prevInputType: GameInputType.VISIT_DESTINATION_CARD,
-      //       cardContext: card.name,
-      //       locationOptions: (Object.keys(
-      //         gameState.locationsMap
-      //       ) as unknown) as LocationName[],
-      //       clientOptions: {
-      //         selectedLocation: LocationName.BASIC_ONE_BERRY,
-      //       },
-      //     },
-      //   ]);
-      // });
+      it("should allow player to copy a basic location", () => {
+        let player1 = gameState.getActivePlayer();
+        player1.addToCity(CardName.LOOKOUT);
+
+        expect(player1.numAvailableWorkers).to.be(2);
+        expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+
+        gameState = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardOwnerId: player1.playerId,
+            card: CardName.LOOKOUT,
+          },
+          {
+            inputType: GameInputType.SELECT_LOCATION,
+            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardContext: CardName.LOOKOUT,
+            locationOptions: (Object.keys(
+              gameState.locationsMap
+            ) as unknown) as LocationName[],
+            clientOptions: {
+              selectedLocation: LocationName.BASIC_ONE_BERRY,
+            },
+          },
+        ]);
+
+        player1 = gameState.getPlayer(player1.playerId);
+
+        expect(player1.numAvailableWorkers).to.be(1);
+        expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
+      });
+
+      it("should allow player to copy a forest location", () => {
+        gameState.locationsMap[LocationName.FOREST_TWO_BERRY_ONE_CARD] = [];
+        let player1 = gameState.getActivePlayer();
+        player1.addToCity(CardName.LOOKOUT);
+
+        expect(player1.numAvailableWorkers).to.be(2);
+        expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+        expect(player1.cardsInHand.length).to.be(0);
+
+        gameState = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardOwnerId: player1.playerId,
+            card: CardName.LOOKOUT,
+          },
+          {
+            inputType: GameInputType.SELECT_LOCATION,
+            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardContext: CardName.LOOKOUT,
+            locationOptions: (Object.keys(
+              gameState.locationsMap
+            ) as unknown) as LocationName[],
+            clientOptions: {
+              selectedLocation: LocationName.FOREST_TWO_BERRY_ONE_CARD,
+            },
+          },
+        ]);
+
+        player1 = gameState.getPlayer(player1.playerId);
+
+        expect(player1.numAvailableWorkers).to.be(1);
+        expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
+        expect(player1.cardsInHand.length).to.be(1);
+      });
+
+      it("should allow player to copy location with a worker on it", () => {
+        gameState.locationsMap[LocationName.FOREST_TWO_BERRY_ONE_CARD] = [];
+        let player1 = gameState.getActivePlayer();
+        player1.addToCity(CardName.LOOKOUT);
+
+        expect(player1.numAvailableWorkers).to.be(2);
+        expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+        expect(player1.cardsInHand.length).to.be(0);
+
+        // note: placeWorkerOnLocation doesn't gain the placement bonus
+        player1.placeWorkerOnLocation(LocationName.FOREST_TWO_BERRY_ONE_CARD);
+
+        gameState = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardOwnerId: player1.playerId,
+            card: CardName.LOOKOUT,
+          },
+          {
+            inputType: GameInputType.SELECT_LOCATION,
+            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardContext: CardName.LOOKOUT,
+            locationOptions: (Object.keys(
+              gameState.locationsMap
+            ) as unknown) as LocationName[],
+            clientOptions: {
+              selectedLocation: LocationName.FOREST_TWO_BERRY_ONE_CARD,
+            },
+          },
+        ]);
+
+        player1 = gameState.getPlayer(player1.playerId);
+
+        expect(player1.numAvailableWorkers).to.be(0);
+        expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
+        expect(player1.cardsInHand.length).to.be(1);
+      });
     });
 
     describe(CardName.INN, () => {
@@ -2010,59 +2093,6 @@ describe("Card", () => {
 
         player2.recallWorkers(gameState);
         expect(player2.numAvailableWorkers).to.be(2);
-      });
-    });
-
-    describe(CardName.RUINS, () => {
-      it("should not be playable if there's no existing construction", () => {
-        const card = Card.fromName(CardName.RUINS);
-        const player = gameState.getActivePlayer();
-        // Add critters to city
-        player.addToCity(CardName.WIFE);
-        player.addToCity(CardName.HUSBAND);
-
-        player.cardsInHand = [CardName.RUINS];
-        player.gainResources(card.baseCost);
-        expect(card.canPlay(gameState, playCardInput(card.name))).to.be(false);
-
-        player.addToCity(CardName.MINE);
-        expect(card.canPlay(gameState, playCardInput(card.name))).to.be(true);
-      });
-
-      it("should prompt user to select a construction to ruin", () => {
-        const card = Card.fromName(CardName.RUINS);
-        let player = gameState.getActivePlayer();
-
-        player.addToCity(CardName.MINE);
-
-        player.cardsInHand = [CardName.RUINS];
-        player.gainResources(card.baseCost);
-
-        gameState.deck.addToStack(CardName.FARM);
-        gameState.deck.addToStack(CardName.FARM);
-
-        expect(player.hasCardInCity(CardName.MINE)).to.be(true);
-        expect(player.cardsInHand).to.eql([CardName.RUINS]);
-
-        const gameState2 = multiStepGameInputTest(gameState, [
-          playCardInput(card.name),
-          {
-            inputType: GameInputType.SELECT_PLAYED_CARDS,
-            prevInputType: GameInputType.PLAY_CARD,
-            cardOptions: [...player.getPlayedCardInfos(CardName.MINE)],
-            cardContext: CardName.RUINS,
-            maxToSelect: 1,
-            minToSelect: 1,
-            clientOptions: {
-              selectedCards: player.getPlayedCardInfos(CardName.MINE),
-            },
-          },
-        ]);
-
-        player = gameState2.getPlayer(player.playerId);
-        expect(player.hasCardInCity(CardName.MINE)).to.be(false);
-        expect(player.hasCardInCity(CardName.RUINS)).to.be(true);
-        expect(player.cardsInHand).to.eql([CardName.FARM, CardName.FARM]);
       });
     });
   });

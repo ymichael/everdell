@@ -1765,5 +1765,123 @@ describe("Card", () => {
         expect(player2.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
       });
     });
+
+    describe(CardName.UNIVERSITY, () => {
+      it("allow player remove card from city with university", () => {
+        let player = gameState.getActivePlayer();
+        const card = Card.fromName(CardName.UNIVERSITY);
+
+        player.addToCity(CardName.UNIVERSITY);
+        player.addToCity(CardName.FARM);
+        player.addToCity(CardName.CHAPEL);
+        player.addToCity(CardName.MONK);
+
+        expect(player.numAvailableWorkers).to.be(2);
+        expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+        expect(player.hasCardInCity(CardName.FARM)).to.be(true);
+
+        gameState = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardOwnerId: player.playerId,
+            card: CardName.UNIVERSITY,
+          },
+          {
+            inputType: GameInputType.SELECT_PLAYED_CARDS,
+            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardContext: CardName.UNIVERSITY,
+            cardOptions: [
+              {
+                cardOwnerId: player.playerId,
+                cardName: CardName.FARM,
+                usedForCritter: false,
+              },
+              {
+                cardOwnerId: player.playerId,
+                cardName: CardName.CHAPEL,
+                usedForCritter: false,
+                workers: [],
+                resources: {
+                  [ResourceType.VP]: 0,
+                },
+              },
+              {
+                cardOwnerId: player.playerId,
+                cardName: CardName.MONK,
+              },
+            ],
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              selectedCards: [
+                {
+                  cardOwnerId: player.playerId,
+                  cardName: CardName.FARM,
+                  usedForCritter: false,
+                },
+              ],
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_RESOURCES,
+            prevInputType: GameInputType.SELECT_PLAYED_CARDS,
+            prevInput: {
+              inputType: GameInputType.SELECT_PLAYED_CARDS,
+              prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+              cardContext: CardName.UNIVERSITY,
+              cardOptions: [
+                {
+                  cardOwnerId: player.playerId,
+                  cardName: CardName.FARM,
+                  usedForCritter: false,
+                },
+                {
+                  cardOwnerId: player.playerId,
+                  cardName: CardName.CHAPEL,
+                  usedForCritter: false,
+                  workers: [],
+                  resources: {
+                    [ResourceType.VP]: 0,
+                  },
+                },
+                {
+                  cardOwnerId: player.playerId,
+                  cardName: CardName.MONK,
+                },
+              ],
+              maxToSelect: 1,
+              minToSelect: 1,
+              clientOptions: {
+                selectedCards: [
+                  {
+                    cardOwnerId: player.playerId,
+                    cardName: CardName.FARM,
+                    usedForCritter: false,
+                  },
+                ],
+              },
+            },
+            cardContext: CardName.UNIVERSITY,
+            maxResources: 1,
+            minResources: 1,
+            clientOptions: {
+              resources: { [ResourceType.BERRY]: 1 },
+            },
+          },
+        ]);
+
+        player = gameState.getPlayer(player.playerId);
+
+        expect(player.numAvailableWorkers).to.be(1);
+        expect(player.hasCardInCity(CardName.FARM)).to.be(false);
+        expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(2);
+        expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(1);
+      });
+    });
   });
 });

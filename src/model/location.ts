@@ -164,6 +164,15 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     name: LocationName.HAVEN,
     type: LocationType.HAVEN,
     occupancy: LocationOccupancy.UNLIMITED,
+    description: [
+      "May discard any ",
+      "CARD",
+      " from your hand.",
+      "For every 2 ",
+      "CARD",
+      " you discard, gain 1 ",
+      "ANY",
+    ],
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.PLACE_WORKER) {
@@ -227,6 +236,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     name: LocationName.JOURNEY_FIVE,
     type: LocationType.JOURNEY,
     occupancy: LocationOccupancy.EXCLUSIVE,
+    description: ["Discard 5 ", "CARD"],
     playInner: playInnerJourneyFactory(LocationName.JOURNEY_FIVE, 5),
     canPlayCheckInner: canPlayCheckInnerJourneyFactory(5),
   }),
@@ -234,6 +244,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     name: LocationName.JOURNEY_FOUR,
     type: LocationType.JOURNEY,
     occupancy: LocationOccupancy.EXCLUSIVE,
+    description: ["Discard 4 ", "CARD"],
     playInner: playInnerJourneyFactory(LocationName.JOURNEY_FOUR, 4),
     canPlayCheckInner: canPlayCheckInnerJourneyFactory(4),
   }),
@@ -241,6 +252,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     name: LocationName.JOURNEY_THREE,
     type: LocationType.JOURNEY,
     occupancy: LocationOccupancy.EXCLUSIVE,
+    description: ["Discard 3 ", "CARD"],
     playInner: playInnerJourneyFactory(LocationName.JOURNEY_THREE, 3),
     canPlayCheckInner: canPlayCheckInnerJourneyFactory(3),
   }),
@@ -248,6 +260,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     name: LocationName.JOURNEY_TWO,
     type: LocationType.JOURNEY,
     occupancy: LocationOccupancy.UNLIMITED,
+    description: ["Discard 2 ", "CARD"],
     playInner: playInnerJourneyFactory(LocationName.JOURNEY_TWO, 2),
     canPlayCheckInner: canPlayCheckInnerJourneyFactory(2),
   }),
@@ -332,6 +345,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     name: LocationName.FOREST_TWO_WILD,
     type: LocationType.FOREST,
     occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
+    description: ["2 ", "ANY"],
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.PLACE_WORKER) {
@@ -370,6 +384,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     name: LocationName.FOREST_DISCARD_ANY_THEN_DRAW_TWO_PER_CARD,
     type: LocationType.FOREST,
     occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
+    description: ["Discard any, then draw 2 for every ", "CARD", " discarded"],
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.PLACE_WORKER) {
@@ -413,6 +428,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     name: LocationName.FOREST_COPY_BASIC_ONE_CARD,
     type: LocationType.FOREST,
     occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
+    description: ["Copy any Basic location and draw 1 ", "CARD"],
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.PLACE_WORKER) {
@@ -455,7 +471,6 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
       [ResourceType.PEBBLE]: 1,
       CARD: 3,
     },
-    description: ["3 ", "CARD", " & 1 ", ResourceType.PEBBLE],
   }),
   [LocationName.FOREST_ONE_TWIG_RESIN_BERRY]: new Location({
     name: LocationName.FOREST_ONE_TWIG_RESIN_BERRY,
@@ -474,6 +489,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     resourcesToGain: {
       [ResourceType.BERRY]: 3,
     },
+    description: [ResourceType.BERRY, ResourceType.BERRY, ResourceType.BERRY],
   }),
   [LocationName.FOREST_TWO_RESIN_ONE_TWIG]: new Location({
     name: LocationName.FOREST_TWO_RESIN_ONE_TWIG,
@@ -488,6 +504,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     name: LocationName.FOREST_TWO_CARDS_ONE_WILD,
     type: LocationType.FOREST,
     occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
+    description: ["2 ", "ANY"],
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.PLACE_WORKER) {
@@ -526,6 +543,14 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
       name: LocationName.FOREST_DISCARD_UP_TO_THREE_CARDS_TO_GAIN_WILD_PER_CARD,
       type: LocationType.FOREST,
       occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
+      description: [
+        "Discard up to 3 ",
+        "CARD",
+        " & gain 1 ",
+        "ANY",
+        " for each ",
+        "CARD",
+      ],
       playInner: (gameState: GameState, gameInput: GameInput) => {
         const player = gameState.getActivePlayer();
         if (gameInput.inputType === GameInputType.PLACE_WORKER) {
@@ -595,6 +620,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     name: LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS,
     type: LocationType.FOREST,
     occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
+    description: ["Draw 2 Meadow ", "CARD", " and play 1 for -1 ", "ANY"],
     playInner: () => {
       throw new Error("Not Implemented");
     },

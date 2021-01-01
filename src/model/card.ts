@@ -874,14 +874,13 @@ const CARD_REGISTRY: Record<CardName, Card> = {
 
         const card = Card.fromName(gameInput.cardToBuy);
 
-        if (
-          !player.isPaidResourcesValid(
-            gameInput.paymentOptions.resources,
-            card.baseCost,
-            "ANY"
-          )
-        ) {
-          throw new Error("invalid list of resources for payment");
+        const paymentError = player.validatePaidResources(
+          gameInput.paymentOptions.resources,
+          card.baseCost,
+          "ANY"
+        );
+        if (paymentError) {
+          throw new Error(paymentError);
         }
 
         player.payForCard(gameState, gameInput);

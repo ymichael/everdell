@@ -1890,7 +1890,7 @@ describe("Card", () => {
     });
 
     describe(CardName.UNDERTAKER, () => {
-      it("undertaker should allow player to take card from meadow", () => {
+      it("should allow player to take card from meadow", () => {
         const cards = [
           CardName.KING,
           CardName.QUEEN,
@@ -2119,7 +2119,7 @@ describe("Card", () => {
     });
 
     describe(CardName.UNIVERSITY, () => {
-      it("allow player remove card from city with university", () => {
+      it("should allow player remove card from city with university", () => {
         let player = gameState.getActivePlayer();
         const card = Card.fromName(CardName.UNIVERSITY);
 
@@ -2362,6 +2362,72 @@ describe("Card", () => {
 
         player2.recallWorkers(gameState);
         expect(player2.numAvailableWorkers).to.be(2);
+      });
+      it("remove card with permanently placed worker on it", () => {
+        let player = gameState.getActivePlayer();
+        const card = Card.fromName(CardName.UNIVERSITY);
+
+        player.addToCity(CardName.UNIVERSITY);
+        player.addToCity(CardName.MONASTERY);
+
+        expect(player.numAvailableWorkers).to.be(2);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+        player.placeWorkerOnCard(CardName.MONASTERY, player);
+        expect(player.numAvailableWorkers).to.be(1);
+
+        gameState = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardOwnerId: player.playerId,
+            card: CardName.UNIVERSITY,
+          },
+          {
+            inputType: GameInputType.SELECT_PLAYED_CARDS,
+            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardContext: CardName.UNIVERSITY,
+            cardOptions: player
+              .getAllPlayedCards()
+              .filter(({ cardName }) => cardName !== CardName.UNIVERSITY),
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              // these are the cards the player wants to remove
+              // from their city
+              selectedCards: [...player.getPlayedCardInfos(CardName.MONASTERY)],
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_RESOURCES,
+            prevInputType: GameInputType.SELECT_PLAYED_CARDS,
+            prevInput: {
+              inputType: GameInputType.SELECT_PLAYED_CARDS,
+              prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+              cardContext: CardName.UNIVERSITY,
+              cardOptions: player
+                .getAllPlayedCards()
+                .filter(({ cardName }) => cardName !== CardName.UNIVERSITY),
+              maxToSelect: 1,
+              minToSelect: 1,
+              clientOptions: {
+                // these are the cards the player wants to remove
+                // from their city
+                selectedCards: [
+                  ...player.getPlayedCardInfos(CardName.MONASTERY),
+                ],
+              },
+            },
+            cardContext: CardName.UNIVERSITY,
+            maxResources: 1,
+            minResources: 1,
+            clientOptions: {
+              resources: { [ResourceType.TWIG]: 1 },
+            },
+          },
+        ]);
+        player = gameState.getPlayer(player.playerId);
+        expect(player.numAvailableWorkers).to.be(0);
+        player.recallWorkers(gameState);
+        expect(player.numAvailableWorkers).to.be(1);
       });
     });
   });

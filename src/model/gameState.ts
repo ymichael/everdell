@@ -151,15 +151,18 @@ export class GameState {
     if (canPlayErr) {
       throw new Error(canPlayErr);
     }
-    if (!player.isPaymentOptionsValid(gameInput)) {
-      throw new Error("Invalid payment options");
+
+    const paymentOptionsError = player.validatePaymentOptions(gameInput);
+    if (paymentOptionsError) {
+      throw new Error(paymentOptionsError);
     }
+
     player.payForCard(this, gameInput);
     if (gameInput.fromMeadow) {
       this.removeCardFromMeadow(gameInput.card);
       this.replenishMeadow();
     } else {
-      this.getActivePlayer().removeCardFromHand(gameInput.card);
+      player.removeCardFromHand(gameInput.card);
     }
     card.play(this, gameInput);
   }

@@ -106,6 +106,11 @@ export class Event implements GameStatePlayable {
   }
 
   play(gameState: GameState, gameInput: GameInput): void {
+    const canPlayError = this.canPlayCheck(gameState, gameInput);
+    if (canPlayError) {
+      throw new Error(canPlayError);
+    }
+
     const player = gameState.getActivePlayer();
     if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
       player.placeWorkerOnEvent(this.name);

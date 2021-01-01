@@ -275,6 +275,7 @@ const GameInputBox: React.FC<{
                 <pre>{JSON.stringify(values, null, 2)}</pre>
                 <GameInputSelectPlayer
                   gameInput={gameInput}
+                  gameState={gameStateImpl}
                   viewingPlayer={viewingPlayer}
                 />
               </>

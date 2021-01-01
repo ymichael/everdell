@@ -2012,5 +2012,58 @@ describe("Card", () => {
         expect(player2.numAvailableWorkers).to.be(2);
       });
     });
+
+    describe(CardName.RUINS, () => {
+      it("should not be playable if there's no existing construction", () => {
+        const card = Card.fromName(CardName.RUINS);
+        const player = gameState.getActivePlayer();
+        // Add critters to city
+        player.addToCity(CardName.WIFE);
+        player.addToCity(CardName.HUSBAND);
+
+        player.cardsInHand = [CardName.RUINS];
+        player.gainResources(card.baseCost);
+        expect(card.canPlay(gameState, playCardInput(card.name))).to.be(false);
+
+        player.addToCity(CardName.MINE);
+        expect(card.canPlay(gameState, playCardInput(card.name))).to.be(true);
+      });
+
+      it("should prompt user to select a construction to ruin", () => {
+        const card = Card.fromName(CardName.RUINS);
+        let player = gameState.getActivePlayer();
+
+        player.addToCity(CardName.MINE);
+
+        player.cardsInHand = [CardName.RUINS];
+        player.gainResources(card.baseCost);
+
+        gameState.deck.addToStack(CardName.FARM);
+        gameState.deck.addToStack(CardName.FARM);
+
+        expect(player.hasCardInCity(CardName.MINE)).to.be(true);
+        expect(player.cardsInHand).to.eql([CardName.RUINS]);
+
+        const gameState2 = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+          {
+            inputType: GameInputType.SELECT_PLAYED_CARDS,
+            prevInputType: GameInputType.PLAY_CARD,
+            cardOptions: [...player.getPlayedCardInfos(CardName.MINE)],
+            cardContext: CardName.RUINS,
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              selectedCards: player.getPlayedCardInfos(CardName.MINE),
+            },
+          },
+        ]);
+
+        player = gameState2.getPlayer(player.playerId);
+        expect(player.hasCardInCity(CardName.MINE)).to.be(false);
+        expect(player.hasCardInCity(CardName.RUINS)).to.be(true);
+        expect(player.cardsInHand).to.eql([CardName.FARM, CardName.FARM]);
+      });
+    });
   });
 });

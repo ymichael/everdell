@@ -1568,21 +1568,26 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         const cardOptions: PlayedCardInfo[] = [];
         player.forEachPlayedCard((playedCardInfo) => {
           const card = Card.fromName(playedCardInfo.cardName);
+          if (card.name === CardName.RUINS) {
+            return;
+          }
           if (card.isConstruction) {
             cardOptions.push(playedCardInfo);
           }
         });
-        gameState.pendingGameInputs.push({
-          inputType: GameInputType.SELECT_PLAYED_CARDS,
-          prevInputType: gameInput.inputType,
-          cardOptions,
-          cardContext: CardName.RUINS,
-          maxToSelect: 1,
-          minToSelect: 1,
-          clientOptions: {
-            selectedCards: [],
-          },
-        });
+        if (cardOptions.length !== 0) {
+          gameState.pendingGameInputs.push({
+            inputType: GameInputType.SELECT_PLAYED_CARDS,
+            prevInputType: gameInput.inputType,
+            cardOptions,
+            cardContext: CardName.RUINS,
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              selectedCards: [],
+            },
+          });
+        }
       } else if (gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS) {
         const selectedCards = gameInput.clientOptions.selectedCards;
         if (

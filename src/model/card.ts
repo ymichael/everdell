@@ -1966,8 +1966,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         // remove card from city + put in discard pile
         const prevInput = gameInput.prevInput;
         const cardToRemove = prevInput.clientOptions.selectedCards[0];
-        console.log(cardToRemove);
-        console.log(player.getAllPlayedCards());
         player.removeCardFromCity(gameState, cardToRemove, true);
 
         // give player resources from base cost + the resource they chose

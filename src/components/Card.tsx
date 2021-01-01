@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Card as CardModel } from "../model/card";
-import { CardTypeSymbol, CardIcon, ResourceTypeIcon } from "./assets";
+import { CardTypeSymbol } from "./assets";
 import styles from "../styles/card.module.css";
 import {
   ResourceType,
@@ -9,6 +9,7 @@ import {
   CardName,
   PlayedCardInfo,
 } from "../model/types";
+import { Resource, Description } from "./common";
 import { sumResources } from "../model/gameStatePlayHelpers";
 
 var colorClassMap = {
@@ -44,24 +45,6 @@ const getAssociatedCard = (card: CardModel) => {
   }
 };
 
-const CardResource = ({
-  resourceType,
-}: {
-  resourceType: ResourceType | "CARD";
-}) => {
-  return (
-    <div className={styles.card_resource}>
-      <div className={styles.card_resource_inner}>
-        {resourceType === "CARD" ? (
-          <CardIcon />
-        ) : (
-          <ResourceTypeIcon resourceType={resourceType} />
-        )}
-      </div>
-    </div>
-  );
-};
-
 const resourceTypeList = [
   ResourceType.BERRY,
   ResourceType.TWIG,
@@ -72,29 +55,16 @@ const resourceTypeList = [
 
 const CardDescription = ({ card }: { card: CardModel }) => {
   if (card.cardDescription) {
-    return (
-      <span>
-        {card.cardDescription.map((part: any) => {
-          if (resourceTypeList.indexOf(part) !== -1) {
-            return <CardResource resourceType={part} />;
-          } else {
-            return part;
-          }
-        })}
-      </span>
-    );
+    return <Description description={card.cardDescription} />;
   }
-
   if (card.resourcesToGain) {
     const totalResources = sumResources(card.resourcesToGain);
     for (let i = 0; i < resourceTypeList.length; i++) {
       if (card.resourcesToGain[resourceTypeList[i]] === totalResources) {
         return (
-          <span>
-            {"Gain "}
-            {totalResources} <CardResource resourceType={resourceTypeList[i]} />
-            {"."}
-          </span>
+          <Description
+            description={[`Gain ${totalResources} `, resourceTypeList[i], "."]}
+          />
         );
       }
     }
@@ -132,7 +102,7 @@ const Card: React.FC<{ name: CardName }> = ({ name }) => {
             {Object.entries(card.baseCost).map(([resourceType, count], idx) => {
               return (
                 <div className={styles.card_cost_item} key={idx}>
-                  <CardResource resourceType={resourceType as ResourceType} />
+                  <Resource resourceType={resourceType as ResourceType} />
                   <span className={styles.card_cost_value}> {count}</span>
                 </div>
               );

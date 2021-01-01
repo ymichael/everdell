@@ -8,3 +8,16 @@
   margin: 10px;
   max-width: 100%;
 }
+
+.resource {
+  display: inline-block;
+  margin-top: -10px;
+}
+
+.resource_inner {
+  height: 20px;
+  width: 20px;
+  top: 5px;
+  position: relative;
+  display: inline-block;
+}

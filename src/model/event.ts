@@ -519,10 +519,14 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     canPlayInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       const cards = [CardName.UNDERTAKER, CardName.BARGE_TOAD];
-      return cards.every((card) => player.hasCardInCity(card)) &&
-        gameInput.inputType === GameInputType.CLAIM_EVENT
-        ? player.getNumResourcesByType(ResourceType.BERRY) >= 2
-        : true;
+      console.log(player.hasCardInCity(CardName.UNDERTAKER));
+      console.log(player.hasCardInCity(CardName.BARGE_TOAD));
+      return (
+        cards.every((card) => player.hasCardInCity(card)) &&
+        (gameInput.inputType === GameInputType.CLAIM_EVENT
+          ? player.getNumResourcesByType(ResourceType.BERRY) >= 2
+          : true)
+      );
     },
     // Pay 2 berries and discard 2 cards from city
     playInner: (gameState: GameState, gameInput: GameInput) => {

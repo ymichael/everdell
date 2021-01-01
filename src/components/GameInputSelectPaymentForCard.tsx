@@ -1,13 +1,13 @@
 import * as React from "react";
 import { useRef } from "react";
 
-import { GameInputSelectResources as TGameInputSelectResources } from "../model/types";
+import { GameInputSelectPaymentForCard as TGameInputSelectPaymentForCard } from "../model/types";
 import { Player } from "../model/player";
 import { ResourcesToSpend } from "./CardPayment";
 import { Form } from "formik";
 
 const GameInputSelectPaymentForCard: React.FC<{
-  gameInput: TGameInputSelectResources;
+  gameInput: TGameInputSelectPaymentForCard;
   viewingPlayer: Player;
 }> = ({ gameInput, viewingPlayer }) => {
   return (

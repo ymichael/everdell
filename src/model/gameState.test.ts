@@ -7,6 +7,7 @@ import {
   GameInputType,
   LocationName,
   EventName,
+  PlayerStatus,
   ResourceType,
 } from "./types";
 import { Event } from "./event";
@@ -575,6 +576,30 @@ describe("GameState", () => {
         },
         usedForCritter: false,
       });
+    });
+  });
+
+  describe("Game end", () => {
+    it("remove player from list of remaining players once they're done", () => {
+      gameState = testInitialGameState({ numPlayers: 3 });
+      let player1 = gameState.getActivePlayer();
+      player1.nextSeason();
+      player1.nextSeason();
+      player1.nextSeason();
+      player1.placeWorkerOnLocation(LocationName.BASIC_ONE_STONE);
+      player1.placeWorkerOnLocation(LocationName.BASIC_ONE_BERRY);
+      player1.placeWorkerOnLocation(LocationName.BASIC_ONE_BERRY);
+      player1.placeWorkerOnLocation(LocationName.BASIC_ONE_BERRY);
+      player1.placeWorkerOnLocation(LocationName.BASIC_ONE_BERRY);
+      player1.placeWorkerOnLocation(LocationName.BASIC_ONE_BERRY);
+
+      expect(player1.currentSeason).to.be(Season.AUTUMN);
+      expect(player1.numAvailableWorkers).to.be(0);
+      expect(gameState.players.length).to.be(3);
+
+      gameState = gameState.next({ inputType: GameInputType.GAME_END });
+      player1 = gameState.getPlayer(player1.playerId);
+      expect(player1.playerStatus).to.be(PlayerStatus.GAME_ENDED);
     });
   });
 });

@@ -8,6 +8,7 @@ import {
   GameInputVisitDestinationCard,
   GameInputPrepareForSeason,
   GameInputMultiStep,
+  GameInputGameEnd,
   CardName,
   EventName,
   LocationName,
@@ -103,9 +104,22 @@ export class GameState {
 
   nextPlayer(): void {
     const player = this.getActivePlayer();
-    const playerIdx = this.players.indexOf(player);
-    const nextPlayer = this.players[(playerIdx + 1) % this.players.length];
+    const remainingPlayers = this.getRemainingPlayers();
+    const playerIdx = remainingPlayers.indexOf(player);
+    const nextPlayer =
+      remainingPlayers[(playerIdx + 1) % remainingPlayers.length];
     this._activePlayerId = nextPlayer.playerId;
+  }
+
+  // returns list of players who do not have the GAME_END playerStatus
+  getRemainingPlayers(): Player[] {
+    let remainingPlayers: Player[] = [];
+    this.players.forEach((player) => {
+      if (player.playerStatus !== PlayerStatus.GAME_ENDED) {
+        remainingPlayers.push(player);
+      }
+    });
+    return remainingPlayers;
   }
 
   replenishMeadow(): void {
@@ -315,6 +329,15 @@ export class GameState {
     player.nextSeason();
   }
 
+  private handleGameEndGameInput(gameInput: GameInputGameEnd): void {
+    const player = this.getActivePlayer();
+
+    if (player.currentSeason !== Season.AUTUMN) {
+      throw new Error("cannot end game unless you're in Autumn");
+    }
+    player.playerStatus = PlayerStatus.GAME_ENDED;
+  }
+
   next(gameInput: GameInput): GameState {
     const nextGameState = this.clone();
     switch (gameInput.inputType) {
@@ -340,7 +363,9 @@ export class GameState {
         nextGameState.handlePrepareForSeason(gameInput);
         break;
       case GameInputType.GAME_END:
-        throw new Error("Not Implemented");
+        nextGameState.handleGameEndGameInput(gameInput);
+        //throw new Error("Not Implemented");
+        break;
       default:
         assertUnreachable(
           gameInput,

@@ -1,4 +1,3 @@
-// GameInputSelectPlayedCards
 import * as React from "react";
 import { useRef } from "react";
 
@@ -51,26 +50,3 @@ const GameInputSelectPlayedCards: React.FC<{
 };
 
 export default GameInputSelectPlayedCards;
-
-// {viewingPlayer.getAllPlayedCards().map((card, idx) => {
-//             return (
-//               <li
-//                 key={idx}
-//                 onClick={() => {
-//                   const isSelected = !!selectedCardIdx.current[idx];
-//                   if (isSelected) {
-//                     const newValue = [...meta.value];
-//                     newValue.splice(newValue.indexOf(card), 1);
-//                     helpers.setValue(newValue);
-//
-//                     selectedCardIdx.current[idx] = false;
-//                   } else {
-//                     helpers.setValue(meta.value.concat([card]));
-//                     selectedCardIdx.current[idx] = true;
-//                   }
-//                 }}
-//               >
-//                 {card}
-//               </li>
-//             );
-//           })}

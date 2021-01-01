@@ -3,6 +3,7 @@ import { useState, useCallback, useEffect } from "react";
 
 import Meadow from "./Meadow";
 import Players from "./Players";
+import ViewerUI from "./ViewerUI";
 import GameInputBox from "./GameInputBox";
 import { Player } from "../model/player";
 import { CardName, GameInput } from "../model/types";
@@ -54,6 +55,7 @@ const Game: React.FC<{
         viewingPlayer={viewingPlayerImpl}
       />
       <Players viewingPlayer={viewingPlayerImpl} gameState={gameState} />
+      <ViewerUI player={viewingPlayerImpl} />
       <hr />
       <div>
         <h2>DEBUG</h2>

@@ -39,6 +39,7 @@ export type PlayerJSON = {
   playerSecret?: string;
   playerId: string;
   playedCards: Partial<Record<CardName, PlayedCardInfo[]>>;
+  numCardsInHand: number;
   cardsInHand: CardName[];
   resources: {
     [ResourceType.VP]: number;

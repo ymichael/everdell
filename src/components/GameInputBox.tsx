@@ -128,7 +128,7 @@ const GameInputDefaultSelector: React.FC<{
 }> = ({ gameInputs = [] }) => {
   const [field, meta, helpers] = useField("gameInput");
   return (
-    <div role="group" className={styles.selector}>
+    <div role="group" className={styles.default_selector}>
       {gameInputs.map((gameInput, idx) => {
         return (
           <div key={idx}>

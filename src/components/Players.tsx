@@ -4,7 +4,7 @@ import { CardName, ResourceType, CardType } from "../model/types";
 import { PlayerJSON, GameStateJSON } from "../model/jsonTypes";
 import { Player } from "../model/player";
 import { GameBlock } from "./common";
-import { CardTypeSymbol, ResourceTypeIcon } from "./assets";
+import { VPIcon, CardIcon, CardTypeSymbol, ResourceTypeIcon } from "./assets";
 
 export const Players = ({
   viewingPlayer,
@@ -90,14 +90,16 @@ const PlayerStatus: React.FC<{
       <div className={styles.status_box_item}>
         <div className={styles.status_box_item_resource_list}>
           <div className={styles.status_box_item_resource}>
-            <div className={styles.status_box_item_resource_label}>{"VP"}</div>
+            <div className={styles.status_box_item_resource_label}>
+              <VPIcon />
+            </div>
             <div className={styles.status_box_item_resource_count}>
               {playerImpl.getNumResourcesByType(ResourceType.VP)}
             </div>
           </div>
           <div className={styles.status_box_item_resource}>
             <div className={styles.status_box_item_resource_label}>
-              {"CARDS"}
+              <CardIcon />
             </div>
             <div className={styles.status_box_item_resource_count}>
               {player.numCardsInHand}

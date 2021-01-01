@@ -1,13 +1,17 @@
-.container {
+.location {
   height: 100px;
   width: 200px;
   border-radius: 5px;
-  position: relative;
 
   border: 1px solid #bbb;
   box-shadow: 1px 1px #eee;
+
   overflow: hidden;
   margin: 10px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .location_name {
@@ -19,27 +23,48 @@
   color: #ffffff;
 }
 
-.color_basic {
-  background: #88a55e;
+.color_basic.location {
+  border: solid 2px #88a55e;
 }
 
-.color_forest {
-  background: #4e5627;
+.color_forest.location {
+  border: solid 2px #4e5627;
 }
 
-.color_haven {
-  background: #ddcf9d;
+.color_haven.location {
+  border: solid 2px #ddcf9d;
 }
 
-.color_journey {
-  background: #bb9e66;
+.color_journey.location {
+  border: solid 2px #bb9e66;
+}
+
+.color_basic .location_type {
+  color: #88a55e;
+}
+
+.color_forest .location_type {
+  color: #4e5627;
+}
+
+.color_haven .location_type {
+  color: #ddcf9d;
+}
+
+.color_journey .location_type {
+  color: #bb9e66;
 }
 
 .location_type {
   text-align: center;
   text-transform: uppercase;
   font-size: 10px;
-  font-weight: 700;
-  margin-top: 20px;
-  color: #ffffff;
+  font-weight: 800;
+  margin: 5px;
+}
+
+.location_center {
+  padding: 10px;
+  text-align: center;
+  font-size: 14px;
 }

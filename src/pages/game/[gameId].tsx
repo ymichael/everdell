@@ -2,6 +2,7 @@ import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 
 import { getGameById } from "../../model/game";
+import { GameJSON, PlayerJSON } from "../../model/jsonTypes";
 import GameAdmin from "../../components/GameAdmin";
 import Game from "../../components/Game";
 
@@ -10,6 +11,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     gameId = null,
     gameSecret = null,
     playerSecret = null,
+    debug = null,
   } = context.query;
   const game = await getGameById(gameId as string);
   if (!game) {
@@ -19,11 +21,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   // Render admin page showing links for all players
   const isGameAdmin = !!(gameSecret && game.gameSecretUNSAFE === gameSecret);
   const player = playerSecret && game.getPlayerBySecret(playerSecret as string);
-
-  // TODO: Check if gameId & playerId is valid
   return {
     props: {
       isGameAdmin,
+      devDebugMode: process.env.NODE_ENV === "development" && !!debug,
       game: game && game.toJSON(isGameAdmin /* includePrivate */),
       viewingPlayer: player && player.toJSON(true /* includePrivate */),
     },
@@ -32,14 +33,15 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 export default function GamePage(props: {
   isGameAdmin: boolean;
-  game: any;
-  viewingPlayer: any;
+  devDebugMode: boolean;
+  game: GameJSON;
+  viewingPlayer: PlayerJSON;
 }) {
-  const { isGameAdmin, game, viewingPlayer } = props;
+  const { isGameAdmin, devDebugMode, game, viewingPlayer } = props;
   return (
     <div>
       {isGameAdmin ? (
-        <GameAdmin game={game} />
+        <GameAdmin game={game} devDebugMode={devDebugMode} />
       ) : (
         <Game game={game} viewingPlayer={viewingPlayer} />
       )}

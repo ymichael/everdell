@@ -20,11 +20,12 @@ import { ResourceTypeIcon } from "./assets";
 import Card from "./Card";
 import Location from "./Location";
 
-const GameInputBoxWaiting: React.FC<{ activePlayer: Player }> = ({
-  activePlayer,
-}) => {
+const GameInputBoxWaiting: React.FC<{
+  title?: string;
+  activePlayer: Player;
+}> = ({ activePlayer, title = "Game Input" }) => {
   return (
-    <GameBlock title={"Game Input"}>
+    <GameBlock title={title}>
       <p>Waiting for {activePlayer.name}</p>
     </GameBlock>
   );
@@ -194,14 +195,17 @@ const GameInputDefaultSelector: React.FC<{
 
 const GameInputBox: React.FC<{
   gameId: string;
+  title?: string;
   gameState: GameStateJSON;
   viewingPlayer: Player;
-}> = ({ gameId, gameState, viewingPlayer }) => {
+}> = ({ title = "Game Input", gameId, gameState, viewingPlayer }) => {
   const gameStateImpl = GameState.fromJSON(gameState);
   const activePlayerImpl = gameStateImpl.getActivePlayer();
 
   if (gameState.activePlayerId !== viewingPlayer.playerId) {
-    return <GameInputBoxWaiting activePlayer={activePlayerImpl} />;
+    return (
+      <GameInputBoxWaiting title={title} activePlayer={activePlayerImpl} />
+    );
   }
 
   const gameInputs = gameStateImpl.getPossibleGameInputs();
@@ -219,7 +223,7 @@ const GameInputBox: React.FC<{
   );
 
   return (
-    <GameBlock title={"Game Input"}>
+    <GameBlock title={title}>
       <div>
         <p>Perform an action:</p>
         <Formik

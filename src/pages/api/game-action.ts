@@ -31,14 +31,8 @@ export default async (
   }
 
   const player = playerId && game.getPlayer(playerId);
-  if (
-    // Can't find player
-    !player ||
-    // Trying to take an action as another player
-    gameInput?.playerId !== playerId ||
-    // Invalid secret
-    player.playerSecretUNSAFE !== playerSecret
-  ) {
+  console.log(player);
+  if (!player || player.playerSecretUNSAFE !== playerSecret) {
     res.status(404).json({
       success: false,
       error: "Invalid player",

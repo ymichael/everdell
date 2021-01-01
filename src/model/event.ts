@@ -335,52 +335,6 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       CardName.HISTORIAN,
       CardName.RUINS,
     ]),
-
-    // if (gameInput.inputType === GameInputType.PLAY_CARD) {
-    //     if (gameState.pendingGameInputs.length !== 0) {
-    //       throw new Error("Should not have any pending game input");
-    //     }
-    //     const cardOptions = [gameState.drawCard(), gameState.drawCard()];
-    //     const player = gameState.getActivePlayer();
-    //     gameState.pendingGameInputs.push({
-    //       inputType: GameInputType.SELECT_CARDS,
-    //       prevInputType: GameInputType.PLAY_CARD,
-    //       cardContext: CardName.POSTAL_PIGEON,
-    //       mustSelectOne: false,
-    //       cardOptions: cardOptions.filter((cardName) => {
-    //         const cardOption = Card.fromName(cardName);
-    //         if (cardOption.baseVP > 3) {
-    //           return false;
-    //         }
-    //         return player.canAddToCity(cardName);
-    //       }),
-    //       cardOptionsUnfiltered: cardOptions,
-    //       clientOptions: {
-    //         selectedCard: null,
-    //       },
-    //     });
-    //   } else if (
-    //     gameInput.inputType === GameInputType.SELECT_CARDS &&
-    //     gameInput.prevInputType === GameInputType.PLAY_CARD &&
-    //     gameInput.cardContext === CardName.POSTAL_PIGEON
-    //   ) {
-    //     const player = gameState.getActivePlayer();
-    //     const cardOptionsUnfiltered = [...gameInput.cardOptionsUnfiltered];
-    //     if (gameInput.clientOptions.selectedCard) {
-    //       player.addToCity(gameInput.clientOptions.selectedCard);
-    //       cardOptionsUnfiltered.splice(
-    //         cardOptionsUnfiltered.indexOf(gameInput.clientOptions.selectedCard),
-    //         1
-    //       );
-    //     }
-    //     cardOptionsUnfiltered.forEach((cardName) => {
-    //       gameState.discardPile.addToStack(cardName);
-    //     });
-    //   } else {
-    //     throw new Error("Invalid game input");
-    //   }
-    // },
-
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
 

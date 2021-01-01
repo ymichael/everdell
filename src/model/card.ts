@@ -37,6 +37,7 @@ type ProductionInnerFn = (
 
 export class Card<TCardType extends CardType = CardType>
   implements GameStatePlayable {
+  readonly cardDescription: string[] | undefined;
   readonly playInner: GameStatePlayFn | undefined;
   readonly canPlayCheckInner: GameStateCanPlayCheckFn | undefined;
   readonly playedCardInfoDefault:
@@ -68,6 +69,7 @@ export class Card<TCardType extends CardType = CardType>
     associatedCard,
     resourcesToGain,
     productionInner,
+    cardDescription,
     isOpenDestination = false, // if the destination is an open destination
     playInner, // called when the card is played
     canPlayCheckInner, // called when we check canPlay function
@@ -88,6 +90,7 @@ export class Card<TCardType extends CardType = CardType>
     playedCardInfoDefault?: Partial<Omit<PlayedCardInfo, "playerId">>;
     pointsInner?: (gameState: GameState, playerId: string) => number;
     maxWorkersInner?: MaxWorkersInnerFn;
+    cardDescription?: string[] | undefined;
   } & (TCardType extends CardType.PRODUCTION
     ? {
         resourcesToGain: ProductionResourceMap;
@@ -110,6 +113,7 @@ export class Card<TCardType extends CardType = CardType>
     this.canPlayCheckInner = canPlayCheckInner;
     this.playedCardInfoDefault = playedCardInfoDefault;
     this.pointsInner = pointsInner;
+    this.cardDescription = cardDescription;
 
     // Production cards
     this.productionInner = productionInner;
@@ -333,6 +337,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: false,
     associatedCard: CardName.TWIG_BARGE,
     resourcesToGain: {},
+    cardDescription: [
+      "Gain 2 ",
+      ResourceType.TWIG,
+      " for each Farm in your city.",
+    ],
     productionInner: (
       gameState: GameState,
       gameInput: GameInput,
@@ -729,6 +738,14 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: true,
     associatedCard: CardName.SHOPKEEPER,
     resourcesToGain: {},
+    cardDescription: [
+      "Gain 1 ",
+      ResourceType.BERRY,
+      ". ",
+      "If you have a Farm in your city, gain 1 additional ",
+      ResourceType.BERRY,
+      ".",
+    ],
     productionInner: (
       gameState: GameState,
       gameInput: GameInput,
@@ -896,6 +913,13 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: false,
     associatedCard: CardName.INN,
+    cardDescription: [
+      "When playing a Critter, ",
+      "you many discard this Innkeeper from your city ",
+      "to decrease the cost by 3 ",
+      ResourceType.BERRY,
+      ".",
+    ],
   }),
   [CardName.JUDGE]: new Card({
     name: CardName.JUDGE,

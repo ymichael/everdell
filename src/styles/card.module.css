@@ -53,11 +53,12 @@
 }
 
 .card_cost_item {
-  padding: 0 5px;
+  padding: 5px;
 }
 
 .card_resource {
   display: inline-block;
+  margin-top: -10px;
 }
 
 .card_resource_inner {

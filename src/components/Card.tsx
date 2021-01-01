@@ -71,6 +71,20 @@ const resourceTypeList = [
 ];
 
 const CardDescription = ({ card }: { card: CardModel }) => {
+  if (card.cardDescription) {
+    return (
+      <span>
+        {card.cardDescription.map((part: any) => {
+          if (resourceTypeList.indexOf(part) !== -1) {
+            return <CardResource resourceType={part} />;
+          } else {
+            return part;
+          }
+        })}
+      </span>
+    );
+  }
+
   if (card.resourcesToGain) {
     const totalResources = sumResources(card.resourcesToGain);
     for (let i = 0; i < resourceTypeList.length; i++) {

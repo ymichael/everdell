@@ -700,6 +700,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           cardContext: CardName.FOOL,
           playerOptions: gameState.players
             .filter((p) => p.playerId !== player.playerId)
+            .filter((p) => p.canAddToCity(CardName.FOOL))
             .map((p) => p.playerId),
           mustSelectOne: true,
           clientOptions: {

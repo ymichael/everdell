@@ -1318,6 +1318,80 @@ describe("Card", () => {
           gameState3.getPlayer(targetPlayerId).hasCardInCity(card.name)
         ).to.be(true);
       });
+      it("should not allow the player to select player with no available city spaces", () => {
+        gameState = testInitialGameState({ numPlayers: 3 });
+        let player = gameState.getActivePlayer();
+        const targetPlayerId = gameState.players[1].playerId;
+        let targetPlayer = gameState.getPlayer(targetPlayerId);
+        const player3 = gameState.players[2].playerId;
+        const card = Card.fromName(CardName.FOOL);
+
+        targetPlayer.addToCityMulti([
+          CardName.FARM,
+          CardName.FARM,
+          CardName.FARM,
+          CardName.FARM,
+          CardName.FARM,
+          CardName.FARM,
+          CardName.FARM,
+          CardName.FARM,
+          CardName.FARM,
+          CardName.FARM,
+          CardName.FARM,
+          CardName.FARM,
+          CardName.FARM,
+          CardName.FARM,
+          CardName.FARM,
+        ]);
+
+        // Make sure we can play this card
+        player.gainResources(card.baseCost);
+        player.cardsInHand.push(card.name);
+
+        gameState = gameState.next(playCardInput(card.name));
+
+        expect(() => {
+          gameState.next({
+            inputType: GameInputType.SELECT_PLAYER,
+            prevInputType: GameInputType.PLAY_CARD,
+            cardContext: CardName.FOOL,
+            mustSelectOne: true,
+            playerOptions: [targetPlayerId, player3],
+            clientOptions: {
+              selectedPlayer: targetPlayerId,
+            },
+          });
+        }).to.throwException(/invalid/i);
+      });
+      it("should not allow the player to select player who already has a FOOL in city", () => {
+        gameState = testInitialGameState({ numPlayers: 3 });
+        let player = gameState.getActivePlayer();
+        const targetPlayerId = gameState.players[1].playerId;
+        let targetPlayer = gameState.getPlayer(targetPlayerId);
+        const player3 = gameState.players[2].playerId;
+        const card = Card.fromName(CardName.FOOL);
+
+        targetPlayer.addToCity(card.name);
+
+        // Make sure we can play this card
+        player.gainResources(card.baseCost);
+        player.cardsInHand.push(card.name);
+
+        gameState = gameState.next(playCardInput(card.name));
+
+        expect(() => {
+          gameState.next({
+            inputType: GameInputType.SELECT_PLAYER,
+            prevInputType: GameInputType.PLAY_CARD,
+            cardContext: CardName.FOOL,
+            mustSelectOne: true,
+            playerOptions: [targetPlayerId, player3],
+            clientOptions: {
+              selectedPlayer: targetPlayerId,
+            },
+          });
+        }).to.throwException(/invalid/i);
+      });
     });
 
     describe(CardName.LOOKOUT, () => {

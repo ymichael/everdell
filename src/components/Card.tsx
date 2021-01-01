@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Card as CardModel } from "../model/card";
-import { CardTypeSymbol, ResourceTypeIcon } from "./assets";
+import { CardTypeSymbol, CardIcon, ResourceTypeIcon } from "./assets";
 import styles from "../styles/card.module.css";
 import {
   ResourceType,
@@ -9,6 +9,7 @@ import {
   CardName,
   PlayedCardInfo,
 } from "../model/types";
+import { sumResources } from "../model/gameStatePlayHelpers";
 
 var colorClassMap = {
   GOVERNANCE: styles.color_governance,
@@ -32,15 +33,59 @@ const getAssociatedCard = (card: CardModel) => {
     return card.associatedCard;
   } else {
     if (card.name == CardName.FARM) {
-      return "Husband / Wife";
+      return "HUSBAND / WIFE";
     } else if (card.name == CardName.EVERTREE) {
-      return "Any Critter";
+      return "ANY";
     } else {
       throw new Error(
         "Associated card is null and card is not Farm or Evertree"
       );
     }
   }
+};
+
+const CardResource = ({
+  resourceType,
+}: {
+  resourceType: ResourceType | "CARD";
+}) => {
+  return (
+    <div className={styles.card_resource}>
+      <div className={styles.card_resource_inner}>
+        {resourceType === "CARD" ? (
+          <CardIcon />
+        ) : (
+          <ResourceTypeIcon resourceType={resourceType} />
+        )}
+      </div>
+    </div>
+  );
+};
+
+const resourceTypeList = [
+  ResourceType.BERRY,
+  ResourceType.TWIG,
+  ResourceType.PEBBLE,
+  ResourceType.RESIN,
+  "CARD" as const,
+];
+
+const CardDescription = ({ card }: { card: CardModel }) => {
+  if (card.resourcesToGain) {
+    const totalResources = sumResources(card.resourcesToGain);
+    for (let i = 0; i < resourceTypeList.length; i++) {
+      if (card.resourcesToGain[resourceTypeList[i]] === totalResources) {
+        return (
+          <span>
+            {"Gain "}
+            {totalResources} <CardResource resourceType={resourceTypeList[i]} />
+            {"."}
+          </span>
+        );
+      }
+    }
+  }
+  return <></>;
 };
 
 const Card: React.FC<{ name: CardName }> = ({ name }) => {
@@ -50,38 +95,45 @@ const Card: React.FC<{ name: CardName }> = ({ name }) => {
   const associatedCard = getAssociatedCard(card);
   return (
     <>
-      <div className={styles.container}>
-        <div className={[styles.circle, styles.card_header_symbol].join(" ")}>
-          <CardTypeSymbol cardType={card.cardType} />
+      <div className={styles.card}>
+        <div className={styles.card_header_row}>
+          <div className={[styles.circle, styles.card_header_symbol].join(" ")}>
+            <CardTypeSymbol cardType={card.cardType} />
+          </div>
+          <div
+            className={[
+              styles.circle,
+              styles.color_victory_point,
+              styles.card_header_vp,
+            ].join(" ")}
+          >
+            <span className={styles.card_header_vp_number}>{card.baseVP}</span>
+          </div>
+          <div className={[styles.card_header, colorClass].join(" ")}>
+            {name}
+          </div>
         </div>
-        <div
-          className={[
-            styles.circle,
-            styles.color_victory_point,
-            styles.card_header_vp,
-          ].join(" ")}
-        >
-          <span className={styles.card_header_vp_number}>{card.baseVP}</span>
+        <div className={styles.info_row}>
+          <div className={styles.card_cost}>
+            {Object.entries(card.baseCost).map(([resourceType, count], idx) => {
+              return (
+                <div className={styles.card_cost_item} key={idx}>
+                  <CardResource resourceType={resourceType as ResourceType} />
+                  <span className={styles.card_cost_value}> {count}</span>
+                </div>
+              );
+            })}
+          </div>
+          <div className={styles.card_description}>
+            <CardDescription card={card} />
+          </div>
         </div>
-        <div className={[styles.card_header, colorClass].join(" ")}>{name}</div>
-        <div className={styles.cost}>
-          {Object.entries(card.baseCost).map(([resourceType, count], idx) => {
-            return (
-              <div className={styles.card_cost_row} key={idx}>
-                <span className={styles.card_cost_icon}>
-                  <ResourceTypeIcon
-                    resourceType={resourceType as ResourceType}
-                  />
-                </span>{" "}
-                <span className={styles.card_cost_value}>{count}</span>
-              </div>
-            );
-          })}
-        </div>
-        <div className={styles.rarity_label}>{rarityLabel}</div>
+        <div className={styles.card_bottom_row}>
+          <div className={styles.rarity_label}>{rarityLabel}</div>
 
-        <div className={[styles.associated_card, colorClass].join(" ")}>
-          {associatedCard}
+          <div className={styles.associated_card}>
+            <span className={colorClass}>{associatedCard}</span>
+          </div>
         </div>
       </div>
     </>

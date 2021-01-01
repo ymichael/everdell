@@ -1,4 +1,4 @@
-.container {
+.card {
   height: 180px;
   width: 200px;
   border-radius: 5px;
@@ -8,6 +8,10 @@
   box-shadow: 1px 1px #eee;
   overflow: hidden;
   margin: 10px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .card_header {
@@ -18,15 +22,68 @@
   color: #ffffff;
 }
 
+.card_bottom_row {
+  display: flex;
+  justify-content: space-between;
+}
+
 .associated_card {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  padding: 5px;
-  font-size: 10px;
+  display: flex;
+  color: #ffffff;
+}
+
+.associated_card > span {
   border-radius: 5px 0 0 0;
   font-weight: 700;
-  color: #ffffff;
+  padding: 5px;
+  font-size: 10px;
+  align-self: flex-end;
+}
+
+.info_row {
+  display: flex;
+  flex-direction: column;
+  flex: auto;
+  justify-content: space-between;
+}
+
+.card_cost {
+  display: flex;
+  flex: auto;
+}
+
+.card_cost_item {
+  padding: 0 5px;
+}
+
+.card_resource {
+  display: inline-block;
+}
+
+.card_resource_inner {
+  height: 20px;
+  width: 20px;
+  top: 5px;
+  position: relative;
+  display: inline-block;
+}
+
+.card_description {
+  padding: 0 5px;
+  font-size: 14px;
+}
+
+.card_cost_value {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.rarity_label {
+  padding: 5px;
+  text-transform: uppercase;
+  font-size: 10px;
+  font-weight: 700;
+  color: #bbb;
 }
 
 .circle {
@@ -87,38 +144,9 @@
   background: #476f80;
 }
 
-.rarity_label {
-  bottom: 0;
-  left: 0;
-  position: absolute;
-
-  padding: 5px;
-  text-transform: uppercase;
-  font-size: 10px;
-  font-weight: 700;
-}
-
 .color_destination_gradient {
   background: linear-gradient(111.09deg, #c26473 -23.53%, #431f24 116.69%),
     linear-gradient(0deg, #b84a5b, #b84a5b);
-}
-
-.card_cost_row {
-  height: 20px;
-  padding: 5px;
-}
-
-.card_cost_icon {
-  height: 22px;
-  width: 22px;
-  position: relative;
-  display: inline-block;
-}
-
-.card_cost_value {
-  vertical-align: super;
-  font-size: 14px;
-  font-weight: 500;
 }
 
 .played_card_wrapper {

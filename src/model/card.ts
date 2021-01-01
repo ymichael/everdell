@@ -728,9 +728,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: true,
     associatedCard: CardName.SHOPKEEPER,
-    resourcesToGain: {
-      [ResourceType.BERRY]: 1,
-    },
+    resourcesToGain: {},
     productionInner: (
       gameState: GameState,
       gameInput: GameInput,
@@ -738,7 +736,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     ) => {
       const player = gameState.getActivePlayer();
       player.gainResources({
-        [ResourceType.BERRY]: cardOwner.hasCardInCity(CardName.FARM) ? 1 : 0,
+        [ResourceType.BERRY]: cardOwner.hasCardInCity(CardName.FARM) ? 2 : 1,
       });
     },
   }),

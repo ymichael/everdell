@@ -21,6 +21,14 @@ export const CardTypeSymbol = ({ cardType }: { cardType: CardType }) => {
   );
 };
 
+export const CardIcon = () => {
+  return <Image src="/images/card.png" layout="fill" />;
+};
+
+export const VPIcon = () => {
+  return <Image src="/images/vp.png" layout="fill" />;
+};
+
 export const ResourceTypeIcon = ({
   resourceType,
 }: {

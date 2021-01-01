@@ -20,6 +20,9 @@ import { ResourceTypeIcon } from "./assets";
 import Card from "./Card";
 import Location from "./Location";
 
+import { GameInputBoxContainer } from "./gameInputCommon";
+import GameInputDiscardCards from "./GameInputDiscardCards";
+
 const GameInputBoxWaiting: React.FC<{
   title?: string;
   activePlayer: Player;
@@ -217,6 +220,13 @@ const GameInputBox: React.FC<{
     );
   }
 
+  //   if (gameInputs.length === 1) {
+  //     const gameInput = gameInputs[0];
+  //     if (gameInput.inputType === GameInputType.DISCARD_CARDS) {
+  //       return <GameInputDiscardCards gameInput={gameInput} />;
+  //     }
+  //   }
+
   const inputTypeToInputs: Partial<Record<GameInputType, GameInput[]>> = {};
   gameInputs.forEach((gameInput) => {
     inputTypeToInputs[gameInput.inputType] =
@@ -234,31 +244,12 @@ const GameInputBox: React.FC<{
     <GameBlock title={title}>
       <div>
         <p>Perform an action:</p>
-        <Formik
+        <GameInputBoxContainer
+          gameId={gameId}
+          viewingPlayer={viewingPlayer}
           initialValues={{
             selectedInputType: inputTypesOrdered[0],
             gameInput: null,
-          }}
-          onSubmit={async (values) => {
-            const response = await fetch("/api/game-action", {
-              method: "POST",
-              cache: "no-cache",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                gameId,
-                playerId: viewingPlayer.playerId,
-                playerSecret: viewingPlayer.playerSecretUNSAFE,
-                gameInput: values.gameInput,
-              }),
-            });
-            const json = await response.json();
-            if (!json.success) {
-              alert(json.error);
-            } else if (devDebug) {
-              window.location.reload();
-            }
           }}
         >
           {({ values, setFieldValue }) => {
@@ -307,7 +298,7 @@ const GameInputBox: React.FC<{
               </Form>
             );
           }}
-        </Formik>
+        </GameInputBoxContainer>
       </div>
     </GameBlock>
   );

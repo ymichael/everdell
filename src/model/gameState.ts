@@ -182,7 +182,17 @@ export class GameState {
       );
     });
     if (!found) {
-      throw new Error(`Invalid multi-step input`);
+      throw new Error(
+        `Invalid multi-step input: \n gameInput: ${JSON.stringify(
+          gameInput,
+          null,
+          2
+        )} \n\nexpected one of: ${JSON.stringify(
+          this.pendingGameInputs,
+          null,
+          2
+        )}`
+      );
     }
     const idx = this.pendingGameInputs.indexOf(found);
     if (idx === -1) {
@@ -193,8 +203,6 @@ export class GameState {
   }
 
   private handleMultiStepGameInput(gameInput: GameInputMultiStep): void {
-    this.removeMultiStepGameInput(gameInput);
-
     if (gameInput.cardContext) {
       const card = Card.fromName(gameInput.cardContext);
       if (!card.canPlay(this, gameInput)) {
@@ -340,15 +348,10 @@ export class GameState {
 
   next(gameInput: GameInput): GameState {
     const nextGameState = this.clone();
+    if (nextGameState.pendingGameInputs.length !== 0) {
+      nextGameState.removeMultiStepGameInput(gameInput as any);
+    }
     switch (gameInput.inputType) {
-      case GameInputType.PLAY_CARD:
-        nextGameState.handlePlayCardGameInput(gameInput);
-        break;
-      case GameInputType.PLACE_WORKER:
-      case GameInputType.VISIT_DESTINATION_CARD:
-      case GameInputType.CLAIM_EVENT:
-        nextGameState.handleWorkerPlacementGameInput(gameInput);
-        break;
       case GameInputType.SELECT_CARDS:
       case GameInputType.SELECT_PLAYED_CARDS:
       case GameInputType.SELECT_LOCATION:
@@ -358,6 +361,14 @@ export class GameState {
       case GameInputType.SELECT_RESOURCES:
       case GameInputType.DISCARD_CARDS:
         nextGameState.handleMultiStepGameInput(gameInput);
+        break;
+      case GameInputType.PLAY_CARD:
+        nextGameState.handlePlayCardGameInput(gameInput);
+        break;
+      case GameInputType.PLACE_WORKER:
+      case GameInputType.VISIT_DESTINATION_CARD:
+      case GameInputType.CLAIM_EVENT:
+        nextGameState.handleWorkerPlacementGameInput(gameInput);
         break;
       case GameInputType.PREPARE_FOR_SEASON:
         nextGameState.handlePrepareForSeason(gameInput);

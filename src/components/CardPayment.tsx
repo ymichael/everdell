@@ -35,7 +35,7 @@ const ResourceTypeValueInput: React.FC<{
   );
 };
 
-const ResourcesToSpend: React.FC<{
+export const ResourcesToSpend: React.FC<{
   name: string;
   viewingPlayer: Player;
 }> = ({ name, viewingPlayer }) => {

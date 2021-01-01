@@ -4,7 +4,7 @@ import { Player } from "../model/player";
 import { GameState } from "../model/gameState";
 import { GameBlock } from "./common";
 
-import Meadow from "./Meadow";
+import { Meadow } from "./gameBoard";
 import GameInputBox from "./GameInputBox";
 
 const GameAdmin = ({

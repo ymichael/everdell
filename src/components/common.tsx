@@ -48,9 +48,9 @@ const resourceTypeList = [
 export const Description = ({ description }: { description: string[] }) => {
   return description ? (
     <span>
-      {description.map((part: any) => {
+      {description.map((part: any, idx: number) => {
         if (resourceTypeList.indexOf(part) !== -1) {
-          return <Resource resourceType={part} />;
+          return <Resource key={idx} resourceType={part} />;
         } else {
           return part;
         }

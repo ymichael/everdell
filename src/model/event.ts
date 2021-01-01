@@ -399,7 +399,8 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
 
           // if card is added to player's hand, remove it from cards
           // that will go under event
-          remainingCards = pull(remainingCards, cardName);
+          const idx = remainingCards.indexOf(cardName);
+          remainingCards.splice(idx, 1);
         });
 
         remainingCards.forEach((cardName) => {

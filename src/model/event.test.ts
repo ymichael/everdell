@@ -591,7 +591,7 @@ describe("Event", () => {
   });
 
   describe(EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED, () => {
-    it("game state", () => {
+    it("should be able to claim event and store 5/5 revealed cards", () => {
       const event = Event.fromName(
         EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED
       );
@@ -662,6 +662,183 @@ describe("Event", () => {
         CardName.QUEEN,
         CardName.KING,
       ]);
+      expect(event.getPoints(gameState, player.playerId)).to.be(5);
+    });
+    it("should be able to claim event and store subset of revealed cards", () => {
+      const event = Event.fromName(
+        EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED
+      );
+      let player = gameState.getActivePlayer();
+      const gameInput = claimEventInput(event.name);
+
+      gameState.eventsMap[EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED] = null;
+
+      player.addToCity(CardName.HISTORIAN);
+      player.addToCity(CardName.RUINS);
+
+      // add cards to deck so we know what cards were drawn
+      gameState.deck.addToStack(CardName.KING);
+      gameState.deck.addToStack(CardName.QUEEN);
+      gameState.deck.addToStack(CardName.POSTAL_PIGEON);
+      gameState.deck.addToStack(CardName.FOOL);
+      gameState.deck.addToStack(CardName.QUEEN);
+
+      // check if the player can claim the event
+      expect(event.canPlay(gameState, gameInput)).to.be(true);
+
+      // try to claim the event + check that you get the correct game state back
+      expect(gameState.pendingGameInputs).to.eql([]);
+      expect(
+        player.claimedEvents[EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED]
+      ).to.be(undefined);
+
+      gameState = multiStepGameInputTest(gameState, [
+        gameInput,
+        {
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          eventContext: EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED,
+          maxToSelect: 5,
+          minToSelect: 0,
+          cardOptions: [
+            CardName.QUEEN,
+            CardName.FOOL,
+            CardName.POSTAL_PIGEON,
+            CardName.QUEEN,
+            CardName.KING,
+          ],
+          clientOptions: {
+            selectedCards: [CardName.QUEEN, CardName.KING],
+          },
+        },
+      ]);
+      player = gameState.getPlayer(player.playerId);
+
+      // player should have Queen and King
+      expect(player.cardsInHand).to.eql([CardName.QUEEN, CardName.KING]);
+
+      const eventInfo =
+        player.claimedEvents[EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED];
+
+      if (!eventInfo) {
+        throw new Error("invalid event info");
+      }
+      const storedCards = eventInfo.storedCards;
+
+      if (!storedCards) {
+        throw new Error("invalid list of stored cards");
+      }
+      expect(storedCards).to.eql([
+        CardName.FOOL,
+        CardName.POSTAL_PIGEON,
+        CardName.QUEEN,
+      ]);
+
+      expect(event.getPoints(gameState, player.playerId)).to.be(3);
+    });
+    it("should be able to claim event and take all revealed cards into hand", () => {
+      const event = Event.fromName(
+        EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED
+      );
+      let player = gameState.getActivePlayer();
+      const gameInput = claimEventInput(event.name);
+
+      gameState.eventsMap[EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED] = null;
+
+      player.addToCity(CardName.HISTORIAN);
+      player.addToCity(CardName.RUINS);
+
+      // add cards to deck so we know what cards were drawn
+      gameState.deck.addToStack(CardName.KING);
+      gameState.deck.addToStack(CardName.QUEEN);
+      gameState.deck.addToStack(CardName.POSTAL_PIGEON);
+      gameState.deck.addToStack(CardName.FOOL);
+      gameState.deck.addToStack(CardName.QUEEN);
+
+      // check if the player can claim the event
+      expect(event.canPlay(gameState, gameInput)).to.be(true);
+
+      // try to claim the event + check that you get the correct game state back
+      expect(gameState.pendingGameInputs).to.eql([]);
+      expect(
+        player.claimedEvents[EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED]
+      ).to.be(undefined);
+
+      gameState = multiStepGameInputTest(gameState, [
+        gameInput,
+        {
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          eventContext: EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED,
+          maxToSelect: 5,
+          minToSelect: 0,
+          cardOptions: [
+            CardName.QUEEN,
+            CardName.FOOL,
+            CardName.POSTAL_PIGEON,
+            CardName.QUEEN,
+            CardName.KING,
+          ],
+          // player takes all revealed cards
+          clientOptions: {
+            selectedCards: [
+              CardName.QUEEN,
+              CardName.FOOL,
+              CardName.POSTAL_PIGEON,
+              CardName.QUEEN,
+              CardName.KING,
+            ],
+          },
+        },
+      ]);
+      player = gameState.getPlayer(player.playerId);
+
+      expect(player.cardsInHand).to.eql([
+        CardName.QUEEN,
+        CardName.FOOL,
+        CardName.POSTAL_PIGEON,
+        CardName.QUEEN,
+        CardName.KING,
+      ]);
+
+      const eventInfo =
+        player.claimedEvents[EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED];
+
+      if (!eventInfo) {
+        throw new Error("invalid event info");
+      }
+      const storedCards = eventInfo.storedCards;
+
+      if (!storedCards) {
+        throw new Error("invalid list of stored cards");
+      }
+      expect(storedCards).to.eql([]);
+
+      expect(event.getPoints(gameState, player.playerId)).to.be(0);
+    });
+    it("should not be able to claim event if missing cards", () => {
+      const event = Event.fromName(
+        EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED
+      );
+      let player = gameState.getActivePlayer();
+      const gameInput = claimEventInput(event.name);
+
+      gameState.eventsMap[EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED] = null;
+
+      player.addToCity(CardName.HISTORIAN);
+
+      // check if the player can claim the event
+      expect(event.canPlay(gameState, gameInput)).to.be(false);
+      expect(
+        player.claimedEvents[EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED]
+      ).to.be(undefined);
+
+      expect(() => {
+        gameState.next(gameInput);
+      }).to.throwException(/Need to have played/i);
+      expect(
+        player.claimedEvents[EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED]
+      ).to.be(undefined);
     });
   });
 });

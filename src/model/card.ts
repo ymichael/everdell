@@ -432,17 +432,19 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       const cardOptions = player
         .getAllPlayedCardsByType(CardType.PRODUCTION)
         .filter(({ cardName }) => cardName !== CardName.CHIP_SWEEP);
-      gameState.pendingGameInputs.push({
-        inputType: GameInputType.SELECT_PLAYED_CARDS,
-        prevInputType: gameInput.inputType,
-        cardOptions,
-        cardContext: CardName.CHIP_SWEEP,
-        maxToSelect: 1,
-        minToSelect: 1,
-        clientOptions: {
-          selectedCards: [],
-        },
-      });
+      if (cardOptions.length !== 0) {
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          prevInputType: gameInput.inputType,
+          cardOptions,
+          cardContext: CardName.CHIP_SWEEP,
+          maxToSelect: 1,
+          minToSelect: 1,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      }
     },
   }),
   [CardName.CLOCK_TOWER]: new Card({
@@ -1006,30 +1008,32 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           );
         }
       });
-
-      gameState.pendingGameInputs.push({
-        inputType: GameInputType.SELECT_PLAYED_CARDS,
-        prevInputType: gameInput.inputType,
-        cardContext: CardName.MINER_MOLE,
-        cardOptions: productionPlayedCards.filter((playedCardInfo) => {
-          // Filter out useless cards to copy
-          if (
-            playedCardInfo.cardName === CardName.STOREHOUSE &&
-            playedCardInfo.cardOwnerId !== player.playerId
-          ) {
-            return false;
-          }
-          return (
-            playedCardInfo.cardName !== CardName.MINER_MOLE &&
-            playedCardInfo.cardName !== CardName.CHIP_SWEEP
-          );
-        }),
-        maxToSelect: 1,
-        minToSelect: 1,
-        clientOptions: {
-          selectedCards: [],
-        },
+      const cardOptions = productionPlayedCards.filter((playedCardInfo) => {
+        // Filter out useless cards to copy
+        if (
+          playedCardInfo.cardName === CardName.STOREHOUSE &&
+          playedCardInfo.cardOwnerId !== player.playerId
+        ) {
+          return false;
+        }
+        return (
+          playedCardInfo.cardName !== CardName.MINER_MOLE &&
+          playedCardInfo.cardName !== CardName.CHIP_SWEEP
+        );
       });
+      if (cardOptions.length !== 0) {
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          prevInputType: gameInput.inputType,
+          cardContext: CardName.MINER_MOLE,
+          cardOptions,
+          maxToSelect: 1,
+          minToSelect: 1,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      }
     },
   }),
   [CardName.MONASTERY]: new Card({

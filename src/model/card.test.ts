@@ -1148,6 +1148,22 @@ describe("Card", () => {
     });
 
     describe(CardName.CHIP_SWEEP, () => {
+      it("should do nothing if only the CHIP_SWEEP is played", () => {
+        const card = Card.fromName(CardName.CHIP_SWEEP);
+        let player = gameState.getActivePlayer();
+
+        // Make sure we can play this card
+        player.gainResources(card.baseCost);
+        player.cardsInHand.push(card.name);
+        expect(player.hasCardInCity(card.name)).to.be(false);
+        const gameState2 = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+        ]);
+
+        player = gameState2.getPlayer(player.playerId);
+        expect(player.hasCardInCity(card.name)).to.be(true);
+      });
+
       it("should allow the player to select a card to play", () => {
         const card = Card.fromName(CardName.CHIP_SWEEP);
 

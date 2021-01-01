@@ -26,6 +26,7 @@ import GameInputSelectResources from "./GameInputSelectResources";
 import GameInputSelectPlayer from "./GameInputSelectPlayer";
 import GameInputSelectPlayedCards from "./GameInputSelectPlayedCards";
 import GameInputSelectCards from "./GameInputSelectCards";
+import GameInputPlaceWorkerSelector from "./GameInputPlaceWorkerSelector";
 
 const GameInputBoxWaiting: React.FC<{
   title?: string;
@@ -116,56 +117,6 @@ const GameInputPlayCardSelector: React.FC<{
           viewingPlayer={viewingPlayer}
         />
       )}
-    </div>
-  );
-};
-
-// locations
-const GameInputPlaceWorkerSelector: React.FC<{
-  gameInputs?: GameInput[];
-  viewingPlayer: Player;
-}> = ({ gameInputs = [], viewingPlayer }) => {
-  const [field, meta, helpers] = useField("gameInput");
-  return (
-    <div className={styles.selector}>
-      <div role="group">
-        <p>Choose a card to play:</p>
-        <div className={styles.play_card_list}>
-          {gameInputs.map((gameInput, idx) => {
-            if (gameInput.inputType !== GameInputType.PLACE_WORKER) {
-              return <></>;
-            }
-
-            const isSelected =
-              meta.value &&
-              meta.value.inputType === gameInput.inputType &&
-              meta.value._idx === idx;
-
-            return (
-              <div key={idx} className={styles.play_card_list_item_wrapper}>
-                <div
-                  key={idx}
-                  className={[
-                    styles.play_card_list_item,
-                    isSelected && styles.play_card_list_item_selected,
-                  ]
-                    .filter(Boolean)
-                    .join(" ")}
-                  onClick={() => {
-                    helpers.setValue({
-                      ...gameInput,
-                      _idx: idx,
-                      clientOptions: {},
-                    });
-                  }}
-                >
-                  <Location name={gameInput.location} />
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
     </div>
   );
 };

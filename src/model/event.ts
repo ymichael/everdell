@@ -208,6 +208,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN,
     type: EventType.SPECIAL,
     baseVP: 0,
+    requiredCards: [CardName.SHOPKEEPER, CardName.POST_OFFICE],
     canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
       return "Not Implemented";
     },
@@ -229,6 +230,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_A_WEE_RUN_CITY,
     type: EventType.SPECIAL,
     baseVP: 4,
+    requiredCards: [CardName.CHIP_SWEEP, CardName.CLOCK_TOWER],
     canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
       return "Not Implemented";
     },

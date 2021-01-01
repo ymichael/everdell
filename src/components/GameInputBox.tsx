@@ -25,6 +25,7 @@ import GameInputDiscardCards from "./GameInputDiscardCards";
 import GameInputSelectResources from "./GameInputSelectResources";
 import GameInputSelectPlayer from "./GameInputSelectPlayer";
 import GameInputSelectPlayedCards from "./GameInputSelectPlayedCards";
+import GameInputSelectCards from "./GameInputSelectCards";
 
 const GameInputBoxWaiting: React.FC<{
   title?: string;
@@ -182,6 +183,7 @@ const GameInputDefaultSelector: React.FC<{
               <input
                 type="radio"
                 name="gameInput"
+                checked={isEqual(meta.value, gameInput)}
                 onChange={() => {
                   helpers.setValue(gameInput);
                 }}
@@ -288,6 +290,16 @@ const GameInputBox: React.FC<{
               <>
                 <pre>{JSON.stringify(values, null, 2)}</pre>
                 <GameInputSelectPlayedCards
+                  gameInput={gameInput}
+                  viewingPlayer={viewingPlayer}
+                />
+              </>
+            );
+          } else if (gameInput.inputType === GameInputType.SELECT_CARDS) {
+            return (
+              <>
+                <pre>{JSON.stringify(values, null, 2)}</pre>
+                <GameInputSelectCards
                   gameInput={gameInput}
                   viewingPlayer={viewingPlayer}
                 />

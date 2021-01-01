@@ -33,7 +33,7 @@ export const GameInputBoxContainer: React.FC<{
       <p>Perform an action:</p>
       <Formik
         initialValues={initialValues}
-        onSubmit={async (values) => {
+        onSubmit={async (values, bag) => {
           const response = await fetch("/api/game-action", {
             method: "POST",
             cache: "no-cache",

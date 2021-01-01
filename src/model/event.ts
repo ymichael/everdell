@@ -333,7 +333,12 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       }
 
       const numTwigs = resources[ResourceType.TWIG];
-      if (!numTwigs) {
+
+      if (numTwigs === 0) {
+        return 0;
+      }
+
+      if (!numTwigs || numTwigs > 3) {
         throw new Error("Invalid number of twigs");
       }
 
@@ -507,6 +512,20 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       if (!eventInfo) {
         throw new Error("Cannot find event info");
       }
+
+      const storedCards = eventInfo.storedCards || [];
+
+      if (storedCards.length > 2) {
+        throw new Error("too many cards stored under event");
+      }
+
+      storedCards.forEach((cardName) => {
+        const card = Card.fromName(cardName as CardName);
+        if (!card.isCritter) {
+          throw new Error("cannot store critters under this event");
+        }
+      });
+
       return (eventInfo.storedCards = eventInfo.storedCards || []).length * 3;
     },
   }),
@@ -812,7 +831,12 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       }
 
       const numBerries = resources[ResourceType.BERRY];
-      if (!numBerries) {
+
+      if (numBerries === 0) {
+        return 0;
+      }
+
+      if (!numBerries || numBerries > 3) {
         throw new Error("Invalid number of berries");
       }
 

@@ -297,7 +297,7 @@ describe("Event", () => {
   });
 
   describe(EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES, () => {
-    it("game state", () => {
+    it("should be able to claim event", () => {
       const event = Event.fromName(
         EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES
       );
@@ -350,11 +350,13 @@ describe("Event", () => {
       expect(player.hasCardInCity(CardName.WIFE)).to.eql(true);
       expect(player.hasCardInCity(CardName.QUEEN)).to.eql(true);
       expect(player.hasCardInCity(CardName.COURTHOUSE)).to.eql(true);
+
+      expect(event.getPoints(gameState, player.playerId)).to.be(6);
     });
   });
 
   describe(EventName.SPECIAL_AN_EVENING_OF_FIREWORKS, () => {
-    it("game state", () => {
+    it("should be able to claim event and store twigs", () => {
       const event = Event.fromName(EventName.SPECIAL_AN_EVENING_OF_FIREWORKS);
       let player = gameState.getActivePlayer();
       const gameInput = claimEventInput(event.name);
@@ -409,11 +411,105 @@ describe("Event", () => {
       expect(storedResources).to.eql({
         [ResourceType.TWIG]: 3,
       });
+
+      expect(event.getPoints(gameState, player.playerId)).to.be(6);
+    });
+    it("should calculate points correctly", () => {
+      const event = Event.fromName(EventName.SPECIAL_AN_EVENING_OF_FIREWORKS);
+      let player = gameState.getActivePlayer();
+
+      player.claimedEvents[event.name] = {
+        storedResources: {},
+      };
+
+      expect(() => {
+        event.getPoints(gameState, player.playerId);
+      }).to.throwException(/invalid number of/i);
+
+      player.claimedEvents[event.name] = {
+        storedResources: { [ResourceType.TWIG]: 0 },
+      };
+
+      expect(event.getPoints(gameState, player.playerId)).to.be(0);
+
+      player.claimedEvents[event.name] = {
+        storedResources: { [ResourceType.TWIG]: 1 },
+      };
+
+      expect(event.getPoints(gameState, player.playerId)).to.be(2);
+
+      player.claimedEvents[event.name] = {
+        storedResources: { [ResourceType.TWIG]: 2 },
+      };
+
+      expect(event.getPoints(gameState, player.playerId)).to.be(4);
+
+      player.claimedEvents[event.name] = {
+        storedResources: { [ResourceType.TWIG]: 3 },
+      };
+
+      expect(event.getPoints(gameState, player.playerId)).to.be(6);
+
+      player.claimedEvents[event.name] = {
+        storedResources: { [ResourceType.TWIG]: 4 },
+      };
+
+      expect(() => {
+        event.getPoints(gameState, player.playerId);
+      }).to.throwException(/invalid number of/i);
+    });
+    it("can't put incorrect resources or number of twigs", () => {
+      const event = Event.fromName(EventName.SPECIAL_AN_EVENING_OF_FIREWORKS);
+      let player = gameState.getActivePlayer();
+      const gameInput = claimEventInput(event.name);
+
+      gameState.eventsMap[EventName.SPECIAL_AN_EVENING_OF_FIREWORKS] = null;
+
+      player.addToCity(CardName.LOOKOUT);
+      player.addToCity(CardName.MINER_MOLE);
+      player.gainResources({ [ResourceType.TWIG]: 3 });
+
+      // check if the player can claim the event
+      expect(event.canPlay(gameState, gameInput)).to.be(true);
+
+      // try to claim the event + check that you get the correct game state back
+      expect(gameState.pendingGameInputs).to.eql([]);
+      expect(
+        player.claimedEvents[EventName.SPECIAL_AN_EVENING_OF_FIREWORKS]
+      ).to.be(undefined);
+
+      gameState = gameState.next(gameInput);
+
+      expect(() => {
+        gameState.next({
+          inputType: GameInputType.SELECT_RESOURCES,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          eventContext: EventName.SPECIAL_AN_EVENING_OF_FIREWORKS,
+          maxResources: 3,
+          minResources: 0,
+          clientOptions: {
+            resources: { [ResourceType.BERRY]: 3 },
+          },
+        });
+      }).to.throwException();
+
+      expect(() => {
+        gameState.next({
+          inputType: GameInputType.SELECT_RESOURCES,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          eventContext: EventName.SPECIAL_AN_EVENING_OF_FIREWORKS,
+          maxResources: 3,
+          minResources: 0,
+          clientOptions: {
+            resources: { [ResourceType.TWIG]: 4 },
+          },
+        });
+      }).to.throwException();
     });
   });
 
   describe(EventName.SPECIAL_PERFORMER_IN_RESIDENCE, () => {
-    it("game state", () => {
+    it("should be able to claim event and store berries", () => {
       const event = Event.fromName(EventName.SPECIAL_PERFORMER_IN_RESIDENCE);
       let player = gameState.getActivePlayer();
       const gameInput = claimEventInput(event.name);
@@ -468,6 +564,99 @@ describe("Event", () => {
       expect(storedResources).to.eql({
         [ResourceType.BERRY]: 3,
       });
+      expect(event.getPoints(gameState, player.playerId)).to.be(6);
+    });
+    it("should calculate points correctly", () => {
+      const event = Event.fromName(EventName.SPECIAL_PERFORMER_IN_RESIDENCE);
+      let player = gameState.getActivePlayer();
+
+      player.claimedEvents[event.name] = {
+        storedResources: {},
+      };
+
+      expect(() => {
+        event.getPoints(gameState, player.playerId);
+      }).to.throwException(/invalid number of/i);
+
+      player.claimedEvents[event.name] = {
+        storedResources: { [ResourceType.BERRY]: 0 },
+      };
+
+      expect(event.getPoints(gameState, player.playerId)).to.be(0);
+
+      player.claimedEvents[event.name] = {
+        storedResources: { [ResourceType.BERRY]: 1 },
+      };
+
+      expect(event.getPoints(gameState, player.playerId)).to.be(2);
+
+      player.claimedEvents[event.name] = {
+        storedResources: { [ResourceType.BERRY]: 2 },
+      };
+
+      expect(event.getPoints(gameState, player.playerId)).to.be(4);
+
+      player.claimedEvents[event.name] = {
+        storedResources: { [ResourceType.BERRY]: 3 },
+      };
+
+      expect(event.getPoints(gameState, player.playerId)).to.be(6);
+
+      player.claimedEvents[event.name] = {
+        storedResources: { [ResourceType.BERRY]: 4 },
+      };
+
+      expect(() => {
+        event.getPoints(gameState, player.playerId);
+      }).to.throwException(/invalid number of/i);
+    });
+    it("can't put incorrect resources or number of berries", () => {
+      const event = Event.fromName(EventName.SPECIAL_PERFORMER_IN_RESIDENCE);
+      let player = gameState.getActivePlayer();
+      const gameInput = claimEventInput(event.name);
+
+      gameState.eventsMap[EventName.SPECIAL_PERFORMER_IN_RESIDENCE] = null;
+
+      player.addToCity(CardName.BARD);
+      player.addToCity(CardName.INN);
+      player.gainResources({ [ResourceType.BERRY]: 5 });
+
+      // check if the player can claim the event
+      expect(event.canPlay(gameState, gameInput)).to.be(true);
+
+      // try to claim the event + check that you get the correct game state back
+      expect(gameState.pendingGameInputs).to.eql([]);
+      expect(
+        player.claimedEvents[EventName.SPECIAL_PERFORMER_IN_RESIDENCE]
+      ).to.be(undefined);
+
+      gameState = gameState.next(gameInput);
+
+      expect(() => {
+        gameState.next({
+          inputType: GameInputType.SELECT_RESOURCES,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          eventContext: EventName.SPECIAL_PERFORMER_IN_RESIDENCE,
+          maxResources: 3,
+          minResources: 0,
+          clientOptions: {
+            resources: { [ResourceType.TWIG]: 3 },
+          },
+        });
+      }).to.throwException();
+
+      expect(() => {
+        gameState.next({
+          inputType: GameInputType.SELECT_RESOURCES,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          eventContext: EventName.SPECIAL_PERFORMER_IN_RESIDENCE,
+          maxResources: 3,
+          minResources: 0,
+          clientOptions: {
+            resources: { [ResourceType.BERRY]: 4 },
+          },
+        });
+      }).to.throwException();
     });
   });
 
@@ -597,7 +786,6 @@ describe("Event", () => {
       // 1 pt per twig and berry, 2 pts per resin and pebble
       expect(event.getPoints(gameState, player.playerId)).to.be(0);
     });
-
     it("can claim event without placing resources", () => {
       const event = Event.fromName(EventName.SPECIAL_UNDER_NEW_MANAGEMENT);
       let player = gameState.getActivePlayer();
@@ -664,6 +852,13 @@ describe("Event", () => {
     it("should calculate points correctly", () => {
       const event = Event.fromName(EventName.SPECIAL_UNDER_NEW_MANAGEMENT);
       let player = gameState.getActivePlayer();
+
+      player.claimedEvents[event.name] = {
+        storedResources: { [ResourceType.TWIG]: 0, [ResourceType.BERRY]: 0 },
+      };
+
+      // 1 pt per twig and berry, 2 pts per resin and pebble
+      expect(event.getPoints(gameState, player.playerId)).to.be(0);
 
       player.claimedEvents[event.name] = {
         storedResources: { [ResourceType.TWIG]: 1, [ResourceType.BERRY]: 1 },

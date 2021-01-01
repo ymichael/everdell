@@ -182,6 +182,7 @@ const GameInputDefaultSelector: React.FC<{
               <input
                 type="radio"
                 name="gameInput"
+                checked={isEqual(meta.value, gameInput)}
                 onChange={() => {
                   helpers.setValue(gameInput);
                 }}

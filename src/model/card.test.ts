@@ -1730,7 +1730,6 @@ describe("Card", () => {
             prevInputType: GameInputType.VISIT_DESTINATION_CARD,
             cardContext: CardName.QUEEN,
             cardOptions: [CardName.SHEPHERD],
-            cardOptionsUnfiltered: [CardName.SHEPHERD],
             maxToSelect: 1,
             minToSelect: 1,
             clientOptions: {

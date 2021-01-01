@@ -238,6 +238,7 @@ const GameInputBox: React.FC<{
     <GameInputBoxContainer
       title={title}
       gameId={gameId}
+      devDebug={devDebug}
       viewingPlayer={viewingPlayer}
       initialValues={{
         selectedInputType: inputTypesOrdered[0],

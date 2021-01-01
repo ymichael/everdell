@@ -85,6 +85,7 @@ export type GameInputDiscardCards = {
 
   locationContext?: LocationName;
   cardContext?: CardName;
+  eventContext?: EventName;
 
   clientOptions: {
     cardsToDiscard: CardName[];
@@ -99,6 +100,7 @@ export type GameInputSelectPlayer = {
 
   locationContext?: LocationName;
   cardContext?: CardName;
+  eventContext?: EventName;
 
   clientOptions: {
     selectedPlayer: string | null;
@@ -116,6 +118,7 @@ export type GameInputSelectCards = {
 
   locationContext?: LocationName;
   cardContext?: CardName;
+  eventContext?: EventName;
 
   clientOptions: {
     selectedCards: CardName[];

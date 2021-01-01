@@ -26,6 +26,7 @@ const ResourceTypeValueInput: React.FC<{
       <input
         type="number"
         value={meta.value}
+        onClick={(e) => (e.target as any).select()}
         onChange={(e) => {
           helpers.setValue(parseInt(e.target.value) || 0);
         }}
@@ -37,8 +38,7 @@ const ResourceTypeValueInput: React.FC<{
 
 export const ResourcesToSpend: React.FC<{
   name: string;
-  viewingPlayer: Player;
-}> = ({ name, viewingPlayer }) => {
+}> = ({ name }) => {
   return (
     <>
       <p>Resources to spend:</p>
@@ -149,10 +149,7 @@ const CardPayment: React.FC<{
 
   return (
     <div className={styles.card_payment_form}>
-      <ResourcesToSpend
-        name={`${name}.resources`}
-        viewingPlayer={viewingPlayer}
-      />
+      <ResourcesToSpend name={`${name}.resources`} />
       <OptionToUseAssociatedCard
         gameInput={gameInput}
         name={`${name}.useAssociatedCard`}

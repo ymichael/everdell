@@ -6,6 +6,23 @@ import { Player } from "../model/player";
 
 import { Form, useField } from "formik";
 
+const textLabel = (gameInput: TGameInputDiscardCards) => {
+  let numLabel = "";
+  if (gameInput.minCards === gameInput.maxCards) {
+    numLabel = `${gameInput.maxCards} `;
+  } else if (gameInput.minCards === 0) {
+    numLabel = `up to ${gameInput.maxCards} `;
+  }
+  const prefix = `Discard ${numLabel}cards`;
+  if (gameInput.locationContext) {
+    return `${prefix} for ${gameInput.locationContext}:`;
+  }
+  if (gameInput.cardContext) {
+    return `${prefix} for ${gameInput.cardContext}:`;
+  }
+  return prefix;
+};
+
 const GameInputDiscardCards: React.FC<{
   gameInput: TGameInputDiscardCards;
   viewingPlayer: Player;
@@ -16,9 +33,7 @@ const GameInputDiscardCards: React.FC<{
   const selectedCardIdx = useRef<any>({});
   return (
     <Form>
-      <p>
-        Discard cards for {gameInput.locationContext || gameInput.cardContext}
-      </p>
+      <p>{textLabel(gameInput)}</p>
       <>
         {viewingPlayer.cardsInHand.map((card, idx) => {
           return (

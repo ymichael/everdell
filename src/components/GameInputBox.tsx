@@ -24,6 +24,7 @@ import { GameInputBoxContainer } from "./gameInputCommon";
 import GameInputDiscardCards from "./GameInputDiscardCards";
 import GameInputSelectResources from "./GameInputSelectResources";
 import GameInputSelectPlayer from "./GameInputSelectPlayer";
+import GameInputSelectCards from "./GameInputSelectCards";
 
 const GameInputBoxWaiting: React.FC<{
   title?: string;
@@ -276,6 +277,16 @@ const GameInputBox: React.FC<{
                 <GameInputSelectPlayer
                   gameInput={gameInput}
                   gameState={gameStateImpl}
+                  viewingPlayer={viewingPlayer}
+                />
+              </>
+            );
+          } else if (gameInput.inputType === GameInputType.SELECT_CARDS) {
+            return (
+              <>
+                <pre>{JSON.stringify(values, null, 2)}</pre>
+                <GameInputSelectCards
+                  gameInput={gameInput}
                   viewingPlayer={viewingPlayer}
                 />
               </>

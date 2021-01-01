@@ -427,14 +427,14 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         targetCard.gainProduction(gameState, gameInput, player);
       }
     },
-    productionInner: (gameState: GameState) => {
+    productionInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       const cardOptions = player
         .getAllPlayedCardsByType(CardType.PRODUCTION)
         .filter(({ cardName }) => cardName !== CardName.CHIP_SWEEP);
       gameState.pendingGameInputs.push({
         inputType: GameInputType.SELECT_PLAYED_CARDS,
-        prevInputType: GameInputType.PLAY_CARD,
+        prevInputType: gameInput.inputType,
         cardOptions,
         cardContext: CardName.CHIP_SWEEP,
         maxToSelect: 1,
@@ -797,7 +797,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           inputType: GameInputType.SELECT_CARDS,
           prevInputType: GameInputType.VISIT_DESTINATION_CARD,
           cardOptions: gameState.meadowCards,
-          cardOptionsUnfiltered: gameState.meadowCards,
           maxToSelect: 1,
           minToSelect: 1,
           cardContext: CardName.INN,
@@ -1334,7 +1333,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         const player = gameState.getActivePlayer();
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_CARDS,
-          prevInputType: GameInputType.PLAY_CARD,
+          prevInputType: gameInput.inputType,
           cardContext: CardName.POSTAL_PIGEON,
           maxToSelect: 1,
           minToSelect: 0,
@@ -1410,7 +1409,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           inputType: GameInputType.SELECT_CARDS,
           prevInputType: GameInputType.VISIT_DESTINATION_CARD,
           cardOptions: playableCards,
-          cardOptionsUnfiltered: playableCards,
           maxToSelect: 1,
           minToSelect: 1,
           cardContext: CardName.QUEEN,
@@ -1577,7 +1575,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         });
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_PLAYED_CARDS,
-          prevInputType: GameInputType.PLAY_CARD,
+          prevInputType: gameInput.inputType,
           cardOptions,
           cardContext: CardName.RUINS,
           maxToSelect: 1,
@@ -1687,35 +1685,34 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     associatedCard: CardName.SCHOOL,
     resourcesToGain: {},
     // draw 2 cards + give 1 to an opponent
+    productionInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      const cardOptions = [gameState.drawCard(), gameState.drawCard()];
+
+      gameState.pendingGameInputs.push({
+        inputType: GameInputType.SELECT_CARDS,
+        prevInputType: gameInput.inputType,
+        cardOptions: cardOptions,
+        maxToSelect: 1,
+        minToSelect: 1,
+        cardContext: CardName.TEACHER,
+        clientOptions: {
+          selectedCards: [],
+        },
+      });
+    },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
-      if (gameInput.inputType === GameInputType.PLAY_CARD) {
-        const cardOptions = [gameState.drawCard(), gameState.drawCard()];
-
-        gameState.pendingGameInputs.push({
-          inputType: GameInputType.SELECT_CARDS,
-          prevInputType: GameInputType.PLAY_CARD,
-          cardOptions: cardOptions,
-          cardOptionsUnfiltered: cardOptions,
-          maxToSelect: 1,
-          minToSelect: 1,
-          cardContext: CardName.TEACHER,
-          clientOptions: {
-            selectedCards: [],
-          },
-        });
-      } else if (gameInput.inputType === GameInputType.SELECT_CARDS) {
+      if (gameInput.inputType === GameInputType.SELECT_CARDS) {
         if (!gameInput.clientOptions.selectedCards) {
           throw new Error("invalid selected cards");
         }
-
         if (gameInput.clientOptions.selectedCards.length !== 1) {
           throw new Error("incorrect number of cards selected");
         }
-
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_PLAYER,
-          prevInputType: GameInputType.SELECT_CARDS,
+          prevInputType: gameInput.inputType,
           prevInput: gameInput,
           playerOptions: gameState.players
             .filter((p) => p.playerId !== player.playerId)
@@ -1733,12 +1730,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         ) {
           throw new Error("Invalid input");
         }
-
         const selectedPlayer = gameInput.clientOptions.selectedPlayer;
         if (!selectedPlayer) {
           throw new Error("must select a player");
         }
-
         if (
           !gameState.getPlayer(selectedPlayer) ||
           selectedPlayer === player.playerId
@@ -1746,21 +1741,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           throw new Error("invalid playerId provided");
         }
         const cardName = gameInput.prevInput.clientOptions.selectedCards[0];
-        const card = Card.fromName(cardName as CardName);
-
-        gameState.getPlayer(selectedPlayer).addCardToHand(gameState, card.name);
-
-        let keptCard = gameInput.prevInput.cardOptions;
-
-        keptCard = pull(keptCard, card.name);
-
-        if (keptCard.length !== 1) {
-          throw new Error("issue getting card to keep");
-        }
-
-        player.addCardToHand(gameState, keptCard[0] as CardName);
-      } else {
-        throw new Error("Invalid input type");
+        gameState.getPlayer(selectedPlayer).addCardToHand(gameState, cardName);
+        const cardOptions = gameInput.prevInput.cardOptions;
+        const cardToGive =
+          cardOptions[0] === cardName ? cardOptions[1] : cardOptions[0];
+        player.addCardToHand(gameState, cardToGive);
       }
     },
   }),
@@ -1805,9 +1790,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       if (gameInput.inputType === GameInputType.PLAY_CARD) {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_CARDS,
-          prevInputType: GameInputType.PLAY_CARD,
+          prevInputType: gameInput.inputType,
           cardOptions: gameState.meadowCards,
-          cardOptionsUnfiltered: gameState.meadowCards,
           maxToSelect: 3,
           minToSelect: 3,
           cardContext: CardName.UNDERTAKER,
@@ -1836,7 +1820,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           inputType: GameInputType.SELECT_CARDS,
           prevInputType: GameInputType.SELECT_CARDS,
           cardOptions: gameState.meadowCards,
-          cardOptionsUnfiltered: gameState.meadowCards,
           maxToSelect: 1,
           minToSelect: 1,
           cardContext: CardName.UNDERTAKER,

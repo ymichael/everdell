@@ -456,7 +456,7 @@ describe("GameState", () => {
       });
     });
 
-    xit("should work for  CLOCK_TOWER + multiple multi-step productions", () => {
+    it("should work for CLOCK_TOWER + multiple multi-step productions", () => {
       let player = gameState.getActivePlayer();
       player.addToCity(CardName.CLOCK_TOWER);
       player.addToCity(CardName.TEACHER);
@@ -518,7 +518,7 @@ describe("GameState", () => {
 
       const chipSweepInput = {
         inputType: GameInputType.SELECT_PLAYED_CARDS as const,
-        prevInputType: GameInputType.PLAY_CARD,
+        prevInputType: GameInputType.SELECT_WORKER_PLACEMENT,
         cardContext: CardName.CHIP_SWEEP,
         maxToSelect: 1,
         minToSelect: 1,
@@ -528,29 +528,53 @@ describe("GameState", () => {
           ...player.getPlayedCardInfos(CardName.HUSBAND),
         ],
         clientOptions: {
-          selectedCards: player.getPlayedCardInfos(CardName.TEACHER),
+          selectedCards: player.getPlayedCardInfos(CardName.FARM),
         },
       };
 
+      const teacherInput = {
+        inputType: GameInputType.SELECT_CARDS as const,
+        prevInputType: GameInputType.SELECT_WORKER_PLACEMENT,
+        cardContext: CardName.TEACHER,
+        cardOptions: [CardName.TEACHER, CardName.TEACHER],
+        maxToSelect: 1,
+        minToSelect: 1,
+        clientOptions: {
+          selectedCards: [CardName.TEACHER],
+        },
+      };
+
+      const teacherSelectPlayerInput = {
+        inputType: GameInputType.SELECT_PLAYER as const,
+        prevInputType: GameInputType.SELECT_CARDS,
+        prevInput: teacherInput,
+        cardContext: CardName.TEACHER,
+        playerOptions: [gameState.players[1].playerId],
+        mustSelectOne: true,
+        clientOptions: {
+          selectedPlayer: gameState.players[1].playerId,
+        },
+      };
       intermediateGameState = intermediateGameState.next(clockTowerInput);
       intermediateGameState = intermediateGameState.next(husbandInput);
       intermediateGameState = intermediateGameState.next(chipSweepInput);
+      intermediateGameState = intermediateGameState.next(teacherInput);
+      intermediateGameState = intermediateGameState.next(
+        teacherSelectPlayerInput
+      );
 
-      // console.log(intermediateGameState.pendingGameInputs);
-
-      // ]);
-      // player = gameStateWithActivate.getPlayer(player.playerId);
-      // expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(3);
-      // expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(2);
-      // expect(player.numAvailableWorkers).to.be(3);
-      // expect(player.getPlayedCardInfos(CardName.CLOCK_TOWER)?.[0]).to.eql({
-      //   cardName: CardName.CLOCK_TOWER,
-      //   cardOwnerId: player.playerId,
-      //   resources: {
-      //     [ResourceType.VP]: 2,
-      //   },
-      //   usedForCritter: false,
-      // });
+      player = intermediateGameState.getPlayer(player.playerId);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(4);
+      expect(player.numAvailableWorkers).to.be(3);
+      expect(player.cardsInHand).to.eql([CardName.TEACHER]);
+      expect(player.getPlayedCardInfos(CardName.CLOCK_TOWER)?.[0]).to.eql({
+        cardName: CardName.CLOCK_TOWER,
+        cardOwnerId: player.playerId,
+        resources: {
+          [ResourceType.VP]: 2,
+        },
+        usedForCritter: false,
+      });
     });
   });
 });

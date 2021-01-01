@@ -1366,7 +1366,6 @@ describe("Card", () => {
             prevInputType: GameInputType.VISIT_DESTINATION_CARD,
             cardContext: CardName.INN,
             cardOptions: gameState.meadowCards,
-            cardOptionsUnfiltered: gameState.meadowCards,
             maxToSelect: 1,
             minToSelect: 1,
             clientOptions: {
@@ -1442,14 +1441,6 @@ describe("Card", () => {
               CardName.CHAPEL,
               CardName.MONK,
             ],
-            cardOptionsUnfiltered: [
-              CardName.POSTAL_PIGEON,
-              CardName.POSTAL_PIGEON,
-              CardName.FARM,
-              CardName.HUSBAND,
-              CardName.CHAPEL,
-              CardName.MONK,
-            ],
             maxToSelect: 1,
             minToSelect: 1,
             clientOptions: {
@@ -1492,7 +1483,6 @@ describe("Card", () => {
             prevInputType: GameInputType.PLAY_CARD,
             cardContext: CardName.TEACHER,
             cardOptions: [CardName.FARM, CardName.QUEEN],
-            cardOptionsUnfiltered: [CardName.FARM, CardName.QUEEN],
             maxToSelect: 1,
             minToSelect: 1,
             clientOptions: {
@@ -1507,7 +1497,6 @@ describe("Card", () => {
               prevInputType: GameInputType.PLAY_CARD,
               cardContext: CardName.TEACHER,
               cardOptions: [CardName.FARM, CardName.QUEEN],
-              cardOptionsUnfiltered: [CardName.FARM, CardName.QUEEN],
               maxToSelect: 1,
               minToSelect: 1,
               clientOptions: {
@@ -1585,16 +1574,6 @@ describe("Card", () => {
               CardName.CHAPEL,
               CardName.MONK,
             ],
-            cardOptionsUnfiltered: [
-              CardName.KING,
-              CardName.QUEEN,
-              CardName.POSTAL_PIGEON,
-              CardName.POSTAL_PIGEON,
-              CardName.FARM,
-              CardName.HUSBAND,
-              CardName.CHAPEL,
-              CardName.MONK,
-            ],
             maxToSelect: 3,
             minToSelect: 3,
             clientOptions: {
@@ -1606,16 +1585,6 @@ describe("Card", () => {
             prevInputType: GameInputType.SELECT_CARDS,
             cardContext: card.name,
             cardOptions: [
-              CardName.POSTAL_PIGEON,
-              CardName.POSTAL_PIGEON,
-              CardName.FARM,
-              CardName.HUSBAND,
-              CardName.MONK,
-              CardName.SCHOOL,
-              CardName.TEACHER,
-              CardName.WIFE,
-            ],
-            cardOptionsUnfiltered: [
               CardName.POSTAL_PIGEON,
               CardName.POSTAL_PIGEON,
               CardName.FARM,

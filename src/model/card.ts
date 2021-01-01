@@ -15,7 +15,7 @@ import {
   GameState,
   GameStatePlayable,
   GameStatePlayFn,
-  GameStateCanPlayFn,
+  GameStateCanPlayCheckFn,
   GameStateCountPointsFn,
 } from "./gameState";
 import { Location } from "./location";
@@ -38,7 +38,7 @@ type ProductionInnerFn = (
 export class Card<TCardType extends CardType = CardType>
   implements GameStatePlayable {
   readonly playInner: GameStatePlayFn | undefined;
-  readonly canPlayInner: GameStateCanPlayFn | undefined;
+  readonly canPlayCheckInner: GameStateCanPlayCheckFn | undefined;
   readonly playedCardInfoDefault:
     | Partial<Omit<PlayedCardInfo, "playerId">>
     | undefined;
@@ -70,7 +70,7 @@ export class Card<TCardType extends CardType = CardType>
     productionInner,
     isOpenDestination = false, // if the destination is an open destination
     playInner, // called when the card is played
-    canPlayInner, // called when we check canPlay function
+    canPlayCheckInner, // called when we check canPlay function
     playedCardInfoDefault,
     pointsInner, // computed if specified + added to base points
     maxWorkersInner,
@@ -84,7 +84,7 @@ export class Card<TCardType extends CardType = CardType>
     associatedCard: CardName | null;
     isOpenDestination?: boolean;
     playInner?: GameStatePlayFn;
-    canPlayInner?: GameStateCanPlayFn;
+    canPlayCheckInner?: GameStateCanPlayCheckFn;
     playedCardInfoDefault?: Partial<Omit<PlayedCardInfo, "playerId">>;
     pointsInner?: (gameState: GameState, playerId: string) => number;
     maxWorkersInner?: MaxWorkersInnerFn;
@@ -107,7 +107,7 @@ export class Card<TCardType extends CardType = CardType>
     this.associatedCard = associatedCard;
     this.isOpenDestination = isOpenDestination;
     this.playInner = playInner;
-    this.canPlayInner = canPlayInner;
+    this.canPlayCheckInner = canPlayCheckInner;
     this.playedCardInfoDefault = playedCardInfoDefault;
     this.pointsInner = pointsInner;
 
@@ -136,31 +136,50 @@ export class Card<TCardType extends CardType = CardType>
   }
 
   canPlay(gameState: GameState, gameInput: GameInput): boolean {
+    return !this.canPlayCheck(gameState, gameInput);
+  }
+
+  canPlayCheck(gameState: GameState, gameInput: GameInput): string | null {
     const player = gameState.getActivePlayer();
     if (gameInput.inputType === GameInputType.PLAY_CARD) {
       if (!player.canAddToCity(this.name)) {
-        return false;
+        return `Cannot add ${this.name} to player's city`;
       }
       if (
         gameInput.fromMeadow &&
         gameState.meadowCards.indexOf(this.name) === -1
       ) {
-        return false;
+        return `Card ${
+          this.name
+        } does not exist in the meadow.\n ${JSON.stringify(
+          gameState.meadowCards,
+          null,
+          2
+        )}`;
       }
       if (
         !gameInput.fromMeadow &&
         player.cardsInHand.indexOf(this.name) === -1
       ) {
-        return false;
+        return `Card ${
+          this.name
+        } does not exist in your hand.\n ${JSON.stringify(
+          player.cardsInHand,
+          null,
+          2
+        )}`;
       }
       if (!player.canAffordCard(this.name, gameInput.fromMeadow)) {
-        return false;
+        return `Cannot afford to play card: ${this.name}`;
       }
     }
-    if (this.canPlayInner && !this.canPlayInner(gameState, gameInput)) {
-      return false;
+    if (this.canPlayCheckInner) {
+      const errorMsg = this.canPlayCheckInner(gameState, gameInput);
+      if (errorMsg) {
+        return errorMsg;
+      }
     }
-    return true;
+    return null;
   }
 
   play(gameState: GameState, gameInput: GameInput): void {
@@ -661,11 +680,16 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: false,
     associatedCard: CardName.FAIRGROUNDS,
-    canPlayInner: (gameState: GameState, gameInput: GameInput) => {
+    canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
-      return gameState.players
-        .filter((p) => p.playerId !== player.playerId)
-        .some((p) => p.canAddToCity(CardName.FOOL));
+      if (
+        !gameState.players
+          .filter((p) => p.playerId !== player.playerId)
+          .some((p) => p.canAddToCity(CardName.FOOL))
+      ) {
+        return `Unable to add ${CardName.FOOL} to any player's city`;
+      }
+      return null;
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
@@ -1237,13 +1261,17 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: true,
     associatedCard: CardName.POSTAL_PIGEON,
     isOpenDestination: true,
-    canPlayInner: (gameState: GameState, gameInput: GameInput) => {
+    canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
       if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
         // Need at least 2 cards to visit this card
         const player = gameState.getActivePlayer();
-        return player.cardsInHand.length >= 2;
+        if (player.cardsInHand.length < 2) {
+          return `Need at least 2 cards in hand to visit ${
+            CardName.POST_OFFICE
+          }\n ${JSON.stringify(player.cardsInHand, null, 2)}`;
+        }
       }
-      return true;
+      return null;
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
@@ -1548,7 +1576,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: true,
     associatedCard: CardName.PEDDLER,
-    canPlayInner: (gameState: GameState, gameInput: GameInput) => {
+    canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
       // Need to be able to ruin an existing construction.
       const player = gameState.getActivePlayer();
       let hasConstruction = false;
@@ -1558,7 +1586,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           hasConstruction = card.isConstruction;
         }
       });
-      return hasConstruction;
+      if (!hasConstruction) {
+        return `Require an existing construction to play ${CardName.RUINS}`;
+      }
+      return null;
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();

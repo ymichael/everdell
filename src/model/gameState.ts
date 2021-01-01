@@ -27,6 +27,7 @@ import { CardStack, emptyCardStack } from "./cardStack";
 import { Location, initialLocationsMap } from "./location";
 import { Event, initialEventMap } from "./event";
 import { initialDeck } from "./deck";
+import { assertUnreachable } from "../utils";
 
 import cloneDeep from "lodash/cloneDeep";
 import isEqual from "lodash/isEqual";
@@ -34,10 +35,6 @@ import omit from "lodash/omit";
 
 const MEADOW_SIZE = 8;
 const STARTING_PLAYER_HAND_SIZE = 5;
-
-function assertUnreachable(x: never, msg: string): never {
-  throw new Error(msg);
-}
 
 export class GameState {
   private _activePlayerId: Player["playerId"];
@@ -131,7 +128,13 @@ export class GameState {
   removeCardFromMeadow(cardName: CardName): void {
     const idx = this.meadowCards.indexOf(cardName);
     if (idx === -1) {
-      throw new Error(`Unable to remove meadow card ${cardName}`);
+      throw new Error(
+        `Unable to remove meadow card ${cardName}.\n meadowCards: ${JSON.stringify(
+          this.meadowCards,
+          null,
+          2
+        )}`
+      );
     } else {
       this.meadowCards.splice(idx, 1);
     }
@@ -144,8 +147,9 @@ export class GameState {
   private handlePlayCardGameInput(gameInput: GameInputPlayCard): void {
     const card = Card.fromName(gameInput.card);
     const player = this.getActivePlayer();
-    if (!card.canPlay(this, gameInput)) {
-      throw new Error("Cannot take action");
+    const canPlayErr = card.canPlayCheck(this, gameInput);
+    if (canPlayErr) {
+      throw new Error(canPlayErr);
     }
     if (!player.isPaymentOptionsValid(gameInput)) {
       throw new Error("Invalid payment options");
@@ -162,8 +166,10 @@ export class GameState {
 
   private handlePlaceWorkerGameInput(gameInput: GameInputPlaceWorker): void {
     const location = Location.fromName(gameInput.location);
-    if (!location.canPlay(this, gameInput)) {
-      throw new Error("Cannot take action");
+
+    const canPlayErr = location.canPlayCheck(this, gameInput);
+    if (canPlayErr) {
+      throw new Error(canPlayErr);
     }
 
     // Before we place the worker because locations need to check occupancy.
@@ -183,7 +189,7 @@ export class GameState {
     });
     if (!found) {
       throw new Error(
-        `Invalid multi-step input: \n gameInput: ${JSON.stringify(
+        `Invalid multi-step input. \n gameInput: ${JSON.stringify(
           gameInput,
           null,
           2
@@ -195,11 +201,7 @@ export class GameState {
       );
     }
     const idx = this.pendingGameInputs.indexOf(found);
-    if (idx === -1) {
-      throw new Error(`Invalid multi-step input`);
-    } else {
-      this.pendingGameInputs.splice(idx, 1);
-    }
+    this.pendingGameInputs.splice(idx, 1);
   }
 
   private handleMultiStepGameInput(gameInput: GameInputMultiStep): void {
@@ -252,9 +254,11 @@ export class GameState {
 
   private handleClaimEventGameInput(gameInput: GameInputClaimEvent): void {
     const event = Event.fromName(gameInput.event);
-    if (!event.canPlay(this, gameInput)) {
-      throw new Error("Cannot play this event");
+    const canPlayErr = event.canPlayCheck(this, gameInput);
+    if (canPlayErr) {
+      throw new Error(canPlayErr);
     }
+
     event.play(this, gameInput);
     this.eventsMap[gameInput.event] = this._activePlayerId;
   }
@@ -620,6 +624,11 @@ export type GameStatePlayFn = (
   gameInput: GameInput
 ) => void;
 
+export type GameStateCanPlayCheckFn = (
+  gameState: GameState,
+  gameInput: GameInput
+) => string | null;
+
 export type GameStateCanPlayFn = (
   gameState: GameState,
   gameInput: GameInput
@@ -627,6 +636,7 @@ export type GameStateCanPlayFn = (
 
 export interface GameStatePlayable {
   canPlay: GameStateCanPlayFn;
+  canPlayCheck: GameStateCanPlayCheckFn;
   play: GameStatePlayFn;
 }
 

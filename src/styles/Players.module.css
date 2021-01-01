@@ -5,6 +5,11 @@
   display: flex;
   margin: 5px 0;
   border-radius: 5px;
+  cursor: pointer;
+}
+
+.viewer_status_box {
+  cursor: auto;
 }
 
 .status_box_item {

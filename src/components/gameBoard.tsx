@@ -5,7 +5,9 @@ import {
   LocationNameToPlayerIds,
   LocationName,
 } from "../model/types";
-import Card from "./Card";
+import { Player } from "../model/player";
+
+import Card, { PlayedCard } from "./Card";
 import Location from "./Location";
 import { GameBlock } from "./common";
 
@@ -34,5 +36,26 @@ export const Locations: React.FC<{ locationsMap: LocationNameToPlayerIds }> = ({
         ))}
       </div>
     </GameBlock>
+  );
+};
+
+export const PlayerCity: React.FC<{ player: Player; viewerId: string }> = ({
+  player,
+  viewerId,
+}) => {
+  const playedCards = player.getAllPlayedCards();
+  return playedCards.length !== 0 ? (
+    <div className={styles.items}>
+      {playedCards.map((playedCard, idx) => (
+        <PlayedCard
+          key={idx}
+          playedCard={playedCard}
+          viewerId={viewerId}
+          cardOwner={player}
+        />
+      ))}
+    </div>
+  ) : (
+    <div className={styles.empty_city}>City is empty.</div>
   );
 };

@@ -9,6 +9,7 @@ import {
   CardName,
   PlayedCardInfo,
 } from "../model/types";
+import { Player } from "../model/player";
 import { Resource, Description } from "./common";
 import { sumResources } from "../model/gameStatePlayHelpers";
 
@@ -128,8 +129,9 @@ export default Card;
 
 export const PlayedCard: React.FC<{
   playedCard: PlayedCardInfo;
+  cardOwner: Player;
   viewerId: string;
-}> = ({ playedCard, viewerId }) => {
+}> = ({ playedCard, cardOwner, viewerId }) => {
   const {
     cardOwnerId,
     cardName,
@@ -145,7 +147,7 @@ export const PlayedCard: React.FC<{
         <Card name={cardName} />
       </div>
       <div className={styles.played_card_meta}>
-        <p>Card Owner: {viewerId === cardOwnerId ? "You" : cardOwnerId}</p>
+        <p>Card Owner: {viewerId === cardOwnerId ? "You" : cardOwner.name}</p>
         {card.isConstruction && (
           <p>usedForCritter: {JSON.stringify(usedForCritter)}</p>
         )}

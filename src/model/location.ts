@@ -90,16 +90,11 @@ export class Location implements GameStatePlayable {
     if (this.playInner) {
       this.playInner(gameState, gameInput);
     }
-    if (
-      gameInput.inputType === GameInputType.PLACE_WORKER ||
-      gameInput.inputType === GameInputType.SELECT_LOCATION
-    ) {
-      if (this.resourcesToGain) {
-        const player = gameState.getActivePlayer();
-        player.gainResources(this.resourcesToGain);
-        if (this.resourcesToGain.CARD) {
-          player.drawCards(gameState, this.resourcesToGain.CARD);
-        }
+    if (this.resourcesToGain) {
+      const player = gameState.getActivePlayer();
+      player.gainResources(this.resourcesToGain);
+      if (this.resourcesToGain.CARD) {
+        player.drawCards(gameState, this.resourcesToGain.CARD);
       }
     }
   }

@@ -488,7 +488,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             inputType: GameInputType.SELECT_WORKER_PLACEMENT,
             prevInputType: gameInput.inputType,
             options: basicAndForestLocationInputs,
-            cardContext: CardName.COURTHOUSE,
+            cardContext: CardName.CLOCK_TOWER,
             mustSelectOne: false,
             clientOptions: {
               selectedInput: null,

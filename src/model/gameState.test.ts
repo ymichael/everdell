@@ -1,6 +1,7 @@
 import expect from "expect.js";
 import { GameState } from "./gameState";
 import {
+  Season,
   CardName,
   GameInput,
   GameInputType,
@@ -209,12 +210,13 @@ describe("GameState", () => {
   });
 
   describe("PREPARE_FOR_SEASON", () => {
-    it("should activate production in WINTER and SUMMER", () => {
+    it("should activate production in WINTER", () => {
       let player = gameState.getActivePlayer();
       player.addToCity(CardName.FARM);
       player.addToCity(CardName.FARM);
       player.addToCity(CardName.MINE);
       player.addToCity(CardName.MINE);
+      expect(player.currentSeason).to.be(Season.WINTER);
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
       expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
 
@@ -236,6 +238,319 @@ describe("GameState", () => {
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
       expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(2);
       expect(player.numAvailableWorkers).to.be(3);
+    });
+
+    it("should activate production in SUMMER", () => {
+      let player = gameState.getActivePlayer();
+      player.addToCity(CardName.FARM);
+      player.addToCity(CardName.FARM);
+      player.addToCity(CardName.MINE);
+      player.addToCity(CardName.MINE);
+
+      player.nextSeason();
+      player.nextSeason();
+
+      expect(player.currentSeason).to.be(Season.SUMMER);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+
+      // Use up all workers
+      gameState.locationsMap[LocationName.BASIC_TWO_CARDS_AND_ONE_VP]!.push(
+        player.playerId,
+        player.playerId,
+        player.playerId,
+        player.playerId
+      );
+      player.placeWorkerOnLocation(LocationName.BASIC_TWO_CARDS_AND_ONE_VP);
+      player.placeWorkerOnLocation(LocationName.BASIC_TWO_CARDS_AND_ONE_VP);
+      player.placeWorkerOnLocation(LocationName.BASIC_TWO_CARDS_AND_ONE_VP);
+      player.placeWorkerOnLocation(LocationName.BASIC_TWO_CARDS_AND_ONE_VP);
+
+      const gameState2 = multiStepGameInputTest(gameState, [
+        {
+          inputType: GameInputType.PREPARE_FOR_SEASON,
+        },
+      ]);
+
+      player = gameState2.getPlayer(player.playerId);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(2);
+      expect(player.numAvailableWorkers).to.be(6);
+    });
+
+    it("should draw 2 cards from the meadow in SPRING", () => {
+      let player = gameState.getActivePlayer();
+      player.addToCity(CardName.FARM);
+      player.addToCity(CardName.FARM);
+      player.addToCity(CardName.MINE);
+      player.addToCity(CardName.MINE);
+
+      player.nextSeason();
+
+      // Use up all workers
+      gameState.locationsMap[LocationName.BASIC_ONE_BERRY]!.push(
+        player.playerId,
+        player.playerId,
+        player.playerId
+      );
+      player.placeWorkerOnLocation(LocationName.BASIC_ONE_BERRY);
+      player.placeWorkerOnLocation(LocationName.BASIC_ONE_BERRY);
+      player.placeWorkerOnLocation(LocationName.BASIC_ONE_BERRY);
+
+      const topOfDeck = [
+        CardName.FARM,
+        CardName.MINE,
+        CardName.QUEEN,
+        CardName.KING,
+        CardName.CASTLE,
+        CardName.TEACHER,
+        CardName.HISTORIAN,
+        CardName.INN,
+        CardName.LOOKOUT,
+        CardName.POST_OFFICE,
+      ];
+      topOfDeck.reverse();
+      topOfDeck.forEach((x) => gameState.deck.addToStack(x));
+
+      expect(player.currentSeason).to.be(Season.SPRING);
+      expect(player.cardsInHand).to.eql([]);
+
+      gameState.replenishMeadow();
+      expect(gameState.meadowCards).to.eql([
+        CardName.FARM,
+        CardName.MINE,
+        CardName.QUEEN,
+        CardName.KING,
+        CardName.CASTLE,
+        CardName.TEACHER,
+        CardName.HISTORIAN,
+        CardName.INN,
+      ]);
+
+      const gameState2 = multiStepGameInputTest(gameState, [
+        {
+          inputType: GameInputType.PREPARE_FOR_SEASON,
+        },
+        {
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: GameInputType.PREPARE_FOR_SEASON,
+          cardOptions: gameState.meadowCards,
+          maxToSelect: 2,
+          minToSelect: 2,
+          clientOptions: {
+            selectedCards: [CardName.MINE, CardName.QUEEN],
+          },
+        },
+      ]);
+
+      player = gameState2.getPlayer(player.playerId);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+      expect(player.numAvailableWorkers).to.be(4);
+      expect(player.cardsInHand).to.eql([CardName.MINE, CardName.QUEEN]);
+      expect(gameState2.meadowCards).to.eql([
+        CardName.FARM,
+        CardName.KING,
+        CardName.CASTLE,
+        CardName.TEACHER,
+        CardName.HISTORIAN,
+        CardName.INN,
+        CardName.LOOKOUT,
+        CardName.POST_OFFICE,
+      ]);
+    });
+
+    it("should prompt to activate CLOCK_TOWER before recalling workers", () => {
+      let player = gameState.getActivePlayer();
+      player.addToCity(CardName.CLOCK_TOWER);
+      player.addToCity(CardName.FARM);
+      player.addToCity(CardName.FARM);
+      player.addToCity(CardName.MINE);
+      player.addToCity(CardName.MINE);
+      expect(player.currentSeason).to.be(Season.WINTER);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+
+      // Use up all workers
+      gameState.locationsMap[LocationName.BASIC_ONE_BERRY]!.push(
+        player.playerId,
+        player.playerId
+      );
+      player.placeWorkerOnLocation(LocationName.BASIC_ONE_BERRY);
+      player.placeWorkerOnLocation(LocationName.BASIC_ONE_BERRY);
+
+      const gameStateNoActivate = multiStepGameInputTest(gameState, [
+        {
+          inputType: GameInputType.PREPARE_FOR_SEASON,
+        },
+        {
+          cardContext: CardName.CLOCK_TOWER,
+          inputType: GameInputType.SELECT_WORKER_PLACEMENT,
+          mustSelectOne: false,
+          options: [
+            {
+              inputType: GameInputType.PLACE_WORKER,
+              location: LocationName.BASIC_ONE_BERRY,
+            },
+            {
+              inputType: GameInputType.PLACE_WORKER,
+              location: LocationName.BASIC_ONE_BERRY,
+            },
+          ],
+          clientOptions: {
+            selectedInput: null,
+          },
+          prevInputType: GameInputType.PREPARE_FOR_SEASON,
+        },
+      ]);
+      player = gameStateNoActivate.getPlayer(player.playerId);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(2);
+      expect(player.numAvailableWorkers).to.be(3);
+      expect(player.getPlayedCardInfos(CardName.CLOCK_TOWER)?.[0]).to.eql({
+        cardName: CardName.CLOCK_TOWER,
+        cardOwnerId: player.playerId,
+        resources: {
+          [ResourceType.VP]: 3,
+        },
+        usedForCritter: false,
+      });
+
+      const gameStateWithActivate = multiStepGameInputTest(gameState, [
+        {
+          inputType: GameInputType.PREPARE_FOR_SEASON,
+        },
+        {
+          cardContext: CardName.CLOCK_TOWER,
+          inputType: GameInputType.SELECT_WORKER_PLACEMENT,
+          mustSelectOne: false,
+          options: [
+            {
+              inputType: GameInputType.PLACE_WORKER,
+              location: LocationName.BASIC_ONE_BERRY,
+            },
+            {
+              inputType: GameInputType.PLACE_WORKER,
+              location: LocationName.BASIC_ONE_BERRY,
+            },
+          ],
+          clientOptions: {
+            selectedInput: {
+              inputType: GameInputType.PLACE_WORKER,
+              location: LocationName.BASIC_ONE_BERRY,
+            },
+          },
+          prevInputType: GameInputType.PREPARE_FOR_SEASON,
+        },
+      ]);
+      player = gameStateWithActivate.getPlayer(player.playerId);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(3);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(2);
+      expect(player.numAvailableWorkers).to.be(3);
+      expect(player.getPlayedCardInfos(CardName.CLOCK_TOWER)?.[0]).to.eql({
+        cardName: CardName.CLOCK_TOWER,
+        cardOwnerId: player.playerId,
+        resources: {
+          [ResourceType.VP]: 2,
+        },
+        usedForCritter: false,
+      });
+    });
+
+    xit("should work for  CLOCK_TOWER + multiple multi-step productions", () => {
+      let player = gameState.getActivePlayer();
+      player.addToCity(CardName.CLOCK_TOWER);
+      player.addToCity(CardName.TEACHER);
+      player.addToCity(CardName.CHIP_SWEEP);
+      player.addToCity(CardName.FARM);
+      player.addToCity(CardName.HUSBAND);
+      player.addToCity(CardName.WIFE);
+      expect(player.currentSeason).to.be(Season.WINTER);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+
+      // Use up all workers
+      gameState.locationsMap[LocationName.BASIC_ONE_BERRY]!.push(
+        player.playerId,
+        player.playerId
+      );
+      player.placeWorkerOnLocation(LocationName.BASIC_ONE_BERRY);
+      player.placeWorkerOnLocation(LocationName.BASIC_ONE_BERRY);
+
+      let intermediateGameState = gameState.next({
+        inputType: GameInputType.PREPARE_FOR_SEASON,
+      });
+
+      const clockTowerInput = {
+        cardContext: CardName.CLOCK_TOWER,
+        inputType: GameInputType.SELECT_WORKER_PLACEMENT as const,
+        prevInputType: GameInputType.PREPARE_FOR_SEASON,
+        mustSelectOne: false,
+        options: [
+          {
+            inputType: GameInputType.PLACE_WORKER as const,
+            location: LocationName.BASIC_ONE_BERRY,
+          },
+          {
+            inputType: GameInputType.PLACE_WORKER as const,
+            location: LocationName.BASIC_ONE_BERRY,
+          },
+        ],
+        clientOptions: {
+          selectedInput: {
+            inputType: GameInputType.PLACE_WORKER as const,
+            location: LocationName.BASIC_ONE_BERRY,
+          },
+        },
+      };
+
+      const husbandInput = {
+        inputType: GameInputType.SELECT_RESOURCES as const,
+        prevInputType: GameInputType.SELECT_WORKER_PLACEMENT,
+        cardContext: CardName.HUSBAND,
+        maxResources: 1,
+        minResources: 1,
+        clientOptions: {
+          resources: {
+            [ResourceType.BERRY]: 1,
+          },
+        },
+      };
+
+      const chipSweepInput = {
+        inputType: GameInputType.SELECT_PLAYED_CARDS as const,
+        prevInputType: GameInputType.PLAY_CARD,
+        cardContext: CardName.CHIP_SWEEP,
+        maxToSelect: 1,
+        minToSelect: 1,
+        cardOptions: [
+          ...player.getPlayedCardInfos(CardName.TEACHER),
+          ...player.getPlayedCardInfos(CardName.FARM),
+          ...player.getPlayedCardInfos(CardName.HUSBAND),
+        ],
+        clientOptions: {
+          selectedCards: player.getPlayedCardInfos(CardName.TEACHER),
+        },
+      };
+
+      intermediateGameState = intermediateGameState.next(clockTowerInput);
+      intermediateGameState = intermediateGameState.next(husbandInput);
+      intermediateGameState = intermediateGameState.next(chipSweepInput);
+
+      // console.log(intermediateGameState.pendingGameInputs);
+
+      // ]);
+      // player = gameStateWithActivate.getPlayer(player.playerId);
+      // expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(3);
+      // expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(2);
+      // expect(player.numAvailableWorkers).to.be(3);
+      // expect(player.getPlayedCardInfos(CardName.CLOCK_TOWER)?.[0]).to.eql({
+      //   cardName: CardName.CLOCK_TOWER,
+      //   cardOwnerId: player.playerId,
+      //   resources: {
+      //     [ResourceType.VP]: 2,
+      //   },
+      //   usedForCritter: false,
+      // });
     });
   });
 });

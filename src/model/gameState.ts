@@ -215,6 +215,7 @@ export class GameState {
         player.addCardToHand(this, cardName);
       });
       this.replenishMeadow();
+      return;
     }
 
     throw new Error(`Unhandled game input: ${JSON.stringify(gameInput)}`);
@@ -294,7 +295,6 @@ export class GameState {
       this.pendingGameInputs.push({
         inputType: GameInputType.SELECT_CARDS,
         prevInputType: GameInputType.PREPARE_FOR_SEASON,
-        cardContext: CardName.POST_OFFICE,
         cardOptions: this.meadowCards,
         maxToSelect: 2,
         minToSelect: 2,

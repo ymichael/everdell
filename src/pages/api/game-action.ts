@@ -55,7 +55,7 @@ export default async (
     console.error(e);
     res.status(500).json({
       success: false,
-      error: "Server Error",
+      error: e.toString(),
     });
     return;
   }

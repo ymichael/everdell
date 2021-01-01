@@ -30,6 +30,85 @@ describe("Player", () => {
     gameState = testInitialGameState();
   });
 
+  describe("canAddToCity", () => {
+    it("should be able to add cards to city if there is space", () => {
+      const player = gameState.getActivePlayer();
+      expect(player.canAddToCity(CardName.FARM)).to.be(true);
+
+      player.addToCity(CardName.FARM);
+      expect(player.canAddToCity(CardName.FARM)).to.be(true);
+    });
+    it("should not be able to add cards to city if there is no space", () => {
+      const player = gameState.getActivePlayer();
+
+      // max city size is 15, minus some special rules for husband/wife and wanderer
+      player.addToCityMulti([
+        CardName.FARM,
+        CardName.WIFE,
+        CardName.SCHOOL,
+        CardName.FOOL,
+        CardName.POSTAL_PIGEON,
+        CardName.POSTAL_PIGEON,
+        CardName.POST_OFFICE,
+        CardName.INN,
+        CardName.MINER_MOLE,
+        CardName.MINE,
+        CardName.RESIN_REFINERY,
+        CardName.TWIG_BARGE,
+        CardName.FARM,
+        CardName.BARGE_TOAD,
+        CardName.FARM,
+      ]);
+      expect(player.canAddToCity(CardName.FARM)).to.be(false);
+    });
+    it("should be able to add wanderer to city even if city is already full", () => {
+      const player = gameState.getActivePlayer();
+
+      // max city size is 15, minus some special rules for husband/wife and wanderer
+      player.addToCityMulti([
+        CardName.FARM,
+        CardName.WIFE,
+        CardName.SCHOOL,
+        CardName.FOOL,
+        CardName.POSTAL_PIGEON,
+        CardName.POSTAL_PIGEON,
+        CardName.POST_OFFICE,
+        CardName.INN,
+        CardName.MINER_MOLE,
+        CardName.MINE,
+        CardName.RESIN_REFINERY,
+        CardName.TWIG_BARGE,
+        CardName.FARM,
+        CardName.BARGE_TOAD,
+        CardName.FARM,
+      ]);
+      expect(player.canAddToCity(CardName.WANDERER)).to.be(true);
+    });
+    it("should allow player to add another card if there's a husband/wife pair that can share a spot", () => {
+      const player = gameState.getActivePlayer();
+
+      // max city size is 15, minus some special rules for husband/wife and wanderer
+      player.addToCityMulti([
+        CardName.HUSBAND,
+        CardName.WIFE,
+        CardName.SCHOOL,
+        CardName.FOOL,
+        CardName.POSTAL_PIGEON,
+        CardName.POSTAL_PIGEON,
+        CardName.POST_OFFICE,
+        CardName.INN,
+        CardName.MINER_MOLE,
+        CardName.MINE,
+        CardName.RESIN_REFINERY,
+        CardName.TWIG_BARGE,
+        CardName.FARM,
+        CardName.BARGE_TOAD,
+        CardName.FARM,
+      ]);
+      expect(player.canAddToCity(CardName.FARM)).to.be(true);
+    });
+  });
+
   describe("canAffordCard", () => {
     it("have the right resources", () => {
       const player = gameState.getActivePlayer();

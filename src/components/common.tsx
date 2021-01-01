@@ -42,6 +42,7 @@ const resourceTypeList = [
   ResourceType.PEBBLE,
   ResourceType.RESIN,
   "CARD" as const,
+  "VP" as const,
 ];
 
 export const Description = ({ description }: { description: string[] }) => {

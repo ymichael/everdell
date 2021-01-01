@@ -590,10 +590,8 @@ export class Player {
     }
     if (outstandingOwedSum !== 0) {
       return `Paid resources is insufficient: paid=${JSON.stringify(
-        paidResources,
-        null,
-        2
-      )}, cost=${JSON.stringify(cardCost, null, 2)}, discount=${discount}`;
+        paidResources
+      )}, cost=${JSON.stringify(cardCost)}, discount=${discount}`;
     }
     return null;
   }

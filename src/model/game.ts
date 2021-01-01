@@ -4,7 +4,6 @@ import { GameState } from "./gameState";
 import { GameInput } from "./types";
 import { GameJSON } from "./jsonTypes";
 import { getGameJSONById, saveGameJSONById } from "./db";
-import { emitGameUpdate } from "./gameUpdates";
 import cloneDeep from "lodash/cloneDeep";
 
 class Game {
@@ -34,13 +33,16 @@ class Game {
     return this.gameState.getPossibleGameInputs();
   }
 
+  getGameStateId(): number {
+    return this.gameState.gameStateId;
+  }
+
   applyGameInput(gameInput: GameInput): void {
     this.gameState = this.gameState.next(gameInput);
   }
 
   async save(): Promise<void> {
     await saveGameJSONById(this.gameId, this.toJSON(true /* includePrivate */));
-    emitGameUpdate(this.gameId);
   }
 
   toJSON(includePrivate: boolean): GameJSON {

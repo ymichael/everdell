@@ -33,7 +33,7 @@ export class Event implements GameStatePlayable {
   readonly requiredCards: CardName[] | undefined;
   // every event has requirements to play,
   // but not all events result in an action when played
-  readonly canPlayCheckInner: GameStateCanPlayCheckFn;
+  readonly canPlayCheckInner: GameStateCanPlayCheckFn | undefined;
 
   constructor({
     name,
@@ -49,7 +49,7 @@ export class Event implements GameStatePlayable {
     type: EventType;
     baseVP: number;
     requiredCards?: CardName[];
-    canPlayCheckInner: GameStateCanPlayCheckFn;
+    canPlayCheckInner?: GameStateCanPlayCheckFn;
     playInner?: GameStatePlayFn;
     playedEventInfoInner?: () => PlayedEventInfo;
     pointsInner?: (gameState: GameState, playerId: string) => number;
@@ -99,7 +99,18 @@ export class Event implements GameStatePlayable {
       return `Active player (${player.playerId}) doesn't have any workers to place.`;
     }
 
-    // check whether player meets criteria for playing event
+    // check whether player has required cards, if any
+    if (this.requiredCards) {
+      if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
+        for (let i = 0; i < this.requiredCards.length; i++) {
+          if (!player.hasCardInCity(this.requiredCards[i])) {
+            return `Need to have played ${this.requiredCards[i]} to claim event {$this.name}`;
+          }
+        }
+      }
+    }
+
+    // check whether player meets criteria for playing event other than played cards
     if (this.canPlayCheckInner) {
       const errorMsg = this.canPlayCheckInner(gameState, gameInput);
       if (errorMsg) {
@@ -251,10 +262,6 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     baseVP: 0,
     requiredCards: [CardName.LOOKOUT, CardName.MINER_MOLE],
-    canPlayCheckInner: canPlayCheckInnerRequiresCards([
-      CardName.LOOKOUT,
-      CardName.MINER_MOLE,
-    ]),
     playedEventInfoInner: () => ({
       storedResources: {
         [ResourceType.TWIG]: 0,
@@ -339,10 +346,6 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     baseVP: 0,
     requiredCards: [CardName.HISTORIAN, CardName.RUINS],
-    canPlayCheckInner: canPlayCheckInnerRequiresCards([
-      CardName.HISTORIAN,
-      CardName.RUINS,
-    ]),
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
 
@@ -433,10 +436,6 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     baseVP: 0,
     requiredCards: [CardName.COURTHOUSE, CardName.RANGER],
-    canPlayCheckInner: canPlayCheckInnerRequiresCards([
-      CardName.COURTHOUSE,
-      CardName.RANGER,
-    ]),
     playedEventInfoInner: () => ({
       storedCards: [],
     }),
@@ -514,6 +513,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_CROAK_WART_CURE,
     type: EventType.SPECIAL,
     baseVP: 0,
+    requiredCards: [CardName.UNDERTAKER, CardName.BARGE_TOAD],
     canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
@@ -579,10 +579,6 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     baseVP: 0,
     requiredCards: [CardName.DOCTOR, CardName.POSTAL_PIGEON],
-    canPlayCheckInner: canPlayCheckInnerRequiresCards([
-      CardName.DOCTOR,
-      CardName.POSTAL_PIGEON,
-    ]),
     pointsInner: (gameState: GameState, playerId: string) => {
       let getNumHusbandWifePairs = 0;
       gameState.players.forEach((player) => {
@@ -596,10 +592,6 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     baseVP: 0,
     requiredCards: [CardName.TEACHER, CardName.UNIVERSITY],
-    canPlayCheckInner: canPlayCheckInnerRequiresCards([
-      CardName.TEACHER,
-      CardName.UNIVERSITY,
-    ]),
     playedEventInfoInner: () => ({
       storedCards: [],
     }),
@@ -678,10 +670,6 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     baseVP: 0,
     requiredCards: [CardName.MONK, CardName.DUNGEON],
-    canPlayCheckInner: canPlayCheckInnerRequiresCards([
-      CardName.MONK,
-      CardName.DUNGEON,
-    ]),
     // 3 points for each prisoner in dungeon
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
@@ -712,10 +700,6 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     baseVP: 0,
     requiredCards: [CardName.MONASTERY, CardName.WANDERER],
-    canPlayCheckInner: canPlayCheckInnerRequiresCards([
-      CardName.MONASTERY,
-      CardName.WANDERER,
-    ]),
     // 3 points for each worker in the monestary
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
@@ -755,10 +739,6 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     baseVP: 0,
     requiredCards: [CardName.INN, CardName.BARD],
-    canPlayCheckInner: canPlayCheckInnerRequiresCards([
-      CardName.INN,
-      CardName.BARD,
-    ]),
     // may place up to 3 berries on this card
     playedEventInfoInner: () => ({
       storedResources: {
@@ -843,10 +823,6 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     baseVP: 0,
     requiredCards: [CardName.WOODCARVER, CardName.CHAPEL],
-    canPlayCheckInner: canPlayCheckInnerRequiresCards([
-      CardName.WOODCARVER,
-      CardName.CHAPEL,
-    ]),
     // draw 1 card and receive 1 resource for each VP on your chapel
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
@@ -947,10 +923,6 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     baseVP: 0,
     requiredCards: [CardName.CEMETARY, CardName.SHEPHERD],
-    canPlayCheckInner: canPlayCheckInnerRequiresCards([
-      CardName.CEMETARY,
-      CardName.SHEPHERD,
-    ]),
     // 3 points for each worker in the cemetary
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
@@ -1033,10 +1005,6 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     baseVP: 0,
     requiredCards: [CardName.PEDDLER, CardName.GENERAL_STORE],
-    canPlayCheckInner: canPlayCheckInnerRequiresCards([
-      CardName.PEDDLER,
-      CardName.GENERAL_STORE,
-    ]),
     playedEventInfoInner: () => ({
       storedResources: {
         [ResourceType.TWIG]: 0,
@@ -1152,22 +1120,3 @@ export const initialEventMap = (): EventNameToPlayerId => {
 
   return ret;
 };
-
-/*
- * Helpers
- */
-function canPlayCheckInnerRequiresCards(
-  cards: CardName[]
-): GameStateCanPlayCheckFn {
-  return (gameState: GameState, gameInput: GameInput) => {
-    const player = gameState.getActivePlayer();
-    if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
-      for (let i = 0; i < cards.length; i++) {
-        if (!player.hasCardInCity(cards[i])) {
-          return `Need to have played ${cards[i]} to claim event`;
-        }
-      }
-    }
-    return null;
-  };
-}

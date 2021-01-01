@@ -6,5 +6,5 @@
 .block {
   padding: 0 0.5rem;
   margin: 10px;
-  width: 2100px;
+  max-width: 100%;
 }

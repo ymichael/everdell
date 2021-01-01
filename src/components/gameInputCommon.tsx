@@ -32,6 +32,7 @@ export const GameInputBoxContainer: React.FC<{
     <GameBlock title={title}>
       <p>Perform an action:</p>
       <Formik
+        enableReinitialize={true}
         initialValues={initialValues}
         onSubmit={async (values, bag) => {
           const response = await fetch("/api/game-action", {

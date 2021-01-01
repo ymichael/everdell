@@ -24,11 +24,18 @@ const ResourceTypeValueInput: React.FC<{
         <ResourceTypeIcon resourceType={resourceType} />
       </div>
       <input
-        type="number"
+        type="text"
         value={meta.value}
         onClick={(e) => (e.target as any).select()}
-        onChange={(e) => {
+        onBlur={(e) => {
+          let val = 0;
+          try {
+            val = parseInt(e.target.value);
+          } catch (e) {}
           helpers.setValue(parseInt(e.target.value) || 0);
+        }}
+        onChange={(e) => {
+          helpers.setValue(e.target.value);
         }}
         className={styles.resource_input_el}
       />

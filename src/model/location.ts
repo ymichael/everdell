@@ -345,7 +345,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     name: LocationName.FOREST_TWO_WILD,
     type: LocationType.FOREST,
     occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
-    description: ["2 ", "ANY"],
+    description: ["ANY", "ANY"],
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.PLACE_WORKER) {

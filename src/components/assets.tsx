@@ -29,6 +29,10 @@ export const VPIcon = () => {
   return <Image src="/images/vp.png" layout="fill" />;
 };
 
+export const WildResourceIcon = () => {
+  return <Image src="/images/wild_resource.png" layout="fill" />;
+};
+
 export const ResourceTypeIcon = ({
   resourceType,
 }: {

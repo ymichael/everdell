@@ -1,7 +1,7 @@
 import * as React from "react";
 import styles from "../styles/common.module.css";
 import { ResourceType } from "../model/types";
-import { CardIcon, VPIcon, ResourceTypeIcon } from "./assets";
+import { CardIcon, VPIcon, WildResourceIcon, ResourceTypeIcon } from "./assets";
 
 export const GameBlockTitle: React.FC = ({ children }) => {
   return <div className={styles.title}>{children}</div>;
@@ -19,7 +19,7 @@ export const GameBlock: React.FC<{ title: string }> = ({ title, children }) => {
 export const Resource = ({
   resourceType,
 }: {
-  resourceType: ResourceType | "CARD" | "VP";
+  resourceType: ResourceType | "CARD" | "VP" | "ANY";
 }) => {
   return (
     <div className={styles.resource}>
@@ -28,6 +28,8 @@ export const Resource = ({
           <CardIcon />
         ) : resourceType === "VP" ? (
           <VPIcon />
+        ) : resourceType === "ANY" ? (
+          <WildResourceIcon />
         ) : (
           <ResourceTypeIcon resourceType={resourceType} />
         )}
@@ -43,6 +45,7 @@ const resourceTypeList = [
   ResourceType.RESIN,
   "CARD" as const,
   "VP" as const,
+  "ANY" as const,
 ];
 
 export const Description = ({ description }: { description: string[] }) => {

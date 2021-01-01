@@ -1,5 +1,5 @@
 .card {
-  height: 180px;
+  min-height: 180px;
   width: 200px;
   border-radius: 5px;
   position: relative;
@@ -57,8 +57,9 @@
 }
 
 .card_description {
-  padding: 0 5px;
+  padding: 10px 5px 5px 5px;
   font-size: 14px;
+  border-bottom: solid 1px #eee;
 }
 
 .card_cost_value {

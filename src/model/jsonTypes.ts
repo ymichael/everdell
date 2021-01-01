@@ -19,6 +19,7 @@ export type GameJSON = {
 };
 
 export type GameStateJSON = {
+  gameStateId: number;
   activePlayerId: string;
   players: PlayerJSON[];
   meadowCards: CardName[];

@@ -37,6 +37,7 @@ const MEADOW_SIZE = 8;
 const STARTING_PLAYER_HAND_SIZE = 5;
 
 export class GameState {
+  readonly gameStateId: number;
   private _activePlayerId: Player["playerId"];
   readonly pendingGameInputs: GameInputMultiStep[];
   readonly players: Player[];
@@ -47,6 +48,7 @@ export class GameState {
   readonly eventsMap: EventNameToPlayerId;
 
   constructor({
+    gameStateId,
     activePlayerId,
     players,
     meadowCards,
@@ -56,6 +58,7 @@ export class GameState {
     eventsMap,
     pendingGameInputs = [],
   }: {
+    gameStateId: number;
     activePlayerId?: Player["playerId"];
     players: Player[];
     meadowCards: CardName[];
@@ -65,6 +68,7 @@ export class GameState {
     eventsMap: EventNameToPlayerId;
     pendingGameInputs: GameInputMultiStep[];
   }) {
+    this.gameStateId = gameStateId;
     this.players = players;
     this.locationsMap = locationsMap;
     this.meadowCards = meadowCards;
@@ -82,6 +86,7 @@ export class GameState {
   toJSON(includePrivate: boolean): GameStateJSON {
     return cloneDeep({
       ...{
+        gameStateId: this.gameStateId,
         activePlayerId: this.activePlayerId,
         players: this.players.map((p) => p.toJSON(includePrivate)),
         meadowCards: this.meadowCards,
@@ -141,7 +146,9 @@ export class GameState {
   }
 
   clone(): GameState {
-    return GameState.fromJSON(this.toJSON(true /* includePrivate */));
+    const gameStateJSON = this.toJSON(true /* includePrivate */);
+    gameStateJSON.gameStateId += 1;
+    return GameState.fromJSON(gameStateJSON);
   }
 
   private handlePlayCardGameInput(gameInput: GameInputPlayCard): void {
@@ -432,6 +439,7 @@ export class GameState {
     }
 
     const gameState = new GameState({
+      gameStateId: 1,
       players,
       meadowCards: [],
       deck: initialDeck(),

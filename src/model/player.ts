@@ -594,10 +594,8 @@ export class Player {
     }
     if (outstandingOwedSum !== 0) {
       return `Paid resources is insufficient: paid=${JSON.stringify(
-        paidResources,
-        null,
-        2
-      )}, cost=${JSON.stringify(cardCost, null, 2)}, discount=${discount}`;
+        paidResources
+      )}, cost=${JSON.stringify(cardCost)}, discount=${discount}`;
     }
     return null;
   }
@@ -625,9 +623,6 @@ export class Player {
         | GameInputType.SELECT_PAYMENT_FOR_CARD;
     }
   ): void {
-    if (!gameInput.paymentOptions || !gameInput.paymentOptions.resources) {
-      throw new Error("Invalid input");
-    }
     const paymentOptions = gameInput.paymentOptions;
     const paymentResources = paymentOptions.resources;
 
@@ -773,31 +768,51 @@ export class Player {
   }): void {
     if (VP) {
       if (this.resources[ResourceType.VP] < VP) {
-        throw new Error(`Insufficient ${ResourceType.VP}`);
+        throw new Error(
+          `Insufficient ${ResourceType.VP}. Need ${VP}, but only have ${
+            this.resources[ResourceType.VP]
+          }`
+        );
       }
       this.resources[ResourceType.VP] -= VP;
     }
     if (TWIG) {
       if (this.resources[ResourceType.TWIG] < TWIG) {
-        throw new Error(`Insufficient ${ResourceType.TWIG}`);
+        throw new Error(
+          `Insufficient ${ResourceType.TWIG}. Need ${TWIG}, but only have ${
+            this.resources[ResourceType.TWIG]
+          }IG`
+        );
       }
       this.resources[ResourceType.TWIG] -= TWIG;
     }
     if (BERRY) {
       if (this.resources[ResourceType.BERRY] < BERRY) {
-        throw new Error(`Insufficient ${ResourceType.BERRY}`);
+        throw new Error(
+          `Insufficient ${ResourceType.BERRY}. Need ${BERRY}, but only have ${
+            this.resources[ResourceType.BERRY]
+          }RRY`
+        );
       }
       this.resources[ResourceType.BERRY] -= BERRY;
     }
     if (PEBBLE) {
       if (this.resources[ResourceType.PEBBLE] < PEBBLE) {
-        throw new Error(`Insufficient ${ResourceType.PEBBLE}`);
+        throw new Error(
+          `Insufficient ${ResourceType.PEBBLE}. Need ${PEBBLE}, but only have ${
+            this.resources[ResourceType.PEBBLE]
+          }BBLE`
+        );
       }
       this.resources[ResourceType.PEBBLE] -= PEBBLE;
     }
     if (RESIN) {
       if (this.resources[ResourceType.RESIN] < RESIN) {
-        throw new Error(`Insufficient ${ResourceType.RESIN}`);
+        throw new Error(
+          `Insufficient ${ResourceType.RESIN}. Need ${RESIN}, but only have ${
+            this.resources[ResourceType.RESIN]
+          }SIN`
+        );
       }
       this.resources[ResourceType.RESIN] -= RESIN;
     }

@@ -1,9 +1,11 @@
 import * as React from "react";
+import { useContext } from "react";
 import { Formik, FormikProps } from "formik";
 
 import { GameInput, GameInputType } from "../model/types";
 import { Player } from "../model/player";
 import { GameBlock } from "./common";
+import { GameUpdaterContext } from "./GameUpdater";
 
 type TValues = {
   selectedInputType: GameInputType;
@@ -25,6 +27,7 @@ export const GameInputBoxContainer: React.FC<{
   children,
   devDebug = false,
 }) => {
+  const updateGameState = useContext(GameUpdaterContext);
   return (
     <GameBlock title={title}>
       <p>Perform an action:</p>
@@ -49,6 +52,8 @@ export const GameInputBoxContainer: React.FC<{
             alert(json.error);
           } else if (devDebug) {
             window.location.reload();
+          } else {
+            updateGameState();
           }
         }}
       >

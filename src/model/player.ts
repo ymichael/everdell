@@ -135,6 +135,10 @@ export class Player {
     this.playedCards[cardName]!.push(card.getPlayedCardInfo(this.playerId));
   }
 
+  addToCityMulti(cards: CardName[]): void {
+    cards.forEach((cardName) => this.addToCity(cardName));
+  }
+
   removeCardFromCity(
     gameState: GameState,
     playedCardInfo: PlayedCardInfo,
@@ -193,7 +197,7 @@ export class Player {
 
     // Only count each husband/wife pair once
     numOccupiedSpacesInCity -= this.getNumHusbandWifePairs();
-    return numOccupiedSpacesInCity <= MAX_CITY_SIZE;
+    return numOccupiedSpacesInCity < MAX_CITY_SIZE;
   }
 
   hasCardInCity(cardName: CardName): boolean {

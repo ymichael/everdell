@@ -2247,7 +2247,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: false,
     associatedCard: CardName.FARM,
-    cardDescription: ["3VP if paired with a Husband."],
+    cardDescription: ["3 VP if paired with a Husband."],
     // +3 if paired with Husband
     pointsInner: (gameState: GameState, playerId: string) => {
       // TODO: implement this!

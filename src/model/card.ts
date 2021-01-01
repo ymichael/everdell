@@ -750,8 +750,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
 
         player.payForCard(gameState, gameInput);
         player.addToCity(card.name);
-      } else {
-        throw new Error(`Invalid input type ${gameInput.inputType}`);
+        card.play(gameState, gameInput);
       }
     },
   }),
@@ -827,8 +826,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         }
 
         location.play(gameState, gameInput);
-      } else {
-        throw new Error(`Invalid input type ${gameInput.inputType}`);
       }
     },
   }),
@@ -1381,10 +1378,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         }
 
         player.addToCity(card.name);
-      } else {
-        throw new Error(`Invalid input type ${gameInput.inputType}`);
+        card.play(gameState, gameInput);
       }
-      //throw new Error("Not Implemented");
     },
   }),
   [CardName.RANGER]: new Card({
@@ -1568,7 +1563,67 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: false,
     associatedCard: CardName.CHAPEL,
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
+      const player = gameState.getActivePlayer();
+
+      if (gameInput.inputType === GameInputType.PLAY_CARD) {
+        if (sumResources(gameInput.paymentOptions.resources) > 0) {
+          gameState.pendingGameInputs.push({
+            inputType: GameInputType.SELECT_PLAYER,
+            prevInputType: GameInputType.PLAY_CARD,
+            prevInput: gameInput,
+            playerOptions: gameState.players
+              .filter((p) => p.playerId !== player.playerId)
+              .map((p) => p.playerId),
+            mustSelectOne: true,
+            cardContext: CardName.SHEPHERD,
+            clientOptions: {
+              selectedPlayer: null,
+            },
+          });
+        } else {
+          player.gainResources({ [ResourceType.BERRY]: 3 });
+          const chapelInfo = player.getPlayedCardInfos(CardName.CHAPEL);
+
+          if (chapelInfo.length > 0) {
+            const chapel = chapelInfo[0].resources;
+            if (!chapel) {
+              throw new Error("invalid chapel card info");
+            }
+
+            const numVP = chapel[ResourceType.VP] || 0;
+            player.gainResources({ [ResourceType.VP]: numVP });
+          }
+        }
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_PLAYER &&
+        gameInput.prevInputType === GameInputType.PLAY_CARD &&
+        !!gameInput.prevInput &&
+        gameInput.prevInput.inputType === GameInputType.PLAY_CARD
+      ) {
+        const selectedPlayer = gameInput.clientOptions.selectedPlayer;
+        if (!selectedPlayer) {
+          throw new Error("must select a player");
+        }
+        const resourcesToGive = gameInput.prevInput.paymentOptions.resources;
+        gameState.getPlayer(selectedPlayer).gainResources(resourcesToGive);
+      } else if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
+        // give the player their berries + VP, don't ask them to select a player
+
+        player.gainResources({ [ResourceType.BERRY]: 3 });
+        const chapelInfo = player.getPlayedCardInfos(CardName.CHAPEL);
+
+        if (chapelInfo.length > 0) {
+          const chapel = chapelInfo[0].resources;
+          if (!chapel) {
+            throw new Error("invalid chapel card info");
+          }
+
+          const numVP = chapel[ResourceType.VP] || 0;
+          player.gainResources({ [ResourceType.VP]: numVP });
+        }
+      } else {
+        ("Unexpected input type ${gameInput.inputType} with previous input type ${gameInput.prevInputType}");
+      }
     },
   }),
   [CardName.SHOPKEEPER]: new Card({

@@ -3,11 +3,31 @@ import { useRef } from "react";
 
 import {
   CardName,
+  GameInputType,
   GameInputSelectCards as TGameInputSelectCards,
 } from "../model/types";
 import { Player } from "../model/player";
 
 import { Form, useField } from "formik";
+
+const textLabel = (gameInput: TGameInputSelectCards) => {
+  let numLabel = "";
+  if (gameInput.minToSelect === gameInput.maxToSelect) {
+    numLabel = `${gameInput.maxToSelect} `;
+  } else if (gameInput.minToSelect === 0) {
+    numLabel = `up to ${gameInput.maxToSelect} `;
+  }
+  const prefix = `Select ${numLabel}cards`;
+  if (gameInput.locationContext) {
+    return `${prefix} for ${gameInput.locationContext}:`;
+  }
+  if (gameInput.cardContext) {
+    return `${prefix} for ${gameInput.cardContext}:`;
+  }
+  if (gameInput.prevInputType === GameInputType.PREPARE_FOR_SEASON) {
+    return `${prefix} from the Meadow:`;
+  }
+};
 
 const GameInputSelectCards: React.FC<{
   gameInput: TGameInputSelectCards;
@@ -19,9 +39,7 @@ const GameInputSelectCards: React.FC<{
   const selectedCardIdx = useRef<any>({});
   return (
     <Form>
-      <p>
-        Select cards for {gameInput.locationContext || gameInput.cardContext}
-      </p>
+      <p>{textLabel(gameInput)}</p>
       <>
         <ul>
           {gameInput.cardOptions.map((card: CardName, idx: number) => {

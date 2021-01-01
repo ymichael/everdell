@@ -1587,7 +1587,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         const selectedCards = gameInput.clientOptions.selectedCards;
         if (
           !selectedCards ||
-          selectedCards.length !== 0 ||
+          selectedCards.length === 0 ||
           !selectedCards[0].cardName ||
           !player.hasCardInCity(selectedCards[0].cardName)
         ) {

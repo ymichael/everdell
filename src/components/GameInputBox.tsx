@@ -220,13 +220,6 @@ const GameInputBox: React.FC<{
     );
   }
 
-  //   if (gameInputs.length === 1) {
-  //     const gameInput = gameInputs[0];
-  //     if (gameInput.inputType === GameInputType.DISCARD_CARDS) {
-  //       return <GameInputDiscardCards gameInput={gameInput} />;
-  //     }
-  //   }
-
   const inputTypeToInputs: Partial<Record<GameInputType, GameInput[]>> = {};
   gameInputs.forEach((gameInput) => {
     inputTypeToInputs[gameInput.inputType] =
@@ -241,66 +234,76 @@ const GameInputBox: React.FC<{
   );
 
   return (
-    <GameBlock title={title}>
-      <div>
-        <p>Perform an action:</p>
-        <GameInputBoxContainer
-          gameId={gameId}
-          viewingPlayer={viewingPlayer}
-          initialValues={{
-            selectedInputType: inputTypesOrdered[0],
-            gameInput: null,
-          }}
-        >
-          {({ values, setFieldValue }) => {
+    <GameInputBoxContainer
+      title={title}
+      gameId={gameId}
+      viewingPlayer={viewingPlayer}
+      initialValues={{
+        selectedInputType: inputTypesOrdered[0],
+        gameInput: gameInputs.length === 1 ? gameInputs[0] : null,
+      }}
+    >
+      {({ values, setFieldValue }) => {
+        if (gameInputs.length === 1) {
+          const gameInput = gameInputs[0];
+          if (gameInput.inputType === GameInputType.DISCARD_CARDS) {
             return (
-              <Form>
+              <>
                 <pre>{JSON.stringify(values, null, 2)}</pre>
-                <div role="group">
-                  {inputTypesOrdered.map((inputType) => {
-                    return (
-                      <div key={inputType}>
-                        <label>
-                          <Field
-                            type="radio"
-                            name="selectedInputType"
-                            value={inputType}
-                            onChange={() => {
-                              setFieldValue("selectedInputType", inputType);
-                              setFieldValue("gameInput", null);
-                            }}
-                          />
-                          {inputType}
-                        </label>
-                        {inputType === values.selectedInputType &&
-                          (inputType === GameInputType.PLACE_WORKER ? (
-                            <GameInputPlaceWorkerSelector
-                              viewingPlayer={viewingPlayer}
-                              gameInputs={inputTypeToInputs[inputType]}
-                            />
-                          ) : inputType === GameInputType.PLAY_CARD ? (
-                            <GameInputPlayCardSelector
-                              viewingPlayer={viewingPlayer}
-                              gameInputs={inputTypeToInputs[inputType]}
-                            />
-                          ) : (
-                            <GameInputDefaultSelector
-                              gameInputs={inputTypeToInputs[inputType]}
-                            />
-                          ))}
-                      </div>
-                    );
-                  })}
-                </div>
-                <p>
-                  <button type="submit">Submit</button>
-                </p>
-              </Form>
+                <GameInputDiscardCards
+                  gameInput={gameInput}
+                  viewingPlayer={viewingPlayer}
+                />
+              </>
             );
-          }}
-        </GameInputBoxContainer>
-      </div>
-    </GameBlock>
+          }
+        }
+        return (
+          <Form>
+            <pre>{JSON.stringify(values, null, 2)}</pre>
+            <div role="group">
+              {inputTypesOrdered.map((inputType) => {
+                return (
+                  <div key={inputType}>
+                    <label>
+                      <Field
+                        type="radio"
+                        name="selectedInputType"
+                        value={inputType}
+                        onChange={() => {
+                          setFieldValue("selectedInputType", inputType);
+                          setFieldValue("gameInput", null);
+                        }}
+                      />
+                      {inputType}
+                    </label>
+                    {inputType === values.selectedInputType &&
+                      (inputType === GameInputType.PLACE_WORKER ? (
+                        <GameInputPlaceWorkerSelector
+                          viewingPlayer={viewingPlayer}
+                          gameInputs={inputTypeToInputs[inputType]}
+                        />
+                      ) : inputType === GameInputType.PLAY_CARD ? (
+                        <GameInputPlayCardSelector
+                          viewingPlayer={viewingPlayer}
+                          gameInputs={inputTypeToInputs[inputType]}
+                        />
+                      ) : (
+                        <GameInputDefaultSelector
+                          gameInputs={inputTypeToInputs[inputType]}
+                        />
+                      ))}
+                  </div>
+                );
+              })}
+            </div>
+            <p>
+              <button type="submit">Submit</button>
+            </p>
+          </Form>
+        );
+      }}
+    </GameInputBoxContainer>
   );
 };
 

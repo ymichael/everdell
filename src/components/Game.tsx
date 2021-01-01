@@ -5,11 +5,12 @@ import Meadow from "./Meadow";
 import Players from "./Players";
 import GameInputBox from "./GameInputBox";
 import { Player } from "../model/player";
-import { CardName } from "../model/types";
+import { CardName, GameInput } from "../model/types";
 import { GameJSON, PlayerJSON } from "../model/jsonTypes";
 
 const Game: React.FC<{
   game: GameJSON;
+  gameInputs: GameInput[];
   viewingPlayer: PlayerJSON;
 }> = (props) => {
   const [game, setGame] = useState(props.game);
@@ -49,6 +50,7 @@ const Game: React.FC<{
       <GameInputBox
         gameId={gameId}
         gameState={gameState}
+        gameInputs={props.gameInputs}
         viewingPlayer={viewingPlayerImpl}
       />
       <Players viewingPlayer={viewingPlayerImpl} gameState={gameState} />

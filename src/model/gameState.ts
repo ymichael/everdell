@@ -83,14 +83,21 @@ export class GameState {
 
   toJSON(includePrivate: boolean): GameStateJSON {
     return cloneDeep({
-      activePlayerId: this.activePlayerId,
-      players: this.players.map((p) => p.toJSON(includePrivate)),
-      meadowCards: this.meadowCards,
-      locationsMap: this.locationsMap,
-      eventsMap: this.eventsMap,
-      pendingGameInputs: this.pendingGameInputs,
-      deck: this.deck.toJSON(includePrivate),
-      discardPile: this.discardPile.toJSON(includePrivate),
+      ...{
+        activePlayerId: this.activePlayerId,
+        players: this.players.map((p) => p.toJSON(includePrivate)),
+        meadowCards: this.meadowCards,
+        locationsMap: this.locationsMap,
+        eventsMap: this.eventsMap,
+        pendingGameInputs: [],
+        deck: this.deck.toJSON(includePrivate),
+        discardPile: this.discardPile.toJSON(includePrivate),
+      },
+      ...(includePrivate
+        ? {
+            pendingGameInputs: this.pendingGameInputs,
+          }
+        : {}),
     });
   }
 

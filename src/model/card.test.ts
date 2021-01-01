@@ -1610,5 +1610,145 @@ describe("Card", () => {
         ).to.be.greaterThan(0);
       });
     });
+
+    describe(CardName.SHEPHERD, () => {
+      it("play shepherd using berries", () => {
+        let player1 = gameState.players[0];
+        let player2 = gameState.players[1];
+        const card = Card.fromName(CardName.SHEPHERD);
+
+        // Make sure we can play this card
+        player1.gainResources(card.baseCost);
+        player1.addCardToHand(gameState, card.name);
+        expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(3);
+        expect(player2.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+
+        gameState = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+          {
+            inputType: GameInputType.SELECT_PLAYER,
+            prevInputType: GameInputType.PLAY_CARD,
+            prevInput: playCardInput(card.name),
+            cardContext: CardName.SHEPHERD,
+            playerOptions: [player2.playerId],
+            mustSelectOne: true,
+            clientOptions: {
+              selectedPlayer: player2.playerId,
+            },
+          },
+        ]);
+
+        player1 = gameState.getPlayer(player1.playerId);
+        player2 = gameState.getPlayer(player2.playerId);
+
+        expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+        expect(player2.getNumResourcesByType(ResourceType.BERRY)).to.be(3);
+      });
+      it("play shepherd using mixed resources (eg judge)", () => {
+        let player1 = gameState.players[0];
+        let player2 = gameState.players[1];
+        const card = Card.fromName(CardName.SHEPHERD);
+
+        // Make sure we can play this card
+
+        player1.gainResources({
+          [ResourceType.TWIG]: 3,
+          [ResourceType.BERRY]: 2,
+        });
+        player1.addCardToHand(gameState, card.name);
+        player1.addToCity(CardName.JUDGE);
+        expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
+        expect(player2.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+
+        gameState = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.PLAY_CARD,
+            card: card.name,
+            fromMeadow: false,
+            paymentOptions: {
+              resources: {
+                [ResourceType.TWIG]: 1,
+                [ResourceType.BERRY]: 2,
+              },
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_PLAYER,
+            prevInputType: GameInputType.PLAY_CARD,
+            prevInput: {
+              inputType: GameInputType.PLAY_CARD,
+              card: card.name,
+              fromMeadow: false,
+              paymentOptions: {
+                resources: {
+                  [ResourceType.TWIG]: 1,
+                  [ResourceType.BERRY]: 2,
+                },
+              },
+            },
+            cardContext: CardName.SHEPHERD,
+            playerOptions: [player2.playerId],
+            mustSelectOne: true,
+            clientOptions: {
+              selectedPlayer: player2.playerId,
+            },
+          },
+        ]);
+
+        player1 = gameState.getPlayer(player1.playerId);
+        player2 = gameState.getPlayer(player2.playerId);
+
+        expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+        expect(player1.getNumResourcesByType(ResourceType.TWIG)).to.be(2);
+        expect(player2.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
+        expect(player2.getNumResourcesByType(ResourceType.TWIG)).to.be(1);
+      });
+      it("playing shepherd via queen should not cost resources", () => {
+        let player1 = gameState.players[0];
+        let player2 = gameState.players[1];
+        const card = Card.fromName(CardName.SHEPHERD);
+
+        // Make sure we can play this card
+
+        player1.gainResources({
+          [ResourceType.TWIG]: 3,
+          [ResourceType.BERRY]: 2,
+        });
+        player1.addCardToHand(gameState, card.name);
+        player1.addToCity(CardName.QUEEN);
+        expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
+        expect(player2.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+
+        gameState = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardOwnerId: player1.playerId,
+            card: CardName.QUEEN,
+          },
+          {
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardContext: CardName.QUEEN,
+            cardOptions: [CardName.SHEPHERD],
+            cardOptionsUnfiltered: [CardName.SHEPHERD],
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              selectedCards: [CardName.SHEPHERD],
+            },
+          },
+        ]);
+
+        player1 = gameState.getPlayer(player1.playerId);
+        player2 = gameState.getPlayer(player2.playerId);
+
+        expect(player1.hasCardInCity(CardName.SHEPHERD));
+
+        expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
+        expect(player1.getNumResourcesByType(ResourceType.TWIG)).to.be(3);
+        expect(player2.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+        expect(player2.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+      });
+    });
   });
 });

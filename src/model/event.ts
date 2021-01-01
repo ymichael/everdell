@@ -1084,14 +1084,6 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       if (!resources) {
         throw new Error("Invalid resources list");
       }
-      if (
-        !resources[ResourceType.BERRY] ||
-        !resources[ResourceType.TWIG] ||
-        !resources[ResourceType.RESIN] ||
-        !resources[ResourceType.PEBBLE]
-      ) {
-        throw new Error("Resource is undefined");
-      }
 
       return (
         (resources[ResourceType.BERRY] || 0) +

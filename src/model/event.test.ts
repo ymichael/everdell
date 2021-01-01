@@ -472,7 +472,7 @@ describe("Event", () => {
   });
 
   describe(EventName.SPECIAL_UNDER_NEW_MANAGEMENT, () => {
-    it("game state", () => {
+    it("should be able to claim event", () => {
       const event = Event.fromName(EventName.SPECIAL_UNDER_NEW_MANAGEMENT);
       let player = gameState.getActivePlayer();
       const gameInput = claimEventInput(event.name);
@@ -539,10 +539,163 @@ describe("Event", () => {
         [ResourceType.RESIN]: 1,
         [ResourceType.PEBBLE]: 1,
       });
+
+      // 1 pt per twig and berry, 2 pts per resin and pebble
+      expect(event.getPoints(gameState, player.playerId)).to.be(5);
+    });
+    it("can claim event without having resources", () => {
+      const event = Event.fromName(EventName.SPECIAL_UNDER_NEW_MANAGEMENT);
+      let player = gameState.getActivePlayer();
+      const gameInput = claimEventInput(event.name);
+
+      gameState.eventsMap[EventName.SPECIAL_UNDER_NEW_MANAGEMENT] = null;
+
+      player.addToCity(CardName.PEDDLER);
+      player.addToCity(CardName.GENERAL_STORE);
+
+      // check if the player can claim the event
+      expect(event.canPlay(gameState, gameInput)).to.be(true);
+
+      // try to claim the event + check that you get the correct game state back
+      expect(gameState.pendingGameInputs).to.eql([]);
+      expect(
+        player.claimedEvents[EventName.SPECIAL_UNDER_NEW_MANAGEMENT]
+      ).to.be(undefined);
+
+      gameState = multiStepGameInputTest(gameState, [
+        gameInput,
+        {
+          inputType: GameInputType.SELECT_RESOURCES,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          eventContext: EventName.SPECIAL_UNDER_NEW_MANAGEMENT,
+          maxResources: 3,
+          minResources: 0,
+          clientOptions: {
+            resources: {},
+          },
+        },
+      ]);
+      player = gameState.getPlayer(player.playerId);
+
+      // check to make sure the right cards are still in the city
+      expect(player.hasCardInCity(CardName.PEDDLER)).to.eql(true);
+
+      // check that correct resources are on card
+      const eventInfo =
+        player.claimedEvents[EventName.SPECIAL_UNDER_NEW_MANAGEMENT];
+
+      if (!eventInfo) {
+        throw new Error("invalid event info");
+      }
+      const storedResources = eventInfo.storedResources;
+
+      if (!storedResources) {
+        throw new Error("invalid list of stored resources");
+      }
+      expect(storedResources).to.eql({});
+
+      // 1 pt per twig and berry, 2 pts per resin and pebble
+      expect(event.getPoints(gameState, player.playerId)).to.be(0);
+    });
+
+    it("can claim event without placing resources", () => {
+      const event = Event.fromName(EventName.SPECIAL_UNDER_NEW_MANAGEMENT);
+      let player = gameState.getActivePlayer();
+      const gameInput = claimEventInput(event.name);
+
+      gameState.eventsMap[EventName.SPECIAL_UNDER_NEW_MANAGEMENT] = null;
+
+      player.addToCity(CardName.PEDDLER);
+      player.addToCity(CardName.GENERAL_STORE);
+      player.gainResources({
+        [ResourceType.TWIG]: 3,
+        [ResourceType.RESIN]: 1,
+        [ResourceType.PEBBLE]: 2,
+      });
+
+      // check if the player can claim the event
+      expect(event.canPlay(gameState, gameInput)).to.be(true);
+
+      // try to claim the event + check that you get the correct game state back
+      expect(gameState.pendingGameInputs).to.eql([]);
+      expect(
+        player.claimedEvents[EventName.SPECIAL_UNDER_NEW_MANAGEMENT]
+      ).to.be(undefined);
+
+      gameState = multiStepGameInputTest(gameState, [
+        gameInput,
+        {
+          inputType: GameInputType.SELECT_RESOURCES,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          eventContext: EventName.SPECIAL_UNDER_NEW_MANAGEMENT,
+          maxResources: 3,
+          minResources: 0,
+          clientOptions: {
+            resources: {},
+          },
+        },
+      ]);
+      player = gameState.getPlayer(player.playerId);
+
+      // check to make sure the right cards are still in the city
+      expect(player.hasCardInCity(CardName.PEDDLER)).to.eql(true);
+
+      expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(3);
+      expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(2);
+
+      // check that correct resources are on card
+      const eventInfo =
+        player.claimedEvents[EventName.SPECIAL_UNDER_NEW_MANAGEMENT];
+
+      if (!eventInfo) {
+        throw new Error("invalid event info");
+      }
+      const storedResources = eventInfo.storedResources;
+
+      if (!storedResources) {
+        throw new Error("invalid list of stored resources");
+      }
+      expect(storedResources).to.eql({});
+
+      // 1 pt per twig and berry, 2 pts per resin and pebble
+      expect(event.getPoints(gameState, player.playerId)).to.be(0);
+    });
+    it("should calculate points correctly", () => {
+      const event = Event.fromName(EventName.SPECIAL_UNDER_NEW_MANAGEMENT);
+      let player = gameState.getActivePlayer();
+
+      player.claimedEvents[event.name] = {
+        storedResources: { [ResourceType.TWIG]: 1, [ResourceType.BERRY]: 1 },
+      };
+
+      // 1 pt per twig and berry, 2 pts per resin and pebble
+      expect(event.getPoints(gameState, player.playerId)).to.be(2);
+
+      player.claimedEvents[event.name] = {
+        storedResources: { [ResourceType.RESIN]: 1, [ResourceType.BERRY]: 1 },
+      };
+
+      // 1 pt per twig and berry, 2 pts per resin and pebble
+      expect(event.getPoints(gameState, player.playerId)).to.be(3);
+
+      player.claimedEvents[event.name] = {
+        storedResources: { [ResourceType.TWIG]: 1, [ResourceType.BERRY]: 2 },
+      };
+
+      // 1 pt per twig and berry, 2 pts per resin and pebble
+      expect(event.getPoints(gameState, player.playerId)).to.be(3);
+
+      player.claimedEvents[event.name] = {
+        storedResources: {},
+      };
+
+      // 1 pt per twig and berry, 2 pts per resin and pebble
+      expect(event.getPoints(gameState, player.playerId)).to.be(0);
     });
   });
   describe(EventName.SPECIAL_PRISTINE_CHAPEL_CEILING, () => {
-    it("game state", () => {
+    it("should be able to claim event", () => {
       const event = Event.fromName(EventName.SPECIAL_PRISTINE_CHAPEL_CEILING);
       let player = gameState.getActivePlayer();
       const gameInput = claimEventInput(event.name);
@@ -587,6 +740,47 @@ describe("Event", () => {
 
       expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(1);
       expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
+      expect(event.getPoints(gameState, player.playerId)).to.be(4);
+    });
+    it("if no resources on chapel, claim event but don't get points or resources", () => {
+      const event = Event.fromName(EventName.SPECIAL_PRISTINE_CHAPEL_CEILING);
+      let player = gameState.getActivePlayer();
+      const gameInput = claimEventInput(event.name);
+
+      gameState.eventsMap[EventName.SPECIAL_PRISTINE_CHAPEL_CEILING] = null;
+
+      player.addToCity(CardName.WOODCARVER);
+      player.addToCity(CardName.CHAPEL);
+
+      // check if the player can claim the event
+      expect(event.canPlay(gameState, gameInput)).to.be(true);
+
+      // try to claim the event + check that you get the correct game state back
+      expect(gameState.pendingGameInputs).to.eql([]);
+      expect(
+        player.claimedEvents[EventName.SPECIAL_PRISTINE_CHAPEL_CEILING]
+      ).to.be(undefined);
+
+      gameState = multiStepGameInputTest(gameState, [
+        gameInput,
+        {
+          inputType: GameInputType.SELECT_RESOURCES,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          eventContext: EventName.SPECIAL_PRISTINE_CHAPEL_CEILING,
+          maxResources: 0,
+          minResources: 0,
+          clientOptions: {
+            resources: {},
+          },
+        },
+      ]);
+      player = gameState.getPlayer(player.playerId);
+
+      // check to make sure the right cards are still in the city
+      expect(player.hasCardInCity(CardName.CHAPEL)).to.eql(true);
+
+      // 2pts per VP on Chapel -> if no VP on chapel, then no points
+      expect(event.getPoints(gameState, player.playerId)).to.be(0);
     });
   });
 

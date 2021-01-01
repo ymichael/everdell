@@ -1497,7 +1497,7 @@ describe("Card", () => {
     });
 
     describe(CardName.QUEEN, () => {
-      it("allow player to buy card for less than 3 points for free", () => {
+      it("should allow player to buy card for less than 3 points for free", () => {
         const cards = [
           CardName.KING,
           CardName.QUEEN,
@@ -1553,6 +1553,115 @@ describe("Card", () => {
         expect(player.numAvailableWorkers).to.be(1);
         expect(player.hasCardInCity(CardName.HUSBAND)).to.be(true);
         expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(5);
+      });
+      it("should allow player to buy card for exactly 3 points for free", () => {
+        const cards = [
+          CardName.KING,
+          CardName.QUEEN,
+          CardName.POSTAL_PIGEON,
+          CardName.POSTAL_PIGEON,
+          CardName.FARM,
+          CardName.HUSBAND,
+          CardName.CHAPEL,
+          CardName.FAIRGROUNDS,
+        ];
+        gameState = testInitialGameState({ meadowCards: cards });
+
+        let player = gameState.getActivePlayer();
+        const card = Card.fromName(CardName.QUEEN);
+
+        // Make sure we can play this card
+        player.gainResources(card.baseCost);
+        player.cardsInHand.push(card.name);
+        player.addToCity(CardName.QUEEN);
+
+        expect(player.numAvailableWorkers).to.be(2);
+        expect(player.hasCardInCity(CardName.FAIRGROUNDS)).to.be(false);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(5);
+
+        gameState = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardOwnerId: player.playerId,
+            card: CardName.QUEEN,
+          },
+          {
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardContext: CardName.QUEEN,
+            cardOptions: [
+              CardName.POSTAL_PIGEON,
+              CardName.POSTAL_PIGEON,
+              CardName.FARM,
+              CardName.HUSBAND,
+              CardName.CHAPEL,
+              CardName.FAIRGROUNDS,
+            ],
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              selectedCards: [CardName.FAIRGROUNDS],
+            },
+          },
+        ]);
+
+        player = gameState.getPlayer(player.playerId);
+
+        expect(player.numAvailableWorkers).to.be(1);
+        expect(player.hasCardInCity(CardName.FAIRGROUNDS)).to.be(true);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(5);
+      });
+      it("should not allow player to buy card for than 3 points", () => {
+        const cards = [
+          CardName.KING,
+          CardName.QUEEN,
+          CardName.POSTAL_PIGEON,
+          CardName.POSTAL_PIGEON,
+          CardName.FARM,
+          CardName.HUSBAND,
+          CardName.CHAPEL,
+          CardName.MONK,
+        ];
+        gameState = testInitialGameState({ meadowCards: cards });
+
+        let player = gameState.getActivePlayer();
+        const card = Card.fromName(CardName.QUEEN);
+
+        // Make sure we can play this card
+        player.gainResources(card.baseCost);
+        player.cardsInHand.push(card.name);
+        player.addToCity(CardName.QUEEN);
+
+        expect(player.numAvailableWorkers).to.be(2);
+        expect(player.hasCardInCity(CardName.HUSBAND)).to.be(false);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(5);
+
+        gameState = gameState.next({
+          inputType: GameInputType.VISIT_DESTINATION_CARD,
+          cardOwnerId: player.playerId,
+          card: CardName.QUEEN,
+        });
+
+        expect(() => {
+          gameState.next({
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardContext: CardName.QUEEN,
+            cardOptions: [
+              CardName.POSTAL_PIGEON,
+              CardName.POSTAL_PIGEON,
+              CardName.FARM,
+              CardName.HUSBAND,
+              CardName.CHAPEL,
+              CardName.MONK,
+            ],
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              selectedCards: [CardName.KING],
+            },
+          });
+        }).to.throwException(/cannot use Queen/i);
       });
     });
 

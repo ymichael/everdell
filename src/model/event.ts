@@ -333,7 +333,12 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       }
 
       const numTwigs = resources[ResourceType.TWIG];
-      if (!numTwigs) {
+
+      if (numTwigs === 0) {
+        return 0;
+      }
+
+      if (!numTwigs || numTwigs > 3) {
         throw new Error("Invalid number of twigs");
       }
 
@@ -812,7 +817,12 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       }
 
       const numBerries = resources[ResourceType.BERRY];
-      if (!numBerries) {
+
+      if (numBerries === 0) {
+        return 0;
+      }
+
+      if (!numBerries || numBerries > 3) {
         throw new Error("Invalid number of berries");
       }
 

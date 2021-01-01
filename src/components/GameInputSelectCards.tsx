@@ -27,6 +27,7 @@ const textLabel = (gameInput: TGameInputSelectCards) => {
   if (gameInput.prevInputType === GameInputType.PREPARE_FOR_SEASON) {
     return `${prefix} from the Meadow:`;
   }
+  return prefix;
 };
 
 const GameInputSelectCards: React.FC<{

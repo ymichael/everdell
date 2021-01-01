@@ -306,7 +306,7 @@ describe("Location", () => {
           prevInputType: GameInputType.PLACE_WORKER,
           locationContext: LocationName.HAVEN,
           minCards: 0,
-          maxCards: 8,
+          maxCards: player.cardsInHand.length,
           clientOptions: {
             cardsToDiscard: [
               CardName.FARM,
@@ -330,6 +330,10 @@ describe("Location", () => {
           },
         },
       ]);
+
+      expect(gameState.getActivePlayer().playerId).not.to.be.eql(
+        player.playerId
+      );
 
       player = gameState.getPlayer(player.playerId);
 

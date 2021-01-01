@@ -139,7 +139,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
           prevInputType: GameInputType.PLACE_WORKER,
           locationContext: LocationName.HAVEN,
           minCards: 0,
-          maxCards: 8,
+          maxCards: player.cardsInHand.length,
           clientOptions: {
             cardsToDiscard: [],
           },
@@ -151,11 +151,13 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
           throw new Error("invalid list of cards to discard");
         }
 
-        // discard the cards
+        // remove cards from hand + put them on the discard pile
         cardsToDiscard.forEach((cardName) => {
           player.removeCardFromHand(cardName);
+          gameState.discardPile.addToStack(cardName);
         });
-        // ask player how many cards to discard
+
+        // ask player which resources they want to get
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_RESOURCES,
           prevInputType: GameInputType.DISCARD_CARDS,
@@ -168,15 +170,15 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
         });
       } else if (gameInput.inputType === GameInputType.SELECT_RESOURCES) {
         const resources = gameInput.clientOptions.resources;
-        if (!resources) {
-          throw new Error("invalid input");
-        }
+
         const numResources = sumResources(resources);
+
         if (numResources > gameInput.maxResources) {
           throw new Error("Can only gain 1 resource per 2 cards discarded");
         } else if (numResources !== gameInput.maxResources) {
           throw new Error(`Must gain ${gameInput.maxResources} resource`);
         }
+
         player.gainResources(resources);
       } else {
         throw new Error(`Invalid input type ${gameInput.inputType}`);

@@ -202,7 +202,7 @@ const GameInputBox: React.FC<{
         gameInput: gameInputs.length === 1 ? gameInputs[0] : null,
       }}
     >
-      {({ values, setFieldValue }) => {
+      {({ values, setFieldValue, isSubmitting }) => {
         if (gameInputs.length === 1) {
           const gameInput = gameInputs[0];
           if (gameInput.inputType === GameInputType.DISCARD_CARDS) {
@@ -324,7 +324,9 @@ const GameInputBox: React.FC<{
               })}
             </div>
             <p>
-              <button type="submit">Submit</button>
+              <button disabled={isSubmitting} type="submit">
+                Submit
+              </button>
             </p>
           </Form>
         );

@@ -1917,29 +1917,63 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: true,
     associatedCard: CardName.DOCTOR,
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not implemented");
-      // if (gameInput.inputType !== GameInputType.VISIT_DESTINATION_CARD) {
-      //   throw new Error("Invalid input type");
-      // }
-      // if (
-      //   !gameInput.clientOptions?.targetCard ||
-      //   !gameInput.clientOptions?.resourcesToGain ||
-      //   sumResources(gameInput.clientOptions?.resourcesToGain) !== 0 ||
-      //   gameInput.clientOptions?.resourcesToGain[ResourceType.VP]
-      // ) {
-      //   throw new Error("Invalid input");
-      // }
-      // const player = gameState.getActivePlayer();
-      // const card = Card.fromName(gameInput.clientOptions?.targetCard);
-      // if (!card.isConstruction) {
-      //   throw new Error("Can only ruin constructions");
-      // }
-      // player.removeCardFromCity(gameState, gameInput.clientOptions?.targetCard);
-      // player.gainResources(card.baseCost);
-      // player.gainResources(gameInput.clientOptions?.resourcesToGain);
-      // player.gainResources({
-      //   [ResourceType.VP]: 1,
-      // });
+      const player = gameState.getActivePlayer();
+
+      if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
+        // choose a card to destroy
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          prevInputType: gameInput.inputType,
+          cardOptions: player
+            .getAllPlayedCards()
+            .filter(({ cardName }) => cardName !== CardName.UNIVERSITY),
+          maxToSelect: 1,
+          minToSelect: 1,
+          cardContext: CardName.UNIVERSITY,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS) {
+        // check that they only chose 1 card
+        if (gameInput.clientOptions.selectedCards.length !== 1) {
+          throw new Error("may only choose one card to remove from city");
+        }
+
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_RESOURCES,
+          prevInputType: gameInput.inputType,
+          prevInput: gameInput,
+          maxResources: 1,
+          minResources: 1,
+          cardContext: CardName.UNIVERSITY,
+          clientOptions: {
+            resources: {},
+          },
+        });
+        // ask player what random resources they want to receive
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_RESOURCES &&
+        gameInput.prevInputType === GameInputType.SELECT_PLAYED_CARDS &&
+        !!gameInput.prevInput &&
+        gameInput.prevInput.inputType === GameInputType.SELECT_PLAYED_CARDS
+      ) {
+        const resourceToGain = gameInput.clientOptions.resources;
+        if (sumResources(resourceToGain) !== 1) {
+          throw new Error("may only gain 1 resource");
+        }
+
+        // remove card from city + put in discard pile
+        const prevInput = gameInput.prevInput;
+        const cardToRemove = prevInput.clientOptions.selectedCards[0];
+        player.removeCardFromCity(gameState, cardToRemove, true);
+
+        // give player resources from base cost + the resource they chose
+        const removedCard = Card.fromName(cardToRemove.cardName);
+        player.gainResources(removedCard.baseCost);
+        player.gainResources(resourceToGain);
+        player.gainResources({ [ResourceType.VP]: 1 });
+      }
     },
   }),
   [CardName.WANDERER]: new Card({

@@ -866,11 +866,14 @@ export class Player {
           }
         });
       if (!removedWorker) {
-        throw new Error(
-          `Couldn't find worker at cardDestination: ${JSON.stringify(
-            cardDestination
-          )}`
-        );
+        // this means we can't find the worker on any card owned by the card owner from
+        // the WorkerPlacementInfo. This card may have been discarded from the city, such
+        // as through the university
+        // throw new Error(
+        //   `Couldn't find worker at cardDestination: ${JSON.stringify(
+        //     cardDestination
+        //   )}`
+        // );
       }
     } else {
       throw new Error("Unexpected worker placement");

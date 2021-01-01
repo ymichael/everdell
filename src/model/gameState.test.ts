@@ -207,4 +207,35 @@ describe("GameState", () => {
       expect(event.canPlay(gameState, gameInput)).to.be(false);
     });
   });
+
+  describe("PREPARE_FOR_SEASON", () => {
+    it("should activate production in WINTER and SUMMER", () => {
+      let player = gameState.getActivePlayer();
+      player.addToCity(CardName.FARM);
+      player.addToCity(CardName.FARM);
+      player.addToCity(CardName.MINE);
+      player.addToCity(CardName.MINE);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+
+      // Use up all workers
+      gameState.locationsMap[LocationName.BASIC_TWO_CARDS_AND_ONE_VP]!.push(
+        player.playerId,
+        player.playerId
+      );
+      player.placeWorkerOnLocation(LocationName.BASIC_TWO_CARDS_AND_ONE_VP);
+      player.placeWorkerOnLocation(LocationName.BASIC_TWO_CARDS_AND_ONE_VP);
+
+      const gameState2 = multiStepGameInputTest(gameState, [
+        {
+          inputType: GameInputType.PREPARE_FOR_SEASON,
+        },
+      ]);
+
+      player = gameState2.getPlayer(player.playerId);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(2);
+      expect(player.numAvailableWorkers).to.be(3);
+    });
+  });
 });

@@ -64,7 +64,6 @@ export type GameInputGameEnd = {
 
 export type GameInputPrepareForSeason = {
   inputType: GameInputType.PREPARE_FOR_SEASON;
-  phase: "START" | "PRODUCTION" | "END";
 };
 
 export type GameInputWorkerPlacementTypes =

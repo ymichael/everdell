@@ -528,7 +528,6 @@ export class GameState {
     } else if (player.currentSeason !== Season.AUTUMN) {
       possibleGameInputs.push({
         inputType: GameInputType.PREPARE_FOR_SEASON,
-        phase: "START",
       });
     } else {
       possibleGameInputs.push({

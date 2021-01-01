@@ -1,49 +1,79 @@
+import * as React from "react";
+import { useState, useEffect } from "react";
+
 import Head from "next/head";
-import styles from "../styles/Home.module.css";
-import Test from "../components/Test";
+import styles from "../styles/test.module.css";
+
+import { GameBlock } from "../components/common";
 import Card from "../components/Card";
 import Location from "../components/Location";
 import { CardName, LocationName } from "../model/types";
 
+const ItemsList: React.FC<{ title: string; visible: boolean }> = ({
+  title,
+  children,
+  visible = true,
+}) => {
+  return visible ? (
+    <GameBlock title={title}>
+      <div className={styles.items}>{children}</div>
+    </GameBlock>
+  ) : (
+    <></>
+  );
+};
+
 export default function TestPage() {
-  const renderAllCards = true;
-  let cardsToRender: CardName[] = [];
+  const allCards: CardName[] = Object.keys(CardName) as CardName[];
+  const allLocations: LocationName[] = Object.keys(
+    LocationName
+  ) as LocationName[];
 
-  const renderAllLocations = true;
-  let locationsToRender: LocationName[] = [];
+  const [showCards, setShowCards] = useState(false);
+  const [showLocations, setShowLocations] = useState(false);
+  const [filter, setFilter] = useState("");
 
-  if (renderAllCards == true) {
-    const enums = Object.keys(CardName) as CardName[];
-    cardsToRender.push(...enums);
-  } else {
-    cardsToRender = [CardName.POSTAL_PIGEON];
-  }
-
-  if (renderAllLocations == true) {
-    const locations = Object.keys(LocationName) as LocationName[];
-    locationsToRender.push(...locations);
-  } else {
-    locationsToRender = [
-      LocationName.BASIC_ONE_BERRY,
-      LocationName.FOREST_COPY_BASIC_ONE_CARD,
-    ];
-  }
+  useEffect(() => {
+    const params = new URL(window.location.href).searchParams;
+    const cardsOnly = params.get("cards");
+    const locationsOnly = params.get("locations");
+    const showOneType = cardsOnly || locationsOnly;
+    setShowCards(!!(cardsOnly || !showOneType));
+    setShowLocations(!!(locationsOnly || !showOneType));
+  }, []);
 
   return (
     <div className={styles.container}>
       <Head>
         <title>Everdell Test Page</title>
       </Head>
-      <div>
-        {cardsToRender.map(function (cardsToRender, index) {
-          return <Card key={index} name={cardsToRender} />;
-        })}
+      <div className={styles.filter}>
+        <input
+          type="text"
+          placeholder="Filter items..."
+          onChange={(e) => {
+            setFilter(e.target.value.toLowerCase());
+          }}
+        />
       </div>
-      <div>
-        {locationsToRender.map(function (locationsToRender, index) {
-          return <Location key={index} name={locationsToRender} />;
-        })}
-      </div>
+      <ItemsList title={"Cards"} visible={showCards}>
+        {allCards
+          .filter((x) => {
+            return !filter || x.toLowerCase().indexOf(filter) !== -1;
+          })
+          .map((card) => {
+            return <Card key={card} name={card} />;
+          })}
+      </ItemsList>
+      <ItemsList title={"Locations"} visible={showLocations}>
+        {allLocations
+          .filter((x) => {
+            return !filter || x.toLowerCase().indexOf(filter) !== -1;
+          })
+          .map((loc) => {
+            return <Location key={loc} name={loc} />;
+          })}
+      </ItemsList>
     </div>
   );
 }

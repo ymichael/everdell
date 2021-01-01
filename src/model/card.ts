@@ -655,7 +655,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: true,
     associatedCard: CardName.ARCHITECT,
     cardDescription: [
-      "When playing a Construction, you may discard this Crane from your city to play that Construction for 3 fewer resources.",
+      "When playing a Construction, you may discard this Crane from your city, ",
+      "to play that Construction for 3 fewer ",
+      "ANY",
+      ".",
     ],
   }),
   [CardName.DOCTOR]: new Card({
@@ -690,7 +693,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     cardDescription: [
       "When playing a Construction or Critter, you may place a Critter ",
       "from your city face-down beneatth this Dungeon to ",
-      "decrease the cost by 3 resources.",
+      "decrease the cost by 3 ",
+      "ANY",
+      ".",
     ],
     playedCardInfoDefault: {
       pairedCards: [],
@@ -857,7 +862,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     associatedCard: CardName.FARM,
     cardDescription: [
       "Gain 1 ",
-      "resource",
+      "ANY",
       " if paired with a Wife and you have at least 1 Farm in your city.",
     ],
     resourcesToGain: {},

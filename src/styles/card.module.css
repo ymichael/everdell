@@ -120,3 +120,21 @@
   font-size: 14px;
   font-weight: 500;
 }
+
+.played_card_wrapper {
+  padding: 10px;
+  margin: 5px;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  justify-content: center;
+}
+
+.played_card_card > div {
+  margin: auto;
+}
+
+.played_card_meta > p {
+  margin: 5px 0;
+  font-size: 10px;
+}

@@ -2,7 +2,13 @@ import * as React from "react";
 import { Card as CardModel } from "../model/card";
 import { CardTypeSymbol, ResourceTypeIcon } from "./assets";
 import styles from "../styles/card.module.css";
-import { ResourceType, CardCost, CardType, CardName } from "../model/types";
+import {
+  ResourceType,
+  CardCost,
+  CardType,
+  CardName,
+  PlayedCardInfo,
+} from "../model/types";
 
 var colorClassMap = {
   GOVERNANCE: styles.color_governance,
@@ -83,3 +89,35 @@ const Card: React.FC<{ name: CardName }> = ({ name }) => {
 };
 
 export default Card;
+
+export const PlayedCard: React.FC<{
+  playedCard: PlayedCardInfo;
+  viewerId: string;
+}> = ({ playedCard, viewerId }) => {
+  const {
+    cardOwnerId,
+    cardName,
+    usedForCritter,
+    resources = {},
+    workers = [],
+    pairedCards = [],
+  } = playedCard;
+  const card = CardModel.fromName(cardName);
+  return (
+    <div className={styles.played_card_wrapper}>
+      <div className={styles.played_card_card}>
+        <Card name={cardName} />
+      </div>
+      <div className={styles.played_card_meta}>
+        <p>Card Owner: {viewerId === cardOwnerId ? "You" : cardOwnerId}</p>
+        {card.isConstruction && (
+          <p>usedForCritter: {JSON.stringify(usedForCritter)}</p>
+        )}
+        {"workers" in playedCard && <p>Workers: {JSON.stringify(workers)}</p>}
+        {"resources" in playedCard && (
+          <p>Resources: {JSON.stringify(resources)}</p>
+        )}
+      </div>
+    </div>
+  );
+};

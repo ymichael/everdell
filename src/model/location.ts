@@ -24,6 +24,7 @@ import { assertUnreachable } from "../utils";
 export class Location implements GameStatePlayable {
   readonly name: LocationName;
   readonly type: LocationType;
+  readonly description: string[] | undefined;
   readonly resourcesToGain: ProductionResourceMap;
   readonly occupancy: LocationOccupancy;
   readonly playInner: GameStatePlayFn | undefined;
@@ -33,6 +34,7 @@ export class Location implements GameStatePlayable {
     name,
     type,
     occupancy,
+    description,
     resourcesToGain,
     playInner,
     canPlayCheckInner,
@@ -43,6 +45,7 @@ export class Location implements GameStatePlayable {
     playInner?: GameStatePlayFn;
     resourcesToGain?: ProductionResourceMap;
     canPlayCheckInner?: GameStateCanPlayCheckFn;
+    description?: string[] | undefined;
   }) {
     this.name = name;
     this.type = type;
@@ -50,6 +53,7 @@ export class Location implements GameStatePlayable {
     this.playInner = playInner;
     this.canPlayCheckInner = canPlayCheckInner;
     this.resourcesToGain = resourcesToGain || {};
+    this.description = description;
   }
 
   canPlay(gameState: GameState, gameInput: GameInput): boolean {
@@ -451,6 +455,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
       [ResourceType.PEBBLE]: 1,
       CARD: 3,
     },
+    description: ["3 ", "CARD", " & 1 ", ResourceType.PEBBLE],
   }),
   [LocationName.FOREST_ONE_TWIG_RESIN_BERRY]: new Location({
     name: LocationName.FOREST_ONE_TWIG_RESIN_BERRY,

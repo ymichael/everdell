@@ -297,7 +297,7 @@ describe("Event", () => {
   });
 
   describe(EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES, () => {
-    it("game state", () => {
+    it("should be able to claim event", () => {
       const event = Event.fromName(
         EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES
       );
@@ -350,6 +350,8 @@ describe("Event", () => {
       expect(player.hasCardInCity(CardName.WIFE)).to.eql(true);
       expect(player.hasCardInCity(CardName.QUEEN)).to.eql(true);
       expect(player.hasCardInCity(CardName.COURTHOUSE)).to.eql(true);
+
+      expect(event.getPoints(gameState, player.playerId)).to.be(6);
     });
   });
 

@@ -512,6 +512,20 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       if (!eventInfo) {
         throw new Error("Cannot find event info");
       }
+
+      const storedCards = eventInfo.storedCards || [];
+
+      if (storedCards.length > 2) {
+        throw new Error("too many cards stored under event");
+      }
+
+      storedCards.forEach((cardName) => {
+        const card = Card.fromName(cardName as CardName);
+        if (!card.isCritter) {
+          throw new Error("cannot store critters under this event");
+        }
+      });
+
       return (eventInfo.storedCards = eventInfo.storedCards || []).length * 3;
     },
   }),

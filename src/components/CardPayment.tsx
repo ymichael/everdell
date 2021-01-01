@@ -27,7 +27,7 @@ const ResourceTypeValueInput: React.FC<{
         type="number"
         value={meta.value}
         onChange={(e) => {
-          helpers.setValue(e.target.value);
+          helpers.setValue(parseInt(e.target.value) || 0);
         }}
         className={styles.resource_input_el}
       />
@@ -35,7 +35,7 @@ const ResourceTypeValueInput: React.FC<{
   );
 };
 
-const ResourcesToSpend: React.FC<{
+export const ResourcesToSpend: React.FC<{
   name: string;
   viewingPlayer: Player;
 }> = ({ name, viewingPlayer }) => {

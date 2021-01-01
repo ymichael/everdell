@@ -20,6 +20,10 @@ import { ResourceTypeIcon } from "./assets";
 import Card from "./Card";
 import Location from "./Location";
 
+import { GameInputBoxContainer } from "./gameInputCommon";
+import GameInputDiscardCards from "./GameInputDiscardCards";
+import GameInputSelectResources from "./GameInputSelectResources";
+
 const GameInputBoxWaiting: React.FC<{
   title?: string;
   activePlayer: Player;
@@ -231,85 +235,87 @@ const GameInputBox: React.FC<{
   );
 
   return (
-    <GameBlock title={title}>
-      <div>
-        <p>Perform an action:</p>
-        <Formik
-          initialValues={{
-            selectedInputType: inputTypesOrdered[0],
-            gameInput: null,
-          }}
-          onSubmit={async (values) => {
-            const response = await fetch("/api/game-action", {
-              method: "POST",
-              cache: "no-cache",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                gameId,
-                playerId: viewingPlayer.playerId,
-                playerSecret: viewingPlayer.playerSecretUNSAFE,
-                gameInput: values.gameInput,
-              }),
-            });
-            const json = await response.json();
-            if (!json.success) {
-              alert(json.error);
-            } else if (devDebug) {
-              window.location.reload();
-            }
-          }}
-        >
-          {({ values, setFieldValue }) => {
+    <GameInputBoxContainer
+      title={title}
+      gameId={gameId}
+      devDebug={devDebug}
+      viewingPlayer={viewingPlayer}
+      initialValues={{
+        selectedInputType: inputTypesOrdered[0],
+        gameInput: gameInputs.length === 1 ? gameInputs[0] : null,
+      }}
+    >
+      {({ values, setFieldValue }) => {
+        if (gameInputs.length === 1) {
+          const gameInput = gameInputs[0];
+          if (gameInput.inputType === GameInputType.DISCARD_CARDS) {
             return (
-              <Form>
+              <>
                 <pre>{JSON.stringify(values, null, 2)}</pre>
-                <div role="group">
-                  {inputTypesOrdered.map((inputType) => {
-                    return (
-                      <div key={inputType}>
-                        <label>
-                          <Field
-                            type="radio"
-                            name="selectedInputType"
-                            value={inputType}
-                            onChange={() => {
-                              setFieldValue("selectedInputType", inputType);
-                              setFieldValue("gameInput", null);
-                            }}
-                          />
-                          {inputType}
-                        </label>
-                        {inputType === values.selectedInputType &&
-                          (inputType === GameInputType.PLACE_WORKER ? (
-                            <GameInputPlaceWorkerSelector
-                              viewingPlayer={viewingPlayer}
-                              gameInputs={inputTypeToInputs[inputType]}
-                            />
-                          ) : inputType === GameInputType.PLAY_CARD ? (
-                            <GameInputPlayCardSelector
-                              viewingPlayer={viewingPlayer}
-                              gameInputs={inputTypeToInputs[inputType]}
-                            />
-                          ) : (
-                            <GameInputDefaultSelector
-                              gameInputs={inputTypeToInputs[inputType]}
-                            />
-                          ))}
-                      </div>
-                    );
-                  })}
-                </div>
-                <p>
-                  <button type="submit">Submit</button>
-                </p>
-              </Form>
+                <GameInputDiscardCards
+                  gameInput={gameInput}
+                  viewingPlayer={viewingPlayer}
+                />
+              </>
             );
-          }}
-        </Formik>
-      </div>
-    </GameBlock>
+          } else if (gameInput.inputType === GameInputType.SELECT_RESOURCES) {
+            return (
+              <>
+                <pre>{JSON.stringify(values, null, 2)}</pre>
+                <GameInputSelectResources
+                  gameInput={gameInput}
+                  viewingPlayer={viewingPlayer}
+                />
+              </>
+            );
+          }
+        }
+        return (
+          <Form>
+            <pre>{JSON.stringify(values, null, 2)}</pre>
+            <div role="group">
+              {inputTypesOrdered.map((inputType) => {
+                return (
+                  <div key={inputType}>
+                    <label>
+                      <Field
+                        type="radio"
+                        name="selectedInputType"
+                        value={inputType}
+                        onChange={() => {
+                          setFieldValue("selectedInputType", inputType);
+                          setFieldValue("gameInput", null);
+                        }}
+                      />
+                      {inputType}
+                    </label>
+                    {inputType === values.selectedInputType &&
+                      (inputType === GameInputType.PLACE_WORKER ? (
+                        <GameInputPlaceWorkerSelector
+                          viewingPlayer={viewingPlayer}
+                          gameInputs={inputTypeToInputs[inputType]}
+                        />
+                      ) : inputType === GameInputType.PLAY_CARD ? (
+                        <GameInputPlayCardSelector
+                          viewingPlayer={viewingPlayer}
+                          gameInputs={inputTypeToInputs[inputType]}
+                        />
+                      ) : (
+                        <GameInputDefaultSelector
+                          gameInputs={inputTypeToInputs[inputType]}
+                        />
+                      ))}
+                  </div>
+                );
+              })}
+            </div>
+            <p>
+              <button type="submit">Submit</button>
+            </p>
+          </Form>
+        );
+      }}
+    </GameInputBoxContainer>
   );
 };
 

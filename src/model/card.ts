@@ -862,7 +862,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     associatedCard: CardName.FARM,
     cardDescription: [
       "Gain 1 ",
-      "resource",
+      "ANY",
       " if paired with a Wife and you have at least 1 Farm in your city.",
     ],
     resourcesToGain: {},

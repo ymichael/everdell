@@ -198,12 +198,14 @@ const GameInputBox: React.FC<{
   title?: string;
   devDebug?: boolean;
   gameState: GameStateJSON;
+  gameInputs: GameInput[];
   viewingPlayer: Player;
 }> = ({
   title = "Game Input",
   devDebug = false,
   gameId,
   gameState,
+  gameInputs,
   viewingPlayer,
 }) => {
   const gameStateImpl = GameState.fromJSON(gameState);
@@ -215,7 +217,6 @@ const GameInputBox: React.FC<{
     );
   }
 
-  const gameInputs = gameStateImpl.getPossibleGameInputs();
   const inputTypeToInputs: Partial<Record<GameInputType, GameInput[]>> = {};
   gameInputs.forEach((gameInput) => {
     inputTypeToInputs[gameInput.inputType] =
@@ -313,17 +314,3 @@ const GameInputBox: React.FC<{
 };
 
 export default GameInputBox;
-
-/*
-{inputType === values.selectedInputType &&
-                          (inputType === GameInputType.PLAY_CARD ? (
-                            <GameInputPlayCardSelector
-                              viewingPlayer={viewingPlayer}
-                              gameInputs={inputTypeToInputs[inputType]}
-                            />
-                          ) : (
-                            <GameInputDefaultSelector
-                              gameInputs={inputTypeToInputs[inputType]}
-                            />
-                          ))}
-*/

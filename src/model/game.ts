@@ -30,6 +30,10 @@ class Game {
     return this.gameState.getActivePlayer();
   }
 
+  getGameInputs(): GameInput[] {
+    return this.gameState.getPossibleGameInputs();
+  }
+
   applyGameInput(gameInput: GameInput): void {
     this.gameState = this.gameState.next(gameInput);
   }

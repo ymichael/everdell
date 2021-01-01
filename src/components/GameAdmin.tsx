@@ -1,6 +1,7 @@
 import * as React from "react";
 import { GameJSON } from "../model/jsonTypes";
 import { Player } from "../model/player";
+import { GameState } from "../model/gameState";
 import { GameBlock } from "./common";
 
 import Meadow from "./Meadow";
@@ -31,21 +32,32 @@ const GameAdmin = ({
       {devDebugMode && (
         <>
           <hr />
-          {game.gameState.players.map((pJSON, idx) => (
-            <React.Fragment key={idx}>
-              <GameInputBox
-                title={`Game Input:: ${pJSON.name}`}
-                devDebug={true}
-                gameId={game.gameId}
-                gameState={game.gameState}
-                viewingPlayer={Player.fromJSON(pJSON)}
-              />
-              <pre>{JSON.stringify(pJSON, null, 2)}</pre>
-            </React.Fragment>
-          ))}
-          <Meadow meadowCards={game.gameState.meadowCards} />
+          <GameAdminDebugOnly game={game} />
         </>
       )}
+    </>
+  );
+};
+
+const GameAdminDebugOnly: React.FC<{ game: GameJSON }> = ({ game }) => {
+  const gameStateImpl = GameState.fromJSON(game.gameState);
+  const gameInputs = gameStateImpl.getPossibleGameInputs();
+  return (
+    <>
+      {gameStateImpl.players.map((player, idx) => (
+        <React.Fragment key={idx}>
+          <GameInputBox
+            title={`Game Input: ${player.name}`}
+            devDebug={true}
+            gameId={game.gameId}
+            gameInputs={gameInputs}
+            gameState={game.gameState}
+            viewingPlayer={player}
+          />
+          <pre>{JSON.stringify(player.toJSON(true), null, 2)}</pre>
+        </React.Fragment>
+      ))}
+      <Meadow meadowCards={game.gameState.meadowCards} />
     </>
   );
 };

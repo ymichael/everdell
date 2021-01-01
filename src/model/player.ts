@@ -227,6 +227,24 @@ export class Player {
     return Math.min(numHusbands, numWifes);
   }
 
+  getPoints(gameState: GameState): number {
+    let points = 0;
+
+    // points from cards
+    this.forEachPlayedCard((cardInfo) => {
+      const card = Card.fromName(cardInfo.cardName);
+      points = points + card.getPoints(gameState, this.playerId);
+    });
+
+    // points from events
+    Object.keys(this.claimedEvents).forEach((eventName) => {
+      const event = Event.fromName(eventName as EventName);
+      points = points + event.getPoints(gameState, this.playerId);
+    });
+
+    return points;
+  }
+
   getNumResources(): number {
     return sumResources(this.resources);
   }

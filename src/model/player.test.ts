@@ -746,4 +746,15 @@ describe("Player", () => {
       expect(allDestinations.length).to.eql(2);
     });
   });
+
+  describe("getPoints", () => {
+    it("calculate points for player with no events", () => {
+      const player = gameState.getActivePlayer();
+
+      player.addToCityMulti([CardName.FARM, CardName.INN]);
+
+      const points = player.getPoints(gameState);
+      expect(points).to.be(3);
+    });
+  });
 });

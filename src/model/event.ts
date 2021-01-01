@@ -128,6 +128,13 @@ export class Event implements GameStatePlayable {
     return this.playedEventInfoInner ? this.playedEventInfoInner() : {};
   }
 
+  getPoints(gameState: GameState, playerId: string) {
+    return (
+      this.baseVP +
+      (this.pointsInner ? this.pointsInner(gameState, playerId) : 0)
+    );
+  }
+
   static fromName(name: EventName): Event {
     return EVENT_REGISTRY[name];
   }

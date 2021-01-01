@@ -20,30 +20,31 @@ const GameInputDiscardCards: React.FC<{
         Discard cards for {gameInput.locationContext || gameInput.cardContext}
       </p>
       <>
-        <ul>
-          {viewingPlayer.cardsInHand.map((card, idx) => {
-            return (
-              <li
-                key={idx}
-                onClick={() => {
-                  const isSelected = !!selectedCardIdx.current[idx];
-                  if (isSelected) {
-                    const newValue = [...meta.value];
-                    newValue.splice(newValue.indexOf(card), 1);
-                    helpers.setValue(newValue);
+        {viewingPlayer.cardsInHand.map((card, idx) => {
+          return (
+            <p key={idx}>
+              <label>
+                <input
+                  type={"checkbox"}
+                  onClick={() => {
+                    const isSelected = !!selectedCardIdx.current[idx];
+                    if (isSelected) {
+                      const newValue = [...meta.value];
+                      newValue.splice(newValue.indexOf(card), 1);
+                      helpers.setValue(newValue);
 
-                    selectedCardIdx.current[idx] = false;
-                  } else {
-                    helpers.setValue(meta.value.concat([card]));
-                    selectedCardIdx.current[idx] = true;
-                  }
-                }}
-              >
+                      selectedCardIdx.current[idx] = false;
+                    } else {
+                      helpers.setValue(meta.value.concat([card]));
+                      selectedCardIdx.current[idx] = true;
+                    }
+                  }}
+                />
                 {card}
-              </li>
-            );
-          })}
-        </ul>
+              </label>
+            </p>
+          );
+        })}
       </>
       <button type="submit">Submit</button>
     </Form>

@@ -16,9 +16,10 @@ import {
   GameState,
   GameStatePlayable,
   GameStatePlayFn,
-  GameStateCanPlayFn,
+  GameStateCanPlayCheckFn,
 } from "./gameState";
 import shuffle from "lodash/shuffle";
+import { assertUnreachable } from "../utils";
 
 export class Location implements GameStatePlayable {
   readonly name: LocationName;
@@ -26,7 +27,7 @@ export class Location implements GameStatePlayable {
   readonly resourcesToGain: ProductionResourceMap;
   readonly occupancy: LocationOccupancy;
   readonly playInner: GameStatePlayFn | undefined;
-  readonly canPlayInner: GameStateCanPlayFn | undefined;
+  readonly canPlayCheckInner: GameStateCanPlayCheckFn | undefined;
 
   constructor({
     name,
@@ -34,59 +35,92 @@ export class Location implements GameStatePlayable {
     occupancy,
     resourcesToGain,
     playInner,
-    canPlayInner,
+    canPlayCheckInner,
   }: {
     name: LocationName;
     type: LocationType;
     occupancy: LocationOccupancy;
     playInner?: GameStatePlayFn;
     resourcesToGain?: ProductionResourceMap;
-    canPlayInner?: GameStateCanPlayFn;
+    canPlayCheckInner?: GameStateCanPlayCheckFn;
   }) {
     this.name = name;
     this.type = type;
     this.occupancy = occupancy;
     this.playInner = playInner;
-    this.canPlayInner = canPlayInner;
+    this.canPlayCheckInner = canPlayCheckInner;
     this.resourcesToGain = resourcesToGain || {};
   }
 
   canPlay(gameState: GameState, gameInput: GameInput): boolean {
+    return !this.canPlayCheck(gameState, gameInput);
+  }
+
+  canPlayCheck(gameState: GameState, gameInput: GameInput): string | null {
     if (!(this.name in gameState.locationsMap)) {
-      return false;
+      return `Location ${
+        this.name
+      } is not part of the current game. \nGame Locations: ${JSON.stringify(
+        gameState.locationsMap,
+        null,
+        2
+      )}`;
     }
     if (gameInput.inputType === GameInputType.PLACE_WORKER) {
-      if (gameState.getActivePlayer().numAvailableWorkers <= 0) {
-        return false;
+      const player = gameState.getActivePlayer();
+      if (player.numAvailableWorkers <= 0) {
+        return `Active player (${player.playerId}) doesn't have any workers to place.`;
       }
-      if (this.occupancy === LocationOccupancy.EXCLUSIVE) {
-        if (gameState.locationsMap[this.name]!.length !== 0) {
-          return false;
-        }
-      } else if (this.occupancy === LocationOccupancy.EXCLUSIVE_FOUR) {
-        if (
-          !(
-            gameState.locationsMap[this.name]!.length <
-            (gameState.players.length < 4 ? 1 : 2)
-          )
-        ) {
-          return false;
-        }
-      } else if (this.occupancy === LocationOccupancy.UNLIMITED) {
-        // Do nothing
-      } else {
-        throw new Error(`Unexpected occupancy: ${this.occupancy}`);
+      switch (this.occupancy) {
+        case LocationOccupancy.EXCLUSIVE:
+          if (gameState.locationsMap[this.name]!.length !== 0) {
+            return `Location ${
+              this.name
+            } is occupied. \nGame Locations: ${JSON.stringify(
+              gameState.locationsMap,
+              null,
+              2
+            )}`;
+          }
+          break;
+        case LocationOccupancy.EXCLUSIVE_FOUR:
+          if (
+            !(
+              gameState.locationsMap[this.name]!.length <
+              (gameState.players.length < 4 ? 1 : 2)
+            )
+          ) {
+            return `Location ${
+              this.name
+            } is occupied. \nGame Locations: ${JSON.stringify(
+              gameState.locationsMap,
+              null,
+              2
+            )}`;
+          }
+          break;
+        case LocationOccupancy.UNLIMITED:
+          break;
+        default:
+          assertUnreachable(
+            this.occupancy,
+            `Unexpected occupancy: ${this.occupancy}`
+          );
       }
     }
-    if (this.canPlayInner && !this.canPlayInner(gameState, gameInput)) {
-      return false;
+    if (this.canPlayCheckInner) {
+      const errorMsg = this.canPlayCheckInner(gameState, gameInput);
+      if (errorMsg) {
+        return errorMsg;
+      }
     }
-    return true;
+    return null;
   }
 
   play(gameState: GameState, gameInput: GameInput): void {
-    if (!this.canPlay(gameState, gameInput)) {
-      throw new Error(`Unable to visit location ${this.name}`);
+    const canPlayError = this.canPlayCheck(gameState, gameInput);
+    if (canPlayError) {
+      throw new Error(canPlayError);
     }
     if (this.playInner) {
       this.playInner(gameState, gameInput);
@@ -190,28 +224,28 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     type: LocationType.JOURNEY,
     occupancy: LocationOccupancy.EXCLUSIVE,
     playInner: playInnerJourneyFactory(LocationName.JOURNEY_FIVE, 5),
-    canPlayInner: canPlayInnerJourneyFactory(5),
+    canPlayCheckInner: canPlayCheckInnerJourneyFactory(5),
   }),
   [LocationName.JOURNEY_FOUR]: new Location({
     name: LocationName.JOURNEY_FOUR,
     type: LocationType.JOURNEY,
     occupancy: LocationOccupancy.EXCLUSIVE,
     playInner: playInnerJourneyFactory(LocationName.JOURNEY_FOUR, 4),
-    canPlayInner: canPlayInnerJourneyFactory(4),
+    canPlayCheckInner: canPlayCheckInnerJourneyFactory(4),
   }),
   [LocationName.JOURNEY_THREE]: new Location({
     name: LocationName.JOURNEY_THREE,
     type: LocationType.JOURNEY,
     occupancy: LocationOccupancy.EXCLUSIVE,
     playInner: playInnerJourneyFactory(LocationName.JOURNEY_THREE, 3),
-    canPlayInner: canPlayInnerJourneyFactory(3),
+    canPlayCheckInner: canPlayCheckInnerJourneyFactory(3),
   }),
   [LocationName.JOURNEY_TWO]: new Location({
     name: LocationName.JOURNEY_TWO,
     type: LocationType.JOURNEY,
     occupancy: LocationOccupancy.UNLIMITED,
     playInner: playInnerJourneyFactory(LocationName.JOURNEY_TWO, 2),
-    canPlayInner: canPlayInnerJourneyFactory(2),
+    canPlayCheckInner: canPlayCheckInnerJourneyFactory(2),
   }),
   [LocationName.BASIC_ONE_BERRY]: new Location({
     name: LocationName.BASIC_ONE_BERRY,
@@ -628,15 +662,21 @@ function playInnerJourneyFactory(
   };
 }
 
-function canPlayInnerJourneyFactory(numPoints: number): GameStateCanPlayFn {
-  return (gameState: GameState, gameInput: GameInput) => {
+function canPlayCheckInnerJourneyFactory(
+  numPoints: number
+): GameStateCanPlayCheckFn {
+  return (gameState: GameState, gameInput: GameInput): string | null => {
     const player = gameState.getActivePlayer();
     if (player.currentSeason !== Season.AUTUMN) {
-      return false;
+      return `Cannot visit the Journey in ${player.currentSeason}`;
     }
     if (player.cardsInHand.length < numPoints) {
-      return false;
+      return `Not enough cards to discard for the Journey.\n cardsInHand: ${JSON.stringify(
+        player.cardsInHand,
+        null,
+        2
+      )}, Required: ${numPoints}`;
     }
-    return true;
+    return null;
   };
 }

@@ -15,7 +15,7 @@ import {
   GameState,
   GameStatePlayable,
   GameStatePlayFn,
-  GameStateCanPlayFn,
+  GameStateCanPlayCheckFn,
 } from "./gameState";
 import shuffle from "lodash/shuffle";
 import pull from "lodash/pull";
@@ -32,21 +32,21 @@ export class Event implements GameStatePlayable {
   readonly baseVP: number;
   // every event has requirements to play,
   // but not all events result in an action when played
-  readonly canPlayInner: GameStateCanPlayFn;
+  readonly canPlayCheckInner: GameStateCanPlayCheckFn;
 
   constructor({
     name,
     type,
     baseVP,
     playInner, // called when the card is played
-    canPlayInner, // called when we check canPlay function
+    canPlayCheckInner, // called when we check canPlay function
     playedEventInfoInner, // used for cards that accumulate other cards or resources
     pointsInner, // computed if specified + added to base points
   }: {
     name: EventName;
     type: EventType;
     baseVP: number;
-    canPlayInner: GameStateCanPlayFn;
+    canPlayCheckInner: GameStateCanPlayCheckFn;
     playInner?: GameStatePlayFn;
     playedEventInfoInner?: () => PlayedEventInfo;
     pointsInner?: (gameState: GameState, playerId: string) => number;
@@ -54,37 +54,55 @@ export class Event implements GameStatePlayable {
     this.name = name;
     this.type = type;
     this.baseVP = baseVP;
-    this.canPlayInner = canPlayInner;
+    this.canPlayCheckInner = canPlayCheckInner;
     this.playInner = playInner;
     this.playedEventInfoInner = playedEventInfoInner;
     this.pointsInner = pointsInner;
   }
 
   canPlay(gameState: GameState, gameInput: GameInput): boolean {
+    return !this.canPlayCheck(gameState, gameInput);
+  }
+
+  canPlayCheck(gameState: GameState, gameInput: GameInput): string | null {
     // check whether the event is in the game
     if (!(this.name in gameState.eventsMap)) {
-      return false;
+      return `Event ${
+        this.name
+      } is not part of the current game. \nGame Events: ${JSON.stringify(
+        gameState.eventsMap,
+        null,
+        2
+      )}`;
     }
 
     // check whether the event has been playedCards and we're not taking
     // a second action
     if (
-      gameState.eventsMap[this.name] &&
-      gameInput.inputType == GameInputType.CLAIM_EVENT
+      gameInput.inputType == GameInputType.CLAIM_EVENT &&
+      gameState.eventsMap[this.name]
     ) {
-      return false;
+      return `Event ${this.name} is already claimed by ${JSON.stringify(
+        gameState.eventsMap[this.name],
+        null,
+        2
+      )}`;
     }
 
     // check whether the active player has available workers
-    if (gameState.getActivePlayer().numAvailableWorkers <= 0) {
-      return false;
+    const player = gameState.getActivePlayer();
+    if (player.numAvailableWorkers <= 0) {
+      return `Active player (${player.playerId}) doesn't have any workers to place.`;
     }
 
     // check whether player meets criteria for playing event
-    if (this.canPlayInner && !this.canPlayInner(gameState, gameInput)) {
-      return false;
+    if (this.canPlayCheckInner) {
+      const errorMsg = this.canPlayCheckInner(gameState, gameInput);
+      if (errorMsg) {
+        return errorMsg;
+      }
     }
-    return true;
+    return null;
   }
 
   play(gameState: GameState, gameInput: GameInput): void {
@@ -125,36 +143,48 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.BASIC_FOUR_PRODUCTION_TAGS,
     type: EventType.BASIC,
     baseVP: 3,
-    canPlayInner: (gameState: GameState) => {
+    canPlayCheckInner: (gameState: GameState) => {
       const player = gameState.getActivePlayer();
-      return player.getNumCardType(CardType.PRODUCTION) >= 4;
+      if (player.getNumCardType(CardType.PRODUCTION) < 4) {
+        return `Need at least 4 ${CardType.PRODUCTION} cards to claim event`;
+      }
+      return null;
     },
   }),
   [EventName.BASIC_THREE_DESTINATION]: new Event({
     name: EventName.BASIC_THREE_DESTINATION,
     type: EventType.BASIC,
     baseVP: 3,
-    canPlayInner: (gameState: GameState) => {
+    canPlayCheckInner: (gameState: GameState) => {
       const player = gameState.getActivePlayer();
-      return player.getNumCardType(CardType.DESTINATION) >= 3;
+      if (player.getNumCardType(CardType.DESTINATION) < 3) {
+        return `Need at least 3 ${CardType.DESTINATION} cards to claim event`;
+      }
+      return null;
     },
   }),
   [EventName.BASIC_THREE_GOVERNANCE]: new Event({
     name: EventName.BASIC_THREE_GOVERNANCE,
     type: EventType.BASIC,
     baseVP: 3,
-    canPlayInner: (gameState: GameState) => {
+    canPlayCheckInner: (gameState: GameState) => {
       const player = gameState.getActivePlayer();
-      return player.getNumCardType(CardType.GOVERNANCE) >= 3;
+      if (player.getNumCardType(CardType.GOVERNANCE) < 3) {
+        return `Need at least 3 ${CardType.GOVERNANCE} cards to claim event`;
+      }
+      return null;
     },
   }),
   [EventName.BASIC_THREE_TRAVELER]: new Event({
     name: EventName.BASIC_THREE_TRAVELER,
     type: EventType.BASIC,
     baseVP: 3,
-    canPlayInner: (gameState: GameState) => {
+    canPlayCheckInner: (gameState: GameState) => {
       const player = gameState.getActivePlayer();
-      return player.getNumCardType(CardType.TRAVELER) >= 3;
+      if (player.getNumCardType(CardType.TRAVELER) < 3) {
+        return `Need at least 3 ${CardType.TRAVELER} cards to claim event`;
+      }
+      return null;
     },
   }),
 
@@ -162,14 +192,14 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN,
     type: EventType.SPECIAL,
     baseVP: 0,
-    canPlayInner: (gameState: GameState, gameInput: GameInput) => {
-      return false;
+    canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
+      return "Not Implemented";
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       throw new Error("Not Implemented");
     },
     /*
-    canPlayInnerRequiresCards([
+    canPlayCheckInnerRequiresCards([
       CardName.SHOPKEEPER,
       CardName.POST_OFFICE,
     ]),
@@ -183,14 +213,14 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_A_WEE_RUN_CITY,
     type: EventType.SPECIAL,
     baseVP: 4,
-    canPlayInner: (gameState: GameState, gameInput: GameInput) => {
-      return false;
+    canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
+      return "Not Implemented";
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       throw new Error("Not Implemented");
     },
     /*
-    canPlayInnerRequiresCards([
+    canPlayCheckInnerRequiresCards([
       CardName.CHIP_SWEEP,
       CardName.CLOCK_TOWER,
     ]),
@@ -202,7 +232,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_AN_EVENING_OF_FIREWORKS,
     type: EventType.SPECIAL,
     baseVP: 0,
-    canPlayInner: canPlayInnerRequiresCards([
+    canPlayCheckInner: canPlayCheckInnerRequiresCards([
       CardName.LOOKOUT,
       CardName.MINER_MOLE,
     ]),
@@ -289,7 +319,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED,
     type: EventType.SPECIAL,
     baseVP: 0,
-    canPlayInner: canPlayInnerRequiresCards([
+    canPlayCheckInner: canPlayCheckInnerRequiresCards([
       CardName.HISTORIAN,
       CardName.RUINS,
     ]),
@@ -404,7 +434,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     },
 
     /*
-    canPlayInnerRequiresCards([
+    canPlayCheckInnerRequiresCards([
       CardName.HISTORIAN,
       CardName.RUINS,
     ]),
@@ -435,7 +465,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES,
     type: EventType.SPECIAL,
     baseVP: 0,
-    canPlayInner: canPlayInnerRequiresCards([
+    canPlayCheckInner: canPlayCheckInnerRequiresCards([
       CardName.COURTHOUSE,
       CardName.RANGER,
     ]),
@@ -516,15 +546,24 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_CROAK_WART_CURE,
     type: EventType.SPECIAL,
     baseVP: 0,
-    canPlayInner: (gameState: GameState, gameInput: GameInput) => {
+    canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
-      const cards = [CardName.UNDERTAKER, CardName.BARGE_TOAD];
-      return (
-        cards.every((card) => player.hasCardInCity(card)) &&
-        (gameInput.inputType === GameInputType.CLAIM_EVENT
-          ? player.getNumResourcesByType(ResourceType.BERRY) >= 2
-          : true)
-      );
+      if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
+        if (!player.hasCardInCity(CardName.UNDERTAKER)) {
+          return `Need to have played ${CardName.UNDERTAKER} to claim event`;
+        }
+        if (!player.hasCardInCity(CardName.BARGE_TOAD)) {
+          return `Need to have played ${CardName.BARGE_TOAD} to claim event`;
+        }
+        if (player.getNumResourcesByType(ResourceType.BERRY) < 2) {
+          return `Need to have at least 2 ${
+            ResourceType.BERRY
+          } to claim event. \n Got: ${player.getNumResourcesByType(
+            ResourceType.BERRY
+          )}`;
+        }
+      }
+      return null;
     },
     // Pay 2 berries and discard 2 cards from city
     playInner: (gameState: GameState, gameInput: GameInput) => {
@@ -571,7 +610,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_FLYING_DOCTOR_SERVICE,
     type: EventType.SPECIAL,
     baseVP: 0,
-    canPlayInner: canPlayInnerRequiresCards([
+    canPlayCheckInner: canPlayCheckInnerRequiresCards([
       CardName.DOCTOR,
       CardName.POSTAL_PIGEON,
     ]),
@@ -587,7 +626,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_GRADUATION_OF_SCHOLARS,
     type: EventType.SPECIAL,
     baseVP: 0,
-    canPlayInner: canPlayInnerRequiresCards([
+    canPlayCheckInner: canPlayCheckInnerRequiresCards([
       CardName.TEACHER,
       CardName.UNIVERSITY,
     ]),
@@ -668,7 +707,10 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_MINISTERING_TO_MISCREANTS,
     type: EventType.SPECIAL,
     baseVP: 0,
-    canPlayInner: canPlayInnerRequiresCards([CardName.MONK, CardName.DUNGEON]),
+    canPlayCheckInner: canPlayCheckInnerRequiresCards([
+      CardName.MONK,
+      CardName.DUNGEON,
+    ]),
     // 3 points for each prisoner in dungeon
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
@@ -698,7 +740,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_PATH_OF_THE_PILGRIMS,
     type: EventType.SPECIAL,
     baseVP: 0,
-    canPlayInner: canPlayInnerRequiresCards([
+    canPlayCheckInner: canPlayCheckInnerRequiresCards([
       CardName.MONASTERY,
       CardName.WANDERER,
     ]),
@@ -740,7 +782,10 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_PERFORMER_IN_RESIDENCE,
     type: EventType.SPECIAL,
     baseVP: 0,
-    canPlayInner: canPlayInnerRequiresCards([CardName.INN, CardName.BARD]),
+    canPlayCheckInner: canPlayCheckInnerRequiresCards([
+      CardName.INN,
+      CardName.BARD,
+    ]),
     // may place up to 3 berries on this card
     playedEventInfoInner: () => ({
       storedResources: {
@@ -824,7 +869,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_PRISTINE_CHAPEL_CEILING,
     type: EventType.SPECIAL,
     baseVP: 0,
-    canPlayInner: canPlayInnerRequiresCards([
+    canPlayCheckInner: canPlayCheckInnerRequiresCards([
       CardName.WOODCARVER,
       CardName.CHAPEL,
     ]),
@@ -927,7 +972,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_REMEMBERING_THE_FALLEN,
     type: EventType.SPECIAL,
     baseVP: 0,
-    canPlayInner: canPlayInnerRequiresCards([
+    canPlayCheckInner: canPlayCheckInnerRequiresCards([
       CardName.CEMETARY,
       CardName.SHEPHERD,
     ]),
@@ -970,13 +1015,13 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_TAX_RELIEF,
     type: EventType.SPECIAL,
     baseVP: 0,
-    canPlayInner: (gameState: GameState, gameInput: GameInput) => {
-      return false;
+    canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
+      return "Not Implemented";
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       throw new Error("Not Implemented");
     },
-    /* canPlayInnerRequiresCards([CardName.JUDGE, CardName.QUEEN]),*/
+    /* canPlayCheckInnerRequiresCards([CardName.JUDGE, CardName.QUEEN]),*/
     // TODO: add playInner
     pointsInner: (gameState: GameState, playerId: string) => {
       return 3;
@@ -986,22 +1031,32 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_THE_EVERDELL_GAMES,
     type: EventType.SPECIAL,
     baseVP: 9,
-    canPlayInner: (gameState: GameState) => {
+    canPlayCheckInner: (gameState: GameState) => {
       const player = gameState.getActivePlayer();
-      return (
-        player.getNumCardType(CardType.PROSPERITY) >= 2 &&
-        player.getNumCardType(CardType.GOVERNANCE) >= 2 &&
-        player.getNumCardType(CardType.PRODUCTION) >= 2 &&
-        player.getNumCardType(CardType.TRAVELER) >= 2 &&
-        player.getNumCardType(CardType.DESTINATION) >= 2
-      );
+      const cardTypeList = [
+        CardType.PROSPERITY,
+        CardType.GOVERNANCE,
+        CardType.PRODUCTION,
+        CardType.TRAVELER,
+        CardType.DESTINATION,
+      ];
+      for (let i = 0; i < cardTypeList.length; i++) {
+        if (player.getNumCardType(cardTypeList[i]) < 2) {
+          return `Need to have at least 2 ${
+            cardTypeList[i]
+          } cards to claim event. Got: ${player.getNumCardType(
+            cardTypeList[i]
+          )}`;
+        }
+      }
+      return null;
     },
   }),
   [EventName.SPECIAL_UNDER_NEW_MANAGEMENT]: new Event({
     name: EventName.SPECIAL_UNDER_NEW_MANAGEMENT,
     type: EventType.SPECIAL,
     baseVP: 0,
-    canPlayInner: canPlayInnerRequiresCards([
+    canPlayCheckInner: canPlayCheckInnerRequiresCards([
       CardName.PEDDLER,
       CardName.GENERAL_STORE,
     ]),
@@ -1124,9 +1179,18 @@ export const initialEventMap = (): EventNameToPlayerId => {
 /*
  * Helpers
  */
-function canPlayInnerRequiresCards(cards: CardName[]): GameStateCanPlayFn {
+function canPlayCheckInnerRequiresCards(
+  cards: CardName[]
+): GameStateCanPlayCheckFn {
   return (gameState: GameState, gameInput: GameInput) => {
     const player = gameState.getActivePlayer();
-    return cards.every((card) => player.hasCardInCity(card));
+    if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
+      for (let i = 0; i < cards.length; i++) {
+        if (!player.hasCardInCity(cards[i])) {
+          return `Need to have played ${cards[i]} to claim event`;
+        }
+      }
+    }
+    return null;
   };
 }

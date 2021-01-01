@@ -52,10 +52,17 @@ export default async (
     game.applyGameInput(gameInput);
     await game.save();
   } catch (e) {
+    console.error(
+      `Ran into error with the following gameInput: \n${JSON.stringify(
+        gameInput,
+        null,
+        2
+      )}`
+    );
     console.error(e);
     res.status(500).json({
       success: false,
-      error: e.toString(),
+      error: e.toString().split("\n")[0],
     });
     return;
   }

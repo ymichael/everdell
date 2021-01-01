@@ -35,6 +35,7 @@ const GameAdmin = ({
             <React.Fragment key={idx}>
               <GameInputBox
                 title={`Game Input:: ${pJSON.name}`}
+                devDebug={true}
                 gameId={game.gameId}
                 gameState={game.gameState}
                 viewingPlayer={Player.fromJSON(pJSON)}

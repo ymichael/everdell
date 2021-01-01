@@ -15,6 +15,7 @@
   font-weight: bold;
   font-size: 12px;
   text-align: center;
+  word-wrap: break-word;
   color: #ffffff;
 }
 

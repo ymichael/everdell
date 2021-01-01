@@ -196,9 +196,16 @@ const GameInputDefaultSelector: React.FC<{
 const GameInputBox: React.FC<{
   gameId: string;
   title?: string;
+  devDebug?: boolean;
   gameState: GameStateJSON;
   viewingPlayer: Player;
-}> = ({ title = "Game Input", gameId, gameState, viewingPlayer }) => {
+}> = ({
+  title = "Game Input",
+  devDebug = false,
+  gameId,
+  gameState,
+  viewingPlayer,
+}) => {
   const gameStateImpl = GameState.fromJSON(gameState);
   const activePlayerImpl = gameStateImpl.getActivePlayer();
 
@@ -248,6 +255,8 @@ const GameInputBox: React.FC<{
             const json = await response.json();
             if (!json.success) {
               alert(json.error);
+            } else if (devDebug) {
+              window.location.reload();
             }
           }}
         >

@@ -31,7 +31,6 @@ export default async (
   }
 
   const player = playerId && game.getPlayer(playerId);
-  console.log(player);
   if (!player || player.playerSecretUNSAFE !== playerSecret) {
     res.status(404).json({
       success: false,

@@ -127,7 +127,7 @@ describe("Location", () => {
           prevInputType: GameInputType.PLACE_WORKER,
           locationContext: LocationName.FOREST_TWO_WILD,
           maxResources: 2,
-          minResources: 0,
+          minResources: 2,
           clientOptions: {
             resources: {
               [ResourceType.TWIG]: 1,
@@ -163,7 +163,7 @@ describe("Location", () => {
           prevInputType: GameInputType.PLACE_WORKER,
           locationContext: LocationName.FOREST_TWO_CARDS_ONE_WILD,
           maxResources: 1,
-          minResources: 0,
+          minResources: 1,
           clientOptions: {
             resources: {
               [ResourceType.TWIG]: 1,
@@ -321,7 +321,7 @@ describe("Location", () => {
           prevInputType: GameInputType.DISCARD_CARDS,
           locationContext: LocationName.HAVEN,
           maxResources: 2,
-          minResources: 0,
+          minResources: 2,
           clientOptions: {
             resources: {
               [ResourceType.TWIG]: 1,

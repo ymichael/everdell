@@ -11,6 +11,7 @@ import {
   ProductionResourceMap,
   CardCost,
 } from "./types";
+import { sumResources } from "./gameStatePlayHelpers";
 import {
   GameState,
   GameStatePlayable,
@@ -159,8 +160,8 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
           inputType: GameInputType.SELECT_RESOURCES,
           prevInputType: GameInputType.DISCARD_CARDS,
           locationContext: LocationName.HAVEN,
-          minResources: 0,
-          maxResources: cardsToDiscard.length / 2,
+          minResources: Math.floor(cardsToDiscard.length / 2),
+          maxResources: Math.floor(cardsToDiscard.length / 2),
           clientOptions: {
             resources: {},
           },
@@ -170,19 +171,12 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
         if (!resources) {
           throw new Error("invalid input");
         }
-        // count total number of resources
-
-        const numResources =
-          (resources[ResourceType.BERRY] || 0) +
-          (resources[ResourceType.TWIG] || 0) +
-          (resources[ResourceType.RESIN] || 0) +
-          (resources[ResourceType.PEBBLE] || 0);
-
+        const numResources = sumResources(resources);
         if (numResources > gameInput.maxResources) {
           throw new Error("Can only gain 1 resource per 2 cards discarded");
+        } else if (numResources !== gameInput.maxResources) {
+          throw new Error(`Must gain ${gameInput.maxResources} resource`);
         }
-
-        // gain requested resources
         player.gainResources(resources);
       } else {
         throw new Error(`Invalid input type ${gameInput.inputType}`);
@@ -307,32 +301,24 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
           prevInputType: GameInputType.PLACE_WORKER,
           locationContext: LocationName.FOREST_TWO_WILD,
           maxResources: 2,
-          minResources: 0,
+          minResources: 2,
           clientOptions: {
             resources: {},
           },
         });
       } else if (gameInput.inputType === GameInputType.SELECT_RESOURCES) {
-        // check to make sure they're not gaining more than 2
-        // have player gain resource
-
         const resources = gameInput.clientOptions.resources;
         if (!resources) {
           throw new Error("invalid input");
         }
         // count total number of resources
-
-        const numResources =
-          (resources[ResourceType.BERRY] || 0) +
-          (resources[ResourceType.TWIG] || 0) +
-          (resources[ResourceType.RESIN] || 0) +
-          (resources[ResourceType.PEBBLE] || 0);
-
+        const numResources = sumResources(resources);
         if (numResources > 2) {
           throw new Error("Can't gain more than 2 resources");
+        } else if (numResources !== 2) {
+          throw new Error("Need to gain 2 resources");
         }
-
-        // gain requested resources
+        // Gain requested resources
         player.gainResources(resources);
       } else {
         throw new Error(`Invalid input type ${gameInput.inputType}`);
@@ -472,7 +458,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
           prevInputType: GameInputType.PLACE_WORKER,
           locationContext: LocationName.FOREST_TWO_CARDS_ONE_WILD,
           maxResources: 1,
-          minResources: 0,
+          minResources: 1,
           clientOptions: {
             resources: {},
           },
@@ -482,19 +468,12 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
         if (!resources) {
           throw new Error("invalid input");
         }
-
-        // count total number of resources
-        const numResources =
-          (resources[ResourceType.BERRY] || 0) +
-          (resources[ResourceType.TWIG] || 0) +
-          (resources[ResourceType.RESIN] || 0) +
-          (resources[ResourceType.PEBBLE] || 0);
-
+        const numResources = sumResources(resources);
         if (numResources > 1) {
           throw new Error("Can't gain more than 1 resource");
+        } else if (numResources !== 1) {
+          throw new Error("Must gain 1 resource");
         }
-
-        // gain requested resources
         player.gainResources(resources);
       } else {
         throw new Error(`Invalid input type ${gameInput.inputType}`);
@@ -555,20 +534,15 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
             throw new Error("invalid input");
           }
 
-          // count total number of resources
-          const numResources =
-            (resources[ResourceType.BERRY] || 0) +
-            (resources[ResourceType.TWIG] || 0) +
-            (resources[ResourceType.RESIN] || 0) +
-            (resources[ResourceType.PEBBLE] || 0);
-
+          const numResources = sumResources(resources);
           if (numResources > gameInput.maxResources) {
             throw new Error(
               "Can't gain more resources than the number of cards discarded"
             );
+          } else if (numResources !== gameInput.maxResources) {
+            throw new Error(`Must gain ${gameInput.maxResources} resources`);
           }
 
-          // gain requested resources
           player.gainResources(resources);
         } else {
           throw new Error(`Invalid input type ${gameInput.inputType}`);

@@ -1,20 +1,29 @@
 import { generate as uuid } from "short-uuid";
 import { Player, createPlayer } from "./player";
 import { GameState } from "./gameState";
-import { GameInput } from "./types";
+import { GameInput, GameInputType, GameLogEntry } from "./types";
 import { GameJSON } from "./jsonTypes";
 import { getGameJSONById, saveGameJSONById } from "./db";
 import cloneDeep from "lodash/cloneDeep";
+
+const MAX_GAME_LOG_BUFFER = 100;
 
 class Game {
   public gameId: string;
   private gameSecret: string;
   private gameState: GameState;
+  private gameLogBuffer: GameLogEntry[];
 
-  constructor(gameId: string, gameSecret: string, gameState: GameState) {
+  constructor(
+    gameId: string,
+    gameSecret: string,
+    gameState: GameState,
+    gameLogBuffer: GameLogEntry[] = []
+  ) {
     this.gameId = gameId;
     this.gameSecret = gameSecret;
     this.gameState = gameState;
+    this.gameLogBuffer = gameLogBuffer;
   }
 
   get gameSecretUNSAFE(): string {
@@ -37,7 +46,54 @@ class Game {
     return this.gameState.gameStateId;
   }
 
+  private updateGameLog(gameInput: GameInput): void {
+    const logSize = this.gameLogBuffer.length;
+    if (logSize > MAX_GAME_LOG_BUFFER) {
+      this.gameLogBuffer.splice(0, Math.floor(MAX_GAME_LOG_BUFFER / 2));
+    }
+
+    const player = this.gameState.getActivePlayer();
+    switch (gameInput.inputType) {
+      case GameInputType.PLAY_CARD:
+        this.gameLogBuffer.push({
+          text: `${player.name} played ${gameInput.card}`,
+        });
+        break;
+      case GameInputType.PLACE_WORKER:
+        this.gameLogBuffer.push({
+          text: `${player.name} place a worker on ${gameInput.location}.`,
+        });
+        break;
+      case GameInputType.CLAIM_EVENT:
+        this.gameLogBuffer.push({
+          text: `${player.name} claimed the ${gameInput.event} event.`,
+        });
+        break;
+      case GameInputType.PREPARE_FOR_SEASON:
+        this.gameLogBuffer.push({
+          text: `${player.name} took the prepare for season action.`,
+        });
+        break;
+      case GameInputType.SELECT_CARDS:
+      case GameInputType.SELECT_PLAYED_CARDS:
+      case GameInputType.SELECT_LOCATION:
+      case GameInputType.SELECT_PAYMENT_FOR_CARD:
+      case GameInputType.SELECT_WORKER_PLACEMENT:
+      case GameInputType.SELECT_PLAYER:
+      case GameInputType.SELECT_RESOURCES:
+      case GameInputType.DISCARD_CARDS:
+      case GameInputType.VISIT_DESTINATION_CARD:
+      case GameInputType.GAME_END:
+      default:
+        this.gameLogBuffer.push({
+          text: `${player.name} took ${gameInput.inputType} action.`,
+        });
+        break;
+    }
+  }
+
   applyGameInput(gameInput: GameInput): void {
+    this.updateGameLog(gameInput);
     this.gameState = this.gameState.next(gameInput);
   }
 
@@ -50,6 +106,7 @@ class Game {
       gameId: this.gameId,
       gameSecret: "",
       gameState: this.gameState.toJSON(includePrivate),
+      gameLogBuffer: this.gameLogBuffer,
       ...(includePrivate
         ? {
             gameSecret: this.gameSecret,
@@ -68,7 +125,8 @@ class Game {
     return new Game(
       gameJSON.gameId,
       gameJSON.gameSecret,
-      GameState.fromJSON(gameJSON.gameState)
+      GameState.fromJSON(gameJSON.gameState),
+      gameJSON.gameLogBuffer
     );
   }
 }
@@ -88,7 +146,12 @@ export const createGame = async (playerNames: string[]): Promise<Game> => {
     gameSecret,
     GameState.initialGameState({
       players,
-    })
+    }),
+    [
+      { text: "Game created with ${players.length} players." },
+      { text: "Dealing cards to each player." },
+      { text: "Dealing cards to the Meadow." },
+    ]
   );
 
   await game.save();

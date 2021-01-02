@@ -6,6 +6,7 @@ import { Meadow, Locations } from "./gameBoard";
 import Players from "./Players";
 import ViewerUI from "./ViewerUI";
 import GameInputBox from "./GameInputBox";
+import GameLog from "./GameLog";
 import GameUpdater from "./GameUpdater";
 import { Player } from "../model/player";
 import { CardName, GameInput } from "../model/types";
@@ -44,6 +45,7 @@ const Game: React.FC<{
       onUpdate={updateGameAndViewingPlayer}
     >
       <Meadow meadowCards={gameState.meadowCards} />
+      <GameLog logs={game.gameLogBuffer} />
       <GameInputBox
         gameId={gameId}
         gameState={gameState}

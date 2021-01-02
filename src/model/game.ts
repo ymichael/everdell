@@ -8,7 +8,7 @@ import cloneDeep from "lodash/cloneDeep";
 
 const MAX_GAME_LOG_BUFFER = 100;
 
-class Game {
+export class Game {
   public gameId: string;
   private gameSecret: string;
   private gameState: GameState;
@@ -99,7 +99,9 @@ class Game {
         });
         break;
     }
+  }
 
+  private handleGameOver(): void {
     if (this.gameState.isGameOver()) {
       this.gameLogBuffer.push({ text: `Game over` });
       this.gameState.players.forEach((player) => {
@@ -115,6 +117,7 @@ class Game {
   applyGameInput(gameInput: GameInput): void {
     this.updateGameLog(gameInput);
     this.gameState = this.gameState.next(gameInput);
+    this.handleGameOver();
   }
 
   async save(): Promise<void> {

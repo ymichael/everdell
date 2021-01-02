@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "test": "mocha -r ts-node/register src/**/*.test.ts",
-    "test:watch": "mocha -r ts-node/register --watch --extension ts src/**/*.test.ts",
+    "test": "DB_PATH=./db.test.sqlite mocha -r ts-node/register src/**/*.test.ts",
+    "test:watch": "DB_PATH=./db.test.sqlite mocha -r ts-node/register --watch --extension ts src/**/*.test.ts",
     "dev": "DB_PATH=./db/game.sqlite next dev",
     "build": "next build",
     "start": "next start",

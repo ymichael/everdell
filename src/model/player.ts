@@ -245,6 +245,9 @@ export class Player {
 
     points += this.getNumResourcesByType(ResourceType.VP);
 
+    // For each husband/wife pair
+    points += 3 * this.getNumHusbandWifePairs();
+
     return points;
   }
 

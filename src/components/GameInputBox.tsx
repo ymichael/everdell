@@ -178,7 +178,7 @@ const GameInputBox: React.FC<{
     return (
       <GameInputBoxText
         title={title}
-        text={`Waiting for {activePlayerImpl.name}`}
+        text={`Waiting for ${activePlayerImpl.name}`}
       />
     );
   }

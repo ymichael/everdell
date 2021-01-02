@@ -12,7 +12,7 @@ const GameLog: React.FC<{ logs: GameLogEntry[] }> = ({ logs }) => {
     if (logsElRef.current && lastLogElRef.current) {
       logsElRef.current.scrollTop = lastLogElRef.current.offsetTop;
     }
-  }, []);
+  }, [logs.length]);
   return (
     <GameBlock title={"Game Log"}>
       <div className={styles.logs} ref={logsElRef}>

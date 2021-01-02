@@ -2,6 +2,8 @@ import * as React from "react";
 import styles from "../styles/gameBoard.module.css";
 import {
   CardName,
+  EventNameToPlayerId,
+  EventName,
   LocationNameToPlayerIds,
   LocationName,
 } from "../model/types";
@@ -40,7 +42,7 @@ export const Locations: React.FC<{ locationsMap: LocationNameToPlayerIds }> = ({
   );
 };
 
-export const Events: React.FC<{ eventsMap: EventNameToPlayerIds }> = ({
+export const Events: React.FC<{ eventsMap: EventNameToPlayerId }> = ({
   eventsMap,
 }) => {
   return (

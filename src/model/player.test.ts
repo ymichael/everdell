@@ -750,11 +750,25 @@ describe("Player", () => {
   describe("getPoints", () => {
     it("calculate points for player with no events", () => {
       const player = gameState.getActivePlayer();
-
       player.addToCityMulti([CardName.FARM, CardName.INN]);
 
       const points = player.getPoints(gameState);
       expect(points).to.be(3);
+    });
+
+    it("includes point tokens", () => {
+      const player = gameState.getActivePlayer();
+      player.addToCityMulti([CardName.FARM, CardName.INN]);
+      player.gainResources({
+        [ResourceType.VP]: 5,
+      });
+      expect(player.getPoints(gameState)).to.be(8);
+    });
+
+    it("includes point tokens on cards", () => {
+      const player = gameState.getActivePlayer();
+      player.addToCityMulti([CardName.CLOCK_TOWER]);
+      expect(player.getPoints(gameState)).to.be(3);
     });
   });
 });

@@ -105,23 +105,25 @@ export class GameState {
   }
 
   nextPlayer(): void {
-    const player = this.getActivePlayer();
     const remainingPlayers = this.getRemainingPlayers();
-    const playerIdx = remainingPlayers.indexOf(player);
-    const nextPlayer =
-      remainingPlayers[(playerIdx + 1) % remainingPlayers.length];
-    this._activePlayerId = nextPlayer.playerId;
+    if (remainingPlayers.length !== 0) {
+      const player = this.getActivePlayer();
+      const playerIdx = remainingPlayers.indexOf(player);
+      const nextPlayer =
+        remainingPlayers[(playerIdx + 1) % remainingPlayers.length];
+      this._activePlayerId = nextPlayer.playerId;
+    }
   }
 
   // returns list of players who do not have the GAME_END playerStatus
   getRemainingPlayers(): Player[] {
-    let remainingPlayers: Player[] = [];
-    this.players.forEach((player) => {
-      if (player.playerStatus !== PlayerStatus.GAME_ENDED) {
-        remainingPlayers.push(player);
-      }
+    return this.players.filter((player) => {
+      return player.playerStatus !== PlayerStatus.GAME_ENDED;
     });
-    return remainingPlayers;
+  }
+
+  isGameOver(): boolean {
+    return this.getRemainingPlayers().length === 0;
   }
 
   replenishMeadow(): void {
@@ -353,9 +355,8 @@ export class GameState {
 
   private handleGameEndGameInput(gameInput: GameInputGameEnd): void {
     const player = this.getActivePlayer();
-
     if (player.currentSeason !== Season.AUTUMN) {
-      throw new Error("cannot end game unless you're in Autumn");
+      throw new Error("Cannot end game unless you're in Autumn");
     }
     player.playerStatus = PlayerStatus.GAME_ENDED;
   }

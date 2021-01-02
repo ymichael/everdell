@@ -82,13 +82,33 @@ class Game {
       case GameInputType.SELECT_PLAYER:
       case GameInputType.SELECT_RESOURCES:
       case GameInputType.DISCARD_CARDS:
-      case GameInputType.VISIT_DESTINATION_CARD:
+        this.gameLogBuffer.push({
+          text: `[${
+            gameInput.cardContext ||
+            gameInput.eventContext ||
+            gameInput.locationContext ||
+            gameInput.prevInputType
+          }] ${player.name} took ${gameInput.inputType} action.`,
+        });
+        break;
       case GameInputType.GAME_END:
+      case GameInputType.VISIT_DESTINATION_CARD:
       default:
         this.gameLogBuffer.push({
           text: `${player.name} took ${gameInput.inputType} action.`,
         });
         break;
+    }
+
+    if (this.gameState.isGameOver()) {
+      this.gameLogBuffer.push({ text: `Game over` });
+      this.gameState.players.forEach((player) => {
+        this.gameLogBuffer.push({
+          text: `${player.name} has ${player.getPoints(
+            this.gameState
+          )} points.`,
+        });
+      });
     }
   }
 

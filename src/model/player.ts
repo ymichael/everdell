@@ -230,17 +230,20 @@ export class Player {
   getPoints(gameState: GameState): number {
     let points = 0;
 
-    // points from cards
-    this.forEachPlayedCard((cardInfo) => {
-      const card = Card.fromName(cardInfo.cardName);
-      points = points + card.getPoints(gameState, this.playerId);
+    // Points from cards
+    this.forEachPlayedCard(({ cardName, resources = {} }) => {
+      const card = Card.fromName(cardName);
+      points += card.getPoints(gameState, this.playerId);
+      points += resources[ResourceType.VP] || 0;
     });
 
-    // points from events
+    // Points from events
     Object.keys(this.claimedEvents).forEach((eventName) => {
       const event = Event.fromName(eventName as EventName);
-      points = points + event.getPoints(gameState, this.playerId);
+      points += event.getPoints(gameState, this.playerId);
     });
+
+    points += this.getNumResourcesByType(ResourceType.VP);
 
     return points;
   }

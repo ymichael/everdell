@@ -148,7 +148,7 @@ export const createGame = async (playerNames: string[]): Promise<Game> => {
       players,
     }),
     [
-      { text: "Game created with ${players.length} players." },
+      { text: `Game created with ${players.length} players.` },
       { text: "Dealing cards to each player." },
       { text: "Dealing cards to the Meadow." },
     ]

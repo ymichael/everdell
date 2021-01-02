@@ -2192,6 +2192,104 @@ describe("Card", () => {
       });
     });
 
+    describe(CardName.DOCTOR, () => {
+      it("should not prompt player if they don't have any berries", () => {
+        const card = Card.fromName(CardName.DOCTOR);
+        let player = gameState.getActivePlayer();
+
+        // Make sure we can play this card
+        player.gainResources(card.baseCost);
+        player.addCardToHand(gameState, card.name);
+        gameState = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+        ]);
+        player = gameState.getPlayer(player.playerId);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+      });
+
+      it("should allow player to pay up to 3 berries for vp", () => {
+        const card = Card.fromName(CardName.DOCTOR);
+        let player = gameState.getActivePlayer();
+
+        // Make sure we can play this card
+        player.gainResources(card.baseCost);
+        // Make sure we can spend for vp
+        player.gainResources({ [ResourceType.BERRY]: 3 });
+        player.addCardToHand(gameState, card.name);
+
+        gameState = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+          {
+            inputType: GameInputType.SELECT_RESOURCES,
+            prevInputType: GameInputType.PLAY_CARD,
+            cardContext: CardName.DOCTOR,
+            specificResource: ResourceType.BERRY,
+            minResources: 0,
+            maxResources: 3,
+            clientOptions: {
+              resources: {
+                [ResourceType.BERRY]: 3,
+              },
+            },
+          },
+        ]);
+
+        player = gameState.getPlayer(player.playerId);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(3);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+      });
+    });
+
+    describe(CardName.WOODCARVER, () => {
+      it("should not prompt player if they don't have any twigs", () => {
+        const card = Card.fromName(CardName.WOODCARVER);
+        let player = gameState.getActivePlayer();
+
+        // Make sure we can play this card
+        player.gainResources(card.baseCost);
+        player.addCardToHand(gameState, card.name);
+        gameState = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+        ]);
+        player = gameState.getPlayer(player.playerId);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+      });
+
+      it("should allow player to pay up to 3 twig for vp", () => {
+        const card = Card.fromName(CardName.WOODCARVER);
+        let player = gameState.getActivePlayer();
+
+        // Make sure we can play this card
+        player.gainResources(card.baseCost);
+        // Make sure we can spend for vp
+        player.gainResources({ [ResourceType.TWIG]: 3 });
+        player.addCardToHand(gameState, card.name);
+
+        gameState = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+          {
+            inputType: GameInputType.SELECT_RESOURCES,
+            prevInputType: GameInputType.PLAY_CARD,
+            cardContext: CardName.WOODCARVER,
+            specificResource: ResourceType.TWIG,
+            minResources: 0,
+            maxResources: 3,
+            clientOptions: {
+              resources: {
+                [ResourceType.TWIG]: 3,
+              },
+            },
+          },
+        ]);
+
+        player = gameState.getPlayer(player.playerId);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(3);
+        expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+      });
+    });
+
     describe(CardName.UNIVERSITY, () => {
       it("should allow player remove card from city with university", () => {
         let player = gameState.getActivePlayer();

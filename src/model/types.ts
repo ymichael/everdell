@@ -469,3 +469,7 @@ export enum PlayerStatus {
   PREPARING_FOR_SEASON = "PREPARING_FOR_SEASON",
   GAME_ENDED = "GAME_ENDED",
 }
+
+export type GameLogEntry = {
+  text: string;
+};

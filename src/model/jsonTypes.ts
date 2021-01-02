@@ -9,6 +9,7 @@ import {
   WorkerPlacementInfo,
   GameInputMultiStep,
   EventNameToPlayerId,
+  GameLogEntry,
   LocationNameToPlayerIds,
 } from "./types";
 
@@ -16,6 +17,7 @@ export type GameJSON = {
   gameId: string;
   gameSecret: string;
   gameState: GameStateJSON;
+  gameLogBuffer: GameLogEntry[];
 };
 
 export type GameStateJSON = {

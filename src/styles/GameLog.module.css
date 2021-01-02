@@ -1,0 +1,26 @@
+.logs {
+  display: flex;
+  flex-direction: column;
+
+  height: 150px;
+  width: 500px;
+
+  margin: 10px 0;
+  border-radius: 5px;
+  border: solid 1px black;
+  font-size: 14px;
+
+  overflow-y: scroll;
+  scroll-behavior: smooth;
+}
+
+.log {
+  padding: 5px;
+  display: flex;
+}
+
+.log_prefix {
+  font-weight: 800;
+  font-family: monospace;
+  margin-right: 10px;
+}

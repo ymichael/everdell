@@ -1518,7 +1518,7 @@ describe("Card", () => {
             inputType: GameInputType.SELECT_PAYMENT_FOR_CARD,
             prevInputType: GameInputType.SELECT_CARDS,
             cardContext: card.name,
-            cardToBuy: CardName.FARM,
+            card: CardName.FARM,
             clientOptions: {
               resources: {},
             },
@@ -1581,7 +1581,7 @@ describe("Card", () => {
             inputType: GameInputType.SELECT_PAYMENT_FOR_CARD,
             prevInputType: GameInputType.SELECT_CARDS,
             cardContext: card.name,
-            cardToBuy: CardName.QUEEN,
+            card: CardName.QUEEN,
             clientOptions: {
               resources: {
                 [ResourceType.BERRY]: 2,
@@ -1685,7 +1685,7 @@ describe("Card", () => {
             inputType: GameInputType.SELECT_PAYMENT_FOR_CARD,
             prevInputType: GameInputType.SELECT_CARDS,
             cardContext: card.name,
-            cardToBuy: CardName.WIFE,
+            card: CardName.WIFE,
             clientOptions: {
               resources: {},
             },

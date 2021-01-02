@@ -687,11 +687,7 @@ export class Player {
         | GameInputType.SELECT_PAYMENT_FOR_CARD;
     }
   ): void {
-    const card = Card.fromName(
-      gameInput.inputType === GameInputType.PLAY_CARD
-        ? gameInput.card
-        : gameInput.cardToBuy
-    );
+    const card = Card.fromName(gameInput.card);
     const paymentOptions = gameInput.paymentOptions;
     const paymentResources = paymentOptions.resources;
 

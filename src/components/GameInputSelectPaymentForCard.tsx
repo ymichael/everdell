@@ -12,7 +12,7 @@ const GameInputSelectPaymentForCard: React.FC<{
 }> = ({ gameInput, viewingPlayer }) => {
   return (
     <Form>
-      <p>Play {gameInput.cardToBuy} for 3 fewer resources</p>
+      <p>Play {gameInput.card} for 3 fewer resources</p>
       <>
         <ResourcesToSpend name={"gameInput.clientOptions.resources"} />
       </>

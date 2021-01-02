@@ -197,7 +197,8 @@ export type GameInputSelectPaymentForCard = {
   locationContext?: LocationName;
   // if cardContext is specified, must use that card
   cardContext?: CardName;
-  cardToBuy: CardName;
+
+  card: CardName;
 
   // player specified number of resources
   clientOptions: {

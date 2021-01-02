@@ -967,7 +967,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           inputType: GameInputType.SELECT_PAYMENT_FOR_CARD,
           prevInputType: GameInputType.SELECT_CARDS,
           cardContext: CardName.INN,
-          cardToBuy: selectedCard as CardName,
+          card: selectedCard as CardName,
           clientOptions: { resources: {} },
           paymentOptions: {
             cardToUse: CardName.INN,
@@ -986,7 +986,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         }
         gameInput.paymentOptions.resources = gameInput.clientOptions.resources;
 
-        const card = Card.fromName(gameInput.cardToBuy);
+        const card = Card.fromName(gameInput.card);
 
         const paymentError = player.validatePaidResources(
           gameInput.paymentOptions.resources,

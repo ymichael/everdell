@@ -1,0 +1,25 @@
+.event {
+  height: 100px;
+  width: 200px;
+  border-radius: 5px;
+
+  border: 1px solid #bbb;
+  box-shadow: 1px 1px #eee;
+  border: solid 2px #682c1e;
+
+  overflow: hidden;
+  margin: 10px;
+}
+
+.event_header {
+  padding: 10px;
+  font-weight: bold;
+  font-size: 12px;
+  text-align: center;
+}
+
+.event_requirements {
+  padding: 10px;
+  text-align: center;
+  font-size: 14px;
+}

@@ -31,6 +31,7 @@ export class Event implements GameStatePlayable {
   readonly type: EventType;
   readonly baseVP: number;
   readonly requiredCards: CardName[] | undefined;
+  readonly eventDescription: string[] | undefined;
   // every event has requirements to play,
   // but not all events result in an action when played
   readonly canPlayCheckInner: GameStateCanPlayCheckFn | undefined;
@@ -40,6 +41,7 @@ export class Event implements GameStatePlayable {
     type,
     baseVP,
     requiredCards,
+    eventDescription,
     playInner, // called when the card is played
     canPlayCheckInner, // called when we check canPlay function
     playedEventInfoInner, // used for cards that accumulate other cards or resources
@@ -49,6 +51,7 @@ export class Event implements GameStatePlayable {
     type: EventType;
     baseVP: number;
     requiredCards?: CardName[];
+    eventDescription?: string[];
     canPlayCheckInner?: GameStateCanPlayCheckFn;
     playInner?: GameStatePlayFn;
     playedEventInfoInner?: () => PlayedEventInfo;
@@ -58,6 +61,7 @@ export class Event implements GameStatePlayable {
     this.type = type;
     this.baseVP = baseVP;
     this.requiredCards = requiredCards;
+    this.eventDescription = eventDescription;
     this.canPlayCheckInner = canPlayCheckInner;
     this.playInner = playInner;
     this.playedEventInfoInner = playedEventInfoInner;
@@ -848,6 +852,15 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     baseVP: 0,
     requiredCards: [CardName.WOODCARVER, CardName.CHAPEL],
+    eventDescription: [
+      "When achieved, draw 1 ",
+      "CARD",
+      " and receive 1 ",
+      "ANY",
+      " for each ",
+      "VP",
+      " on your Chapel.",
+    ],
     // draw 1 card and receive 1 resource for each VP on your chapel
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();

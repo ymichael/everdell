@@ -7,7 +7,8 @@ import styles from "../styles/test.module.css";
 import { GameBlock } from "../components/common";
 import Card from "../components/Card";
 import Location from "../components/Location";
-import { CardName, LocationName } from "../model/types";
+import Event from "../components/Event";
+import { CardName, LocationName, EventName } from "../model/types";
 
 const ItemsList: React.FC<{ title: string; visible: boolean }> = ({
   title,
@@ -73,6 +74,10 @@ export default function TestPage() {
           .map((loc) => {
             return <Location key={loc} name={loc} />;
           })}
+      </ItemsList>
+      <ItemsList title={"Events"} visible={showLocations}>
+        <Event name={EventName.SPECIAL_THE_EVERDELL_GAMES} />
+        <Event name={EventName.SPECIAL_PRISTINE_CHAPEL_CEILING} />
       </ItemsList>
     </div>
   );

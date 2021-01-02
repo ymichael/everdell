@@ -647,10 +647,35 @@ export class Player {
         | GameInputType.SELECT_PAYMENT_FOR_CARD;
     }
   ): void {
+    const card = Card.fromName(
+      gameInput.inputType === GameInputType.PLAY_CARD
+        ? gameInput.card
+        : gameInput.cardToBuy
+    );
     const paymentOptions = gameInput.paymentOptions;
     const paymentResources = paymentOptions.resources;
 
     this.spendResources(paymentResources);
+
+    if (paymentOptions.useAssociatedCard) {
+      let hasUsed = false;
+      const playedCardsToCheck: PlayedCardInfo[] = [];
+      if (card.associatedCard) {
+        playedCardsToCheck.push(
+          ...this.getPlayedCardInfos(card.associatedCard)
+        );
+      }
+      playedCardsToCheck.push(...this.getPlayedCardInfos(CardName.EVERTREE));
+      playedCardsToCheck.forEach((playedCard) => {
+        if (!hasUsed) {
+          if (!playedCard.usedForCritter) {
+            playedCard.usedForCritter = true;
+            hasUsed = true;
+          }
+        }
+      });
+    }
+
     if (paymentOptions.cardToDungeon) {
       throw new Error("Not Implemented yet");
     } else if (paymentOptions.cardToUse) {
@@ -716,6 +741,22 @@ export class Player {
 
     // Validate if payment options are valid for the card
     const cardToPlay = Card.fromName(gameInput.card);
+
+    // Check if you have the associated construction if card is a critter
+    if (paymentOptions.useAssociatedCard) {
+      if (!cardToPlay.isCritter || !cardToPlay.associatedCard) {
+        return `Cannot use associated card to play ${cardToPlay.name}`;
+      }
+
+      if (
+        !this.hasUnusedByCritterConstruction(CardName.EVERTREE) &&
+        !this.hasUnusedByCritterConstruction(cardToPlay.associatedCard)
+      ) {
+        return `Cannot find associated card to play ${cardToPlay.name}`;
+      }
+      return null;
+    }
+
     if (paymentOptions.cardToDungeon) {
       if (!this.canInvokeDungeon()) {
         return `Unable to invoke ${CardName.DUNGEON}`;

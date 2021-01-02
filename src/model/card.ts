@@ -22,6 +22,7 @@ import { Location } from "./location";
 import { Player } from "./player";
 import {
   playSpendResourceToGetVPFactory,
+  gainProductionSpendResourceToGetVPFactory,
   sumResources,
   getPointsPerRarityLabel,
 } from "./gameStatePlayHelpers";
@@ -677,7 +678,12 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       "VP",
       " each.",
     ],
-    productionInner: playSpendResourceToGetVPFactory({
+    productionInner: gainProductionSpendResourceToGetVPFactory({
+      card: CardName.DOCTOR,
+      resourceType: ResourceType.BERRY,
+      maxToSpend: 3,
+    }),
+    playInner: playSpendResourceToGetVPFactory({
       resourceType: ResourceType.BERRY,
       maxToSpend: 3,
     }),
@@ -2274,6 +2280,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       "VP",
       " each.",
     ],
+    productionInner: gainProductionSpendResourceToGetVPFactory({
+      card: CardName.WOODCARVER,
+      resourceType: ResourceType.TWIG,
+      maxToSpend: 3,
+    }),
     playInner: playSpendResourceToGetVPFactory({
       resourceType: ResourceType.TWIG,
       maxToSpend: 3,

@@ -17,31 +17,52 @@ export function playSpendResourceToGetVPFactory({
   resourceType,
   maxToSpend,
 }: {
-  resourceType: ResourceType;
+  resourceType: ResourceType.BERRY | ResourceType.TWIG;
   maxToSpend: number;
 }): GameStatePlayFn {
   return (gameState: GameState, gameInput: GameInput) => {
-    throw new Error("Not Implemented");
-    // if (gameInput.inputType !== GameInputType.PLAY_CARD) {
-    //   throw new Error("Invalid input type");
-    // }
-    // if (!gameInput.clientOptions?.resourcesToSpend) {
-    //   throw new Error("Invalid input");
-    // }
-    // const player = gameState.getActivePlayer();
-    // const numToSpend =
-    //   gameInput.clientOptions.resourcesToSpend[resourceType] || 0;
-    // if (numToSpend > maxToSpend) {
-    //   throw new Error(
-    //     `Too many resources, max: ${maxToSpend}, got: ${numToSpend}`
-    //   );
-    // }
-    // player.spendResources({
-    //   [resourceType]: numToSpend,
-    // });
-    // player.gainResources({
-    //   [ResourceType.VP]: numToSpend,
-    // });
+    const player = gameState.getActivePlayer();
+    if (gameInput.inputType === GameInputType.SELECT_RESOURCES) {
+      const numToSpend = gameInput.clientOptions.resources[resourceType] || 0;
+      if (numToSpend > maxToSpend) {
+        throw new Error(
+          `Too many resources, max: ${maxToSpend}, got: ${numToSpend}`
+        );
+      }
+      player.spendResources({
+        [resourceType]: numToSpend,
+      });
+      player.gainResources({
+        [ResourceType.VP]: numToSpend,
+      });
+    }
+  };
+}
+
+export function gainProductionSpendResourceToGetVPFactory({
+  card,
+  resourceType,
+  maxToSpend,
+}: {
+  card: CardName;
+  resourceType: ResourceType.BERRY | ResourceType.TWIG;
+  maxToSpend: number;
+}): GameStatePlayFn {
+  return (gameState: GameState, gameInput: GameInput) => {
+    const player = gameState.getActivePlayer();
+    if (player.getNumResourcesByType(resourceType) !== 0) {
+      gameState.pendingGameInputs.push({
+        inputType: GameInputType.SELECT_RESOURCES,
+        prevInputType: gameInput.inputType,
+        cardContext: card,
+        maxResources: maxToSpend,
+        minResources: 0,
+        specificResource: resourceType,
+        clientOptions: {
+          resources: {},
+        },
+      });
+    }
   };
 }
 

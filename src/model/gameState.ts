@@ -219,8 +219,9 @@ export class GameState {
   private handleMultiStepGameInput(gameInput: GameInputMultiStep): void {
     if (gameInput.cardContext) {
       const card = Card.fromName(gameInput.cardContext);
-      if (!card.canPlay(this, gameInput)) {
-        throw new Error("Cannot take action");
+      const canPlayCardErr = card.canPlayCheck(this, gameInput);
+      if (canPlayCardErr) {
+        throw new Error(canPlayCardErr);
       }
       card.play(this, gameInput);
       return;
@@ -228,17 +229,19 @@ export class GameState {
 
     if (gameInput.locationContext) {
       const location = Location.fromName(gameInput.locationContext);
-      if (!location.canPlay(this, gameInput)) {
-        throw new Error("Cannot take action");
+      const canPlayLocationErr = location.canPlayCheck(this, gameInput);
+      if (canPlayLocationErr) {
+        throw new Error(canPlayLocationErr);
       }
       location.play(this, gameInput);
       return;
     }
 
     if (gameInput.eventContext) {
-      const event = Event.fromName(gameInput.eventContext as EventName);
-      if (!event.canPlay(this, gameInput)) {
-        throw new Error("event cannot be played");
+      const event = Event.fromName(gameInput.eventContext);
+      const canPlayEventErr = event.canPlayCheck(this, gameInput);
+      if (canPlayEventErr) {
+        throw new Error(canPlayEventErr);
       }
       event.play(this, gameInput);
       return;

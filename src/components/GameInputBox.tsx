@@ -125,18 +125,23 @@ const GameInputPlayCardSelector: React.FC<{
 
 const GameInputDefaultSelector: React.FC<{
   gameInputs?: GameInput[];
-}> = ({ gameInputs = [] }) => {
+  viewingPlayer: Player;
+}> = ({ gameInputs = [], viewingPlayer }) => {
   const [field, meta, helpers] = useField("gameInput");
   return (
     <div role="group" className={styles.default_selector}>
       {gameInputs.map((gameInput, idx) => {
+        const isSelected = isEqual(
+          omit(meta.value, ["clientOptions"]),
+          omit(gameInput, ["clientOptions"])
+        );
         return (
           <div key={idx}>
             <label>
               <input
                 type="radio"
                 name="gameInput"
-                checked={isEqual(meta.value, gameInput)}
+                checked={isSelected}
                 onChange={() => {
                   helpers.setValue(gameInput);
                 }}
@@ -147,6 +152,18 @@ const GameInputDefaultSelector: React.FC<{
                 2
               )}
             </label>
+            {isSelected &&
+              (gameInput.inputType === GameInputType.SELECT_RESOURCES ? (
+                <GameInputSelectResources
+                  gameInput={gameInput}
+                  viewingPlayer={viewingPlayer}
+                />
+              ) : gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS ? (
+                <GameInputSelectPlayedCards
+                  gameInput={gameInput}
+                  viewingPlayer={viewingPlayer}
+                />
+              ) : null)}
           </div>
         );
       })}
@@ -321,6 +338,7 @@ const GameInputBox: React.FC<{
                         />
                       ) : (
                         <GameInputDefaultSelector
+                          viewingPlayer={viewingPlayer}
                           gameInputs={inputTypeToInputs[inputType]}
                         />
                       ))}

@@ -99,8 +99,10 @@ export class Event implements GameStatePlayable {
 
     // check whether the active player has available workers
     const player = gameState.getActivePlayer();
-    if (player.numAvailableWorkers <= 0) {
-      return `Active player (${player.playerId}) doesn't have any workers to place.`;
+    if (gameInput.inputType == GameInputType.CLAIM_EVENT) {
+      if (player.numAvailableWorkers <= 0) {
+        return `Active player (${player.playerId}) doesn't have any workers to place.`;
+      }
     }
 
     // check whether player has required cards, if any

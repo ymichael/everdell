@@ -745,7 +745,7 @@ describe("Player", () => {
         // Destroy it
         player.removeCardFromCity(
           gameState,
-          player.getPlayedCardInfos(CardName.INNKEEPER)[0]
+          player.getFirstPlayedCard(CardName.INNKEEPER)
         );
 
         // Try again.
@@ -935,7 +935,11 @@ describe("Player", () => {
       // Player 1 has a worker on player 2's INN
       player2.addToCity(CardName.INN);
       expect(player1.canPlaceWorkerOnCard(CardName.INN, player2)).to.be(true);
-      player1.placeWorkerOnCard(CardName.INN, player2);
+
+      player1.placeWorkerOnCard(
+        gameState,
+        player2.getFirstPlayedCard(CardName.INN)
+      );
 
       // No more space
       expect(player1.canPlaceWorkerOnCard(CardName.INN, player2)).to.be(false);
@@ -960,13 +964,22 @@ describe("Player", () => {
 
       // Player has 1 worker on lookout, 1 worker on monastery
       player.addToCity(CardName.LOOKOUT);
-      player.placeWorkerOnCard(CardName.LOOKOUT);
+      player.placeWorkerOnCard(
+        gameState,
+        player.getFirstPlayedCard(CardName.LOOKOUT)
+      );
 
       player.addToCity(CardName.MONASTERY);
-      player.placeWorkerOnCard(CardName.MONASTERY);
+      player.placeWorkerOnCard(
+        gameState,
+        player.getFirstPlayedCard(CardName.MONASTERY)
+      );
 
       player.addToCity(CardName.CEMETARY);
-      player.placeWorkerOnCard(CardName.CEMETARY);
+      player.placeWorkerOnCard(
+        gameState,
+        player.getFirstPlayedCard(CardName.CEMETARY)
+      );
 
       player.addToCity(CardName.FARM);
       player.addToCity(CardName.FARM);

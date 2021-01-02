@@ -526,14 +526,12 @@ describe("Card", () => {
             cardContext: CardName.RANGER,
             mustSelectOne: true,
             clientOptions: {
-              selectedInput: {
-                inputType: GameInputType.PLACE_WORKER,
+              selectedOption: {
                 location: LocationName.BASIC_ONE_STONE,
               },
             },
             options: [
               {
-                inputType: GameInputType.PLACE_WORKER,
                 location: LocationName.BASIC_ONE_STONE,
               },
             ],
@@ -545,45 +543,35 @@ describe("Card", () => {
             mustSelectOne: true,
             options: [
               {
-                inputType: GameInputType.PLACE_WORKER,
                 location: LocationName.BASIC_ONE_BERRY,
               },
               {
-                inputType: GameInputType.PLACE_WORKER,
                 location: LocationName.BASIC_ONE_BERRY_AND_ONE_CARD,
               },
               {
-                inputType: GameInputType.PLACE_WORKER,
                 location: LocationName.BASIC_ONE_RESIN_AND_ONE_CARD,
               },
               {
-                inputType: GameInputType.PLACE_WORKER,
                 location: LocationName.BASIC_ONE_STONE,
               },
               {
-                inputType: GameInputType.PLACE_WORKER,
                 location: LocationName.BASIC_THREE_TWIGS,
               },
               {
-                inputType: GameInputType.PLACE_WORKER,
                 location: LocationName.BASIC_TWO_CARDS_AND_ONE_VP,
               },
               {
-                inputType: GameInputType.PLACE_WORKER,
                 location: LocationName.BASIC_TWO_RESIN,
               },
               {
-                inputType: GameInputType.PLACE_WORKER,
                 location: LocationName.BASIC_TWO_TWIGS_AND_ONE_CARD,
               },
               {
-                inputType: GameInputType.PLACE_WORKER,
                 location: LocationName.HAVEN,
               },
             ],
             clientOptions: {
-              selectedInput: {
-                inputType: GameInputType.PLACE_WORKER,
+              selectedOption: {
                 location: LocationName.BASIC_TWO_TWIGS_AND_ONE_CARD,
               },
             },
@@ -609,8 +597,9 @@ describe("Card", () => {
 
         const visitDestinationInput = {
           inputType: GameInputType.VISIT_DESTINATION_CARD as const,
-          card: CardName.POST_OFFICE,
-          cardOwnerId: player.playerId,
+          clientOptions: {
+            playedCard: player.getFirstPlayedCard(CardName.POST_OFFICE),
+          },
         };
 
         expect(card.canPlay(gameState, visitDestinationInput)).to.be(false);
@@ -647,8 +636,9 @@ describe("Card", () => {
 
         const visitDestinationInput = {
           inputType: GameInputType.VISIT_DESTINATION_CARD as const,
-          card: CardName.POST_OFFICE,
-          cardOwnerId: player.playerId,
+          clientOptions: {
+            playedCard: player.getFirstPlayedCard(CardName.POST_OFFICE),
+          },
         };
 
         const selectPlayer = {
@@ -1377,8 +1367,9 @@ describe("Card", () => {
         gameState = multiStepGameInputTest(gameState, [
           {
             inputType: GameInputType.VISIT_DESTINATION_CARD,
-            cardOwnerId: player1.playerId,
-            card: CardName.LOOKOUT,
+            clientOptions: {
+              playedCard: player1.getFirstPlayedCard(CardName.LOOKOUT),
+            },
           },
           {
             inputType: GameInputType.SELECT_LOCATION,
@@ -1411,8 +1402,9 @@ describe("Card", () => {
         gameState = multiStepGameInputTest(gameState, [
           {
             inputType: GameInputType.VISIT_DESTINATION_CARD,
-            cardOwnerId: player1.playerId,
-            card: CardName.LOOKOUT,
+            clientOptions: {
+              playedCard: player1.getFirstPlayedCard(CardName.LOOKOUT),
+            },
           },
           {
             inputType: GameInputType.SELECT_LOCATION,
@@ -1449,8 +1441,9 @@ describe("Card", () => {
         gameState = multiStepGameInputTest(gameState, [
           {
             inputType: GameInputType.VISIT_DESTINATION_CARD,
-            cardOwnerId: player1.playerId,
-            card: CardName.LOOKOUT,
+            clientOptions: {
+              playedCard: player1.getFirstPlayedCard(CardName.LOOKOUT),
+            },
           },
           {
             inputType: GameInputType.SELECT_LOCATION,
@@ -1500,8 +1493,9 @@ describe("Card", () => {
         gameState = multiStepGameInputTest(gameState, [
           {
             inputType: GameInputType.VISIT_DESTINATION_CARD,
-            cardOwnerId: player.playerId,
-            card: CardName.INN,
+            clientOptions: {
+              playedCard: player.getFirstPlayedCard(CardName.INN),
+            },
           },
           {
             inputType: GameInputType.SELECT_CARDS,
@@ -1563,8 +1557,9 @@ describe("Card", () => {
         gameState = multiStepGameInputTest(gameState, [
           {
             inputType: GameInputType.VISIT_DESTINATION_CARD,
-            cardOwnerId: player.playerId,
-            card: CardName.INN,
+            clientOptions: {
+              playedCard: player.getFirstPlayedCard(CardName.INN),
+            },
           },
           {
             inputType: GameInputType.SELECT_CARDS,
@@ -1625,8 +1620,9 @@ describe("Card", () => {
 
         gameState = gameState.next({
           inputType: GameInputType.VISIT_DESTINATION_CARD,
-          cardOwnerId: player.playerId,
-          card: CardName.INN,
+          clientOptions: {
+            playedCard: player.getFirstPlayedCard(CardName.INN),
+          },
         });
 
         expect(() => {
@@ -1667,8 +1663,9 @@ describe("Card", () => {
         gameState = multiStepGameInputTest(gameState, [
           {
             inputType: GameInputType.VISIT_DESTINATION_CARD,
-            cardOwnerId: player.playerId,
-            card: CardName.INN,
+            clientOptions: {
+              playedCard: player.getFirstPlayedCard(CardName.INN),
+            },
           },
           {
             inputType: GameInputType.SELECT_CARDS,
@@ -1731,8 +1728,9 @@ describe("Card", () => {
         gameState = multiStepGameInputTest(gameState, [
           {
             inputType: GameInputType.VISIT_DESTINATION_CARD,
-            cardOwnerId: player.playerId,
-            card: CardName.QUEEN,
+            clientOptions: {
+              playedCard: player.getFirstPlayedCard(CardName.QUEEN),
+            },
           },
           {
             inputType: GameInputType.SELECT_CARDS,
@@ -1788,8 +1786,9 @@ describe("Card", () => {
         gameState = multiStepGameInputTest(gameState, [
           {
             inputType: GameInputType.VISIT_DESTINATION_CARD,
-            cardOwnerId: player.playerId,
-            card: CardName.QUEEN,
+            clientOptions: {
+              playedCard: player.getFirstPlayedCard(CardName.QUEEN),
+            },
           },
           {
             inputType: GameInputType.SELECT_CARDS,
@@ -1844,8 +1843,9 @@ describe("Card", () => {
 
         gameState = gameState.next({
           inputType: GameInputType.VISIT_DESTINATION_CARD,
-          cardOwnerId: player.playerId,
-          card: CardName.QUEEN,
+          clientOptions: {
+            playedCard: player.getFirstPlayedCard(CardName.QUEEN),
+          },
         });
 
         expect(() => {
@@ -2140,8 +2140,9 @@ describe("Card", () => {
         gameState = multiStepGameInputTest(gameState, [
           {
             inputType: GameInputType.VISIT_DESTINATION_CARD,
-            cardOwnerId: player1.playerId,
-            card: CardName.QUEEN,
+            clientOptions: {
+              playedCard: player1.getFirstPlayedCard(CardName.QUEEN),
+            },
           },
           {
             inputType: GameInputType.SELECT_CARDS,
@@ -2286,8 +2287,9 @@ describe("Card", () => {
         gameState = multiStepGameInputTest(gameState, [
           {
             inputType: GameInputType.VISIT_DESTINATION_CARD,
-            cardOwnerId: player.playerId,
-            card: CardName.UNIVERSITY,
+            clientOptions: {
+              playedCard: player.getFirstPlayedCard(CardName.UNIVERSITY),
+            },
           },
           {
             inputType: GameInputType.SELECT_PLAYED_CARDS,
@@ -2382,6 +2384,7 @@ describe("Card", () => {
         expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
         expect(player.getNumResourcesByType(ResourceType.VP)).to.be(1);
       });
+
       it("remove card with non-permanently placed worker on it", () => {
         let player = gameState.getActivePlayer();
         const card = Card.fromName(CardName.UNIVERSITY);
@@ -2391,14 +2394,18 @@ describe("Card", () => {
 
         expect(player.numAvailableWorkers).to.be(2);
         expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
-        player.placeWorkerOnCard(CardName.LOOKOUT, player);
+        player.placeWorkerOnCard(
+          gameState,
+          player.getFirstPlayedCard(CardName.LOOKOUT)
+        );
         expect(player.numAvailableWorkers).to.be(1);
 
         gameState = multiStepGameInputTest(gameState, [
           {
             inputType: GameInputType.VISIT_DESTINATION_CARD,
-            cardOwnerId: player.playerId,
-            card: CardName.UNIVERSITY,
+            clientOptions: {
+              playedCard: player.getFirstPlayedCard(CardName.UNIVERSITY),
+            },
           },
           {
             inputType: GameInputType.SELECT_PLAYED_CARDS,
@@ -2446,6 +2453,7 @@ describe("Card", () => {
         player.recallWorkers(gameState);
         expect(player.numAvailableWorkers).to.be(2);
       });
+
       it("remove card with another player's worker on it", () => {
         let player1 = gameState.getActivePlayer();
         let player2 = gameState.players[1];
@@ -2458,15 +2466,22 @@ describe("Card", () => {
         expect(player1.numAvailableWorkers).to.be(2);
         expect(player2.numAvailableWorkers).to.be(2);
         expect(player1.getNumResourcesByType(ResourceType.VP)).to.be(0);
-        player2.placeWorkerOnCard(CardName.INN, player1);
-        player2.placeWorkerOnCard(CardName.LOOKOUT, player2);
+        player2.placeWorkerOnCard(
+          gameState,
+          player1.getFirstPlayedCard(CardName.INN)
+        );
+        player2.placeWorkerOnCard(
+          gameState,
+          player2.getFirstPlayedCard(CardName.LOOKOUT)
+        );
         expect(player2.numAvailableWorkers).to.be(0);
 
         gameState = multiStepGameInputTest(gameState, [
           {
             inputType: GameInputType.VISIT_DESTINATION_CARD,
-            cardOwnerId: player1.playerId,
-            card: CardName.UNIVERSITY,
+            clientOptions: {
+              playedCard: player1.getFirstPlayedCard(CardName.UNIVERSITY),
+            },
           },
           {
             inputType: GameInputType.SELECT_PLAYED_CARDS,
@@ -2520,14 +2535,18 @@ describe("Card", () => {
 
         expect(player.numAvailableWorkers).to.be(2);
         expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
-        player.placeWorkerOnCard(CardName.MONASTERY, player);
+        player.placeWorkerOnCard(
+          gameState,
+          player.getFirstPlayedCard(CardName.MONASTERY)
+        );
         expect(player.numAvailableWorkers).to.be(1);
 
         gameState = multiStepGameInputTest(gameState, [
           {
             inputType: GameInputType.VISIT_DESTINATION_CARD,
-            cardOwnerId: player.playerId,
-            card: CardName.UNIVERSITY,
+            clientOptions: {
+              playedCard: player.getFirstPlayedCard(CardName.UNIVERSITY),
+            },
           },
           {
             inputType: GameInputType.SELECT_PLAYED_CARDS,

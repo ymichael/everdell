@@ -15,7 +15,9 @@ import {
 const placeWorkerInput = (location: LocationName): GameInputPlaceWorker => {
   return {
     inputType: GameInputType.PLACE_WORKER,
-    location,
+    clientOptions: {
+      location,
+    },
   };
 };
 

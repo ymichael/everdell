@@ -28,6 +28,7 @@ import {
 } from "./gameStatePlayHelpers";
 import cloneDeep from "lodash/cloneDeep";
 import pull from "lodash/pull";
+import { assertUnreachable } from "../utils";
 
 type MaxWorkersInnerFn = (cardOwner: Player) => number;
 type ProductionInnerFn = (
@@ -536,44 +537,39 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         return;
       }
       if (gameInput.inputType === GameInputType.PREPARE_FOR_SEASON) {
-        const basicAndForestLocationInputs: GameInputPlaceWorker[] = [];
-        player.getRecallableWorkers().forEach((workerInfo) => {
-          if (!workerInfo.location) {
-            return;
-          }
-          const location = Location.fromName(workerInfo.location);
-          if (
-            location.type !== LocationType.BASIC &&
-            location.type !== LocationType.FOREST
-          ) {
-            return;
-          }
-          basicAndForestLocationInputs.push({
-            inputType: GameInputType.PLACE_WORKER,
-            location: location.name,
+        const basicAndForestLocationOptions = player
+          .getRecallableWorkers()
+          .filter((workerInfo) => {
+            if (!workerInfo.location) {
+              return false;
+            }
+            const location = Location.fromName(workerInfo.location);
+            return (
+              location.type === LocationType.BASIC ||
+              location.type === LocationType.FOREST
+            );
           });
-        });
-        if (basicAndForestLocationInputs.length !== 0) {
+        if (basicAndForestLocationOptions.length !== 0) {
           gameState.pendingGameInputs.push({
             inputType: GameInputType.SELECT_WORKER_PLACEMENT,
             prevInputType: gameInput.inputType,
-            options: basicAndForestLocationInputs,
+            options: basicAndForestLocationOptions,
             cardContext: CardName.CLOCK_TOWER,
             mustSelectOne: false,
             clientOptions: {
-              selectedInput: null,
+              selectedOption: null,
             },
           });
         }
       } else if (
         gameInput.inputType === GameInputType.SELECT_WORKER_PLACEMENT
       ) {
-        const selectedInput = gameInput.clientOptions.selectedInput;
-        if (selectedInput) {
-          if (selectedInput.inputType !== GameInputType.PLACE_WORKER) {
+        const selectedOption = gameInput.clientOptions.selectedOption;
+        if (selectedOption) {
+          if (!selectedOption.location) {
             throw new Error("Invalid input");
           }
-          const location = Location.fromName(selectedInput.location);
+          const location = Location.fromName(selectedOption.location);
           if (
             location.type !== LocationType.BASIC &&
             location.type !== LocationType.FOREST
@@ -1651,73 +1647,71 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           gameState.pendingGameInputs.push({
             inputType: GameInputType.SELECT_WORKER_PLACEMENT,
             prevInputType: gameInput.inputType,
-            options: recallableWorkers.map((placedWorker) => {
-              const { location, cardDestination, event } = placedWorker;
-              if (location) {
-                return {
-                  inputType: GameInputType.PLACE_WORKER as const,
-                  location,
-                };
-              } else if (event) {
-                return {
-                  inputType: GameInputType.CLAIM_EVENT as const,
-                  event,
-                };
-              } else if (cardDestination) {
-                return {
-                  inputType: GameInputType.VISIT_DESTINATION_CARD as const,
-                  cardOwnerId: cardDestination.cardOwnerId,
-                  card: cardDestination.card,
-                };
-              } else {
-                throw new Error(
-                  `Unexpected place worker ${JSON.stringify(placedWorker)}`
-                );
-              }
-            }),
+            options: recallableWorkers,
             cardContext: CardName.RANGER,
             mustSelectOne: true,
             clientOptions: {
-              selectedInput: null,
+              selectedOption: null,
             },
           });
         }
       } else if (
         gameInput.inputType === GameInputType.SELECT_WORKER_PLACEMENT
       ) {
-        const selectedInput = gameInput.clientOptions.selectedInput;
-        if (!selectedInput) {
-          throw new Error("Invalid input");
+        const selectedOption = gameInput.clientOptions.selectedOption;
+        if (!selectedOption) {
+          throw new Error("Must specify clientOptions.selectedOption");
         }
         if (gameInput.prevInputType === GameInputType.PLAY_CARD) {
-          if (selectedInput.inputType === GameInputType.CLAIM_EVENT) {
-            player.recallWorker(gameState, { event: selectedInput.event });
-          } else if (selectedInput.inputType === GameInputType.PLACE_WORKER) {
-            player.recallWorker(gameState, {
-              location: selectedInput.location,
-            });
-          } else if (
-            selectedInput.inputType === GameInputType.VISIT_DESTINATION_CARD
-          ) {
-            player.recallWorker(gameState, {
-              cardDestination: {
-                card: selectedInput.card,
-                cardOwnerId: selectedInput.cardOwnerId,
-              },
-            });
-          }
+          player.recallWorker(gameState, selectedOption);
           gameState.pendingGameInputs.push({
             inputType: GameInputType.SELECT_WORKER_PLACEMENT,
             prevInputType: gameInput.inputType,
-            options: gameState.getEligibleWorkerPlacementGameInputs(),
+            options: [
+              ...gameState
+                .getPlayableLocations()
+                .map((location) => ({ location })),
+
+              ...gameState.getClaimableEvents().map((event) => ({ event })),
+
+              ...gameState
+                .getVisitableDestinationCards()
+                .map((playedCard) => ({ playedCard })),
+            ],
             cardContext: CardName.RANGER,
             mustSelectOne: true,
             clientOptions: {
-              selectedInput: null,
+              selectedOption: null,
             },
           });
         } else {
-          gameState.handleWorkerPlacementGameInput(selectedInput);
+          if (selectedOption.event) {
+            gameState.handleWorkerPlacementGameInput({
+              inputType: GameInputType.CLAIM_EVENT,
+              clientOptions: {
+                event: selectedOption.event,
+              },
+            });
+          } else if (selectedOption.location) {
+            gameState.handleWorkerPlacementGameInput({
+              inputType: GameInputType.PLACE_WORKER,
+              clientOptions: {
+                location: selectedOption.location,
+              },
+            });
+          } else if (selectedOption.playedCard) {
+            gameState.handleWorkerPlacementGameInput({
+              inputType: GameInputType.VISIT_DESTINATION_CARD,
+              clientOptions: {
+                playedCard: selectedOption.playedCard,
+              },
+            });
+          } else {
+            assertUnreachable(
+              selectedOption,
+              `Unexpected selectedOption ${JSON.stringify(selectedOption)}`
+            );
+          }
         }
       } else {
         throw new Error(`Invalid input type: ${gameInput}`);

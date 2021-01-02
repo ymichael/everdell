@@ -18,6 +18,7 @@ import {
   ResourceType,
   GameInputWorkerPlacementTypes,
   WorkerPlacementInfo,
+  PlayedCardInfo,
   PlayerStatus,
 } from "./types";
 import { GameStateJSON } from "./jsonTypes";
@@ -180,8 +181,11 @@ export class GameState {
   }
 
   private handlePlaceWorkerGameInput(gameInput: GameInputPlaceWorker): void {
-    const location = Location.fromName(gameInput.location);
+    if (!gameInput.clientOptions?.location) {
+      throw new Error("Need to specify clientOptions.location");
+    }
 
+    const location = Location.fromName(gameInput.clientOptions.location);
     const canPlayErr = location.canPlayCheck(this, gameInput);
     if (canPlayErr) {
       throw new Error(canPlayErr);
@@ -191,8 +195,8 @@ export class GameState {
     location.play(this, gameInput);
 
     const player = this.getActivePlayer();
-    player.placeWorkerOnLocation(gameInput.location);
-    this.locationsMap[gameInput.location]!.push(player.playerId);
+    player.placeWorkerOnLocation(location.name);
+    this.locationsMap[location.name]!.push(player.playerId);
   }
 
   private removeMultiStepGameInput(gameInput: GameInputMultiStep): void {
@@ -271,28 +275,43 @@ export class GameState {
   }
 
   private handleClaimEventGameInput(gameInput: GameInputClaimEvent): void {
-    const event = Event.fromName(gameInput.event);
+    if (!gameInput.clientOptions?.event) {
+      throw new Error("Need to specify clientOptions.event");
+    }
+
+    const event = Event.fromName(gameInput.clientOptions.event);
     const canPlayErr = event.canPlayCheck(this, gameInput);
     if (canPlayErr) {
       throw new Error(canPlayErr);
     }
 
     event.play(this, gameInput);
-    this.eventsMap[gameInput.event] = this._activePlayerId;
+    this.eventsMap[event.name] = this._activePlayerId;
   }
 
   private handleVisitDestinationCardGameInput(
     gameInput: GameInputVisitDestinationCard
   ): void {
-    const card = Card.fromName(gameInput.card);
-    const cardOwner = this.getPlayer(gameInput.cardOwnerId);
-    const activePlayer = this.getActivePlayer();
-    const activePlayerOwnsCard = cardOwner.playerId === activePlayer.playerId;
+    if (!gameInput.clientOptions?.playedCard) {
+      throw new Error("Need to specify clientOptions.playedCard");
+    }
+    const playedCard = gameInput.clientOptions.playedCard;
+    const cardOwner = this.getPlayer(playedCard.cardOwnerId);
 
-    activePlayer.placeWorkerOnCard(card.name, cardOwner);
+    const origPlayedCard = cardOwner.findPlayedCard(playedCard);
+    if (!origPlayedCard) {
+      throw new Error(
+        `Could not find played card: ${JSON.stringify(playedCard, null, 2)}`
+      );
+    }
+
+    const card = Card.fromName(origPlayedCard.cardName);
+    const activePlayer = this.getActivePlayer();
+
+    activePlayer.placeWorkerOnCard(this, origPlayedCard);
 
     // If card isn't owned by active player, pay the other player a VP
-    if (!activePlayerOwnsCard) {
+    if (cardOwner.playerId !== activePlayer.playerId) {
       cardOwner.gainResources({ [ResourceType.VP]: 1 });
     }
 
@@ -501,82 +520,69 @@ export class GameState {
     throw new Error("No more cards to draw");
   }
 
-  getEligibleWorkerPlacementGameInputs(): GameInputWorkerPlacementTypes[] {
-    if (this.getActivePlayer().numAvailableWorkers === 0) {
-      return [];
-    }
-    return [
-      ...this.getAvailableLocationGameInputs(),
-      ...this.getEligibleEventGameInputs(),
-      ...this.getAvailableDestinationCardGameInputs(),
-    ];
-  }
-
-  private getEligibleEventGameInputs = (): GameInputClaimEvent[] => {
+  getClaimableEvents = (): EventName[] => {
     const keys = (Object.keys(this.eventsMap) as unknown) as EventName[];
-    return keys
-      .map((eventName) => {
-        return {
-          inputType: GameInputType.CLAIM_EVENT as const,
+    return keys.filter((eventName) => {
+      const event = Event.fromName(eventName);
+      return event.canPlay(this, {
+        inputType: GameInputType.CLAIM_EVENT as const,
+        clientOptions: {
           event: eventName,
-        };
-      })
-      .filter((gameInput) => {
-        const event = Event.fromName(gameInput.event);
-        return event.canPlay(this, gameInput);
+        },
       });
+    });
   };
 
-  private getAvailableLocationGameInputs = (): GameInputPlaceWorker[] => {
+  getPlayableLocations = (): LocationName[] => {
     const keys = (Object.keys(this.locationsMap) as unknown) as LocationName[];
-    return keys
-      .map((locationName) => {
-        return {
-          inputType: GameInputType.PLACE_WORKER as const,
+    return keys.filter((locationName) => {
+      const location = Location.fromName(locationName);
+      return location.canPlay(this, {
+        inputType: GameInputType.PLACE_WORKER as const,
+        clientOptions: {
           location: locationName,
-        };
-      })
-      .filter((gameInput) => {
-        const location = Location.fromName(gameInput.location);
-        return location.canPlay(this, gameInput);
+        },
       });
+    });
   };
 
-  private getAvailableDestinationCardGameInputs = (): GameInputVisitDestinationCard[] => {
-    const destinationCardsToPlayers: PlayerIdsToAvailableDestinationCards = {};
+  getVisitableDestinationCards = (): PlayedCardInfo[] => {
+    return [];
+    // TODO
+    // const destinationCardsToPlayers: PlayerIdsToAvailableDestinationCards = {};
 
-    // get open destination cards of other players
-    this.players.forEach((player) => {
-      const availableDestinationCards: CardName[] = player.getAvailableOpenDestinationCards();
+    // // get open destination cards of other players
+    // this.players.forEach((player) => {
+    //   const availableDestinationCards: CardName[] = player.getAvailableOpenDestinationCards();
 
-      const playerId = player.playerId;
+    //   const playerId = player.playerId;
 
-      destinationCardsToPlayers[playerId] = availableDestinationCards;
-    });
+    //   destinationCardsToPlayers[playerId] = availableDestinationCards;
+    // });
 
-    const activePlayer = this.getActivePlayer();
-    const activePlayerId: string = this.activePlayerId;
-    const availableClosedDestinationCards = activePlayer.getAvailableClosedDestinationCards();
-    destinationCardsToPlayers[activePlayerId].push(
-      ...availableClosedDestinationCards
-    );
+    // const activePlayer = this.getActivePlayer();
+    // const activePlayerId: string = this.activePlayerId;
+    // const availableClosedDestinationCards = activePlayer.getAvailableClosedDestinationCards();
+    // destinationCardsToPlayers[activePlayerId].push(
+    //   ...availableClosedDestinationCards
+    // );
 
-    // create the game inputs for these cards
-    const gameInputs: GameInputVisitDestinationCard[] = [];
-    const playerIds = Object.keys(destinationCardsToPlayers);
+    // // create the game inputs for these cards
+    // const gameInputs: GameInputVisitDestinationCard[] = [];
+    // const playerIds = Object.keys(destinationCardsToPlayers);
 
-    playerIds.forEach((playerId) => {
-      const cards = destinationCardsToPlayers[playerId];
-      cards.forEach((cardName) => {
-        gameInputs.push({
-          inputType: GameInputType.VISIT_DESTINATION_CARD as const,
-          cardOwnerId: playerId,
-          card: cardName as CardName,
-        });
-      });
-    });
+    // playerIds.forEach((playerId) => {
+    //   const cards = destinationCardsToPlayers[playerId];
+    //   cards.forEach((cardName) => {
+    //     gameInputs.push({
+    //       inputType: GameInputType.VISIT_DESTINATION_CARD as const,
+    //       cardOwnerId: playerId,
+    //       card: cardName as CardName,
+    //     });
+    //   });
+    // });
 
-    return gameInputs;
+    // return gameInputs;
   };
 
   getPlayableCards(): { card: CardName; fromMeadow: boolean }[] {
@@ -636,7 +642,30 @@ export class GameState {
     const possibleGameInputs: GameInput[] = [];
 
     if (player.numAvailableWorkers > 0) {
-      possibleGameInputs.push(...this.getEligibleWorkerPlacementGameInputs());
+      if (this.getPlayableLocations().length !== 0) {
+        possibleGameInputs.push({
+          inputType: GameInputType.PLACE_WORKER,
+          clientOptions: {
+            location: null,
+          },
+        });
+      }
+      if (this.getVisitableDestinationCards().length !== 0) {
+        possibleGameInputs.push({
+          inputType: GameInputType.VISIT_DESTINATION_CARD,
+          clientOptions: {
+            playedCard: null,
+          },
+        });
+      }
+      if (this.getClaimableEvents().length !== 0) {
+        possibleGameInputs.push({
+          inputType: GameInputType.CLAIM_EVENT,
+          clientOptions: {
+            event: null,
+          },
+        });
+      }
     } else if (player.currentSeason !== Season.AUTUMN) {
       possibleGameInputs.push({
         inputType: GameInputType.PREPARE_FOR_SEASON,

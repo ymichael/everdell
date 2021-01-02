@@ -48,7 +48,9 @@ const GameInputPlaceWorkerSelector: React.FC<{
                     });
                   }}
                 >
-                  <Location name={gameInput.location} />
+                  {gameInput.clientOptions.location && (
+                    <Location name={gameInput.clientOptions.location} />
+                  )}
                 </div>
               </div>
             );

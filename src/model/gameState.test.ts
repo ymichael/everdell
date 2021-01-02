@@ -310,7 +310,9 @@ describe("GameState", () => {
       // player1 should be able to claim event
       const gameInput: GameInput = {
         inputType: GameInputType.CLAIM_EVENT as const,
-        event: EventName.BASIC_FOUR_PRODUCTION_TAGS,
+        clientOptions: {
+          event: EventName.BASIC_FOUR_PRODUCTION_TAGS,
+        },
       };
       gameState = gameState.next(gameInput);
       player1 = gameState.getPlayer(player1.playerId);
@@ -505,16 +507,14 @@ describe("GameState", () => {
           mustSelectOne: false,
           options: [
             {
-              inputType: GameInputType.PLACE_WORKER,
               location: LocationName.BASIC_ONE_BERRY,
             },
             {
-              inputType: GameInputType.PLACE_WORKER,
               location: LocationName.BASIC_ONE_BERRY,
             },
           ],
           clientOptions: {
-            selectedInput: null,
+            selectedOption: null,
           },
           prevInputType: GameInputType.PREPARE_FOR_SEASON,
         },
@@ -542,17 +542,14 @@ describe("GameState", () => {
           mustSelectOne: false,
           options: [
             {
-              inputType: GameInputType.PLACE_WORKER,
               location: LocationName.BASIC_ONE_BERRY,
             },
             {
-              inputType: GameInputType.PLACE_WORKER,
               location: LocationName.BASIC_ONE_BERRY,
             },
           ],
           clientOptions: {
-            selectedInput: {
-              inputType: GameInputType.PLACE_WORKER,
+            selectedOption: {
               location: LocationName.BASIC_ONE_BERRY,
             },
           },
@@ -604,17 +601,14 @@ describe("GameState", () => {
         mustSelectOne: false,
         options: [
           {
-            inputType: GameInputType.PLACE_WORKER as const,
             location: LocationName.BASIC_ONE_BERRY,
           },
           {
-            inputType: GameInputType.PLACE_WORKER as const,
             location: LocationName.BASIC_ONE_BERRY,
           },
         ],
         clientOptions: {
-          selectedInput: {
-            inputType: GameInputType.PLACE_WORKER as const,
+          selectedOption: {
             location: LocationName.BASIC_ONE_BERRY,
           },
         },

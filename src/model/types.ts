@@ -18,13 +18,16 @@ export enum GameInputType {
 
 export type GameInputPlaceWorker = {
   inputType: GameInputType.PLACE_WORKER;
-  location: LocationName;
+  clientOptions: {
+    location: LocationName | null;
+  };
 };
 
 export type GameInputVisitDestinationCard = {
   inputType: GameInputType.VISIT_DESTINATION_CARD;
-  card: CardName;
-  cardOwnerId: string;
+  clientOptions: {
+    playedCard: PlayedCardInfo | null;
+  };
 };
 
 export type GameInputPlayCard = {
@@ -38,7 +41,9 @@ export type GameInputPlayCard = {
 
 export type GameInputClaimEvent = {
   inputType: GameInputType.CLAIM_EVENT;
-  event: EventName;
+  clientOptions: {
+    event: EventName | null;
+  };
 };
 
 export type GameInputGameEnd = {
@@ -145,7 +150,7 @@ export type GameInputSelectResources = {
 export type GameInputSelectWorkerPlacement = {
   inputType: GameInputType.SELECT_WORKER_PLACEMENT;
   prevInputType: GameInputType;
-  options: GameInputWorkerPlacementTypes[];
+  options: WorkerPlacementInfo[];
 
   mustSelectOne: boolean;
 
@@ -154,7 +159,7 @@ export type GameInputSelectWorkerPlacement = {
   eventContext?: EventName;
 
   clientOptions: {
-    selectedInput: GameInputWorkerPlacementTypes | null;
+    selectedOption: WorkerPlacementInfo | null;
   };
 };
 
@@ -337,14 +342,22 @@ export type PlayedEventInfo = {
   storedCards?: string[];
 };
 
-export type WorkerPlacementInfo = {
-  location?: LocationName;
-  cardDestination?: {
-    card: CardName;
-    cardOwnerId: string;
-  };
-  event?: EventName;
-};
+export type WorkerPlacementInfo =
+  | {
+      location: LocationName;
+      playedCard?: undefined;
+      event?: undefined;
+    }
+  | {
+      playedCard: PlayedCardInfo;
+      event?: undefined;
+      location?: undefined;
+    }
+  | {
+      event: EventName;
+      location?: undefined;
+      playedCard?: undefined;
+    };
 
 export type PlayerIdsToAvailableDestinationCards = {
   [playerId: string]: CardName[];

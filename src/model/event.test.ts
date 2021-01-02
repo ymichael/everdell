@@ -14,7 +14,9 @@ import {
 const claimEventInput = (event: EventName): GameInputClaimEvent => {
   return {
     inputType: GameInputType.CLAIM_EVENT,
-    event,
+    clientOptions: {
+      event,
+    },
   };
 };
 

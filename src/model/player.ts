@@ -401,6 +401,20 @@ export class Player {
     return playedCardInfos || [];
   }
 
+  getFirstPlayedCard(cardName: CardName): PlayedCardInfo {
+    const playedCards = this.getPlayedCardInfos(cardName);
+    if (playedCards.length === 0) {
+      throw new Error(`Cannot find played card for: ${cardName}`);
+    }
+    return playedCards[0];
+  }
+
+  findPlayedCard(playedCard: PlayedCardInfo): PlayedCardInfo | undefined {
+    return this.getPlayedCardInfos(playedCard.cardName).find((x) => {
+      return isEqual(x, playedCard);
+    });
+  }
+
   hasUnusedByCritterConstruction(cardName: CardName): boolean {
     return !!(
       Card.fromName(cardName).isConstruction &&
@@ -453,37 +467,15 @@ export class Player {
     this.claimedEvents[eventName] = event.getPlayedEventInfo();
   }
 
-  placeWorkerOnCard(
-    cardName: CardName,
-    _cardOwner: Player | null = null
-  ): void {
-    const cardOwner = _cardOwner || this;
-    if (!this.canPlaceWorkerOnCard(cardName, cardOwner)) {
-      throw new Error(`Cannot place worker on ${cardName}`);
+  placeWorkerOnCard(gameState: GameState, playedCard: PlayedCardInfo): void {
+    const { cardName, cardOwnerId, workers = [] } = playedCard;
+    const cardOwner = gameState.getPlayer(cardOwnerId);
+    const card = Card.fromName(cardName);
+    if (workers.length >= card.getMaxWorkers(cardOwner)) {
+      throw new Error(`Couldn't place worker: ${JSON.stringify(playedCard)}`);
     }
-    const cardDestination = {
-      card: cardName,
-      cardOwnerId: cardOwner.playerId,
-    };
-    this.placeWorkerCommon({ cardDestination });
-
-    let placedWorker = false;
-    cardOwner
-      .getPlayedCardInfos(cardName)
-      .forEach(({ cardName, workers = [] }) => {
-        const card = Card.fromName(cardName);
-        if (!placedWorker && workers.length < card.getMaxWorkers(cardOwner)) {
-          workers.push(this.playerId);
-          placedWorker = true;
-        }
-      });
-    if (!placedWorker) {
-      throw new Error(
-        `Couldn't place worker at cardDestination: ${JSON.stringify(
-          cardDestination
-        )}`
-      );
-    }
+    workers.push(this.playerId);
+    this.placeWorkerCommon({ playedCard });
   }
 
   private placeWorkerCommon(workerPlacementInfo: WorkerPlacementInfo): void {
@@ -737,9 +729,10 @@ export class Player {
           break;
         case CardName.QUEEN:
         case CardName.INN:
-          if (gameInput.inputType === GameInputType.PLAY_CARD) {
-            this.placeWorkerOnCard(paymentOptions.cardToUse);
-          }
+          // TODO
+          // if (gameInput.inputType === GameInputType.PLAY_CARD) {
+          //   this.placeWorkerOnCard(paymentOptions.cardToUse);
+          // }
           break;
         default:
           assertUnreachable(
@@ -958,9 +951,9 @@ export class Player {
   isRecallableWorker(WorkerPlacementInfo: WorkerPlacementInfo): boolean {
     // Don't remove workers from these cards.
     if (
-      WorkerPlacementInfo.cardDestination &&
-      (WorkerPlacementInfo.cardDestination.card === CardName.CEMETARY ||
-        WorkerPlacementInfo.cardDestination.card === CardName.MONASTERY)
+      WorkerPlacementInfo.playedCard &&
+      (WorkerPlacementInfo.playedCard.cardName === CardName.CEMETARY ||
+        WorkerPlacementInfo.playedCard.cardName === CardName.MONASTERY)
     ) {
       return false;
     }
@@ -990,7 +983,7 @@ export class Player {
     if (removeFromPlacedWorkers) {
       this.placedWorkers.splice(this.placedWorkers.indexOf(toRemove), 1);
     }
-    const { location, cardDestination, event } = toRemove;
+    const { location, playedCard, event } = toRemove;
     // Update gameState/other objects
     if (location) {
       const workers = gameState.locationsMap[location];
@@ -1005,11 +998,11 @@ export class Player {
       }
     } else if (event) {
       // Don't need to do anything for event
-    } else if (cardDestination) {
-      const cardOwner = gameState.getPlayer(cardDestination.cardOwnerId);
+    } else if (playedCard) {
+      const cardOwner = gameState.getPlayer(playedCard.cardOwnerId);
       let removedWorker = false;
       cardOwner
-        .getPlayedCardInfos(cardDestination.card)
+        .getPlayedCardInfos(playedCard.cardName)
         .forEach(({ workers = [] }) => {
           if (!removedWorker) {
             const idx = workers.indexOf(this.playerId);
@@ -1019,18 +1012,14 @@ export class Player {
             }
           }
         });
-      if (!removedWorker) {
-        // this means we can't find the worker on any card owned by the card owner from
-        // the WorkerPlacementInfo. This card may have been discarded from the city, such
-        // as through the university
-        // throw new Error(
-        //   `Couldn't find worker at cardDestination: ${JSON.stringify(
-        //     cardDestination
-        //   )}`
-        // );
-      }
     } else {
-      throw new Error("Unexpected worker placement");
+      throw new Error(
+        `Unexpected Worker Placement: ${JSON.stringify(
+          workerPlacementInfo,
+          null,
+          2
+        )}`
+      );
     }
   }
 

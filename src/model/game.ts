@@ -61,12 +61,12 @@ export class Game {
         break;
       case GameInputType.PLACE_WORKER:
         this.gameLogBuffer.push({
-          text: `${player.name} place a worker on ${gameInput.location}.`,
+          text: `${player.name} place a worker on ${gameInput.clientOptions.location}.`,
         });
         break;
       case GameInputType.CLAIM_EVENT:
         this.gameLogBuffer.push({
-          text: `${player.name} claimed the ${gameInput.event} event.`,
+          text: `${player.name} claimed the ${gameInput.clientOptions.event} event.`,
         });
         break;
       case GameInputType.PREPARE_FOR_SEASON:

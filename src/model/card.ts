@@ -174,9 +174,6 @@ export class Card<TCardType extends CardType = CardType>
           2
         )}`;
       }
-      if (!player.canAffordCard(this.name, gameInput.fromMeadow)) {
-        return `Cannot afford to play card: ${this.name}`;
-      }
     }
     if (this.canPlayCheckInner) {
       const errorMsg = this.canPlayCheckInner(gameState, gameInput);

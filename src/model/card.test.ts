@@ -2,7 +2,11 @@ import expect from "expect.js";
 import { Card } from "./card";
 import { GameState } from "./gameState";
 import merge from "lodash/merge";
-import { testInitialGameState, multiStepGameInputTest } from "./testHelpers";
+import {
+  testInitialGameState,
+  multiStepGameInputTest,
+  playCardInput,
+} from "./testHelpers";
 import {
   CardType,
   ResourceType,
@@ -11,23 +15,6 @@ import {
   CardName,
   LocationName,
 } from "./types";
-
-const playCardInput = (
-  card: CardName,
-  overrides: any = {}
-): GameInputPlayCard => {
-  return merge(
-    {
-      inputType: GameInputType.PLAY_CARD,
-      card,
-      fromMeadow: false,
-      paymentOptions: {
-        resources: Card.fromName(card).baseCost,
-      },
-    },
-    overrides
-  );
-};
 
 describe("Card", () => {
   let gameState: GameState;
@@ -126,21 +113,6 @@ describe("Card", () => {
         expect(player.hasCardInCity(CardName.FARM)).to.be(true);
         expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
         expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
-      });
-
-      it("should be able to pay for the card to play it", () => {
-        const card = Card.fromName(CardName.FARM);
-        const gameInput = playCardInput(card.name);
-        const player = gameState.getActivePlayer();
-
-        player.cardsInHand.push(card.name);
-
-        expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
-        expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
-        expect(card.canPlay(gameState, gameInput)).to.be(false);
-
-        player.gainResources(card.baseCost);
-        expect(card.canPlay(gameState, gameInput)).to.be(true);
       });
 
       it("should gain 1 berry when played", () => {

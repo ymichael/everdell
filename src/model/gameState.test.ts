@@ -11,7 +11,12 @@ import {
   ResourceType,
 } from "./types";
 import { Event } from "./event";
-import { testInitialGameState, multiStepGameInputTest } from "./testHelpers";
+import { Card } from "./card";
+import {
+  testInitialGameState,
+  multiStepGameInputTest,
+  playCardInput,
+} from "./testHelpers";
 
 describe("GameState", () => {
   let gameState: GameState;
@@ -78,6 +83,42 @@ describe("GameState", () => {
         CardName.MINE,
         CardName.FARM,
       ]);
+    });
+  });
+
+  describe("PLAY_CARD", () => {
+    it("should be able to pay for the card to play it", () => {
+      const card = Card.fromName(CardName.FARM);
+      const gameInput = playCardInput(card.name);
+      let player = gameState.getActivePlayer();
+
+      player.cardsInHand.push(card.name);
+      expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
+
+      expect(
+        gameState.getPossibleGameInputs().find((gameInput) => {
+          return (
+            gameInput.inputType === GameInputType.PLAY_CARD &&
+            gameInput.card === card.name
+          );
+        })
+      ).to.be(undefined);
+      player.gainResources(card.baseCost);
+      expect(
+        gameState.getPossibleGameInputs().find((gameInput) => {
+          return (
+            gameInput.inputType === GameInputType.PLAY_CARD &&
+            gameInput.card === card.name
+          );
+        })
+      ).to.eql({
+        inputType: GameInputType.PLAY_CARD,
+        playerId: player.playerId,
+        card: card.name,
+        fromMeadow: false,
+        paymentOptions: { resources: {} },
+      });
     });
   });
 
@@ -487,7 +528,7 @@ describe("GameState", () => {
     });
   });
 
-  describe("Game end", () => {
+  describe("GAME_END", () => {
     it("remove player from list of remaining players once they're done", () => {
       gameState = testInitialGameState({ numPlayers: 3 });
       let player1 = gameState.getActivePlayer();

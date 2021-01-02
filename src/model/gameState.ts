@@ -614,9 +614,13 @@ export class GameState {
             },
           };
         })
-        .filter((gameInput) =>
-          Card.fromName(gameInput.card).canPlay(this, gameInput)
-        ),
+        .filter((gameInput) => {
+          const card = Card.fromName(gameInput.card);
+          return (
+            player.canAffordCard(card.name, gameInput.fromMeadow) &&
+            card.canPlay(this, gameInput)
+          );
+        }),
       ...this.getActivePlayer()
         .cardsInHand.map((cardName) => {
           return {
@@ -629,9 +633,13 @@ export class GameState {
             },
           };
         })
-        .filter((gameInput) =>
-          Card.fromName(gameInput.card).canPlay(this, gameInput)
-        )
+        .filter((gameInput) => {
+          const card = Card.fromName(gameInput.card);
+          return (
+            player.canAffordCard(card.name, gameInput.fromMeadow) &&
+            card.canPlay(this, gameInput)
+          );
+        })
     );
 
     return possibleGameInputs;

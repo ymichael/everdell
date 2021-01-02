@@ -3,6 +3,7 @@ import { GameState } from "./gameState";
 import { createPlayer } from "./player";
 import { Location } from "./location";
 import { Event } from "./event";
+import { Card } from "./card";
 import {
   CardName,
   LocationName,
@@ -10,8 +11,11 @@ import {
   EventName,
   EventType,
   GameInput,
+  GameInputType,
+  GameInputPlayCard,
 } from "./types";
 import omit from "lodash/omit";
+import merge from "lodash/merge";
 
 export function testInitialGameState(
   opts: {
@@ -94,4 +98,21 @@ export const multiStepGameInputTest = (
     }
   });
   return currGameState;
+};
+
+export const playCardInput = (
+  card: CardName,
+  overrides: any = {}
+): GameInputPlayCard => {
+  return merge(
+    {
+      inputType: GameInputType.PLAY_CARD,
+      card,
+      fromMeadow: false,
+      paymentOptions: {
+        resources: Card.fromName(card).baseCost,
+      },
+    },
+    overrides
+  );
 };

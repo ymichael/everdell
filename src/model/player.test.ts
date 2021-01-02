@@ -38,6 +38,7 @@ describe("Player", () => {
       player.addToCity(CardName.FARM);
       expect(player.canAddToCity(CardName.FARM)).to.be(true);
     });
+
     it("should not be able to add cards to city if there is no space", () => {
       const player = gameState.getActivePlayer();
 
@@ -61,6 +62,7 @@ describe("Player", () => {
       ]);
       expect(player.canAddToCity(CardName.FARM)).to.be(false);
     });
+
     it("should be able to add wanderer to city even if city is already full", () => {
       const player = gameState.getActivePlayer();
 
@@ -84,6 +86,7 @@ describe("Player", () => {
       ]);
       expect(player.canAddToCity(CardName.WANDERER)).to.be(true);
     });
+
     it("should allow player to add another card if there's a husband/wife pair that can share a spot", () => {
       const player = gameState.getActivePlayer();
 
@@ -286,6 +289,76 @@ describe("Player", () => {
                 [ResourceType.TWIG]: 2,
                 [ResourceType.RESIN]: 1,
               },
+            },
+          })
+        )
+      ).to.be(null);
+    });
+
+    it("unoccupied associated construction", () => {
+      const player = gameState.getActivePlayer();
+      expect(
+        player.validatePaymentOptions(
+          playCardInput(CardName.FARM, {
+            paymentOptions: { resources: {} },
+          })
+        )
+      ).to.match(/insufficient/i);
+
+      // Doesn't work for constructions
+      expect(
+        player.validatePaymentOptions(
+          playCardInput(CardName.FARM, {
+            paymentOptions: {
+              resources: {},
+              useAssociatedCard: true,
+            },
+          })
+        )
+      ).to.match(/cannot use associated card/i);
+
+      // Error if don't have associated card
+      expect(
+        player.validatePaymentOptions(
+          playCardInput(CardName.INNKEEPER, {
+            paymentOptions: {
+              resources: {},
+              useAssociatedCard: true,
+            },
+          })
+        )
+      ).to.match(/cannot find associated card/i);
+
+      player.addToCity(CardName.INN);
+      expect(
+        player.validatePaymentOptions(
+          playCardInput(CardName.INNKEEPER, {
+            paymentOptions: {
+              resources: {},
+              useAssociatedCard: true,
+            },
+          })
+        )
+      ).to.be(null);
+
+      // Try with king + evertree
+      expect(
+        player.validatePaymentOptions(
+          playCardInput(CardName.KING, {
+            paymentOptions: {
+              resources: {},
+              useAssociatedCard: true,
+            },
+          })
+        )
+      ).to.match(/cannot find associated card/i);
+      player.addToCity(CardName.EVERTREE);
+      expect(
+        player.validatePaymentOptions(
+          playCardInput(CardName.KING, {
+            paymentOptions: {
+              resources: {},
+              useAssociatedCard: true,
             },
           })
         )
@@ -602,6 +675,172 @@ describe("Player", () => {
   });
 
   describe("payForCard", () => {
+    describe("useAssociatedCard", () => {
+      it("should occupy associated card after using it", () => {
+        // Use INN to play INNKEEPER
+        const card = Card.fromName(CardName.INNKEEPER);
+        const gameInput = playCardInput(card.name, {
+          paymentOptions: {
+            resources: {},
+            useAssociatedCard: true,
+          },
+        });
+
+        let player = gameState.getActivePlayer();
+        player.addToCity(CardName.INN);
+        expect(player.hasUnusedByCritterConstruction(CardName.INN)).to.be(true);
+        player.cardsInHand = [card.name];
+
+        expect(player.hasCardInCity(CardName.INN)).to.be(true);
+        expect(card.canPlay(gameState, gameInput)).to.be(true);
+        expect(player.cardsInHand).to.not.eql([]);
+
+        gameState = gameState.next(gameInput);
+        player = gameState.getPlayer(player.playerId);
+
+        expect(player.cardsInHand).to.eql([]);
+        expect(player.hasUnusedByCritterConstruction(CardName.INN)).to.be(
+          false
+        );
+        expect(player.hasCardInCity(CardName.INN)).to.be(true);
+        expect(player.hasCardInCity(CardName.INNKEEPER)).to.be(true);
+
+        // Back to the prev player
+        gameState.nextPlayer();
+
+        // Now INN is occupied, try to occupy it again
+        player.cardsInHand = [card.name];
+        expect(player.cardsInHand).to.not.eql([]);
+        expect(card.canPlay(gameState, gameInput)).to.be(false);
+
+        // Innkeeper is unique.
+        expect(() => {
+          gameState = gameState.next(gameInput);
+        }).to.throwException(/cannot add innkeeper/i);
+
+        // Destroy it
+        player.removeCardFromCity(
+          gameState,
+          player.getPlayedCardInfos(CardName.INNKEEPER)[0]
+        );
+
+        // Try again.
+        expect(() => {
+          gameState = gameState.next(gameInput);
+        }).to.throwException(/cannot find associated card/i);
+      });
+
+      it("should occupy only ONE associated card after using it", () => {
+        // Use FARM to play HUSBAND
+        const card = Card.fromName(CardName.HUSBAND);
+        const gameInput = playCardInput(card.name, {
+          paymentOptions: {
+            resources: {},
+            useAssociatedCard: true,
+          },
+        });
+
+        let player = gameState.getActivePlayer();
+        player.cardsInHand = [card.name, card.name, card.name];
+
+        // Add 2 farms
+        player.addToCity(CardName.FARM);
+        player.addToCity(CardName.FARM);
+
+        expect(player.hasUnusedByCritterConstruction(CardName.FARM)).to.be(
+          true
+        );
+
+        expect(player.hasCardInCity(CardName.FARM)).to.be(true);
+        expect(card.canPlay(gameState, gameInput)).to.be(true);
+
+        gameState = gameState.next(gameInput);
+        player = gameState.getPlayer(player.playerId);
+        expect(player.hasUnusedByCritterConstruction(CardName.FARM)).to.be(
+          true
+        );
+        expect(player.hasCardInCity(CardName.HUSBAND)).to.be(true);
+        expect(player.getPlayedCardInfos(CardName.HUSBAND).length).to.be(1);
+
+        // Back to the prev player
+        gameState.nextPlayer();
+
+        gameState = gameState.next(gameInput);
+        player = gameState.getPlayer(player.playerId);
+        expect(player.hasUnusedByCritterConstruction(CardName.FARM)).to.be(
+          false
+        );
+        expect(player.getPlayedCardInfos(CardName.HUSBAND).length).to.be(2);
+
+        // Back to the prev player
+        gameState.nextPlayer();
+
+        expect(() => {
+          gameState = gameState.next(gameInput);
+        }).to.throwException(/cannot find associated card/i);
+      });
+
+      it("should occupy only specific card over the EVERTREE is one exists", () => {
+        // Use FARM OR EVERTREE to play HUSBAND
+        const card = Card.fromName(CardName.HUSBAND);
+        const gameInput = playCardInput(card.name, {
+          paymentOptions: {
+            resources: {},
+            useAssociatedCard: true,
+          },
+        });
+
+        let player = gameState.getActivePlayer();
+        player.cardsInHand = [card.name, card.name, card.name];
+
+        // Add 2 farms
+        player.addToCity(CardName.FARM);
+        player.addToCity(CardName.EVERTREE);
+
+        expect(player.hasUnusedByCritterConstruction(CardName.FARM)).to.be(
+          true
+        );
+        expect(player.hasUnusedByCritterConstruction(CardName.EVERTREE)).to.be(
+          true
+        );
+
+        expect(player.hasCardInCity(CardName.FARM)).to.be(true);
+        expect(card.canPlay(gameState, gameInput)).to.be(true);
+
+        gameState = gameState.next(gameInput);
+        player = gameState.getPlayer(player.playerId);
+        expect(player.hasUnusedByCritterConstruction(CardName.FARM)).to.be(
+          false
+        );
+        expect(player.hasUnusedByCritterConstruction(CardName.EVERTREE)).to.be(
+          true
+        );
+        expect(player.hasCardInCity(CardName.HUSBAND)).to.be(true);
+        expect(player.getPlayedCardInfos(CardName.HUSBAND).length).to.be(1);
+
+        // Back to the prev player
+        gameState.nextPlayer();
+
+        // use evertree this time.
+        gameState = gameState.next(gameInput);
+        player = gameState.getPlayer(player.playerId);
+        expect(player.hasUnusedByCritterConstruction(CardName.FARM)).to.be(
+          false
+        );
+        expect(player.hasUnusedByCritterConstruction(CardName.EVERTREE)).to.be(
+          false
+        );
+        expect(player.getPlayedCardInfos(CardName.HUSBAND).length).to.be(2);
+
+        // Back to the prev player
+        gameState.nextPlayer();
+
+        expect(() => {
+          gameState = gameState.next(gameInput);
+        }).to.throwException(/cannot find associated card/i);
+      });
+    });
+
     describe("cardToUse", () => {
       it("should remove CRANE from city after using it", () => {
         // Use crane to play farm

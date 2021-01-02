@@ -9,6 +9,7 @@ import {
   EventName,
   PlayerStatus,
   ResourceType,
+  GameInputPlayCard,
 } from "./types";
 import { Event } from "./event";
 import { Card } from "./card";
@@ -97,28 +98,215 @@ describe("GameState", () => {
       expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
 
       expect(
-        gameState.getPossibleGameInputs().find((gameInput) => {
-          return (
-            gameInput.inputType === GameInputType.PLAY_CARD &&
-            gameInput.card === card.name
-          );
-        })
-      ).to.be(undefined);
+        (gameState.getPossibleGameInputs().filter((gameInput) => {
+          return gameInput.inputType === GameInputType.PLAY_CARD;
+        }) as GameInputPlayCard[]).map((gameInput) => gameInput.card)
+      ).to.eql([]);
+
       player.gainResources(card.baseCost);
       expect(
-        gameState.getPossibleGameInputs().find((gameInput) => {
-          return (
-            gameInput.inputType === GameInputType.PLAY_CARD &&
-            gameInput.card === card.name
-          );
-        })
-      ).to.eql({
-        inputType: GameInputType.PLAY_CARD,
-        playerId: player.playerId,
-        card: card.name,
-        fromMeadow: false,
-        paymentOptions: { resources: {} },
-      });
+        (gameState.getPossibleGameInputs().filter((gameInput) => {
+          return gameInput.inputType === GameInputType.PLAY_CARD;
+        }) as GameInputPlayCard[]).map((gameInput) => gameInput.card)
+      ).to.eql([CardName.FARM]);
+    });
+
+    it("should be not be able to play cards if city is full", () => {
+      const card = Card.fromName(CardName.FARM);
+
+      let player = gameState.getActivePlayer();
+      player.cardsInHand.push(card.name);
+      player.gainResources(card.baseCost);
+
+      expect(
+        (gameState.getPossibleGameInputs().filter((gameInput) => {
+          return gameInput.inputType === GameInputType.PLAY_CARD;
+        }) as GameInputPlayCard[]).map((gameInput) => gameInput.card)
+      ).to.eql([CardName.FARM]);
+
+      // Fill up city
+      for (var i = 0; i < 15; i++) {
+        player.addToCity(CardName.FARM);
+      }
+      expect(
+        (gameState.getPossibleGameInputs().filter((gameInput) => {
+          return gameInput.inputType === GameInputType.PLAY_CARD;
+        }) as GameInputPlayCard[]).map((gameInput) => gameInput.card)
+      ).to.eql([]);
+    });
+
+    it("should be able to play constructions if city is full (w/ crane)", () => {
+      let player = gameState.getActivePlayer();
+
+      player.cardsInHand.push(CardName.FARM);
+      player.gainResources(Card.fromName(CardName.FARM).baseCost);
+      player.cardsInHand.push(CardName.MINE);
+      player.gainResources(Card.fromName(CardName.MINE).baseCost);
+
+      player.cardsInHand.push(CardName.WIFE);
+      player.gainResources(Card.fromName(CardName.WIFE).baseCost);
+      player.cardsInHand.push(CardName.KING);
+      player.gainResources(Card.fromName(CardName.KING).baseCost);
+
+      expect(
+        (gameState.getPossibleGameInputs().filter((gameInput) => {
+          return gameInput.inputType === GameInputType.PLAY_CARD;
+        }) as GameInputPlayCard[]).map((gameInput) => gameInput.card)
+      ).to.eql([CardName.FARM, CardName.MINE, CardName.WIFE, CardName.KING]);
+
+      // Fill up city
+      player.addToCity(CardName.CRANE);
+      for (var i = 0; i < 14; i++) {
+        player.addToCity(CardName.FARM);
+      }
+
+      // Only constructions
+      expect(
+        (gameState.getPossibleGameInputs().filter((gameInput) => {
+          return gameInput.inputType === GameInputType.PLAY_CARD;
+        }) as GameInputPlayCard[]).map((gameInput) => gameInput.card)
+      ).to.eql([CardName.FARM, CardName.MINE]);
+
+      expect(() => {
+        multiStepGameInputTest(gameState, [playCardInput(CardName.MINE)]);
+      }).to.throwException(/unable to add/i);
+
+      expect(player.hasCardInCity(CardName.CRANE)).to.be(true);
+      expect(player.hasCardInCity(CardName.MINE)).to.be(false);
+      gameState = multiStepGameInputTest(gameState, [
+        playCardInput(CardName.MINE, {
+          paymentOptions: {
+            resources: {
+              [ResourceType.PEBBLE]: 0,
+              [ResourceType.RESIN]: 0,
+              [ResourceType.TWIG]: 0,
+            },
+            cardToUse: CardName.CRANE,
+          },
+        }),
+      ]);
+      player = gameState.getPlayer(player.playerId);
+      expect(player.hasCardInCity(CardName.CRANE)).to.be(false);
+      expect(player.hasCardInCity(CardName.MINE)).to.be(true);
+    });
+
+    it("should be able to play critters if city is full (w/ innkeeper)", () => {
+      let player = gameState.getActivePlayer();
+
+      player.cardsInHand.push(CardName.FARM);
+      player.gainResources(Card.fromName(CardName.FARM).baseCost);
+      player.cardsInHand.push(CardName.MINE);
+      player.gainResources(Card.fromName(CardName.MINE).baseCost);
+
+      player.cardsInHand.push(CardName.WIFE);
+      player.gainResources(Card.fromName(CardName.WIFE).baseCost);
+      player.cardsInHand.push(CardName.KING);
+      player.gainResources(Card.fromName(CardName.KING).baseCost);
+
+      expect(
+        (gameState.getPossibleGameInputs().filter((gameInput) => {
+          return gameInput.inputType === GameInputType.PLAY_CARD;
+        }) as GameInputPlayCard[]).map((gameInput) => gameInput.card)
+      ).to.eql([CardName.FARM, CardName.MINE, CardName.WIFE, CardName.KING]);
+
+      // Fill up city
+      player.addToCity(CardName.INNKEEPER);
+      for (var i = 0; i < 14; i++) {
+        player.addToCity(CardName.FARM);
+      }
+
+      // Only critters
+      expect(
+        (gameState.getPossibleGameInputs().filter((gameInput) => {
+          return gameInput.inputType === GameInputType.PLAY_CARD;
+        }) as GameInputPlayCard[]).map((gameInput) => gameInput.card)
+      ).to.eql([CardName.WIFE, CardName.KING]);
+
+      expect(() => {
+        multiStepGameInputTest(gameState, [playCardInput(CardName.WIFE)]);
+      }).to.throwException(/unable to add/i);
+
+      expect(player.hasCardInCity(CardName.INNKEEPER)).to.be(true);
+      expect(player.hasCardInCity(CardName.WIFE)).to.be(false);
+      gameState = multiStepGameInputTest(gameState, [
+        playCardInput(CardName.WIFE, {
+          paymentOptions: {
+            resources: {
+              [ResourceType.BERRY]: 0,
+            },
+            cardToUse: CardName.INNKEEPER,
+          },
+        }),
+      ]);
+      player = gameState.getPlayer(player.playerId);
+      expect(player.hasCardInCity(CardName.INNKEEPER)).to.be(false);
+      expect(player.hasCardInCity(CardName.WIFE)).to.be(true);
+    });
+
+    it("should be able to play FOOL if city is full", () => {
+      let player = gameState.getActivePlayer();
+      player.cardsInHand.push(CardName.FOOL);
+      player.gainResources(Card.fromName(CardName.FOOL).baseCost);
+      expect(
+        (gameState.getPossibleGameInputs().filter((gameInput) => {
+          return gameInput.inputType === GameInputType.PLAY_CARD;
+        }) as GameInputPlayCard[]).map((gameInput) => gameInput.card)
+      ).to.eql([CardName.FOOL]);
+
+      // Fill up city
+      for (var i = 0; i < 15; i++) {
+        player.addToCity(CardName.FARM);
+      }
+      expect(
+        (gameState.getPossibleGameInputs().filter((gameInput) => {
+          return gameInput.inputType === GameInputType.PLAY_CARD;
+        }) as GameInputPlayCard[]).map((gameInput) => gameInput.card)
+      ).to.eql([CardName.FOOL]);
+    });
+
+    it("should be able to play RUINS if city is full (w/ construction)", () => {
+      let player = gameState.getActivePlayer();
+      player.cardsInHand.push(CardName.RUINS);
+      player.gainResources(Card.fromName(CardName.RUINS).baseCost);
+
+      // no construction to destroy
+      expect(
+        (gameState.getPossibleGameInputs().filter((gameInput) => {
+          return gameInput.inputType === GameInputType.PLAY_CARD;
+        }) as GameInputPlayCard[]).map((gameInput) => gameInput.card)
+      ).to.eql([]);
+
+      // Fill up city
+      for (var i = 0; i < 15; i++) {
+        player.addToCity(CardName.FARM);
+      }
+      expect(
+        (gameState.getPossibleGameInputs().filter((gameInput) => {
+          return gameInput.inputType === GameInputType.PLAY_CARD;
+        }) as GameInputPlayCard[]).map((gameInput) => gameInput.card)
+      ).to.eql([CardName.RUINS]);
+
+      expect(player.hasCardInCity(CardName.RUINS)).to.be(false);
+      gameState = multiStepGameInputTest(gameState, [
+        playCardInput(CardName.RUINS, {
+          paymentOptions: {
+            resources: {},
+          },
+        }),
+        {
+          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          prevInputType: GameInputType.PLAY_CARD,
+          cardOptions: player.getPlayedCardInfos(CardName.FARM),
+          cardContext: CardName.RUINS,
+          maxToSelect: 1,
+          minToSelect: 1,
+          clientOptions: {
+            selectedCards: [player.getPlayedCardInfos(CardName.FARM)[0]],
+          },
+        },
+      ]);
+      player = gameState.getPlayer(player.playerId);
+      expect(player.hasCardInCity(CardName.RUINS)).to.be(true);
     });
   });
 

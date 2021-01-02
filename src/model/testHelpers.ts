@@ -105,6 +105,7 @@ export const playCardInput = (
   overrides: any = {}
 ): GameInputPlayCard => {
   return merge(
+    {},
     {
       inputType: GameInputType.PLAY_CARD,
       card,

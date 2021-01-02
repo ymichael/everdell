@@ -102,7 +102,7 @@ export class Card<TCardType extends CardType = CardType>
         productionInner?: undefined;
       })) {
     this.name = name;
-    this.baseCost = baseCost;
+    this.baseCost = Object.freeze(baseCost);
     this.baseVP = baseVP;
     this.cardType = cardType;
     this.isUnique = isUnique;
@@ -190,7 +190,7 @@ export class Card<TCardType extends CardType = CardType>
   play(gameState: GameState, gameInput: GameInput): void {
     const player = gameState.getActivePlayer();
     if (gameInput.inputType === GameInputType.PLAY_CARD) {
-      if (this.name !== CardName.FOOL) {
+      if (this.name !== CardName.FOOL && this.name !== CardName.RUINS) {
         player.addToCity(this.name);
       }
       if (
@@ -1812,6 +1812,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           throw new Error("Cannot ruins non-construction");
         }
         player.removeCardFromCity(gameState, selectedCards[0]);
+        player.gainResources(targetCard.baseCost);
+        player.addToCity(CardName.RUINS);
         player.drawCards(gameState, 2);
       } else {
         throw new Error("Invalid input type");

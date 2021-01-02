@@ -2,7 +2,7 @@ import * as React from "react";
 import { useState, useCallback, useEffect } from "react";
 import { unstable_batchedUpdates } from "react-dom";
 
-import { Meadow, Locations } from "./gameBoard";
+import { Meadow, Locations, Events } from "./gameBoard";
 import Players from "./Players";
 import ViewerUI from "./ViewerUI";
 import GameInputBox from "./GameInputBox";
@@ -55,6 +55,7 @@ const Game: React.FC<{
       <Players viewingPlayer={viewingPlayerImpl} gameState={gameState} />
       <ViewerUI player={viewingPlayerImpl} />
       <Locations locationsMap={gameState.locationsMap} />
+      <Events eventsMap={gameState.eventsMap} />
       <hr />
       <div>
         <h2>DEBUG</h2>

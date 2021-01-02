@@ -9,6 +9,7 @@ import { Player } from "../model/player";
 
 import Card, { PlayedCard } from "./Card";
 import Location from "./Location";
+import Event from "./Event";
 import { GameBlock } from "./common";
 
 export const Meadow: React.FC<{ meadowCards: CardName[] }> = ({
@@ -33,6 +34,20 @@ export const Locations: React.FC<{ locationsMap: LocationNameToPlayerIds }> = ({
       <div className={styles.items}>
         {Object.keys(locationsMap).map((locationName, idx) => (
           <Location key={idx} name={locationName as LocationName} />
+        ))}
+      </div>
+    </GameBlock>
+  );
+};
+
+export const Events: React.FC<{ eventsMap: EventNameToPlayerIds }> = ({
+  eventsMap,
+}) => {
+  return (
+    <GameBlock title={"Events"}>
+      <div className={styles.items}>
+        {Object.keys(eventsMap).map((eventName, idx) => (
+          <Event key={idx} name={eventName as EventName} />
         ))}
       </div>
     </GameBlock>

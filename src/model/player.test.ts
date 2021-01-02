@@ -13,13 +13,15 @@ import {
 
 const playCardInput = (
   card: CardName,
-  overrides: any = {}
+  clientOptionOverrides: any = {}
 ): GameInputPlayCard => {
   return {
     inputType: GameInputType.PLAY_CARD as const,
-    card,
-    fromMeadow: false,
-    ...overrides,
+    clientOptions: {
+      card,
+      fromMeadow: false,
+      ...clientOptionOverrides,
+    },
   };
 };
 

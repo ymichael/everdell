@@ -154,7 +154,10 @@ export class GameState {
   }
 
   private handlePlayCardGameInput(gameInput: GameInputPlayCard): void {
-    const card = Card.fromName(gameInput.card);
+    if (!gameInput.clientOptions?.card) {
+      throw new Error("Must specify card to play.");
+    }
+    const card = Card.fromName(gameInput.clientOptions.card);
     const player = this.getActivePlayer();
     const canPlayErr = card.canPlayCheck(this, gameInput);
     if (canPlayErr) {
@@ -167,11 +170,11 @@ export class GameState {
     }
 
     player.payForCard(this, gameInput);
-    if (gameInput.fromMeadow) {
-      this.removeCardFromMeadow(gameInput.card);
+    if (gameInput.clientOptions.fromMeadow) {
+      this.removeCardFromMeadow(card.name);
       this.replenishMeadow();
     } else {
-      player.removeCardFromHand(gameInput.card);
+      player.removeCardFromHand(card.name);
     }
     card.play(this, gameInput);
   }
@@ -576,6 +579,49 @@ export class GameState {
     return gameInputs;
   };
 
+  getPlayableCards(): { card: CardName; fromMeadow: boolean }[] {
+    const player = this.getActivePlayer();
+    const ret: { card: CardName; fromMeadow: boolean }[] = [];
+
+    this.meadowCards.forEach((cardName) => {
+      const card = Card.fromName(cardName);
+      if (
+        player.canAffordCard(card.name, true) &&
+        card.canPlay(this, {
+          inputType: GameInputType.PLAY_CARD as const,
+          clientOptions: {
+            card: cardName,
+            fromMeadow: true,
+            paymentOptions: {
+              resources: {},
+            },
+          },
+        })
+      ) {
+        ret.push({ card: cardName, fromMeadow: true });
+      }
+    });
+    player.cardsInHand.forEach((cardName) => {
+      const card = Card.fromName(cardName);
+      if (
+        player.canAffordCard(card.name, true) &&
+        card.canPlay(this, {
+          inputType: GameInputType.PLAY_CARD as const,
+          clientOptions: {
+            card: cardName,
+            fromMeadow: false,
+            paymentOptions: {
+              resources: {},
+            },
+          },
+        })
+      ) {
+        ret.push({ card: cardName, fromMeadow: false });
+      }
+    });
+    return ret;
+  }
+
   getPossibleGameInputs(): GameInput[] {
     if (this.getRemainingPlayers().length === 0) {
       return [];
@@ -601,47 +647,18 @@ export class GameState {
       });
     }
 
-    possibleGameInputs.push(
-      ...this.meadowCards
-        .map((cardName) => {
-          return {
-            inputType: GameInputType.PLAY_CARD as const,
-            playerId,
-            card: cardName,
-            fromMeadow: true,
-            paymentOptions: {
-              resources: {},
-            },
-          };
-        })
-        .filter((gameInput) => {
-          const card = Card.fromName(gameInput.card);
-          return (
-            player.canAffordCard(card.name, gameInput.fromMeadow) &&
-            card.canPlay(this, gameInput)
-          );
-        }),
-      ...this.getActivePlayer()
-        .cardsInHand.map((cardName) => {
-          return {
-            inputType: GameInputType.PLAY_CARD as const,
-            playerId,
-            card: cardName,
-            fromMeadow: false,
-            paymentOptions: {
-              resources: {},
-            },
-          };
-        })
-        .filter((gameInput) => {
-          const card = Card.fromName(gameInput.card);
-          return (
-            player.canAffordCard(card.name, gameInput.fromMeadow) &&
-            card.canPlay(this, gameInput)
-          );
-        })
-    );
-
+    if (this.getPlayableCards().length !== 0) {
+      possibleGameInputs.push({
+        inputType: GameInputType.PLAY_CARD,
+        clientOptions: {
+          card: null,
+          fromMeadow: false,
+          paymentOptions: {
+            resources: {},
+          },
+        },
+      });
+    }
     return possibleGameInputs;
   }
 }

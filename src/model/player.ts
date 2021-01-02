@@ -687,8 +687,11 @@ export class Player {
         | GameInputType.SELECT_PAYMENT_FOR_CARD;
     }
   ): void {
-    const card = Card.fromName(gameInput.card);
-    const paymentOptions = gameInput.paymentOptions;
+    if (!gameInput.clientOptions?.card) {
+      throw new Error(`Must specify card to pay for`);
+    }
+    const card = Card.fromName(gameInput.clientOptions.card);
+    const paymentOptions = gameInput.clientOptions.paymentOptions;
     const paymentResources = paymentOptions.resources;
 
     this.spendResources(paymentResources);
@@ -750,15 +753,18 @@ export class Player {
   validatePaymentOptions(
     gameInput: GameInput & { inputType: GameInputType.PLAY_CARD }
   ): string | null {
-    if (!gameInput.paymentOptions || !gameInput.paymentOptions.resources) {
-      return `Invalid input: missing paymentOptions.resources in gameInput: ${JSON.stringify(
+    if (!gameInput.clientOptions?.card) {
+      return `Must specify card to play`;
+    }
+    if (!gameInput?.clientOptions?.paymentOptions?.resources) {
+      return `Invalid input: missing clientOptions.paymentOptions.resources in gameInput: ${JSON.stringify(
         gameInput,
         null,
         2
       )}`;
     }
 
-    const paymentOptions = gameInput.paymentOptions;
+    const paymentOptions = gameInput.clientOptions.paymentOptions;
     const paymentResources = paymentOptions.resources;
 
     // Validate if player has resources specified by payment options
@@ -776,7 +782,7 @@ export class Player {
     }
 
     // Validate if payment options are valid for the card
-    const cardToPlay = Card.fromName(gameInput.card);
+    const cardToPlay = Card.fromName(gameInput.clientOptions.card);
 
     // Check if you have the associated construction if card is a critter
     if (paymentOptions.useAssociatedCard) {
@@ -827,7 +833,7 @@ export class Player {
           return null;
         case CardName.INN:
           // TODO check if we can place a worker here
-          if (!gameInput.fromMeadow) {
+          if (!gameInput.clientOptions.fromMeadow) {
             return `Cannot use ${CardName.INN} to play a non-meadow card`;
           }
           return this.validatePaidResources(

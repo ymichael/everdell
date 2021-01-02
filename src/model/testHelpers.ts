@@ -102,18 +102,22 @@ export const multiStepGameInputTest = (
 
 export const playCardInput = (
   card: CardName,
-  overrides: any = {}
+  clientOptionOverrides: Partial<GameInputPlayCard["clientOptions"]> = {}
 ): GameInputPlayCard => {
   return merge(
     {},
     {
-      inputType: GameInputType.PLAY_CARD,
-      card,
-      fromMeadow: false,
-      paymentOptions: {
-        resources: Card.fromName(card).baseCost,
+      inputType: GameInputType.PLAY_CARD as const,
+      clientOptions: {
+        card,
+        fromMeadow: false,
+        paymentOptions: {
+          resources: Card.fromName(card).baseCost,
+        },
       },
     },
-    overrides
+    {
+      clientOptions: clientOptionOverrides,
+    }
   );
 };

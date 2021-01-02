@@ -154,7 +154,7 @@ export class Card<TCardType extends CardType = CardType>
         }
       }
       if (
-        gameInput.fromMeadow &&
+        gameInput.clientOptions.fromMeadow &&
         gameState.meadowCards.indexOf(this.name) === -1
       ) {
         return `Card ${
@@ -166,7 +166,7 @@ export class Card<TCardType extends CardType = CardType>
         )}`;
       }
       if (
-        !gameInput.fromMeadow &&
+        !gameInput.clientOptions.fromMeadow &&
         player.cardsInHand.indexOf(this.name) === -1
       ) {
         return `Card ${
@@ -616,8 +616,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       const player = gameState.getActivePlayer();
       if (
         gameInput.inputType === GameInputType.PLAY_CARD &&
-        gameInput.card !== CardName.COURTHOUSE &&
-        Card.fromName(gameInput.card).isConstruction
+        gameInput.clientOptions.card !== CardName.COURTHOUSE &&
+        gameInput.clientOptions.card &&
+        Card.fromName(gameInput.clientOptions.card).isConstruction
       ) {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_RESOURCES,
@@ -856,7 +857,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       const player = gameState.getActivePlayer();
       if (
         gameInput.inputType === GameInputType.PLAY_CARD &&
-        gameInput.card !== CardName.HISTORIAN
+        gameInput.clientOptions.card !== CardName.HISTORIAN
       ) {
         player.drawCards(gameState, 1);
       }
@@ -967,36 +968,29 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           inputType: GameInputType.SELECT_PAYMENT_FOR_CARD,
           prevInputType: GameInputType.SELECT_CARDS,
           cardContext: CardName.INN,
-          card: selectedCard as CardName,
-          clientOptions: { resources: {} },
-          paymentOptions: {
-            cardToUse: CardName.INN,
-            resources: {},
+          card: selectedCard,
+          clientOptions: {
+            card: selectedCard,
+            paymentOptions: { resources: {} },
           },
         });
       } else if (
         gameInput.inputType === GameInputType.SELECT_PAYMENT_FOR_CARD
       ) {
-        if (!gameInput.paymentOptions) {
-          throw new Error("invalid payment options");
+        if (!gameInput.clientOptions?.paymentOptions?.resources) {
+          throw new Error(
+            "Invalid input: clientOptions.paymentOptions.resources missing"
+          );
         }
-
-        if (!gameInput.clientOptions) {
-          throw new Error("invalid client options");
-        }
-        gameInput.paymentOptions.resources = gameInput.clientOptions.resources;
-
         const card = Card.fromName(gameInput.card);
-
         const paymentError = player.validatePaidResources(
-          gameInput.paymentOptions.resources,
+          gameInput.clientOptions.paymentOptions.resources,
           card.baseCost,
           "ANY"
         );
         if (paymentError) {
           throw new Error(paymentError);
         }
-
         player.payForCard(gameState, gameInput);
         player.addToCity(card.name);
         card.play(gameState, gameInput);
@@ -1850,7 +1844,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       const player = gameState.getActivePlayer();
 
       if (gameInput.inputType === GameInputType.PLAY_CARD) {
-        if (sumResources(gameInput.paymentOptions.resources) > 0) {
+        if (
+          sumResources(gameInput.clientOptions.paymentOptions.resources) > 0
+        ) {
           gameState.pendingGameInputs.push({
             inputType: GameInputType.SELECT_PLAYER,
             prevInputType: GameInputType.PLAY_CARD,
@@ -1888,7 +1884,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         if (!selectedPlayer) {
           throw new Error("must select a player");
         }
-        const resourcesToGive = gameInput.prevInput.paymentOptions.resources;
+        const resourcesToGive =
+          gameInput.prevInput.clientOptions.paymentOptions.resources;
         gameState.getPlayer(selectedPlayer).gainResources(resourcesToGive);
       } else if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
         // give the player their berries + VP, don't ask them to select a player
@@ -1927,8 +1924,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       const player = gameState.getActivePlayer();
       if (
         gameInput.inputType === GameInputType.PLAY_CARD &&
-        gameInput.card !== CardName.SHOPKEEPER &&
-        Card.fromName(gameInput.card).isCritter
+        gameInput.clientOptions.card !== CardName.SHOPKEEPER &&
+        gameInput.clientOptions.card &&
+        Card.fromName(gameInput.clientOptions.card).isCritter
       ) {
         player.gainResources({
           [ResourceType.BERRY]: 1,

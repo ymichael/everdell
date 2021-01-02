@@ -64,11 +64,14 @@ const GameInputPlayCardSelector: React.FC<{
             if (gameInput.inputType !== GameInputType.PLAY_CARD) {
               return <></>;
             }
+            if (!gameInput.clientOptions.card) {
+              return <></>;
+            }
             const isSelected =
               meta.value &&
               meta.value.inputType === gameInput.inputType &&
-              meta.value.card === gameInput.card &&
-              meta.value.fromMeadow === gameInput.fromMeadow &&
+              meta.value.card === gameInput.clientOptions.card &&
+              meta.value.fromMeadow === gameInput.clientOptions.fromMeadow &&
               meta.value._idx === idx;
             return (
               <div key={idx} className={styles.play_card_list_item_wrapper}>
@@ -97,8 +100,8 @@ const GameInputPlayCardSelector: React.FC<{
                     });
                   }}
                 >
-                  <Card name={gameInput.card} />
-                  {gameInput.fromMeadow && (
+                  <Card name={gameInput.clientOptions.card} />
+                  {gameInput.clientOptions.fromMeadow && (
                     <div className={styles.play_card_list_item_label}>
                       (Meadow)
                     </div>

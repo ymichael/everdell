@@ -29,27 +29,10 @@ export type GameInputVisitDestinationCard = {
 
 export type GameInputPlayCard = {
   inputType: GameInputType.PLAY_CARD;
-  card: CardName;
-  fromMeadow: boolean;
-  paymentOptions: {
-    cardToDungeon?: CardName;
-
-    useAssociatedCard?: boolean;
-
-    // Eg crane, innkeeper, queen
-    cardToUse?:
-      | CardName.QUEEN
-      | CardName.INNKEEPER
-      | CardName.CRANE
-      | CardName.INN
-      | null;
-
-    resources: {
-      [ResourceType.TWIG]?: number;
-      [ResourceType.BERRY]?: number;
-      [ResourceType.PEBBLE]?: number;
-      [ResourceType.RESIN]?: number;
-    };
+  clientOptions: {
+    card: CardName | null;
+    fromMeadow: boolean;
+    paymentOptions: CardPaymentOptions;
   };
 };
 
@@ -202,33 +185,8 @@ export type GameInputSelectPaymentForCard = {
 
   // player specified number of resources
   clientOptions: {
-    resources: {
-      [ResourceType.TWIG]?: number;
-      [ResourceType.BERRY]?: number;
-      [ResourceType.PEBBLE]?: number;
-      [ResourceType.RESIN]?: number;
-    };
-  };
-
-  paymentOptions: {
-    cardToDungeon?: CardName;
-
-    useAssociatedCard?: boolean;
-
-    // Eg crane, innkeeper, queen
-    cardToUse?:
-      | CardName.QUEEN
-      | CardName.INNKEEPER
-      | CardName.CRANE
-      | CardName.INN
-      | null;
-
-    resources: {
-      [ResourceType.TWIG]?: number;
-      [ResourceType.BERRY]?: number;
-      [ResourceType.PEBBLE]?: number;
-      [ResourceType.RESIN]?: number;
-    };
+    card: CardName;
+    paymentOptions: CardPaymentOptions;
   };
 };
 
@@ -473,4 +431,25 @@ export enum PlayerStatus {
 
 export type GameLogEntry = {
   text: string;
+};
+
+export type CardPaymentOptions = {
+  cardToDungeon?: CardName;
+
+  useAssociatedCard?: boolean;
+
+  // Eg crane, innkeeper, queen
+  cardToUse?:
+    | CardName.QUEEN
+    | CardName.INNKEEPER
+    | CardName.CRANE
+    | CardName.INN
+    | null;
+
+  resources: {
+    [ResourceType.TWIG]?: number;
+    [ResourceType.BERRY]?: number;
+    [ResourceType.PEBBLE]?: number;
+    [ResourceType.RESIN]?: number;
+  };
 };

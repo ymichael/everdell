@@ -56,7 +56,7 @@ export class Game {
     switch (gameInput.inputType) {
       case GameInputType.PLAY_CARD:
         this.gameLogBuffer.push({
-          text: `${player.name} played ${gameInput.card}`,
+          text: `${player.name} played ${gameInput.clientOptions.card}`,
         });
         break;
       case GameInputType.PLACE_WORKER:

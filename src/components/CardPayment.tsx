@@ -76,7 +76,10 @@ const OptionToUseAssociatedCard: React.FC<{
   name: string;
   viewingPlayer: Player;
 }> = ({ gameInput, name, viewingPlayer }) => {
-  const card = CardModel.fromName(gameInput.card);
+  if (!gameInput.clientOptions.card) {
+    return <></>;
+  }
+  const card = CardModel.fromName(gameInput.clientOptions.card);
   if (
     !(
       card.isCritter &&
@@ -152,7 +155,10 @@ const CardPayment: React.FC<{
   if (gameInput.inputType !== GameInputType.PLAY_CARD) {
     return <></>;
   }
-  const card = CardModel.fromName(gameInput.card);
+  if (!gameInput.clientOptions.card) {
+    return <></>;
+  }
+  const card = CardModel.fromName(gameInput.clientOptions.card);
 
   return (
     <div className={styles.card_payment_form}>

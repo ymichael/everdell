@@ -147,8 +147,11 @@ export class Card<TCardType extends CardType = CardType>
   canPlayCheck(gameState: GameState, gameInput: GameInput): string | null {
     const player = gameState.getActivePlayer();
     if (gameInput.inputType === GameInputType.PLAY_CARD) {
-      if (!player.canAddToCity(this.name)) {
-        return `Cannot add ${this.name} to player's city`;
+      // Don't check for FOOL since its not played in the active player's city
+      if (this.name !== CardName.FOOL) {
+        if (!player.canAddToCity(this.name, false /* strict */)) {
+          return `Cannot add ${this.name} to player's city`;
+        }
       }
       if (
         gameInput.fromMeadow &&
@@ -769,7 +772,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       if (
         !gameState.players
           .filter((p) => p.playerId !== player.playerId)
-          .some((p) => p.canAddToCity(CardName.FOOL))
+          .some((p) => p.canAddToCity(CardName.FOOL, true /* strict */))
       ) {
         return `Unable to add ${CardName.FOOL} to any player's city`;
       }
@@ -783,8 +786,12 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           prevInputType: gameInput.inputType,
           cardContext: CardName.FOOL,
           playerOptions: gameState.players
-            .filter((p) => p.playerId !== player.playerId)
-            .filter((p) => p.canAddToCity(CardName.FOOL))
+            .filter((p) => {
+              return (
+                p.playerId !== player.playerId &&
+                p.canAddToCity(CardName.FOOL, true /* strict */)
+              );
+            })
             .map((p) => p.playerId),
           mustSelectOne: true,
           clientOptions: {
@@ -1531,7 +1538,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             if (cardOption.baseVP > 3) {
               return false;
             }
-            return player.canAddToCity(cardName);
+            return player.canAddToCity(cardName, true /* strict */);
           }),
           cardOptionsUnfiltered: cardOptions,
           clientOptions: {

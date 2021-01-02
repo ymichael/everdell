@@ -127,7 +127,7 @@ export class Player {
   }
 
   addToCity(cardName: CardName): void {
-    if (!this.canAddToCity(cardName)) {
+    if (!this.canAddToCity(cardName, true /* strict */)) {
       throw new Error(`Unable to add ${cardName} to city`);
     }
     const card = Card.fromName(cardName);
@@ -174,19 +174,7 @@ export class Player {
     return removedCards;
   }
 
-  canAddToCity(cardName: CardName): boolean {
-    const card = Card.fromName(cardName);
-    if (card.isUnique && this.hasCardInCity(card.name)) {
-      return false;
-    }
-
-    // Can always play wanderer
-    if (cardName === CardName.WANDERER) {
-      return true;
-    }
-
-    // TODO: Innkeeper, husband/wife, ruins, dungeoning
-
+  getNumOccupiedSpacesInCity(): number {
     let numOccupiedSpacesInCity = 0;
     this.forEachPlayedCard(({ cardName }) => {
       if (cardName === CardName.WANDERER) {
@@ -194,9 +182,50 @@ export class Player {
       }
       numOccupiedSpacesInCity += 1;
     });
-
     // Only count each husband/wife pair once
     numOccupiedSpacesInCity -= this.getNumHusbandWifePairs();
+    return numOccupiedSpacesInCity;
+  }
+
+  canAddToCity(cardName: CardName, strict: boolean): boolean {
+    const card = Card.fromName(cardName);
+    if (card.isUnique && this.hasCardInCity(card.name)) {
+      return false;
+    }
+    if (cardName === CardName.WANDERER) {
+      return true;
+    }
+
+    // If strict is true, we're about to add this card to the city
+    // otherwise, account for cards that can make space.
+    if (!strict) {
+      if (card.isCritter && this.hasCardInCity(CardName.INNKEEPER)) {
+        return true;
+      }
+      if (card.isConstruction && this.hasCardInCity(CardName.CRANE)) {
+        return true;
+      }
+      if (
+        cardName === CardName.RUINS &&
+        this.getPlayedConstructions().length !== 0
+      ) {
+        return true;
+      }
+    }
+
+    if (cardName === CardName.HUSBAND || cardName === CardName.WIFE) {
+      const numHusbands = (this.playedCards[CardName.HUSBAND] || []).length;
+      const numWifes = (this.playedCards[CardName.WIFE] || []).length;
+      if (cardName === CardName.HUSBAND && numHusbands < numWifes) {
+        return true;
+      }
+      if (cardName === CardName.WIFE && numWifes < numHusbands) {
+        return true;
+      }
+    }
+
+    // TODO: dungeoning
+    const numOccupiedSpacesInCity = this.getNumOccupiedSpacesInCity();
     return numOccupiedSpacesInCity < MAX_CITY_SIZE;
   }
 
@@ -257,6 +286,17 @@ export class Player {
 
   getNumResourcesByType(resourceType: ResourceType): number {
     return this.resources[resourceType];
+  }
+
+  getPlayedConstructions(): PlayedCardInfo[] {
+    const constructionsInCity: PlayedCardInfo[] = [];
+    this.forEachPlayedCard((playedCardInfo) => {
+      const card = Card.fromName(playedCardInfo.cardName);
+      if (card.isConstruction) {
+        constructionsInCity.push(playedCardInfo);
+      }
+    });
+    return constructionsInCity;
   }
 
   getPlayedCritters(): PlayedCardInfo[] {

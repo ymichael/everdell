@@ -32,83 +32,105 @@ describe("Player", () => {
 
   describe("canAddToCity", () => {
     it("should be able to add cards to city if there is space", () => {
-      const player = gameState.getActivePlayer();
-      expect(player.canAddToCity(CardName.FARM)).to.be(true);
+      const p = gameState.getActivePlayer();
+      expect(p.canAddToCity(CardName.FARM, true /* strict */)).to.be(true);
+      expect(p.canAddToCity(CardName.FARM, false /* strict */)).to.be(true);
 
-      player.addToCity(CardName.FARM);
-      expect(player.canAddToCity(CardName.FARM)).to.be(true);
+      p.addToCity(CardName.FARM);
+      expect(p.canAddToCity(CardName.FARM, true /* strict */)).to.be(true);
+      expect(p.canAddToCity(CardName.FARM, false /* strict */)).to.be(true);
     });
 
-    it("should not be able to add cards to city if there is no space", () => {
-      const player = gameState.getActivePlayer();
-
-      // max city size is 15, minus some special rules for husband/wife and wanderer
-      player.addToCityMulti([
-        CardName.FARM,
-        CardName.WIFE,
-        CardName.SCHOOL,
-        CardName.FOOL,
-        CardName.POSTAL_PIGEON,
-        CardName.POSTAL_PIGEON,
-        CardName.POST_OFFICE,
-        CardName.INN,
-        CardName.MINER_MOLE,
-        CardName.MINE,
-        CardName.RESIN_REFINERY,
-        CardName.TWIG_BARGE,
-        CardName.FARM,
-        CardName.BARGE_TOAD,
-        CardName.FARM,
-      ]);
-      expect(player.canAddToCity(CardName.FARM)).to.be(false);
+    it("should not be able to add cards to city if full", () => {
+      const p = gameState.getActivePlayer();
+      // Max city size is 15
+      for (var i = 0; i < 15; i++) {
+        p.addToCity(CardName.FARM);
+      }
+      expect(p.canAddToCity(CardName.FARM, false /* strict */)).to.be(false);
+      expect(p.canAddToCity(CardName.FARM, true /* strict */)).to.be(false);
     });
 
-    it("should be able to add wanderer to city even if city is already full", () => {
-      const player = gameState.getActivePlayer();
-
-      // max city size is 15, minus some special rules for husband/wife and wanderer
-      player.addToCityMulti([
-        CardName.FARM,
-        CardName.WIFE,
-        CardName.SCHOOL,
-        CardName.FOOL,
-        CardName.POSTAL_PIGEON,
-        CardName.POSTAL_PIGEON,
-        CardName.POST_OFFICE,
-        CardName.INN,
-        CardName.MINER_MOLE,
-        CardName.MINE,
-        CardName.RESIN_REFINERY,
-        CardName.TWIG_BARGE,
-        CardName.FARM,
-        CardName.BARGE_TOAD,
-        CardName.FARM,
-      ]);
-      expect(player.canAddToCity(CardName.WANDERER)).to.be(true);
+    it("should be able to add wanderer even if city is full", () => {
+      const p = gameState.getActivePlayer();
+      for (var i = 0; i < 15; i++) {
+        p.addToCity(CardName.FARM);
+      }
+      expect(p.canAddToCity(CardName.WANDERER, false /* strict */)).to.be(true);
+      expect(p.canAddToCity(CardName.WANDERER, true /* strict */)).to.be(true);
     });
 
-    it("should allow player to add another card if there's a husband/wife pair that can share a spot", () => {
-      const player = gameState.getActivePlayer();
+    it("should account for husband/wife pairs", () => {
+      const p = gameState.getActivePlayer();
 
-      // max city size is 15, minus some special rules for husband/wife and wanderer
-      player.addToCityMulti([
-        CardName.HUSBAND,
-        CardName.WIFE,
-        CardName.SCHOOL,
-        CardName.FOOL,
-        CardName.POSTAL_PIGEON,
-        CardName.POSTAL_PIGEON,
-        CardName.POST_OFFICE,
-        CardName.INN,
-        CardName.MINER_MOLE,
-        CardName.MINE,
-        CardName.RESIN_REFINERY,
-        CardName.TWIG_BARGE,
-        CardName.FARM,
-        CardName.BARGE_TOAD,
-        CardName.FARM,
-      ]);
-      expect(player.canAddToCity(CardName.FARM)).to.be(true);
+      for (var i = 0; i < 13; i++) {
+        p.addToCity(CardName.FARM);
+      }
+      p.addToCity(CardName.HUSBAND);
+      p.addToCity(CardName.WIFE);
+
+      expect(p.canAddToCity(CardName.FARM, true /* strict */)).to.be(true);
+      expect(p.canAddToCity(CardName.FARM, false /* strict */)).to.be(true);
+
+      // Add another husband
+      p.addToCity(CardName.HUSBAND);
+
+      expect(p.canAddToCity(CardName.FARM, true /* strict */)).to.be(false);
+      expect(p.canAddToCity(CardName.FARM, false /* strict */)).to.be(false);
+      expect(p.canAddToCity(CardName.HUSBAND, true /* strict */)).to.be(false);
+      expect(p.canAddToCity(CardName.HUSBAND, false /* strict */)).to.be(false);
+
+      // We can add a WIFE though
+      expect(p.canAddToCity(CardName.WIFE, true /* strict */)).to.be(true);
+      expect(p.canAddToCity(CardName.WIFE, false /* strict */)).to.be(true);
+    });
+
+    it("should account for CRANE", () => {
+      const p = gameState.getActivePlayer();
+
+      for (var i = 0; i < 14; i++) {
+        p.addToCity(CardName.FARM);
+      }
+      p.addToCity(CardName.CRANE);
+
+      // constructions are okay if not strict
+      expect(p.canAddToCity(CardName.FARM, false /* strict */)).to.be(true);
+      expect(p.canAddToCity(CardName.FARM, true /* strict */)).to.be(false);
+
+      // not critters
+      expect(p.canAddToCity(CardName.WIFE, true /* strict */)).to.be(false);
+      expect(p.canAddToCity(CardName.WIFE, false /* strict */)).to.be(false);
+    });
+
+    it("should account for INNKEEPER", () => {
+      const p = gameState.getActivePlayer();
+
+      for (var i = 0; i < 14; i++) {
+        p.addToCity(CardName.FARM);
+      }
+      p.addToCity(CardName.INNKEEPER);
+
+      // critters are okay if not strict
+      expect(p.canAddToCity(CardName.WIFE, false /* strict */)).to.be(true);
+      expect(p.canAddToCity(CardName.WIFE, true /* strict */)).to.be(false);
+
+      // not constructions
+      expect(p.canAddToCity(CardName.FARM, true /* strict */)).to.be(false);
+      expect(p.canAddToCity(CardName.FARM, false /* strict */)).to.be(false);
+    });
+
+    it("should account for RUINS", () => {
+      const p = gameState.getActivePlayer();
+      for (var i = 0; i < 15; i++) {
+        p.addToCity(CardName.FARM);
+      }
+      // city is full
+      expect(p.canAddToCity(CardName.FARM, true /* strict */)).to.be(false);
+      expect(p.canAddToCity(CardName.FARM, false /* strict */)).to.be(false);
+
+      // ruins is okay if not strict
+      expect(p.canAddToCity(CardName.RUINS, true /* strict */)).to.be(false);
+      expect(p.canAddToCity(CardName.RUINS, false /* strict */)).to.be(true);
     });
   });
 

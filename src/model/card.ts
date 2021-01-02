@@ -1777,9 +1777,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         const cardOptions: PlayedCardInfo[] = [];
         player.forEachPlayedCard((playedCardInfo) => {
           const card = Card.fromName(playedCardInfo.cardName);
-          if (card.name === CardName.RUINS) {
-            return;
-          }
           if (card.isConstruction) {
             cardOptions.push(playedCardInfo);
           }

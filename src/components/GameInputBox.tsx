@@ -30,13 +30,13 @@ import GameInputPlaceWorkerSelector from "./GameInputPlaceWorkerSelector";
 import GameInputSelectPaymentForCard from "./GameInputSelectPaymentForCard";
 import GameInputSelectWorkerPlacement from "./GameInputSelectWorkerPlacement";
 
-const GameInputBoxWaiting: React.FC<{
+const GameInputBoxText: React.FC<{
   title?: string;
-  activePlayer: Player;
-}> = ({ activePlayer, title = "Game Input" }) => {
+  text: string;
+}> = ({ title = "Game Input", text }) => {
   return (
     <GameBlock title={title}>
-      <p>Waiting for {activePlayer.name}</p>
+      <p>{text}</p>
     </GameBlock>
   );
 };
@@ -171,10 +171,15 @@ const GameInputBox: React.FC<{
 }) => {
   const gameStateImpl = GameState.fromJSON(gameState);
   const activePlayerImpl = gameStateImpl.getActivePlayer();
-
+  if (gameStateImpl.getRemainingPlayers().length === 0) {
+    return <GameInputBoxText title={title} text={`Game Over!`} />;
+  }
   if (gameState.activePlayerId !== viewingPlayer.playerId) {
     return (
-      <GameInputBoxWaiting title={title} activePlayer={activePlayerImpl} />
+      <GameInputBoxText
+        title={title}
+        text={`Waiting for {activePlayerImpl.name}`}
+      />
     );
   }
 

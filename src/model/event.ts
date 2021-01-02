@@ -73,7 +73,9 @@ export class Event implements GameStatePlayable {
   }
 
   canPlayCheck(gameState: GameState, gameInput: GameInput): string | null {
-    // check whether the event is in the game
+    const player = gameState.getActivePlayer();
+
+    // Check whether the event is in the game
     if (!(this.name in gameState.eventsMap)) {
       return `Event ${
         this.name
@@ -84,30 +86,22 @@ export class Event implements GameStatePlayable {
       )}`;
     }
 
-    // check whether the event has been playedCards and we're not taking
-    // a second action
-    if (
-      gameInput.inputType == GameInputType.CLAIM_EVENT &&
-      gameState.eventsMap[this.name]
-    ) {
-      return `Event ${this.name} is already claimed by ${JSON.stringify(
-        gameState.eventsMap[this.name],
-        null,
-        2
-      )}`;
-    }
+    if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
+      // Check whether the event has been claimed
+      if (gameState.eventsMap[this.name]) {
+        return `Event ${this.name} is already claimed by ${JSON.stringify(
+          gameState.eventsMap[this.name],
+          null,
+          2
+        )}`;
+      }
 
-    // check whether the active player has available workers
-    const player = gameState.getActivePlayer();
-    if (gameInput.inputType == GameInputType.CLAIM_EVENT) {
+      // Check whether the active player has available workers
       if (player.numAvailableWorkers <= 0) {
         return `Active player (${player.playerId}) doesn't have any workers to place.`;
       }
-    }
-
-    // check whether player has required cards, if any
-    if (this.requiredCards) {
-      if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
+      // Check whether player has required cards, if any
+      if (this.requiredCards) {
         for (let i = 0; i < this.requiredCards.length; i++) {
           if (!player.hasCardInCity(this.requiredCards[i])) {
             return `Need to have played ${this.requiredCards[i]} to claim event {$this.name}`;

@@ -8,6 +8,7 @@ import {
   GameInputClaimEvent,
   CardName,
   ResourceType,
+  LocationName,
 } from "./types";
 
 const claimEventInput = (event: EventName): GameInputClaimEvent => {
@@ -257,6 +258,11 @@ describe("Event", () => {
 
       // check if the player can claim the event
       expect(event.canPlay(gameState, gameInput)).to.be(true);
+
+      // Make sure this event works even if the player only has 1 worker left
+      while (player.numAvailableWorkers !== 1) {
+        player.placeWorkerOnLocation(LocationName.BASIC_TWO_CARDS_AND_ONE_VP);
+      }
 
       // try to claim the event + check that you get the correct game state back
       expect(gameState.pendingGameInputs).to.eql([]);

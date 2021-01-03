@@ -44,7 +44,7 @@ describe("Location", () => {
 
       const player = gameState.getActivePlayer();
       const numAvailableWorkers = player.numAvailableWorkers;
-      for (var i = 0; i < numAvailableWorkers; i++) {
+      for (let i = 0; i < numAvailableWorkers; i++) {
         // Place workers on unlimited location
         player.placeWorkerOnLocation(LocationName.BASIC_TWO_CARDS_AND_ONE_VP);
       }

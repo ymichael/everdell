@@ -9,7 +9,6 @@ import {
   GameInputType,
   Season,
   ProductionResourceMap,
-  CardCost,
 } from "./types";
 import { sumResources } from "./gameStatePlayHelpers";
 import {

@@ -1,7 +1,7 @@
 import expect from "expect.js";
 import { Game } from "./game";
 import { GameState } from "./gameState";
-import { GameInputType, Season, CardName, ResourceType } from "./types";
+import { GameInputType, CardName, ResourceType } from "./types";
 import { testInitialGameState } from "./testHelpers";
 
 describe("Game", () => {

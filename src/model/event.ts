@@ -8,7 +8,6 @@ import {
   GameInputType,
   PlayedEventInfo,
   ResourceType,
-  CardCost,
 } from "./types";
 import { Card } from "./card";
 import {
@@ -18,7 +17,6 @@ import {
   GameStateCanPlayCheckFn,
 } from "./gameState";
 import shuffle from "lodash/shuffle";
-import pull from "lodash/pull";
 import flatten from "lodash/flatten";
 
 export class Event implements GameStatePlayable {
@@ -148,7 +146,7 @@ export class Event implements GameStatePlayable {
     return this.playedEventInfoInner ? this.playedEventInfoInner() : {};
   }
 
-  getPoints(gameState: GameState, playerId: string) {
+  getPoints(gameState: GameState, playerId: string): number {
     return (
       this.baseVP +
       (this.pointsInner ? this.pointsInner(gameState, playerId) : 0)
@@ -407,7 +405,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           throw new Error("Cannot find event info");
         }
 
-        let remainingCards = gameInput.cardOptions;
+        const remainingCards = gameInput.cardOptions;
 
         // add selected cards to player's hand
         selectedCards.forEach((cardName) => {
@@ -655,7 +653,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       const player = gameState.getActivePlayer();
 
       if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
-        let critterCardsInHand: CardName[] = [];
+        const critterCardsInHand: CardName[] = [];
         player.cardsInHand.forEach((cardName) => {
           const card = Card.fromName(cardName as CardName);
           if (card.isCritter) {

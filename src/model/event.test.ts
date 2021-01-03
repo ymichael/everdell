@@ -29,9 +29,9 @@ describe("Event", () => {
 
   describe("fromName", () => {
     it("should return the expect Event instances", () => {
-      for (const evt in EventName) {
+      Object.values(EventName).forEach((evt) => {
         expect(Event.fromName(evt as EventName).name).to.be(evt);
-      }
+      });
     });
   });
 
@@ -239,7 +239,7 @@ describe("Event", () => {
       expect(
         player.claimedEvents[EventName.SPECIAL_GRADUATION_OF_SCHOLARS]
       ).to.eql({
-        storedCards: ["POSTAL_PIGEON", "HUSBAND", "WIFE"],
+        storedCards: [CardName.POSTAL_PIGEON, CardName.HUSBAND, CardName.WIFE],
       });
     });
   });
@@ -424,7 +424,7 @@ describe("Event", () => {
     });
     it("should calculate points correctly", () => {
       const event = Event.fromName(EventName.SPECIAL_AN_EVENING_OF_FIREWORKS);
-      let player = gameState.getActivePlayer();
+      const player = gameState.getActivePlayer();
 
       player.claimedEvents[event.name] = {
         storedResources: {},
@@ -468,7 +468,7 @@ describe("Event", () => {
     });
     it("can't put incorrect resources or number of twigs", () => {
       const event = Event.fromName(EventName.SPECIAL_AN_EVENING_OF_FIREWORKS);
-      let player = gameState.getActivePlayer();
+      const player = gameState.getActivePlayer();
       const gameInput = claimEventInput(event.name);
 
       gameState.eventsMap[EventName.SPECIAL_AN_EVENING_OF_FIREWORKS] = null;
@@ -576,7 +576,7 @@ describe("Event", () => {
     });
     it("should calculate points correctly", () => {
       const event = Event.fromName(EventName.SPECIAL_PERFORMER_IN_RESIDENCE);
-      let player = gameState.getActivePlayer();
+      const player = gameState.getActivePlayer();
 
       player.claimedEvents[event.name] = {
         storedResources: {},
@@ -620,7 +620,7 @@ describe("Event", () => {
     });
     it("can't put incorrect resources or number of berries", () => {
       const event = Event.fromName(EventName.SPECIAL_PERFORMER_IN_RESIDENCE);
-      let player = gameState.getActivePlayer();
+      const player = gameState.getActivePlayer();
       const gameInput = claimEventInput(event.name);
 
       gameState.eventsMap[EventName.SPECIAL_PERFORMER_IN_RESIDENCE] = null;
@@ -859,7 +859,7 @@ describe("Event", () => {
     });
     it("should calculate points correctly", () => {
       const event = Event.fromName(EventName.SPECIAL_UNDER_NEW_MANAGEMENT);
-      let player = gameState.getActivePlayer();
+      const player = gameState.getActivePlayer();
 
       player.claimedEvents[event.name] = {
         storedResources: { [ResourceType.TWIG]: 0, [ResourceType.BERRY]: 0 },
@@ -1217,7 +1217,7 @@ describe("Event", () => {
       const event = Event.fromName(
         EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED
       );
-      let player = gameState.getActivePlayer();
+      const player = gameState.getActivePlayer();
       const gameInput = claimEventInput(event.name);
 
       gameState.eventsMap[EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED] = null;

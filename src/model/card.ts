@@ -1,5 +1,4 @@
 import {
-  GameInputPlaceWorker,
   ResourceType,
   ProductionResourceMap,
   LocationType,
@@ -27,7 +26,6 @@ import {
   getPointsPerRarityLabel,
 } from "./gameStatePlayHelpers";
 import cloneDeep from "lodash/cloneDeep";
-import pull from "lodash/pull";
 import { assertUnreachable } from "../utils";
 
 type MaxWorkersInnerFn = (cardOwner: Player) => number;
@@ -892,7 +890,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       gameInput: GameInput,
       cardOwner: Player
     ) => {
-      const player = gameState.getActivePlayer();
       const playedHusbands = cardOwner.getPlayedCardInfos(CardName.HUSBAND);
       const playedWifes = cardOwner.getPlayedCardInfos(CardName.WIFE);
       if (playedHusbands.length <= playedWifes.length) {
@@ -1053,7 +1050,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     associatedCard: CardName.WANDERER,
     cardDescription: ["Copy any Basic or Forest loocation."],
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
         // ask player which location they want to copy
         const possibleLocations = (Object.keys(
@@ -1587,7 +1583,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
         // find all cards worth up to 3 baseVP
 
-        let playableCards: CardName[] = [];
+        const playableCards: CardName[] = [];
 
         player.cardsInHand.forEach((cardName) => {
           const card = Card.fromName(cardName as CardName);
@@ -1994,9 +1990,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     ],
     // draw 2 cards + give 1 to an opponent
     productionInner: (gameState: GameState, gameInput: GameInput) => {
-      const player = gameState.getActivePlayer();
       const cardOptions = [gameState.drawCard(), gameState.drawCard()];
-
       gameState.pendingGameInputs.push({
         inputType: GameInputType.SELECT_CARDS,
         prevInputType: gameInput.inputType,

@@ -2,7 +2,6 @@ import expect from "expect.js";
 import { Card } from "./card";
 import { GameState } from "./gameState";
 import { testInitialGameState } from "./testHelpers";
-import { sumResources } from "./gameStatePlayHelpers";
 import {
   ResourceType,
   CardName,
@@ -46,7 +45,7 @@ describe("Player", () => {
     it("should not be able to add cards to city if full", () => {
       const p = gameState.getActivePlayer();
       // Max city size is 15
-      for (var i = 0; i < 15; i++) {
+      for (let i = 0; i < 15; i++) {
         p.addToCity(CardName.FARM);
       }
       expect(p.canAddToCity(CardName.FARM, false /* strict */)).to.be(false);
@@ -55,7 +54,7 @@ describe("Player", () => {
 
     it("should be able to add wanderer even if city is full", () => {
       const p = gameState.getActivePlayer();
-      for (var i = 0; i < 15; i++) {
+      for (let i = 0; i < 15; i++) {
         p.addToCity(CardName.FARM);
       }
       expect(p.canAddToCity(CardName.WANDERER, false /* strict */)).to.be(true);
@@ -65,7 +64,7 @@ describe("Player", () => {
     it("should account for husband/wife pairs", () => {
       const p = gameState.getActivePlayer();
 
-      for (var i = 0; i < 13; i++) {
+      for (let i = 0; i < 13; i++) {
         p.addToCity(CardName.FARM);
       }
       p.addToCity(CardName.HUSBAND);
@@ -90,7 +89,7 @@ describe("Player", () => {
     it("should account for CRANE", () => {
       const p = gameState.getActivePlayer();
 
-      for (var i = 0; i < 14; i++) {
+      for (let i = 0; i < 14; i++) {
         p.addToCity(CardName.FARM);
       }
       p.addToCity(CardName.CRANE);
@@ -107,7 +106,7 @@ describe("Player", () => {
     it("should account for INNKEEPER", () => {
       const p = gameState.getActivePlayer();
 
-      for (var i = 0; i < 14; i++) {
+      for (let i = 0; i < 14; i++) {
         p.addToCity(CardName.FARM);
       }
       p.addToCity(CardName.INNKEEPER);
@@ -123,7 +122,7 @@ describe("Player", () => {
 
     it("should account for RUINS", () => {
       const p = gameState.getActivePlayer();
-      for (var i = 0; i < 15; i++) {
+      for (let i = 0; i < 15; i++) {
         p.addToCity(CardName.FARM);
       }
       // city is full

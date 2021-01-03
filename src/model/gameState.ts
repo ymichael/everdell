@@ -16,7 +16,6 @@ import {
   EventNameToPlayerId,
   ResourceType,
   GameInputWorkerPlacementTypes,
-  WorkerPlacementInfo,
   PlayedCardInfo,
   PlayerStatus,
 } from "./types";
@@ -607,7 +606,6 @@ export class GameState {
     }
 
     const player = this.getActivePlayer();
-    const playerId = player.playerId;
     const possibleGameInputs: GameInput[] = [];
 
     if (player.numAvailableWorkers > 0) {

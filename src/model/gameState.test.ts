@@ -9,7 +9,6 @@ import {
   EventName,
   PlayerStatus,
   ResourceType,
-  GameInputPlayCard,
 } from "./types";
 import { Event } from "./event";
 import { Card } from "./card";
@@ -90,8 +89,7 @@ describe("GameState", () => {
   describe("PLAY_CARD", () => {
     it("should be able to pay for the card to play it", () => {
       const card = Card.fromName(CardName.FARM);
-      const gameInput = playCardInput(card.name);
-      let player = gameState.getActivePlayer();
+      const player = gameState.getActivePlayer();
 
       player.cardsInHand.push(card.name);
       expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
@@ -108,7 +106,7 @@ describe("GameState", () => {
     it("should be not be able to play cards if city is full", () => {
       const card = Card.fromName(CardName.FARM);
 
-      let player = gameState.getActivePlayer();
+      const player = gameState.getActivePlayer();
       player.cardsInHand.push(card.name);
       player.gainResources(card.baseCost);
 
@@ -117,7 +115,7 @@ describe("GameState", () => {
       ]);
 
       // Fill up city
-      for (var i = 0; i < 15; i++) {
+      for (let i = 0; i < 15; i++) {
         player.addToCity(CardName.FARM);
       }
       expect(gameState.getPlayableCards()).to.eql([]);
@@ -145,7 +143,7 @@ describe("GameState", () => {
 
       // Fill up city
       player.addToCity(CardName.CRANE);
-      for (var i = 0; i < 14; i++) {
+      for (let i = 0; i < 14; i++) {
         player.addToCity(CardName.FARM);
       }
 
@@ -201,7 +199,7 @@ describe("GameState", () => {
 
       // Fill up city
       player.addToCity(CardName.INNKEEPER);
-      for (var i = 0; i < 14; i++) {
+      for (let i = 0; i < 14; i++) {
         player.addToCity(CardName.FARM);
       }
 
@@ -233,7 +231,7 @@ describe("GameState", () => {
     });
 
     it("should be able to play FOOL if city is full", () => {
-      let player = gameState.getActivePlayer();
+      const player = gameState.getActivePlayer();
       player.cardsInHand.push(CardName.FOOL);
       player.gainResources(Card.fromName(CardName.FOOL).baseCost);
       expect(gameState.getPlayableCards()).to.eql([
@@ -241,7 +239,7 @@ describe("GameState", () => {
       ]);
 
       // Fill up city
-      for (var i = 0; i < 15; i++) {
+      for (let i = 0; i < 15; i++) {
         player.addToCity(CardName.FARM);
       }
       expect(gameState.getPlayableCards()).to.eql([
@@ -258,7 +256,7 @@ describe("GameState", () => {
       expect(gameState.getPlayableCards()).to.eql([]);
 
       // Fill up city
-      for (var i = 0; i < 15; i++) {
+      for (let i = 0; i < 15; i++) {
         player.addToCity(CardName.FARM);
       }
       expect(gameState.getPlayableCards()).to.eql([
@@ -411,7 +409,7 @@ describe("GameState", () => {
       expect(gameState.getClaimableEvents()).to.eql([]);
 
       // player2 should not be able to claim event
-      let event = Event.fromName(EventName.BASIC_FOUR_PRODUCTION);
+      const event = Event.fromName(EventName.BASIC_FOUR_PRODUCTION);
       expect(event.canPlay(gameState, gameInput)).to.be(false);
     });
   });

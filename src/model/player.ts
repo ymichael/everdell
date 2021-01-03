@@ -721,20 +721,16 @@ export class Player {
     } else if (paymentOptions.cardToUse) {
       switch (paymentOptions.cardToUse) {
         case CardName.CRANE:
-          const playedCrane = this.getPlayedCardInfos(CardName.CRANE)?.[0];
-          if (!playedCrane) {
-            throw new Error("Can't find played crane");
-          }
-          this.removeCardFromCity(gameState, playedCrane);
+          this.removeCardFromCity(
+            gameState,
+            this.getFirstPlayedCard(CardName.CRANE)
+          );
           break;
         case CardName.INNKEEPER:
-          const playedInnkeeper = this.getPlayedCardInfos(
-            CardName.INNKEEPER
-          )?.[0];
-          if (!playedInnkeeper) {
-            throw new Error("Can't find played innkeeper");
-          }
-          this.removeCardFromCity(gameState, playedInnkeeper);
+          this.removeCardFromCity(
+            gameState,
+            this.getFirstPlayedCard(CardName.INNKEEPER)
+          );
           break;
         case CardName.QUEEN:
         case CardName.INN:
@@ -976,7 +972,7 @@ export class Player {
   recallWorker(
     gameState: GameState,
     workerPlacementInfo: WorkerPlacementInfo,
-    removeFromPlacedWorkers: boolean = true
+    removeFromPlacedWorkers = true
   ): void {
     if (!this.isRecallableWorker(workerPlacementInfo)) {
       throw new Error("Cannot recall worker");

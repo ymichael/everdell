@@ -135,11 +135,25 @@ const CardToDungeonForm: React.FC<{
   viewingPlayer: Player;
 }> = ({ name, viewingPlayer }) => {
   const [field, meta, helpers] = useField(name);
-  return (
-    <>
-      <p>TODO Card to Dungeon:</p>
-    </>
-  );
+  return viewingPlayer.canInvokeDungeon() ? (
+    <p>
+      Dungeon:
+      <select
+        onChange={(e) => {
+          helpers.setValue(e.target.value || null);
+        }}
+      >
+        <option value={""}>None</option>
+        {viewingPlayer.getPlayedCritters().map(({ cardName }, idx) => {
+          return (
+            <option key={idx} value={cardName}>
+              {cardName}
+            </option>
+          );
+        })}
+      </select>
+    </p>
+  ) : null;
 };
 
 const CardPayment: React.FC<{

@@ -7,7 +7,7 @@ import { PlayerJSON, GameStateJSON } from "../model/jsonTypes";
 import { Player } from "../model/player";
 import { GameBlock } from "./common";
 import { PlayerCity } from "./gameBoard";
-import { VPIcon, CardIcon, CardTypeSymbol, ResourceTypeIcon } from "./assets";
+import { VPIcon, CardIcon, CardTypeSymbol, ResourceTypeIcon } from "./common";
 
 export const Players = ({
   viewingPlayer,

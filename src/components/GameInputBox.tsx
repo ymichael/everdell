@@ -15,8 +15,7 @@ import {
 import { GameStateJSON } from "../model/jsonTypes";
 import { Player } from "../model/player";
 import { Card as CardModel } from "../model/card";
-import { GameBlock } from "./common";
-import { ResourceTypeIcon } from "./assets";
+import { ResourceTypeIcon, GameBlock } from "./common";
 import Card from "./Card";
 import Location from "./Location";
 

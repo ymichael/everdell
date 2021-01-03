@@ -1,6 +1,5 @@
 import * as React from "react";
 import { Event as EventModel } from "../model/event";
-import { CardTypeSymbol } from "./assets";
 import styles from "../styles/event.module.css";
 import {
   ResourceType,
@@ -11,7 +10,7 @@ import {
   EventName,
 } from "../model/types";
 import { Player } from "../model/player";
-import { Resource, Description } from "./common";
+import { Resource, Description, CardTypeSymbol } from "./common";
 import { sumResources } from "../model/gameStatePlayHelpers";
 
 const makeEventName = (eventName: string) => {

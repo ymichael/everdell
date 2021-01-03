@@ -1,7 +1,8 @@
 import * as React from "react";
+import Image from "next/image";
+
 import styles from "../styles/common.module.css";
-import { ResourceType } from "../model/types";
-import { CardIcon, VPIcon, WildResourceIcon, ResourceTypeIcon } from "./assets";
+import { ResourceType, CardType } from "../model/types";
 
 export const GameBlockTitle: React.FC = ({ children }) => {
   return <div className={styles.title}>{children}</div>;
@@ -13,6 +14,60 @@ export const GameBlock: React.FC<{ title: string }> = ({ title, children }) => {
       <GameBlockTitle>{title}</GameBlockTitle>
       {children}
     </div>
+  );
+};
+
+export const CardTypeSymbol = ({ cardType }: { cardType: CardType }) => {
+  return (
+    <>
+      {cardType === CardType.PRODUCTION ? (
+        <Image src="/images/production.png" layout="fill" />
+      ) : cardType === CardType.GOVERNANCE ? (
+        <Image src="/images/governance.png" layout="fill" />
+      ) : cardType === CardType.DESTINATION ? (
+        <Image src="/images/destination.png" layout="fill" />
+      ) : cardType === CardType.PROSPERITY ? (
+        <Image src="/images/prosperity.png" layout="fill" />
+      ) : cardType === CardType.TRAVELER ? (
+        <Image src="/images/traveler.png" layout="fill" />
+      ) : (
+        <>{cardType}</>
+      )}
+    </>
+  );
+};
+
+export const CardIcon = () => {
+  return <Image src="/images/card.png" layout="fill" />;
+};
+
+export const VPIcon = () => {
+  return <Image src="/images/vp.png" layout="fill" />;
+};
+
+export const WildResourceIcon = () => {
+  return <Image src="/images/wild_resource.png" layout="fill" />;
+};
+
+export const ResourceTypeIcon = ({
+  resourceType,
+}: {
+  resourceType: ResourceType;
+}) => {
+  return (
+    <>
+      {resourceType === ResourceType.BERRY ? (
+        <Image src="/images/berry.png" layout="fill" />
+      ) : resourceType === ResourceType.TWIG ? (
+        <Image src="/images/twig.png" layout="fill" />
+      ) : resourceType === ResourceType.PEBBLE ? (
+        <Image src="/images/pebble.png" layout="fill" />
+      ) : resourceType === ResourceType.RESIN ? (
+        <Image src="/images/resin.png" layout="fill" />
+      ) : (
+        <>{resourceType}</>
+      )}
+    </>
   );
 };
 
@@ -46,6 +101,14 @@ const resourceTypeList = [
   "CARD" as const,
   "VP" as const,
   "ANY" as const,
+];
+
+const cardTypeList = [
+  CardType.TRAVELER,
+  CardType.PRODUCTION,
+  CardType.DESTINATION,
+  CardType.GOVERNANCE,
+  CardType.PROSPERITY,
 ];
 
 export const Description = ({ description }: { description: string[] }) => {

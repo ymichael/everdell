@@ -3,7 +3,6 @@ import styles from "../styles/location.module.css";
 
 import { Card as CardModel } from "../model/card";
 import { Location as LocationModel } from "../model/location";
-import { CardTypeSymbol, ResourceTypeIcon } from "./assets";
 import { sumResources } from "../model/gameStatePlayHelpers";
 import {
   ProductionResourceMap,

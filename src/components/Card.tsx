@@ -1,6 +1,5 @@
 import * as React from "react";
 import { Card as CardModel } from "../model/card";
-import { CardTypeSymbol } from "./assets";
 import styles from "../styles/card.module.css";
 import {
   ResourceType,
@@ -10,7 +9,7 @@ import {
   PlayedCardInfo,
 } from "../model/types";
 import { Player } from "../model/player";
-import { Resource, Description } from "./common";
+import { Resource, Description, CardTypeSymbol } from "./common";
 import { sumResources } from "../model/gameStatePlayHelpers";
 
 var colorClassMap = {

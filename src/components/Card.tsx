@@ -9,7 +9,7 @@ import {
   PlayedCardInfo,
 } from "../model/types";
 import { Player } from "../model/player";
-import { Resource, Description, CardTypeSymbol } from "./common";
+import { GameIcon, Description, CardTypeSymbol } from "./common";
 import { sumResources } from "../model/gameStatePlayHelpers";
 
 var colorClassMap = {
@@ -102,7 +102,7 @@ const Card: React.FC<{ name: CardName }> = ({ name }) => {
             {Object.entries(card.baseCost).map(([resourceType, count], idx) => {
               return (
                 <div className={styles.card_cost_item} key={idx}>
-                  <Resource resourceType={resourceType as ResourceType} />
+                  <GameIcon type={resourceType as ResourceType} />
                   <span className={styles.card_cost_value}> {count}</span>
                 </div>
               );

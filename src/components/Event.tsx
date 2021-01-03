@@ -10,7 +10,7 @@ import {
   EventName,
 } from "../model/types";
 import { Player } from "../model/player";
-import { Resource, Description, CardTypeSymbol } from "./common";
+import { Description, CardTypeSymbol } from "./common";
 import { sumResources } from "../model/gameStatePlayHelpers";
 
 const makeEventName = (eventName: string) => {

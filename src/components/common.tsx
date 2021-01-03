@@ -71,52 +71,48 @@ export const ResourceTypeIcon = ({
   );
 };
 
-export const Resource = ({
-  resourceType,
+export const GameIcon = ({
+  type,
 }: {
-  resourceType: ResourceType | "CARD" | "VP" | "ANY";
+  type: CardType | ResourceType | "CARD" | "VP" | "ANY";
 }) => {
   return (
     <div className={styles.resource}>
       <div className={styles.resource_inner}>
-        {resourceType === "CARD" ? (
+        {type === "CARD" ? (
           <CardIcon />
-        ) : resourceType === "VP" ? (
+        ) : type === "VP" ? (
           <VPIcon />
-        ) : resourceType === "ANY" ? (
+        ) : type === "ANY" ? (
           <WildResourceIcon />
+        ) : Object.values(ResourceType).includes(type as any) ? (
+          <ResourceTypeIcon resourceType={type as ResourceType} />
+        ) : Object.values(CardType).includes(type as any) ? (
+          <CardTypeSymbol cardType={type as CardType} />
         ) : (
-          <ResourceTypeIcon resourceType={resourceType} />
+          type
         )}
       </div>
     </div>
   );
 };
 
-const resourceTypeList = [
-  ResourceType.BERRY,
-  ResourceType.TWIG,
-  ResourceType.PEBBLE,
-  ResourceType.RESIN,
-  "CARD" as const,
-  "VP" as const,
-  "ANY" as const,
-];
+const ICON_TYPES: Record<any, any> = {
+  ...ResourceType,
+  ...CardType,
+  CARD: "CARD",
+  VP: "VP",
+  ANY: "ANY",
+};
 
-const cardTypeList = [
-  CardType.TRAVELER,
-  CardType.PRODUCTION,
-  CardType.DESTINATION,
-  CardType.GOVERNANCE,
-  CardType.PROSPERITY,
-];
+const cardTypeList = [];
 
 export const Description = ({ description }: { description: string[] }) => {
   return description ? (
     <span>
       {description.map((part: any, idx: number) => {
-        if (resourceTypeList.indexOf(part) !== -1) {
-          return <Resource key={idx} resourceType={part} />;
+        if (ICON_TYPES[part]) {
+          return <GameIcon key={idx} type={part} />;
         } else {
           return part;
         }

@@ -10,7 +10,7 @@ import {
   GameInputType,
   GameInputPlayCard,
 } from "../model/types";
-import { Resource } from "./common";
+import { ResourceTypeIcon } from "./common";
 
 import styles from "../styles/CardPayment.module.css";
 
@@ -21,7 +21,9 @@ const ResourceTypeValueInput: React.FC<{
   const [field, meta, helpers] = useField(name);
   return (
     <div className={styles.resource_input}>
-      <Resource resourceType={resourceType} />
+      <div className={styles.resource_icon}>
+        <ResourceTypeIcon resourceType={resourceType} />
+      </div>
       <input
         type="text"
         value={meta.value}

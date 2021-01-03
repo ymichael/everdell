@@ -19,6 +19,7 @@ import {
 } from "./gameState";
 import shuffle from "lodash/shuffle";
 import pull from "lodash/pull";
+import flatten from "lodash/flatten";
 
 export class Event implements GameStatePlayable {
   readonly playInner: GameStatePlayFn | undefined;
@@ -170,8 +171,8 @@ export class Event implements GameStatePlayable {
 }
 
 const EVENT_REGISTRY: Record<EventName, Event> = {
-  [EventName.BASIC_FOUR_PRODUCTION_TAGS]: new Event({
-    name: EventName.BASIC_FOUR_PRODUCTION_TAGS,
+  [EventName.BASIC_FOUR_PRODUCTION]: new Event({
+    name: EventName.BASIC_FOUR_PRODUCTION,
     type: EventType.BASIC,
     baseVP: 3,
     eventRequirementsDescription: ["4 ", "PRODUCTION"],
@@ -228,48 +229,43 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     baseVP: 0,
     requiredCards: [CardName.SHOPKEEPER, CardName.POST_OFFICE],
+    eventDescription: flatten([
+      ["When achieved, you may give opponents up to a total of 3 ", "ANY"],
+      "BR",
+      ["For each donation gain 2 ", "VP", "."],
+    ]),
     canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
       return "Not Implemented";
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       throw new Error("Not Implemented");
     },
-    /*
-    canPlayCheckInnerRequiresCards([
-      CardName.SHOPKEEPER,
-      CardName.POST_OFFICE,
-    ]),
-    // may give opponents up to a total of 3 resources
-    */
-    // TODO: add playInner
-    // TODO: add pointsInner
   }),
-
   [EventName.SPECIAL_A_WEE_RUN_CITY]: new Event({
     name: EventName.SPECIAL_A_WEE_RUN_CITY,
     type: EventType.SPECIAL,
     baseVP: 4,
     requiredCards: [CardName.CHIP_SWEEP, CardName.CLOCK_TOWER],
+    eventDescription: [
+      "When achieved, bring back one of your deployed workers",
+    ],
     canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
       return "Not Implemented";
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       throw new Error("Not Implemented");
     },
-    /*
-    canPlayCheckInnerRequiresCards([
-      CardName.CHIP_SWEEP,
-      CardName.CLOCK_TOWER,
-    ]),
-    */
-    // bring back one of your deployed workers
-    // TODO: add playInner
   }),
   [EventName.SPECIAL_AN_EVENING_OF_FIREWORKS]: new Event({
     name: EventName.SPECIAL_AN_EVENING_OF_FIREWORKS,
     type: EventType.SPECIAL,
     baseVP: 0,
     requiredCards: [CardName.LOOKOUT, CardName.MINER_MOLE],
+    eventDescription: flatten([
+      ["When achieved, you may place up to 3 ", "TWIG", " here."],
+      "HR",
+      ["2 ", "VP", " for each ", "TWIG", " on this Event."],
+    ]),
     playedEventInfoInner: () => ({
       storedResources: {
         [ResourceType.TWIG]: 0,
@@ -359,6 +355,13 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     baseVP: 0,
     requiredCards: [CardName.HISTORIAN, CardName.RUINS],
+    eventDescription: flatten([
+      ["When achieved, reveal 5 ", "CARD", "."],
+      "BR",
+      ["You may draw any or place any beneath this Event."],
+      "HR",
+      ["1 ", "VP", " for each ", "CARD", " beneath this Event."],
+    ]),
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
 
@@ -450,6 +453,13 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     baseVP: 0,
     requiredCards: [CardName.COURTHOUSE, CardName.RANGER],
+    eventDescription: [
+      "When achieved, place up to 2 Critters from your city beneath this Event.",
+      "HR",
+      "3 ",
+      "VP",
+      " for each Critter beneath this Event",
+    ],
     playedEventInfoInner: () => ({
       storedCards: [],
     }),
@@ -540,8 +550,15 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
   [EventName.SPECIAL_CROAK_WART_CURE]: new Event({
     name: EventName.SPECIAL_CROAK_WART_CURE,
     type: EventType.SPECIAL,
-    baseVP: 0,
+    baseVP: 6,
     requiredCards: [CardName.UNDERTAKER, CardName.BARGE_TOAD],
+    eventDescription: [
+      "When achieved, pay 2 ",
+      "BERRY",
+      " and discard 2 ",
+      "CARD",
+      " from your city.",
+    ],
     canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
@@ -607,6 +624,11 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     baseVP: 0,
     requiredCards: [CardName.DOCTOR, CardName.POSTAL_PIGEON],
+    eventDescription: [
+      "3 ",
+      "VP",
+      " for each husband/wife pair in every city.",
+    ],
     pointsInner: (gameState: GameState, playerId: string) => {
       let getNumHusbandWifePairs = 0;
       gameState.players.forEach((player) => {
@@ -620,6 +642,11 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     baseVP: 0,
     requiredCards: [CardName.TEACHER, CardName.UNIVERSITY],
+    eventDescription: flatten([
+      "When achieved, you may place up to 3 Critters from your hand beneath this Event.",
+      "HR",
+      ["2 ", "VP", " for each Critter beneath this Event."],
+    ]),
     playedEventInfoInner: () => ({
       storedCards: [],
     }),
@@ -698,7 +725,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     baseVP: 0,
     requiredCards: [CardName.MONK, CardName.DUNGEON],
-    // 3 points for each prisoner in dungeon
+    eventDescription: ["3 ", "VP", " for each prisoner in your Dungeon."],
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
 
@@ -728,7 +755,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     baseVP: 0,
     requiredCards: [CardName.MONASTERY, CardName.WANDERER],
-    // 3 points for each worker in the monestary
+    eventDescription: ["3 ", "VP", " for each worker in your Monestery."],
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
 
@@ -767,6 +794,11 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     baseVP: 0,
     requiredCards: [CardName.INN, CardName.BARD],
+    eventDescription: flatten([
+      ["When achieved, you may place up to 3 ", ResourceType.BERRY, " here."],
+      "HR",
+      ["2 ", "VP", " for each ", ResourceType.BERRY, " on this Event."],
+    ]),
     // may place up to 3 berries on this card
     playedEventInfoInner: () => ({
       storedResources: {
@@ -965,6 +997,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     baseVP: 0,
     requiredCards: [CardName.CEMETARY, CardName.SHEPHERD],
+    eventDescription: ["3 ", "VP", " for each buried worker in your Cemetery."],
     // 3 points for each worker in the cemetary
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
@@ -1003,8 +1036,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
   [EventName.SPECIAL_TAX_RELIEF]: new Event({
     name: EventName.SPECIAL_TAX_RELIEF,
     type: EventType.SPECIAL,
-    baseVP: 0,
+    baseVP: 3,
     requiredCards: [CardName.JUDGE, CardName.QUEEN],
+    eventDescription: ["PRODUCTION", "BR", "Activate Production"],
     canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
       return "Not Implemented";
     },
@@ -1060,6 +1094,13 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     baseVP: 0,
     requiredCards: [CardName.PEDDLER, CardName.GENERAL_STORE],
+    eventDescription: flatten([
+      ["When achieved, you may place up to 3 ", "ANY", " here."],
+      "HR",
+      ["Each ", "BERRY", "TWIG", " = ", "1 ", "VP"],
+      "BR",
+      ["Each ", "RESIN", "PEBBLE", " = ", "2 ", "VP"],
+    ]),
     playedEventInfoInner: () => ({
       storedResources: {
         [ResourceType.TWIG]: 0,

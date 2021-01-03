@@ -390,28 +390,28 @@ describe("GameState", () => {
       expect(player2.numAvailableWorkers).to.be(2);
 
       expect(gameState.getClaimableEvents()).to.eql([
-        EventName.BASIC_FOUR_PRODUCTION_TAGS,
+        EventName.BASIC_FOUR_PRODUCTION,
       ]);
 
       // player1 should be able to claim event
       const gameInput: GameInput = {
         inputType: GameInputType.CLAIM_EVENT as const,
         clientOptions: {
-          event: EventName.BASIC_FOUR_PRODUCTION_TAGS,
+          event: EventName.BASIC_FOUR_PRODUCTION,
         },
       };
       gameState = gameState.next(gameInput);
       player1 = gameState.getPlayer(player1.playerId);
 
       expect(player1.numAvailableWorkers).to.be(1);
-      expect(
-        !!player1.claimedEvents[EventName.BASIC_FOUR_PRODUCTION_TAGS]
-      ).to.be(true);
+      expect(!!player1.claimedEvents[EventName.BASIC_FOUR_PRODUCTION]).to.be(
+        true
+      );
 
       expect(gameState.getClaimableEvents()).to.eql([]);
 
       // player2 should not be able to claim event
-      let event = Event.fromName(EventName.BASIC_FOUR_PRODUCTION_TAGS);
+      let event = Event.fromName(EventName.BASIC_FOUR_PRODUCTION);
       expect(event.canPlay(gameState, gameInput)).to.be(false);
     });
   });

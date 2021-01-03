@@ -35,9 +35,9 @@ describe("Event", () => {
     });
   });
 
-  describe(EventName.BASIC_FOUR_PRODUCTION_TAGS, () => {
+  describe(EventName.BASIC_FOUR_PRODUCTION, () => {
     it("should only be playable with four production tags", () => {
-      const event = Event.fromName(EventName.BASIC_FOUR_PRODUCTION_TAGS);
+      const event = Event.fromName(EventName.BASIC_FOUR_PRODUCTION);
       const gameInput = claimEventInput(event.name);
       const player = gameState.getActivePlayer();
 
@@ -52,7 +52,7 @@ describe("Event", () => {
       expect(Object.keys(player.claimedEvents).length == 0);
 
       event.play(gameState, gameInput);
-      expect(player.claimedEvents[EventName.BASIC_FOUR_PRODUCTION_TAGS]);
+      expect(player.claimedEvents[EventName.BASIC_FOUR_PRODUCTION]);
       expect(Object.keys(player.claimedEvents).length == 1);
     });
   });

@@ -115,6 +115,8 @@ export const Description = ({ description }: { description: string[] }) => {
           return <GameIcon key={idx} type={part} />;
         } else if (part === "BR") {
           return <br />;
+        } else if (part === "HR") {
+          return <hr />;
         } else {
           return part;
         }

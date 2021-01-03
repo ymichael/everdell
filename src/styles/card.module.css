@@ -10,6 +10,7 @@
   margin: 10px;
 
   display: flex;
+  align-self: flex-start;
   flex-direction: column;
   justify-content: space-between;
 }

@@ -1,18 +1,19 @@
 .event {
   min-height: 100px;
-  width: 200px;
+  width: 220px;
   border-radius: 5px;
 
   border: 1px solid #bbb;
   box-shadow: 1px 1px #eee;
   border: solid 2px #682c1e;
 
-  overflow: hidden;
   margin: 10px;
+  padding: 10px;
 
   display: flex;
+  align-self: flex-start;
   flex-direction: column;
-  /*justify-content: space-around;*/
+  position: relative;
 }
 
 .event_row {
@@ -25,4 +26,29 @@
 .event_header {
   font-weight: bold;
   font-size: 12px;
+}
+
+.vp {
+  position: absolute;
+  right: -18px;
+  top: -18px;
+
+  border-radius: 99px;
+  width: 35px;
+  height: 35px;
+  margin: 6px;
+
+  background: url("/images/vp.png");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.vp_number {
+  text-align: center;
+  font-weight: bold;
+  font-size: 20px;
+  padding: 5px;
+}
+
+.claimed {
 }

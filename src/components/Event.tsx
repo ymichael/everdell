@@ -22,12 +22,20 @@ const makeEventName = (eventName: string) => {
   }
 };
 
-const Event: React.FC<{ name: EventName }> = ({ name }) => {
+const Event: React.FC<{
+  name: EventName;
+  claimedBy?: string | null;
+}> = ({ name, claimedBy = null }) => {
   const event = EventModel.fromName(name as any);
   const justEventName = makeEventName(name);
   return (
     <>
       <div className={styles.event}>
+        {event.baseVP ? (
+          <div className={styles.vp}>
+            <div className={styles.vp_number}>{event.baseVP}</div>
+          </div>
+        ) : null}
         <div className={styles.event_row}>
           <div className={styles.event_header}>
             {event.requiredCards ? (

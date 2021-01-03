@@ -42,8 +42,8 @@
 }
 
 .button {
-  background-color: #13463c;
-  color: #e5b8c0;
+  background-color: inherit;
+  color: inherit;
   border: solid 2px;
   width: 100px;
   padding: 10px;

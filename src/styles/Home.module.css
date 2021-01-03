@@ -22,8 +22,8 @@
 }
 
 .button {
-  background-color: #13463c;
-  color: #e5b8c0;
+  background-color: inherit;
+  color: inherit;
   border: solid 2px;
   width: 200px;
   padding: 10px;
@@ -79,25 +79,20 @@
 .game_builder_player_input_wrapper input {
   padding: 5px;
   font-size: 18px;
-  color: #3c1346;
-  background-color: #8b8787;
+  width: 240px;
+  background-color: inherit;
+  color: inherit;
   outline: none;
-  border: none;
-
-  border-top-left-radius: 5px;
-  border-bottom-left-radius: 5px;
+  border: solid 1px;
+  border-radius: 5px;
 }
 
 .game_builder_player_input_button {
-  background-color: #8b8787;
+  background-color: inherit;
+  color: inherit;
   border: none;
   padding: 10px;
   font-size: 18px;
-}
-
-.game_builder_player_input_button_plus {
-  border-bottom-right-radius: 5px;
-  border-top-right-radius: 5px;
 }
 
 .game_builder_randomize_start {

@@ -2,21 +2,21 @@ import * as React from "react";
 import { useRouter } from "next/router";
 import { Formik, Form, Field, FieldArray } from "formik";
 import { GameBlock } from "./common";
+import styles from "../styles/Home.module.css";
 
 let playerIdx = 0;
 const getDummyPlayer = (name: string = "") => {
   playerIdx++;
   return {
     name: name || `Player ${playerIdx}`,
-    critter: "",
   };
 };
 
 const GameBuilder: React.FC = () => {
   const router = useRouter();
-
   return (
-    <GameBlock title={"Create Game"}>
+    <div>
+      {/* <GameBlock title={"Create Game"}> */}
       <Formik
         initialValues={{
           players: [getDummyPlayer("Player 1"), getDummyPlayer("Player 2")],
@@ -45,61 +45,80 @@ const GameBuilder: React.FC = () => {
           const numPlayers = players.length;
           return (
             <Form>
-              <FieldArray
-                name="players"
-                render={(arrayHelpers) => (
-                  <div>
-                    <p>Players</p>
-                    {numPlayers > 0 ? (
-                      players.map((player, idx) => (
-                        <div key={idx}>
-                          <Field
-                            name={`players.${idx}.name`}
-                            placeholder="Player Name"
-                          />
-                          <Field
-                            name={`players.${idx}.critter`}
-                            placeholder="Player Critter"
-                          />
-                          {numPlayers > 2 && (
-                            <button
-                              type="button"
-                              onClick={() => arrayHelpers.remove(idx)}
-                            >
-                              {" "}
-                              -{" "}
-                            </button>
-                          )}
-                          {numPlayers <= 6 && (
-                            <button
-                              type="button"
-                              onClick={() =>
-                                arrayHelpers.insert(idx + 1, getDummyPlayer())
+              <div className={styles.game_builder}>
+                <div className={styles.game_builder_fields}>
+                  <FieldArray
+                    name="players"
+                    render={(arrayHelpers) => (
+                      <div className={styles.game_builder_players}>
+                        <h2>Players</h2>
+                        {numPlayers > 0 ? (
+                          players.map((player, idx) => (
+                            <div
+                              key={idx}
+                              className={
+                                styles.game_builder_player_input_wrapper
                               }
                             >
-                              +
-                            </button>
-                          )}
-                        </div>
-                      ))
-                    ) : (
-                      <></>
+                              <Field
+                                name={`players.${idx}.name`}
+                                placeholder="Player Name"
+                              />
+                              {numPlayers > 2 && (
+                                <button
+                                  type="button"
+                                  className={
+                                    styles.game_builder_player_input_button
+                                  }
+                                  onClick={() => arrayHelpers.remove(idx)}
+                                >
+                                  {" "}
+                                  -{" "}
+                                </button>
+                              )}
+                              {numPlayers <= 6 && (
+                                <button
+                                  type="button"
+                                  className={[
+                                    styles.game_builder_player_input_button,
+                                    styles.game_builder_player_input_button_plus,
+                                  ].join(" ")}
+                                  onClick={() =>
+                                    arrayHelpers.insert(
+                                      idx + 1,
+                                      getDummyPlayer()
+                                    )
+                                  }
+                                >
+                                  +
+                                </button>
+                              )}
+                            </div>
+                          ))
+                        ) : (
+                          <></>
+                        )}
+                        <label className={styles.game_builder_randomize_start}>
+                          <Field
+                            type="checkbox"
+                            name="randomizeStartingPlayer"
+                          />
+                          {"Randomize starting player"}
+                        </label>
+                      </div>
                     )}
-                    <label>
-                      <Field type="checkbox" name="randomizeStartingPlayer" />
-                      {"Randomize starting player"}
-                    </label>
-                  </div>
-                )}
-              />
-              <p>
-                <button type="submit">Submit</button>
-              </p>
+                  />
+                </div>
+                <button className={styles.button} type="submit">
+                  Start Game
+                </button>
+              </div>
             </Form>
           );
         }}
       </Formik>
-    </GameBlock>
+      {/* </GameBlock> */}
+    </div>
   );
 };
 

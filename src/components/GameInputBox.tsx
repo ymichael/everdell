@@ -27,6 +27,7 @@ import GameInputSelectPlayer from "./GameInputSelectPlayer";
 import GameInputSelectPlayedCards from "./GameInputSelectPlayedCards";
 import GameInputSelectCards from "./GameInputSelectCards";
 import GameInputPlaceWorkerSelector from "./GameInputPlaceWorkerSelector";
+import GameInputClaimEventSelector from "./GameInputClaimEventSelector";
 import GameInputSelectPaymentForCard from "./GameInputSelectPaymentForCard";
 import GameInputSelectWorkerPlacement from "./GameInputSelectWorkerPlacement";
 
@@ -115,54 +116,6 @@ const GameInputPlayCardSelector: React.FC<{
           viewingPlayer={viewingPlayer}
         />
       )}
-    </div>
-  );
-};
-
-const GameInputDefaultSelector: React.FC<{
-  gameInputs?: GameInput[];
-  viewingPlayer: Player;
-}> = ({ gameInputs = [], viewingPlayer }) => {
-  const [field, meta, helpers] = useField("gameInput");
-  return (
-    <div role="group" className={styles.default_selector}>
-      {gameInputs.map((gameInput, idx) => {
-        const isSelected = isEqual(
-          omit(meta.value, ["clientOptions"]),
-          omit(gameInput, ["clientOptions"])
-        );
-        return (
-          <div key={idx}>
-            <label>
-              <input
-                type="radio"
-                name="gameInput"
-                checked={isSelected}
-                onChange={() => {
-                  helpers.setValue(gameInput);
-                }}
-              />
-              {JSON.stringify(
-                omit(gameInput, ["playerId", "inputType"]),
-                null,
-                2
-              )}
-            </label>
-            {isSelected &&
-              (gameInput.inputType === GameInputType.SELECT_RESOURCES ? (
-                <GameInputSelectResources
-                  gameInput={gameInput}
-                  viewingPlayer={viewingPlayer}
-                />
-              ) : gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS ? (
-                <GameInputSelectPlayedCards
-                  gameInput={gameInput}
-                  viewingPlayer={viewingPlayer}
-                />
-              ) : null)}
-          </div>
-        );
-      })}
     </div>
   );
 };
@@ -327,11 +280,13 @@ const GameInputBox: React.FC<{
                           viewingPlayer={viewingPlayer}
                           options={gameStateImpl.getPlayableCards()}
                         />
-                      ) : (
-                        <GameInputDefaultSelector
+                      ) : inputType === GameInputType.CLAIM_EVENT ? (
+                        <GameInputClaimEventSelector
                           viewingPlayer={viewingPlayer}
-                          gameInputs={[]}
+                          events={gameStateImpl.getClaimableEvents()}
                         />
+                      ) : (
+                        <>TODO</>
                       ))}
                   </div>
                 );

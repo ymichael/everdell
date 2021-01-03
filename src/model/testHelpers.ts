@@ -21,7 +21,7 @@ export function testInitialGameState(
   opts: {
     numPlayers?: number;
     playerNames?: string[];
-    cardsInHand?: CardName[] | null;
+    cardsInHand?: CardName[];
     noForestLocations?: boolean;
     noSpecialEvents?: boolean;
     meadowCards?: CardName[];
@@ -31,7 +31,7 @@ export function testInitialGameState(
   const {
     numPlayers = 2,
     playerNames = [],
-    cardsInHand = null,
+    cardsInHand = [],
     meadowCards = [],
     noForestLocations = true,
     noSpecialEvents = true,
@@ -49,11 +49,9 @@ export function testInitialGameState(
     gameState.meadowCards.pop();
   }
   gameState.meadowCards.push(...meadowCards);
-  if (cardsInHand) {
-    gameState.players.forEach((player) => {
-      player.cardsInHand = [...cardsInHand];
-    });
-  }
+  gameState.players.forEach((player) => {
+    player.cardsInHand = [...cardsInHand];
+  });
   if (noForestLocations) {
     (Object.keys(gameState.locationsMap) as LocationName[]).forEach(
       (locationName) => {

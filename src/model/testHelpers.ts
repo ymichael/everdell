@@ -20,7 +20,8 @@ import merge from "lodash/merge";
 export function testInitialGameState(
   opts: {
     numPlayers?: number;
-    cardsInHand?: CardName[];
+    playerNames?: string[];
+    cardsInHand?: CardName[] | null;
     noForestLocations?: boolean;
     noSpecialEvents?: boolean;
     meadowCards?: CardName[];
@@ -29,7 +30,8 @@ export function testInitialGameState(
 ): GameState {
   const {
     numPlayers = 2,
-    cardsInHand = [],
+    playerNames = [],
+    cardsInHand = null,
     meadowCards = [],
     noForestLocations = true,
     noSpecialEvents = true,
@@ -37,7 +39,7 @@ export function testInitialGameState(
   } = opts;
   const players = [];
   for (let i = 0; i < numPlayers; i++) {
-    players.push(createPlayer(`Player #${i}`));
+    players.push(createPlayer(playerNames[i] || `Player #${i}`));
   }
   const gameState = GameState.initialGameState({
     players,
@@ -47,9 +49,11 @@ export function testInitialGameState(
     gameState.meadowCards.pop();
   }
   gameState.meadowCards.push(...meadowCards);
-  gameState.players.forEach((player) => {
-    player.cardsInHand = [...cardsInHand];
-  });
+  if (cardsInHand) {
+    gameState.players.forEach((player) => {
+      player.cardsInHand = [...cardsInHand];
+    });
+  }
   if (noForestLocations) {
     (Object.keys(gameState.locationsMap) as LocationName[]).forEach(
       (locationName) => {

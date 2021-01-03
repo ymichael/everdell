@@ -56,18 +56,6 @@ const Game: React.FC<{
       <ViewerUI player={viewingPlayerImpl} />
       <Locations locationsMap={gameState.locationsMap} />
       <Events eventsMap={gameState.eventsMap} />
-      <hr />
-      <div>
-        <h2>DEBUG</h2>
-        <div>
-          <h3>you</h3>
-          <pre>{JSON.stringify(viewingPlayer, null, 2)}</pre>
-        </div>
-        <div>
-          <h3>Game State:</h3>
-          <pre>{JSON.stringify(game, null, 2)}</pre>
-        </div>
-      </div>
     </GameUpdater>
   );
 };

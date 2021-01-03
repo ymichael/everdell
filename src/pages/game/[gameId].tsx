@@ -1,5 +1,4 @@
 import { GetServerSideProps } from "next";
-import { useRouter } from "next/router";
 
 import { getGameById } from "../../model/game";
 import { GameJSON, PlayerJSON } from "../../model/jsonTypes";

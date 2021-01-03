@@ -399,7 +399,7 @@ describe("Player", () => {
             },
           })
         )
-      ).to.match(/dungeon/i);
+      ).to.match(/unable to invoke dungeon/i);
       player.addToCity(CardName.WIFE);
       player.addToCity(CardName.DUNGEON);
       expect(
@@ -412,6 +412,23 @@ describe("Player", () => {
           })
         )
       ).to.be(null);
+
+      const playedDungeon = player.getFirstPlayedCard(CardName.DUNGEON);
+      playedDungeon.pairedCards!.push(CardName.WIFE);
+
+      expect(
+        player.validatePaymentOptions(
+          playCardInput(CardName.FARM, {
+            paymentOptions: {
+              resources: {},
+              cardToDungeon: CardName.WIFE,
+            },
+          })
+        )
+      ).to.match(/unable to invoke dungeon/i);
+
+      player.addToCity(CardName.RANGER);
+
       expect(
         player.validatePaymentOptions(
           playCardInput(CardName.KING, {
@@ -911,6 +928,48 @@ describe("Player", () => {
         expect(player.cardsInHand).to.eql([]);
         expect(player.hasCardInCity(CardName.WIFE)).to.be(true);
         expect(player.hasCardInCity(CardName.INNKEEPER)).to.be(false);
+      });
+    });
+
+    describe("cardToDungeon", () => {
+      it("should add the cardToDungeon to the dungeon", () => {
+        // Dungeon wife to play farm
+        const card = Card.fromName(CardName.FARM);
+        const gameInput = playCardInput(card.name, {
+          paymentOptions: {
+            resources: {},
+            cardToDungeon: CardName.WIFE,
+          },
+        });
+
+        let player = gameState.getActivePlayer();
+        player.cardsInHand = [card.name];
+
+        player.addToCity(CardName.DUNGEON);
+        player.addToCity(CardName.WIFE);
+
+        expect(player.getFirstPlayedCard(CardName.DUNGEON)).to.eql({
+          cardName: CardName.DUNGEON,
+          cardOwnerId: player.playerId,
+          pairedCards: [],
+          usedForCritter: false,
+        });
+
+        expect(player.hasCardInCity(CardName.FARM)).to.be(false);
+        expect(card.canPlay(gameState, gameInput)).to.be(true);
+
+        const nextGameState = gameState.next(gameInput);
+        player = nextGameState.getPlayer(player.playerId);
+        expect(player.cardsInHand).to.eql([]);
+        expect(player.hasCardInCity(CardName.FARM)).to.be(true);
+        expect(player.hasCardInCity(CardName.WIFE)).to.be(false);
+        expect(player.hasCardInCity(CardName.DUNGEON)).to.be(true);
+        expect(player.getFirstPlayedCard(CardName.DUNGEON)).to.eql({
+          cardName: CardName.DUNGEON,
+          cardOwnerId: player.playerId,
+          pairedCards: [CardName.WIFE],
+          usedForCritter: false,
+        });
       });
     });
   });

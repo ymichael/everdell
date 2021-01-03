@@ -426,10 +426,10 @@ export class Player {
   }
 
   canInvokeDungeon(): boolean {
-    const playedDungeon = this.playedCards[CardName.DUNGEON]?.[0];
-    if (!playedDungeon) {
+    if (!this.hasCardInCity(CardName.DUNGEON)) {
       return false;
     }
+    const playedDungeon = this.getFirstPlayedCard(CardName.DUNGEON);
     const numDungeoned = playedDungeon.pairedCards?.length || 0;
     const maxDungeoned = this.hasCardInCity(CardName.RANGER) ? 2 : 1;
     // Need to have a critter to dungeon
@@ -717,7 +717,12 @@ export class Player {
     }
 
     if (paymentOptions.cardToDungeon) {
-      throw new Error("Not Implemented yet");
+      const playedDungeon = this.getFirstPlayedCard(CardName.DUNGEON);
+      this.removeCardFromCity(
+        gameState,
+        this.getFirstPlayedCard(paymentOptions.cardToDungeon)
+      );
+      playedDungeon.pairedCards!.push(paymentOptions.cardToDungeon);
     } else if (paymentOptions.cardToUse) {
       switch (paymentOptions.cardToUse) {
         case CardName.CRANE:

@@ -10,7 +10,7 @@
     "test:watch": "DB_PATH=./db.test.sqlite mocha -r ts-node/register --watch --extension ts src/**/*.test.ts",
     "dev": "DB_PATH=./db/game.sqlite next dev",
     "build": "next build",
-    "start": "DB_PATH=./db/game.sqlite next start",
+    "start": "DB_PATH=./db/game.sqlite next start -p $PORT",
     "format": "prettier --write src",
     "lint": "eslint src --ext .ts,ts"
   },

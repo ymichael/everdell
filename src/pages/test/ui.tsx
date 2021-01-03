@@ -2,13 +2,13 @@ import * as React from "react";
 import { useState, useEffect } from "react";
 
 import Head from "next/head";
-import styles from "../styles/test.module.css";
+import styles from "../../styles/test.module.css";
 
-import { GameBlock } from "../components/common";
-import Card from "../components/Card";
-import Location from "../components/Location";
-import Event from "../components/Event";
-import { CardName, LocationName, EventName } from "../model/types";
+import { GameBlock } from "../../components/common";
+import Card from "../../components/Card";
+import Location from "../../components/Location";
+import Event from "../../components/Event";
+import { CardName, LocationName, EventName } from "../../model/types";
 
 const ItemsList: React.FC<{ title: string; visible: boolean }> = ({
   title,

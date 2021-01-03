@@ -1,13 +1,16 @@
 {
   "name": "everdell",
   "version": "0.1.0",
+  "engines": {
+    "node": "12.x"
+  },
   "private": true,
   "scripts": {
     "test": "DB_PATH=./db.test.sqlite mocha -r ts-node/register src/**/*.test.ts",
     "test:watch": "DB_PATH=./db.test.sqlite mocha -r ts-node/register --watch --extension ts src/**/*.test.ts",
     "dev": "DB_PATH=./db/game.sqlite next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "DB_PATH=./db/game.sqlite next start -p $PORT",
     "format": "prettier --write src",
     "lint": "eslint src --ext .ts,ts"
   },

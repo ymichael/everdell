@@ -26,21 +26,25 @@ const ItemsList: React.FC<{ title: string; visible: boolean }> = ({
 
 export default function TestPage() {
   const allCards: CardName[] = Object.keys(CardName) as CardName[];
+  const allEvents: EventName[] = Object.keys(EventName) as EventName[];
   const allLocations: LocationName[] = Object.keys(
     LocationName
   ) as LocationName[];
 
   const [showCards, setShowCards] = useState(false);
   const [showLocations, setShowLocations] = useState(false);
+  const [showEvents, setShowEvents] = useState(false);
   const [filter, setFilter] = useState("");
 
   useEffect(() => {
     const params = new URL(window.location.href).searchParams;
     const cardsOnly = params.get("cards");
     const locationsOnly = params.get("locations");
-    const showOneType = cardsOnly || locationsOnly;
+    const eventsOnly = params.get("events");
+    const showOneType = cardsOnly || locationsOnly || eventsOnly;
     setShowCards(!!(cardsOnly || !showOneType));
     setShowLocations(!!(locationsOnly || !showOneType));
+    setShowEvents(!!(eventsOnly || !showOneType));
   }, []);
 
   return (
@@ -76,8 +80,13 @@ export default function TestPage() {
           })}
       </ItemsList>
       <ItemsList title={"Events"} visible={showLocations}>
-        <Event name={EventName.SPECIAL_THE_EVERDELL_GAMES} />
-        <Event name={EventName.SPECIAL_PRISTINE_CHAPEL_CEILING} />
+        {allEvents
+          .filter((x) => {
+            return !filter || x.toLowerCase().indexOf(filter) !== -1;
+          })
+          .map((evt) => {
+            return <Event key={evt} name={evt} />;
+          })}
       </ItemsList>
     </div>
   );

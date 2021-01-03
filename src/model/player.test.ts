@@ -930,19 +930,18 @@ describe("Player", () => {
       const player2 = gameState.players[1];
 
       expect(player1.numAvailableWorkers).to.be(2);
-      expect(player1.canPlaceWorkerOnCard(CardName.INN, player2)).to.be(false);
 
       // Player 1 has a worker on player 2's INN
       player2.addToCity(CardName.INN);
-      expect(player1.canPlaceWorkerOnCard(CardName.INN, player2)).to.be(true);
-
       player1.placeWorkerOnCard(
         gameState,
         player2.getFirstPlayedCard(CardName.INN)
       );
 
       // No more space
-      expect(player1.canPlaceWorkerOnCard(CardName.INN, player2)).to.be(false);
+      expect(
+        player1.canPlaceWorkerOnCard(player2.getFirstPlayedCard(CardName.INN))
+      ).to.be(false);
 
       gameState.locationsMap[LocationName.BASIC_ONE_STONE]!.push(
         player1.playerId

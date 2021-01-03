@@ -480,7 +480,7 @@ export class Player {
       );
     }
 
-    if (!this.canPlaceWorkerOnCard(cardName, cardOwner)) {
+    if (!this.canPlaceWorkerOnCard(origPlayedCard)) {
       throw new Error(
         `Cannot place worker on card: ${JSON.stringify(playedCard, null, 2)}`
       );
@@ -502,34 +502,20 @@ export class Player {
     this.placedWorkers.push(workerPlacementInfo);
   }
 
-  canPlaceWorkerOnCard(
-    cardName: CardName,
-    _cardOwner: Player | null = null
-  ): boolean {
-    const cardOwner = _cardOwner || this;
+  canPlaceWorkerOnCard(playedCard: PlayedCardInfo | undefined): boolean {
+    if (!playedCard) {
+      return false;
+    }
     if (this.numAvailableWorkers <= 0) {
       return false;
     }
+    const { cardName, cardOwnerId, workers = [] } = playedCard;
     const card = Card.fromName(cardName);
-    if (!cardOwner.hasCardInCity(cardName)) {
+    if (cardOwnerId !== this.playerId && !card.isOpenDestination) {
       return false;
     }
-    if (cardOwner.playerId !== this.playerId && !card.isOpenDestination) {
-      return false;
-    }
-    return cardOwner.hasSpaceOnDestinationCard(cardName);
-  }
 
-  hasSpaceOnDestinationCard(cardName: CardName): boolean {
-    if (!this.hasCardInCity(cardName)) {
-      return false;
-    }
-    return !!this.getPlayedCardInfos(cardName).some(
-      ({ workers = [], cardName }) => {
-        const card = Card.fromName(cardName);
-        return card.getMaxWorkers(this) > workers.length;
-      }
-    );
+    return card.getMaxWorkers(this) > workers.length;
   }
 
   canAffordCard(cardName: CardName, isMeadowCard: boolean): boolean {
@@ -549,7 +535,11 @@ export class Player {
     }
 
     // Queen (below 3 vp free)
-    if (card.baseVP <= 3 && this.canPlaceWorkerOnCard(CardName.QUEEN)) {
+    if (
+      card.baseVP <= 3 &&
+      this.hasCardInCity(CardName.QUEEN) &&
+      this.canPlaceWorkerOnCard(this.getFirstPlayedCard(CardName.QUEEN))
+    ) {
       return true;
     }
 
@@ -571,7 +561,9 @@ export class Player {
       // Dungeon
       this.canInvokeDungeon() ||
       // Inn
-      (isMeadowCard && this.canPlaceWorkerOnCard(CardName.INN)) ||
+      (isMeadowCard &&
+        this.hasCardInCity(CardName.INN) &&
+        this.canPlaceWorkerOnCard(this.getFirstPlayedCard(CardName.INN))) ||
       // Crane
       (card.isConstruction && this.hasCardInCity(CardName.CRANE));
 

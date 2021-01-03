@@ -8,6 +8,7 @@ import {
   CardName,
   GameInput,
   GameInputType,
+  GameInputPlayCard,
 } from "../model/types";
 import { ResourceTypeIcon } from "./assets";
 
@@ -72,14 +73,11 @@ export const ResourcesToSpend: React.FC<{
 };
 
 const OptionToUseAssociatedCard: React.FC<{
-  gameInput: GameInput & { inputType: GameInputType.PLAY_CARD };
   name: string;
+  cardName: CardName;
   viewingPlayer: Player;
-}> = ({ gameInput, name, viewingPlayer }) => {
-  if (!gameInput.clientOptions.card) {
-    return <></>;
-  }
-  const card = CardModel.fromName(gameInput.clientOptions.card);
+}> = ({ cardName, name, viewingPlayer }) => {
+  const card = CardModel.fromName(cardName);
   if (
     !(
       card.isCritter &&
@@ -102,10 +100,9 @@ const OptionToUseAssociatedCard: React.FC<{
 };
 
 const CardToUseForm: React.FC<{
-  gameInput: GameInput & { inputType: GameInputType.PLAY_CARD };
   name: string;
   viewingPlayer: Player;
-}> = ({ gameInput, name, viewingPlayer }) => {
+}> = ({ name, viewingPlayer }) => {
   const [field, meta, helpers] = useField(name);
   return (
     <>
@@ -119,7 +116,7 @@ const CardToUseForm: React.FC<{
             <label key={idx}>
               <Field
                 type="radio"
-                name="gameInput.paymentOptions.cardToUse"
+                name={name}
                 value={cardToUse || "NONE"}
                 checked={cardToUse === meta.value}
                 onChange={() => {
@@ -135,10 +132,9 @@ const CardToUseForm: React.FC<{
 };
 
 const CardToDungeonForm: React.FC<{
-  gameInput: GameInput & { inputType: GameInputType.PLAY_CARD };
   name: string;
   viewingPlayer: Player;
-}> = ({ gameInput, name, viewingPlayer }) => {
+}> = ({ name, viewingPlayer }) => {
   const [field, meta, helpers] = useField(name);
   return (
     <>
@@ -148,33 +144,22 @@ const CardToDungeonForm: React.FC<{
 };
 
 const CardPayment: React.FC<{
-  gameInput: GameInput;
   name: string;
+  clientOptions: GameInputPlayCard["clientOptions"];
   viewingPlayer: Player;
-}> = ({ gameInput, name, viewingPlayer }) => {
-  if (gameInput.inputType !== GameInputType.PLAY_CARD) {
-    return <></>;
-  }
-  if (!gameInput.clientOptions.card) {
-    return <></>;
-  }
-  const card = CardModel.fromName(gameInput.clientOptions.card);
-
+}> = ({ clientOptions, name, viewingPlayer }) => {
   return (
     <div className={styles.card_payment_form}>
       <ResourcesToSpend name={`${name}.resources`} />
-      <OptionToUseAssociatedCard
-        gameInput={gameInput}
-        name={`${name}.useAssociatedCard`}
-        viewingPlayer={viewingPlayer}
-      />
-      <CardToUseForm
-        gameInput={gameInput}
-        name={`${name}.cardToUse`}
-        viewingPlayer={viewingPlayer}
-      />
+      {clientOptions.card && (
+        <OptionToUseAssociatedCard
+          name={`${name}.useAssociatedCard`}
+          cardName={clientOptions.card}
+          viewingPlayer={viewingPlayer}
+        />
+      )}
+      <CardToUseForm name={`${name}.cardToUse`} viewingPlayer={viewingPlayer} />
       <CardToDungeonForm
-        gameInput={gameInput}
         name={`${name}.cardToDungeon`}
         viewingPlayer={viewingPlayer}
       />

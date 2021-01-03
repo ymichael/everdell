@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useRef } from "react";
 
-import { GameInputSelectPlayedCards as TGameInputSelectPlayedCards } from "../model/types";
+import { LocationName } from "../model/types";
 import { Player } from "../model/player";
 import Card from "./Card";
 
@@ -11,25 +11,17 @@ import { GameInputType, GameInput } from "../model/types";
 import Location from "./Location";
 
 const GameInputPlaceWorkerSelector: React.FC<{
-  gameInputs?: GameInput[];
+  locations: LocationName[];
   viewingPlayer: Player;
-}> = ({ gameInputs = [], viewingPlayer }) => {
-  const [field, meta, helpers] = useField("gameInput");
+}> = ({ locations = [], viewingPlayer }) => {
+  const [field, meta, helpers] = useField("gameInput.clientOptions.location");
   return (
     <div className={styles.selector}>
       <div role="group">
         <p>Choose a location to place a worker:</p>
         <div className={styles.play_card_list}>
-          {gameInputs.map((gameInput, idx) => {
-            if (gameInput.inputType !== GameInputType.PLACE_WORKER) {
-              return <></>;
-            }
-
-            const isSelected =
-              meta.value &&
-              meta.value.inputType === gameInput.inputType &&
-              meta.value._idx === idx;
-
+          {locations.map((location, idx) => {
+            const isSelected = meta.value === location;
             return (
               <div key={idx} className={styles.play_card_list_item_wrapper}>
                 <div
@@ -41,16 +33,10 @@ const GameInputPlaceWorkerSelector: React.FC<{
                     .filter(Boolean)
                     .join(" ")}
                   onClick={() => {
-                    helpers.setValue({
-                      ...gameInput,
-                      _idx: idx,
-                      clientOptions: {},
-                    });
+                    helpers.setValue(location);
                   }}
                 >
-                  {gameInput.clientOptions.location && (
-                    <Location name={gameInput.clientOptions.location} />
-                  )}
+                  <Location name={location} />
                 </div>
               </div>
             );

@@ -51,27 +51,20 @@ const gameInputSortOrder: Partial<Record<GameInputType, number>> = {
 };
 
 const GameInputPlayCardSelector: React.FC<{
-  gameInputs?: GameInput[];
+  options: { card: CardName; fromMeadow: boolean }[];
   viewingPlayer: Player;
-}> = ({ gameInputs = [], viewingPlayer }) => {
-  const [field, meta, helpers] = useField("gameInput");
+}> = ({ options = [], viewingPlayer }) => {
+  const [field, meta, helpers] = useField("gameInput.clientOptions");
   return (
     <div className={styles.selector}>
       <div role="group">
         <p>Choose a card to play:</p>
         <div className={styles.play_card_list}>
-          {gameInputs.map((gameInput, idx) => {
-            if (gameInput.inputType !== GameInputType.PLAY_CARD) {
-              return <></>;
-            }
-            if (!gameInput.clientOptions.card) {
-              return <></>;
-            }
+          {options.map(({ card, fromMeadow }, idx) => {
             const isSelected =
               meta.value &&
-              meta.value.inputType === gameInput.inputType &&
-              meta.value.card === gameInput.clientOptions.card &&
-              meta.value.fromMeadow === gameInput.clientOptions.fromMeadow &&
+              meta.value.card === card &&
+              meta.value.fromMeadow === fromMeadow &&
               meta.value._idx === idx;
             return (
               <div key={idx} className={styles.play_card_list_item_wrapper}>
@@ -85,9 +78,9 @@ const GameInputPlayCardSelector: React.FC<{
                     .join(" ")}
                   onClick={() => {
                     helpers.setValue({
-                      ...gameInput,
                       _idx: idx,
-                      clientOptions: {},
+                      card,
+                      fromMeadow,
                       paymentOptions: {
                         cardToUse: null,
                         resources: {
@@ -100,8 +93,8 @@ const GameInputPlayCardSelector: React.FC<{
                     });
                   }}
                 >
-                  <Card name={gameInput.clientOptions.card} />
-                  {gameInput.clientOptions.fromMeadow && (
+                  <Card name={card} />
+                  {fromMeadow && (
                     <div className={styles.play_card_list_item_label}>
                       (Meadow)
                     </div>
@@ -117,8 +110,8 @@ const GameInputPlayCardSelector: React.FC<{
       </div>
       {meta.value && (
         <CardPayment
-          gameInput={meta.value as GameInput}
-          name={"gameInput.paymentOptions"}
+          name={"gameInput.clientOptions.paymentOptions"}
+          clientOptions={meta.value}
           viewingPlayer={viewingPlayer}
         />
       )}
@@ -203,17 +196,11 @@ const GameInputBox: React.FC<{
     );
   }
 
-  const inputTypeToInputs: Partial<Record<GameInputType, GameInput[]>> = {};
-  gameInputs.forEach((gameInput) => {
-    inputTypeToInputs[gameInput.inputType] =
-      inputTypeToInputs[gameInput.inputType] || [];
-    (inputTypeToInputs[gameInput.inputType] as GameInput[]).push(gameInput);
-  });
-  const inputTypesOrdered: GameInputType[] = Object.keys(
-    inputTypeToInputs
-  ) as GameInputType[];
-  inputTypesOrdered.sort((a, b) =>
-    (gameInputSortOrder[a] || 10) < (gameInputSortOrder[b] || 10) ? -1 : 1
+  gameInputs.sort((a, b) =>
+    (gameInputSortOrder[a.inputType] || 10) <
+    (gameInputSortOrder[b.inputType] || 10)
+      ? -1
+      : 1
   );
 
   return (
@@ -223,8 +210,8 @@ const GameInputBox: React.FC<{
       devDebug={devDebug}
       viewingPlayer={viewingPlayer}
       initialValues={{
-        selectedInputType: inputTypesOrdered[0],
-        gameInput: gameInputs.length === 1 ? gameInputs[0] : null,
+        selectedInputType: gameInputs[0]?.inputType,
+        gameInput: gameInputs[0],
       }}
     >
       {({ values, setFieldValue, isSubmitting }) => {
@@ -313,7 +300,8 @@ const GameInputBox: React.FC<{
           <Form>
             <pre>{JSON.stringify(values, null, 2)}</pre>
             <div role="group">
-              {inputTypesOrdered.map((inputType) => {
+              {gameInputs.map((gameInput) => {
+                const { inputType } = gameInput;
                 return (
                   <div key={inputType}>
                     <label>
@@ -323,7 +311,7 @@ const GameInputBox: React.FC<{
                         value={inputType}
                         onChange={() => {
                           setFieldValue("selectedInputType", inputType);
-                          setFieldValue("gameInput", null);
+                          setFieldValue("gameInput", gameInput);
                         }}
                       />
                       {inputType}
@@ -332,17 +320,17 @@ const GameInputBox: React.FC<{
                       (inputType === GameInputType.PLACE_WORKER ? (
                         <GameInputPlaceWorkerSelector
                           viewingPlayer={viewingPlayer}
-                          gameInputs={inputTypeToInputs[inputType]}
+                          locations={gameStateImpl.getPlayableLocations()}
                         />
                       ) : inputType === GameInputType.PLAY_CARD ? (
                         <GameInputPlayCardSelector
                           viewingPlayer={viewingPlayer}
-                          gameInputs={inputTypeToInputs[inputType]}
+                          options={gameStateImpl.getPlayableCards()}
                         />
                       ) : (
                         <GameInputDefaultSelector
                           viewingPlayer={viewingPlayer}
-                          gameInputs={inputTypeToInputs[inputType]}
+                          gameInputs={[]}
                         />
                       ))}
                   </div>

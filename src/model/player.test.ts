@@ -509,15 +509,128 @@ describe("Player", () => {
         ).to.match(/overpay/i);
       });
 
-      // TODO
-      xit("QUEEN", () => {
-        throw new Error("Not Implemented yet");
+      it("QUEEN", () => {
+        const player = gameState.getActivePlayer();
+        expect(
+          player.validatePaymentOptions(
+            playCardInput(CardName.FARM, {
+              paymentOptions: {
+                cardToUse: CardName.QUEEN,
+                resources: {},
+              },
+            })
+          )
+        ).to.match(/unable to find queen/i);
+
+        player.addToCity(CardName.QUEEN);
+        player.addToCity(CardName.CASTLE);
+        expect(
+          player.validatePaymentOptions(
+            playCardInput(CardName.FARM, {
+              paymentOptions: {
+                cardToUse: CardName.QUEEN,
+                resources: {},
+              },
+            })
+          )
+        ).to.be(null);
+
+        expect(
+          player.validatePaymentOptions(
+            playCardInput(CardName.KING, {
+              paymentOptions: {
+                cardToUse: CardName.QUEEN,
+                resources: {},
+              },
+            })
+          )
+        ).to.match(/cannot use queen to play king/i);
+
+        expect(() => {
+          player.validatePaymentOptions(
+            playCardInput(CardName.KING, {
+              paymentOptions: {
+                cardToUse: CardName.CASTLE,
+                resources: {},
+              },
+            })
+          );
+        }).to.throwException(/unexpected/i);
       });
-      xit("CRANE", () => {
-        throw new Error("Not Implemented yet");
+
+      it("CRANE", () => {
+        const player = gameState.getActivePlayer();
+        expect(
+          player.validatePaymentOptions(
+            playCardInput(CardName.FARM, {
+              paymentOptions: {
+                cardToUse: CardName.CRANE,
+                resources: {},
+              },
+            })
+          )
+        ).to.match(/unable to find crane/i);
+
+        player.addToCity(CardName.CRANE);
+        expect(
+          player.validatePaymentOptions(
+            playCardInput(CardName.FARM, {
+              paymentOptions: {
+                cardToUse: CardName.CRANE,
+                resources: {},
+              },
+            })
+          )
+        ).to.be(null);
+
+        expect(
+          player.validatePaymentOptions(
+            playCardInput(CardName.WIFE, {
+              paymentOptions: {
+                cardToUse: CardName.CRANE,
+                resources: {},
+              },
+            })
+          )
+        ).to.match(/unable to use crane to play wife/i);
       });
-      xit("INN", () => {
-        throw new Error("Not Implemented yet");
+
+      it("INN", () => {
+        const player = gameState.getActivePlayer();
+        expect(
+          player.validatePaymentOptions(
+            playCardInput(CardName.FARM, {
+              paymentOptions: {
+                cardToUse: CardName.INN,
+                resources: {},
+              },
+            })
+          )
+        ).to.match(/unable to find inn/i);
+
+        player.addToCity(CardName.INN);
+        expect(
+          player.validatePaymentOptions(
+            playCardInput(CardName.FARM, {
+              paymentOptions: {
+                cardToUse: CardName.INN,
+                resources: {},
+              },
+            })
+          )
+        ).to.match(/cannot use inn to play a non-meadow card/i);
+
+        expect(
+          player.validatePaymentOptions(
+            playCardInput(CardName.FARM, {
+              fromMeadow: true,
+              paymentOptions: {
+                cardToUse: CardName.INN,
+                resources: {},
+              },
+            })
+          )
+        ).to.be(null);
       });
     });
   });

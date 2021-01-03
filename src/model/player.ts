@@ -831,7 +831,7 @@ export class Player {
           );
         case CardName.QUEEN:
           if (cardToPlay.baseVP > 3) {
-            return `Cannot use ${CardName.QUEEN} to play ${cardToPlay.name} (baseVP: ${cardToPlay.baseVP}`;
+            return `Cannot use ${CardName.QUEEN} to play ${cardToPlay.name} (baseVP: ${cardToPlay.baseVP})`;
           }
           return null;
         case CardName.INN:

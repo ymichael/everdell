@@ -25,9 +25,9 @@ const ItemsList: React.FC<{ title: string; visible: boolean }> = ({
 };
 
 export default function TestPage() {
-  const allCards: CardName[] = Object.keys(CardName) as CardName[];
-  const allEvents: EventName[] = Object.keys(EventName) as EventName[];
-  const allLocations: LocationName[] = Object.keys(
+  const allCards: CardName[] = Object.values(CardName) as CardName[];
+  const allEvents: EventName[] = Object.values(EventName) as EventName[];
+  const allLocations: LocationName[] = Object.values(
     LocationName
   ) as LocationName[];
 

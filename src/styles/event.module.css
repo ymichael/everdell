@@ -11,9 +11,22 @@
   padding: 10px;
 
   display: flex;
+  justify-content: center;
   align-self: flex-start;
   flex-direction: column;
   position: relative;
+}
+
+.event_basic {
+  padding: 10px;
+  text-align: center;
+  font-size: 22px;
+  line-height: 22px;
+}
+
+.event_basic div {
+  width: 28px;
+  height: 28px;
 }
 
 .event_row {
@@ -48,7 +61,4 @@
   font-weight: bold;
   font-size: 20px;
   padding: 5px;
-}
-
-.claimed {
 }

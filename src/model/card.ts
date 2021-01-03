@@ -288,7 +288,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       ResourceType.RESIN,
       " and ",
       ResourceType.PEBBLE,
-      " , to a maximum of 6.",
+      ", to a maximum of 6.",
     ],
     // 1 point per rock and pebble, up to 6 pts
     pointsInner: (gameState: GameState, playerId: string) => {
@@ -1580,7 +1580,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: false,
     associatedCard: CardName.PALACE,
-    cardDescription: ["Play a ", "CARD", "worth up to 3 VP for free"],
+    cardDescription: ["Play a ", "CARD", " worth up to 3 VP for free"],
     // play a card worth up to 3 base VP for free
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();

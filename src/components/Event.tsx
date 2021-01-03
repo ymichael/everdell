@@ -14,20 +14,11 @@ import { Player } from "../model/player";
 import { Description, CardTypeSymbol } from "./common";
 import { sumResources } from "../model/gameStatePlayHelpers";
 
-const makeEventName = (eventName: string) => {
-  if (eventName.startsWith("SPECIAL")) {
-    return eventName.substring(8, eventName.length);
-  } else {
-    return eventName.substring(6, eventName.length);
-  }
-};
-
 const Event: React.FC<{
   name: EventName;
   claimedBy?: string | null;
 }> = ({ name, claimedBy = null }) => {
   const event = EventModel.fromName(name as any);
-  const justEventName = makeEventName(name);
   return (
     <>
       <div className={styles.event}>
@@ -36,30 +27,40 @@ const Event: React.FC<{
             <div className={styles.vp_number}>{event.baseVP}</div>
           </div>
         ) : null}
-        <div className={styles.event_row}>
-          <div className={styles.event_header}>
-            {event.requiredCards ? (
-              <Description
-                description={[
-                  event.requiredCards[0],
-                  ", ",
-                  event.requiredCards[1],
-                ]}
-              />
-            ) : (
-              justEventName
-            )}
-          </div>
-        </div>
-        {event.eventRequirementsDescription && (
-          <div className={styles.event_row}>
+        {event.type === EventType.BASIC ? (
+          <div className={styles.event_basic}>
             <Description description={event.eventRequirementsDescription} />
           </div>
-        )}
-        {event.eventDescription && (
-          <div className={styles.event_row}>
-            <Description description={event.eventDescription} />
-          </div>
+        ) : (
+          <>
+            <div className={styles.event_row}>
+              <div className={styles.event_header}>
+                {event.requiredCards ? (
+                  <>
+                    <Description
+                      description={[
+                        event.requiredCards[0],
+                        ", ",
+                        event.requiredCards[1],
+                      ]}
+                    />
+                  </>
+                ) : (
+                  name
+                )}
+              </div>
+            </div>
+            {event.eventRequirementsDescription && (
+              <div className={styles.event_row}>
+                <Description description={event.eventRequirementsDescription} />
+              </div>
+            )}
+            {event.eventDescription && (
+              <div className={styles.event_row}>
+                <Description description={event.eventDescription} />
+              </div>
+            )}
+          </>
         )}
       </div>
     </>

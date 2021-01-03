@@ -114,9 +114,9 @@ export const Description = ({ description }: { description: string[] }) => {
         if (ICON_TYPES[part]) {
           return <GameIcon key={idx} type={part} />;
         } else if (part === "BR") {
-          return <br />;
+          return <br key={idx} />;
         } else if (part === "HR") {
-          return <hr />;
+          return <hr key={idx} />;
         } else {
           return part;
         }

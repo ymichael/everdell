@@ -1,5 +1,6 @@
 import expect from "expect.js";
 import { Card } from "./card";
+import { Location } from "./location";
 import { GameState } from "./gameState";
 import merge from "lodash/merge";
 import {
@@ -9,6 +10,7 @@ import {
 } from "./testHelpers";
 import {
   CardType,
+  LocationType,
   ResourceType,
   GameInputType,
   GameInputPlayCard,
@@ -1375,9 +1377,15 @@ describe("Card", () => {
             inputType: GameInputType.SELECT_LOCATION,
             prevInputType: GameInputType.VISIT_DESTINATION_CARD,
             cardContext: CardName.LOOKOUT,
-            locationOptions: (Object.keys(
+            locationOptions: ((Object.keys(
               gameState.locationsMap
-            ) as unknown) as LocationName[],
+            ) as unknown) as LocationName[]).filter((name) => {
+              const location = Location.fromName(name);
+              return (
+                location.type === LocationType.BASIC ||
+                location.type === LocationType.FOREST
+              );
+            }),
             clientOptions: {
               selectedLocation: LocationName.BASIC_ONE_BERRY,
             },
@@ -1410,9 +1418,15 @@ describe("Card", () => {
             inputType: GameInputType.SELECT_LOCATION,
             prevInputType: GameInputType.VISIT_DESTINATION_CARD,
             cardContext: CardName.LOOKOUT,
-            locationOptions: (Object.keys(
+            locationOptions: ((Object.keys(
               gameState.locationsMap
-            ) as unknown) as LocationName[],
+            ) as unknown) as LocationName[]).filter((name) => {
+              const location = Location.fromName(name);
+              return (
+                location.type === LocationType.BASIC ||
+                location.type === LocationType.FOREST
+              );
+            }),
             clientOptions: {
               selectedLocation: LocationName.FOREST_TWO_BERRY_ONE_CARD,
             },
@@ -1449,9 +1463,15 @@ describe("Card", () => {
             inputType: GameInputType.SELECT_LOCATION,
             prevInputType: GameInputType.VISIT_DESTINATION_CARD,
             cardContext: CardName.LOOKOUT,
-            locationOptions: (Object.keys(
+            locationOptions: ((Object.keys(
               gameState.locationsMap
-            ) as unknown) as LocationName[],
+            ) as unknown) as LocationName[]).filter((name) => {
+              const location = Location.fromName(name);
+              return (
+                location.type === LocationType.BASIC ||
+                location.type === LocationType.FOREST
+              );
+            }),
             clientOptions: {
               selectedLocation: LocationName.FOREST_TWO_BERRY_ONE_CARD,
             },

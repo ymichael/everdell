@@ -1064,20 +1064,31 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           inputType: GameInputType.SELECT_LOCATION,
           prevInputType: GameInputType.VISIT_DESTINATION_CARD,
           cardContext: CardName.LOOKOUT,
-          locationOptions: possibleLocations,
+          locationOptions: possibleLocations.filter((locationName) => {
+            const location = Location.fromName(locationName);
+            return (
+              location.type === LocationType.BASIC ||
+              location.type === LocationType.FOREST
+            );
+          }),
           clientOptions: {
             selectedLocation: null,
           },
         });
       } else if (gameInput.inputType === GameInputType.SELECT_LOCATION) {
         const selectedLocation = gameInput.clientOptions.selectedLocation;
-
         if (!selectedLocation) {
           throw new Error("Invalid location selected");
         }
-
         const location = Location.fromName(selectedLocation);
-
+        if (
+          location.type !== LocationType.BASIC &&
+          location.type !== LocationType.FOREST
+        ) {
+          throw new Error(
+            `Cannot copy ${selectedLocation}. Only basic and forest locations are allowed.`
+          );
+        }
         if (!location.canPlay(gameState, gameInput)) {
           throw new Error("location can't be played");
         }

@@ -79,7 +79,7 @@ export default function TestPage() {
             return <Location key={loc} name={loc} />;
           })}
       </ItemsList>
-      <ItemsList title={"Events"} visible={showLocations}>
+      <ItemsList title={"Events"} visible={showEvents}>
         {allEvents
           .filter((x) => {
             return !filter || x.toLowerCase().indexOf(filter) !== -1;

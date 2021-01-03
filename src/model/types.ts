@@ -359,10 +359,6 @@ export type WorkerPlacementInfo =
       playedCard?: undefined;
     };
 
-export type PlayerIdsToAvailableDestinationCards = {
-  [playerId: string]: CardName[];
-};
-
 // All known cards
 export enum CardName {
   ARCHITECT = "ARCHITECT",

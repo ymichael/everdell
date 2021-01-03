@@ -348,14 +348,15 @@ export class Player {
     return numCards;
   }
 
-  // returns all destination cards that a player has played that have
+  // Returns all played destination cards that a player has played that have
   // room for another worker
-  getAllAvailableDestinationCards(): CardName[] {
-    const ret: CardName[] = [];
-    this.forEachPlayedCard(({ cardName, workers = [] }) => {
+  getAllAvailableDestinationCards(): PlayedCardInfo[] {
+    const ret: PlayedCardInfo[] = [];
+    this.forEachPlayedCard((playedCard) => {
+      const { cardName, workers = [] } = playedCard;
       const card = Card.fromName(cardName);
       if (card.getMaxWorkers(this) > workers.length) {
-        ret.push(cardName);
+        ret.push(playedCard);
       }
     });
     return ret;
@@ -363,8 +364,8 @@ export class Player {
 
   // returns all non-Open destination or storehouse cards that were played by player and
   // are available for them to put a worker on
-  getAvailableClosedDestinationCards(): CardName[] {
-    return this.getAllAvailableDestinationCards().filter((cardName) => {
+  getAvailableClosedDestinationCards(): PlayedCardInfo[] {
+    return this.getAllAvailableDestinationCards().filter(({ cardName }) => {
       const card = Card.fromName(cardName);
       return !card.isOpenDestination;
     });
@@ -372,8 +373,8 @@ export class Player {
 
   // returns all destination cards played by this player that are "open"
   // and are available to take other workers
-  getAvailableOpenDestinationCards(): CardName[] {
-    return this.getAllAvailableDestinationCards().filter((cardName) => {
+  getAvailableOpenDestinationCards(): PlayedCardInfo[] {
+    return this.getAllAvailableDestinationCards().filter(({ cardName }) => {
       const card = Card.fromName(cardName);
       return card.isOpenDestination;
     });
@@ -468,12 +469,28 @@ export class Player {
   }
 
   placeWorkerOnCard(gameState: GameState, playedCard: PlayedCardInfo): void {
-    const { cardName, cardOwnerId, workers = [] } = playedCard;
+    const { cardName, cardOwnerId } = playedCard;
     const cardOwner = gameState.getPlayer(cardOwnerId);
     const card = Card.fromName(cardName);
+
+    const origPlayedCard = cardOwner.findPlayedCard(playedCard);
+    if (!origPlayedCard) {
+      throw new Error(
+        `Could not find played card: ${JSON.stringify(playedCard, null, 2)}`
+      );
+    }
+
+    if (!this.canPlaceWorkerOnCard(cardName, cardOwner)) {
+      throw new Error(
+        `Cannot place worker on card: ${JSON.stringify(playedCard, null, 2)}`
+      );
+    }
+
+    const { workers = [] } = origPlayedCard;
     if (workers.length >= card.getMaxWorkers(cardOwner)) {
       throw new Error(`Couldn't place worker: ${JSON.stringify(playedCard)}`);
     }
+
     workers.push(this.playerId);
     this.placeWorkerCommon({ playedCard });
   }

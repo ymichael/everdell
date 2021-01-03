@@ -289,6 +289,88 @@ describe("GameState", () => {
     });
   });
 
+  describe("VISIT_DESTINATION_CARD", () => {
+    it("sanity test", () => {
+      const player = gameState.getActivePlayer();
+      expect(gameState.getVisitableDestinationCards()).to.eql([]);
+
+      expect(gameState.getPossibleGameInputs()).to.eql([
+        {
+          inputType: GameInputType.PLACE_WORKER,
+          clientOptions: {
+            location: null,
+          },
+        },
+      ]);
+
+      player.addToCity(CardName.UNIVERSITY);
+      expect(gameState.getVisitableDestinationCards()).to.eql([
+        player.getFirstPlayedCard(CardName.UNIVERSITY),
+      ]);
+
+      const player2 = gameState.players[1];
+      player2.addToCity(CardName.QUEEN);
+      player2.addToCity(CardName.INN);
+      player2.addToCity(CardName.UNIVERSITY);
+
+      expect(gameState.getVisitableDestinationCards()).to.eql([
+        player.getFirstPlayedCard(CardName.UNIVERSITY),
+        player2.getFirstPlayedCard(CardName.INN),
+      ]);
+
+      expect(gameState.getPossibleGameInputs()).to.eql([
+        {
+          inputType: GameInputType.PLACE_WORKER,
+          clientOptions: {
+            location: null,
+          },
+        },
+        {
+          inputType: GameInputType.VISIT_DESTINATION_CARD,
+          clientOptions: {
+            playedCard: null,
+          },
+        },
+      ]);
+
+      player2.placeWorkerOnCard(
+        gameState,
+        player2.getFirstPlayedCard(CardName.INN)
+      );
+
+      expect(gameState.getVisitableDestinationCards()).to.eql([
+        player.getFirstPlayedCard(CardName.UNIVERSITY),
+      ]);
+
+      expect(() => {
+        multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            clientOptions: {
+              playedCard: player2.getFirstPlayedCard(CardName.UNIVERSITY),
+            },
+          },
+        ]);
+      }).to.throwException(/cannot place worker on card/i);
+
+      player.placeWorkerOnCard(
+        gameState,
+        player.getFirstPlayedCard(CardName.UNIVERSITY)
+      );
+
+      expect(gameState.getVisitableDestinationCards()).to.eql([]);
+
+      expect(gameState.getPossibleGameInputs()).to.eql([
+        {
+          inputType: GameInputType.PLACE_WORKER,
+          clientOptions: {
+            location: null,
+          },
+        },
+      ]);
+    });
+  });
+
   describe("CLAIM_EVENT", () => {
     it("should handle CLAIM_EVENT game input", () => {
       // player1 is the active player
@@ -307,6 +389,10 @@ describe("GameState", () => {
       expect(player1.numAvailableWorkers).to.be(2);
       expect(player2.numAvailableWorkers).to.be(2);
 
+      expect(gameState.getClaimableEvents()).to.eql([
+        EventName.BASIC_FOUR_PRODUCTION_TAGS,
+      ]);
+
       // player1 should be able to claim event
       const gameInput: GameInput = {
         inputType: GameInputType.CLAIM_EVENT as const,
@@ -321,6 +407,8 @@ describe("GameState", () => {
       expect(
         !!player1.claimedEvents[EventName.BASIC_FOUR_PRODUCTION_TAGS]
       ).to.be(true);
+
+      expect(gameState.getClaimableEvents()).to.eql([]);
 
       // player2 should not be able to claim event
       let event = Event.fromName(EventName.BASIC_FOUR_PRODUCTION_TAGS);

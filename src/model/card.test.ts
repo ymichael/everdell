@@ -2526,6 +2526,7 @@ describe("Card", () => {
         player2.recallWorkers(gameState);
         expect(player2.numAvailableWorkers).to.be(2);
       });
+
       it("remove card with permanently placed worker on it", () => {
         let player = gameState.getActivePlayer();
         const card = Card.fromName(CardName.UNIVERSITY);

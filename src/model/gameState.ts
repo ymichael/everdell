@@ -14,7 +14,6 @@ import {
   LocationName,
   LocationNameToPlayerIds,
   EventNameToPlayerId,
-  PlayerIdsToAvailableDestinationCards,
   ResourceType,
   GameInputWorkerPlacementTypes,
   WorkerPlacementInfo,
@@ -547,42 +546,12 @@ export class GameState {
   };
 
   getVisitableDestinationCards = (): PlayedCardInfo[] => {
-    return [];
-    // TODO
-    // const destinationCardsToPlayers: PlayerIdsToAvailableDestinationCards = {};
-
-    // // get open destination cards of other players
-    // this.players.forEach((player) => {
-    //   const availableDestinationCards: CardName[] = player.getAvailableOpenDestinationCards();
-
-    //   const playerId = player.playerId;
-
-    //   destinationCardsToPlayers[playerId] = availableDestinationCards;
-    // });
-
-    // const activePlayer = this.getActivePlayer();
-    // const activePlayerId: string = this.activePlayerId;
-    // const availableClosedDestinationCards = activePlayer.getAvailableClosedDestinationCards();
-    // destinationCardsToPlayers[activePlayerId].push(
-    //   ...availableClosedDestinationCards
-    // );
-
-    // // create the game inputs for these cards
-    // const gameInputs: GameInputVisitDestinationCard[] = [];
-    // const playerIds = Object.keys(destinationCardsToPlayers);
-
-    // playerIds.forEach((playerId) => {
-    //   const cards = destinationCardsToPlayers[playerId];
-    //   cards.forEach((cardName) => {
-    //     gameInputs.push({
-    //       inputType: GameInputType.VISIT_DESTINATION_CARD as const,
-    //       cardOwnerId: playerId,
-    //       card: cardName as CardName,
-    //     });
-    //   });
-    // });
-
-    // return gameInputs;
+    const activePlayer = this.getActivePlayer();
+    const ret = [...activePlayer.getAvailableClosedDestinationCards()];
+    this.players.forEach((player) => {
+      ret.push(...player.getAvailableOpenDestinationCards());
+    });
+    return ret;
   };
 
   getPlayableCards(): { card: CardName; fromMeadow: boolean }[] {

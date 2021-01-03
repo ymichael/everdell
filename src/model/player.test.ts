@@ -1016,7 +1016,9 @@ describe("Player", () => {
       player.addToCity(CardName.INN);
 
       const closedDestinations = player.getAvailableClosedDestinationCards();
-      expect(closedDestinations).to.eql([CardName.STOREHOUSE]);
+      expect(closedDestinations).to.eql([
+        player.getFirstPlayedCard(CardName.STOREHOUSE),
+      ]);
 
       const allDestinations = player.getAllAvailableDestinationCards();
       expect(allDestinations.length).to.eql(2);

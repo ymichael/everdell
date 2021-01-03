@@ -739,10 +739,12 @@ export class Player {
           break;
         case CardName.QUEEN:
         case CardName.INN:
-          // TODO
-          // if (gameInput.inputType === GameInputType.PLAY_CARD) {
-          //   this.placeWorkerOnCard(paymentOptions.cardToUse);
-          // }
+          if (gameInput.inputType === GameInputType.PLAY_CARD) {
+            this.placeWorkerOnCard(
+              gameState,
+              this.getFirstPlayedCard(paymentOptions.cardToUse)
+            );
+          }
           break;
         default:
           assertUnreachable(

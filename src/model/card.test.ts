@@ -1503,6 +1503,12 @@ describe("Card", () => {
         player.addToCity(CardName.INN);
 
         expect(player.numAvailableWorkers).to.be(2);
+        expect(player.getFirstPlayedCard(CardName.INN)).to.eql({
+          cardName: CardName.INN,
+          cardOwnerId: player.playerId,
+          usedForCritter: false,
+          workers: [],
+        });
         expect(player.hasCardInCity(CardName.QUEEN)).to.be(false);
         expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
         expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
@@ -1541,7 +1547,6 @@ describe("Card", () => {
         ]);
 
         player = gameState.getPlayer(player.playerId);
-
         expect(player.numAvailableWorkers).to.be(1);
         expect(player.hasCardInCity(CardName.FARM)).to.be(true);
         expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);

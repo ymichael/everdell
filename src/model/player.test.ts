@@ -1042,6 +1042,47 @@ describe("Player", () => {
         expect(player.hasCardInCity(CardName.WIFE)).to.be(true);
         expect(player.hasCardInCity(CardName.INNKEEPER)).to.be(false);
       });
+
+      it("should place worker on QUEEN after using it", () => {
+        // Use QUEEN to play wife
+        const card = Card.fromName(CardName.WIFE);
+        const gameInput = playCardInput(card.name, {
+          paymentOptions: {
+            resources: {},
+            cardToUse: CardName.QUEEN,
+          },
+        });
+        let player = gameState.getActivePlayer();
+
+        player.addToCity(CardName.QUEEN);
+        player.cardsInHand = [card.name];
+
+        expect(card.canPlay(gameState, gameInput)).to.be(true);
+        expect(player.cardsInHand).to.not.eql([]);
+        expect(player.numAvailableWorkers).to.be(2);
+        expect(player.getFirstPlayedCard(CardName.QUEEN)).to.eql({
+          cardName: CardName.QUEEN,
+          cardOwnerId: player.playerId,
+          workers: [],
+        });
+        const nextGameState = gameState.next(gameInput);
+        player = nextGameState.getPlayer(player.playerId);
+
+        expect(player.cardsInHand).to.eql([]);
+        expect(player.hasCardInCity(CardName.WIFE)).to.be(true);
+        expect(player.getFirstPlayedCard(CardName.QUEEN)).to.eql({
+          cardName: CardName.QUEEN,
+          cardOwnerId: player.playerId,
+          workers: [player.playerId],
+        });
+        expect(player.numAvailableWorkers).to.be(1);
+
+        nextGameState.nextPlayer();
+        player.cardsInHand = [card.name];
+        expect(() => {
+          nextGameState.next(gameInput);
+        }).to.throwException(/cannot place worker on card/i);
+      });
     });
 
     describe("cardToDungeon", () => {

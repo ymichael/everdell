@@ -20,13 +20,13 @@
 .event_basic {
   padding: 10px;
   text-align: center;
-  font-size: 22px;
+  font-size: 16px;
   line-height: 22px;
 }
 
 .event_basic div {
-  width: 28px;
-  height: 28px;
+  width: 22px;
+  height: 22px;
 }
 
 .event_row {

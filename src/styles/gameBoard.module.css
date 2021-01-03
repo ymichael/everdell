@@ -8,3 +8,10 @@
   font-size: 14px;
   padding: 20px 0;
 }
+
+.forest_items {
+  margin-left: -10px;
+  display: flex;
+  flex-wrap: wrap;
+  width: 1000px;
+}

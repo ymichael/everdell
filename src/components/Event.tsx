@@ -29,7 +29,9 @@ const Event: React.FC<{
         ) : null}
         {event.type === EventType.BASIC ? (
           <div className={styles.event_basic}>
-            <Description description={event.eventRequirementsDescription} />
+            <Description
+              description={event.eventRequirementsDescription || []}
+            />
           </div>
         ) : (
           <>

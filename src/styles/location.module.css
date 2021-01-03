@@ -3,11 +3,12 @@
   width: 200px;
   border-radius: 5px;
 
-  border: 1px solid #bbb;
-  box-shadow: 1px 1px #eee;
+  border: 1px solid;
+  box-shadow: 1px 1px;
 
   overflow: hidden;
   margin: 10px;
+  color: #13463c;
 
   display: flex;
   flex-direction: column;
@@ -39,20 +40,21 @@
   border: solid 2px #bb9e66;
 }
 
-.color_basic .location_type {
-  color: #88a55e;
+.color_basic {
+  background-color: #88a55e;
 }
 
-.color_forest .location_type {
-  color: #4e5627;
-}
-
-.color_haven .location_type {
+.color_forest {
   color: #ddcf9d;
+  background-color: #4e5627;
 }
 
-.color_journey .location_type {
-  color: #bb9e66;
+.color_haven {
+  background-color: #ddcf9d;
+}
+
+.color_journey {
+  background-color: #bb9e66;
 }
 
 .location_type {

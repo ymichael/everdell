@@ -7,6 +7,8 @@ import { GameBlock } from "./common";
 import { Meadow } from "./gameBoard";
 import GameInputBox from "./GameInputBox";
 
+import styles from "../styles/GameAdmin.module.css";
+
 const GameAdmin = ({
   game,
   devDebugMode,
@@ -15,7 +17,7 @@ const GameAdmin = ({
   devDebugMode: boolean;
 }) => {
   return (
-    <>
+    <div className={styles.container}>
       <GameBlock title={"Game Created"}>
         <p>Copy links to share with other players:</p>
         <ul>
@@ -35,7 +37,7 @@ const GameAdmin = ({
           <GameAdminDebugOnly game={game} />
         </>
       )}
-    </>
+    </div>
   );
 };
 

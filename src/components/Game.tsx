@@ -12,6 +12,8 @@ import { Player } from "../model/player";
 import { CardName, GameInput } from "../model/types";
 import { GameJSON, PlayerJSON } from "../model/jsonTypes";
 
+import styles from "../styles/Game.module.css";
+
 const Game: React.FC<{
   game: GameJSON;
   gameInputs: GameInput[];
@@ -36,27 +38,29 @@ const Game: React.FC<{
 
   const viewingPlayerImpl = Player.fromJSON(viewingPlayer);
   return (
-    <GameUpdater
-      gameId={gameId}
-      playerId={playerId}
-      activePlayerId={gameState.activePlayerId}
-      playerSecret={playerSecret as string}
-      gameStateId={gameState.gameStateId}
-      onUpdate={updateGameAndViewingPlayer}
-    >
-      <Meadow meadowCards={gameState.meadowCards} />
-      <GameLog logs={game.gameLogBuffer} />
-      <GameInputBox
+    <div className={styles.container}>
+      <GameUpdater
         gameId={gameId}
-        gameState={gameState}
-        gameInputs={gameInputs}
-        viewingPlayer={viewingPlayerImpl}
-      />
-      <Players viewingPlayer={viewingPlayerImpl} gameState={gameState} />
-      <ViewerUI player={viewingPlayerImpl} />
-      <Locations locationsMap={gameState.locationsMap} />
-      <Events eventsMap={gameState.eventsMap} />
-    </GameUpdater>
+        playerId={playerId}
+        activePlayerId={gameState.activePlayerId}
+        playerSecret={playerSecret as string}
+        gameStateId={gameState.gameStateId}
+        onUpdate={updateGameAndViewingPlayer}
+      >
+        <Meadow meadowCards={gameState.meadowCards} />
+        <GameLog logs={game.gameLogBuffer} />
+        <GameInputBox
+          gameId={gameId}
+          gameState={gameState}
+          gameInputs={gameInputs}
+          viewingPlayer={viewingPlayerImpl}
+        />
+        <Players viewingPlayer={viewingPlayerImpl} gameState={gameState} />
+        <ViewerUI player={viewingPlayerImpl} />
+        <Locations locationsMap={gameState.locationsMap} />
+        <Events eventsMap={gameState.eventsMap} />
+      </GameUpdater>
+    </div>
   );
 };
 

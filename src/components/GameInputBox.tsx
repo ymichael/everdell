@@ -287,11 +287,13 @@ const GameInputBox: React.FC<{
                 );
               })}
             </div>
-            <p>
-              <button disabled={isSubmitting} type="submit">
-                Submit
-              </button>
-            </p>
+            <button
+              className={styles.button}
+              disabled={isSubmitting}
+              type="submit"
+            >
+              Submit
+            </button>
           </Form>
         );
       }}

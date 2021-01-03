@@ -1,7 +1,7 @@
 .status_box {
   height: 100px;
   width: fit-content;
-  border: solid 1px black;
+  border: solid 1px;
   display: flex;
   margin: 5px 0;
   border-radius: 5px;
@@ -31,8 +31,7 @@
 }
 
 .status_box_bio_season {
-  color: #ccc;
-  text-transform: capitalize;
+  text-transform: uppercase;
 }
 
 .status_box_bio_meta {

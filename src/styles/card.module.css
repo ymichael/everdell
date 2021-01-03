@@ -4,8 +4,8 @@
   border-radius: 5px;
   position: relative;
 
-  border: 1px solid #bbb;
-  box-shadow: 1px 1px #eee;
+  border: 1px solid;
+  box-shadow: 1px 1px #c7a7ad;
   overflow: hidden;
   margin: 10px;
 
@@ -60,7 +60,7 @@
 .card_description {
   padding: 10px 5px 5px 5px;
   font-size: 14px;
-  border-bottom: solid 1px #eee;
+  border-bottom: solid 1px;
 }
 
 .card_cost_value {
@@ -73,7 +73,7 @@
   text-transform: uppercase;
   font-size: 10px;
   font-weight: 700;
-  color: #bbb;
+  color: #8b8787;
 }
 
 .circle {
@@ -85,7 +85,6 @@
   text-align: center;
   font-weight: normal;
   font-size: 27px;
-  color: #000000;
 }
 
 .card_header_vp {
@@ -101,7 +100,7 @@
   display: inline-block;
   margin-top: -16px;
   vertical-align: middle;
-  color: #5a4607;
+  color: #3c1346;
 }
 
 .card_header_symbol {

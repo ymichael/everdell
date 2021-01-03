@@ -22,11 +22,6 @@ const Event: React.FC<{
   return (
     <>
       <div className={styles.event}>
-        {event.baseVP ? (
-          <div className={styles.vp}>
-            <div className={styles.vp_number}>{event.baseVP}</div>
-          </div>
-        ) : null}
         {event.type === EventType.BASIC ? (
           <div className={styles.event_basic}>
             <Description
@@ -64,6 +59,9 @@ const Event: React.FC<{
             )}
           </>
         )}
+        {event.baseVP ? (
+          <Description description={[event.baseVP, " ", "VP"]} />
+        ) : null}
       </div>
     </>
   );

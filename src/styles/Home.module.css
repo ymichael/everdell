@@ -1,10 +1,6 @@
 .container {
   min-height: 100vh;
   padding: 0.5rem;
-
-  background-color: #13463c;
-  color: #e5b8c0;
-
   display: flex;
   justify-content: center;
   flex-direction: column;

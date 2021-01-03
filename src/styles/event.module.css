@@ -3,9 +3,9 @@
   width: 220px;
   border-radius: 5px;
 
-  border: 1px solid #bbb;
-  box-shadow: 1px 1px #eee;
-  border: solid 2px #682c1e;
+  box-shadow: 1px 1px;
+  border: solid 2px;
+  background-color: #ddcf9d;
 
   margin: 10px;
   padding: 10px;

@@ -31,6 +31,7 @@ export class Event implements GameStatePlayable {
   readonly type: EventType;
   readonly baseVP: number;
   readonly requiredCards: CardName[] | undefined;
+  readonly eventRequirementsDescription: string[] | undefined;
   readonly eventDescription: string[] | undefined;
   // every event has requirements to play,
   // but not all events result in an action when played
@@ -42,6 +43,7 @@ export class Event implements GameStatePlayable {
     baseVP,
     requiredCards,
     eventDescription,
+    eventRequirementsDescription,
     playInner, // called when the card is played
     canPlayCheckInner, // called when we check canPlay function
     playedEventInfoInner, // used for cards that accumulate other cards or resources
@@ -52,6 +54,7 @@ export class Event implements GameStatePlayable {
     baseVP: number;
     requiredCards?: CardName[];
     eventDescription?: string[];
+    eventRequirementsDescription?: string[];
     canPlayCheckInner?: GameStateCanPlayCheckFn;
     playInner?: GameStatePlayFn;
     playedEventInfoInner?: () => PlayedEventInfo;
@@ -62,6 +65,7 @@ export class Event implements GameStatePlayable {
     this.baseVP = baseVP;
     this.requiredCards = requiredCards;
     this.eventDescription = eventDescription;
+    this.eventRequirementsDescription = eventRequirementsDescription;
     this.canPlayCheckInner = canPlayCheckInner;
     this.playInner = playInner;
     this.playedEventInfoInner = playedEventInfoInner;
@@ -170,6 +174,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.BASIC_FOUR_PRODUCTION_TAGS,
     type: EventType.BASIC,
     baseVP: 3,
+    eventRequirementsDescription: ["4 ", "PRODUCTION"],
     canPlayCheckInner: (gameState: GameState) => {
       const player = gameState.getActivePlayer();
       if (player.getNumCardType(CardType.PRODUCTION) < 4) {
@@ -182,6 +187,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.BASIC_THREE_DESTINATION,
     type: EventType.BASIC,
     baseVP: 3,
+    eventRequirementsDescription: ["3 ", "DESTINATION"],
     canPlayCheckInner: (gameState: GameState) => {
       const player = gameState.getActivePlayer();
       if (player.getNumCardType(CardType.DESTINATION) < 3) {
@@ -194,6 +200,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.BASIC_THREE_GOVERNANCE,
     type: EventType.BASIC,
     baseVP: 3,
+    eventRequirementsDescription: ["3 ", "GOVERNANCE"],
     canPlayCheckInner: (gameState: GameState) => {
       const player = gameState.getActivePlayer();
       if (player.getNumCardType(CardType.GOVERNANCE) < 3) {
@@ -206,6 +213,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.BASIC_THREE_TRAVELER,
     type: EventType.BASIC,
     baseVP: 3,
+    eventRequirementsDescription: ["3 ", "TRAVELER"],
     canPlayCheckInner: (gameState: GameState) => {
       const player = gameState.getActivePlayer();
       if (player.getNumCardType(CardType.TRAVELER) < 3) {
@@ -1013,6 +1021,19 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_THE_EVERDELL_GAMES,
     type: EventType.SPECIAL,
     baseVP: 9,
+    eventRequirementsDescription: [
+      "2 Each of ",
+      "BR",
+      "PRODUCTION",
+      " ",
+      "TRAVELER",
+      " ",
+      "GOVERNANCE",
+      " ",
+      "PROSPERITY",
+      " ",
+      "DESTINATION",
+    ],
     canPlayCheckInner: (gameState: GameState) => {
       const player = gameState.getActivePlayer();
       const cardTypeList = [

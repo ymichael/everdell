@@ -113,6 +113,8 @@ export const Description = ({ description }: { description: string[] }) => {
       {description.map((part: any, idx: number) => {
         if (ICON_TYPES[part]) {
           return <GameIcon key={idx} type={part} />;
+        } else if (part === "BR") {
+          return <br />;
         } else {
           return part;
         }

@@ -1,5 +1,5 @@
 .event {
-  height: 100px;
+  min-height: 100px;
   width: 200px;
   border-radius: 5px;
 
@@ -9,17 +9,20 @@
 
   overflow: hidden;
   margin: 10px;
+
+  display: flex;
+  flex-direction: column;
+  /*justify-content: space-around;*/
+}
+
+.event_row {
+  padding: 5px 10px;
+  text-align: center;
+  font-size: 12px;
+  line-height: 22px;
 }
 
 .event_header {
-  padding: 10px;
   font-weight: bold;
   font-size: 12px;
-  text-align: center;
-}
-
-.event_requirements {
-  padding: 10px;
-  text-align: center;
-  font-size: 14px;
 }

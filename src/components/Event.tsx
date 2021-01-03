@@ -8,6 +8,7 @@ import {
   CardName,
   PlayedCardInfo,
   EventName,
+  EventType,
 } from "../model/types";
 import { Player } from "../model/player";
 import { Description, CardTypeSymbol } from "./common";
@@ -21,38 +22,37 @@ const makeEventName = (eventName: string) => {
   }
 };
 
-const EventRequirements = ({ event }: { event: EventModel }) => {
-  if (event.requiredCards) {
-    return (
-      <>
-        {event.requiredCards[0]}, {event.requiredCards[1]}
-      </>
-    );
-  }
-  return <>event requirements</>;
-};
-
-const EventDescription = ({ event }: { event: EventModel }) => {
-  if (event.eventDescription) {
-    return <Description description={event.eventDescription} />;
-  }
-  return <>event description</>;
-};
-
 const Event: React.FC<{ name: EventName }> = ({ name }) => {
   const event = EventModel.fromName(name as any);
   const justEventName = makeEventName(name);
   return (
     <>
       <div className={styles.event}>
-        <div className={styles.event_header}>{justEventName}</div>
-        <div className={styles.event_requirements}>
-          <EventRequirements event={event}></EventRequirements>
+        <div className={styles.event_row}>
+          <div className={styles.event_header}>
+            {event.requiredCards ? (
+              <Description
+                description={[
+                  event.requiredCards[0],
+                  ", ",
+                  event.requiredCards[1],
+                ]}
+              />
+            ) : (
+              justEventName
+            )}
+          </div>
         </div>
-
-        {/* <div className={styles.info_row}> */}
-        {/*   <EventDescription event={event} /> */}
-        {/* </div> */}
+        {event.eventRequirementsDescription && (
+          <div className={styles.event_row}>
+            <Description description={event.eventRequirementsDescription} />
+          </div>
+        )}
+        {event.eventDescription && (
+          <div className={styles.event_row}>
+            <Description description={event.eventDescription} />
+          </div>
+        )}
       </div>
     </>
   );

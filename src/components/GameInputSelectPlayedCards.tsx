@@ -5,18 +5,17 @@ import { GameInputSelectPlayedCards as TGameInputSelectPlayedCards } from "../mo
 import { Player } from "../model/player";
 import Card from "./Card";
 
-import { Form, useField } from "formik";
+import { useField } from "formik";
 
 const GameInputSelectPlayedCards: React.FC<{
+  name: string;
   gameInput: TGameInputSelectPlayedCards;
   viewingPlayer: Player;
-}> = ({ gameInput, viewingPlayer }) => {
-  const [field, meta, helpers] = useField(
-    "gameInput.clientOptions.selectedCards"
-  );
+}> = ({ name, gameInput, viewingPlayer }) => {
+  const [field, meta, helpers] = useField(name);
   const selectedCardIdx = useRef<any>({});
   return (
-    <Form>
+    <>
       <p>Select {gameInput.maxToSelect} cards</p>
       <>
         <ul>
@@ -44,8 +43,7 @@ const GameInputSelectPlayedCards: React.FC<{
           })}
         </ul>
       </>
-      <button type="submit">Submit</button>
-    </Form>
+    </>
   );
 };
 

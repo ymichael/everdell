@@ -8,7 +8,7 @@ import {
 } from "../model/types";
 import { Player } from "../model/player";
 
-import { Form, useField } from "formik";
+import { useField } from "formik";
 
 const textLabel = (gameInput: TGameInputSelectCards) => {
   let numLabel = "";
@@ -39,7 +39,7 @@ const GameInputSelectCards: React.FC<{
   );
   const selectedCardIdx = useRef<any>({});
   return (
-    <Form>
+    <>
       <p>{textLabel(gameInput)}</p>
       <>
         {gameInput.cardOptions.map((card: CardName, idx: number) => {
@@ -68,8 +68,7 @@ const GameInputSelectCards: React.FC<{
           );
         })}
       </>
-      <button type="submit">Submit</button>
-    </Form>
+    </>
   );
 };
 

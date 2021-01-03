@@ -1,28 +1,28 @@
 import * as React from "react";
 import { useRef } from "react";
 
-import { LocationName } from "../model/types";
+import { PlayedCardInfo } from "../model/types";
 import { Player } from "../model/player";
-import Card from "./Card";
 
 import { useField } from "formik";
 import styles from "../styles/GameInputBox.module.css";
 import { GameInputType, GameInput } from "../model/types";
-import Location from "./Location";
 
-const GameInputPlaceWorkerSelector: React.FC<{
+import isEqual from "lodash/isEqual";
+
+const GameInputVisitDestinationCard: React.FC<{
   name: string;
-  locations: LocationName[];
+  destinations: PlayedCardInfo[];
   viewingPlayer: Player;
-}> = ({ name, locations = [], viewingPlayer }) => {
+}> = ({ name, destinations = [], viewingPlayer }) => {
   const [field, meta, helpers] = useField(name);
   return (
     <div className={styles.selector}>
       <div role="group">
-        <p>Choose a location:</p>
+        <p>Select a card to visit:</p>
         <div className={styles.play_card_list}>
-          {locations.map((location, idx) => {
-            const isSelected = meta.value === location;
+          {destinations.map((playedCard, idx) => {
+            const isSelected = isEqual(meta.value, playedCard);
             return (
               <div key={idx} className={styles.play_card_list_item_wrapper}>
                 <div
@@ -34,10 +34,10 @@ const GameInputPlaceWorkerSelector: React.FC<{
                     .filter(Boolean)
                     .join(" ")}
                   onClick={() => {
-                    helpers.setValue(location);
+                    helpers.setValue(playedCard);
                   }}
                 >
-                  <Location name={location} />
+                  <div>{JSON.stringify(playedCard)}</div>
                 </div>
               </div>
             );
@@ -48,4 +48,4 @@ const GameInputPlaceWorkerSelector: React.FC<{
   );
 };
 
-export default GameInputPlaceWorkerSelector;
+export default GameInputVisitDestinationCard;

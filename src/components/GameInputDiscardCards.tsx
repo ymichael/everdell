@@ -4,7 +4,7 @@ import { useRef } from "react";
 import { GameInputDiscardCards as TGameInputDiscardCards } from "../model/types";
 import { Player } from "../model/player";
 
-import { Form, useField } from "formik";
+import { useField } from "formik";
 
 const textLabel = (gameInput: TGameInputDiscardCards) => {
   let numLabel = "";
@@ -32,7 +32,7 @@ const GameInputDiscardCards: React.FC<{
   );
   const selectedCardIdx = useRef<any>({});
   return (
-    <Form>
+    <>
       <p>{textLabel(gameInput)}</p>
       <>
         {viewingPlayer.cardsInHand.map((card, idx) => {
@@ -61,8 +61,7 @@ const GameInputDiscardCards: React.FC<{
           );
         })}
       </>
-      <button type="submit">Submit</button>
-    </Form>
+    </>
   );
 };
 

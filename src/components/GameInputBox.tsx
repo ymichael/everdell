@@ -30,6 +30,9 @@ import GameInputPlaceWorkerSelector from "./GameInputPlaceWorkerSelector";
 import GameInputClaimEventSelector from "./GameInputClaimEventSelector";
 import GameInputSelectPaymentForCard from "./GameInputSelectPaymentForCard";
 import GameInputSelectWorkerPlacement from "./GameInputSelectWorkerPlacement";
+import GameInputVisitDestinationCard from "./GameInputVisitDestinationCard";
+
+import { assertUnreachable } from "../utils";
 
 const GameInputBoxText: React.FC<{
   title?: string;
@@ -168,125 +171,118 @@ const GameInputBox: React.FC<{
       }}
     >
       {({ values, setFieldValue, isSubmitting }) => {
-        if (gameInputs.length === 1) {
-          const gameInput = gameInputs[0];
-          if (gameInput.inputType === GameInputType.DISCARD_CARDS) {
-            return (
-              <>
-                <pre>{JSON.stringify(values, null, 2)}</pre>
-                <GameInputDiscardCards
-                  gameInput={gameInput}
-                  viewingPlayer={viewingPlayer}
-                />
-              </>
-            );
-          } else if (gameInput.inputType === GameInputType.SELECT_RESOURCES) {
-            return (
-              <>
-                <pre>{JSON.stringify(values, null, 2)}</pre>
-                <GameInputSelectResources
-                  gameInput={gameInput}
-                  viewingPlayer={viewingPlayer}
-                />
-              </>
-            );
-          } else if (gameInput.inputType === GameInputType.SELECT_PLAYER) {
-            return (
-              <>
-                <pre>{JSON.stringify(values, null, 2)}</pre>
-                <GameInputSelectPlayer
-                  gameInput={gameInput}
-                  gameState={gameStateImpl}
-                  viewingPlayer={viewingPlayer}
-                />
-              </>
-            );
-          } else if (
-            gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS
-          ) {
-            return (
-              <>
-                <pre>{JSON.stringify(values, null, 2)}</pre>
-                <GameInputSelectPlayedCards
-                  gameInput={gameInput}
-                  viewingPlayer={viewingPlayer}
-                />
-              </>
-            );
-          } else if (gameInput.inputType === GameInputType.SELECT_CARDS) {
-            return (
-              <>
-                <pre>{JSON.stringify(values, null, 2)}</pre>
-                <GameInputSelectCards
-                  gameInput={gameInput}
-                  viewingPlayer={viewingPlayer}
-                />
-              </>
-            );
-          } else if (
-            gameInput.inputType === GameInputType.SELECT_PAYMENT_FOR_CARD
-          ) {
-            return (
-              <>
-                <pre>{JSON.stringify(values, null, 2)}</pre>
-                <GameInputSelectPaymentForCard
-                  gameInput={gameInput}
-                  viewingPlayer={viewingPlayer}
-                />
-              </>
-            );
-          } else if (
-            gameInput.inputType === GameInputType.SELECT_WORKER_PLACEMENT
-          ) {
-            return (
-              <>
-                <pre>{JSON.stringify(values, null, 2)}</pre>
-                <GameInputSelectWorkerPlacement
-                  gameInput={gameInput}
-                  viewingPlayer={viewingPlayer}
-                />
-              </>
-            );
-          }
-        }
         return (
           <Form>
             <pre>{JSON.stringify(values, null, 2)}</pre>
             <div role="group">
-              {gameInputs.map((gameInput) => {
-                const { inputType } = gameInput;
+              {gameInputs.map((gameInput, idx) => {
                 return (
-                  <div key={inputType}>
+                  <div key={`${gameInput.inputType}-${idx}`}>
                     <label>
                       <Field
                         type="radio"
                         name="selectedInputType"
-                        value={inputType}
+                        value={gameInput.inputType}
                         onChange={() => {
-                          setFieldValue("selectedInputType", inputType);
+                          setFieldValue(
+                            "selectedInputType",
+                            gameInput.inputType
+                          );
                           setFieldValue("gameInput", gameInput);
                         }}
                       />
-                      {inputType}
+                      {gameInput.inputType}
                     </label>
-                    {inputType === values.selectedInputType &&
-                      (inputType === GameInputType.PLACE_WORKER ? (
+                    {gameInput.inputType === values.selectedInputType &&
+                      (gameInput.inputType === GameInputType.PLACE_WORKER ? (
                         <GameInputPlaceWorkerSelector
+                          name={"gameInput.clientOptions.location"}
                           viewingPlayer={viewingPlayer}
                           locations={gameStateImpl.getPlayableLocations()}
                         />
-                      ) : inputType === GameInputType.PLAY_CARD ? (
+                      ) : gameInput.inputType === GameInputType.PLAY_CARD ? (
                         <GameInputPlayCardSelector
                           viewingPlayer={viewingPlayer}
                           options={gameStateImpl.getPlayableCards()}
                         />
-                      ) : inputType === GameInputType.CLAIM_EVENT ? (
+                      ) : gameInput.inputType === GameInputType.CLAIM_EVENT ? (
                         <GameInputClaimEventSelector
                           viewingPlayer={viewingPlayer}
                           events={gameStateImpl.getClaimableEvents()}
                         />
+                      ) : gameInput.inputType ===
+                        GameInputType.PREPARE_FOR_SEASON ? (
+                        <></>
+                      ) : gameInput.inputType === GameInputType.GAME_END ? (
+                        <></>
+                      ) : gameInput.inputType ===
+                        GameInputType.DISCARD_CARDS ? (
+                        <GameInputDiscardCards
+                          gameInput={gameInput}
+                          viewingPlayer={viewingPlayer}
+                        />
+                      ) : gameInput.inputType ===
+                        GameInputType.SELECT_RESOURCES ? (
+                        <GameInputSelectResources
+                          gameInput={gameInput}
+                          viewingPlayer={viewingPlayer}
+                        />
+                      ) : gameInput.inputType ===
+                        GameInputType.SELECT_PLAYER ? (
+                        <GameInputSelectPlayer
+                          gameInput={gameInput}
+                          gameState={gameStateImpl}
+                          viewingPlayer={viewingPlayer}
+                        />
+                      ) : gameInput.inputType ===
+                        GameInputType.SELECT_PLAYED_CARDS ? (
+                        <GameInputSelectPlayedCards
+                          name={"gameInput.clientOptions.selectedCards"}
+                          gameInput={gameInput}
+                          viewingPlayer={viewingPlayer}
+                        />
+                      ) : gameInput.inputType === GameInputType.SELECT_CARDS ? (
+                        <GameInputSelectCards
+                          gameInput={gameInput}
+                          viewingPlayer={viewingPlayer}
+                        />
+                      ) : gameInput.inputType ===
+                        GameInputType.SELECT_PAYMENT_FOR_CARD ? (
+                        <GameInputSelectPaymentForCard
+                          gameInput={gameInput}
+                          viewingPlayer={viewingPlayer}
+                        />
+                      ) : gameInput.inputType ===
+                        GameInputType.SELECT_WORKER_PLACEMENT ? (
+                        <GameInputSelectWorkerPlacement
+                          gameInput={gameInput}
+                          viewingPlayer={viewingPlayer}
+                        />
+                      ) : gameInput.inputType ===
+                        GameInputType.VISIT_DESTINATION_CARD ? (
+                        <GameInputVisitDestinationCard
+                          name={"gameInput.clientOptions.playedCard"}
+                          destinations={gameStateImpl.getVisitableDestinationCards()}
+                          viewingPlayer={viewingPlayer}
+                        />
+                      ) : gameInput.inputType ===
+                        GameInputType.SELECT_LOCATION ? (
+                        <GameInputPlaceWorkerSelector
+                          name={"gameInput.clientOptions.selectedLocation"}
+                          viewingPlayer={viewingPlayer}
+                          locations={gameInput.locationOptions}
+                        />
                       ) : (
-                        <>TODO</>
+                        <>
+                          {assertUnreachable(
+                            gameInput,
+                            `Unexpected game input: ${JSON.stringify(
+                              gameInput,
+                              null,
+                              2
+                            )}`
+                          )}
+                        </>
                       ))}
                   </div>
                 );

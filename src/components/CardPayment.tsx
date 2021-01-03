@@ -44,12 +44,11 @@ const ResourceTypeValueInput: React.FC<{
   );
 };
 
-export const ResourcesToSpend: React.FC<{
+export const ResourcesForm: React.FC<{
   name: string;
 }> = ({ name }) => {
   return (
     <>
-      <p>Resources to spend:</p>
       <div className={styles.resource_input_list}>
         <ResourceTypeValueInput
           name={`${name}.BERRY`}
@@ -150,7 +149,7 @@ const CardPayment: React.FC<{
 }> = ({ clientOptions, name, viewingPlayer }) => {
   return (
     <div className={styles.card_payment_form}>
-      <ResourcesToSpend name={`${name}.resources`} />
+      <ResourcesForm name={`${name}.resources`} />
       {clientOptions.card && (
         <OptionToUseAssociatedCard
           name={`${name}.useAssociatedCard`}

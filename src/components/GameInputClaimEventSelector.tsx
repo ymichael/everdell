@@ -5,7 +5,7 @@ import { EventName } from "../model/types";
 import { Player } from "../model/player";
 import Card from "./Card";
 
-import { Form, useField } from "formik";
+import { useField } from "formik";
 import styles from "../styles/GameInputBox.module.css";
 import { GameInputType, GameInput } from "../model/types";
 import Event from "./Event";

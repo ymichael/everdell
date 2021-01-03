@@ -4,7 +4,7 @@ import { useRef } from "react";
 import { GameInputSelectPlayer as TGameInputSelectPlayer } from "../model/types";
 import { Player } from "../model/player";
 import { GameState } from "../model/gameState";
-import { ResourcesToSpend } from "./CardPayment";
+import { ResourcesForm } from "./CardPayment";
 import { Form, Field } from "formik";
 
 const GameInputSelectPlayer: React.FC<{

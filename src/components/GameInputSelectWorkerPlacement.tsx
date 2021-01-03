@@ -3,8 +3,8 @@ import { useRef } from "react";
 
 import { GameInputSelectWorkerPlacement as TGameInputSelectWorkerPlacement } from "../model/types";
 import { Player } from "../model/player";
-import { ResourcesToSpend } from "./CardPayment";
-import { Form, useField } from "formik";
+import { ResourcesForm } from "./CardPayment";
+import { useField } from "formik";
 import isEqual from "lodash/isEqual";
 
 const GameInputSelectWorkerPlacement: React.FC<{
@@ -15,7 +15,7 @@ const GameInputSelectWorkerPlacement: React.FC<{
     "gameInput.clientOptions.selectedInput"
   );
   return (
-    <Form>
+    <>
       <p>Choose a worker</p>
       <>
         <ul>
@@ -39,8 +39,7 @@ const GameInputSelectWorkerPlacement: React.FC<{
           })}
         </ul>
       </>
-      <button type="submit">Submit</button>
-    </Form>
+    </>
   );
 };
 

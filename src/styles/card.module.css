@@ -142,7 +142,9 @@
 .played_card_wrapper {
   padding: 10px;
   margin: 5px;
+
   display: flex;
+  align-self: flex-start;
   flex-direction: column;
   align-content: center;
   justify-content: center;

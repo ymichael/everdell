@@ -60,7 +60,7 @@ const Event: React.FC<{
           </>
         )}
         {event.baseVP ? (
-          <Description description={[event.baseVP, " ", "VP"]} />
+          <Description description={[`${event.baseVP} `, "VP"]} />
         ) : null}
       </div>
     </>

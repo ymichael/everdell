@@ -67,7 +67,7 @@ const GameBuilder: React.FC = () => {
                               {numPlayers > 2 && (
                                 <button
                                   type="button"
-                                  tabindex="-1"
+                                  tabIndex={-1}
                                   className={
                                     styles.game_builder_player_input_button
                                   }
@@ -80,7 +80,7 @@ const GameBuilder: React.FC = () => {
                               {numPlayers <= 6 && (
                                 <button
                                   type="button"
-                                  tabindex="-1"
+                                  tabIndex={-1}
                                   className={[
                                     styles.game_builder_player_input_button,
                                     styles.game_builder_player_input_button_plus,

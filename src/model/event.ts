@@ -247,11 +247,34 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     eventDescription: [
       "When achieved, bring back one of your deployed workers",
     ],
-    canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
-      return "Not Implemented";
-    },
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
+      const player = gameState.getActivePlayer();
+
+      if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
+        const recallableWorkers = player.getRecallableWorkers();
+        if (recallableWorkers.length !== 0) {
+          gameState.pendingGameInputs.push({
+            inputType: GameInputType.SELECT_WORKER_PLACEMENT,
+            prevInputType: gameInput.inputType,
+            options: recallableWorkers,
+            eventContext: EventName.SPECIAL_A_WEE_RUN_CITY,
+            mustSelectOne: true,
+            clientOptions: {
+              selectedOption: null,
+            },
+          });
+        }
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_WORKER_PLACEMENT
+      ) {
+        const selectedOption = gameInput.clientOptions.selectedOption;
+        if (!selectedOption) {
+          throw new Error("Must specify clientOptions.selectedOption");
+        }
+        player.recallWorker(gameState, selectedOption);
+      } else {
+        throw new Error(`Invalid input type: ${gameInput}`);
+      }
     },
   }),
   [EventName.SPECIAL_AN_EVENING_OF_FIREWORKS]: new Event({

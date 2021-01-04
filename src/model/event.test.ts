@@ -1289,4 +1289,115 @@ describe("Event", () => {
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
     });
   });
+
+  describe(EventName.SPECIAL_A_WEE_RUN_CITY, () => {
+    it("should be able to claim event + recall 1 worker", () => {
+      const event = Event.fromName(EventName.SPECIAL_A_WEE_RUN_CITY);
+      let player = gameState.getActivePlayer();
+      const gameInput = claimEventInput(event.name);
+
+      gameState.eventsMap[EventName.SPECIAL_A_WEE_RUN_CITY] = null;
+
+      player.addToCity(CardName.CHIP_SWEEP);
+      player.addToCity(CardName.CLOCK_TOWER);
+
+      gameState.locationsMap[LocationName.BASIC_ONE_BERRY]!.push(
+        player.playerId
+      );
+
+      player.placeWorkerOnLocation(LocationName.BASIC_ONE_BERRY);
+      expect(player.numAvailableWorkers).to.be(1);
+
+      const recallableWorkers = player.getRecallableWorkers();
+
+      gameState = multiStepGameInputTest(gameState, [
+        gameInput,
+        {
+          inputType: GameInputType.SELECT_WORKER_PLACEMENT,
+          prevInputType: gameInput.inputType,
+          options: [
+            { location: LocationName.BASIC_ONE_BERRY },
+            { event: EventName.SPECIAL_A_WEE_RUN_CITY },
+          ],
+          eventContext: event.name,
+          mustSelectOne: true,
+          clientOptions: {
+            selectedOption: { location: LocationName.BASIC_ONE_BERRY },
+          },
+        },
+      ]);
+      player = gameState.getPlayer(player.playerId);
+      expect(player.numAvailableWorkers).to.be(1);
+      expect(event.getPoints(gameState, player.playerId)).to.be(4);
+    });
+    it("should allow player to reclaim worker on event", () => {
+      const event = Event.fromName(EventName.SPECIAL_A_WEE_RUN_CITY);
+      let player = gameState.getActivePlayer();
+      const gameInput = claimEventInput(event.name);
+
+      gameState.eventsMap[EventName.SPECIAL_A_WEE_RUN_CITY] = null;
+
+      player.addToCity(CardName.CHIP_SWEEP);
+      player.addToCity(CardName.CLOCK_TOWER);
+
+      gameState.locationsMap[LocationName.BASIC_ONE_BERRY]!.push(
+        player.playerId
+      );
+
+      player.placeWorkerOnLocation(LocationName.BASIC_ONE_BERRY);
+
+      gameState = multiStepGameInputTest(gameState, [
+        gameInput,
+        {
+          inputType: GameInputType.SELECT_WORKER_PLACEMENT,
+          prevInputType: gameInput.inputType,
+          options: [
+            { location: LocationName.BASIC_ONE_BERRY },
+            { event: EventName.SPECIAL_A_WEE_RUN_CITY },
+          ],
+          eventContext: event.name,
+          mustSelectOne: true,
+          clientOptions: {
+            selectedOption: { event: EventName.SPECIAL_A_WEE_RUN_CITY },
+          },
+        },
+      ]);
+      player = gameState.getPlayer(player.playerId);
+
+      // should still be 1 because one worker is still on the basic location
+      expect(player.numAvailableWorkers).to.be(1);
+      expect(event.getPoints(gameState, player.playerId)).to.be(4);
+    });
+    it("should be claimable even if player hadn't yet placed workers", () => {
+      const event = Event.fromName(EventName.SPECIAL_A_WEE_RUN_CITY);
+      let player = gameState.getActivePlayer();
+      const gameInput = claimEventInput(event.name);
+
+      gameState.eventsMap[EventName.SPECIAL_A_WEE_RUN_CITY] = null;
+
+      player.addToCity(CardName.CHIP_SWEEP);
+      player.addToCity(CardName.CLOCK_TOWER);
+
+      expect(player.numAvailableWorkers).to.be(2);
+
+      gameState = multiStepGameInputTest(gameState, [
+        gameInput,
+        {
+          inputType: GameInputType.SELECT_WORKER_PLACEMENT,
+          prevInputType: gameInput.inputType,
+          options: [{ event: EventName.SPECIAL_A_WEE_RUN_CITY }],
+          eventContext: event.name,
+          mustSelectOne: true,
+          clientOptions: {
+            selectedOption: { event: EventName.SPECIAL_A_WEE_RUN_CITY },
+          },
+        },
+      ]);
+      player = gameState.getPlayer(player.playerId);
+
+      // should still be 1 because one worker is still on the basic location
+      expect(player.numAvailableWorkers).to.be(2);
+      expect(event.getPoints(gameState, player.playerId)).to.be(4);
+    });
+  });
 });

@@ -2613,5 +2613,56 @@ describe("Card", () => {
         expect(player.numAvailableWorkers).to.be(1);
       });
     });
+
+    describe(CardName.CEMETARY, () => {
+      it("allow player to play one revealed card", () => {
+        let player = gameState.getActivePlayer();
+        player.addToCity(CardName.CEMETARY);
+
+        // Add some cards to make sure we only give player valid options.
+        player.addToCity(CardName.UNIVERSITY);
+        player.addToCity(CardName.KING);
+        player.addToCity(CardName.FARM);
+
+        gameState.deck.addToStack(CardName.KING);
+        gameState.deck.addToStack(CardName.QUEEN);
+        gameState.deck.addToStack(CardName.FARM);
+        gameState.deck.addToStack(CardName.UNIVERSITY);
+
+        expect(player.numAvailableWorkers).to.be(2);
+        expect(player.hasCardInCity(CardName.QUEEN)).to.be(false);
+
+        gameState = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            clientOptions: {
+              playedCard: player.getFirstPlayedCard(CardName.CEMETARY),
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardContext: CardName.CEMETARY,
+            cardOptions: [CardName.FARM, CardName.QUEEN],
+            cardOptionsUnfiltered: [
+              CardName.UNIVERSITY,
+              CardName.FARM,
+              CardName.QUEEN,
+              CardName.KING,
+            ],
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              // these are the cards the player wants to remove
+              // from their city
+              selectedCards: [CardName.QUEEN],
+            },
+          },
+        ]);
+
+        player = gameState.getPlayer(player.playerId);
+        expect(player.hasCardInCity(CardName.QUEEN)).to.be(true);
+      });
+    });
   });
 });

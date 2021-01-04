@@ -402,16 +402,63 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       return cardOwner.hasCardInCity(CardName.UNDERTAKER) ? 2 : 1;
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      if (gameInput.inputType !== GameInputType.VISIT_DESTINATION_CARD) {
-        throw new Error("Invalid input type");
-      }
-      // TODO
       // When you place a worker here, reveal 4 cards from the draw pile or
       // discard pile and play 1 of them for free. Discard the others. Your
       // worker must stay here permanently. Cemetery may only have up to 2
       // workers on it, but the second spot must be unlocked by having a Undertaker
       // in your city.
-      throw new Error("Not Implemented");
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType == GameInputType.VISIT_DESTINATION_CARD) {
+        const revealedCards = [
+          gameState.drawCard(),
+          gameState.drawCard(),
+          gameState.drawCard(),
+          gameState.drawCard(),
+        ];
+        const filteredOptions = revealedCards.filter((cardName) =>
+          player.canAddToCity(cardName, true /* strict */)
+        );
+        if (filteredOptions.length !== 0) {
+          gameState.pendingGameInputs.push({
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: gameInput.inputType,
+            cardOptions: filteredOptions,
+            cardOptionsUnfiltered: revealedCards,
+            maxToSelect: 1,
+            minToSelect: 1,
+            cardContext: CardName.CEMETARY,
+            clientOptions: {
+              selectedCards: [],
+            },
+          });
+        } else {
+          revealedCards.forEach((cardName) => {
+            gameState.discardPile.addToStack(cardName);
+          });
+        }
+      } else if (gameInput.inputType == GameInputType.SELECT_CARDS) {
+        const selectedCards = gameInput.clientOptions?.selectedCards;
+        if (!selectedCards) {
+          throw new Error("Must specify gameInput.clientOptions.selectedCards");
+        }
+        if (selectedCards.length !== 1) {
+          throw new Error("Must select 1 card");
+        }
+        const selectedCard = selectedCards[0];
+        player.addToCity(selectedCard);
+        Card.fromName(selectedCard).play(gameState, gameInput);
+
+        const cardOptionsUnfiltered = [...gameInput.cardOptionsUnfiltered!];
+        cardOptionsUnfiltered.splice(
+          cardOptionsUnfiltered.indexOf(selectedCard),
+          1
+        );
+        cardOptionsUnfiltered.forEach((cardName) => {
+          gameState.discardPile.addToStack(cardName);
+        });
+      } else {
+        throw new Error("Invalid input type");
+      }
     },
   }),
   [CardName.CHAPEL]: new Card({
@@ -929,7 +976,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
 
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_CARDS,
-          prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+          prevInputType: gameInput.inputType,
           cardOptions: gameState.meadowCards,
           maxToSelect: 1,
           minToSelect: 1,
@@ -938,7 +985,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             selectedCards: [],
           },
         });
-      } else if (gameInput.inputType === GameInputType.SELECT_CARDS) {
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_CARDS &&
+        gameInput.cardContext === CardName.INN
+      ) {
         const selectedCards = gameInput.clientOptions.selectedCards;
 
         if (!selectedCards) {
@@ -959,7 +1009,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         // have player play card to city
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_PAYMENT_FOR_CARD,
-          prevInputType: GameInputType.SELECT_CARDS,
+          prevInputType: gameInput.inputType,
           cardContext: CardName.INN,
           card: selectedCard,
           clientOptions: {
@@ -1058,7 +1108,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
 
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_LOCATION,
-          prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+          prevInputType: gameInput.inputType,
           cardContext: CardName.LOOKOUT,
           locationOptions: possibleLocations.filter((locationName) => {
             const location = Location.fromName(locationName);
@@ -1464,7 +1514,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             selectedCards: [],
           },
         });
-      } else if (gameInput.inputType === GameInputType.SELECT_CARDS) {
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_CARDS &&
+        gameInput.cardContext === CardName.POST_OFFICE
+      ) {
         if (
           gameInput.prevInput &&
           gameInput.prevInput.inputType === GameInputType.SELECT_PLAYER
@@ -1601,7 +1654,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
 
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_CARDS,
-          prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+          prevInputType: gameInput.inputType,
           cardOptions: playableCards,
           maxToSelect: 1,
           minToSelect: 1,
@@ -1610,7 +1663,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             selectedCards: [],
           },
         });
-      } else if (gameInput.inputType === GameInputType.SELECT_CARDS) {
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_CARDS &&
+        gameInput.cardContext === CardName.QUEEN
+      ) {
         const selectedCards = gameInput.clientOptions.selectedCards;
 
         if (!selectedCards) {
@@ -1850,7 +1906,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         ) {
           gameState.pendingGameInputs.push({
             inputType: GameInputType.SELECT_PLAYER,
-            prevInputType: GameInputType.PLAY_CARD,
+            prevInputType: gameInput.inputType,
             prevInput: gameInput,
             playerOptions: gameState.players
               .filter((p) => p.playerId !== player.playerId)
@@ -2005,7 +2061,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
-      if (gameInput.inputType === GameInputType.SELECT_CARDS) {
+      if (
+        gameInput.inputType === GameInputType.SELECT_CARDS &&
+        gameInput.cardContext === CardName.TEACHER
+      ) {
         if (!gameInput.clientOptions.selectedCards) {
           throw new Error("invalid selected cards");
         }
@@ -2113,7 +2172,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         });
       } else if (
         gameInput.inputType === GameInputType.SELECT_CARDS &&
-        gameInput.prevInputType === GameInputType.PLAY_CARD
+        gameInput.prevInputType === GameInputType.PLAY_CARD &&
+        gameInput.cardContext === CardName.UNDERTAKER
       ) {
         // discard the cards from the meadow + replenish
         const selectedCards = gameInput.clientOptions.selectedCards;
@@ -2130,7 +2190,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
 
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_CARDS,
-          prevInputType: GameInputType.SELECT_CARDS,
+          prevInputType: gameInput.inputType,
           cardOptions: gameState.meadowCards,
           maxToSelect: 1,
           minToSelect: 1,
@@ -2141,7 +2201,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         });
       } else if (
         gameInput.inputType === GameInputType.SELECT_CARDS &&
-        gameInput.prevInputType === GameInputType.SELECT_CARDS
+        gameInput.prevInputType === GameInputType.SELECT_CARDS &&
+        gameInput.cardContext === CardName.UNDERTAKER
       ) {
         // add this card to player's hand + replenish meadow
         const selectedCards = gameInput.clientOptions.selectedCards;

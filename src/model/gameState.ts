@@ -22,7 +22,7 @@ import {
 import { GameStateJSON } from "./jsonTypes";
 import { Player } from "./player";
 import { Card } from "./card";
-import { CardStack, emptyCardStack } from "./cardStack";
+import { CardStack, discardPile } from "./cardStack";
 import { Location, initialLocationsMap } from "./location";
 import { Event, initialEventMap } from "./event";
 import { initialDeck } from "./deck";
@@ -403,6 +403,7 @@ export class GameState {
       case GameInputType.SELECT_PLAYER:
       case GameInputType.SELECT_RESOURCES:
       case GameInputType.DISCARD_CARDS:
+      case GameInputType.SELECT_OPTION_GENERIC:
         nextGameState.handleMultiStepGameInput(gameInput);
         break;
       case GameInputType.PLAY_CARD:
@@ -472,7 +473,7 @@ export class GameState {
       players,
       meadowCards: [],
       deck: initialDeck(),
-      discardPile: emptyCardStack(),
+      discardPile: discardPile(),
       locationsMap: initialLocationsMap(players.length),
       eventsMap: initialEventMap(),
       pendingGameInputs: [],

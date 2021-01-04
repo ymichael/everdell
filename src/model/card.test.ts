@@ -2738,8 +2738,18 @@ describe("Card", () => {
             },
           },
           {
-            inputType: GameInputType.SELECT_CARDS,
+            inputType: GameInputType.SELECT_OPTION_GENERIC,
             prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+            label: "Select where to draw cards for the Cemetary:",
+            options: ["Deck", "Discard Pile"],
+            cardContext: CardName.CEMETARY,
+            clientOptions: {
+              selectedOption: "Deck",
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: GameInputType.SELECT_OPTION_GENERIC,
             cardContext: CardName.CEMETARY,
             cardOptions: [CardName.FARM, CardName.QUEEN],
             cardOptionsUnfiltered: [
@@ -2760,6 +2770,36 @@ describe("Card", () => {
 
         player = gameState.getPlayer(player.playerId);
         expect(player.hasCardInCity(CardName.QUEEN)).to.be(true);
+      });
+
+      it("error if no cards in discard pile", () => {
+        let player = gameState.getActivePlayer();
+        player.addToCity(CardName.CEMETARY);
+
+        expect(gameState.discardPile.length).to.be(0);
+        expect(player.numAvailableWorkers).to.be(2);
+        expect(player.hasCardInCity(CardName.QUEEN)).to.be(false);
+
+        expect(() => {
+          multiStepGameInputTest(gameState, [
+            {
+              inputType: GameInputType.VISIT_DESTINATION_CARD,
+              clientOptions: {
+                playedCard: player.getFirstPlayedCard(CardName.CEMETARY),
+              },
+            },
+            {
+              inputType: GameInputType.SELECT_OPTION_GENERIC,
+              prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+              label: "Select where to draw cards for the Cemetary:",
+              options: ["Deck", "Discard Pile"],
+              cardContext: CardName.CEMETARY,
+              clientOptions: {
+                selectedOption: "Discard Pile",
+              },
+            },
+          ]);
+        }).to.throwException(/unable to draw card from discard/i);
       });
     });
   });

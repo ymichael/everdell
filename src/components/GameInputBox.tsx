@@ -30,6 +30,7 @@ import GameInputClaimEventSelector from "./GameInputClaimEventSelector";
 import GameInputSelectPaymentForCard from "./GameInputSelectPaymentForCard";
 import GameInputSelectWorkerPlacement from "./GameInputSelectWorkerPlacement";
 import GameInputVisitDestinationCard from "./GameInputVisitDestinationCard";
+import GameInputSelectOptionGeneric from "./GameInputSelectOptionGeneric";
 
 import { assertUnreachable } from "../utils";
 
@@ -253,6 +254,13 @@ const GameInputBox: React.FC<{
                       ) : gameInput.inputType ===
                         GameInputType.SELECT_WORKER_PLACEMENT ? (
                         <GameInputSelectWorkerPlacement
+                          gameInput={gameInput}
+                          viewingPlayer={viewingPlayer}
+                        />
+                      ) : gameInput.inputType ===
+                        GameInputType.SELECT_OPTION_GENERIC ? (
+                        <GameInputSelectOptionGeneric
+                          name={"gameInput.clientOptions.selectedOption"}
                           gameInput={gameInput}
                           viewingPlayer={viewingPlayer}
                         />

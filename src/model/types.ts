@@ -14,6 +14,7 @@ export enum GameInputType {
   SELECT_WORKER_PLACEMENT = "SELECT_WORKER_PLACEMENT",
   DISCARD_CARDS = "DISCARD_CARDS",
   SELECT_PAYMENT_FOR_CARD = "SELECT_PAYMENT_FOR_CARD",
+  SELECT_OPTION_GENERIC = "SELECT_OPTION_GENERIC",
 }
 
 export type GameInputPlaceWorker = {
@@ -178,6 +179,20 @@ export type GameInputSelectLocation = {
   };
 };
 
+export type GameInputSelectOptionGeneric = {
+  inputType: GameInputType.SELECT_OPTION_GENERIC;
+  prevInputType: GameInputType;
+  label: string;
+  options: string[];
+  locationContext?: LocationName;
+  cardContext?: CardName;
+  eventContext?: EventName;
+
+  clientOptions: {
+    selectedOption: string | null;
+  };
+};
+
 export type GameInputSelectPaymentForCard = {
   inputType: GameInputType.SELECT_PAYMENT_FOR_CARD;
   prevInputType: GameInputType;
@@ -204,6 +219,7 @@ export type GameInputMultiStep = (
   | GameInputSelectLocation
   | GameInputSelectPaymentForCard
   | GameInputSelectWorkerPlacement
+  | GameInputSelectOptionGeneric
 ) & {
   eventContext?: EventName;
   cardContext?: CardName;

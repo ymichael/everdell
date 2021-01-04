@@ -1238,4 +1238,55 @@ describe("Event", () => {
       ).to.be(undefined);
     });
   });
+
+  describe(EventName.SPECIAL_TAX_RELIEF, () => {
+    it("should be able to claim event", () => {
+      const event = Event.fromName(EventName.SPECIAL_TAX_RELIEF);
+      let player = gameState.getActivePlayer();
+      const gameInput = claimEventInput(event.name);
+
+      gameState.eventsMap[EventName.SPECIAL_TAX_RELIEF] = null;
+
+      player.addToCity(CardName.JUDGE);
+      player.addToCity(CardName.QUEEN);
+
+      expect(player.claimedEvents[EventName.SPECIAL_TAX_RELIEF]).to.be(
+        undefined
+      );
+
+      gameState = gameState.next(gameInput);
+
+      player = gameState.getPlayer(player.playerId);
+
+      expect(player.claimedEvents[EventName.SPECIAL_TAX_RELIEF]);
+      expect(event.getPoints(gameState, player.playerId)).to.be(3);
+    });
+
+    it("should activate production when claimed", () => {
+      const event = Event.fromName(EventName.SPECIAL_TAX_RELIEF);
+      let player = gameState.getActivePlayer();
+      const gameInput = claimEventInput(event.name);
+
+      gameState.eventsMap[EventName.SPECIAL_TAX_RELIEF] = null;
+
+      player.addToCity(CardName.JUDGE);
+      player.addToCity(CardName.QUEEN);
+      player.addToCity(CardName.FARM);
+
+      expect(player.claimedEvents[EventName.SPECIAL_TAX_RELIEF]).to.be(
+        undefined
+      );
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+
+      gameState = gameState.next(gameInput);
+
+      player = gameState.getPlayer(player.playerId);
+
+      expect(player.claimedEvents[EventName.SPECIAL_TAX_RELIEF]);
+      expect(event.getPoints(gameState, player.playerId)).to.be(3);
+
+      // indicates that production was activated
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
+    });
+  });
 });

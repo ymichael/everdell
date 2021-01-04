@@ -16,7 +16,7 @@ import { Location as LocationModel } from "../model/location";
 
 import Card, { PlayedCard } from "./Card";
 import Location from "./Location";
-import { ClaimableEvent } from "./Event";
+import Event from "./Event";
 import { GameBlock } from "./common";
 
 export const Meadow: React.FC<{ meadowCards: CardName[] }> = ({
@@ -33,58 +33,62 @@ export const Meadow: React.FC<{ meadowCards: CardName[] }> = ({
   );
 };
 
-export const Locations: React.FC<{ locationsMap: LocationNameToPlayerIds }> = ({
-  locationsMap,
-}) => {
+export const Locations: React.FC<{
+  gameState: GameState;
+  viewingPlayer: Player;
+}> = ({ gameState, viewingPlayer }) => {
+  const locationsMap = gameState.locationsMap;
+  const allLocations = Object.keys(locationsMap) as LocationName[];
+  const allLocationObjs = allLocations.map((x) => LocationModel.fromName(x));
+
+  const allForestLocationObjs = allLocationObjs.filter(
+    (x) => x.type === LocationType.FOREST
+  );
+  const allBasicLocationObjs = allLocationObjs.filter(
+    (x) => x.type === LocationType.BASIC
+  );
+  const allJourneyLocationObjs = allLocationObjs.filter(
+    (x) => x.type === LocationType.JOURNEY
+  );
+  const allHavenLocationObjs = allLocationObjs.filter(
+    (x) => x.type === LocationType.HAVEN
+  );
+
+  const renderLocationWithPlayerNames = (name: LocationName) => {
+    return (
+      <Location
+        key={name}
+        name={name}
+        gameState={gameState}
+        viewingPlayer={viewingPlayer}
+        playerWorkers={(locationsMap[name] || []).map(
+          (pId) => gameState.getPlayer(pId).name
+        )}
+      />
+    );
+  };
+
   return (
     <GameBlock title={"Locations"}>
       <div className={styles.forest_items}>
-        {Object.keys(locationsMap)
-          .filter((locationName) => {
-            const location = LocationModel.fromName(
-              locationName as LocationName
-            );
-            return location.type === LocationType.FOREST;
-          })
-          .map((locationName, idx) => (
-            <Location key={idx} name={locationName as LocationName} />
-          ))}
+        {allForestLocationObjs.map((location, idx) => {
+          return renderLocationWithPlayerNames(location.name);
+        })}
       </div>
       <div className={styles.forest_items}>
-        {Object.keys(locationsMap)
-          .filter((locationName) => {
-            const location = LocationModel.fromName(
-              locationName as LocationName
-            );
-            return location.type === LocationType.BASIC;
-          })
-          .map((locationName, idx) => (
-            <Location key={idx} name={locationName as LocationName} />
-          ))}
+        {allBasicLocationObjs.map((location, idx) => {
+          return renderLocationWithPlayerNames(location.name);
+        })}
       </div>
       <div className={styles.forest_items}>
-        {Object.keys(locationsMap)
-          .filter((locationName) => {
-            const location = LocationModel.fromName(
-              locationName as LocationName
-            );
-            return location.type === LocationType.HAVEN;
-          })
-          .map((locationName, idx) => (
-            <Location key={idx} name={locationName as LocationName} />
-          ))}
+        {allJourneyLocationObjs.map((location, idx) => {
+          return renderLocationWithPlayerNames(location.name);
+        })}
       </div>
       <div className={styles.forest_items}>
-        {Object.keys(locationsMap)
-          .filter((locationName) => {
-            const location = LocationModel.fromName(
-              locationName as LocationName
-            );
-            return location.type === LocationType.JOURNEY;
-          })
-          .map((locationName, idx) => (
-            <Location key={idx} name={locationName as LocationName} />
-          ))}
+        {allHavenLocationObjs.map((location, idx) => {
+          return renderLocationWithPlayerNames(location.name);
+        })}
       </div>
     </GameBlock>
   );
@@ -94,7 +98,7 @@ export const Events: React.FC<{ gameState: GameState }> = ({ gameState }) => {
   const renderClaimedEvent = (name: EventName) => {
     const playerId = gameState.eventsMap[name];
     const claimedBy = playerId ? gameState.getPlayer(playerId).name : null;
-    return <ClaimableEvent key={name} name={name} claimedBy={claimedBy} />;
+    return <Event key={name} name={name} claimedBy={claimedBy} />;
   };
 
   const allEvents = Object.keys(gameState.eventsMap) as EventName[];

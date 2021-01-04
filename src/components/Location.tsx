@@ -2,13 +2,17 @@ import * as React from "react";
 import styles from "../styles/location.module.css";
 
 import { Card as CardModel } from "../model/card";
+import { Player } from "../model/player";
+import { GameState } from "../model/gameState";
 import { Location as LocationModel } from "../model/location";
 import { sumResources } from "../model/gameStatePlayHelpers";
 import {
+  Season,
   ProductionResourceMap,
   ResourceType,
   LocationName,
   LocationType,
+  LocationOccupancy,
 } from "../model/types";
 import { Description } from "./common";
 
@@ -54,7 +58,7 @@ const LocationDescription = ({ location }: { location: LocationModel }) => {
   return <>{location.name}</>;
 };
 
-const Location: React.FC<{ name: LocationName }> = ({ name }) => {
+const LocationInner: React.FC<{ name: LocationName }> = ({ name }) => {
   const location = LocationModel.fromName(name as any);
   const colorClass = colorClassMap[location.type];
   return (
@@ -69,6 +73,46 @@ const Location: React.FC<{ name: LocationName }> = ({ name }) => {
         </div>
       </div>
     </>
+  );
+};
+
+const Location: React.FC<{
+  name: LocationName;
+  playerWorkers?: string[];
+  viewingPlayer?: Player | null;
+  gameState?: GameState | null;
+}> = ({ name, playerWorkers = [], viewingPlayer = null, gameState = null }) => {
+  const location = LocationModel.fromName(name);
+  let acceptingWorkers = true;
+
+  if (location.occupancy === LocationOccupancy.EXCLUSIVE) {
+    acceptingWorkers = playerWorkers.length === 0;
+  }
+  if (viewingPlayer) {
+    if (location.type === LocationType.JOURNEY) {
+      acceptingWorkers = viewingPlayer.currentSeason === Season.AUTUMN;
+    }
+  }
+  if (gameState) {
+    if (location.occupancy === LocationOccupancy.EXCLUSIVE_FOUR) {
+      acceptingWorkers =
+        playerWorkers.length < (gameState.players.length < 4 ? 1 : 2);
+    }
+  }
+  return (
+    <div className={styles.location_wrapper}>
+      <div className={!acceptingWorkers ? styles.not_accepting_workers : ""}>
+        <LocationInner name={name} />
+      </div>
+      {playerWorkers.length !== 0 && (
+        <div className={styles.location_workers}>
+          <span>Workers: </span>
+          <span className={styles.location_worker}>
+            {playerWorkers.join(", ")}
+          </span>
+        </div>
+      )}
+    </div>
   );
 };
 

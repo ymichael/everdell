@@ -1,12 +1,11 @@
 .event {
   min-height: 100px;
-  width: 220px;
+  width: 200px;
   border-radius: 5px;
 
   border: solid 2px #91894e;
 
   margin: 10px;
-  padding: 10px;
 
   display: flex;
   justify-content: center;
@@ -16,7 +15,8 @@
 }
 
 .event_basic {
-  padding: 10px;
+  padding: 0 10px;
+  margin-top: 20px;
   text-align: center;
   font-size: 16px;
   line-height: 22px;
@@ -39,29 +39,11 @@
   font-size: 12px;
 }
 
-.vp {
-  position: absolute;
-  right: -18px;
-  top: -18px;
-
-  border-radius: 99px;
-  width: 35px;
-  height: 35px;
-  margin: 6px;
-
-  background: url("/images/vp.png");
-  background-repeat: no-repeat;
-  background-position: center;
+.base_vp {
+  padding: 10px;
 }
 
-.vp_number {
-  text-align: center;
-  font-weight: bold;
-  font-size: 20px;
-  padding: 5px;
-}
-
-.claimable_event {
+.event_wrapper {
   position: relative;
 }
 

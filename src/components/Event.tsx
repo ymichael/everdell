@@ -15,7 +15,7 @@ import { Player } from "../model/player";
 import { Description, CardTypeSymbol } from "./common";
 import { sumResources } from "../model/gameStatePlayHelpers";
 
-const Event: React.FC<{
+const EventInner: React.FC<{
   name: EventName;
 }> = ({ name }) => {
   const event = EventModel.fromName(name as any);
@@ -60,26 +60,28 @@ const Event: React.FC<{
           </>
         )}
         {event.baseVP ? (
-          <Description description={[`${event.baseVP} `, "VP"]} />
+          <div className={styles.base_vp}>
+            <Description description={[`${event.baseVP} `, "VP"]} />
+          </div>
         ) : null}
       </div>
     </>
   );
 };
 
-export const ClaimableEvent = ({
+export const Event = ({
   name,
-  claimedBy,
+  claimedBy = null,
 }: {
   name: EventName;
-  claimedBy: string | null;
+  claimedBy?: string | null;
 }) => {
   return (
-    <div className={styles.claimable_event}>
+    <div className={styles.event_wrapper}>
       <div
         className={[claimedBy && styles.is_claimed].filter(Boolean).join(" ")}
       >
-        <Event name={name} />
+        <EventInner name={name} />
       </div>
       {claimedBy && (
         <div className={styles.claimed_by}>

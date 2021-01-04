@@ -65,7 +65,10 @@ const Game: React.FC<{
         />
         <Players viewingPlayer={viewingPlayerImpl} gameState={gameState} />
         <ViewerUI player={viewingPlayerImpl} />
-        <Locations locationsMap={gameState.locationsMap} />
+        <Locations
+          gameState={gameStateImpl}
+          viewingPlayer={viewingPlayerImpl}
+        />
         <Events gameState={gameStateImpl} />
       </GameUpdater>
     </div>

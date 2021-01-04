@@ -6,12 +6,27 @@
   border: 1px solid;
 
   overflow: hidden;
-  margin: 10px;
   color: #13463c;
 
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+}
+
+.location_wrapper {
+  margin: 10px;
+}
+
+.location_workers {
+  width: 180px;
+  margin: 10px;
+  font-size: 10px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.location_worker {
+  font-weight: bold;
 }
 
 .location_name {
@@ -50,4 +65,8 @@
   padding: 10px;
   text-align: center;
   font-size: 14px;
+}
+
+.not_accepting_workers {
+  opacity: 0.3;
 }

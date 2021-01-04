@@ -7,6 +7,7 @@ import {
   ResourceType,
   CardName,
   EventName,
+  LocationName,
 } from "../../model/types";
 import { Game as GameModel } from "../../model/game";
 import GameAdmin from "../../components/GameAdmin";
@@ -21,7 +22,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   let gameState = testInitialGameState({
     numPlayers,
     playerNames,
-    noForestLocations: false,
+    noForestLocations: true,
     noSpecialEvents: false,
     shuffleDeck: true,
   });
@@ -50,6 +51,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const player = gameState.getActivePlayer();
 
+  gameState.locationsMap[LocationName.FOREST_ONE_PEBBLE_THREE_CARD] = [];
+
   gameState.replenishMeadow();
 
   gameState = gameState.next({
@@ -58,8 +61,24 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       event: EventName.BASIC_FOUR_PRODUCTION,
     },
   });
-  gameState.nextPlayer();
-
+  gameState = gameState.next({
+    inputType: GameInputType.PLACE_WORKER,
+    clientOptions: {
+      location: LocationName.FOREST_ONE_PEBBLE_THREE_CARD,
+    },
+  });
+  gameState = gameState.next({
+    inputType: GameInputType.PLACE_WORKER,
+    clientOptions: {
+      location: LocationName.BASIC_TWO_CARDS_AND_ONE_VP,
+    },
+  });
+  gameState = gameState.next({
+    inputType: GameInputType.PLACE_WORKER,
+    clientOptions: {
+      location: LocationName.BASIC_TWO_CARDS_AND_ONE_VP,
+    },
+  });
   const game = new GameModel("testGameId", "testGameSecret", gameState, [
     { text: `Test game created with ${numPlayers} players.` },
   ]);

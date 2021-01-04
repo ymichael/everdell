@@ -10,12 +10,13 @@ import {
   EventType,
 } from "../model/types";
 import { Player } from "../model/player";
+import { GameState } from "../model/gameState";
 import { Event as EventModel } from "../model/event";
 import { Location as LocationModel } from "../model/location";
 
 import Card, { PlayedCard } from "./Card";
 import Location from "./Location";
-import Event from "./Event";
+import { ClaimableEvent } from "./Event";
 import { GameBlock } from "./common";
 
 export const Meadow: React.FC<{ meadowCards: CardName[] }> = ({
@@ -89,30 +90,31 @@ export const Locations: React.FC<{ locationsMap: LocationNameToPlayerIds }> = ({
   );
 };
 
-export const Events: React.FC<{ eventsMap: EventNameToPlayerId }> = ({
-  eventsMap,
-}) => {
+export const Events: React.FC<{ gameState: GameState }> = ({ gameState }) => {
+  const renderClaimedEvent = (name: EventName) => {
+    const playerId = gameState.eventsMap[name];
+    const claimedBy = playerId ? gameState.getPlayer(playerId).name : null;
+    return <ClaimableEvent key={name} name={name} claimedBy={claimedBy} />;
+  };
+
+  const allEvents = Object.keys(gameState.eventsMap) as EventName[];
   return (
     <GameBlock title={"Events"}>
       <div className={styles.items}>
-        {Object.keys(eventsMap)
+        {allEvents
           .filter((eventName) => {
-            const event = EventModel.fromName(eventName as EventName);
+            const event = EventModel.fromName(eventName);
             return event.type === EventType.BASIC;
           })
-          .map((eventName, idx) => (
-            <Event key={idx} name={eventName as EventName} />
-          ))}
+          .map((eventName) => renderClaimedEvent(eventName))}
       </div>
       <div className={styles.items}>
-        {Object.keys(eventsMap)
+        {allEvents
           .filter((eventName) => {
-            const event = EventModel.fromName(eventName as EventName);
+            const event = EventModel.fromName(eventName);
             return event.type !== EventType.BASIC;
           })
-          .map((eventName, idx) => (
-            <Event key={idx} name={eventName as EventName} />
-          ))}
+          .map((eventName) => renderClaimedEvent(eventName))}
       </div>
     </GameBlock>
   );

@@ -6,6 +6,7 @@ import {
   GameInput,
   ResourceType,
   CardName,
+  EventName,
 } from "../../model/types";
 import { Game as GameModel } from "../../model/game";
 import GameAdmin from "../../components/GameAdmin";
@@ -39,6 +40,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     player.addToCity(CardName.DUNGEON);
     player.addToCity(CardName.WANDERER);
     player.addToCity(CardName.HUSBAND);
+    player.addToCity(CardName.RESIN_REFINERY);
+    player.addToCity(CardName.PEDDLER);
     player.addToCity(CardName.CEMETARY);
     player.addToCity(CardName.FARM);
     player.addToCity(CardName.MINE);
@@ -48,12 +51,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const player = gameState.getActivePlayer();
 
   gameState.replenishMeadow();
-  // gameState = gameState.next({
-  //   inputType: GameInputType.VISIT_DESTINATION_CARD,
-  //   clientOptions: {
-  //     playedCard: player.getFirstPlayedCard(CardName.CEMETARY),
-  //   },
-  // });
+
+  gameState = gameState.next({
+    inputType: GameInputType.CLAIM_EVENT,
+    clientOptions: {
+      event: EventName.BASIC_FOUR_PRODUCTION,
+    },
+  });
 
   const game = new GameModel("testGameId", "testGameSecret", gameState, [
     { text: `Test game created with ${numPlayers} players.` },

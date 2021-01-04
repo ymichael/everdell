@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Event as EventModel } from "../model/event";
+import { GameState } from "../model/gameState";
 import styles from "../styles/event.module.css";
 import {
   ResourceType,
@@ -16,8 +17,7 @@ import { sumResources } from "../model/gameStatePlayHelpers";
 
 const Event: React.FC<{
   name: EventName;
-  claimedBy?: string | null;
-}> = ({ name, claimedBy = null }) => {
+}> = ({ name }) => {
   const event = EventModel.fromName(name as any);
   return (
     <>
@@ -64,6 +64,32 @@ const Event: React.FC<{
         ) : null}
       </div>
     </>
+  );
+};
+
+export const ClaimableEvent = ({
+  name,
+  claimedBy,
+}: {
+  name: EventName;
+  claimedBy: string | null;
+}) => {
+  return (
+    <div className={styles.claimable_event}>
+      <div
+        className={[claimedBy && styles.is_claimed].filter(Boolean).join(" ")}
+      >
+        <Event name={name} />
+      </div>
+      {claimedBy && (
+        <div className={styles.claimed_by}>
+          <span className={styles.claimed_by_text}>
+            {"✔ "}
+            {claimedBy}
+          </span>
+        </div>
+      )}
+    </div>
   );
 };
 

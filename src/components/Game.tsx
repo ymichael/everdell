@@ -9,6 +9,7 @@ import GameInputBox from "./GameInputBox";
 import GameLog from "./GameLog";
 import GameUpdater from "./GameUpdater";
 import { Player } from "../model/player";
+import { GameState } from "../model/gameState";
 import { CardName, GameInput } from "../model/types";
 import { GameJSON, PlayerJSON } from "../model/jsonTypes";
 
@@ -37,6 +38,7 @@ const Game: React.FC<{
   const { playerId, playerSecret } = viewingPlayer;
 
   const viewingPlayerImpl = Player.fromJSON(viewingPlayer);
+  const gameStateImpl = GameState.fromJSON(gameState);
   return (
     <div className={styles.container}>
       <GameUpdater
@@ -58,7 +60,7 @@ const Game: React.FC<{
         <Players viewingPlayer={viewingPlayerImpl} gameState={gameState} />
         <ViewerUI player={viewingPlayerImpl} />
         <Locations locationsMap={gameState.locationsMap} />
-        <Events eventsMap={gameState.eventsMap} />
+        <Events gameState={gameStateImpl} />
       </GameUpdater>
     </div>
   );

@@ -58,6 +58,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       event: EventName.BASIC_FOUR_PRODUCTION,
     },
   });
+  gameState.nextPlayer();
 
   const game = new GameModel("testGameId", "testGameSecret", gameState, [
     { text: `Test game created with ${numPlayers} players.` },

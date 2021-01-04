@@ -36,7 +36,13 @@ const Game: React.FC<{
 
   const { gameId, gameState } = game;
   const { playerId, playerSecret } = viewingPlayer;
-
+  gameState.players = gameState.players.map((player) => {
+    if (player.playerId === viewingPlayer.playerId) {
+      return viewingPlayer;
+    } else {
+      return player;
+    }
+  });
   const viewingPlayerImpl = Player.fromJSON(viewingPlayer);
   const gameStateImpl = GameState.fromJSON(gameState);
   return (

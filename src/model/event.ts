@@ -1037,16 +1037,13 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     baseVP: 3,
     requiredCards: [CardName.JUDGE, CardName.QUEEN],
     eventDescription: ["PRODUCTION", "BR", "Activate Production"],
-    canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
-      return "Not Implemented";
-    },
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
-    },
-    /* canPlayCheckInnerRequiresCards([CardName.JUDGE, CardName.QUEEN]),*/
-    // TODO: add playInner
-    pointsInner: (gameState: GameState, playerId: string) => {
-      return 3;
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
+        player.activateProduction(gameState, gameInput);
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
+      }
     },
   }),
   [EventName.SPECIAL_THE_EVERDELL_GAMES]: new Event({

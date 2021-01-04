@@ -302,6 +302,9 @@ describe("GameState", () => {
       ]);
 
       player.addToCity(CardName.UNIVERSITY);
+      expect(gameState.getVisitableDestinationCards()).to.eql([]);
+
+      player.addToCity(CardName.FARM);
       expect(gameState.getVisitableDestinationCards()).to.eql([
         player.getFirstPlayedCard(CardName.UNIVERSITY),
       ]);
@@ -310,6 +313,12 @@ describe("GameState", () => {
       player2.addToCity(CardName.QUEEN);
       player2.addToCity(CardName.INN);
       player2.addToCity(CardName.UNIVERSITY);
+
+      expect(gameState.getVisitableDestinationCards()).to.eql([
+        player.getFirstPlayedCard(CardName.UNIVERSITY),
+      ]);
+
+      gameState.meadowCards.push(CardName.FARM);
 
       expect(gameState.getVisitableDestinationCards()).to.eql([
         player.getFirstPlayedCard(CardName.UNIVERSITY),

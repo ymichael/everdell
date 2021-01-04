@@ -209,6 +209,19 @@ export class Card<TCardType extends CardType = CardType>
           }
         }
       );
+    } else if (
+      gameInput.inputType === GameInputType.SELECT_CARDS ||
+      gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS ||
+      gameInput.inputType === GameInputType.SELECT_LOCATION ||
+      gameInput.inputType === GameInputType.SELECT_PAYMENT_FOR_CARD ||
+      gameInput.inputType === GameInputType.SELECT_WORKER_PLACEMENT ||
+      gameInput.inputType === GameInputType.SELECT_PLAYER ||
+      gameInput.inputType === GameInputType.SELECT_RESOURCES ||
+      gameInput.inputType === GameInputType.DISCARD_CARDS
+    ) {
+      if (gameInput.cardContext === this.name) {
+        this.playCardEffects(gameState, gameInput);
+      }
     } else {
       this.playCardEffects(gameState, gameInput);
     }
@@ -968,6 +981,25 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       "ANY",
       ".",
     ],
+    canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
+        const resources = player.getResources();
+        const canAffordMeadowCard = gameState.meadowCards.some((cardName) => {
+          const card = Card.fromName(cardName);
+          return player.isPaidResourcesValid(
+            resources,
+            card.baseCost,
+            "ANY",
+            false
+          );
+        });
+        if (!canAffordMeadowCard) {
+          return `Cannot afford any meadow cards even after discounts`;
+        }
+      }
+      return null;
+    },
     // Play meadow card for 3 less resources
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
@@ -985,10 +1017,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             selectedCards: [],
           },
         });
-      } else if (
-        gameInput.inputType === GameInputType.SELECT_CARDS &&
-        gameInput.cardContext === CardName.INN
-      ) {
+      } else if (gameInput.inputType === GameInputType.SELECT_CARDS) {
         const selectedCards = gameInput.clientOptions.selectedCards;
 
         if (!selectedCards) {
@@ -1288,10 +1317,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             resources: {},
           },
         });
-      } else if (
-        gameInput.inputType === GameInputType.SELECT_RESOURCES &&
-        gameInput.cardContext === CardName.MONASTERY
-      ) {
+      } else if (gameInput.inputType === GameInputType.SELECT_RESOURCES) {
         if (sumResources(gameInput.clientOptions.resources) !== 2) {
           throw new Error(
             `Must choose 2 resources, got: ${JSON.stringify(
@@ -1313,10 +1339,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             selectedPlayer: null,
           },
         });
-      } else if (
-        gameInput.inputType === GameInputType.SELECT_PLAYER &&
-        gameInput.cardContext === CardName.MONASTERY
-      ) {
+      } else if (gameInput.inputType === GameInputType.SELECT_PLAYER) {
         const selectedPlayer = gameInput.clientOptions.selectedPlayer;
         if (!selectedPlayer) {
           throw new Error(
@@ -1578,10 +1601,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             selectedCards: [],
           },
         });
-      } else if (
-        gameInput.inputType === GameInputType.SELECT_CARDS &&
-        gameInput.cardContext === CardName.POST_OFFICE
-      ) {
+      } else if (gameInput.inputType === GameInputType.SELECT_CARDS) {
         if (
           gameInput.prevInput &&
           gameInput.prevInput.inputType === GameInputType.SELECT_PLAYER
@@ -1662,7 +1682,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       } else if (
         gameInput.inputType === GameInputType.SELECT_CARDS &&
         gameInput.prevInputType === GameInputType.PLAY_CARD &&
-        gameInput.cardContext === CardName.POSTAL_PIGEON &&
         gameInput.cardOptionsUnfiltered
       ) {
         const player = gameState.getActivePlayer();
@@ -1694,7 +1713,22 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: false,
     associatedCard: CardName.PALACE,
     cardDescription: ["Play a ", "CARD", " worth up to 3 VP for free"],
-    // play a card worth up to 3 base VP for free
+    canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
+        const hasPlayableCard = [
+          ...gameState.meadowCards,
+          ...player.cardsInHand,
+        ].some((cardName) => {
+          const card = Card.fromName(cardName);
+          return card.baseVP <= 3;
+        });
+        if (!hasPlayableCard) {
+          return "No playable cards worth less than 3 VP";
+        }
+      }
+      return null;
+    },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
@@ -1727,10 +1761,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             selectedCards: [],
           },
         });
-      } else if (
-        gameInput.inputType === GameInputType.SELECT_CARDS &&
-        gameInput.cardContext === CardName.QUEEN
-      ) {
+      } else if (gameInput.inputType === GameInputType.SELECT_CARDS) {
         const selectedCards = gameInput.clientOptions.selectedCards;
 
         if (!selectedCards) {
@@ -2125,10 +2156,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
-      if (
-        gameInput.inputType === GameInputType.SELECT_CARDS &&
-        gameInput.cardContext === CardName.TEACHER
-      ) {
+      if (gameInput.inputType === GameInputType.SELECT_CARDS) {
         if (!gameInput.clientOptions.selectedCards) {
           throw new Error("invalid selected cards");
         }
@@ -2236,8 +2264,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         });
       } else if (
         gameInput.inputType === GameInputType.SELECT_CARDS &&
-        gameInput.prevInputType === GameInputType.PLAY_CARD &&
-        gameInput.cardContext === CardName.UNDERTAKER
+        gameInput.prevInputType === GameInputType.PLAY_CARD
       ) {
         // discard the cards from the meadow + replenish
         const selectedCards = gameInput.clientOptions.selectedCards;
@@ -2265,8 +2292,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         });
       } else if (
         gameInput.inputType === GameInputType.SELECT_CARDS &&
-        gameInput.prevInputType === GameInputType.SELECT_CARDS &&
-        gameInput.cardContext === CardName.UNDERTAKER
+        gameInput.prevInputType === GameInputType.SELECT_CARDS
       ) {
         // add this card to player's hand + replenish meadow
         const selectedCards = gameInput.clientOptions.selectedCards;
@@ -2303,6 +2329,15 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       "VP",
       ".",
     ],
+    canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
+        if (player.getNumCardsInCity() === 1) {
+          return `No cards to discard from your city`;
+        }
+      }
+      return null;
+    },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
 

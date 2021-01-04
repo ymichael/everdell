@@ -555,7 +555,15 @@ export class GameState {
     this.players.forEach((player) => {
       ret.push(...player.getAvailableOpenDestinationCards());
     });
-    return ret;
+    return ret.filter((playedCard) => {
+      const card = Card.fromName(playedCard.cardName);
+      return card.canPlay(this, {
+        inputType: GameInputType.VISIT_DESTINATION_CARD,
+        clientOptions: {
+          playedCard,
+        },
+      });
+    });
   };
 
   getPlayableCards(): { card: CardName; fromMeadow: boolean }[] {

@@ -1778,6 +1778,7 @@ describe("Card", () => {
         expect(player.hasCardInCity(CardName.HUSBAND)).to.be(true);
         expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(5);
       });
+
       it("should allow player to buy card for exactly 3 points for free", () => {
         const cards = [
           CardName.KING,
@@ -1836,6 +1837,7 @@ describe("Card", () => {
         expect(player.hasCardInCity(CardName.FAIRGROUNDS)).to.be(true);
         expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(5);
       });
+
       it("should not allow player to buy card for than 3 points", () => {
         const cards = [
           CardName.KING,
@@ -1888,6 +1890,37 @@ describe("Card", () => {
             },
           });
         }).to.throwException(/cannot use Queen/i);
+      });
+
+      it("should not allow player to visit the queen if there are no applicable cards", () => {
+        const cards = [
+          CardName.KING,
+          CardName.KING,
+          CardName.KING,
+          CardName.KING,
+          CardName.KING,
+          CardName.KING,
+          CardName.KING,
+          CardName.KING,
+        ];
+        gameState = testInitialGameState({ meadowCards: cards });
+
+        const player = gameState.getActivePlayer();
+        const card = Card.fromName(CardName.QUEEN);
+
+        // Make sure we can play this card
+        player.gainResources(card.baseCost);
+        player.cardsInHand.push(card.name);
+        player.addToCity(CardName.QUEEN);
+
+        expect(() => {
+          gameState.next({
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            clientOptions: {
+              playedCard: player.getFirstPlayedCard(CardName.QUEEN),
+            },
+          });
+        }).to.throwException(/no playable cards/i);
       });
     });
 

@@ -280,6 +280,10 @@ export class Player {
     return points;
   }
 
+  getResources(): Record<ResourceType, number> {
+    return { ...this.resources };
+  }
+
   getNumResources(): number {
     return sumResources(this.resources);
   }

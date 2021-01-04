@@ -7,9 +7,11 @@ import cloneDeep from "lodash/cloneDeep";
  * Model a stack of cards
  */
 export class CardStack {
+  private name: string;
   private cards: CardName[];
 
-  constructor({ cards }: { cards: CardName[] }) {
+  constructor({ name, cards }: { name: string; cards: CardName[] }) {
+    this.name = name;
     this.cards = cards;
   }
 
@@ -27,7 +29,7 @@ export class CardStack {
 
   drawInner(): CardName {
     if (this.isEmpty) {
-      throw new Error("unable to draw card from empty deck");
+      throw new Error(`Unable to draw card from ${this.name}`);
     }
     return this.cards.pop() as CardName;
   }
@@ -38,6 +40,7 @@ export class CardStack {
 
   toJSON(includePrivate: boolean): CardStackJSON {
     return cloneDeep({
+      name: this.name,
       numCards: this.cards.length,
       cards: [],
       ...(includePrivate ? { cards: this.cards } : {}),
@@ -49,6 +52,6 @@ export class CardStack {
   }
 }
 
-export const emptyCardStack = (): CardStack => {
-  return new CardStack({ cards: [] });
+export const discardPile = (): CardStack => {
+  return new CardStack({ name: "Discard", cards: [] });
 };

@@ -33,6 +33,7 @@ export type GameStateJSON = {
 };
 
 export type CardStackJSON = {
+  name: string;
   numCards: number;
   cards: CardName[];
 };

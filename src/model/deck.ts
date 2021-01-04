@@ -53,7 +53,7 @@ const baseCardsToCount: Partial<Record<CardName, number>> = {
 };
 
 export const initialDeck = (): CardStack => {
-  const cardStack = new CardStack({ cards: [] });
+  const cardStack = new CardStack({ name: "Deck", cards: [] });
   ((Object.entries(baseCardsToCount) as unknown) as [
     CardName,
     number

@@ -2614,6 +2614,71 @@ describe("Card", () => {
       });
     });
 
+    describe(CardName.MONASTERY, () => {
+      it("work", () => {
+        let player = gameState.getActivePlayer();
+        player.addToCity(CardName.MONASTERY);
+        expect(() => {
+          multiStepGameInputTest(gameState, [
+            {
+              inputType: GameInputType.VISIT_DESTINATION_CARD,
+              clientOptions: {
+                playedCard: player.getFirstPlayedCard(CardName.MONASTERY),
+              },
+            },
+          ]);
+        }).to.throwException(/need at least 2 resources/i);
+
+        player.gainResources({
+          [ResourceType.BERRY]: 2,
+        });
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+
+        const targetPlayerId = gameState.players[1].playerId;
+
+        const selectResourcesInput = {
+          inputType: GameInputType.SELECT_RESOURCES as const,
+          prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+          cardContext: CardName.MONASTERY,
+          clientOptions: {
+            resources: {
+              [ResourceType.BERRY]: 2,
+            },
+          },
+          maxResources: 2,
+          minResources: 2,
+        };
+
+        const selectPlayerInput = {
+          inputType: GameInputType.SELECT_PLAYER as const,
+          prevInputType: GameInputType.SELECT_RESOURCES,
+          prevInput: selectResourcesInput,
+          cardContext: CardName.MONASTERY,
+          playerOptions: [targetPlayerId],
+          mustSelectOne: true,
+          clientOptions: {
+            selectedPlayer: targetPlayerId,
+          },
+        };
+        gameState = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            clientOptions: {
+              playedCard: player.getFirstPlayedCard(CardName.MONASTERY),
+            },
+          },
+          selectResourcesInput,
+          selectPlayerInput,
+        ]);
+
+        player = gameState.getPlayer(player.playerId);
+        const targetPlayer = gameState.getPlayer(targetPlayerId);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(4);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+        expect(targetPlayer.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
+      });
+    });
+
     describe(CardName.CEMETARY, () => {
       it("allow player to play one revealed card", () => {
         let player = gameState.getActivePlayer();

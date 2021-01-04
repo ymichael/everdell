@@ -306,6 +306,11 @@ export class GameState {
     const card = Card.fromName(origPlayedCard.cardName);
     const activePlayer = this.getActivePlayer();
 
+    const canPlayErr = card.canPlayCheck(this, gameInput);
+    if (canPlayErr) {
+      throw new Error(canPlayErr);
+    }
+
     activePlayer.placeWorkerOnCard(this, origPlayedCard);
 
     // If card isn't owned by active player, pay the other player a VP

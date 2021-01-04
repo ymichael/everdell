@@ -1261,11 +1261,84 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     maxWorkersInner: (cardOwner: Player) => {
       return cardOwner.hasCardInCity(CardName.MONK) ? 2 : 1;
     },
+    canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
+        const numResources =
+          player.getNumResourcesByType(ResourceType.BERRY) +
+          player.getNumResourcesByType(ResourceType.TWIG) +
+          player.getNumResourcesByType(ResourceType.PEBBLE) +
+          player.getNumResourcesByType(ResourceType.RESIN);
+        if (numResources < 2) {
+          return "Need at least 2 resources to visit the Monastery";
+        }
+      }
+      return null;
+    },
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not implemented");
-      // if (gameInput.inputType !== GameInputType.VISIT_DESTINATION_CARD) {
-      //   throw new Error("Invalid input type");
-      // }
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_RESOURCES,
+          prevInputType: gameInput.inputType,
+          cardContext: CardName.MONASTERY,
+          maxResources: 2,
+          minResources: 2,
+          clientOptions: {
+            resources: {},
+          },
+        });
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_RESOURCES &&
+        gameInput.cardContext === CardName.MONASTERY
+      ) {
+        if (sumResources(gameInput.clientOptions.resources) !== 2) {
+          throw new Error(
+            `Must choose 2 resources, got: ${JSON.stringify(
+              gameInput.clientOptions.resources
+            )}`
+          );
+        }
+
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_PLAYER,
+          prevInputType: gameInput.inputType,
+          prevInput: gameInput,
+          cardContext: CardName.MONASTERY,
+          playerOptions: gameState.players
+            .filter((p) => p.playerId !== player.playerId)
+            .map((p) => p.playerId),
+          mustSelectOne: true,
+          clientOptions: {
+            selectedPlayer: null,
+          },
+        });
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_PLAYER &&
+        gameInput.cardContext === CardName.MONASTERY
+      ) {
+        const selectedPlayer = gameInput.clientOptions.selectedPlayer;
+        if (!selectedPlayer) {
+          throw new Error(
+            "Must specify gameInput.clientOptions.selectedPlayer"
+          );
+        }
+        if (selectedPlayer == player.playerId) {
+          throw new Error("Cannot select yourself");
+        }
+        const prevInput = gameInput.prevInput;
+        if (prevInput?.inputType !== GameInputType.SELECT_RESOURCES) {
+          throw new Error("Unexpected game input");
+        }
+        const targetPlayer = gameState.getPlayer(selectedPlayer);
+        player.spendResources(prevInput.clientOptions.resources);
+        targetPlayer.gainResources(prevInput.clientOptions.resources);
+        player.gainResources({
+          [ResourceType.VP]: 4,
+        });
+      } else {
+        throw new Error("Invalid input type");
+      }
       // if (
       //   !gameInput.clientOptions?.targetPlayerId ||
       //   !gameInput.clientOptions?.resourcesToSpend
@@ -1275,15 +1348,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       // if (sumResources(gameInput.clientOptions?.resourcesToSpend) !== 2) {
       //   throw new Error("Invalid input");
       // }
-      // const targetPlayer = gameState.getPlayer(
-      //   gameInput.clientOptions?.targetPlayerId
-      // );
-      // const player = gameState.getActivePlayer();
-      // player.spendResources(gameInput.clientOptions?.resourcesToSpend);
-      // targetPlayer.gainResources(gameInput.clientOptions?.resourcesToSpend);
-      // player.gainResources({
-      //   [ResourceType.VP]: 2,
-      // });
     },
   }),
   [CardName.MONK]: new Card({
@@ -1300,7 +1364,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       ResourceType.BERRY,
       " to an opponent to gain 2 ",
       "VP",
-      " each. Unlocks second Monastary.",
+      " each. Unlocks second Monastery.",
     ],
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();

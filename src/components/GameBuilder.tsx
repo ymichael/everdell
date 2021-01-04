@@ -61,6 +61,9 @@ const GameBuilder: React.FC = () => {
                               <Field
                                 name={`players.${idx}.name`}
                                 placeholder="Player Name"
+                                onClick={(e: any) => {
+                                  e.target.select();
+                                }}
                               />
                               {numPlayers > 2 && (
                                 <button

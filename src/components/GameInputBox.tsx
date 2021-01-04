@@ -172,7 +172,6 @@ const GameInputBox: React.FC<{
       {({ values, setFieldValue, isSubmitting }) => {
         return (
           <Form>
-            <pre>{JSON.stringify(values, null, 2)}</pre>
             <div role="group">
               {gameInputs.map((gameInput, idx) => {
                 return (

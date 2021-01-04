@@ -1,7 +1,12 @@
 import { GetServerSideProps } from "next";
 
 import { GameJSON, PlayerJSON } from "../../model/jsonTypes";
-import { GameInput, ResourceType, CardName } from "../../model/types";
+import {
+  GameInputType,
+  GameInput,
+  ResourceType,
+  CardName,
+} from "../../model/types";
 import { Game as GameModel } from "../../model/game";
 import GameAdmin from "../../components/GameAdmin";
 import Game from "../../components/Game";
@@ -12,7 +17,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   // Create Test Game Here
   const playerNames = ["Michael", "Elynn"];
   const numPlayers = playerNames.length;
-  const gameState = testInitialGameState({
+  let gameState = testInitialGameState({
     numPlayers,
     playerNames,
     noForestLocations: false,
@@ -34,18 +39,25 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     player.addToCity(CardName.DUNGEON);
     player.addToCity(CardName.WANDERER);
     player.addToCity(CardName.HUSBAND);
-    player.addToCity(CardName.WIFE);
+    player.addToCity(CardName.CEMETARY);
     player.addToCity(CardName.FARM);
     player.addToCity(CardName.MINE);
     player.addToCity(CardName.CLOCK_TOWER);
   });
 
+  const player = gameState.getActivePlayer();
+
   gameState.replenishMeadow();
+  // gameState = gameState.next({
+  //   inputType: GameInputType.VISIT_DESTINATION_CARD,
+  //   clientOptions: {
+  //     playedCard: player.getFirstPlayedCard(CardName.CEMETARY),
+  //   },
+  // });
 
   const game = new GameModel("testGameId", "testGameSecret", gameState, [
     { text: `Test game created with ${numPlayers} players.` },
   ]);
-  const player = game.getActivePlayer();
   const isActivePlayer =
     player && player.playerId === game.getActivePlayer().playerId;
 

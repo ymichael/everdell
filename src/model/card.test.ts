@@ -2738,8 +2738,18 @@ describe("Card", () => {
             },
           },
           {
-            inputType: GameInputType.SELECT_CARDS,
+            inputType: GameInputType.SELECT_OPTION_GENERIC,
             prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+            label: "Select where to draw cards for the Cemetary:",
+            options: ["Deck", "Discard Pile"],
+            cardContext: CardName.CEMETARY,
+            clientOptions: {
+              selectedOption: "Deck",
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: GameInputType.SELECT_OPTION_GENERIC,
             cardContext: CardName.CEMETARY,
             cardOptions: [CardName.FARM, CardName.QUEEN],
             cardOptionsUnfiltered: [

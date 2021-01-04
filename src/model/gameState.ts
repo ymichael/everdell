@@ -403,6 +403,7 @@ export class GameState {
       case GameInputType.SELECT_PLAYER:
       case GameInputType.SELECT_RESOURCES:
       case GameInputType.DISCARD_CARDS:
+      case GameInputType.SELECT_OPTION_GENERIC:
         nextGameState.handleMultiStepGameInput(gameInput);
         break;
       case GameInputType.PLAY_CARD:

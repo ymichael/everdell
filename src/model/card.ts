@@ -422,12 +422,36 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       // in your city.
       const player = gameState.getActivePlayer();
       if (gameInput.inputType == GameInputType.VISIT_DESTINATION_CARD) {
-        const revealedCards = [
-          gameState.drawCard(),
-          gameState.drawCard(),
-          gameState.drawCard(),
-          gameState.drawCard(),
-        ];
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_OPTION_GENERIC,
+          prevInputType: gameInput.inputType,
+          label: "Select where to draw cards for the Cemetary:",
+          options: ["Deck", "Discard Pile"],
+          cardContext: CardName.CEMETARY,
+          clientOptions: {
+            selectedOption: null,
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_OPTION_GENERIC) {
+        const selectedOption = gameInput.clientOptions.selectedOption;
+        if (selectedOption !== "Deck" && selectedOption !== "Discard Pile") {
+          throw new Error("Must choose either Deck or Discard Pile");
+        }
+
+        const revealedCards =
+          selectedOption === "Deck"
+            ? [
+                gameState.drawCard(),
+                gameState.drawCard(),
+                gameState.drawCard(),
+                gameState.drawCard(),
+              ]
+            : [
+                gameState.discardPile.drawInner(),
+                gameState.discardPile.drawInner(),
+                gameState.discardPile.drawInner(),
+                gameState.discardPile.drawInner(),
+              ];
         const filteredOptions = revealedCards.filter((cardName) =>
           player.canAddToCity(cardName, true /* strict */)
         );

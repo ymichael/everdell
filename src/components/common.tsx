@@ -131,7 +131,7 @@ export const ItemWrapper: React.FC<{
 }> = ({ isDisabled, footerChildren = null, children }) => {
   return (
     <div className={styles.item_wrapper}>
-      <div className={isDisabled ? styles.item_disabled : null}>{children}</div>
+      <div className={isDisabled ? styles.item_disabled : undefined}>{children}</div>
       <div className={styles.item_footer}>{footerChildren}</div>
     </div>
   );

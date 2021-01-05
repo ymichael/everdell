@@ -22,3 +22,11 @@
   position: relative;
   display: inline-block;
 }
+
+.item_wrapper {
+  margin: 10px 10px 0px 0px;
+}
+
+.item_disabled {
+  opacity: 0.3;
+}

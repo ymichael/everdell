@@ -12,7 +12,7 @@ import {
   EventType,
 } from "../model/types";
 import { Player } from "../model/player";
-import { Description, CardTypeSymbol } from "./common";
+import { Description, CardTypeSymbol, ItemWrapper } from "./common";
 import { sumResources } from "../model/gameStatePlayHelpers";
 
 const EventInner: React.FC<{
@@ -77,21 +77,21 @@ export const Event = ({
   claimedBy?: string | null;
 }) => {
   return (
-    <div className={styles.event_wrapper}>
-      <div
-        className={[claimedBy && styles.is_claimed].filter(Boolean).join(" ")}
-      >
-        <EventInner name={name} />
-      </div>
-      {claimedBy && (
-        <div className={styles.claimed_by}>
-          <span className={styles.claimed_by_text}>
-            {"✔ "}
-            {claimedBy}
-          </span>
-        </div>
-      )}
-    </div>
+    <ItemWrapper
+      isDisabled={!!claimedBy}
+      footerChildren={
+        claimedBy && (
+          <div className={styles.claimed_by}>
+            <span className={styles.claimed_by_text}>
+              {"✔ "}
+              {claimedBy}
+            </span>
+          </div>
+        )
+      }
+    >
+      <EventInner name={name} />
+    </ItemWrapper>
   );
 };
 

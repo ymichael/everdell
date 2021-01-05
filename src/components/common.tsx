@@ -124,3 +124,15 @@ export const Description = ({ description }: { description: string[] }) => {
     </span>
   ) : null;
 };
+
+export const ItemWrapper: React.FC<{
+  isDisabled: boolean;
+  footerChildren?: any;
+}> = ({ isDisabled, footerChildren = null, children }) => {
+  return (
+    <div className={styles.item_wrapper}>
+      <div className={isDisabled ? styles.item_disabled : null}>{children}</div>
+      <div className={styles.item_footer}>{footerChildren}</div>
+    </div>
+  );
+};

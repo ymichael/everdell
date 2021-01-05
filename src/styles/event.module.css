@@ -44,24 +44,15 @@
   padding: 10px;
 }
 
-.event_wrapper {
-  position: relative;
-}
-
-.is_claimed {
-  opacity: 0.5;
-}
-
 .claimed_by {
   vertical-align: middle;
   text-align: center;
-  padding-bottom: 15px;
 }
 
 .claimed_by_text {
   text-transform: uppercase;
   width: auto;
-  font-size: 14px;
+  font-size: 10px;
   font-weight: 800;
   align-self: center;
   text-shadow: 2px 2px white;

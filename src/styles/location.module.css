@@ -13,10 +13,6 @@
   justify-content: space-between;
 }
 
-.location_wrapper {
-  margin: 10px;
-}
-
 .location_workers {
   width: 180px;
   margin: 10px;
@@ -65,8 +61,4 @@
   padding: 10px;
   text-align: center;
   font-size: 14px;
-}
-
-.not_accepting_workers {
-  opacity: 0.3;
 }

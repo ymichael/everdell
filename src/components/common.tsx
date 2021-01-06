@@ -2,7 +2,7 @@ import * as React from "react";
 import Image from "next/image";
 
 import styles from "../styles/common.module.css";
-import { ResourceType, CardType } from "../model/types";
+import { TextPart, ResourceType, CardType } from "../model/types";
 
 export const GameBlockTitle: React.FC = ({ children }) => {
   return <div className={styles.title}>{children}</div>;
@@ -107,10 +107,10 @@ const ICON_TYPES: Record<any, any> = {
 
 const cardTypeList = [];
 
-export const Description = ({ description }: { description: string[] }) => {
-  return description ? (
+export const Description = ({ textParts }: { textParts: TextPart[] }) => {
+  return textParts ? (
     <span>
-      {description.map((part: any, idx: number) => {
+      {textParts.map((part: any, idx: number) => {
         if (ICON_TYPES[part]) {
           return <GameIcon key={idx} type={part} />;
         } else if (part === "BR") {
@@ -131,7 +131,9 @@ export const ItemWrapper: React.FC<{
 }> = ({ isDisabled, footerChildren = null, children }) => {
   return (
     <div className={styles.item_wrapper}>
-      <div className={isDisabled ? styles.item_disabled : undefined}>{children}</div>
+      <div className={isDisabled ? styles.item_disabled : undefined}>
+        {children}
+      </div>
       <div className={styles.item_footer}>{footerChildren}</div>
     </div>
   );

@@ -55,7 +55,7 @@ const resourceTypeList = [
 
 const CardDescription = ({ card }: { card: CardModel }) => {
   if (card.cardDescription) {
-    return <Description description={card.cardDescription} />;
+    return <Description textParts={card.cardDescription} />;
   }
   if (card.resourcesToGain) {
     const totalResources = sumResources(card.resourcesToGain);
@@ -63,7 +63,7 @@ const CardDescription = ({ card }: { card: CardModel }) => {
       if (card.resourcesToGain[resourceTypeList[i]] === totalResources) {
         return (
           <Description
-            description={[`Gain ${totalResources} `, resourceTypeList[i], "."]}
+            textParts={[`Gain ${totalResources} `, resourceTypeList[i], "."]}
           />
         );
       }

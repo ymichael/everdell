@@ -1,6 +1,8 @@
 import { generate as uuid } from "short-uuid";
 import { Player, createPlayer } from "./player";
 import { GameState } from "./gameState";
+import { Location } from "./location";
+import { Event } from "./event";
 import { GameInput, GameInputType, GameLogEntry } from "./types";
 import { GameJSON } from "./jsonTypes";
 import { getGameJSONById, saveGameJSONById } from "./db";
@@ -56,22 +58,32 @@ export class Game {
     switch (gameInput.inputType) {
       case GameInputType.PLAY_CARD:
         this.gameLogBuffer.push({
-          text: `${player.name} played ${gameInput.clientOptions.card}`,
+          entry: [`${player.name} played ${gameInput.clientOptions.card}`],
         });
         break;
       case GameInputType.PLACE_WORKER:
+        const location = Location.fromName(gameInput.clientOptions.location!);
         this.gameLogBuffer.push({
-          text: `${player.name} place a worker on ${gameInput.clientOptions.location}.`,
+          entry: [
+            `${player.name} place a worker on `,
+            ...location.getShortName(),
+            ".",
+          ],
         });
         break;
       case GameInputType.CLAIM_EVENT:
+        const event = Event.fromName(gameInput.clientOptions.event!);
         this.gameLogBuffer.push({
-          text: `${player.name} claimed the ${gameInput.clientOptions.event} event.`,
+          entry: [
+            `${player.name} claimed the `,
+            ...event.getShortName(),
+            ` event.`,
+          ],
         });
         break;
       case GameInputType.PREPARE_FOR_SEASON:
         this.gameLogBuffer.push({
-          text: `${player.name} took the prepare for season action.`,
+          entry: [`${player.name} took the prepare for season action.`],
         });
         break;
       case GameInputType.SELECT_CARDS:
@@ -82,20 +94,27 @@ export class Game {
       case GameInputType.SELECT_PLAYER:
       case GameInputType.SELECT_RESOURCES:
       case GameInputType.DISCARD_CARDS:
+        const contextParts = gameInput.locationContext
+          ? Location.fromName(gameInput.locationContext).getShortName()
+          : gameInput.eventContext
+          ? Event.fromName(gameInput.eventContext).getShortName()
+          : gameInput.cardContext
+          ? [gameInput.cardContext]
+          : [gameInput.prevInputType];
         this.gameLogBuffer.push({
-          text: `[${
-            gameInput.cardContext ||
-            gameInput.eventContext ||
-            gameInput.locationContext ||
-            gameInput.prevInputType
-          }] ${player.name} took ${gameInput.inputType} action.`,
+          entry: [
+            "[",
+            ...contextParts,
+            "]",
+            `${player.name} took ${gameInput.inputType} action.`,
+          ],
         });
         break;
       case GameInputType.GAME_END:
       case GameInputType.VISIT_DESTINATION_CARD:
       default:
         this.gameLogBuffer.push({
-          text: `${player.name} took ${gameInput.inputType} action.`,
+          entry: [`${player.name} took ${gameInput.inputType} action.`],
         });
         break;
     }
@@ -103,12 +122,12 @@ export class Game {
 
   private handleGameOver(): void {
     if (this.gameState.isGameOver()) {
-      this.gameLogBuffer.push({ text: `Game over` });
+      this.gameLogBuffer.push({ entry: [`Game over`] });
       this.gameState.players.forEach((player) => {
         this.gameLogBuffer.push({
-          text: `${player.name} has ${player.getPoints(
-            this.gameState
-          )} points.`,
+          entry: [
+            `${player.name} has ${player.getPoints(this.gameState)} points.`,
+          ],
         });
       });
     }
@@ -171,9 +190,9 @@ export const createGame = async (playerNames: string[]): Promise<Game> => {
       players,
     }),
     [
-      { text: `Game created with ${players.length} players.` },
-      { text: "Dealing cards to each player." },
-      { text: "Dealing cards to the Meadow." },
+      { entry: [`Game created with ${players.length} players.`] },
+      { entry: ["Dealing cards to each player."] },
+      { entry: ["Dealing cards to the Meadow."] },
     ]
   );
 

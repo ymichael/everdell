@@ -8,6 +8,7 @@ import {
   GameInputType,
   PlayedEventInfo,
   ResourceType,
+  TextPart,
 } from "./types";
 import { Card } from "./card";
 import {
@@ -30,8 +31,8 @@ export class Event implements GameStatePlayable {
   readonly type: EventType;
   readonly baseVP: number;
   readonly requiredCards: CardName[] | undefined;
-  readonly eventRequirementsDescription: string[] | undefined;
-  readonly eventDescription: string[] | undefined;
+  readonly eventRequirementsDescription: TextPart[] | undefined;
+  readonly eventDescription: TextPart[] | undefined;
   // every event has requirements to play,
   // but not all events result in an action when played
   readonly canPlayCheckInner: GameStateCanPlayCheckFn | undefined;
@@ -69,6 +70,13 @@ export class Event implements GameStatePlayable {
     this.playInner = playInner;
     this.playedEventInfoInner = playedEventInfoInner;
     this.pointsInner = pointsInner;
+  }
+
+  getShortName(): TextPart[] {
+    if (this.eventRequirementsDescription) {
+      return this.eventRequirementsDescription;
+    }
+    return [this.name];
   }
 
   canPlay(gameState: GameState, gameInput: GameInput): boolean {

@@ -456,7 +456,7 @@ export enum PlayerStatus {
 }
 
 export type GameLogEntry = {
-  text: string;
+  entry: TextPart[];
 };
 
 export type CardPaymentOptions = {
@@ -479,3 +479,8 @@ export type CardPaymentOptions = {
     [ResourceType.RESIN]?: number;
   };
 };
+
+export type TextPartIcon = ResourceType | CardType | "CARD" | "VP" | "ANY";
+export type TextPartBR = "BR";
+export type TextPartHR = "HR";
+export type TextPart = string | TextPartIcon | TextPartBR | TextPartHR;

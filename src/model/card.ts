@@ -9,6 +9,7 @@ import {
   GameInput,
   GameInputType,
   PlayedCardInfo,
+  TextPart,
 } from "./types";
 import {
   GameState,
@@ -39,7 +40,7 @@ type ProductionInnerFn = (
 
 export class Card<TCardType extends CardType = CardType>
   implements GameStatePlayable {
-  readonly cardDescription: string[] | undefined;
+  readonly cardDescription: TextPart[] | undefined;
   readonly playInner: GameStatePlayFn | undefined;
   readonly canPlayCheckInner: GameStateCanPlayCheckFn | undefined;
   readonly playedCardInfoDefault:

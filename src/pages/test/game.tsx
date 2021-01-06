@@ -49,42 +49,44 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     player.addToCity(CardName.CLOCK_TOWER);
   });
 
-  const player = gameState.getActivePlayer();
-
   gameState.locationsMap[LocationName.FOREST_ONE_PEBBLE_THREE_CARD] = [];
+  gameState.locationsMap[
+    LocationName.FOREST_DISCARD_ANY_THEN_DRAW_TWO_PER_CARD
+  ] = [];
 
   gameState.replenishMeadow();
 
-  gameState = gameState.next({
+  const game = new GameModel("testGameId", "testGameSecret", gameState, [
+    { entry: [`Test game created with ${numPlayers} players.`] },
+  ]);
+
+  game.applyGameInput({
     inputType: GameInputType.CLAIM_EVENT,
     clientOptions: {
       event: EventName.BASIC_FOUR_PRODUCTION,
     },
   });
-  gameState = gameState.next({
+  game.applyGameInput({
     inputType: GameInputType.PLACE_WORKER,
     clientOptions: {
       location: LocationName.FOREST_ONE_PEBBLE_THREE_CARD,
     },
   });
-  gameState = gameState.next({
+  game.applyGameInput({
     inputType: GameInputType.PLACE_WORKER,
     clientOptions: {
       location: LocationName.BASIC_TWO_CARDS_AND_ONE_VP,
     },
   });
-  gameState = gameState.next({
+  game.applyGameInput({
     inputType: GameInputType.PLACE_WORKER,
     clientOptions: {
-      location: LocationName.BASIC_TWO_CARDS_AND_ONE_VP,
+      location: LocationName.FOREST_DISCARD_ANY_THEN_DRAW_TWO_PER_CARD,
     },
   });
-  const game = new GameModel("testGameId", "testGameSecret", gameState, [
-    { text: `Test game created with ${numPlayers} players.` },
-  ]);
-  const isActivePlayer =
-    player && player.playerId === game.getActivePlayer().playerId;
 
+  const player = game.getActivePlayer();
+  const isActivePlayer = true;
   return {
     props: {
       game: game.toJSON(false /* includePrivate */),

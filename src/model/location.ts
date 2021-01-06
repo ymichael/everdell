@@ -9,6 +9,7 @@ import {
   GameInputType,
   Season,
   ProductionResourceMap,
+  TextPart,
 } from "./types";
 import { sumResources } from "./gameStatePlayHelpers";
 import {
@@ -23,7 +24,7 @@ import { assertUnreachable } from "../utils";
 export class Location implements GameStatePlayable {
   readonly name: LocationName;
   readonly type: LocationType;
-  readonly description: string[] | undefined;
+  readonly description: TextPart[] | undefined;
   readonly resourcesToGain: ProductionResourceMap;
   readonly occupancy: LocationOccupancy;
   readonly playInner: GameStatePlayFn | undefined;
@@ -53,6 +54,27 @@ export class Location implements GameStatePlayable {
     this.canPlayCheckInner = canPlayCheckInner;
     this.resourcesToGain = resourcesToGain || {};
     this.description = description;
+  }
+
+  getShortName(): TextPart[] {
+    if (sumResources(this.resourcesToGain) !== 0) {
+      const description: TextPart[] = [];
+      [
+        ResourceType.TWIG,
+        ResourceType.RESIN,
+        ResourceType.PEBBLE,
+        ResourceType.BERRY,
+        "CARD" as const,
+        ResourceType.VP,
+      ].forEach((resource: keyof ProductionResourceMap) => {
+        const numResource = this.resourcesToGain[resource] || 0;
+        for (let j = 0; j < numResource; j++) {
+          description.push(resource);
+        }
+      });
+      return description;
+    }
+    return [this.name];
   }
 
   canPlay(gameState: GameState, gameInput: GameInput): boolean {

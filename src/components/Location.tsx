@@ -33,27 +33,11 @@ const resourceTypeList = [
 
 const LocationDescription = ({ location }: { location: LocationModel }) => {
   if (location.description) {
-    return <Description description={location.description} />;
+    return <Description textParts={location.description} />;
   }
-
-  if (sumResources(location.resourcesToGain) !== 0) {
-    const description: string[] = [];
-    const resourcesToGainKeys = Object.keys(location.resourcesToGain);
-    for (let i = 0; i < resourcesToGainKeys.length; i++) {
-      const resource = resourcesToGainKeys[i] as keyof ProductionResourceMap;
-      const numResource = location.resourcesToGain[resource];
-      if (numResource) {
-        if (description.length !== 0) {
-          if (i === resourcesToGainKeys.length - 1) {
-            description.push(" & ");
-          } else {
-            description.push(", ");
-          }
-        }
-        description.push(`${numResource} `, resource);
-      }
-    }
-    return <Description description={description} />;
+  const shortName = location.getShortName();
+  if (shortName.length !== 0) {
+    return <Description textParts={shortName} />;
   }
   return <>{location.name}</>;
 };

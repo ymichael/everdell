@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 import styles from "../styles/GameLog.module.css";
 
 import { GameLogEntry } from "../model/types";
-import { GameBlock } from "./common";
+import { Description, GameBlock } from "./common";
 
 const GameLog: React.FC<{ logs: GameLogEntry[] }> = ({ logs }) => {
   const logsElRef = useRef<HTMLDivElement>(null);
@@ -16,15 +16,17 @@ const GameLog: React.FC<{ logs: GameLogEntry[] }> = ({ logs }) => {
   return (
     <GameBlock title={"Game Log"}>
       <div className={styles.logs} ref={logsElRef}>
-        {logs.map(({ text }, idx) => {
+        {logs.map(({ entry }, idx) => {
           return (
             <div
-              key={text}
+              key={idx}
               className={styles.log}
               ref={idx == logs.length - 1 ? lastLogElRef : null}
             >
               <span className={styles.log_prefix}>{">> "}</span>
-              <span className={styles.log_text}>{text}</span>
+              <span>
+                <Description textParts={entry} />
+              </span>
             </div>
           );
         })}

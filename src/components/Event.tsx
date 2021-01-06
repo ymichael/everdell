@@ -24,9 +24,7 @@ const EventInner: React.FC<{
       <div className={styles.event}>
         {event.type === EventType.BASIC ? (
           <div className={styles.event_basic}>
-            <Description
-              description={event.eventRequirementsDescription || []}
-            />
+            <Description textParts={event.eventRequirementsDescription || []} />
           </div>
         ) : (
           <>
@@ -35,7 +33,7 @@ const EventInner: React.FC<{
                 {event.requiredCards ? (
                   <>
                     <Description
-                      description={[
+                      textParts={[
                         event.requiredCards[0],
                         ", ",
                         event.requiredCards[1],
@@ -49,19 +47,19 @@ const EventInner: React.FC<{
             </div>
             {event.eventRequirementsDescription && (
               <div className={styles.event_row}>
-                <Description description={event.eventRequirementsDescription} />
+                <Description textParts={event.eventRequirementsDescription} />
               </div>
             )}
             {event.eventDescription && (
               <div className={styles.event_row}>
-                <Description description={event.eventDescription} />
+                <Description textParts={event.eventDescription} />
               </div>
             )}
           </>
         )}
         {event.baseVP ? (
           <div className={styles.base_vp}>
-            <Description description={[`${event.baseVP} `, "VP"]} />
+            <Description textParts={[`${event.baseVP} `, "VP"]} />
           </div>
         ) : null}
       </div>

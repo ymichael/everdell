@@ -1,5 +1,6 @@
 import expect from "expect.js";
 import { Event } from "./event";
+import { Player } from "./player";
 import { GameState } from "./gameState";
 import { testInitialGameState, multiStepGameInputTest } from "./testHelpers";
 import {
@@ -22,9 +23,11 @@ const claimEventInput = (event: EventName): GameInputClaimEvent => {
 
 describe("Event", () => {
   let gameState: GameState;
+  let player: Player;
 
   beforeEach(() => {
     gameState = testInitialGameState();
+    player = gameState.getActivePlayer();
   });
 
   describe("fromName", () => {
@@ -39,7 +42,6 @@ describe("Event", () => {
     it("should only be playable with four production tags", () => {
       const event = Event.fromName(EventName.BASIC_FOUR_PRODUCTION);
       const gameInput = claimEventInput(event.name);
-      const player = gameState.getActivePlayer();
 
       expect(event.canPlay(gameState, gameInput)).to.be(false);
 
@@ -61,7 +63,7 @@ describe("Event", () => {
     it("should only be playable with three destination tags", () => {
       const event = Event.fromName(EventName.BASIC_THREE_DESTINATION);
       const gameInput = claimEventInput(event.name);
-      const player = gameState.getActivePlayer();
+
       expect(event.canPlay(gameState, gameInput)).to.be(false);
 
       player.addToCity(CardName.UNIVERSITY);
@@ -81,7 +83,7 @@ describe("Event", () => {
     it("should only be playable with three traverler tags", () => {
       const event = Event.fromName(EventName.BASIC_THREE_TRAVELER);
       const gameInput = claimEventInput(event.name);
-      const player = gameState.getActivePlayer();
+
       expect(event.canPlay(gameState, gameInput)).to.be(false);
 
       player.addToCity(CardName.WANDERER);
@@ -101,7 +103,7 @@ describe("Event", () => {
     it("should only be playable with three governance tags", () => {
       const event = Event.fromName(EventName.BASIC_THREE_GOVERNANCE);
       const gameInput = claimEventInput(event.name);
-      const player = gameState.getActivePlayer();
+
       expect(event.canPlay(gameState, gameInput)).to.be(false);
 
       player.addToCity(CardName.JUDGE);
@@ -121,7 +123,6 @@ describe("Event", () => {
     it("should only be playable with 2 of each tags", () => {
       const event = Event.fromName(EventName.SPECIAL_THE_EVERDELL_GAMES);
       const gameInput = claimEventInput(event.name);
-      const player = gameState.getActivePlayer();
 
       gameState.eventsMap[EventName.SPECIAL_THE_EVERDELL_GAMES] = null;
 
@@ -158,7 +159,6 @@ describe("Event", () => {
   describe(EventName.SPECIAL_GRADUATION_OF_SCHOLARS, () => {
     it("game state", () => {
       const event = Event.fromName(EventName.SPECIAL_GRADUATION_OF_SCHOLARS);
-      let player = gameState.getActivePlayer();
       const gameInput = claimEventInput(event.name);
 
       gameState.eventsMap[EventName.SPECIAL_GRADUATION_OF_SCHOLARS] = null;
@@ -247,7 +247,6 @@ describe("Event", () => {
   describe(EventName.SPECIAL_CROAK_WART_CURE, () => {
     it("game state", () => {
       const event = Event.fromName(EventName.SPECIAL_CROAK_WART_CURE);
-      let player = gameState.getActivePlayer();
       const gameInput = claimEventInput(event.name);
 
       gameState.eventsMap[EventName.SPECIAL_CROAK_WART_CURE] = null;
@@ -309,7 +308,6 @@ describe("Event", () => {
       const event = Event.fromName(
         EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES
       );
-      let player = gameState.getActivePlayer();
       const gameInput = claimEventInput(event.name);
 
       gameState.eventsMap[
@@ -366,7 +364,6 @@ describe("Event", () => {
   describe(EventName.SPECIAL_AN_EVENING_OF_FIREWORKS, () => {
     it("should be able to claim event and store twigs", () => {
       const event = Event.fromName(EventName.SPECIAL_AN_EVENING_OF_FIREWORKS);
-      let player = gameState.getActivePlayer();
       const gameInput = claimEventInput(event.name);
 
       gameState.eventsMap[EventName.SPECIAL_AN_EVENING_OF_FIREWORKS] = null;
@@ -424,7 +421,6 @@ describe("Event", () => {
     });
     it("should calculate points correctly", () => {
       const event = Event.fromName(EventName.SPECIAL_AN_EVENING_OF_FIREWORKS);
-      const player = gameState.getActivePlayer();
 
       player.claimedEvents[event.name] = {
         storedResources: {},
@@ -468,7 +464,7 @@ describe("Event", () => {
     });
     it("can't put incorrect resources or number of twigs", () => {
       const event = Event.fromName(EventName.SPECIAL_AN_EVENING_OF_FIREWORKS);
-      const player = gameState.getActivePlayer();
+
       const gameInput = claimEventInput(event.name);
 
       gameState.eventsMap[EventName.SPECIAL_AN_EVENING_OF_FIREWORKS] = null;
@@ -519,7 +515,6 @@ describe("Event", () => {
   describe(EventName.SPECIAL_PERFORMER_IN_RESIDENCE, () => {
     it("should be able to claim event and store berries", () => {
       const event = Event.fromName(EventName.SPECIAL_PERFORMER_IN_RESIDENCE);
-      let player = gameState.getActivePlayer();
       const gameInput = claimEventInput(event.name);
 
       gameState.eventsMap[EventName.SPECIAL_PERFORMER_IN_RESIDENCE] = null;
@@ -576,7 +571,6 @@ describe("Event", () => {
     });
     it("should calculate points correctly", () => {
       const event = Event.fromName(EventName.SPECIAL_PERFORMER_IN_RESIDENCE);
-      const player = gameState.getActivePlayer();
 
       player.claimedEvents[event.name] = {
         storedResources: {},
@@ -620,7 +614,7 @@ describe("Event", () => {
     });
     it("can't put incorrect resources or number of berries", () => {
       const event = Event.fromName(EventName.SPECIAL_PERFORMER_IN_RESIDENCE);
-      const player = gameState.getActivePlayer();
+
       const gameInput = claimEventInput(event.name);
 
       gameState.eventsMap[EventName.SPECIAL_PERFORMER_IN_RESIDENCE] = null;
@@ -671,7 +665,6 @@ describe("Event", () => {
   describe(EventName.SPECIAL_UNDER_NEW_MANAGEMENT, () => {
     it("should be able to claim event", () => {
       const event = Event.fromName(EventName.SPECIAL_UNDER_NEW_MANAGEMENT);
-      let player = gameState.getActivePlayer();
       const gameInput = claimEventInput(event.name);
 
       gameState.eventsMap[EventName.SPECIAL_UNDER_NEW_MANAGEMENT] = null;
@@ -742,7 +735,6 @@ describe("Event", () => {
     });
     it("can claim event without having resources", () => {
       const event = Event.fromName(EventName.SPECIAL_UNDER_NEW_MANAGEMENT);
-      let player = gameState.getActivePlayer();
       const gameInput = claimEventInput(event.name);
 
       gameState.eventsMap[EventName.SPECIAL_UNDER_NEW_MANAGEMENT] = null;
@@ -796,7 +788,6 @@ describe("Event", () => {
     });
     it("can claim event without placing resources", () => {
       const event = Event.fromName(EventName.SPECIAL_UNDER_NEW_MANAGEMENT);
-      let player = gameState.getActivePlayer();
       const gameInput = claimEventInput(event.name);
 
       gameState.eventsMap[EventName.SPECIAL_UNDER_NEW_MANAGEMENT] = null;
@@ -859,7 +850,6 @@ describe("Event", () => {
     });
     it("should calculate points correctly", () => {
       const event = Event.fromName(EventName.SPECIAL_UNDER_NEW_MANAGEMENT);
-      const player = gameState.getActivePlayer();
 
       player.claimedEvents[event.name] = {
         storedResources: { [ResourceType.TWIG]: 0, [ResourceType.BERRY]: 0 },
@@ -900,7 +890,6 @@ describe("Event", () => {
   describe(EventName.SPECIAL_PRISTINE_CHAPEL_CEILING, () => {
     it("should be able to claim event", () => {
       const event = Event.fromName(EventName.SPECIAL_PRISTINE_CHAPEL_CEILING);
-      let player = gameState.getActivePlayer();
       const gameInput = claimEventInput(event.name);
 
       gameState.eventsMap[EventName.SPECIAL_PRISTINE_CHAPEL_CEILING] = null;
@@ -947,7 +936,6 @@ describe("Event", () => {
     });
     it("if no resources on chapel, claim event but don't get points or resources", () => {
       const event = Event.fromName(EventName.SPECIAL_PRISTINE_CHAPEL_CEILING);
-      let player = gameState.getActivePlayer();
       const gameInput = claimEventInput(event.name);
 
       gameState.eventsMap[EventName.SPECIAL_PRISTINE_CHAPEL_CEILING] = null;
@@ -992,7 +980,6 @@ describe("Event", () => {
       const event = Event.fromName(
         EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED
       );
-      let player = gameState.getActivePlayer();
       const gameInput = claimEventInput(event.name);
 
       gameState.eventsMap[EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED] = null;
@@ -1065,7 +1052,6 @@ describe("Event", () => {
       const event = Event.fromName(
         EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED
       );
-      let player = gameState.getActivePlayer();
       const gameInput = claimEventInput(event.name);
 
       gameState.eventsMap[EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED] = null;
@@ -1137,7 +1123,6 @@ describe("Event", () => {
       const event = Event.fromName(
         EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED
       );
-      let player = gameState.getActivePlayer();
       const gameInput = claimEventInput(event.name);
 
       gameState.eventsMap[EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED] = null;
@@ -1217,7 +1202,7 @@ describe("Event", () => {
       const event = Event.fromName(
         EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED
       );
-      const player = gameState.getActivePlayer();
+
       const gameInput = claimEventInput(event.name);
 
       gameState.eventsMap[EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED] = null;
@@ -1242,7 +1227,6 @@ describe("Event", () => {
   describe(EventName.SPECIAL_TAX_RELIEF, () => {
     it("should be able to claim event", () => {
       const event = Event.fromName(EventName.SPECIAL_TAX_RELIEF);
-      let player = gameState.getActivePlayer();
       const gameInput = claimEventInput(event.name);
 
       gameState.eventsMap[EventName.SPECIAL_TAX_RELIEF] = null;
@@ -1264,7 +1248,6 @@ describe("Event", () => {
 
     it("should activate production when claimed", () => {
       const event = Event.fromName(EventName.SPECIAL_TAX_RELIEF);
-      let player = gameState.getActivePlayer();
       const gameInput = claimEventInput(event.name);
 
       gameState.eventsMap[EventName.SPECIAL_TAX_RELIEF] = null;
@@ -1293,7 +1276,6 @@ describe("Event", () => {
   describe(EventName.SPECIAL_A_WEE_RUN_CITY, () => {
     it("should be able to claim event + recall 1 worker", () => {
       const event = Event.fromName(EventName.SPECIAL_A_WEE_RUN_CITY);
-      let player = gameState.getActivePlayer();
       const gameInput = claimEventInput(event.name);
 
       gameState.eventsMap[EventName.SPECIAL_A_WEE_RUN_CITY] = null;
@@ -1332,7 +1314,6 @@ describe("Event", () => {
     });
     it("should allow player to reclaim worker on event", () => {
       const event = Event.fromName(EventName.SPECIAL_A_WEE_RUN_CITY);
-      let player = gameState.getActivePlayer();
       const gameInput = claimEventInput(event.name);
 
       gameState.eventsMap[EventName.SPECIAL_A_WEE_RUN_CITY] = null;
@@ -1370,7 +1351,6 @@ describe("Event", () => {
     });
     it("should be claimable even if player hadn't yet placed workers", () => {
       const event = Event.fromName(EventName.SPECIAL_A_WEE_RUN_CITY);
-      let player = gameState.getActivePlayer();
       const gameInput = claimEventInput(event.name);
 
       gameState.eventsMap[EventName.SPECIAL_A_WEE_RUN_CITY] = null;

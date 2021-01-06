@@ -1,6 +1,7 @@
 import expect from "expect.js";
 import { Location } from "./location";
 import { GameState } from "./gameState";
+import { Player } from "./player";
 import { testInitialGameState, multiStepGameInputTest } from "./testHelpers";
 import {
   Season,
@@ -23,9 +24,11 @@ const placeWorkerInput = (location: LocationName): GameInputPlaceWorker => {
 
 describe("Location", () => {
   let gameState: GameState;
+  let player: Player;
 
   beforeEach(() => {
     gameState = testInitialGameState();
+    player = gameState.getActivePlayer();
   });
 
   describe("fromName", () => {
@@ -42,7 +45,6 @@ describe("Location", () => {
       const gameInput = placeWorkerInput(location.name);
       expect(location.canPlay(gameState, gameInput)).to.be(true);
 
-      const player = gameState.getActivePlayer();
       const numAvailableWorkers = player.numAvailableWorkers;
       for (let i = 0; i < numAvailableWorkers; i++) {
         // Place workers on unlimited location
@@ -95,7 +97,6 @@ describe("Location", () => {
 
       expect(location.canPlay(gameState, gameInput)).to.be(true);
 
-      let player = gameState.getActivePlayer();
       gameState.deck.addToStack(CardName.FARM);
 
       expect(player.numAvailableWorkers).to.be(2);
@@ -118,7 +119,6 @@ describe("Location", () => {
       const location = Location.fromName(LocationName.FOREST_TWO_WILD);
       const gameInput = placeWorkerInput(location.name);
       gameState.locationsMap[LocationName.FOREST_TWO_WILD] = [];
-      let player = gameState.getActivePlayer();
 
       expect(location.canPlay(gameState, gameInput)).to.be(true);
 
@@ -153,7 +153,6 @@ describe("Location", () => {
       );
       const gameInput = placeWorkerInput(location.name);
       gameState.locationsMap[LocationName.FOREST_TWO_CARDS_ONE_WILD] = [];
-      let player = gameState.getActivePlayer();
 
       expect(location.canPlay(gameState, gameInput)).to.be(true);
       expect(player.cardsInHand.length).to.be(0);
@@ -190,7 +189,6 @@ describe("Location", () => {
       gameState.locationsMap[
         LocationName.FOREST_DISCARD_UP_TO_THREE_CARDS_TO_GAIN_WILD_PER_CARD
       ] = [];
-      let player = gameState.getActivePlayer();
       player.addCardToHand(gameState, CardName.FARM);
       player.addCardToHand(gameState, CardName.HUSBAND);
       player.addCardToHand(gameState, CardName.WIFE);
@@ -245,7 +243,6 @@ describe("Location", () => {
       gameState.locationsMap[
         LocationName.FOREST_DISCARD_ANY_THEN_DRAW_TWO_PER_CARD
       ] = [];
-      let player = gameState.getActivePlayer();
       player.addCardToHand(gameState, CardName.BARD);
       player.addCardToHand(gameState, CardName.INN);
       player.addCardToHand(gameState, CardName.FOOL);
@@ -288,7 +285,6 @@ describe("Location", () => {
       const location = Location.fromName(LocationName.HAVEN);
       const gameInput = placeWorkerInput(location.name);
       gameState.locationsMap[LocationName.HAVEN] = [];
-      let player = gameState.getActivePlayer();
       player.addCardToHand(gameState, CardName.BARD);
       player.addCardToHand(gameState, CardName.INN);
       player.addCardToHand(gameState, CardName.FOOL);
@@ -354,7 +350,6 @@ describe("Location", () => {
       );
       const gameInput = placeWorkerInput(location.name);
       gameState.locationsMap[LocationName.FOREST_COPY_BASIC_ONE_CARD] = [];
-      let player = gameState.getActivePlayer();
       player.addCardToHand(gameState, CardName.BARD);
       player.addCardToHand(gameState, CardName.INN);
 
@@ -389,7 +384,6 @@ describe("Location", () => {
   ].forEach((locationName) => {
     describe(`JOURNEY: ${locationName}`, () => {
       it("cannot be played until autumn", () => {
-        const player = gameState.getActivePlayer();
         const location = Location.fromName(locationName);
         const gameInput = placeWorkerInput(locationName);
         player.cardsInHand = [
@@ -419,7 +413,6 @@ describe("Location", () => {
       it("requires X cards in hand", () => {
         const location = Location.fromName(locationName);
         const gameInput = placeWorkerInput(locationName);
-        const player = gameState.getActivePlayer();
 
         expect(player.currentSeason).to.be(Season.WINTER);
         player.nextSeason();

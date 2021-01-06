@@ -16,6 +16,7 @@ import {
 } from "./types";
 import omit from "lodash/omit";
 import merge from "lodash/merge";
+import cloneDeep from "lodash/cloneDeep";
 
 export function testInitialGameState(
   opts: {
@@ -85,6 +86,10 @@ export const multiStepGameInputTest = (
 
   pendingGameInputs.forEach((gameInput, idx) => {
     const isLastInput = idx === pendingGameInputs.length - 1;
+
+    // Clone gameInput to simulate client back and forth and make
+    // sure we don't rely on references to objects.
+    gameInput = cloneDeep(gameInput);
 
     currGameState = currGameState.next(gameInput);
     if (!isLastInput) {

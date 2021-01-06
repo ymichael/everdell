@@ -22,12 +22,12 @@
 }
 
 .location_worker {
-  font-weight: bold;
+  font-weight: var(--font-bold);
 }
 
 .location_name {
   padding: 10px;
-  font-weight: bold;
+  font-weight: var(--font-bold);
   font-size: 12px;
   text-align: center;
   word-wrap: break-word;
@@ -53,7 +53,7 @@
   text-align: center;
   text-transform: uppercase;
   font-size: 10px;
-  font-weight: 800;
+  font-weight: var(--font-bold);
   margin: 5px;
 }
 

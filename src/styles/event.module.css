@@ -35,7 +35,7 @@
 }
 
 .event_header {
-  font-weight: bold;
+  font-weight: var(--font-bold);
   font-size: 12px;
 }
 
@@ -53,7 +53,7 @@
   text-transform: uppercase;
   width: auto;
   font-size: 10px;
-  font-weight: 800;
+  font-weight: var(--font-bold);
   align-self: center;
   text-shadow: 2px 2px white;
 }

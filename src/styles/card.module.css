@@ -7,7 +7,6 @@
   border: 1px solid;
   overflow: hidden;
   margin: 10px;
-
   display: flex;
   align-self: flex-start;
   flex-direction: column;
@@ -16,7 +15,7 @@
 
 .card_header {
   padding: 10px;
-  font-weight: bold;
+  font-weight: var(--font-bold);
   font-size: 12px;
   text-align: center;
   color: #ffffff;
@@ -34,7 +33,7 @@
 
 .associated_card > span {
   border-radius: 5px 0 0 0;
-  font-weight: 700;
+  font-weight: var(--font-bold);
   padding: 5px;
   font-size: 10px;
   align-self: flex-end;
@@ -58,21 +57,20 @@
 
 .card_description {
   padding: 10px 5px 5px 5px;
-  font-size: 14px;
-  border-bottom: solid 1px;
+  font-size: 12px;
+  line-height: 1.5em;
 }
 
 .card_cost_value {
   font-size: 14px;
-  font-weight: 500;
 }
 
 .rarity_label {
   padding: 5px;
   text-transform: uppercase;
   font-size: 10px;
-  font-weight: 700;
-  color: #8b8787;
+  font-weight: var(--font-bold);
+  color: var(--text-color-light);
 }
 
 .circle {
@@ -82,7 +80,6 @@
   margin: 6px;
 
   text-align: center;
-  font-weight: normal;
   font-size: 27px;
 }
 
@@ -95,9 +92,9 @@
 
 .card_header_vp_number {
   font-size: 15px;
-  font-weight: 800;
+  font-weight: var(--font-bold);
   display: inline-block;
-  margin-top: -16px;
+  margin-top: -14px;
   vertical-align: middle;
   color: #3c1346;
 }

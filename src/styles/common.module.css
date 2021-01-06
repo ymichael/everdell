@@ -1,6 +1,6 @@
 .title {
-  font-family: "Allura", cursive;
-  font-weight: 800;
+  font-family: var(--font-cursive);
+  font-weight: var(--font-bold);
   font-size: 30px;
 }
 

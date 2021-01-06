@@ -88,13 +88,12 @@ const OptionToUseAssociatedCard: React.FC<{
     return <></>;
   }
   return (
-    <>
-      <p>Use Associated Construction:</p>
+    <div className={styles.associated_card}>
       <label>
         <Field type={"checkbox"} name={name} />
         Use {card.associatedCard} to play {card.name}
       </label>
-    </>
+    </div>
   );
 };
 
@@ -103,31 +102,33 @@ const CardToUseForm: React.FC<{
   viewingPlayer: Player;
 }> = ({ name, viewingPlayer }) => {
   const [field, meta, helpers] = useField(name);
-  return (
+  const cardsToUse: (CardName | null)[] = [
+    CardName.QUEEN,
+    CardName.INNKEEPER,
+    CardName.INN,
+    CardName.CRANE,
+  ].filter((cardToUse) => !cardToUse || viewingPlayer.hasCardInCity(cardToUse));
+  return cardsToUse.length !== 0 ? (
     <>
       <p>Card to use:</p>
-      {[CardName.QUEEN, CardName.INNKEEPER, CardName.INN, CardName.CRANE, null]
-        .filter(
-          (cardToUse) => !cardToUse || viewingPlayer.hasCardInCity(cardToUse)
-        )
-        .map((cardToUse, idx) => {
-          return (
-            <label key={idx}>
-              <Field
-                type="radio"
-                name={name}
-                value={cardToUse || "NONE"}
-                checked={cardToUse === meta.value}
-                onChange={() => {
-                  helpers.setValue(cardToUse);
-                }}
-              />
-              {cardToUse || "NONE"}
-            </label>
-          );
-        })}
+      {cardsToUse.concat([null]).map((cardToUse, idx) => {
+        return (
+          <label key={idx}>
+            <Field
+              type="radio"
+              name={name}
+              value={cardToUse || "NONE"}
+              checked={cardToUse === meta.value}
+              onChange={() => {
+                helpers.setValue(cardToUse);
+              }}
+            />
+            {cardToUse || "NONE"}
+          </label>
+        );
+      })}
     </>
-  );
+  ) : null;
 };
 
 const CardToDungeonForm: React.FC<{
@@ -137,7 +138,7 @@ const CardToDungeonForm: React.FC<{
   const [field, meta, helpers] = useField(name);
   return viewingPlayer.canInvokeDungeon() ? (
     <p>
-      Dungeon:
+      {"Dungeon: "}
       <select
         onChange={(e) => {
           helpers.setValue(e.target.value || null);
@@ -163,7 +164,6 @@ const CardPayment: React.FC<{
 }> = ({ clientOptions, name, viewingPlayer }) => {
   return (
     <div className={styles.card_payment_form}>
-      <ResourcesForm name={`${name}.resources`} />
       {clientOptions.card && (
         <OptionToUseAssociatedCard
           name={`${name}.useAssociatedCard`}
@@ -171,6 +171,7 @@ const CardPayment: React.FC<{
           viewingPlayer={viewingPlayer}
         />
       )}
+      <ResourcesForm name={`${name}.resources`} />
       <CardToUseForm name={`${name}.cardToUse`} viewingPlayer={viewingPlayer} />
       <CardToDungeonForm
         name={`${name}.cardToDungeon`}

@@ -9,7 +9,7 @@
 }
 
 .title {
-  font-family: "Allura", cursive;
+  font-family: var(--font-cursive);
   width: 100%;
   margin: 0;
   padding: 0;
@@ -59,7 +59,7 @@
 }
 
 .game_builder_players h2 {
-  font-family: "Allura", cursive;
+  font-family: var(--font-cursive);
   font-size: 40px;
   text-align: center;
   margin: 0;

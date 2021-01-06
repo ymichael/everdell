@@ -20,7 +20,7 @@
 }
 
 .log_prefix {
-  font-weight: 800;
-  font-family: monospace;
+  font-weight: var(--font-bold);
+  font-family: var(--font-mono);
   margin-right: 10px;
 }

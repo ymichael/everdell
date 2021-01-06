@@ -22,6 +22,12 @@
 
 .card_payment_form {
   border: solid 1px black;
+  border-radius: 5px;
   padding: 20px 10px 10px 10px;
+  margin: 0px;
   width: 500px;
+}
+
+.associated_card {
+  padding-bottom: 15px;
 }

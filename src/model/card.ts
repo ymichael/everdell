@@ -26,6 +26,7 @@ import {
   getPointsPerRarityLabel,
 } from "./gameStatePlayHelpers";
 import cloneDeep from "lodash/cloneDeep";
+import flatten from "lodash/flatten";
 import { assertUnreachable } from "../utils";
 
 type MaxWorkersInnerFn = (cardOwner: Player) => number;
@@ -321,7 +322,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     cardDescription: [
       "You may discard up to 5 ",
       "CARD",
-      "to gain 1 ",
+      " to gain 1 ",
       "VP",
       " each.",
     ],
@@ -550,7 +551,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: false,
     associatedCard: CardName.RESIN_REFINERY,
     resourcesToGain: {},
-    cardDescription: ["Activate 1 ", "production card", " in your city."],
+    cardDescription: ["Activate 1 ", "PRODUCTION", " card", " in your city."],
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS) {
@@ -1134,10 +1135,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: false,
     associatedCard: CardName.CASTLE,
-    cardDescription: [
-      "1 VP for each basic Event you achieved.",
-      " 2 VP for each special Event you achieved.",
-    ],
+    cardDescription: flatten([
+      ["1 ", "VP", " for each basic Event you achieved."],
+      "BR",
+      [" 2 ", "VP", " for each special Event you achieved."],
+    ]),
   }),
   [CardName.LOOKOUT]: new Card({
     name: CardName.LOOKOUT,
@@ -1221,7 +1223,12 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: false,
     associatedCard: CardName.MINE,
     resourcesToGain: {},
-    cardDescription: ["Copy 1 ", "production card", " in an opponent's city."],
+    cardDescription: [
+      "Copy 1 ",
+      "PRODUCTION",
+      " card",
+      " in an opponent's city.",
+    ],
     playInner: (gameState: GameState, gameInput: GameInput) => {
       if (gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS) {
         const selectedCards = gameInput.clientOptions.selectedCards;
@@ -1675,7 +1682,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     cardDescription: [
       "Reveal 2 ",
       "CARD",
-      ". You may play 1 worth up to 3 VP for free. ",
+      ". You may play 1 worth up to 3 ",
+      "VP",
+      " for free. ",
       "Discard the other.",
     ],
     playInner: (gameState: GameState, gameInput: GameInput) => {
@@ -1736,7 +1745,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: false,
     associatedCard: CardName.PALACE,
-    cardDescription: ["Play a ", "CARD", " worth up to 3 VP for free"],
+    cardDescription: ["Play a ", "CARD", " worth up to 3 ", "VP", " for free"],
     canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
@@ -2442,7 +2451,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: false,
     associatedCard: CardName.FARM,
-    cardDescription: ["3 VP if paired with a Husband."],
+    cardDescription: ["3 ", "VP", " if paired with a Husband."],
     pointsInner: (gameState: GameState, playerId: string) => {
       // NOTE: this is implemented in player!
       return 0;

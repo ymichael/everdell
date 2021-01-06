@@ -27,7 +27,7 @@
 
 .status_box_bio_name {
   padding-top: 4px;
-  font-weight: 800;
+  font-weight: var(--font-bold);
 }
 
 .status_box_bio_season {
@@ -35,7 +35,7 @@
 }
 
 .status_box_bio_meta {
-  font-weight: 800;
+  font-weight: var(--font-bold);
 }
 
 .status_box_item_resource_list {
@@ -59,7 +59,7 @@
   padding-top: 4px;
   position: relative;
   display: inline-block;
-  font-weight: 800;
+  font-weight: var(--font-bold);
 }
 
 .status_box_item_resource_icon {
@@ -67,7 +67,7 @@
   height: 30px;
   position: relative;
   display: inline-block;
-  font-weight: 800;
+  font-weight: var(--font-bold);
 }
 
 .status_box_item_resource_count {

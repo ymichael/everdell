@@ -1,15 +1,12 @@
-.default_selector {
-  padding: 20px;
-}
-
 .play_card_list {
   display: flex;
   flex-wrap: wrap;
+  margin-left: -10px;
 }
 
 .play_card_list_item_wrapper {
   position: relative;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 .play_card_list_item {
@@ -30,15 +27,15 @@
   background-color: white;
   border: solid 4px black;
   z-index: 20;
-  font-size: 18px;
-  padding: 6px 8px;
+  font-size: 14px;
+  padding: 4px 8px;
 }
 
 .play_card_list_item_label {
   text-align: center;
   text-transform: uppercase;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .button {
@@ -46,9 +43,13 @@
   color: inherit;
   border: solid 2px;
   width: 100px;
-  padding: 10px;
+  padding: 5px;
   font-size: 16px;
   border-radius: 8px;
-  margin: 0 auto;
+  margin: 10px 0;
   cursor: pointer;
+}
+
+.input_type_form {
+  margin: 20px;
 }

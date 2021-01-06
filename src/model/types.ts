@@ -187,6 +187,7 @@ export type GameInputSelectOptionGeneric = {
   locationContext?: LocationName;
   cardContext?: CardName;
   eventContext?: EventName;
+  playedCardContext?: PlayedCardInfo;
 
   clientOptions: {
     selectedOption: string | null;

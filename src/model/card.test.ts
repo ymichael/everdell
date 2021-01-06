@@ -2802,5 +2802,161 @@ describe("Card", () => {
         }).to.throwException(/unable to draw card from discard/i);
       });
     });
+
+    describe(CardName.STOREHOUSE, () => {
+      it("should allow player to choose resources to place on card", () => {
+        let player = gameState.getActivePlayer();
+        const card = Card.fromName(CardName.STOREHOUSE);
+        player.cardsInHand = [card.name];
+
+        // Make sure we can play this card
+        player.gainResources(card.baseCost);
+        gameState = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+          {
+            inputType: GameInputType.SELECT_OPTION_GENERIC,
+            prevInputType: GameInputType.PLAY_CARD,
+            cardContext: card.name,
+            playedCardContext: {
+              cardName: card.name,
+              cardOwnerId: player.playerId,
+              resources: {
+                BERRY: 0,
+                PEBBLE: 0,
+                RESIN: 0,
+                TWIG: 0,
+              },
+              usedForCritter: false,
+            },
+            label: "Choose resource(s) to add to the Storehouse:",
+            options: ["3 Twigs", "2 Resin", "1 Pebble", "2 Berries"],
+            clientOptions: {
+              selectedOption: "3 Twigs",
+            },
+          },
+        ]);
+
+        player = gameState.getPlayer(player.playerId);
+        const playedCard = player.getFirstPlayedCard(card.name);
+        expect(playedCard).to.eql({
+          cardName: card.name,
+          cardOwnerId: player.playerId,
+          resources: {
+            BERRY: 0,
+            PEBBLE: 0,
+            RESIN: 0,
+            TWIG: 3,
+          },
+          usedForCritter: false,
+        });
+      });
+
+      it("should add resources to the correct storehouse", () => {
+        let player = gameState.getActivePlayer();
+        const card = Card.fromName(CardName.STOREHOUSE);
+        player.cardsInHand = [card.name];
+
+        // play one store card
+        const storehouse1 = player.addToCity(card.name);
+        // put 5 berries on it.
+        storehouse1.resources![ResourceType.BERRY]! = 5;
+
+        // Make sure we can play this card
+        player.gainResources(card.baseCost);
+        gameState = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+          {
+            inputType: GameInputType.SELECT_OPTION_GENERIC,
+            prevInputType: GameInputType.PLAY_CARD,
+            cardContext: card.name,
+            playedCardContext: {
+              cardName: card.name,
+              cardOwnerId: player.playerId,
+              resources: {
+                BERRY: 0,
+                PEBBLE: 0,
+                RESIN: 0,
+                TWIG: 0,
+              },
+              usedForCritter: false,
+            },
+            label: "Choose resource(s) to add to the Storehouse:",
+            options: ["3 Twigs", "2 Resin", "1 Pebble", "2 Berries"],
+            clientOptions: {
+              selectedOption: "3 Twigs",
+            },
+          },
+        ]);
+
+        player = gameState.getPlayer(player.playerId);
+        expect(player.getPlayedCardInfos(card.name)).to.eql([
+          {
+            cardName: card.name,
+            cardOwnerId: player.playerId,
+            resources: {
+              BERRY: 5,
+              PEBBLE: 0,
+              RESIN: 0,
+              TWIG: 0,
+            },
+            usedForCritter: false,
+          },
+          {
+            cardName: card.name,
+            cardOwnerId: player.playerId,
+            resources: {
+              BERRY: 0,
+              PEBBLE: 0,
+              RESIN: 0,
+              TWIG: 3,
+            },
+            usedForCritter: false,
+          },
+        ]);
+      });
+
+      it("should add resources to the correct storehouse", () => {
+        let player = gameState.getActivePlayer();
+
+        const card = Card.fromName(CardName.STOREHOUSE);
+        const storehouse1 = player.addToCity(card.name);
+        storehouse1.resources![ResourceType.BERRY]! = 5;
+
+        expect(player.getFirstPlayedCard(card.name)).to.eql({
+          cardName: card.name,
+          cardOwnerId: player.playerId,
+          resources: {
+            BERRY: 5,
+            PEBBLE: 0,
+            RESIN: 0,
+            TWIG: 0,
+          },
+          usedForCritter: false,
+        });
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+
+        gameState = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD as const,
+            clientOptions: {
+              playedCard: player.getFirstPlayedCard(card.name),
+            },
+          },
+        ]);
+        player = gameState.getPlayer(player.playerId);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(5);
+        expect(player.getFirstPlayedCard(card.name)).to.eql({
+          cardName: card.name,
+          cardOwnerId: player.playerId,
+          resources: {
+            BERRY: 0,
+            PEBBLE: 0,
+            RESIN: 0,
+            TWIG: 0,
+          },
+          usedForCritter: false,
+        });
+      });
+    });
   });
 });

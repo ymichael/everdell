@@ -126,13 +126,15 @@ export class Player {
     }
   }
 
-  addToCity(cardName: CardName): void {
+  addToCity(cardName: CardName): PlayedCardInfo {
     if (!this.canAddToCity(cardName, true /* strict */)) {
       throw new Error(`Unable to add ${cardName} to city`);
     }
     const card = Card.fromName(cardName);
     this.playedCards[cardName] = this.playedCards[cardName] || [];
-    this.playedCards[cardName]!.push(card.getPlayedCardInfo(this.playerId));
+    const playedCard = card.getPlayedCardInfo(this.playerId);
+    this.playedCards[cardName]!.push(playedCard);
+    return playedCard;
   }
 
   addToCityMulti(cards: CardName[]): void {
@@ -455,7 +457,7 @@ export class Player {
   activateProduction(gameState: GameState, gameInput: GameInput): void {
     this.getAllPlayedCardsByType(CardType.PRODUCTION).forEach((playedCard) => {
       const card = Card.fromName(playedCard.cardName);
-      card.gainProduction(gameState, gameInput, this);
+      card.gainProduction(gameState, gameInput, this, playedCard);
     });
   }
 

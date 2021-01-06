@@ -33,7 +33,8 @@ type MaxWorkersInnerFn = (cardOwner: Player) => number;
 type ProductionInnerFn = (
   gameState: GameState,
   gameInput: GameInput,
-  cardOwner: Player
+  cardOwner: Player,
+  playedCard: PlayedCardInfo
 ) => void;
 
 export class Card<TCardType extends CardType = CardType>
@@ -190,14 +191,15 @@ export class Card<TCardType extends CardType = CardType>
   play(gameState: GameState, gameInput: GameInput): void {
     const player = gameState.getActivePlayer();
     if (gameInput.inputType === GameInputType.PLAY_CARD) {
+      let playedCard: PlayedCardInfo | null = null;
       if (this.name !== CardName.FOOL && this.name !== CardName.RUINS) {
-        player.addToCity(this.name);
+        playedCard = player.addToCity(this.name);
       }
       if (
         this.cardType === CardType.PRODUCTION ||
         this.cardType === CardType.TRAVELER
       ) {
-        this.gainProduction(gameState, gameInput, player);
+        this.gainProduction(gameState, gameInput, player, playedCard!);
         if (this.playInner) {
           this.playInner(gameState, gameInput);
         }
@@ -231,7 +233,8 @@ export class Card<TCardType extends CardType = CardType>
   gainProduction(
     gameState: GameState,
     gameInput: GameInput,
-    cardOwner: Player
+    cardOwner: Player,
+    playedCard: PlayedCardInfo
   ): void {
     const player = gameState.getActivePlayer();
     if (this.resourcesToGain) {
@@ -241,7 +244,7 @@ export class Card<TCardType extends CardType = CardType>
       }
     }
     if (this.productionInner) {
-      this.productionInner(gameState, gameInput, cardOwner);
+      this.productionInner(gameState, gameInput, cardOwner, playedCard);
     }
   }
 
@@ -565,10 +568,12 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           throw new Error("Invalid input");
         }
         const targetCard = Card.fromName(selectedCards[0].cardName);
-        if (targetCard.cardType !== CardType.PRODUCTION) {
-          throw new Error("Invalid input");
-        }
-        targetCard.gainProduction(gameState, gameInput, player);
+        targetCard.gainProduction(
+          gameState,
+          gameInput,
+          player,
+          selectedCards[0]
+        );
       }
     },
     productionInner: (gameState: GameState, gameInput: GameInput) => {
@@ -1247,7 +1252,12 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         if (targetCard.cardType !== CardType.PRODUCTION) {
           throw new Error("Can only copy production cards");
         }
-        targetCard.gainProduction(gameState, gameInput, cardOwner);
+        targetCard.gainProduction(
+          gameState,
+          gameInput,
+          cardOwner,
+          selectedCards[0]
+        );
       }
     },
     productionInner: (gameState: GameState, gameInput: GameInput) => {
@@ -2132,18 +2142,21 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: true,
     associatedCard: CardName.WOODCARVER,
     resourcesToGain: {},
-    cardDescription: [
-      "Place either 3 ",
-      ResourceType.TWIG,
-      ", 2 ",
-      ResourceType.RESIN,
-      ", 1 ",
-      ResourceType.PEBBLE,
-      ", or 2 ",
-      ResourceType.BERRY,
-      " on this Storehouse from the Supply. Place worker: ",
-      "Take all resources on this card.",
-    ],
+    cardDescription: flatten([
+      [
+        "Place either 3 ",
+        ResourceType.TWIG,
+        ", 2 ",
+        ResourceType.RESIN,
+        ", 1 ",
+        ResourceType.PEBBLE,
+        ", or 2 ",
+        ResourceType.BERRY,
+        " on this Storehouse from the Supply.",
+      ],
+      "HR",
+      "Place worker: Take all resources on this card.",
+    ]),
     maxWorkersInner: () => 1,
     playedCardInfoDefault: {
       resources: {
@@ -2153,8 +2166,64 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         [ResourceType.BERRY]: 0,
       },
     },
+    productionInner: (
+      gameState: GameState,
+      gameInput: GameInput,
+      cardOwner: Player,
+      playedCard: PlayedCardInfo
+    ) => {
+      gameState.pendingGameInputs.push({
+        inputType: GameInputType.SELECT_OPTION_GENERIC,
+        prevInputType: gameInput.inputType,
+        cardContext: CardName.STOREHOUSE,
+        playedCardContext: playedCard,
+        label: "Choose resource(s) to add to the Storehouse:",
+        options: ["3 Twigs", "2 Resin", "1 Pebble", "2 Berries"],
+        clientOptions: {
+          selectedOption: null,
+        },
+      });
+    },
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.SELECT_OPTION_GENERIC) {
+        const playedCard = gameInput.playedCardContext;
+        if (!playedCard) {
+          throw new Error("Missing played card context.");
+        }
+        const origPlayedCard = player.findPlayedCard(playedCard);
+        if (!origPlayedCard) {
+          throw new Error("Cannot find played card");
+        }
+        const selectedOption = gameInput.clientOptions.selectedOption;
+        if (selectedOption === "3 Twigs") {
+          origPlayedCard.resources![ResourceType.TWIG]! += 3;
+        } else if (selectedOption === "2 Resin") {
+          origPlayedCard.resources![ResourceType.RESIN]! += 2;
+        } else if (selectedOption === "1 Pebble") {
+          origPlayedCard.resources![ResourceType.PEBBLE]! += 1;
+        } else if (selectedOption === "2 Berries") {
+          origPlayedCard.resources![ResourceType.BERRY]! += 2;
+        } else {
+          throw new Error("Must select an option!");
+        }
+      } else if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
+        const playedCard = gameInput.clientOptions.playedCard;
+        if (!playedCard) {
+          throw new Error("Invalid input");
+        }
+        const origPlayedCard = player.findPlayedCard(playedCard);
+        if (!origPlayedCard) {
+          throw new Error("Cannot find played card");
+        }
+        player.gainResources(origPlayedCard.resources!);
+        origPlayedCard.resources = {
+          [ResourceType.TWIG]: 0,
+          [ResourceType.RESIN]: 0,
+          [ResourceType.PEBBLE]: 0,
+          [ResourceType.BERRY]: 0,
+        };
+      }
     },
   }),
   [CardName.TEACHER]: new Card({

@@ -33,9 +33,9 @@ describe("Location", () => {
 
   describe("fromName", () => {
     it("should return the expect Location instances", () => {
-      for (const loc in LocationName) {
+      Object.values(LocationName).forEach((loc) => {
         expect(Location.fromName(loc as LocationName).name).to.be(loc);
-      }
+      });
     });
   });
 

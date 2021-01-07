@@ -2,7 +2,8 @@ import * as React from "react";
 import Image from "next/image";
 
 import styles from "../styles/common.module.css";
-import { TextPart, ResourceType, CardType } from "../model/types";
+import { GameText, TextPart, ResourceType, CardType } from "../model/types";
+import { assertUnreachable } from "../utils";
 
 export const GameBlockTitle: React.FC = ({ children }) => {
   return <div className={styles.title}>{children}</div>;
@@ -107,18 +108,25 @@ const ICON_TYPES: Record<any, any> = {
 
 const cardTypeList = [];
 
-export const Description = ({ textParts }: { textParts: TextPart[] }) => {
+export const Description = ({ textParts }: { textParts: GameText }) => {
   return textParts ? (
     <span>
-      {textParts.map((part: any, idx: number) => {
-        if (ICON_TYPES[part]) {
-          return <GameIcon key={idx} type={part} />;
-        } else if (part === "BR") {
-          return <br key={idx} />;
-        } else if (part === "HR") {
-          return <hr key={idx} />;
-        } else {
-          return part;
+      {textParts.map((part: TextPart, idx: number) => {
+        switch (part.type) {
+          case "text":
+            return part.text;
+          case "BR":
+            return <br key={idx} />;
+          case "HR":
+            return <hr key={idx} />;
+          case "resource":
+            return <GameIcon key={idx} type={part.resourceType} />;
+          case "cardType":
+            return <GameIcon key={idx} type={part.cardType} />;
+          case "symbol":
+            return <GameIcon key={idx} type={part.symbol} />;
+          default:
+            assertUnreachable(part, `Unexpected part: ${JSON.stringify(part)}`);
         }
       })}
     </span>

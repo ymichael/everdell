@@ -34,9 +34,15 @@ const EventInner: React.FC<{
                   <>
                     <Description
                       textParts={[
-                        event.requiredCards[0],
-                        ", ",
-                        event.requiredCards[1],
+                        {
+                          type: "text",
+                          text: event.requiredCards[0],
+                        },
+                        { type: "text", text: ", " },
+                        {
+                          type: "text",
+                          text: event.requiredCards[1],
+                        },
                       ]}
                     />
                   </>
@@ -59,7 +65,15 @@ const EventInner: React.FC<{
         )}
         {event.baseVP ? (
           <div className={styles.base_vp}>
-            <Description textParts={[`${event.baseVP} `, "VP"]} />
+            <Description
+              textParts={[
+                {
+                  type: "text",
+                  text: `${event.baseVP} `,
+                },
+                { type: "symbol", symbol: "VP" },
+              ]}
+            />
           </div>
         ) : null}
       </div>

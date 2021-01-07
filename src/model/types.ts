@@ -456,7 +456,7 @@ export enum PlayerStatus {
 }
 
 export type GameLogEntry = {
-  entry: TextPart[];
+  entry: GameText;
 };
 
 export type CardPaymentOptions = {
@@ -480,7 +480,15 @@ export type CardPaymentOptions = {
   };
 };
 
-export type TextPartIcon = ResourceType | CardType | "CARD" | "VP" | "ANY";
-export type TextPartBR = "BR";
-export type TextPartHR = "HR";
-export type TextPart = string | TextPartIcon | TextPartBR | TextPartHR;
+export type TextPartIcon =
+  | { type: "resource"; resourceType: ResourceType | "ANY" }
+  | { type: "cardType"; cardType: CardType }
+  | { type: "symbol"; symbol: "VP" | "CARD" };
+export type TextPartBR = { type: "BR" };
+export type TextPartHR = { type: "HR" };
+export type TextPart =
+  | { type: "text"; text: string }
+  | TextPartIcon
+  | TextPartBR
+  | TextPartHR;
+export type GameText = TextPart[];

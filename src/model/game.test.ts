@@ -38,11 +38,11 @@ describe("Game", () => {
     game.applyGameInput({ inputType: GameInputType.GAME_END });
     game.applyGameInput({ inputType: GameInputType.GAME_END });
     expect(game.toJSON(false).gameLogBuffer).eql([
-      { entry: ["Player #0 took GAME_END action."] },
-      { entry: ["Player #1 took GAME_END action."] },
-      { entry: ["Game over"] },
-      { entry: ["Player #0 has 14 points."] },
-      { entry: ["Player #1 has 12 points."] },
+      { entry: [{ type: "text", text: "Player #0 took GAME_END action." }] },
+      { entry: [{ type: "text", text: "Player #1 took GAME_END action." }] },
+      { entry: [{ type: "text", text: "Game over" }] },
+      { entry: [{ type: "text", text: "Player #0 has 14 points." }] },
+      { entry: [{ type: "text", text: "Player #1 has 12 points." }] },
     ]);
   });
 });

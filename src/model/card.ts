@@ -9,7 +9,7 @@ import {
   GameInput,
   GameInputType,
   PlayedCardInfo,
-  TextPart,
+  GameText,
 } from "./types";
 import {
   GameState,
@@ -28,7 +28,7 @@ import {
 } from "./gameStatePlayHelpers";
 import cloneDeep from "lodash/cloneDeep";
 import flatten from "lodash/flatten";
-import { assertUnreachable } from "../utils";
+import { assertUnreachable, strToGameText } from "../utils";
 
 type MaxWorkersInnerFn = (cardOwner: Player) => number;
 type ProductionInnerFn = (
@@ -40,7 +40,7 @@ type ProductionInnerFn = (
 
 export class Card<TCardType extends CardType = CardType>
   implements GameStatePlayable {
-  readonly cardDescription: TextPart[] | undefined;
+  readonly cardDescription: GameText | undefined;
   readonly playInner: GameStatePlayFn | undefined;
   readonly canPlayCheckInner: GameStateCanPlayCheckFn | undefined;
   readonly playedCardInfoDefault:
@@ -93,7 +93,7 @@ export class Card<TCardType extends CardType = CardType>
     playedCardInfoDefault?: Partial<Omit<PlayedCardInfo, "playerId">>;
     pointsInner?: (gameState: GameState, playerId: string) => number;
     maxWorkersInner?: MaxWorkersInnerFn;
-    cardDescription?: string[] | undefined;
+    cardDescription?: GameText | undefined;
   } & (TCardType extends CardType.PRODUCTION
     ? {
         resourcesToGain: ProductionResourceMap;
@@ -298,14 +298,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: false,
     associatedCard: CardName.CRANE,
-    cardDescription: [
-      "VP",
-      " for each of your unused ",
-      ResourceType.RESIN,
-      " and ",
-      ResourceType.PEBBLE,
-      ", to a maximum of 6.",
-    ],
+    cardDescription: strToGameText(
+      "VP for each of your unused RESIN and PEBBLE, to a maximum of 6."
+    ),
     // 1 point per rock and pebble, up to 6 pts
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
@@ -323,13 +318,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: false,
     associatedCard: CardName.THEATRE,
-    cardDescription: [
-      "You may discard up to 5 ",
-      "CARD",
-      " to gain 1 ",
-      "VP",
-      " each.",
-    ],
+    cardDescription: strToGameText(
+      "You may discard up to 5 CARD to gain 1 VP each."
+    ),
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.PLAY_CARD) {
@@ -370,11 +361,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: false,
     associatedCard: CardName.TWIG_BARGE,
     resourcesToGain: {},
-    cardDescription: [
-      "Gain 2 ",
-      ResourceType.TWIG,
-      " for each Farm in your city.",
-    ],
+    cardDescription: strToGameText("Gain 2 TWIG for each Farm in your city."),
     productionInner: (
       gameState: GameState,
       gameInput: GameInput,
@@ -399,7 +386,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: true,
     associatedCard: CardName.KING,
-    cardDescription: ["VP", " for each Common Construction in your city."],
+    cardDescription: strToGameText(
+      "VP for each Common Construction in your city."
+    ),
     // 1 point per common construction
     pointsInner: getPointsPerRarityLabel({ isCritter: false, isUnique: false }),
   }),
@@ -411,11 +400,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: true,
     associatedCard: CardName.UNDERTAKER,
-    cardDescription: [
-      "Worker stays here permanently. Reveal 4 ",
-      "CARD",
-      " from the deck or discard pile and play 1 for free. Discard the others.",
-    ],
+    cardDescription: strToGameText([
+      "Worker stays here permanently. ",
+      "Reveal 4 CARD from the deck or discard pile and play 1 for free. ",
+      "Discard the others.",
+    ]),
     maxWorkersInner: (cardOwner: Player) => {
       return cardOwner.hasCardInCity(CardName.UNDERTAKER) ? 2 : 1;
     },
@@ -515,15 +504,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: true,
     associatedCard: CardName.SHEPHERD,
-    cardDescription: [
-      "Place 1 ",
-      "VP",
-      " on this Chapel, then draw 2 ",
-      "CARD",
-      " for each ",
-      "VP",
-      " on this Chapel.",
-    ],
+    cardDescription: strToGameText([
+      "Place 1 VP on this Chapel, ",
+      "then draw 2 CARD for each VP on this Chapel.",
+    ]),
     playedCardInfoDefault: {
       resources: {
         [ResourceType.VP]: 0,
@@ -555,7 +539,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: false,
     associatedCard: CardName.RESIN_REFINERY,
     resourcesToGain: {},
-    cardDescription: ["Activate 1 ", "PRODUCTION", " card", " in your city."],
+    cardDescription: strToGameText("Activate 1 PRODUCTION in your city."),
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS) {
@@ -605,13 +589,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: true,
     associatedCard: CardName.HISTORIAN,
-    cardDescription: [
-      "When played, place 3 ",
-      "VP",
-      " here. At the beginning of Preparing for Season, you may pay 1 ",
-      "VP",
-      " from here to activate 1 of the Basic or Forest locations where you have a worker deployed.",
-    ],
+    cardDescription: strToGameText([
+      "When played, place 3 VP here. ",
+      "At the beginning of Preparing for Season, you may pay 1 VP from here to activate 1 of the Basic or Forest locations where you have a worker deployed.",
+    ]),
     playedCardInfoDefault: {
       resources: {
         [ResourceType.VP]: 3,
@@ -688,15 +669,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: true,
     associatedCard: CardName.JUDGE,
-    cardDescription: [
-      "Gain 1 ",
-      ResourceType.TWIG,
-      " or 1 ",
-      ResourceType.RESIN,
-      " or 1 ",
-      ResourceType.PEBBLE,
-      " after you play a Construction.",
-    ],
+    cardDescription: strToGameText(
+      "Gain 1 TWIG or 1 RESIN or 1 PEBBLE after you play a Construction."
+    ),
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (
@@ -741,12 +716,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: true,
     associatedCard: CardName.ARCHITECT,
-    cardDescription: [
+    cardDescription: strToGameText([
       "When playing a Construction, you may discard this Crane from your city, ",
-      "to play that Construction for 3 fewer ",
-      "ANY",
-      ".",
-    ],
+      "to play that Construction for 3 fewer ANY.",
+    ]),
   }),
   [CardName.DOCTOR]: new Card({
     name: CardName.DOCTOR,
@@ -757,13 +730,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: false,
     associatedCard: CardName.UNIVERSITY,
     resourcesToGain: {},
-    cardDescription: [
-      "You may pay up to 3 ",
-      ResourceType.BERRY,
-      " to gain 1 ",
-      "VP",
-      " each.",
-    ],
+    cardDescription: strToGameText(
+      "You may pay up to 3 BERRY to gain 1 VP each."
+    ),
     productionInner: gainProductionSpendResourceToGetVPFactory({
       card: CardName.DOCTOR,
       resourceType: ResourceType.BERRY,
@@ -782,13 +751,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: true,
     associatedCard: CardName.RANGER,
-    cardDescription: [
+    cardDescription: strToGameText([
       "When playing a Construction or Critter, you may place a Critter ",
-      "from your city face-down beneatth this Dungeon to ",
-      "decrease the cost by 3 ",
-      "ANY",
-      ".",
-    ],
+      "from your city facedown beneath this Dungeon to ",
+      "decrease the cost by 3 ANY.",
+    ]),
     playedCardInfoDefault: {
       pairedCards: [],
     },
@@ -805,7 +772,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: true,
     associatedCard: null,
-    cardDescription: ["VP", " for each Prosperity card in your city."],
+    cardDescription: strToGameText("VP for each PROSPERITY in your city."),
     // 1 point per prosperty card
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
@@ -825,7 +792,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: true,
     associatedCard: CardName.FOOL,
-    cardDescription: ["Draw 2 ", "CARD", "."],
+    cardDescription: strToGameText("Draw 2 CARD."),
     resourcesToGain: {
       CARD: 2,
     },
@@ -851,7 +818,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: false,
     associatedCard: CardName.FAIRGROUNDS,
     cardDescription: [
-      "Play this Fool into an empty space in an opponent's city.",
+      {
+        type: "text",
+        text: "Play this Fool into an empty space in an opponent's city.",
+      },
     ],
     canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
@@ -906,14 +876,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: true,
     associatedCard: CardName.SHOPKEEPER,
     resourcesToGain: {},
-    cardDescription: [
-      "Gain 1 ",
-      ResourceType.BERRY,
-      ". ",
-      "If you have a Farm in your city, gain 1 additional ",
-      ResourceType.BERRY,
-      ".",
-    ],
+    cardDescription: strToGameText([
+      "Gain 1 BERRY.",
+      "If you have a Farm in your city, gain 1 additional BERRY.",
+    ]),
     productionInner: (
       gameState: GameState,
       gameInput: GameInput,
@@ -933,11 +899,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: false,
     associatedCard: CardName.CLOCK_TOWER,
-    cardDescription: [
-      "Draw 1 ",
-      "CARD",
-      " after you play a Critter or Construction.",
-    ],
+    cardDescription: strToGameText(
+      "Draw 1 CARD after you play a Critter or Construction."
+    ),
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (
@@ -956,11 +920,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: false,
     associatedCard: CardName.FARM,
-    cardDescription: [
-      "Gain 1 ",
-      "ANY",
-      " if paired with a Wife and you have at least 1 Farm in your city.",
-    ],
+    cardDescription: strToGameText(
+      "Gain 1 ANY if paired with a Wife and you have at least 1 Farm in your city."
+    ),
     resourcesToGain: {},
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
@@ -1006,12 +968,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: true,
     associatedCard: CardName.INNKEEPER,
     isOpenDestination: true,
-    cardDescription: [
-      "Play a Critter or Construction from the Meadow ",
-      "for 3 fewer ",
-      "ANY",
-      ".",
-    ],
+    cardDescription: strToGameText(
+      "Play a Critter or Construction from the Meadow for 3 fewer ANY."
+    ),
     canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
@@ -1108,13 +1067,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: false,
     associatedCard: CardName.INN,
-    cardDescription: [
-      "When playing a Critter, ",
-      "you many discard this Innkeeper from your city ",
-      "to decrease the cost by 3 ",
-      ResourceType.BERRY,
-      ".",
-    ],
+    cardDescription: strToGameText([
+      "When playing a Critter, you many discard this Innkeeper from your city ",
+      "to decrease the cost by 3 BERRY.",
+    ]),
   }),
   [CardName.JUDGE]: new Card({
     name: CardName.JUDGE,
@@ -1124,14 +1080,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: false,
     associatedCard: CardName.COURTHOUSE,
-    cardDescription: [
+    cardDescription: strToGameText([
       "When you play a Critter or Construction, ",
-      "you may replace 1 ",
-      "ANY",
-      " with 1 ",
-      "ANY",
-      ".",
-    ],
+      "you may replace 1 ANY with 1 ANY.",
+    ]),
   }),
   [CardName.KING]: new Card({
     name: CardName.KING,
@@ -1141,10 +1093,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: false,
     associatedCard: CardName.CASTLE,
-    cardDescription: flatten([
-      ["1 ", "VP", " for each basic Event you achieved."],
-      "BR",
-      [" 2 ", "VP", " for each special Event you achieved."],
+    cardDescription: strToGameText([
+      "1 VP for each basic Event you achieved.",
+      { type: "BR" },
+      "2 VP for each special Event you achieved.",
     ]),
   }),
   [CardName.LOOKOUT]: new Card({
@@ -1159,7 +1111,12 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: true,
     associatedCard: CardName.WANDERER,
-    cardDescription: ["Copy any Basic or Forest loocation."],
+    cardDescription: [
+      {
+        type: "text",
+        text: "Copy any Basic or Forest loocation.",
+      },
+    ],
     playInner: (gameState: GameState, gameInput: GameInput) => {
       if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
         // ask player which location they want to copy
@@ -1229,12 +1186,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: false,
     associatedCard: CardName.MINE,
     resourcesToGain: {},
-    cardDescription: [
-      "Copy 1 ",
-      "PRODUCTION",
-      " card",
-      " in an opponent's city.",
-    ],
+    cardDescription: strToGameText("Copy 1 PRODUCTION in an opponent's city"),
     playInner: (gameState: GameState, gameInput: GameInput) => {
       if (gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS) {
         const selectedCards = gameInput.clientOptions.selectedCards;
@@ -1322,13 +1274,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: true,
     associatedCard: CardName.MONK,
-    cardDescription: [
-      "Give 2 ",
-      "ANY",
-      " to an opponent and gain 4 ",
-      "VP",
-      ".",
-    ],
+    cardDescription: strToGameText("Give 2 ANY to an opponent and gain 4 VP."),
     maxWorkersInner: (cardOwner: Player) => {
       return cardOwner.hasCardInCity(CardName.MONK) ? 2 : 1;
     },
@@ -1404,15 +1350,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       } else {
         throw new Error("Invalid input type");
       }
-      // if (
-      //   !gameInput.clientOptions?.targetPlayerId ||
-      //   !gameInput.clientOptions?.resourcesToSpend
-      // ) {
-      //   throw new Error("Invalid input");
-      // }
-      // if (sumResources(gameInput.clientOptions?.resourcesToSpend) !== 2) {
-      //   throw new Error("Invalid input");
-      // }
     },
   }),
   [CardName.MONK]: new Card({
@@ -1424,13 +1361,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: false,
     associatedCard: CardName.MONASTERY,
     resourcesToGain: {},
-    cardDescription: [
-      "You may give up to 2 ",
-      ResourceType.BERRY,
-      " to an opponent to gain 2 ",
-      "VP",
-      " each. Unlocks second Monastery.",
-    ],
+    cardDescription: strToGameText([
+      "You may give up to 2 BERRY to an opponent to gain 2 VP each.",
+      { type: "BR" },
+      "Unlocks second Monastery.",
+    ]),
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.SELECT_RESOURCES) {
@@ -1514,7 +1449,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: true,
     associatedCard: CardName.QUEEN,
-    cardDescription: ["VP", " for each Unique Construction in your city"],
+    cardDescription: strToGameText(
+      "VP for each Unique Construction in your city"
+    ),
     // 1 point per unique construction
     pointsInner: getPointsPerRarityLabel({ isCritter: false, isUnique: true }),
   }),
@@ -1527,13 +1464,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: false,
     associatedCard: CardName.RUINS,
     resourcesToGain: {},
-    cardDescription: [
-      "You may pay up to 2 ",
-      "ANY",
-      " to gain an equal amount of ",
-      "ANY",
-      ".",
-    ],
+    cardDescription: strToGameText(
+      "You may pay up to 2 ANY to gain an equal amount of ANY."
+    ),
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.SELECT_RESOURCES) {
@@ -1593,13 +1526,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: true,
     associatedCard: CardName.POSTAL_PIGEON,
     isOpenDestination: true,
-    cardDescription: [
-      "Give an opponent 2 ",
-      "CARD",
-      " , then discard any number of ",
-      "CARD",
-      " and draw up to your hand limit.",
-    ],
+    cardDescription: strToGameText([
+      "Give an opponent 2 CARD, then discard any number of CARD ",
+      "and draw up to your hand limit.",
+    ]),
     canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
       if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
         // Need at least 2 cards to visit this card
@@ -1690,14 +1620,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: false,
     associatedCard: CardName.POST_OFFICE,
-    cardDescription: [
-      "Reveal 2 ",
-      "CARD",
-      ". You may play 1 worth up to 3 ",
-      "VP",
-      " for free. ",
+    cardDescription: strToGameText([
+      "Reveal 2 CARD.",
+      "You may play 1 worth up to 3 VP for free.",
       "Discard the other.",
-    ],
+    ]),
     playInner: (gameState: GameState, gameInput: GameInput) => {
       if (gameInput.inputType === GameInputType.PLAY_CARD) {
         if (gameState.pendingGameInputs.length !== 0) {
@@ -1756,7 +1683,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: false,
     associatedCard: CardName.PALACE,
-    cardDescription: ["Play a ", "CARD", " worth up to 3 ", "VP", " for free"],
+    cardDescription: strToGameText("Play a CARD worth up to 3 VP for free."),
     canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
@@ -1837,10 +1764,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: false,
     associatedCard: CardName.DUNGEON,
-    cardDescription: [
-      "Move 1 of your deployed workers to a new location. ",
+    cardDescription: strToGameText([
+      "Move 1 of your deployed workers to a new location.",
+      { type: "BR" },
       "Unlocks second Dungeon.",
-    ],
+    ]),
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.PLAY_CARD) {
@@ -1940,12 +1868,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: true,
     associatedCard: CardName.PEDDLER,
-    cardDescription: [
+    cardDescription: strToGameText([
       "Discard a Construction from your city. ",
-      "Gain resources equal to that Construction's cost and draw 2 ",
-      "CARD",
-      ".",
-    ],
+      "Gain resources equal to that Construction's cost and draw 2 CARD.",
+    ]),
     canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
       // Need to be able to ruin an existing construction.
       const player = gameState.getActivePlayer();
@@ -2015,7 +1941,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: true,
     associatedCard: CardName.TEACHER,
-    cardDescription: ["VP", " for each Common Critter in your city."],
+    cardDescription: strToGameText("VP for each Common Critter in your city."),
     // 1 point per common critter
     pointsInner: getPointsPerRarityLabel({ isCritter: true, isUnique: false }),
   }),
@@ -2027,15 +1953,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: false,
     associatedCard: CardName.CHAPEL,
-    cardDescription: [
-      "Gain 3 ",
-      ResourceType.BERRY,
-      ", then gain 1 ",
-      "VP",
-      " for each ",
-      "VP",
-      " on your Chapel.",
-    ],
+    cardDescription: strToGameText(
+      "Gain 3 BERRY, then gain 1 VP for each VP on your Chapel."
+    ),
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
 
@@ -2111,11 +2031,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: false,
     associatedCard: CardName.GENERAL_STORE,
-    cardDescription: [
-      "Gain 1 ",
-      ResourceType.BERRY,
-      " after you play a Critter.",
-    ],
+    cardDescription: strToGameText("Gain 1 BERRY after you play a Critter."),
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (
@@ -2143,19 +2059,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: true,
     associatedCard: CardName.WOODCARVER,
     resourcesToGain: {},
-    cardDescription: flatten([
-      [
-        "Place either 3 ",
-        ResourceType.TWIG,
-        ", 2 ",
-        ResourceType.RESIN,
-        ", 1 ",
-        ResourceType.PEBBLE,
-        ", or 2 ",
-        ResourceType.BERRY,
-        " on this Storehouse from the Supply.",
-      ],
-      "HR",
+    cardDescription: strToGameText([
+      "Place either 3 TWIG, 2 RESIN, 1 PEBBLE or 2 BERRY ",
+      "on this Storehouse from the Supply.",
+      { type: "HR" },
       "Place worker: Take all resources on this card.",
     ]),
     maxWorkersInner: () => 1,
@@ -2236,12 +2143,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: false,
     associatedCard: CardName.SCHOOL,
     resourcesToGain: {},
-    cardDescription: [
-      "Draw 2 ",
-      "CARD",
-      ", keep 1, and give ",
-      "the other to an opponent.",
-    ],
+    cardDescription: strToGameText(
+      "Draw 2 CARD, keep 1, and give the other to an opponent."
+    ),
     // draw 2 cards + give 1 to an opponent
     productionInner: (gameState: GameState, gameInput: GameInput) => {
       const cardOptions = [gameState.drawCard(), gameState.drawCard()];
@@ -2317,7 +2221,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: true,
     associatedCard: CardName.BARD,
-    cardDescription: ["VP", " for each Unique Critter in your city."],
+    cardDescription: strToGameText("VP for each Unique Critter in your city."),
     // 1 point per unique critter
     pointsInner: getPointsPerRarityLabel({ isCritter: true, isUnique: true }),
   }),
@@ -2341,15 +2245,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: false,
     associatedCard: CardName.CEMETARY,
-    cardDescription: [
-      "Discard 3 ",
-      "CARD",
-      " from the Meadow, replenish, then ",
-      "draw 1 ",
-      "CARD",
-      " from the Meadow. ",
+    cardDescription: strToGameText([
+      "Discard 3 CARD from the Meadow, replenish, then draw 1 CARD from the Meadow.",
+      { type: "BR" },
       "Unlocks second Cemetary.",
-    ],
+    ]),
     // Discard 3 meadow, replace, draw 1 meadow
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
@@ -2423,15 +2323,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: true,
     associatedCard: CardName.DOCTOR,
-    cardDescription: [
+    cardDescription: strToGameText([
       "Discard a Critter or Construction from your city. ",
       "Gain resources equal to that card's cost, ",
-      "then gain 1 ",
-      "ANY",
-      " and gain 1 ",
-      "VP",
-      ".",
-    ],
+      "then gain 1 ANY and gain 1 VP.",
+    ]),
     canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
@@ -2521,7 +2417,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: false,
     associatedCard: CardName.FARM,
-    cardDescription: ["3 ", "VP", " if paired with a Husband."],
+    cardDescription: strToGameText("3 VP if paired with a Husband."),
     pointsInner: (gameState: GameState, playerId: string) => {
       // NOTE: this is implemented in player!
       return 0;
@@ -2536,13 +2432,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: false,
     associatedCard: CardName.STOREHOUSE,
     resourcesToGain: {},
-    cardDescription: [
-      "You may pay up to 3 ",
-      ResourceType.TWIG,
-      " to gain 1 ",
-      "VP",
-      " each.",
-    ],
+    cardDescription: strToGameText(
+      "You may pay up to 3 TWIG to gain 1 VP each"
+    ),
     productionInner: gainProductionSpendResourceToGetVPFactory({
       card: CardName.WOODCARVER,
       resourceType: ResourceType.TWIG,

@@ -193,7 +193,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     type: LocationType.HAVEN,
     occupancy: LocationOccupancy.UNLIMITED,
     description: strToGameText([
-      "May discard any CARD from your hand.",
+      "May discard any CARD from your hand. ",
       "For every 2 CARD you discard, gain 1 ANY.",
     ]),
     playInner: (gameState: GameState, gameInput: GameInput) => {

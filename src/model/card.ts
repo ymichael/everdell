@@ -877,7 +877,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     associatedCard: CardName.SHOPKEEPER,
     resourcesToGain: {},
     cardDescription: strToGameText([
-      "Gain 1 BERRY.",
+      "Gain 1 BERRY. ",
       "If you have a Farm in your city, gain 1 additional BERRY.",
     ]),
     productionInner: (
@@ -1621,8 +1621,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: false,
     associatedCard: CardName.POST_OFFICE,
     cardDescription: strToGameText([
-      "Reveal 2 CARD.",
-      "You may play 1 worth up to 3 VP for free.",
+      "Reveal 2 CARD. ",
+      "You may play 1 worth up to 3 VP for free. ",
       "Discard the other.",
     ]),
     playInner: (gameState: GameState, gameInput: GameInput) => {

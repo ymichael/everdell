@@ -3,18 +3,21 @@ import { useRef } from "react";
 
 import { PlayedCardInfo } from "../model/types";
 import { Player } from "../model/player";
+import { GameState } from "../model/gameState";
 
 import { useField } from "formik";
 import styles from "../styles/GameInputBox.module.css";
+import { PlayedCard } from "./Card";
 import { GameInputType, GameInput } from "../model/types";
 
 import isEqual from "lodash/isEqual";
 
 const GameInputVisitDestinationCard: React.FC<{
   name: string;
+  gameState: GameState;
   destinations: PlayedCardInfo[];
   viewingPlayer: Player;
-}> = ({ name, destinations = [], viewingPlayer }) => {
+}> = ({ name, gameState, destinations = [], viewingPlayer }) => {
   const [field, meta, helpers] = useField(name);
   return (
     <div className={styles.selector}>
@@ -37,7 +40,11 @@ const GameInputVisitDestinationCard: React.FC<{
                     helpers.setValue(playedCard);
                   }}
                 >
-                  <div>{JSON.stringify(playedCard)}</div>
+                  <PlayedCard
+                    playedCard={playedCard}
+                    cardOwner={gameState.getPlayer(playedCard.cardOwnerId)}
+                    viewerId={viewingPlayer.playerId}
+                  />
                 </div>
               </div>
             );

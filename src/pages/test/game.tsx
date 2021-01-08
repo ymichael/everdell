@@ -43,7 +43,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     player.addToCity(CardName.HUSBAND);
     player.addToCity(CardName.RESIN_REFINERY);
     player.addToCity(CardName.PEDDLER);
-    player.addToCity(CardName.CEMETARY);
+    player.addToCity(CardName.INN);
     player.addToCity(CardName.FARM);
     player.addToCity(CardName.MINE);
     player.addToCity(CardName.CLOCK_TOWER);
@@ -84,12 +84,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     inputType: GameInputType.PLACE_WORKER,
     clientOptions: {
       location: LocationName.BASIC_TWO_CARDS_AND_ONE_VP,
-    },
-  });
-  game.applyGameInput({
-    inputType: GameInputType.PLACE_WORKER,
-    clientOptions: {
-      location: LocationName.FOREST_DISCARD_ANY_THEN_DRAW_TWO_PER_CARD,
     },
   });
 

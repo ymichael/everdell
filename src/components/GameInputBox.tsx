@@ -269,6 +269,7 @@ const GameInputBox: React.FC<{
                           GameInputType.VISIT_DESTINATION_CARD ? (
                           <GameInputVisitDestinationCard
                             name={"gameInput.clientOptions.playedCard"}
+                            gameState={gameStateImpl}
                             destinations={gameStateImpl.getVisitableDestinationCards()}
                             viewingPlayer={viewingPlayer}
                           />

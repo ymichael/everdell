@@ -28,6 +28,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   });
   gameState.players.forEach((player, idx) => {
     player.drawCards(gameState, 5 + idx);
+    player.cardsInHand.push(CardName.BARD);
+
     player.gainResources({
       [ResourceType.VP]: 12,
       [ResourceType.TWIG]: 4,
@@ -44,7 +46,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     player.addToCity(CardName.RESIN_REFINERY);
     player.addToCity(CardName.PEDDLER);
     player.addToCity(CardName.INN);
-    player.addToCity(CardName.FARM);
     player.addToCity(CardName.MINE);
     player.addToCity(CardName.CLOCK_TOWER);
   });
@@ -87,11 +88,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     },
   });
   game.applyGameInput({
-    inputType: GameInputType.VISIT_DESTINATION_CARD,
+    inputType: GameInputType.PLAY_CARD,
     clientOptions: {
-      playedCard: game
-        .getActivePlayer()
-        .getFirstPlayedCard(CardName.UNIVERSITY),
+      card: CardName.BARD,
+      fromMeadow: false,
+      paymentOptions: {
+        resources: { [ResourceType.BERRY]: 3 },
+      },
     },
   });
 

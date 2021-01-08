@@ -86,6 +86,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       location: LocationName.BASIC_TWO_CARDS_AND_ONE_VP,
     },
   });
+  game.applyGameInput({
+    inputType: GameInputType.VISIT_DESTINATION_CARD,
+    clientOptions: {
+      playedCard: game
+        .getActivePlayer()
+        .getFirstPlayedCard(CardName.UNIVERSITY),
+    },
+  });
 
   const player = game.getActivePlayer();
   const isActivePlayer = true;

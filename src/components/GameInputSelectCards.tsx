@@ -1,13 +1,14 @@
 import * as React from "react";
 import { useRef } from "react";
-
+import styles from "../styles/gameBoard.module.css";
 import {
   CardName,
   GameInputType,
   GameInputSelectCards as TGameInputSelectCards,
 } from "../model/types";
 import { Player } from "../model/player";
-
+import Card from "./Card";
+import { ItemWrapper } from "./common";
 import { useField } from "formik";
 
 const textLabel = (gameInput: TGameInputSelectCards) => {
@@ -41,33 +42,38 @@ const GameInputSelectCards: React.FC<{
   return (
     <>
       <p>{textLabel(gameInput)}</p>
-      <>
+      <div className={styles.items}>
         {gameInput.cardOptions.map((card: CardName, idx: number) => {
+          const isSelected = !!selectedCardIdx.current[idx];
           return (
-            <p key={idx}>
-              <label>
-                <input
-                  type={"checkbox"}
-                  onClick={() => {
-                    const isSelected = !!selectedCardIdx.current[idx];
-                    if (isSelected) {
-                      const newValue = [...meta.value];
-                      newValue.splice(newValue.indexOf(card), 1);
-                      helpers.setValue(newValue);
+            <div
+              className={styles.clickable}
+              key={idx}
+              onClick={() => {
+                if (isSelected) {
+                  const newValue = [...meta.value];
+                  newValue.splice(newValue.indexOf(card), 1);
+                  helpers.setValue(newValue);
 
-                      selectedCardIdx.current[idx] = false;
-                    } else {
-                      helpers.setValue(meta.value.concat([card]));
-                      selectedCardIdx.current[idx] = true;
-                    }
-                  }}
-                />
-                {card}
-              </label>
-            </p>
+                  selectedCardIdx.current[idx] = false;
+                } else {
+                  if (gameInput.maxToSelect === 1) {
+                    helpers.setValue([card]);
+                    selectedCardIdx.current = {};
+                  } else {
+                    helpers.setValue(meta.value.concat([card]));
+                  }
+                  selectedCardIdx.current[idx] = true;
+                }
+              }}
+            >
+              <ItemWrapper isDisabled={isSelected}>
+                <Card name={card} />
+              </ItemWrapper>
+            </div>
           );
         })}
-      </>
+      </div>
     </>
   );
 };

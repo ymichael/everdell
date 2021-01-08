@@ -238,6 +238,7 @@ const GameInputBox: React.FC<{
                           <GameInputSelectPlayedCards
                             name={"gameInput.clientOptions.selectedCards"}
                             gameInput={gameInput}
+                            gameState={gameStateImpl}
                             viewingPlayer={viewingPlayer}
                           />
                         ) : gameInput.inputType ===

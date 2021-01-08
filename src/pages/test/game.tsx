@@ -55,17 +55,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     LocationName.FOREST_DISCARD_ANY_THEN_DRAW_TWO_PER_CARD
   ] = [];
 
-  gameState.meadowCards = [
-    CardName.FARM,
-    CardName.FARM,
-    CardName.FARM,
-    CardName.FARM,
-    CardName.FARM,
-    CardName.FARM,
-    CardName.FARM,
-    CardName.FARM,
-    CardName.FARM,
-  ];
+  gameState.replenishMeadow();
 
   const game = new GameModel("testGameId", "testGameSecret", gameState, [
     {
@@ -100,17 +90,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     inputType: GameInputType.VISIT_DESTINATION_CARD,
     clientOptions: {
       playedCard: game.getActivePlayer().getFirstPlayedCard(CardName.INN),
-    },
-  });
-  game.applyGameInput({
-    inputType: GameInputType.SELECT_CARDS,
-    prevInputType: GameInputType.VISIT_DESTINATION_CARD,
-    cardContext: CardName.INN,
-    cardOptions: game.toJSON(false).gameState.meadowCards,
-    maxToSelect: 1,
-    minToSelect: 1,
-    clientOptions: {
-      selectedCards: [CardName.FARM],
     },
   });
 

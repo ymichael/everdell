@@ -44,7 +44,7 @@ const GameInputSelectPlayedCards: React.FC<{
                 }
               }}
             >
-              <ItemWrapper isDisabled={isSelected}>
+              <ItemWrapper isHighlighted={isSelected}>
                 <PlayedCard
                   playedCard={cardInfo}
                   viewerId={viewingPlayer.playerId}

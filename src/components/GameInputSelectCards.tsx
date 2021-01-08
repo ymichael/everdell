@@ -67,7 +67,7 @@ const GameInputSelectCards: React.FC<{
                 }
               }}
             >
-              <ItemWrapper isDisabled={isSelected}>
+              <ItemWrapper isHighlighted={isSelected}>
                 <Card name={card} />
               </ItemWrapper>
             </div>

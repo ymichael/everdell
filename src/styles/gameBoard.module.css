@@ -2,7 +2,11 @@
   margin-left: -10px;
   display: flex;
   flex-wrap: wrap;
-  width: 950px;
+}
+
+.items_no_wrap {
+  margin-left: -10px;
+  display: flex;
 }
 
 .empty_city {

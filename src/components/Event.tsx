@@ -90,7 +90,7 @@ export const Event = ({
 }) => {
   return (
     <ItemWrapper
-      isDisabled={!!claimedBy}
+      isHighlighted={!!claimedBy}
       footerChildren={
         claimedBy && (
           <div className={styles.claimed_by}>

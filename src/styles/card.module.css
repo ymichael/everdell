@@ -6,7 +6,6 @@
 
   border: 1px solid;
   overflow: hidden;
-  margin: 10px;
   display: flex;
   align-self: flex-start;
   flex-direction: column;

@@ -85,7 +85,7 @@ const Location: React.FC<{
   }
   return (
     <ItemWrapper
-      isDisabled={!acceptingWorkers}
+      isHighlighted={!acceptingWorkers}
       footerChildren={
         playerWorkers.length !== 0 && (
           <div className={styles.location_workers}>

@@ -17,16 +17,25 @@ import { Location as LocationModel } from "../model/location";
 import Card, { PlayedCard } from "./Card";
 import Location from "./Location";
 import Event from "./Event";
-import { GameBlock } from "./common";
+import { GameBlock, ItemWrapper } from "./common";
 
 export const Meadow: React.FC<{ meadowCards: CardName[] }> = ({
   meadowCards,
 }) => {
   return (
     <GameBlock title={"Meadow"}>
-      <div className={styles.items}>
-        {meadowCards.map((cardName, idx) => (
-          <Card key={idx} name={cardName} />
+      <div className={styles.items_no_wrap}>
+        {meadowCards.slice(0, 4).map((cardName, idx) => (
+          <ItemWrapper key={idx}>
+            <Card name={cardName} />
+          </ItemWrapper>
+        ))}
+      </div>
+      <div className={styles.items_no_wrap}>
+        {meadowCards.slice(4).map((cardName, idx) => (
+          <ItemWrapper key={idx}>
+            <Card name={cardName} />
+          </ItemWrapper>
         ))}
       </div>
     </GameBlock>

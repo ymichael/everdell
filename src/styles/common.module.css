@@ -26,9 +26,9 @@
 }
 
 .item_wrapper {
-  margin: 10px 10px 0px 0px;
+  margin: 10px 10px 0px 10px;
 }
 
-.item_disabled {
+.item_highlighted {
   opacity: 0.3;
 }

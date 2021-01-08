@@ -134,12 +134,12 @@ export const Description = ({ textParts }: { textParts: GameText }) => {
 };
 
 export const ItemWrapper: React.FC<{
-  isDisabled: boolean;
+  isHighlighted?: boolean;
   footerChildren?: any;
-}> = ({ isDisabled, footerChildren = null, children }) => {
+}> = ({ isHighlighted = false, footerChildren = null, children }) => {
   return (
     <div className={styles.item_wrapper}>
-      <div className={isDisabled ? styles.item_disabled : undefined}>
+      <div className={isHighlighted ? styles.item_highlighted : undefined}>
         {children}
       </div>
       <div className={styles.item_footer}>{footerChildren}</div>

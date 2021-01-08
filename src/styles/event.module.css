@@ -4,9 +4,6 @@
   border-radius: 5px;
 
   border: solid 2px #91894e;
-
-  margin: 10px;
-
   display: flex;
   justify-content: center;
   align-self: flex-start;
@@ -15,7 +12,7 @@
 }
 
 .event_basic {
-  padding: 0 10px;
+  padding: 10px;
   margin-top: 20px;
   text-align: center;
   font-size: 16px;

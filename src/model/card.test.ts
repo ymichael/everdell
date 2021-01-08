@@ -1074,6 +1074,42 @@ describe("Card", () => {
         expect(player.hasCardInCity(card.name)).to.be(true);
         expect(gameState3.discardPile.length).to.eql(2);
       });
+
+      it("should trigger production cards when played via the postal pigeon", () => {
+        const card = Card.fromName(CardName.POSTAL_PIGEON);
+        player.gainResources(card.baseCost);
+        player.cardsInHand.push(card.name);
+
+        gameState.deck.addToStack(CardName.FARM);
+        gameState.deck.addToStack(CardName.MINE);
+
+        expect(gameState.discardPile.length).to.eql(0);
+        expect(gameState.pendingGameInputs).to.eql([]);
+        expect(player.hasCardInCity(card.name)).to.be(false);
+        expect(player.hasCardInCity(CardName.MINE)).to.be(false);
+        expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+
+        const gameState3 = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+          {
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: GameInputType.PLAY_CARD,
+            cardContext: CardName.POSTAL_PIGEON,
+            maxToSelect: 1,
+            minToSelect: 0,
+            cardOptions: [CardName.MINE, CardName.FARM],
+            cardOptionsUnfiltered: [CardName.MINE, CardName.FARM],
+            clientOptions: {
+              selectedCards: [CardName.MINE],
+            },
+          },
+        ]);
+
+        player = gameState3.getPlayer(player.playerId);
+        expect(player.hasCardInCity(card.name)).to.be(true);
+        expect(player.hasCardInCity(CardName.MINE)).to.be(true);
+        expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(1);
+      });
     });
 
     describe(CardName.CHIP_SWEEP, () => {

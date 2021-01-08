@@ -200,16 +200,17 @@ export class Card<TCardType extends CardType = CardType>
         this.cardType === CardType.PRODUCTION ||
         this.cardType === CardType.TRAVELER
       ) {
-        this.gainProduction(gameState, gameInput, player, playedCard!);
-        if (this.playInner) {
-          this.playInner(gameState, gameInput);
-        }
+        this.playCardEffects(gameState, gameInput, playedCard!);
       }
       [CardName.HISTORIAN, CardName.SHOPKEEPER, CardName.COURTHOUSE].forEach(
         (cardName) => {
           if (player.hasCardInCity(cardName)) {
             const card = Card.fromName(cardName);
-            card.playCardEffects(gameState, gameInput);
+            card.playCardEffects(
+              gameState,
+              gameInput,
+              player.getFirstPlayedCard(cardName) as PlayedCardInfo
+            );
           }
         }
       );
@@ -217,6 +218,7 @@ export class Card<TCardType extends CardType = CardType>
       gameInput.inputType === GameInputType.SELECT_CARDS ||
       gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS ||
       gameInput.inputType === GameInputType.SELECT_LOCATION ||
+      gameInput.inputType === GameInputType.SELECT_OPTION_GENERIC ||
       gameInput.inputType === GameInputType.SELECT_PAYMENT_FOR_CARD ||
       gameInput.inputType === GameInputType.SELECT_WORKER_PLACEMENT ||
       gameInput.inputType === GameInputType.SELECT_PLAYER ||
@@ -224,10 +226,18 @@ export class Card<TCardType extends CardType = CardType>
       gameInput.inputType === GameInputType.DISCARD_CARDS
     ) {
       if (gameInput.cardContext === this.name) {
-        this.playCardEffects(gameState, gameInput);
+        if (this.playInner) {
+          this.playInner(gameState, gameInput);
+        }
+      } else {
+        throw new Error(
+          "Unexpected cardContext, did you mean to use playCardEffects?"
+        );
       }
     } else {
-      this.playCardEffects(gameState, gameInput);
+      if (this.playInner) {
+        this.playInner(gameState, gameInput);
+      }
     }
   }
 
@@ -249,7 +259,13 @@ export class Card<TCardType extends CardType = CardType>
     }
   }
 
-  playCardEffects(gameState: GameState, gameInput: GameInput): void {
+  playCardEffects(
+    gameState: GameState,
+    gameInput: GameInput,
+    playedCard: PlayedCardInfo
+  ): void {
+    const player = gameState.getActivePlayer();
+    this.gainProduction(gameState, gameInput, player, playedCard);
     if (this.playInner) {
       this.playInner(gameState, gameInput);
     }
@@ -476,8 +492,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           throw new Error("Must select 1 card");
         }
         const selectedCard = selectedCards[0];
-        player.addToCity(selectedCard);
-        Card.fromName(selectedCard).play(gameState, gameInput);
+        const card = Card.fromName(selectedCard);
+        const playedCard = player.addToCity(selectedCard);
+        card.playCardEffects(gameState, gameInput, playedCard);
 
         const cardOptionsUnfiltered = [...gameInput.cardOptionsUnfiltered!];
         cardOptionsUnfiltered.splice(
@@ -1054,8 +1071,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           throw new Error(paymentError);
         }
         player.payForCard(gameState, gameInput);
-        player.addToCity(card.name);
-        card.play(gameState, gameInput);
+        const playedCard = player.addToCity(card.name);
+        card.playCardEffects(gameState, gameInput, playedCard);
       }
     },
   }),
@@ -1661,9 +1678,12 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         if (selectedCards.length > 1) {
           throw new Error("Too many cards");
         } else if (selectedCards.length === 1) {
-          player.addToCity(selectedCards[0]);
+          const selectedCard = selectedCards[0];
+          const card = Card.fromName(selectedCard);
+          const playedCard = player.addToCity(selectedCard);
+          card.playCardEffects(gameState, gameInput, playedCard);
           cardOptionsUnfiltered.splice(
-            cardOptionsUnfiltered.indexOf(selectedCards[0]),
+            cardOptionsUnfiltered.indexOf(selectedCard),
             1
           );
         }
@@ -1751,8 +1771,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           );
         }
 
-        player.addToCity(card.name);
-        card.play(gameState, gameInput);
+        const playedCard = player.addToCity(card.name);
+        card.playCardEffects(gameState, gameInput, playedCard);
       }
     },
   }),

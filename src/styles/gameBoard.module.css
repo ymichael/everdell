@@ -2,7 +2,7 @@
   margin-left: -10px;
   display: flex;
   flex-wrap: wrap;
-  width: 1000px;
+  width: 880px;
 }
 
 .empty_city {
@@ -10,9 +10,21 @@
   padding: 20px 0;
 }
 
-.forest_items {
+.location_items {
   margin-left: -10px;
   display: flex;
   flex-wrap: wrap;
   width: 1000px;
+}
+
+.game_board {
+  display: flex;
+}
+
+.forest_locations {
+  height: 100%;
+  padding: 10px 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }

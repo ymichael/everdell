@@ -49,6 +49,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     player.addToCity(CardName.CLOCK_TOWER);
   });
 
+  gameState.locationsMap[LocationName.FOREST_TWO_WILD] = [];
   gameState.locationsMap[LocationName.FOREST_ONE_PEBBLE_THREE_CARD] = [];
   gameState.locationsMap[
     LocationName.FOREST_DISCARD_ANY_THEN_DRAW_TWO_PER_CARD

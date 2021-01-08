@@ -2,7 +2,7 @@ import * as React from "react";
 import { useState, useCallback, useEffect } from "react";
 import { unstable_batchedUpdates } from "react-dom";
 
-import { Meadow, Locations, Events } from "./gameBoard";
+import { GameBoard, Locations, Events } from "./gameBoard";
 import Players from "./Players";
 import ViewerUI from "./ViewerUI";
 import GameInputBox from "./GameInputBox";
@@ -55,7 +55,10 @@ const Game: React.FC<{
         gameStateId={gameState.gameStateId}
         onUpdate={updateGameAndViewingPlayer}
       >
-        <Meadow meadowCards={gameState.meadowCards} />
+        <GameBoard
+          gameState={gameStateImpl}
+          viewingPlayer={viewingPlayerImpl}
+        />
         <GameLog logs={game.gameLogBuffer} />
         <GameInputBox
           gameId={gameId}

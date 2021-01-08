@@ -5,9 +5,11 @@
 }
 
 .block {
-  padding: 0 0.5rem;
-  margin: 10px;
+  padding: 0.5rem;
+  height: 100%;
   max-width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .resource {

@@ -70,23 +70,58 @@ export const Locations: React.FC<{
 
   return (
     <GameBlock title={"Locations"}>
-      <div className={styles.forest_items}>
+      <div className={styles.location_items}>
         {allForestLocationObjs.map((location, idx) => {
           return renderLocationWithPlayerNames(location.name);
         })}
       </div>
-      <div className={styles.forest_items}>
+      <div className={styles.location_items}>
         {allBasicLocationObjs.map((location, idx) => {
           return renderLocationWithPlayerNames(location.name);
         })}
       </div>
-      <div className={styles.forest_items}>
+      <div className={styles.location_items}>
         {allJourneyLocationObjs.map((location, idx) => {
           return renderLocationWithPlayerNames(location.name);
         })}
       </div>
-      <div className={styles.forest_items}>
+      <div className={styles.location_items}>
         {allHavenLocationObjs.map((location, idx) => {
+          return renderLocationWithPlayerNames(location.name);
+        })}
+      </div>
+    </GameBlock>
+  );
+};
+
+export const ForestLocations: React.FC<{
+  gameState: GameState;
+  viewingPlayer: Player;
+}> = ({ gameState, viewingPlayer }) => {
+  const locationsMap = gameState.locationsMap;
+  const allLocations = Object.keys(locationsMap) as LocationName[];
+  const allLocationObjs = allLocations.map((x) => LocationModel.fromName(x));
+  const allForestLocationObjs = allLocationObjs.filter(
+    (x) => x.type === LocationType.FOREST
+  );
+  const renderLocationWithPlayerNames = (name: LocationName) => {
+    return (
+      <Location
+        key={name}
+        name={name}
+        gameState={gameState}
+        viewingPlayer={viewingPlayer}
+        playerWorkers={(locationsMap[name] || []).map(
+          (pId) => gameState.getPlayer(pId).name
+        )}
+      />
+    );
+  };
+
+  return (
+    <GameBlock title={"Forest Locations"}>
+      <div className={styles.forest_locations}>
+        {allForestLocationObjs.map((location, idx) => {
           return renderLocationWithPlayerNames(location.name);
         })}
       </div>
@@ -142,5 +177,21 @@ export const PlayerCity: React.FC<{ player: Player; viewerId: string }> = ({
     </div>
   ) : (
     <div className={styles.empty_city}>City is empty.</div>
+  );
+};
+
+export const GameBoard: React.FC<{
+  gameState: GameState;
+  viewingPlayer: Player;
+}> = ({ gameState, viewingPlayer }) => {
+  return (
+    <div className={styles.game_board}>
+      <div className={styles.game_board_meadow}>
+        <Meadow meadowCards={gameState.meadowCards} />
+      </div>
+      <div>
+        <ForestLocations gameState={gameState} viewingPlayer={viewingPlayer} />
+      </div>
+    </div>
   );
 };

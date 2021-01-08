@@ -190,30 +190,8 @@ export class Card<TCardType extends CardType = CardType>
   }
 
   play(gameState: GameState, gameInput: GameInput): void {
-    const player = gameState.getActivePlayer();
     if (gameInput.inputType === GameInputType.PLAY_CARD) {
-      let playedCard: PlayedCardInfo | null = null;
-      if (this.name !== CardName.FOOL && this.name !== CardName.RUINS) {
-        playedCard = player.addToCity(this.name);
-      }
-      if (
-        this.cardType === CardType.PRODUCTION ||
-        this.cardType === CardType.TRAVELER
-      ) {
-        this.playCardEffects(gameState, gameInput, playedCard!);
-      }
-      [CardName.HISTORIAN, CardName.SHOPKEEPER, CardName.COURTHOUSE].forEach(
-        (cardName) => {
-          if (player.hasCardInCity(cardName)) {
-            const card = Card.fromName(cardName);
-            card.playCardEffects(
-              gameState,
-              gameInput,
-              player.getFirstPlayedCard(cardName) as PlayedCardInfo
-            );
-          }
-        }
-      );
+      this.addToCityAndPlay(gameState, gameInput);
     } else if (
       gameInput.inputType === GameInputType.SELECT_CARDS ||
       gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS ||
@@ -231,7 +209,7 @@ export class Card<TCardType extends CardType = CardType>
         }
       } else {
         throw new Error(
-          "Unexpected cardContext, did you mean to use playCardEffects?"
+          "Unexpected cardContext, did you mean to use addToCityAndPlay?"
         );
       }
     } else {
@@ -259,7 +237,49 @@ export class Card<TCardType extends CardType = CardType>
     }
   }
 
-  playCardEffects(
+  addToCityAndPlay(gameState: GameState, gameInput: GameInput): void {
+    const player = gameState.getActivePlayer();
+
+    let playedCard: PlayedCardInfo | null = null;
+    if (this.name !== CardName.FOOL && this.name !== CardName.RUINS) {
+      playedCard = player.addToCity(this.name);
+    }
+
+    const playCardGameInput =
+      gameInput.inputType === GameInputType.PLAY_CARD
+        ? gameInput
+        : {
+            inputType: GameInputType.PLAY_CARD as const,
+            prevInputType: gameInput.inputType,
+            clientOptions: {
+              card: this.name,
+              fromMeadow: false,
+              paymentOptions: { resources: {} },
+            },
+          };
+
+    if (
+      this.cardType === CardType.PRODUCTION ||
+      this.cardType === CardType.TRAVELER
+    ) {
+      this.playCardInner(gameState, playCardGameInput, playedCard!);
+    }
+
+    [CardName.HISTORIAN, CardName.SHOPKEEPER, CardName.COURTHOUSE].forEach(
+      (cardName) => {
+        if (player.hasCardInCity(cardName)) {
+          const card = Card.fromName(cardName);
+          card.playCardInner(
+            gameState,
+            playCardGameInput,
+            player.getFirstPlayedCard(cardName) as PlayedCardInfo
+          );
+        }
+      }
+    );
+  }
+
+  playCardInner(
     gameState: GameState,
     gameInput: GameInput,
     playedCard: PlayedCardInfo
@@ -489,7 +509,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             gameState.discardPile.addToStack(cardName);
           });
         }
-      } else if (gameInput.inputType == GameInputType.SELECT_CARDS) {
+      } else if (
+        gameInput.inputType == GameInputType.SELECT_CARDS &&
+        gameInput.cardContext === CardName.CEMETARY
+      ) {
         const selectedCards = gameInput.clientOptions?.selectedCards;
         if (!selectedCards) {
           throw new Error("Must specify gameInput.clientOptions.selectedCards");
@@ -499,8 +522,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         }
         const selectedCard = selectedCards[0];
         const card = Card.fromName(selectedCard);
-        const playedCard = player.addToCity(selectedCard);
-        card.playCardEffects(gameState, gameInput, playedCard);
+        card.addToCityAndPlay(gameState, gameInput);
 
         const cardOptionsUnfiltered = [...gameInput.cardOptionsUnfiltered!];
         cardOptionsUnfiltered.splice(
@@ -1094,8 +1116,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           throw new Error(paymentError);
         }
         player.payForCard(gameState, gameInput);
-        const playedCard = player.addToCity(card.name);
-        card.playCardEffects(gameState, gameInput, playedCard);
+        card.addToCityAndPlay(gameState, gameInput);
       }
     },
   }),
@@ -1731,8 +1752,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         } else if (selectedCards.length === 1) {
           const selectedCard = selectedCards[0];
           const card = Card.fromName(selectedCard);
-          const playedCard = player.addToCity(selectedCard);
-          card.playCardEffects(gameState, gameInput, playedCard);
+          card.addToCityAndPlay(gameState, gameInput);
           cardOptionsUnfiltered.splice(
             cardOptionsUnfiltered.indexOf(selectedCard),
             1
@@ -1808,25 +1828,20 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         gameInput.cardContext === CardName.QUEEN
       ) {
         const selectedCards = gameInput.clientOptions.selectedCards;
-
         if (!selectedCards) {
           throw new Error("no card selected");
         }
-
         if (selectedCards.length !== 1) {
           throw new Error("incorrect number of cards selected");
         }
 
         const card = Card.fromName(selectedCards[0]);
-
         if (card.baseVP > 3) {
           throw new Error(
             "cannot use Queen to play a card worth more than 3 base VP"
           );
         }
-
-        const playedCard = player.addToCity(card.name);
-        card.playCardEffects(gameState, gameInput, playedCard);
+        card.addToCityAndPlay(gameState, gameInput);
       }
     },
   }),
@@ -2098,7 +2113,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           player.gainResources({ [ResourceType.VP]: numVP });
         }
       } else {
-        ("Unexpected input type ${gameInput.inputType} with previous input type ${gameInput.prevInputType}");
+        throw new Error(
+          "Unexpected input type ${gameInput.inputType} with previous input type ${gameInput.prevInputType}"
+        );
       }
     },
   }),

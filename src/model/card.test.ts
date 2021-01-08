@@ -1110,6 +1110,105 @@ describe("Card", () => {
         expect(player.hasCardInCity(CardName.MINE)).to.be(true);
         expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(1);
       });
+
+      it("should trigger HISTORIAN/SHOPKEEPER cards when played via the postal pigeon", () => {
+        const card = Card.fromName(CardName.POSTAL_PIGEON);
+        player.gainResources(card.baseCost);
+        player.addToCity(CardName.HISTORIAN);
+        player.addToCity(CardName.SHOPKEEPER);
+
+        gameState.deck.addToStack(CardName.WANDERER);
+        gameState.deck.addToStack(CardName.FARM);
+
+        player.cardsInHand = [card.name];
+
+        expect(gameState.discardPile.length).to.eql(0);
+        expect(player.cardsInHand.length).to.eql(1);
+        expect(player.hasCardInCity(card.name)).to.be(false);
+        expect(player.hasCardInCity(CardName.WANDERER)).to.be(false);
+
+        const gameState3 = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+          {
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: GameInputType.PLAY_CARD,
+            cardContext: CardName.POSTAL_PIGEON,
+            maxToSelect: 1,
+            minToSelect: 0,
+            cardOptions: [CardName.FARM, CardName.WANDERER],
+            cardOptionsUnfiltered: [CardName.FARM, CardName.WANDERER],
+            clientOptions: {
+              selectedCards: [CardName.WANDERER],
+            },
+          },
+        ]);
+
+        player = gameState3.getPlayer(player.playerId);
+        expect(player.hasCardInCity(card.name)).to.be(true);
+        expect(player.hasCardInCity(CardName.WANDERER)).to.be(true);
+        // From shopkeeper (1 for postal pigeon, 1 for wanderer)
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
+        // From historian (2 cards) and wanderer
+        expect(player.cardsInHand.length).to.eql(3 + 2);
+      });
+
+      it("should trigger COURTHOUSE cards when played via the postal pigeon", () => {
+        const card = Card.fromName(CardName.POSTAL_PIGEON);
+        player.gainResources(card.baseCost);
+        player.addToCity(CardName.HISTORIAN);
+        player.addToCity(CardName.COURTHOUSE);
+
+        gameState.deck.addToStack(CardName.WANDERER);
+        gameState.deck.addToStack(CardName.FARM);
+
+        player.cardsInHand = [card.name];
+
+        expect(gameState.discardPile.length).to.eql(0);
+        expect(player.cardsInHand.length).to.eql(1);
+        expect(player.hasCardInCity(card.name)).to.be(false);
+        expect(player.hasCardInCity(CardName.MINE)).to.be(false);
+        expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+
+        const gameState3 = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+          {
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: GameInputType.PLAY_CARD,
+            cardContext: CardName.POSTAL_PIGEON,
+            maxToSelect: 1,
+            minToSelect: 0,
+            cardOptions: [CardName.FARM, CardName.WANDERER],
+            cardOptionsUnfiltered: [CardName.FARM, CardName.WANDERER],
+            clientOptions: {
+              selectedCards: [CardName.FARM],
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_RESOURCES,
+            prevInputType: GameInputType.PLAY_CARD,
+            cardContext: CardName.COURTHOUSE,
+            maxResources: 1,
+            minResources: 1,
+            excludeResource: ResourceType.BERRY,
+            clientOptions: {
+              resources: {
+                [ResourceType.TWIG]: 1,
+              },
+            },
+          },
+        ]);
+
+        player = gameState3.getPlayer(player.playerId);
+        expect(player.hasCardInCity(card.name)).to.be(true);
+        expect(player.hasCardInCity(CardName.FARM)).to.be(true);
+
+        // From farm production
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
+        // From historian (postal pigeon + farm)
+        expect(player.cardsInHand.length).to.eql(2);
+        // From COURTHOUSE
+        expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(1);
+      });
     });
 
     describe(CardName.CHIP_SWEEP, () => {
@@ -2108,6 +2207,7 @@ describe("Card", () => {
         expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
         expect(player2.getNumResourcesByType(ResourceType.BERRY)).to.be(3);
       });
+
       it("play shepherd using mixed resources (eg judge)", () => {
         let player1 = gameState.players[0];
         let player2 = gameState.players[1];
@@ -2171,6 +2271,7 @@ describe("Card", () => {
         expect(player2.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
         expect(player2.getNumResourcesByType(ResourceType.TWIG)).to.be(1);
       });
+
       it("playing shepherd via queen should not cost resources", () => {
         let player1 = gameState.players[0];
         let player2 = gameState.players[1];
@@ -2211,8 +2312,7 @@ describe("Card", () => {
         player2 = gameState.getPlayer(player2.playerId);
 
         expect(player1.hasCardInCity(CardName.SHEPHERD));
-
-        expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
+        expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(5);
         expect(player1.getNumResourcesByType(ResourceType.TWIG)).to.be(3);
         expect(player2.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
         expect(player2.getNumResourcesByType(ResourceType.TWIG)).to.be(0);

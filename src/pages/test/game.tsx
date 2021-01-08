@@ -28,8 +28,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   });
   gameState.players.forEach((player, idx) => {
     player.drawCards(gameState, 5 + idx);
-    player.cardsInHand.push(CardName.BARD);
-
     player.gainResources({
       [ResourceType.VP]: 12,
       [ResourceType.TWIG]: 4,
@@ -46,6 +44,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     player.addToCity(CardName.RESIN_REFINERY);
     player.addToCity(CardName.PEDDLER);
     player.addToCity(CardName.INN);
+    player.addToCity(CardName.FARM);
     player.addToCity(CardName.MINE);
     player.addToCity(CardName.CLOCK_TOWER);
   });
@@ -56,7 +55,17 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     LocationName.FOREST_DISCARD_ANY_THEN_DRAW_TWO_PER_CARD
   ] = [];
 
-  gameState.replenishMeadow();
+  gameState.meadowCards = [
+    CardName.FARM,
+    CardName.FARM,
+    CardName.FARM,
+    CardName.FARM,
+    CardName.FARM,
+    CardName.FARM,
+    CardName.FARM,
+    CardName.FARM,
+    CardName.FARM,
+  ];
 
   const game = new GameModel("testGameId", "testGameSecret", gameState, [
     {
@@ -88,13 +97,20 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     },
   });
   game.applyGameInput({
-    inputType: GameInputType.PLAY_CARD,
+    inputType: GameInputType.VISIT_DESTINATION_CARD,
     clientOptions: {
-      card: CardName.BARD,
-      fromMeadow: false,
-      paymentOptions: {
-        resources: { [ResourceType.BERRY]: 3 },
-      },
+      playedCard: game.getActivePlayer().getFirstPlayedCard(CardName.INN),
+    },
+  });
+  game.applyGameInput({
+    inputType: GameInputType.SELECT_CARDS,
+    prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+    cardContext: CardName.INN,
+    cardOptions: game.toJSON(false).gameState.meadowCards,
+    maxToSelect: 1,
+    minToSelect: 1,
+    clientOptions: {
+      selectedCards: [CardName.FARM],
     },
   });
 

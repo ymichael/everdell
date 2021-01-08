@@ -11,7 +11,7 @@ const GameInputSelectPlayer: React.FC<{
   gameInput: TGameInputSelectPlayer;
   gameState: GameState;
   viewingPlayer: Player;
-}> = ({ gameInput, viewingPlayer }) => {
+}> = ({ gameInput, gameState, viewingPlayer }) => {
   return (
     <Form>
       <p>
@@ -29,7 +29,7 @@ const GameInputSelectPlayer: React.FC<{
                 name="gameInput.clientOptions.selectedPlayer"
                 value={playerId}
               />
-              {playerId}
+              {gameState.getPlayer(playerId).name}
             </label>
           );
         })}
@@ -44,7 +44,6 @@ const GameInputSelectPlayer: React.FC<{
           </label>
         )}
       </>
-      <button type="submit">Submit</button>
     </Form>
   );
 };

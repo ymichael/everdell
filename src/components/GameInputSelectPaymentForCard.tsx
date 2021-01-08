@@ -16,7 +16,6 @@ const GameInputSelectPaymentForCard: React.FC<{
       <>
         <ResourcesForm name={"gameInput.clientOptions.resources"} />
       </>
-      <button type="submit">Submit</button>
     </Form>
   );
 };

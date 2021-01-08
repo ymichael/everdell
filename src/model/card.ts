@@ -350,7 +350,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             cardsToDiscard: [],
           },
         });
-      } else if (gameInput.inputType === GameInputType.DISCARD_CARDS) {
+      } else if (
+        gameInput.inputType === GameInputType.DISCARD_CARDS &&
+        gameInput.cardContext === CardName.BARD
+      ) {
         if (gameInput.clientOptions?.cardsToDiscard) {
           if (gameInput.clientOptions.cardsToDiscard.length > 5) {
             throw new Error("Discarding too many cards");
@@ -442,7 +445,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             selectedOption: null,
           },
         });
-      } else if (gameInput.inputType === GameInputType.SELECT_OPTION_GENERIC) {
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_OPTION_GENERIC &&
+        gameInput.cardContext === CardName.CEMETARY
+      ) {
         const selectedOption = gameInput.clientOptions.selectedOption;
         if (selectedOption !== "Deck" && selectedOption !== "Discard Pile") {
           throw new Error("Must choose either Deck or Discard Pile");
@@ -559,7 +565,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     cardDescription: strToGameText("Activate 1 PRODUCTION in your city."),
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
-      if (gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS) {
+      if (
+        gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS &&
+        gameInput.cardContext === CardName.CHIP_SWEEP
+      ) {
         const selectedCards = gameInput.clientOptions.selectedCards;
         if (
           !selectedCards ||
@@ -649,7 +658,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           });
         }
       } else if (
-        gameInput.inputType === GameInputType.SELECT_WORKER_PLACEMENT
+        gameInput.inputType === GameInputType.SELECT_WORKER_PLACEMENT &&
+        gameInput.cardContext === CardName.CLOCK_TOWER
       ) {
         const selectedOption = gameInput.clientOptions.selectedOption;
         if (selectedOption) {
@@ -708,7 +718,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             resources: {},
           },
         });
-      } else if (gameInput.inputType === GameInputType.SELECT_RESOURCES) {
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_RESOURCES &&
+        gameInput.cardContext === CardName.COURTHOUSE
+      ) {
         const resources = gameInput.clientOptions?.resources;
         if (
           !resources ||
@@ -871,7 +884,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             selectedPlayer: null,
           },
         });
-      } else if (gameInput.inputType === GameInputType.SELECT_PLAYER) {
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_PLAYER &&
+        gameInput.cardContext === CardName.FOOL
+      ) {
         if (!gameInput.clientOptions.selectedPlayer) {
           throw new Error("invalid input");
         }
@@ -943,7 +959,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     resourcesToGain: {},
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
-      if (gameInput.inputType === GameInputType.SELECT_RESOURCES) {
+      if (
+        gameInput.inputType === GameInputType.SELECT_RESOURCES &&
+        gameInput.cardContext === CardName.HUSBAND
+      ) {
         const resources = gameInput.clientOptions?.resources;
         if (!resources || (resources as any)[ResourceType.VP]) {
           throw new Error("Invalid input");
@@ -1024,7 +1043,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             selectedCards: [],
           },
         });
-      } else if (gameInput.inputType === GameInputType.SELECT_CARDS) {
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_CARDS &&
+        gameInput.cardContext === CardName.INN
+      ) {
         const selectedCards = gameInput.clientOptions.selectedCards;
 
         if (!selectedCards) {
@@ -1054,7 +1076,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           },
         });
       } else if (
-        gameInput.inputType === GameInputType.SELECT_PAYMENT_FOR_CARD
+        gameInput.inputType === GameInputType.SELECT_PAYMENT_FOR_CARD &&
+        gameInput.cardContext === CardName.INN
       ) {
         if (!gameInput.clientOptions?.paymentOptions?.resources) {
           throw new Error(
@@ -1156,7 +1179,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             selectedLocation: null,
           },
         });
-      } else if (gameInput.inputType === GameInputType.SELECT_LOCATION) {
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_LOCATION &&
+        gameInput.cardContext === CardName.LOOKOUT
+      ) {
         const selectedLocation = gameInput.clientOptions.selectedLocation;
         if (!selectedLocation) {
           throw new Error("Invalid location selected");
@@ -1205,7 +1231,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     resourcesToGain: {},
     cardDescription: strToGameText("Copy 1 PRODUCTION in an opponent's city"),
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      if (gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS) {
+      if (
+        gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS &&
+        gameInput.cardContext === CardName.MINER_MOLE
+      ) {
         const selectedCards = gameInput.clientOptions.selectedCards;
         if (
           !selectedCards ||
@@ -1322,7 +1351,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             resources: {},
           },
         });
-      } else if (gameInput.inputType === GameInputType.SELECT_RESOURCES) {
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_RESOURCES &&
+        gameInput.cardContext === CardName.MONASTERY
+      ) {
         if (sumResources(gameInput.clientOptions.resources) !== 2) {
           throw new Error(
             `Must choose 2 resources, got: ${JSON.stringify(
@@ -1344,7 +1376,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             selectedPlayer: null,
           },
         });
-      } else if (gameInput.inputType === GameInputType.SELECT_PLAYER) {
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_PLAYER &&
+        gameInput.cardContext === CardName.MONASTERY
+      ) {
         const selectedPlayer = gameInput.clientOptions.selectedPlayer;
         if (!selectedPlayer) {
           throw new Error(
@@ -1385,7 +1420,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     ]),
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
-      if (gameInput.inputType === GameInputType.SELECT_RESOURCES) {
+      if (
+        gameInput.inputType === GameInputType.SELECT_RESOURCES &&
+        gameInput.cardContext === CardName.MONK
+      ) {
         const numBerries =
           gameInput.clientOptions.resources[ResourceType.BERRY] || 0;
         if (numBerries === 0) {
@@ -1410,7 +1448,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             selectedPlayer: null,
           },
         });
-      } else if (gameInput.inputType === GameInputType.SELECT_PLAYER) {
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_PLAYER &&
+        gameInput.cardContext === CardName.MONK
+      ) {
         if (
           !gameInput.prevInput ||
           gameInput.prevInput.inputType !== GameInputType.SELECT_RESOURCES
@@ -1486,7 +1527,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     ),
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
-      if (gameInput.inputType === GameInputType.SELECT_RESOURCES) {
+      if (
+        gameInput.inputType === GameInputType.SELECT_RESOURCES &&
+        gameInput.cardContext === CardName.PEDDLER
+      ) {
         if (gameInput.prevInputType === GameInputType.PLAY_CARD) {
           const numResources = sumResources(gameInput.clientOptions.resources);
           if (numResources < gameInput.minResources) {
@@ -1574,7 +1618,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             selectedPlayer: null,
           },
         });
-      } else if (gameInput.inputType === GameInputType.SELECT_PLAYER) {
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_PLAYER &&
+        gameInput.cardContext === CardName.POST_OFFICE
+      ) {
         if (!gameInput.clientOptions.selectedPlayer) {
           throw new Error("Must select a player");
         }
@@ -1590,7 +1637,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             selectedCards: [],
           },
         });
-      } else if (gameInput.inputType === GameInputType.SELECT_CARDS) {
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_CARDS &&
+        gameInput.cardContext === CardName.POST_OFFICE
+      ) {
         if (
           gameInput.prevInput &&
           gameInput.prevInput.inputType === GameInputType.SELECT_PLAYER
@@ -1670,6 +1720,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       } else if (
         gameInput.inputType === GameInputType.SELECT_CARDS &&
         gameInput.prevInputType === GameInputType.PLAY_CARD &&
+        gameInput.cardContext === CardName.POSTAL_PIGEON &&
         gameInput.cardOptionsUnfiltered
       ) {
         const player = gameState.getActivePlayer();
@@ -1752,7 +1803,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             selectedCards: [],
           },
         });
-      } else if (gameInput.inputType === GameInputType.SELECT_CARDS) {
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_CARDS &&
+        gameInput.cardContext === CardName.QUEEN
+      ) {
         const selectedCards = gameInput.clientOptions.selectedCards;
 
         if (!selectedCards) {
@@ -1806,7 +1860,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           });
         }
       } else if (
-        gameInput.inputType === GameInputType.SELECT_WORKER_PLACEMENT
+        gameInput.inputType === GameInputType.SELECT_WORKER_PLACEMENT &&
+        gameInput.cardContext === CardName.RANGER
       ) {
         const selectedOption = gameInput.clientOptions.selectedOption;
         if (!selectedOption) {
@@ -1930,7 +1985,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             },
           });
         }
-      } else if (gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS) {
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS &&
+        gameInput.cardContext === CardName.RUINS
+      ) {
         const selectedCards = gameInput.clientOptions.selectedCards;
         if (
           !selectedCards ||
@@ -2013,6 +2071,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       } else if (
         gameInput.inputType === GameInputType.SELECT_PLAYER &&
         gameInput.prevInputType === GameInputType.PLAY_CARD &&
+        gameInput.cardContext === CardName.SHEPHERD &&
         !!gameInput.prevInput &&
         gameInput.prevInput.inputType === GameInputType.PLAY_CARD
       ) {
@@ -2114,7 +2173,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
-      if (gameInput.inputType === GameInputType.SELECT_OPTION_GENERIC) {
+      if (
+        gameInput.inputType === GameInputType.SELECT_OPTION_GENERIC &&
+        gameInput.cardContext === CardName.STOREHOUSE
+      ) {
         const playedCard = gameInput.playedCardContext;
         if (!playedCard) {
           throw new Error("Missing played card context.");
@@ -2183,7 +2245,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
-      if (gameInput.inputType === GameInputType.SELECT_CARDS) {
+      if (
+        gameInput.inputType === GameInputType.SELECT_CARDS &&
+        gameInput.cardContext === CardName.TEACHER
+      ) {
         if (!gameInput.clientOptions.selectedCards) {
           throw new Error("invalid selected cards");
         }
@@ -2203,7 +2268,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             selectedPlayer: null,
           },
         });
-      } else if (gameInput.inputType === GameInputType.SELECT_PLAYER) {
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_PLAYER &&
+        gameInput.cardContext === CardName.TEACHER
+      ) {
         if (
           !gameInput.prevInput ||
           gameInput.prevInput.inputType !== GameInputType.SELECT_CARDS
@@ -2287,7 +2355,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         });
       } else if (
         gameInput.inputType === GameInputType.SELECT_CARDS &&
-        gameInput.prevInputType === GameInputType.PLAY_CARD
+        gameInput.prevInputType === GameInputType.PLAY_CARD &&
+        gameInput.cardContext === CardName.UNDERTAKER
       ) {
         // discard the cards from the meadow + replenish
         const selectedCards = gameInput.clientOptions.selectedCards;
@@ -2315,7 +2384,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         });
       } else if (
         gameInput.inputType === GameInputType.SELECT_CARDS &&
-        gameInput.prevInputType === GameInputType.SELECT_CARDS
+        gameInput.prevInputType === GameInputType.SELECT_CARDS &&
+        gameInput.cardContext === CardName.UNDERTAKER
       ) {
         // add this card to player's hand + replenish meadow
         const selectedCards = gameInput.clientOptions.selectedCards;
@@ -2375,7 +2445,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             selectedCards: [],
           },
         });
-      } else if (gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS) {
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS &&
+        gameInput.cardContext === CardName.UNIVERSITY
+      ) {
         // check that they only chose 1 card
         if (gameInput.clientOptions.selectedCards.length !== 1) {
           throw new Error("may only choose one card to remove from city");
@@ -2396,6 +2469,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       } else if (
         gameInput.inputType === GameInputType.SELECT_RESOURCES &&
         gameInput.prevInputType === GameInputType.SELECT_PLAYED_CARDS &&
+        gameInput.cardContext === CardName.UNIVERSITY &&
         !!gameInput.prevInput &&
         gameInput.prevInput.inputType === GameInputType.SELECT_PLAYED_CARDS
       ) {

@@ -18,6 +18,7 @@
   font-size: 12px;
   text-align: center;
   color: #ffffff;
+  text-transform: uppercase;
 }
 
 .card_bottom_row {
@@ -28,6 +29,7 @@
 .associated_card {
   display: flex;
   color: #ffffff;
+  text-transform: uppercase;
 }
 
 .associated_card > span {

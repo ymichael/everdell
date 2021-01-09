@@ -23,6 +23,7 @@ import { assertUnreachable, strToGameText } from "../utils";
 
 export class Location implements GameStatePlayable {
   readonly name: LocationName;
+  readonly shortName: GameText | undefined;
   readonly type: LocationType;
   readonly description: GameText | undefined;
   readonly resourcesToGain: ProductionResourceMap;
@@ -34,6 +35,7 @@ export class Location implements GameStatePlayable {
     name,
     type,
     occupancy,
+    shortName,
     description,
     resourcesToGain,
     playInner,
@@ -42,6 +44,7 @@ export class Location implements GameStatePlayable {
     name: LocationName;
     type: LocationType;
     occupancy: LocationOccupancy;
+    shortName?: GameText | undefined;
     playInner?: GameStatePlayFn;
     resourcesToGain?: ProductionResourceMap;
     canPlayCheckInner?: GameStateCanPlayCheckFn;
@@ -54,32 +57,12 @@ export class Location implements GameStatePlayable {
     this.canPlayCheckInner = canPlayCheckInner;
     this.resourcesToGain = resourcesToGain || {};
     this.description = description;
+    this.shortName = shortName;
   }
 
   getShortName(): GameText {
-    if (sumResources(this.resourcesToGain) !== 0) {
-      const description: GameText = [];
-      [
-        ResourceType.TWIG,
-        ResourceType.RESIN,
-        ResourceType.PEBBLE,
-        ResourceType.BERRY,
-        "CARD" as const,
-        ResourceType.VP,
-      ].forEach((resource: keyof ProductionResourceMap) => {
-        const numResource = this.resourcesToGain[resource] || 0;
-        for (let j = 0; j < numResource; j++) {
-          if (resource === "CARD") {
-            description.push({ type: "symbol", symbol: "CARD" });
-          } else {
-            description.push({
-              type: "resource",
-              resourceType: resource,
-            });
-          }
-        }
-      });
-      return description;
+    if (this.shortName) {
+      return this.shortName;
     }
     return [{ type: "text", text: this.name }];
   }
@@ -190,6 +173,7 @@ export class Location implements GameStatePlayable {
 const LOCATION_REGISTRY: Record<LocationName, Location> = {
   [LocationName.HAVEN]: new Location({
     name: LocationName.HAVEN,
+    shortName: strToGameText("Haven"),
     type: LocationType.HAVEN,
     occupancy: LocationOccupancy.UNLIMITED,
     description: strToGameText([
@@ -257,6 +241,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
   }),
   [LocationName.JOURNEY_FIVE]: new Location({
     name: LocationName.JOURNEY_FIVE,
+    shortName: strToGameText("Journey 5"),
     type: LocationType.JOURNEY,
     occupancy: LocationOccupancy.EXCLUSIVE,
     description: strToGameText("Discard 5 CARD"),
@@ -265,6 +250,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
   }),
   [LocationName.JOURNEY_FOUR]: new Location({
     name: LocationName.JOURNEY_FOUR,
+    shortName: strToGameText("Journey 4"),
     type: LocationType.JOURNEY,
     occupancy: LocationOccupancy.EXCLUSIVE,
     description: strToGameText("Discard 4 CARD"),
@@ -273,6 +259,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
   }),
   [LocationName.JOURNEY_THREE]: new Location({
     name: LocationName.JOURNEY_THREE,
+    shortName: strToGameText("Journey 3"),
     type: LocationType.JOURNEY,
     occupancy: LocationOccupancy.EXCLUSIVE,
     description: strToGameText("Discard 3 CARD"),
@@ -281,6 +268,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
   }),
   [LocationName.JOURNEY_TWO]: new Location({
     name: LocationName.JOURNEY_TWO,
+    shortName: strToGameText("Journey 2"),
     type: LocationType.JOURNEY,
     occupancy: LocationOccupancy.UNLIMITED,
     description: strToGameText("Discard 2 CARD"),
@@ -289,6 +277,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
   }),
   [LocationName.BASIC_ONE_BERRY]: new Location({
     name: LocationName.BASIC_ONE_BERRY,
+    shortName: strToGameText("BERRY"),
     type: LocationType.BASIC,
     occupancy: LocationOccupancy.UNLIMITED,
     resourcesToGain: {
@@ -297,6 +286,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
   }),
   [LocationName.BASIC_ONE_BERRY_AND_ONE_CARD]: new Location({
     name: LocationName.BASIC_ONE_BERRY_AND_ONE_CARD,
+    shortName: strToGameText(["BERRY", "CARD"]),
     type: LocationType.BASIC,
     occupancy: LocationOccupancy.EXCLUSIVE,
     resourcesToGain: {
@@ -306,6 +296,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
   }),
   [LocationName.BASIC_ONE_RESIN_AND_ONE_CARD]: new Location({
     name: LocationName.BASIC_ONE_RESIN_AND_ONE_CARD,
+    shortName: strToGameText(["RESIN", "CARD"]),
     type: LocationType.BASIC,
     occupancy: LocationOccupancy.UNLIMITED,
     resourcesToGain: {
@@ -315,6 +306,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
   }),
   [LocationName.BASIC_ONE_STONE]: new Location({
     name: LocationName.BASIC_ONE_STONE,
+    shortName: strToGameText(["PEBBLE"]),
     type: LocationType.BASIC,
     occupancy: LocationOccupancy.EXCLUSIVE,
     resourcesToGain: {
@@ -323,6 +315,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
   }),
   [LocationName.BASIC_THREE_TWIGS]: new Location({
     name: LocationName.BASIC_THREE_TWIGS,
+    shortName: strToGameText(["TWIG", "TWIG", "TWIG"]),
     type: LocationType.BASIC,
     occupancy: LocationOccupancy.EXCLUSIVE,
     resourcesToGain: {
@@ -331,6 +324,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
   }),
   [LocationName.BASIC_TWO_CARDS_AND_ONE_VP]: new Location({
     name: LocationName.BASIC_TWO_CARDS_AND_ONE_VP,
+    shortName: strToGameText(["CARD", "CARD", "VP"]),
     type: LocationType.BASIC,
     occupancy: LocationOccupancy.UNLIMITED,
     resourcesToGain: {
@@ -340,6 +334,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
   }),
   [LocationName.BASIC_TWO_RESIN]: new Location({
     name: LocationName.BASIC_TWO_RESIN,
+    shortName: strToGameText(["RESIN", "RESIN"]),
     type: LocationType.BASIC,
     occupancy: LocationOccupancy.EXCLUSIVE,
     resourcesToGain: {
@@ -348,6 +343,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
   }),
   [LocationName.BASIC_TWO_TWIGS_AND_ONE_CARD]: new Location({
     name: LocationName.BASIC_TWO_TWIGS_AND_ONE_CARD,
+    shortName: strToGameText(["TWIG", "TWIG", "CARD"]),
     type: LocationType.BASIC,
     occupancy: LocationOccupancy.UNLIMITED,
     resourcesToGain: {
@@ -357,6 +353,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
   }),
   [LocationName.FOREST_TWO_BERRY_ONE_CARD]: new Location({
     name: LocationName.FOREST_TWO_BERRY_ONE_CARD,
+    shortName: strToGameText(["BERRY", "BERRY", "CARD"]),
     type: LocationType.FOREST,
     occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
     resourcesToGain: {
@@ -366,6 +363,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
   }),
   [LocationName.FOREST_TWO_WILD]: new Location({
     name: LocationName.FOREST_TWO_WILD,
+    shortName: strToGameText(["ANY", "ANY"]),
     type: LocationType.FOREST,
     occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
     description: strToGameText("ANY ANY"),
@@ -405,6 +403,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
   // discard any number of cards and then draw 2 cards per card discarded
   [LocationName.FOREST_DISCARD_ANY_THEN_DRAW_TWO_PER_CARD]: new Location({
     name: LocationName.FOREST_DISCARD_ANY_THEN_DRAW_TWO_PER_CARD,
+    shortName: strToGameText(["-X CARD, +2X CARD"]),
     type: LocationType.FOREST,
     occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
     description: strToGameText(
@@ -451,6 +450,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
   // copy one basic location and draw one card
   [LocationName.FOREST_COPY_BASIC_ONE_CARD]: new Location({
     name: LocationName.FOREST_COPY_BASIC_ONE_CARD,
+    shortName: strToGameText(["Copy 1 Basic Location & CARD"]),
     type: LocationType.FOREST,
     occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
     description: strToGameText("Copy any Basic location and draw 1 CARD"),
@@ -490,6 +490,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
   }),
   [LocationName.FOREST_ONE_PEBBLE_THREE_CARD]: new Location({
     name: LocationName.FOREST_ONE_PEBBLE_THREE_CARD,
+    shortName: strToGameText(["PEBBLE", "CARD", "CARD", "CARD"]),
     type: LocationType.FOREST,
     occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
     resourcesToGain: {
@@ -499,6 +500,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
   }),
   [LocationName.FOREST_ONE_TWIG_RESIN_BERRY]: new Location({
     name: LocationName.FOREST_ONE_TWIG_RESIN_BERRY,
+    shortName: strToGameText(["TWIG", "RESIN", "BERRY"]),
     type: LocationType.FOREST,
     occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
     resourcesToGain: {
@@ -509,6 +511,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
   }),
   [LocationName.FOREST_THREE_BERRY]: new Location({
     name: LocationName.FOREST_THREE_BERRY,
+    shortName: strToGameText(["BERRY", "BERRY", "BERRY"]),
     type: LocationType.FOREST,
     occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
     resourcesToGain: {
@@ -517,6 +520,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
   }),
   [LocationName.FOREST_TWO_RESIN_ONE_TWIG]: new Location({
     name: LocationName.FOREST_TWO_RESIN_ONE_TWIG,
+    shortName: strToGameText(["RESIN", "RESIN", "TWIG"]),
     type: LocationType.FOREST,
     occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
     resourcesToGain: {
@@ -526,6 +530,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
   }),
   [LocationName.FOREST_TWO_CARDS_ONE_WILD]: new Location({
     name: LocationName.FOREST_TWO_CARDS_ONE_WILD,
+    shortName: strToGameText(["CARD", "CARD", "ANY"]),
     type: LocationType.FOREST,
     occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
     description: strToGameText("CARD CARD ANY"),
@@ -565,6 +570,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
   [LocationName.FOREST_DISCARD_UP_TO_THREE_CARDS_TO_GAIN_WILD_PER_CARD]: new Location(
     {
       name: LocationName.FOREST_DISCARD_UP_TO_THREE_CARDS_TO_GAIN_WILD_PER_CARD,
+      shortName: strToGameText(["-3 CARD, +3 ANY"]),
       type: LocationType.FOREST,
       occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
       description: strToGameText(
@@ -637,6 +643,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
   ),
   [LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS]: new Location({
     name: LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS,
+    shortName: strToGameText("Draw 2 Meadow CARD and play 1 for -1 ANY."),
     type: LocationType.FOREST,
     occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
     description: strToGameText("Draw 2 Meadow CARD and play 1 for -1 ANY."),

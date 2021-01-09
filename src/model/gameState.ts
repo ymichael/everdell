@@ -487,31 +487,25 @@ export class GameState {
         );
         break;
       case GameInputType.PLACE_WORKER:
-        const location = Location.fromName(gameInput.clientOptions.location!);
         this.addGameLog([
+          { type: "text", text: `${player.name} place a worker on ` },
           {
-            type: "text",
-            text: `${player.name} place a worker on `,
+            type: "entity",
+            entityType: "location",
+            location: gameInput.clientOptions.location!,
           },
-          ...location.shortName,
-          {
-            type: "text",
-            text: ".",
-          },
+          { type: "text", text: "." },
         ]);
         break;
       case GameInputType.CLAIM_EVENT:
-        const event = Event.fromName(gameInput.clientOptions.event!);
         this.addGameLog([
+          { type: "text", text: `${player.name} claimed the ` },
           {
-            type: "text",
-            text: `${player.name} claimed the `,
+            type: "entity",
+            entityType: "event",
+            event: gameInput.clientOptions.event!,
           },
-          ...event.getShortName(),
-          {
-            type: "text",
-            text: ` event.`,
-          },
+          { type: "text", text: ` event.` },
         ]);
         break;
       case GameInputType.PREPARE_FOR_SEASON:
@@ -525,18 +519,25 @@ export class GameState {
       case GameInputType.SELECT_PLAYER:
       case GameInputType.SELECT_RESOURCES:
       case GameInputType.DISCARD_CARDS:
-        const contextParts = gameInput.locationContext
-          ? Location.fromName(gameInput.locationContext).shortName
+        const contextPart = gameInput.locationContext
+          ? {
+              type: "entity" as const,
+              entityType: "location" as const,
+              location: gameInput.locationContext!,
+            }
           : gameInput.eventContext
-          ? Event.fromName(gameInput.eventContext).getShortName()
-          : [
-              {
-                type: "text" as const,
-                text: gameInput.cardContext || gameInput.prevInputType,
-              },
-            ];
+          ? {
+              type: "entity" as const,
+              entityType: "event" as const,
+              event: gameInput.eventContext,
+            }
+          : {
+              type: "text" as const,
+              text: gameInput.cardContext || gameInput.prevInputType,
+            };
+
         this.addGameLog([
-          ...contextParts,
+          contextPart,
           {
             type: "text",
             text: ": ",

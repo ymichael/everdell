@@ -480,6 +480,18 @@ export type CardPaymentOptions = {
   };
 };
 
+export type TextPartEntity =
+  | {
+      type: "entity";
+      entityType: "location";
+      location: LocationName;
+    }
+  | {
+      type: "entity";
+      entityType: "event";
+      event: EventName;
+    };
+
 export type TextPartIcon =
   | { type: "resource"; resourceType: ResourceType | "ANY" }
   | { type: "cardType"; cardType: CardType }
@@ -490,5 +502,6 @@ export type TextPart =
   | { type: "text"; text: string }
   | TextPartIcon
   | TextPartBR
-  | TextPartHR;
+  | TextPartHR
+  | TextPartEntity;
 export type GameText = TextPart[];

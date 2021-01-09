@@ -2,6 +2,8 @@ import * as React from "react";
 import Image from "next/image";
 
 import styles from "../styles/common.module.css";
+import { Event } from "../model/event";
+import { Location } from "../model/location";
 import { GameText, TextPart, ResourceType, CardType } from "../model/types";
 import { assertUnreachable } from "../utils";
 
@@ -125,6 +127,25 @@ export const Description = ({ textParts }: { textParts: GameText }) => {
             return <GameIcon key={idx} type={part.cardType} />;
           case "symbol":
             return <GameIcon key={idx} type={part.symbol} />;
+          case "entity":
+            if (part.entityType === "event") {
+              return (
+                <span className={styles.entity_part}>
+                  <Description
+                    textParts={Event.fromName(part.event).getShortName()}
+                  />
+                </span>
+              );
+            }
+            if (part.entityType === "location") {
+              return (
+                <span className={styles.entity_part}>
+                  <Description
+                    textParts={Location.fromName(part.location).shortName}
+                  />
+                </span>
+              );
+            }
           default:
             assertUnreachable(part, `Unexpected part: ${JSON.stringify(part)}`);
         }

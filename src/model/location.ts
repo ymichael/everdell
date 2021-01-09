@@ -570,7 +570,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
   [LocationName.FOREST_DISCARD_UP_TO_THREE_CARDS_TO_GAIN_WILD_PER_CARD]: new Location(
     {
       name: LocationName.FOREST_DISCARD_UP_TO_THREE_CARDS_TO_GAIN_WILD_PER_CARD,
-      shortName: strToGameText(["-3 CARD, +3 ANY"]),
+      shortName: strToGameText(["-3 CARD +3 ANY"]),
       type: LocationType.FOREST,
       occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
       description: strToGameText(
@@ -643,7 +643,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
   ),
   [LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS]: new Location({
     name: LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS,
-    shortName: strToGameText("Draw 2 Meadow CARD and play 1 for -1 ANY."),
+    shortName: strToGameText("Draw 2 Meadow CARD and play 1 for -1 ANY"),
     type: LocationType.FOREST,
     occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
     description: strToGameText("Draw 2 Meadow CARD and play 1 for -1 ANY."),

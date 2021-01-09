@@ -10,7 +10,6 @@ import {
   LocationName,
 } from "../../model/types";
 import { Game as GameModel } from "../../model/game";
-import GameAdmin from "../../components/GameAdmin";
 import Game from "../../components/Game";
 
 import { testInitialGameState } from "../../model/testHelpers";

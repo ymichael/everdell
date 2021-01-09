@@ -1,8 +1,6 @@
 .logs {
   display: flex;
   flex-direction: column;
-
-  height: 150px;
   width: 500px;
 
   margin: 10px 0;
@@ -12,6 +10,10 @@
 
   overflow-y: scroll;
   scroll-behavior: smooth;
+}
+
+.logs_height {
+  height: 150px;
 }
 
 .log {

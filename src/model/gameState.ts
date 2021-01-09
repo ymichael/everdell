@@ -478,7 +478,7 @@ export class GameState {
     }
   }
 
-  private updateGameLog(gameInput: GameInput): void {
+  updateGameLog(gameInput: GameInput): void {
     const player = this.getActivePlayer();
     switch (gameInput.inputType) {
       case GameInputType.PLAY_CARD:

@@ -1,4 +1,10 @@
-import { GameText, TextPart, ResourceType, CardType } from "./model/types";
+import {
+  GameLogEntry,
+  GameText,
+  TextPart,
+  ResourceType,
+  CardType,
+} from "./model/types";
 import flatten from "lodash/flatten";
 
 export function assertUnreachable(x: never, msg: string): never {

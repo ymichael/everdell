@@ -59,7 +59,7 @@ const Game: React.FC<{
           gameState={gameStateImpl}
           viewingPlayer={viewingPlayerImpl}
         />
-        <GameLog logs={game.gameLogBuffer} />
+        <GameLog logs={gameState.gameLog} />
         <GameInputBox
           gameId={gameId}
           gameState={gameState}

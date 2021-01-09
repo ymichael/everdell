@@ -17,7 +17,6 @@ export type GameJSON = {
   gameId: string;
   gameSecret: string;
   gameState: GameStateJSON;
-  gameLogBuffer: GameLogEntry[];
 };
 
 export type GameStateJSON = {
@@ -30,6 +29,7 @@ export type GameStateJSON = {
   locationsMap: LocationNameToPlayerIds;
   eventsMap: EventNameToPlayerId;
   pendingGameInputs: GameInputMultiStep[];
+  gameLog: GameLogEntry[];
 };
 
 export type CardStackJSON = {

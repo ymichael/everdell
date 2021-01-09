@@ -57,16 +57,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   gameState.replenishMeadow();
 
-  const game = new GameModel("testGameId", "testGameSecret", gameState, [
-    {
-      entry: [
-        {
-          type: "text",
-          text: `Test game created with ${numPlayers} players.`,
-        },
-      ],
-    },
-  ]);
+  const game = new GameModel({
+    gameId: "testGameId",
+    gameSecret: "testGameSecret",
+    gameState,
+  });
 
   game.applyGameInput({
     inputType: GameInputType.CLAIM_EVENT,

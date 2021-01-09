@@ -18,6 +18,7 @@ import {
   GameInputWorkerPlacementTypes,
   PlayedCardInfo,
   PlayerStatus,
+  GameLogEntry,
 } from "./types";
 import { GameStateJSON } from "./jsonTypes";
 import { Player } from "./player";
@@ -26,7 +27,7 @@ import { CardStack, discardPile } from "./cardStack";
 import { Location, initialLocationsMap } from "./location";
 import { Event, initialEventMap } from "./event";
 import { initialDeck } from "./deck";
-import { assertUnreachable } from "../utils";
+import { assertUnreachable, strToGameText } from "../utils";
 
 import cloneDeep from "lodash/cloneDeep";
 import isEqual from "lodash/isEqual";
@@ -34,6 +35,7 @@ import omit from "lodash/omit";
 
 const MEADOW_SIZE = 8;
 const STARTING_PLAYER_HAND_SIZE = 5;
+const MAX_GAME_LOG_BUFFER = 100;
 
 export class GameState {
   readonly gameStateId: number;
@@ -45,6 +47,7 @@ export class GameState {
   readonly deck: CardStack;
   readonly locationsMap: LocationNameToPlayerIds;
   readonly eventsMap: EventNameToPlayerId;
+  readonly gameLog: GameLogEntry[];
 
   constructor({
     gameStateId,
@@ -55,6 +58,7 @@ export class GameState {
     deck,
     locationsMap,
     eventsMap,
+    gameLog = [],
     pendingGameInputs = [],
   }: {
     gameStateId: number;
@@ -66,6 +70,7 @@ export class GameState {
     locationsMap: LocationNameToPlayerIds;
     eventsMap: EventNameToPlayerId;
     pendingGameInputs: GameInputMultiStep[];
+    gameLog: GameLogEntry[];
   }) {
     this.gameStateId = gameStateId;
     this.players = players;
@@ -76,10 +81,19 @@ export class GameState {
     this.eventsMap = eventsMap;
     this._activePlayerId = activePlayerId || players[0].playerId;
     this.pendingGameInputs = pendingGameInputs;
+    this.gameLog = gameLog;
   }
 
   get activePlayerId(): string {
     return this._activePlayerId;
+  }
+
+  addGameLog(args: Parameters<typeof strToGameText>[0]): void {
+    const logSize = this.gameLog.length;
+    if (logSize > MAX_GAME_LOG_BUFFER) {
+      this.gameLog.splice(0, Math.floor(MAX_GAME_LOG_BUFFER / 2));
+    }
+    this.gameLog.push({ entry: strToGameText(args) });
   }
 
   toJSON(includePrivate: boolean): GameStateJSON {
@@ -94,6 +108,7 @@ export class GameState {
         pendingGameInputs: [],
         deck: this.deck.toJSON(includePrivate),
         discardPile: this.discardPile.toJSON(includePrivate),
+        gameLog: this.gameLog,
       },
       ...(includePrivate
         ? {
@@ -390,6 +405,11 @@ export class GameState {
   }
 
   next(gameInput: GameInput): GameState {
+    this.updateGameLog(gameInput);
+    return this.nextInner(gameInput);
+  }
+
+  private nextInner(gameInput: GameInput): GameState {
     const nextGameState = this.clone();
     if (nextGameState.pendingGameInputs.length !== 0) {
       nextGameState.removeMultiStepGameInput(gameInput as any);
@@ -443,7 +463,96 @@ export class GameState {
       nextGameState.nextPlayer();
     }
 
+    nextGameState.handleGameOver();
+
     return nextGameState;
+  }
+
+  private handleGameOver(): void {
+    if (this.isGameOver()) {
+      this.addGameLog("Game over");
+
+      this.players.forEach((player) => {
+        this.addGameLog(`${player.name} has ${player.getPoints(this)} points.`);
+      });
+    }
+  }
+
+  private updateGameLog(gameInput: GameInput): void {
+    const player = this.getActivePlayer();
+    switch (gameInput.inputType) {
+      case GameInputType.PLAY_CARD:
+        this.addGameLog(
+          `${player.name} played ${gameInput.clientOptions.card}`
+        );
+        break;
+      case GameInputType.PLACE_WORKER:
+        const location = Location.fromName(gameInput.clientOptions.location!);
+        this.addGameLog([
+          {
+            type: "text",
+            text: `${player.name} place a worker on `,
+          },
+          ...location.getShortName(),
+          {
+            type: "text",
+            text: ".",
+          },
+        ]);
+        break;
+      case GameInputType.CLAIM_EVENT:
+        const event = Event.fromName(gameInput.clientOptions.event!);
+        this.addGameLog([
+          {
+            type: "text",
+            text: `${player.name} claimed the `,
+          },
+          ...event.getShortName(),
+          {
+            type: "text",
+            text: ` event.`,
+          },
+        ]);
+        break;
+      case GameInputType.PREPARE_FOR_SEASON:
+        this.addGameLog(`${player.name} took the prepare for season action.`);
+        break;
+      case GameInputType.SELECT_CARDS:
+      case GameInputType.SELECT_PLAYED_CARDS:
+      case GameInputType.SELECT_LOCATION:
+      case GameInputType.SELECT_PAYMENT_FOR_CARD:
+      case GameInputType.SELECT_WORKER_PLACEMENT:
+      case GameInputType.SELECT_PLAYER:
+      case GameInputType.SELECT_RESOURCES:
+      case GameInputType.DISCARD_CARDS:
+        const contextParts = gameInput.locationContext
+          ? Location.fromName(gameInput.locationContext).getShortName()
+          : gameInput.eventContext
+          ? Event.fromName(gameInput.eventContext).getShortName()
+          : [
+              {
+                type: "text" as const,
+                text: gameInput.cardContext || gameInput.prevInputType,
+              },
+            ];
+        this.addGameLog([
+          ...contextParts,
+          {
+            type: "text",
+            text: ": ",
+          },
+          {
+            type: "text",
+            text: `${player.name} took ${gameInput.inputType} action.`,
+          },
+        ]);
+        break;
+      case GameInputType.GAME_END:
+      case GameInputType.VISIT_DESTINATION_CARD:
+      default:
+        this.addGameLog(`${player.name} took ${gameInput.inputType} action.`);
+        break;
+    }
   }
 
   static fromJSON(gameStateJSON: GameStateJSON): GameState {
@@ -476,8 +585,11 @@ export class GameState {
       discardPile: discardPile(),
       locationsMap: initialLocationsMap(players.length),
       eventsMap: initialEventMap(),
+      gameLog: [],
       pendingGameInputs: [],
     });
+
+    gameState.addGameLog(`Game created with ${players.length} players.`);
 
     if (shuffleDeck) {
       gameState.deck.shuffle();
@@ -487,9 +599,11 @@ export class GameState {
     players.forEach((p, idx) => {
       p.drawCards(gameState, STARTING_PLAYER_HAND_SIZE + idx);
     });
+    gameState.addGameLog(`Dealing cards to each player.`);
 
     // Draw cards onto the meadow
     gameState.replenishMeadow();
+    gameState.addGameLog(`Dealing cards to the Meadow.`);
 
     return gameState;
   }

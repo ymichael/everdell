@@ -34,6 +34,7 @@
 .event_header {
   font-weight: var(--font-bold);
   font-size: 12px;
+  text-transform: uppercase;
 }
 
 .base_vp {

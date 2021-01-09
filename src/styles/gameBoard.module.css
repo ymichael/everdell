@@ -1,5 +1,6 @@
 .items {
   margin-left: -10px;
+  margin-bottom: 20px;
   display: flex;
   flex-wrap: wrap;
 }
@@ -35,4 +36,12 @@
 
 .clickable {
   cursor: pointer;
+}
+
+.item_footer_text {
+  margin: 10px;
+  font-weight: var(--font-bold);
+  font-size: 10px;
+  text-align: center;
+  text-transform: uppercase;
 }

@@ -1,7 +1,5 @@
 import * as React from "react";
-import omit from "lodash/omit";
-import isEqual from "lodash/isEqual";
-import { FormikProps, Formik, Form, Field, FieldArray, useField } from "formik";
+import { Form, Field } from "formik";
 import CardPayment from "./CardPayment";
 
 import styles from "../styles/GameInputBox.module.css";
@@ -14,10 +12,7 @@ import {
 } from "../model/types";
 import { GameStateJSON } from "../model/jsonTypes";
 import { Player } from "../model/player";
-import { Card as CardModel } from "../model/card";
-import { ResourceTypeIcon, GameBlock } from "./common";
-import Card from "./Card";
-import Location from "./Location";
+import { GameBlock } from "./common";
 
 import { GameInputBoxContainer } from "./gameInputCommon";
 import GameInputDiscardCards from "./GameInputDiscardCards";
@@ -31,6 +26,7 @@ import GameInputSelectPaymentForCard from "./GameInputSelectPaymentForCard";
 import GameInputSelectWorkerPlacement from "./GameInputSelectWorkerPlacement";
 import GameInputVisitDestinationCard from "./GameInputVisitDestinationCard";
 import GameInputSelectOptionGeneric from "./GameInputSelectOptionGeneric";
+import GameInputPlayCard from "./GameInputPlayCard";
 
 import { assertUnreachable } from "../utils";
 
@@ -52,72 +48,6 @@ const gameInputSortOrder: Partial<Record<GameInputType, number>> = {
   [GameInputType.VISIT_DESTINATION_CARD]: 3,
   [GameInputType.PREPARE_FOR_SEASON]: 4,
   [GameInputType.GAME_END]: 5,
-};
-
-const GameInputPlayCardSelector: React.FC<{
-  options: { card: CardName; fromMeadow: boolean }[];
-  viewingPlayer: Player;
-}> = ({ options = [], viewingPlayer }) => {
-  const [field, meta, helpers] = useField("gameInput.clientOptions");
-  return (
-    <div className={styles.selector}>
-      <div role="group">
-        <p>Choose a card to play:</p>
-        <div className={styles.play_card_list}>
-          {options.map(({ card, fromMeadow }, idx) => {
-            const isSelected =
-              meta.value &&
-              meta.value.card === card &&
-              meta.value.fromMeadow === fromMeadow &&
-              meta.value._idx === idx;
-            return (
-              <div key={idx} className={styles.play_card_list_item_wrapper}>
-                <div
-                  key={idx}
-                  className={[
-                    styles.play_card_list_item,
-                    isSelected && styles.play_card_list_item_selected,
-                  ]
-                    .filter(Boolean)
-                    .join(" ")}
-                  onClick={() => {
-                    helpers.setValue({
-                      _idx: idx,
-                      card,
-                      fromMeadow,
-                      paymentOptions: {
-                        cardToUse: null,
-                        resources: {
-                          [ResourceType.BERRY]: 0,
-                          [ResourceType.TWIG]: 0,
-                          [ResourceType.RESIN]: 0,
-                          [ResourceType.PEBBLE]: 0,
-                        },
-                      },
-                    });
-                  }}
-                >
-                  <Card name={card} />
-                  {fromMeadow && (
-                    <div className={styles.play_card_list_item_label}>
-                      (Meadow)
-                    </div>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-      {meta.value && (
-        <CardPayment
-          name={"gameInput.clientOptions.paymentOptions"}
-          clientOptions={meta.value}
-          viewingPlayer={viewingPlayer}
-        />
-      )}
-    </div>
-  );
 };
 
 const GameInputBox: React.FC<{
@@ -199,7 +129,7 @@ const GameInputBox: React.FC<{
                             locations={gameStateImpl.getPlayableLocations()}
                           />
                         ) : gameInput.inputType === GameInputType.PLAY_CARD ? (
-                          <GameInputPlayCardSelector
+                          <GameInputPlayCard
                             viewingPlayer={viewingPlayer}
                             options={gameStateImpl.getPlayableCards()}
                           />

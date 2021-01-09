@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Head from "next/head";
 import styles from "../../styles/test.module.css";
 
-import { GameBlock } from "../../components/common";
+import { GameBlock, ItemWrapper } from "../../components/common";
 import Card from "../../components/Card";
 import Location from "../../components/Location";
 import Event from "../../components/Event";
@@ -67,7 +67,11 @@ export default function TestPage() {
             return !filter || x.toLowerCase().indexOf(filter) !== -1;
           })
           .map((card) => {
-            return <Card key={card} name={card} />;
+            return (
+              <ItemWrapper>
+                <Card key={card} name={card} />
+              </ItemWrapper>
+            );
           })}
       </ItemsList>
       <ItemsList title={"Locations"} visible={showLocations}>

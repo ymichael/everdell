@@ -1,7 +1,7 @@
 import { GetServerSideProps } from "next";
 
 import { GameStateJSON } from "../../model/jsonTypes";
-import { LocationName, GameInputType } from "../../model/types";
+import { LocationName, EventName, GameInputType } from "../../model/types";
 import { GameState } from "../../model/gameState";
 import GameLog from "../../components/GameLog";
 
@@ -23,6 +23,15 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       inputType: GameInputType.PLACE_WORKER,
       clientOptions: {
         location,
+      },
+    });
+  });
+
+  Object.values(EventName).forEach((event) => {
+    gameState.updateGameLog({
+      inputType: GameInputType.CLAIM_EVENT,
+      clientOptions: {
+        event,
       },
     });
   });

@@ -31,17 +31,6 @@ const resourceTypeList = [
   "CARD" as const,
 ];
 
-const LocationDescription = ({ location }: { location: LocationModel }) => {
-  if (location.description) {
-    return <Description textParts={location.description} />;
-  }
-  const shortName = location.getShortName();
-  if (shortName.length !== 0) {
-    return <Description textParts={shortName} />;
-  }
-  return <>{location.name}</>;
-};
-
 export const LocationInner: React.FC<{ name: LocationName }> = ({ name }) => {
   const location = LocationModel.fromName(name as any);
   const colorClass = colorClassMap[location.type];
@@ -50,7 +39,7 @@ export const LocationInner: React.FC<{ name: LocationName }> = ({ name }) => {
       <div className={[styles.location, colorClass].join(" ")}>
         <div className={styles.location_top}></div>
         <div className={styles.location_center}>
-          <LocationDescription location={location} />
+          <Description textParts={location.description || location.shortName} />
         </div>
         <div className={styles.location_bot}>
           <div className={styles.location_type}>{location.type}</div>

@@ -29,6 +29,7 @@ export class Event implements GameStatePlayable {
     | undefined;
 
   readonly name: EventName;
+  readonly shortName: GameText | undefined;
   readonly type: EventType;
   readonly baseVP: number;
   readonly requiredCards: CardName[] | undefined;
@@ -42,6 +43,7 @@ export class Event implements GameStatePlayable {
     name,
     type,
     baseVP,
+    shortName,
     requiredCards,
     eventDescription,
     eventRequirementsDescription,
@@ -53,6 +55,7 @@ export class Event implements GameStatePlayable {
     name: EventName;
     type: EventType;
     baseVP: number;
+    shortName?: GameText | undefined;
     requiredCards?: CardName[];
     eventDescription?: GameText;
     eventRequirementsDescription?: GameText;
@@ -71,18 +74,24 @@ export class Event implements GameStatePlayable {
     this.playInner = playInner;
     this.playedEventInfoInner = playedEventInfoInner;
     this.pointsInner = pointsInner;
+    this.shortName = shortName;
   }
 
   getShortName(): GameText {
+    if (this.shortName) {
+      return this.shortName;
+    }
     if (this.eventRequirementsDescription) {
       return this.eventRequirementsDescription;
     }
-    return [
-      {
-        type: "text",
-        text: this.name,
-      },
-    ];
+    if (this.requiredCards) {
+      return [
+        { type: "text", text: this.requiredCards[0] },
+        { type: "text", text: ", " },
+        { type: "text", text: this.requiredCards[1] },
+      ];
+    }
+    return [{ type: "text", text: this.name }];
   }
 
   canPlay(gameState: GameState, gameInput: GameInput): boolean {
@@ -1083,6 +1092,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_THE_EVERDELL_GAMES,
     type: EventType.SPECIAL,
     baseVP: 9,
+    shortName: strToGameText("The Everdell Games"),
     eventRequirementsDescription: [
       { type: "text", text: "2 Each of " },
       { type: "BR" },

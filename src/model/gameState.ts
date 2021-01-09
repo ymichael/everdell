@@ -493,7 +493,7 @@ export class GameState {
             type: "text",
             text: `${player.name} place a worker on `,
           },
-          ...location.getShortName(),
+          ...location.shortName,
           {
             type: "text",
             text: ".",
@@ -526,7 +526,7 @@ export class GameState {
       case GameInputType.SELECT_RESOURCES:
       case GameInputType.DISCARD_CARDS:
         const contextParts = gameInput.locationContext
-          ? Location.fromName(gameInput.locationContext).getShortName()
+          ? Location.fromName(gameInput.locationContext).shortName
           : gameInput.eventContext
           ? Event.fromName(gameInput.eventContext).getShortName()
           : [

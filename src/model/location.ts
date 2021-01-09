@@ -23,7 +23,7 @@ import { assertUnreachable, strToGameText } from "../utils";
 
 export class Location implements GameStatePlayable {
   readonly name: LocationName;
-  readonly shortName: GameText | undefined;
+  readonly shortName: GameText;
   readonly type: LocationType;
   readonly description: GameText | undefined;
   readonly resourcesToGain: ProductionResourceMap;
@@ -44,7 +44,7 @@ export class Location implements GameStatePlayable {
     name: LocationName;
     type: LocationType;
     occupancy: LocationOccupancy;
-    shortName?: GameText | undefined;
+    shortName: GameText;
     playInner?: GameStatePlayFn;
     resourcesToGain?: ProductionResourceMap;
     canPlayCheckInner?: GameStateCanPlayCheckFn;
@@ -58,13 +58,6 @@ export class Location implements GameStatePlayable {
     this.resourcesToGain = resourcesToGain || {};
     this.description = description;
     this.shortName = shortName;
-  }
-
-  getShortName(): GameText {
-    if (this.shortName) {
-      return this.shortName;
-    }
-    return [{ type: "text", text: this.name }];
   }
 
   canPlay(gameState: GameState, gameInput: GameInput): boolean {

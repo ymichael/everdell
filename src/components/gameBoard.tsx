@@ -176,12 +176,13 @@ export const PlayerCity: React.FC<{ player: Player; viewerId: string }> = ({
   return playedCards.length !== 0 ? (
     <div className={styles.items}>
       {playedCards.map((playedCard, idx) => (
-        <PlayedCard
-          key={idx}
-          playedCard={playedCard}
-          viewerId={viewerId}
-          cardOwner={player}
-        />
+        <ItemWrapper key={idx}>
+          <PlayedCard
+            playedCard={playedCard}
+            viewerId={viewerId}
+            cardOwner={player}
+          />
+        </ItemWrapper>
       ))}
     </div>
   ) : (

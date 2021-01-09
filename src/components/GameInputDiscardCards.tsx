@@ -1,11 +1,14 @@
 import * as React from "react";
 import { useRef } from "react";
+import { useField } from "formik";
+
 import styles from "../styles/gameBoard.module.css";
+
 import { GameInputDiscardCards as TGameInputDiscardCards } from "../model/types";
 import { Player } from "../model/player";
+
 import Card from "./Card";
 import { ItemWrapper } from "./common";
-import { useField } from "formik";
 
 const textLabel = (gameInput: TGameInputDiscardCards) => {
   let numLabel = "";
@@ -25,12 +28,11 @@ const textLabel = (gameInput: TGameInputDiscardCards) => {
 };
 
 const GameInputDiscardCards: React.FC<{
+  name: string;
   gameInput: TGameInputDiscardCards;
   viewingPlayer: Player;
-}> = ({ gameInput, viewingPlayer }) => {
-  const [field, meta, helpers] = useField(
-    "gameInput.clientOptions.cardsToDiscard"
-  );
+}> = ({ name, gameInput, viewingPlayer }) => {
+  const [field, meta, helpers] = useField(name);
   const selectedCardIdx = useRef<any>({});
   return (
     <>

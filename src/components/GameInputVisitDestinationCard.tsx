@@ -1,16 +1,17 @@
 import * as React from "react";
 import { useRef } from "react";
+import { useField } from "formik";
+import isEqual from "lodash/isEqual";
+
+import styles from "../styles/gameBoard.module.css";
 
 import { PlayedCardInfo } from "../model/types";
 import { Player } from "../model/player";
 import { GameState } from "../model/gameState";
-
-import { useField } from "formik";
-import styles from "../styles/GameInputBox.module.css";
-import { PlayedCard } from "./Card";
 import { GameInputType, GameInput } from "../model/types";
 
-import isEqual from "lodash/isEqual";
+import { PlayedCard } from "./Card";
+import { ItemWrapper } from "./common";
 
 const GameInputVisitDestinationCard: React.FC<{
   name: string;
@@ -20,22 +21,17 @@ const GameInputVisitDestinationCard: React.FC<{
 }> = ({ name, gameState, destinations = [], viewingPlayer }) => {
   const [field, meta, helpers] = useField(name);
   return (
-    <div className={styles.selector}>
+    <div>
       <div role="group">
         <p>Select a card to visit:</p>
-        <div className={styles.play_card_list}>
+        <div className={styles.items}>
           {destinations.map((playedCard, idx) => {
             const isSelected = isEqual(meta.value, playedCard);
             return (
-              <div key={idx} className={styles.play_card_list_item_wrapper}>
+              <ItemWrapper key={idx} isHighlighted={isSelected}>
                 <div
+                  className={styles.clickable}
                   key={idx}
-                  className={[
-                    styles.play_card_list_item,
-                    isSelected && styles.play_card_list_item_selected,
-                  ]
-                    .filter(Boolean)
-                    .join(" ")}
                   onClick={() => {
                     helpers.setValue(playedCard);
                   }}
@@ -46,7 +42,7 @@ const GameInputVisitDestinationCard: React.FC<{
                     viewerId={viewingPlayer.playerId}
                   />
                 </div>
-              </div>
+              </ItemWrapper>
             );
           })}
         </div>

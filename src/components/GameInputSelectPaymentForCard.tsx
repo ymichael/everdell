@@ -1,21 +1,21 @@
 import * as React from "react";
 import { useRef } from "react";
+import { Form } from "formik";
 
 import { GameInputSelectPaymentForCard as TGameInputSelectPaymentForCard } from "../model/types";
 import { Player } from "../model/player";
+
 import { ResourcesForm } from "./CardPayment";
-import { Form } from "formik";
 
 const GameInputSelectPaymentForCard: React.FC<{
+  name: string;
   gameInput: TGameInputSelectPaymentForCard;
   viewingPlayer: Player;
-}> = ({ gameInput, viewingPlayer }) => {
+}> = ({ name, gameInput, viewingPlayer }) => {
   return (
     <Form>
       <p>Play {gameInput.card} for 3 fewer resources</p>
-      <>
-        <ResourcesForm name={"gameInput.clientOptions.resources"} />
-      </>
+      <ResourcesForm name={name} />
     </Form>
   );
 };

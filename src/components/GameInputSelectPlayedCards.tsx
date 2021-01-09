@@ -1,13 +1,15 @@
 import * as React from "react";
 import { useRef } from "react";
+import { useField } from "formik";
+
 import styles from "../styles/gameBoard.module.css";
+
 import { GameInputSelectPlayedCards as TGameInputSelectPlayedCards } from "../model/types";
 import { Player } from "../model/player";
 import { GameState } from "../model/gameState";
+
 import { PlayedCard } from "./Card";
 import { ItemWrapper } from "./common";
-
-import { useField } from "formik";
 
 const GameInputSelectPlayedCards: React.FC<{
   name: string;

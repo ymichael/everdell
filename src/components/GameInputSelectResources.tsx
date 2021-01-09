@@ -6,9 +6,10 @@ import { Player } from "../model/player";
 import { ResourcesForm } from "./CardPayment";
 
 const GameInputSelectResources: React.FC<{
+  name: string;
   gameInput: TGameInputSelectResources;
   viewingPlayer: Player;
-}> = ({ gameInput, viewingPlayer }) => {
+}> = ({ name, gameInput, viewingPlayer }) => {
   return (
     <>
       <p>
@@ -17,7 +18,7 @@ const GameInputSelectResources: React.FC<{
           gameInput.eventContext ||
           gameInput.cardContext}
       </p>
-      <ResourcesForm name={"gameInput.clientOptions.resources"} />
+      <ResourcesForm name={name} />
     </>
   );
 };

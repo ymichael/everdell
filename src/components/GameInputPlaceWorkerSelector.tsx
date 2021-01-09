@@ -1,14 +1,16 @@
 import * as React from "react";
 import { useRef } from "react";
+import { useField } from "formik";
+
+import styles from "../styles/gameBoard.module.css";
 
 import { LocationName } from "../model/types";
 import { Player } from "../model/player";
-import Card from "./Card";
-
-import { useField } from "formik";
-import styles from "../styles/GameInputBox.module.css";
 import { GameInputType, GameInput } from "../model/types";
-import Location from "./Location";
+
+import Card from "./Card";
+import { LocationInner as Location } from "./Location";
+import { ItemWrapper } from "./common";
 
 const GameInputPlaceWorkerSelector: React.FC<{
   name: string;
@@ -17,28 +19,23 @@ const GameInputPlaceWorkerSelector: React.FC<{
 }> = ({ name, locations = [], viewingPlayer }) => {
   const [field, meta, helpers] = useField(name);
   return (
-    <div className={styles.selector}>
+    <div>
       <div role="group">
         <p>Choose a location:</p>
-        <div className={styles.play_card_list}>
+        <div className={styles.items}>
           {locations.map((location, idx) => {
             const isSelected = meta.value === location;
             return (
-              <div key={idx} className={styles.play_card_list_item_wrapper}>
-                <div
-                  key={idx}
-                  className={[
-                    styles.play_card_list_item,
-                    isSelected && styles.play_card_list_item_selected,
-                  ]
-                    .filter(Boolean)
-                    .join(" ")}
-                  onClick={() => {
-                    helpers.setValue(location);
-                  }}
-                >
+              <div
+                key={idx}
+                className={styles.clickable}
+                onClick={() => {
+                  helpers.setValue(location);
+                }}
+              >
+                <ItemWrapper isHighlighted={isSelected}>
                   <Location name={location} />
-                </div>
+                </ItemWrapper>
               </div>
             );
           })}

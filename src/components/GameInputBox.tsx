@@ -100,6 +100,7 @@ const GameInputBox: React.FC<{
       {({ values, setFieldValue, isSubmitting }) => {
         return (
           <Form>
+            <pre>{JSON.stringify(values, null, 2)}</pre>
             <div role="group">
               {gameInputs.map((gameInput, idx) => {
                 return (
@@ -136,6 +137,7 @@ const GameInputBox: React.FC<{
                         ) : gameInput.inputType ===
                           GameInputType.CLAIM_EVENT ? (
                           <GameInputClaimEventSelector
+                            name={"gameInput.clientOptions.event"}
                             viewingPlayer={viewingPlayer}
                             events={gameStateImpl.getClaimableEvents()}
                           />
@@ -147,18 +149,21 @@ const GameInputBox: React.FC<{
                         ) : gameInput.inputType ===
                           GameInputType.DISCARD_CARDS ? (
                           <GameInputDiscardCards
+                            name={"gameInput.clientOptions.cardsToDiscard"}
                             gameInput={gameInput}
                             viewingPlayer={viewingPlayer}
                           />
                         ) : gameInput.inputType ===
                           GameInputType.SELECT_RESOURCES ? (
                           <GameInputSelectResources
+                            name={"gameInput.clientOptions.resources"}
                             gameInput={gameInput}
                             viewingPlayer={viewingPlayer}
                           />
                         ) : gameInput.inputType ===
                           GameInputType.SELECT_PLAYER ? (
                           <GameInputSelectPlayer
+                            name={"gameInput.clientOptions.selectedPlayer"}
                             gameInput={gameInput}
                             gameState={gameStateImpl}
                             viewingPlayer={viewingPlayer}
@@ -174,19 +179,23 @@ const GameInputBox: React.FC<{
                         ) : gameInput.inputType ===
                           GameInputType.SELECT_CARDS ? (
                           <GameInputSelectCards
+                            name={"gameInput.clientOptions.selectedCards"}
                             gameInput={gameInput}
                             viewingPlayer={viewingPlayer}
                           />
                         ) : gameInput.inputType ===
                           GameInputType.SELECT_PAYMENT_FOR_CARD ? (
                           <GameInputSelectPaymentForCard
+                            name={"gameInput.clientOptions.resources"}
                             gameInput={gameInput}
                             viewingPlayer={viewingPlayer}
                           />
                         ) : gameInput.inputType ===
                           GameInputType.SELECT_WORKER_PLACEMENT ? (
                           <GameInputSelectWorkerPlacement
+                            name={"gameInput.clientOptions.selectedOption"}
                             gameInput={gameInput}
+                            gameState={gameStateImpl}
                             viewingPlayer={viewingPlayer}
                           />
                         ) : gameInput.inputType ===

@@ -1,47 +1,46 @@
 import * as React from "react";
 import { useRef } from "react";
+import { useField } from "formik";
+
+import styles from "../styles/gameBoard.module.css";
 
 import { EventName } from "../model/types";
 import { Player } from "../model/player";
-import Card from "./Card";
-
-import { useField } from "formik";
-import styles from "../styles/GameInputBox.module.css";
 import { GameInputType, GameInput } from "../model/types";
-import Event from "./Event";
+
+import { EventInner as Event } from "./Event";
+import { ItemWrapper } from "./common";
 
 const GameInputClaimEventSelector: React.FC<{
+  name: string;
   events: EventName[];
   viewingPlayer: Player;
-}> = ({ events = [], viewingPlayer }) => {
-  const [field, meta, helpers] = useField("gameInput.clientOptions.event");
+}> = ({ events = [], name, viewingPlayer }) => {
+  const [field, meta, helpers] = useField(name);
   return (
-    <div className={styles.selector}>
-      <div role="group">
-        <p>Claim an Event:</p>
-        <div className={styles.play_card_list}>
-          {events.map((event, idx) => {
-            const isSelected = meta.value === event;
-            return (
-              <div key={idx} className={styles.play_card_list_item_wrapper}>
-                <div
-                  key={idx}
-                  className={[
-                    styles.play_card_list_item,
-                    isSelected && styles.play_card_list_item_selected,
-                  ]
-                    .filter(Boolean)
-                    .join(" ")}
-                  onClick={() => {
-                    helpers.setValue(event);
-                  }}
-                >
-                  <Event name={event} />
-                </div>
-              </div>
-            );
-          })}
-        </div>
+    <div role="group">
+      <p>Claim an Event:</p>
+      <div className={styles.items}>
+        {events.map((event, idx) => {
+          const isSelected = meta.value === event;
+          return (
+            <div
+              key={idx}
+              className={styles.clickable}
+              onClick={() => {
+                if (isSelected) {
+                  helpers.setValue(null);
+                } else {
+                  helpers.setValue(event);
+                }
+              }}
+            >
+              <ItemWrapper isHighlighted={isSelected}>
+                <Event name={event} />
+              </ItemWrapper>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

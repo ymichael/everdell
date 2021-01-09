@@ -42,7 +42,7 @@ const LocationDescription = ({ location }: { location: LocationModel }) => {
   return <>{location.name}</>;
 };
 
-const LocationInner: React.FC<{ name: LocationName }> = ({ name }) => {
+export const LocationInner: React.FC<{ name: LocationName }> = ({ name }) => {
   const location = LocationModel.fromName(name as any);
   const colorClass = colorClassMap[location.type];
   return (

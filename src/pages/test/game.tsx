@@ -27,7 +27,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     shuffleDeck: true,
   });
   gameState.players.forEach((player, idx) => {
-    player.drawCards(gameState, 5 + idx);
+    player.nextSeason();
+    player.nextSeason();
+
+    player.drawCards(gameState, idx);
+    player.cardsInHand.push(CardName.RANGER);
+    player.cardsInHand.push(CardName.BARD);
+
     player.gainResources({
       [ResourceType.VP]: 12,
       [ResourceType.TWIG]: 4,
@@ -42,11 +48,15 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     player.addToCity(CardName.WANDERER);
     player.addToCity(CardName.HUSBAND);
     player.addToCity(CardName.RESIN_REFINERY);
-    player.addToCity(CardName.PEDDLER);
     player.addToCity(CardName.INN);
     player.addToCity(CardName.FARM);
     player.addToCity(CardName.MINE);
     player.addToCity(CardName.CLOCK_TOWER);
+
+    player.placeWorkerOnCard(
+      gameState,
+      player.getFirstPlayedCard(CardName.UNIVERSITY)
+    );
   });
 
   gameState.locationsMap[LocationName.FOREST_TWO_WILD] = [];
@@ -63,12 +73,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     gameState,
   });
 
-  game.applyGameInput({
-    inputType: GameInputType.CLAIM_EVENT,
-    clientOptions: {
-      event: EventName.BASIC_FOUR_PRODUCTION,
-    },
-  });
+  // game.applyGameInput({
+  //   inputType: GameInputType.CLAIM_EVENT,
+  //   clientOptions: {
+  //     event: EventName.BASIC_FOUR_PRODUCTION,
+  //   },
+  // });
   game.applyGameInput({
     inputType: GameInputType.PLACE_WORKER,
     clientOptions: {
@@ -81,10 +91,36 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       location: LocationName.BASIC_TWO_CARDS_AND_ONE_VP,
     },
   });
+  game.applyGameInput({
+    inputType: GameInputType.PLACE_WORKER,
+    clientOptions: {
+      location: LocationName.BASIC_TWO_CARDS_AND_ONE_VP,
+    },
+  });
   // game.applyGameInput({
   //   inputType: GameInputType.VISIT_DESTINATION_CARD,
   //   clientOptions: {
   //     playedCard: game.getActivePlayer().getFirstPlayedCard(CardName.INN),
+  //   },
+  // });
+  // game.applyGameInput({
+  //   inputType: GameInputType.PLAY_CARD,
+  //   clientOptions: {
+  //     card: CardName.RANGER,
+  //     fromMeadow: false,
+  //     paymentOptions: {
+  //       resources: { [ResourceType.BERRY]: 2 },
+  //     },
+  //   },
+  // });
+  // game.applyGameInput({
+  //   inputType: GameInputType.PLAY_CARD,
+  //   clientOptions: {
+  //     card: CardName.BARD,
+  //     fromMeadow: false,
+  //     paymentOptions: {
+  //       resources: { [ResourceType.BERRY]: 3 },
+  //     },
   //   },
   // });
 

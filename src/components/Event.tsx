@@ -15,7 +15,7 @@ import { Player } from "../model/player";
 import { Description, CardTypeSymbol, ItemWrapper } from "./common";
 import { sumResources } from "../model/gameStatePlayHelpers";
 
-const EventInner: React.FC<{
+export const EventInner: React.FC<{
   name: EventName;
 }> = ({ name }) => {
   const event = EventModel.fromName(name as any);

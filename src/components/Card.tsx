@@ -34,9 +34,9 @@ const getAssociatedCard = (card: CardModel) => {
     return card.associatedCard;
   } else {
     if (card.name == CardName.FARM) {
-      return "HUSBAND / WIFE";
+      return "Husband / Wife";
     } else if (card.name == CardName.EVERTREE) {
-      return "ANY";
+      return "Any";
     } else {
       throw new Error(
         "Associated card is null and card is not Farm or Evertree"

@@ -10,6 +10,8 @@ import {
   Season,
   ProductionResourceMap,
   GameText,
+  TextPartEntity,
+  IGameTextEntity,
 } from "./types";
 import { sumResources } from "./gameStatePlayHelpers";
 import {
@@ -22,7 +24,7 @@ import shuffle from "lodash/shuffle";
 import { toGameText } from "./gameText";
 import { assertUnreachable } from "../utils";
 
-export class Location implements GameStatePlayable {
+export class Location implements GameStatePlayable, IGameTextEntity {
   readonly name: LocationName;
   readonly shortName: GameText;
   readonly type: LocationType;
@@ -59,6 +61,14 @@ export class Location implements GameStatePlayable {
     this.resourcesToGain = resourcesToGain || {};
     this.description = description;
     this.shortName = shortName;
+  }
+
+  getGameTextPart(): TextPartEntity {
+    return {
+      type: "entity",
+      entityType: "location",
+      location: this.name,
+    };
   }
 
   canPlay(gameState: GameState, gameInput: GameInput): boolean {

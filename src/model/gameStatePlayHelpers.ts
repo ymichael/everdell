@@ -14,9 +14,11 @@ import {
 import { Card } from "./card";
 
 export function playSpendResourceToGetVPFactory({
+  card,
   resourceType,
   maxToSpend,
 }: {
+  card: CardName;
   resourceType: ResourceType.BERRY | ResourceType.TWIG;
   maxToSpend: number;
 }): GameStatePlayFn {
@@ -28,6 +30,17 @@ export function playSpendResourceToGetVPFactory({
         throw new Error(
           `Too many resources, max: ${maxToSpend}, got: ${numToSpend}`
         );
+      }
+      if (numToSpend === 0) {
+        gameState.addGameLogFromCard(card, [
+          player,
+          ` decline to spend any ${resourceType}.`,
+        ]);
+      } else {
+        gameState.addGameLogFromCard(card, [
+          player,
+          ` spent ${numToSpend} ${resourceType} to gain ${numToSpend} VP.`,
+        ]);
       }
       player.spendResources({
         [resourceType]: numToSpend,

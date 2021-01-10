@@ -1380,4 +1380,495 @@ describe("Event", () => {
       expect(event.getPoints(gameState, player.playerId)).to.be(4);
     });
   });
+
+  describe(EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN, () => {
+    it("should be able to claim event", () => {
+      const event = Event.fromName(
+        EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN
+      );
+      const gameInput = claimEventInput(event.name);
+      let player = gameState.getActivePlayer();
+
+      gameState.eventsMap[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN] = null;
+
+      player.addToCity(CardName.SHOPKEEPER);
+      player.addToCity(CardName.POST_OFFICE);
+
+      expect(
+        player.claimedEvents[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN]
+      ).to.be(undefined);
+
+      gameState = gameState.next(gameInput);
+
+      player = gameState.getPlayer(player.playerId);
+
+      expect(
+        player.claimedEvents[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN]
+      );
+    });
+    it("should allow player to pay other players (give multiple to one person)", () => {
+      const event = Event.fromName(
+        EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN
+      );
+      const gameInput = claimEventInput(event.name);
+      let player = gameState.getActivePlayer();
+      let player2 = gameState.players[1];
+
+      gameState.eventsMap[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN] = null;
+
+      player.addToCity(CardName.SHOPKEEPER);
+      player.addToCity(CardName.POST_OFFICE);
+      player.gainResources({ [ResourceType.TWIG]: 3 });
+
+      expect(
+        player.claimedEvents[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN]
+      ).to.be(undefined);
+
+      gameState = multiStepGameInputTest(gameState, [
+        gameInput,
+        {
+          inputType: GameInputType.SELECT_PLAYER,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          playerOptions: gameState.players
+            .filter((p) => {
+              return p.playerId !== player.playerId;
+            })
+            .map((p) => p.playerId),
+          mustSelectOne: false,
+          eventContext: EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN,
+          clientOptions: { selectedPlayer: player2.playerId },
+        },
+        {
+          inputType: GameInputType.SELECT_RESOURCES,
+          prevInputType: GameInputType.SELECT_PLAYER,
+          prevInput: {
+            inputType: GameInputType.SELECT_PLAYER,
+            prevInputType: GameInputType.CLAIM_EVENT,
+            playerOptions: gameState.players
+              .filter((p) => {
+                return p.playerId !== player.playerId;
+              })
+              .map((p) => p.playerId),
+            mustSelectOne: false,
+            eventContext: EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN,
+            clientOptions: { selectedPlayer: player2.playerId },
+          },
+          maxResources: 3,
+          minResources: 0,
+          eventContext: EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN,
+          clientOptions: {
+            resources: { [ResourceType.TWIG]: 3 },
+          },
+        },
+      ]);
+
+      player = gameState.getPlayer(player.playerId);
+      player2 = gameState.getPlayer(player2.playerId);
+
+      expect(
+        player.claimedEvents[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN]
+      );
+      expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+      // shopkeeper is worth 1, post office is worth 2
+      expect(player.getPoints(gameState)).to.be(9);
+      expect(player2.getNumResourcesByType(ResourceType.TWIG)).to.be(3);
+    });
+    it("should work with more than 2 players", () => {
+      const event = Event.fromName(
+        EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN
+      );
+      gameState = testInitialGameState({ numPlayers: 4 });
+      const gameInput = claimEventInput(event.name);
+      let player = gameState.getActivePlayer();
+      let player2 = gameState.players[1];
+      let player3 = gameState.players[2];
+      let player4 = gameState.players[3];
+
+      gameState.eventsMap[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN] = null;
+
+      player.addToCity(CardName.SHOPKEEPER);
+      player.addToCity(CardName.POST_OFFICE);
+      player.gainResources({
+        [ResourceType.TWIG]: 3,
+        [ResourceType.RESIN]: 2,
+        [ResourceType.PEBBLE]: 2,
+        [ResourceType.BERRY]: 4,
+      });
+
+      expect(
+        player.claimedEvents[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN]
+      ).to.be(undefined);
+
+      let selectFirstOppo = {
+        inputType: GameInputType.SELECT_PLAYER as const,
+        prevInputType: GameInputType.CLAIM_EVENT,
+        playerOptions: gameState.players
+          .filter((p) => {
+            return p.playerId !== player.playerId;
+          })
+          .map((p) => p.playerId),
+        mustSelectOne: false,
+        eventContext: EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN,
+        clientOptions: { selectedPlayer: player2.playerId },
+      };
+
+      let selectFirstResource = {
+        inputType: GameInputType.SELECT_RESOURCES as const,
+        prevInputType: GameInputType.SELECT_PLAYER,
+        prevInput: selectFirstOppo,
+        maxResources: 3,
+        minResources: 0,
+        eventContext: EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN,
+        clientOptions: {
+          resources: { [ResourceType.TWIG]: 1 },
+        },
+      };
+
+      let selectSecondOppo = {
+        inputType: GameInputType.SELECT_PLAYER as const,
+        prevInputType: GameInputType.SELECT_RESOURCES,
+        prevInput: selectFirstResource,
+        playerOptions: gameState.players
+          .filter((p) => {
+            return p.playerId !== player.playerId;
+          })
+          .map((p) => p.playerId),
+        mustSelectOne: false,
+        eventContext: EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN,
+        clientOptions: { selectedPlayer: player4.playerId },
+      };
+
+      let selectSecondResource = {
+        inputType: GameInputType.SELECT_RESOURCES as const,
+        prevInputType: GameInputType.SELECT_PLAYER,
+        prevInput: selectSecondOppo,
+        maxResources: 2,
+        minResources: 0,
+        eventContext: EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN,
+        clientOptions: {
+          resources: { [ResourceType.RESIN]: 1 },
+        },
+      };
+
+      let selectThirdOppo = {
+        inputType: GameInputType.SELECT_PLAYER as const,
+        prevInputType: GameInputType.SELECT_RESOURCES,
+        prevInput: selectSecondResource,
+        playerOptions: gameState.players
+          .filter((p) => {
+            return p.playerId !== player.playerId;
+          })
+          .map((p) => p.playerId),
+        mustSelectOne: false,
+        eventContext: EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN,
+        clientOptions: { selectedPlayer: player3.playerId },
+      };
+
+      let selectThirdResource = {
+        inputType: GameInputType.SELECT_RESOURCES as const,
+        prevInputType: GameInputType.SELECT_PLAYER,
+        prevInput: selectThirdOppo,
+        maxResources: 1,
+        minResources: 0,
+        eventContext: EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN,
+        clientOptions: {
+          resources: { [ResourceType.BERRY]: 1 },
+        },
+      };
+
+      gameState = multiStepGameInputTest(gameState, [
+        gameInput,
+        selectFirstOppo,
+        selectFirstResource,
+        selectSecondOppo,
+        selectSecondResource,
+        selectThirdOppo,
+        selectThirdResource,
+      ]);
+
+      player = gameState.getPlayer(player.playerId);
+      player2 = gameState.getPlayer(player2.playerId);
+      player3 = gameState.getPlayer(player3.playerId);
+      player4 = gameState.getPlayer(player4.playerId);
+
+      expect(
+        player.claimedEvents[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN]
+      );
+      expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(2);
+      expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(2);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(3);
+      // shopkeeper is worth 1, post office is worth 2
+      expect(player.getPoints(gameState)).to.be(9);
+
+      expect(player2.getNumResourcesByType(ResourceType.TWIG)).to.be(1);
+      expect(player3.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
+      expect(player4.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
+    });
+    it("should be able to give fewer than 3 resources", () => {
+      const event = Event.fromName(
+        EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN
+      );
+      gameState = testInitialGameState({ numPlayers: 4 });
+      const gameInput = claimEventInput(event.name);
+      let player = gameState.getActivePlayer();
+      let player2 = gameState.players[1];
+      let player3 = gameState.players[2];
+      let player4 = gameState.players[3];
+
+      gameState.eventsMap[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN] = null;
+
+      player.addToCity(CardName.SHOPKEEPER);
+      player.addToCity(CardName.POST_OFFICE);
+      player.gainResources({
+        [ResourceType.TWIG]: 3,
+        [ResourceType.RESIN]: 2,
+        [ResourceType.PEBBLE]: 2,
+        [ResourceType.BERRY]: 4,
+      });
+
+      expect(
+        player.claimedEvents[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN]
+      ).to.be(undefined);
+
+      let selectFirstOppo = {
+        inputType: GameInputType.SELECT_PLAYER as const,
+        prevInputType: GameInputType.CLAIM_EVENT,
+        playerOptions: gameState.players
+          .filter((p) => {
+            return p.playerId !== player.playerId;
+          })
+          .map((p) => p.playerId),
+        mustSelectOne: false,
+        eventContext: EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN,
+        clientOptions: { selectedPlayer: player2.playerId },
+      };
+
+      let selectFirstResource = {
+        inputType: GameInputType.SELECT_RESOURCES as const,
+        prevInputType: GameInputType.SELECT_PLAYER,
+        prevInput: selectFirstOppo,
+        maxResources: 3,
+        minResources: 0,
+        eventContext: EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN,
+        clientOptions: {
+          resources: { [ResourceType.TWIG]: 1 },
+        },
+      };
+
+      let selectSecondOppo = {
+        inputType: GameInputType.SELECT_PLAYER as const,
+        prevInputType: GameInputType.SELECT_RESOURCES,
+        prevInput: selectFirstResource,
+        playerOptions: gameState.players
+          .filter((p) => {
+            return p.playerId !== player.playerId;
+          })
+          .map((p) => p.playerId),
+        mustSelectOne: false,
+        eventContext: EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN,
+        clientOptions: { selectedPlayer: player4.playerId },
+      };
+
+      let selectSecondResource = {
+        inputType: GameInputType.SELECT_RESOURCES as const,
+        prevInputType: GameInputType.SELECT_PLAYER,
+        prevInput: selectSecondOppo,
+        maxResources: 2,
+        minResources: 0,
+        eventContext: EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN,
+        clientOptions: {
+          resources: { [ResourceType.RESIN]: 1 },
+        },
+      };
+
+      let selectThirdOppo = {
+        inputType: GameInputType.SELECT_PLAYER as const,
+        prevInputType: GameInputType.SELECT_RESOURCES,
+        prevInput: selectSecondResource,
+        playerOptions: gameState.players
+          .filter((p) => {
+            return p.playerId !== player.playerId;
+          })
+          .map((p) => p.playerId),
+        mustSelectOne: false,
+        eventContext: EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN,
+        clientOptions: { selectedPlayer: null },
+      };
+
+      gameState = multiStepGameInputTest(gameState, [
+        gameInput,
+        selectFirstOppo,
+        selectFirstResource,
+        selectSecondOppo,
+        selectSecondResource,
+        selectThirdOppo,
+      ]);
+
+      player = gameState.getPlayer(player.playerId);
+      player2 = gameState.getPlayer(player2.playerId);
+      player3 = gameState.getPlayer(player3.playerId);
+      player4 = gameState.getPlayer(player4.playerId);
+
+      expect(
+        player.claimedEvents[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN]
+      );
+      expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(2);
+      expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(2);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(4);
+
+      // shopkeeper is worth 1, post office is worth 2
+      // 4 points from event because only 2 donations
+      expect(player.getPoints(gameState)).to.be(7);
+
+      expect(player2.getNumResourcesByType(ResourceType.TWIG)).to.be(1);
+      expect(player3.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+      expect(player4.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
+    });
+    it("should not be able to give more than 3 resources", () => {
+      const event = Event.fromName(
+        EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN
+      );
+      gameState = testInitialGameState({ numPlayers: 4 });
+      const gameInput = claimEventInput(event.name);
+      let player = gameState.getActivePlayer();
+      let player2 = gameState.players[1];
+      let player3 = gameState.players[2];
+      let player4 = gameState.players[3];
+
+      gameState.eventsMap[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN] = null;
+
+      player.addToCity(CardName.SHOPKEEPER);
+      player.addToCity(CardName.POST_OFFICE);
+      player.gainResources({
+        [ResourceType.TWIG]: 3,
+        [ResourceType.RESIN]: 2,
+        [ResourceType.PEBBLE]: 2,
+        [ResourceType.BERRY]: 4,
+      });
+
+      expect(
+        player.claimedEvents[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN]
+      ).to.be(undefined);
+
+      let selectFirstOppo = {
+        inputType: GameInputType.SELECT_PLAYER as const,
+        prevInputType: GameInputType.CLAIM_EVENT,
+        playerOptions: gameState.players
+          .filter((p) => {
+            return p.playerId !== player.playerId;
+          })
+          .map((p) => p.playerId),
+        mustSelectOne: false,
+        eventContext: EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN,
+        clientOptions: { selectedPlayer: player2.playerId },
+      };
+
+      let selectFirstResource = {
+        inputType: GameInputType.SELECT_RESOURCES as const,
+        prevInputType: GameInputType.SELECT_PLAYER,
+        prevInput: selectFirstOppo,
+        maxResources: 3,
+        minResources: 0,
+        eventContext: EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN,
+        clientOptions: {
+          resources: { [ResourceType.TWIG]: 4 },
+        },
+      };
+
+      gameState = gameState.next(gameInput);
+      gameState = gameState.next(selectFirstOppo);
+
+      expect(() => {
+        gameState.next(selectFirstResource);
+      }).to.throwException(/cannot give/i);
+    });
+    it("should not be able to give more than 3 resources across all donations", () => {
+      const event = Event.fromName(
+        EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN
+      );
+      gameState = testInitialGameState({ numPlayers: 4 });
+      const gameInput = claimEventInput(event.name);
+      let player = gameState.getActivePlayer();
+      let player2 = gameState.players[1];
+      let player3 = gameState.players[2];
+      let player4 = gameState.players[3];
+
+      gameState.eventsMap[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN] = null;
+
+      player.addToCity(CardName.SHOPKEEPER);
+      player.addToCity(CardName.POST_OFFICE);
+      player.gainResources({
+        [ResourceType.TWIG]: 3,
+        [ResourceType.RESIN]: 2,
+        [ResourceType.PEBBLE]: 2,
+        [ResourceType.BERRY]: 4,
+      });
+
+      expect(
+        player.claimedEvents[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN]
+      ).to.be(undefined);
+
+      let selectFirstOppo = {
+        inputType: GameInputType.SELECT_PLAYER as const,
+        prevInputType: GameInputType.CLAIM_EVENT,
+        playerOptions: gameState.players
+          .filter((p) => {
+            return p.playerId !== player.playerId;
+          })
+          .map((p) => p.playerId),
+        mustSelectOne: false,
+        eventContext: EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN,
+        clientOptions: { selectedPlayer: player2.playerId },
+      };
+
+      let selectFirstResource = {
+        inputType: GameInputType.SELECT_RESOURCES as const,
+        prevInputType: GameInputType.SELECT_PLAYER,
+        prevInput: selectFirstOppo,
+        maxResources: 3,
+        minResources: 0,
+        eventContext: EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN,
+        clientOptions: {
+          resources: { [ResourceType.TWIG]: 1 },
+        },
+      };
+
+      let selectSecondOppo = {
+        inputType: GameInputType.SELECT_PLAYER as const,
+        prevInputType: GameInputType.SELECT_RESOURCES,
+        prevInput: selectFirstResource,
+        playerOptions: gameState.players
+          .filter((p) => {
+            return p.playerId !== player.playerId;
+          })
+          .map((p) => p.playerId),
+        mustSelectOne: false,
+        eventContext: EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN,
+        clientOptions: { selectedPlayer: player4.playerId },
+      };
+
+      let selectSecondResource = {
+        inputType: GameInputType.SELECT_RESOURCES as const,
+        prevInputType: GameInputType.SELECT_PLAYER,
+        prevInput: selectSecondOppo,
+        maxResources: 2,
+        minResources: 0,
+        eventContext: EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN,
+        clientOptions: {
+          resources: { [ResourceType.RESIN]: 3 },
+        },
+      };
+
+      gameState = gameState.next(gameInput);
+      gameState = gameState.next(selectFirstOppo);
+      gameState = gameState.next(selectFirstResource);
+      gameState = gameState.next(selectSecondOppo);
+
+      expect(() => {
+        gameState.next(selectSecondResource);
+      }).to.throwException(/cannot give/i);
+    });
+  });
 });

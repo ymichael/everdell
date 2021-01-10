@@ -282,6 +282,12 @@ export class Player implements IGameTextEntity {
     Object.keys(this.claimedEvents).forEach((eventName) => {
       const event = Event.fromName(eventName as EventName);
       points += event.getPoints(gameState, this.playerId);
+
+      const eventInfo = this.claimedEvents[eventName as EventName];
+
+      if (eventInfo && eventInfo.storedResources) {
+        points += eventInfo.storedResources[ResourceType.VP] || 0;
+      }
     });
 
     points += this.getNumResourcesByType(ResourceType.VP);

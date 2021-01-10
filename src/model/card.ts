@@ -1138,7 +1138,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           return player.isPaidResourcesValid(
             resources,
             card.baseCost,
-            "ANY",
+            "ANY 3",
             false
           );
         });
@@ -1223,7 +1223,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         const paymentError = player.validatePaidResources(
           gameInput.clientOptions.paymentOptions.resources,
           card.baseCost,
-          "ANY"
+          "ANY 3"
         );
         if (paymentError) {
           throw new Error(paymentError);

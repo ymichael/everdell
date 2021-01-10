@@ -353,6 +353,7 @@ export type PlayedEventInfo = {
     [ResourceType.BERRY]?: number;
     [ResourceType.PEBBLE]?: number;
     [ResourceType.RESIN]?: number;
+    [ResourceType.VP]?: number;
   };
 
   // certain events

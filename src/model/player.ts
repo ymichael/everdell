@@ -284,6 +284,12 @@ export class Player implements IGameTextEntity {
     Object.keys(this.claimedEvents).forEach((eventName) => {
       const event = Event.fromName(eventName as EventName);
       points += event.getPoints(gameState, this.playerId);
+
+      const eventInfo = this.claimedEvents[eventName as EventName];
+
+      if (eventInfo && eventInfo.storedResources) {
+        points += eventInfo.storedResources[ResourceType.VP] || 0;
+      }
     });
 
     points += this.getNumResourcesByType(ResourceType.VP);
@@ -588,7 +594,7 @@ export class Player implements IGameTextEntity {
     return this.isPaidResourcesValid(
       this.resources,
       card.baseCost,
-      wildDiscount ? "ANY" : null,
+      wildDiscount ? "ANY 3" : null,
       false
     );
   }
@@ -597,7 +603,7 @@ export class Player implements IGameTextEntity {
     paidResources: CardCost,
     cardCost: CardCost,
     // Discounts are exclusive so we use a single argument to represent them
-    discount: ResourceType.BERRY | "ANY" | null = null,
+    discount: ResourceType.BERRY | "ANY 3" | "ANY 1" | null = null,
     errorIfOverpay = true
   ): string | null {
     const needToPay = {
@@ -646,7 +652,7 @@ export class Player implements IGameTextEntity {
     const payingWithRemainerSum = sumResources(payingWith);
 
     // With wild discount, should have outstandingOwedSum left
-    if (discount === "ANY" && outstandingOwedSum <= 3) {
+    if (discount === "ANY 3" && outstandingOwedSum <= 3) {
       if (
         errorIfOverpay &&
         payingWithSum !== 0 &&
@@ -687,7 +693,7 @@ export class Player implements IGameTextEntity {
     paidResources: CardCost,
     cardCost: CardCost,
     // Discounts are exclusive so we use a single argument to represent them
-    discount: ResourceType.BERRY | "ANY" | null = null,
+    discount: ResourceType.BERRY | "ANY 3" | "ANY 1" | null = null,
     errorIfOverpay = true
   ): boolean {
     return !this.validatePaidResources(
@@ -832,7 +838,7 @@ export class Player implements IGameTextEntity {
       return this.validatePaidResources(
         paymentResources,
         cardToPlay.baseCost,
-        "ANY"
+        "ANY 3"
       );
     }
     if (paymentOptions.cardToUse) {
@@ -847,7 +853,7 @@ export class Player implements IGameTextEntity {
           return this.validatePaidResources(
             paymentResources,
             cardToPlay.baseCost,
-            "ANY"
+            "ANY 3"
           );
         case CardName.QUEEN:
           if (cardToPlay.baseVP > 3) {
@@ -862,7 +868,7 @@ export class Player implements IGameTextEntity {
           return this.validatePaidResources(
             paymentResources,
             cardToPlay.baseCost,
-            "ANY"
+            "ANY 3"
           );
         case CardName.INNKEEPER:
           if (!cardToPlay.isCritter) {

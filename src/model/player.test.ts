@@ -743,7 +743,7 @@ describe("Player", () => {
       ).to.be(false);
     });
 
-    it("ANY discount", () => {
+    it("ANY 3 discount", () => {
       const player = gameState.getActivePlayer();
       expect(
         player.isPaidResourcesValid(
@@ -755,35 +755,35 @@ describe("Player", () => {
         player.isPaidResourcesValid(
           {},
           { [ResourceType.TWIG]: 2, [ResourceType.RESIN]: 1 },
-          "ANY"
+          "ANY 3"
         )
       ).to.be(true);
       expect(
         player.isPaidResourcesValid(
           { [ResourceType.TWIG]: 1 },
           { [ResourceType.TWIG]: 3, [ResourceType.RESIN]: 1 },
-          "ANY"
+          "ANY 3"
         )
       ).to.be(true);
       expect(
         player.isPaidResourcesValid(
           { [ResourceType.TWIG]: 0 },
           { [ResourceType.TWIG]: 3, [ResourceType.RESIN]: 1 },
-          "ANY"
+          "ANY 3"
         )
       ).to.be(false);
       expect(
         player.isPaidResourcesValid(
           { [ResourceType.PEBBLE]: 5 },
           { [ResourceType.TWIG]: 3, [ResourceType.RESIN]: 1 },
-          "ANY"
+          "ANY 3"
         )
       ).to.be(false);
       expect(
         player.isPaidResourcesValid(
           { [ResourceType.TWIG]: 2 },
           { [ResourceType.TWIG]: 3, [ResourceType.RESIN]: 1 },
-          "ANY"
+          "ANY 3"
         )
       ).to.be(false);
     });

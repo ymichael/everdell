@@ -31,7 +31,11 @@ import { Location, initialLocationsMap } from "./location";
 import { Event, initialEventMap } from "./event";
 import { initialDeck } from "./deck";
 import { assertUnreachable } from "../utils";
-import { toGameText } from "./gameText";
+import {
+  toGameText,
+  cardListToGameText,
+  workerPlacementToGameText,
+} from "./gameText";
 
 import cloneDeep from "lodash/cloneDeep";
 import isEqual from "lodash/isEqual";
@@ -170,14 +174,14 @@ export class GameState {
       this.gameLog.splice(0, Math.floor(MAX_GAME_LOG_BUFFER / 2));
     }
     const entry = toGameText(args);
-    // const debugStr = gameTextToDebugStr(entry);
-    // if (
-    //   debugStr.startsWith("Dealing cards to") ||
-    //   debugStr.startsWith("Game created ")
-    // ) {
-    // } else {
-    //   console.log(debugStr);
-    // }
+    const debugStr = gameTextToDebugStr(entry);
+    if (
+      debugStr.startsWith("Dealing cards to") ||
+      debugStr.startsWith("Game created ")
+    ) {
+    } else {
+      console.log(debugStr);
+    }
     this.gameLog.push({ entry });
   }
 
@@ -256,6 +260,7 @@ export class GameState {
     if (!gameInput.clientOptions?.card) {
       throw new Error("Must specify card to play.");
     }
+
     const card = Card.fromName(gameInput.clientOptions.card);
     const player = this.getActivePlayer();
     const canPlayErr = card.canPlayCheck(this, gameInput);
@@ -267,6 +272,8 @@ export class GameState {
     if (paymentOptionsError) {
       throw new Error(paymentOptionsError);
     }
+
+    this.addGameLog(this.playCardInputLog(gameInput));
 
     player.payForCard(this, gameInput);
     if (gameInput.clientOptions.fromMeadow) {
@@ -289,10 +296,12 @@ export class GameState {
       throw new Error(canPlayErr);
     }
 
+    const player = this.getActivePlayer();
+    this.addGameLog([player, " place a worker on ", location, "."]);
+
     // Before we place the worker because locations need to check occupancy.
     location.play(this, gameInput);
 
-    const player = this.getActivePlayer();
     player.placeWorkerOnLocation(location.name);
     this.locationsMap[location.name]!.push(player.playerId);
   }
@@ -365,6 +374,13 @@ export class GameState {
         this.removeCardFromMeadow(cardName);
         player.addCardToHand(this, cardName);
       });
+      this.addGameLog([
+        "Prepare for season: ",
+        player,
+        " selected ",
+        ...cardListToGameText(selectedCards),
+        " from the Meadow.",
+      ]);
       this.replenishMeadow();
       return;
     }
@@ -382,6 +398,9 @@ export class GameState {
     if (canPlayErr) {
       throw new Error(canPlayErr);
     }
+
+    const player = this.getActivePlayer();
+    this.addGameLog([player, " claimed the ", event, " event."]);
 
     event.play(this, gameInput);
     this.eventsMap[event.name] = this._activePlayerId;
@@ -410,6 +429,15 @@ export class GameState {
     if (canPlayErr) {
       throw new Error(canPlayErr);
     }
+
+    this.addGameLog([
+      activePlayer,
+      " place a worker on ",
+      ...workerPlacementToGameText({
+        playedCard: gameInput.clientOptions.playedCard!,
+      }),
+      ".",
+    ]);
 
     activePlayer.placeWorkerOnCard(this, origPlayedCard);
 
@@ -450,6 +478,8 @@ export class GameState {
       throw new Error(`Unexpected playerStatus: ${player.playerStatus}`);
     }
 
+    this.addGameLog([player, " took the prepare for season action."]);
+
     player.playerStatus = PlayerStatus.PREPARING_FOR_SEASON;
 
     if (player.hasCardInCity(CardName.CLOCK_TOWER)) {
@@ -463,6 +493,11 @@ export class GameState {
       player.currentSeason === Season.WINTER ||
       player.currentSeason === Season.SUMMER
     ) {
+      this.addGameLog([
+        "Prepare for season: ",
+        player,
+        " activated PRODUCTION.",
+      ]);
       player.activateProduction(this, gameInput);
     } else {
       this.pendingGameInputs.push({
@@ -478,7 +513,20 @@ export class GameState {
     }
     player.playerStatus = PlayerStatus.DURING_SEASON;
     player.recallWorkers(this);
+    this.addGameLog([
+      "Prepare for season: ",
+      player,
+      " recalled their workers.",
+    ]);
+
     player.nextSeason();
+    this.addGameLog([
+      "Prepare for season: ",
+      player,
+      " is now in ",
+      player.currentSeason,
+      ".",
+    ]);
   }
 
   private handleGameEndGameInput(gameInput: GameInputGameEnd): void {
@@ -487,14 +535,10 @@ export class GameState {
       throw new Error("Cannot end game unless you're in Autumn");
     }
     player.playerStatus = PlayerStatus.GAME_ENDED;
+    this.addGameLog([player, ` took the game end action.`]);
   }
 
   next(gameInput: GameInput): GameState {
-    this.updateGameLog(gameInput);
-    return this.nextInner(gameInput);
-  }
-
-  private nextInner(gameInput: GameInput): GameState {
     const nextGameState = this.clone();
     if (nextGameState.pendingGameInputs.length !== 0) {
       nextGameState.removeMultiStepGameInput(gameInput as any);
@@ -563,55 +607,36 @@ export class GameState {
     }
   }
 
-  updateGameLog(gameInput: GameInput): void {
+  private playCardInputLog(
+    gameInput: GameInputPlayCard
+  ): Parameters<typeof toGameText>[0] {
     const player = this.getActivePlayer();
-    switch (gameInput.inputType) {
-      case GameInputType.PLAY_CARD:
-        this.addGameLog([
-          player,
-          { type: "text", text: ` played ` },
-          {
-            type: "entity",
-            entityType: "card",
-            card: gameInput.clientOptions.card!,
-          },
-          { type: "text", text: "." },
-        ]);
-        break;
-      case GameInputType.PLACE_WORKER:
-        this.addGameLog([
-          player,
-          { type: "text", text: ` place a worker on ` },
-          {
-            type: "entity",
-            entityType: "location",
-            location: gameInput.clientOptions.location!,
-          },
-          { type: "text", text: "." },
-        ]);
-        break;
-      case GameInputType.CLAIM_EVENT:
-        this.addGameLog([
-          player,
-          { type: "text", text: ` claimed the ` },
-          {
-            type: "entity",
-            entityType: "event",
-            event: gameInput.clientOptions.event!,
-          },
-          { type: "text", text: ` event.` },
-        ]);
-        break;
-      case GameInputType.PREPARE_FOR_SEASON:
-        this.addGameLog([
-          player,
-          { type: "text", text: ` took the prepare for season action.` },
-        ]);
-        break;
-      case GameInputType.GAME_END:
-      case GameInputType.VISIT_DESTINATION_CARD:
-        this.addGameLog([player, ` took ${gameInput.inputType} action.`]);
+    const card = Card.fromName(gameInput.clientOptions.card!);
+    const ret = [player, " played ", card];
+
+    const paymentOptions = gameInput.clientOptions.paymentOptions;
+    if (paymentOptions.useAssociatedCard) {
+      ret.push(
+        " by occupying ",
+        card.associatedCard &&
+          player.hasUnusedByCritterConstruction(card.associatedCard)
+          ? Card.fromName(card.associatedCard)
+          : player.hasUnusedByCritterConstruction(CardName.EVERTREE)
+          ? Card.fromName(CardName.EVERTREE)
+          : "??"
+      );
+    } else if (paymentOptions.cardToUse) {
+      ret.push(" using ", Card.fromName(paymentOptions.cardToUse));
+    } else if (paymentOptions.cardToDungeon) {
+      ret.push(
+        " by adding ",
+        Card.fromName(paymentOptions.cardToDungeon),
+        " to ",
+        Card.fromName(CardName.DUNGEON)
+      );
     }
+    ret.push(".");
+    return ret;
   }
 
   static fromJSON(gameStateJSON: GameStateJSON): GameState {

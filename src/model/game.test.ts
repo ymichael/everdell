@@ -54,13 +54,13 @@ describe("Game", () => {
       {
         entry: [
           gameState.players[0].getGameTextPart(),
-          { type: "text", text: " took GAME_END action." },
+          { type: "text", text: " took the game end action." },
         ],
       },
       {
         entry: [
           gameState.players[1].getGameTextPart(),
-          { type: "text", text: " took GAME_END action." },
+          { type: "text", text: " took the game end action." },
         ],
       },
       { entry: [{ type: "text", text: "Game over" }] },

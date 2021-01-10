@@ -296,13 +296,10 @@ export class Card<TCardType extends CardType = CardType>
             },
           };
 
-    if (
-      this.cardType === CardType.PRODUCTION ||
-      this.cardType === CardType.TRAVELER
-    ) {
-      this.playCardInner(gameState, playCardGameInput, playedCard!);
-    }
-
+    // Do this first so that logs are ordered properly:
+    // 1. play card
+    // 2. historian/shopkeeper etc
+    // 3+. card related actions..
     [CardName.HISTORIAN, CardName.SHOPKEEPER, CardName.COURTHOUSE].forEach(
       (cardName) => {
         if (player.hasCardInCity(cardName)) {
@@ -315,6 +312,13 @@ export class Card<TCardType extends CardType = CardType>
         }
       }
     );
+
+    if (
+      this.cardType === CardType.PRODUCTION ||
+      this.cardType === CardType.TRAVELER
+    ) {
+      this.playCardInner(gameState, playCardGameInput, playedCard!);
+    }
   }
 
   playCardInner(
@@ -535,9 +539,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         );
         gameState.addGameLogFromCard(CardName.CEMETARY, [
           player,
-          "revealed ",
+          " revealed ",
           ...cardListToGameText(revealedCards),
-          `from the ${selectedOption} ${
+          ` from the ${selectedOption} ${
             filteredOptions.length === 0 ? " but is unable to play any" : ""
           }.`,
         ]);
@@ -572,6 +576,12 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         }
         const selectedCard = selectedCards[0];
         const card = Card.fromName(selectedCard);
+        gameState.addGameLogFromCard(CardName.CEMETARY, [
+          player,
+          " played ",
+          card,
+          ".",
+        ]);
         card.addToCityAndPlay(gameState, gameInput);
 
         const cardOptionsUnfiltered = [...gameInput.cardOptionsUnfiltered!];
@@ -582,12 +592,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         cardOptionsUnfiltered.forEach((cardName) => {
           gameState.discardPile.addToStack(cardName);
         });
-        gameState.addGameLogFromCard(CardName.CEMETARY, [
-          player,
-          "played ",
-          card,
-          ".",
-        ]);
       } else {
         throw new Error("Invalid input type");
       }
@@ -1643,7 +1647,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             player,
             ` gave ${numBerries} BERRY to `,
             targetPlayer,
-            ` to gain ${numBerries * 2}.`,
+            ` to gain ${numBerries * 2} VP.`,
           ]);
         }
       }
@@ -1926,17 +1930,17 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         } else if (selectedCards.length === 1) {
           const selectedCard = selectedCards[0];
           const card = Card.fromName(selectedCard);
-          card.addToCityAndPlay(gameState, gameInput);
-          cardOptionsUnfiltered.splice(
-            cardOptionsUnfiltered.indexOf(selectedCard),
-            1
-          );
           gameState.addGameLogFromCard(CardName.POSTAL_PIGEON, [
             player,
             " chose to play ",
             card,
             ".",
           ]);
+          card.addToCityAndPlay(gameState, gameInput);
+          cardOptionsUnfiltered.splice(
+            cardOptionsUnfiltered.indexOf(selectedCard),
+            1
+          );
         } else {
           gameState.addGameLogFromCard(CardName.POSTAL_PIGEON, [
             player,
@@ -2026,13 +2030,13 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             "cannot use Queen to play a card worth more than 3 base VP"
           );
         }
-        card.addToCityAndPlay(gameState, gameInput);
         gameState.addGameLogFromCard(CardName.QUEEN, [
           player,
           " played ",
           card,
           ".",
         ]);
+        card.addToCityAndPlay(gameState, gameInput);
       }
     },
   }),
@@ -2104,7 +2108,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         } else {
           gameState.addGameLogFromCard(CardName.RANGER, [
             player,
-            " placed worker on ",
+            " moved worker to ",
             ...workerPlacementToGameText(selectedOption),
             ".",
           ]);
@@ -2378,7 +2382,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         });
         gameState.addGameLogFromCard(CardName.SHOPKEEPER, [
           player,
-          "gained 1 BERRY for playing a Critter.",
+          " gained 1 BERRY for playing a Critter.",
         ]);
       }
     },

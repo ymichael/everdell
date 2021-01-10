@@ -20,6 +20,7 @@ import {
   PlayerStatus,
   GameLogEntry,
   TextPart,
+  GameText,
   IGameTextEntity,
 } from "./types";
 import { GameStateJSON } from "./jsonTypes";
@@ -39,6 +40,45 @@ import omit from "lodash/omit";
 const MEADOW_SIZE = 8;
 const STARTING_PLAYER_HAND_SIZE = 5;
 const MAX_GAME_LOG_BUFFER = 100;
+
+const gameTextToDebugStr = (gameText: GameText): string => {
+  return gameText
+    .map((part: TextPart, idx: number) => {
+      switch (part.type) {
+        case "text":
+          return part.text;
+        case "BR":
+          return "\n";
+        case "HR":
+          return "\n---\n";
+        case "resource":
+          return part.resourceType;
+        case "cardType":
+          return part.cardType;
+        case "symbol":
+          return part.symbol;
+        case "player":
+          return part.name;
+        case "entity":
+          if (part.entityType === "event") {
+            return gameTextToDebugStr(
+              Event.fromName(part.event).getShortName()
+            );
+          }
+          if (part.entityType === "location") {
+            return gameTextToDebugStr(
+              Location.fromName(part.location).shortName
+            );
+          }
+          if (part.entityType === "card") {
+            return part.card;
+          }
+        default:
+          assertUnreachable(part, `Unexpected part: ${JSON.stringify(part)}`);
+      }
+    })
+    .join("");
+};
 
 export class GameState {
   readonly gameStateId: number;
@@ -107,7 +147,16 @@ export class GameState {
     if (logSize > MAX_GAME_LOG_BUFFER) {
       this.gameLog.splice(0, Math.floor(MAX_GAME_LOG_BUFFER / 2));
     }
-    this.gameLog.push({ entry: toGameText(args) });
+    const entry = toGameText(args);
+    // const debugStr = gameTextToDebugStr(entry);
+    // if (
+    //   debugStr.startsWith("Dealing cards to") ||
+    //   debugStr.startsWith("Game created ")
+    // ) {
+    // } else {
+    //   console.log(debugStr);
+    // }
+    this.gameLog.push({ entry });
   }
 
   toJSON(includePrivate: boolean): GameStateJSON {

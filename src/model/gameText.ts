@@ -111,7 +111,11 @@ export function resourceMapToGameText(
 ): GameText {
   const ret: GameText = [];
 
-  const resourceTypes = Object.keys(resources) as (keyof typeof resources)[];
+  const resourceTypes = (Object.keys(
+    resources
+  ) as (keyof typeof resources)[]).filter((resourceType) => {
+    return !!resources[resourceType];
+  });
 
   for (let i = 0; i < resourceTypes.length; i++) {
     const resourceType = resourceTypes[i];

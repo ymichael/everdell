@@ -1121,6 +1121,9 @@ describe("Card", () => {
         gameState.deck.addToStack(CardName.WANDERER);
         gameState.deck.addToStack(CardName.FARM);
 
+        // For historian
+        gameState.deck.addToStack(CardName.WIFE);
+
         player.cardsInHand = [card.name];
 
         expect(gameState.discardPile.length).to.eql(0);
@@ -1161,6 +1164,9 @@ describe("Card", () => {
 
         gameState.deck.addToStack(CardName.WANDERER);
         gameState.deck.addToStack(CardName.FARM);
+
+        // For historian
+        gameState.deck.addToStack(CardName.WIFE);
 
         player.cardsInHand = [card.name];
 

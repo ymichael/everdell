@@ -2,6 +2,7 @@ import {
   GameLogEntry,
   GameText,
   TextPart,
+  CardName,
   ResourceType,
   CardType,
   IGameTextEntity,
@@ -79,5 +80,24 @@ function splitOnSpaceOrPunc(str: string): string[] {
     }
   });
   ret.push(textBuffer.join(""));
+  return ret;
+}
+
+export function cardListToGameText(cards: CardName[]): GameText {
+  const ret: GameText = [];
+  for (let i = 0; i < cards.length; i++) {
+    if (i !== 0) {
+      if (i === cards.length - 1) {
+        ret.push({ type: "text", text: " & " });
+      } else {
+        ret.push({ type: "text", text: ", " });
+      }
+    }
+    ret.push({
+      type: "entity",
+      entityType: "card",
+      card: cards[i],
+    });
+  }
   return ret;
 }

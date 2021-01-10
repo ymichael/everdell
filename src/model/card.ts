@@ -10,6 +10,8 @@ import {
   GameInputType,
   PlayedCardInfo,
   GameText,
+  TextPartEntity,
+  IGameTextEntity,
 } from "./types";
 import {
   GameState,
@@ -28,7 +30,7 @@ import {
 } from "./gameStatePlayHelpers";
 import cloneDeep from "lodash/cloneDeep";
 import flatten from "lodash/flatten";
-import { toGameText } from "./gameText";
+import { toGameText, cardListToGameText } from "./gameText";
 import { assertUnreachable } from "../utils";
 
 type MaxWorkersInnerFn = (cardOwner: Player) => number;
@@ -40,7 +42,7 @@ type ProductionInnerFn = (
 ) => void;
 
 export class Card<TCardType extends CardType = CardType>
-  implements GameStatePlayable {
+  implements GameStatePlayable, IGameTextEntity {
   readonly cardDescription: GameText | undefined;
   readonly playInner: GameStatePlayFn | undefined;
   readonly canPlayCheckInner: GameStateCanPlayCheckFn | undefined;
@@ -124,6 +126,14 @@ export class Card<TCardType extends CardType = CardType>
     this.resourcesToGain = resourcesToGain;
 
     this.maxWorkersInner = maxWorkersInner;
+  }
+
+  getGameTextPart(): TextPartEntity {
+    return {
+      type: "entity",
+      entityType: "card",
+      card: this.name,
+    };
   }
 
   getPlayedCardInfo(playerId: string): PlayedCardInfo {
@@ -379,14 +389,18 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           if (gameInput.clientOptions.cardsToDiscard.length > 5) {
             throw new Error("Discarding too many cards");
           }
+          const numDiscarded = gameInput.clientOptions.cardsToDiscard.length;
           gameInput.clientOptions.cardsToDiscard.forEach((cardName) => {
             player.removeCardFromHand(cardName);
             gameState.discardPile.addToStack(cardName);
           });
           player.gainResources({
-            [ResourceType.VP]: gameInput.clientOptions?.cardsToDiscard.length,
+            [ResourceType.VP]: numDiscarded,
           });
-          // gameState.addGameLog([player.getGameText()]);
+          gameState.addGameLog([
+            player,
+            ` discarded ${numDiscarded} CARD to gain ${numDiscarded} VP.`,
+          ]);
         }
       } else {
         throw new Error(`Unexpected input type ${gameInput.inputType}`);
@@ -475,7 +489,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         if (selectedOption !== "Deck" && selectedOption !== "Discard Pile") {
           throw new Error("Must choose either Deck or Discard Pile");
         }
-
         const revealedCards =
           selectedOption === "Deck"
             ? [
@@ -493,6 +506,16 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         const filteredOptions = revealedCards.filter((cardName) =>
           player.canAddToCity(cardName, true /* strict */)
         );
+
+        gameState.addGameLog([
+          player,
+          "revealed ",
+          ...cardListToGameText(revealedCards),
+          `from the ${selectedOption} ${
+            filteredOptions.length === 0 ? " but is unable to play any" : ""
+          }.`,
+        ]);
+
         if (filteredOptions.length !== 0) {
           gameState.pendingGameInputs.push({
             inputType: GameInputType.SELECT_CARDS,
@@ -534,6 +557,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         cardOptionsUnfiltered.forEach((cardName) => {
           gameState.discardPile.addToStack(cardName);
         });
+        gameState.addGameLog([player, "played ", card, "."]);
       } else {
         throw new Error("Invalid input type");
       }

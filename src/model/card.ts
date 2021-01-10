@@ -1176,26 +1176,40 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         if (selectedCards.length !== 1) {
           throw new Error("Can only play 1 card.");
         }
-        const selectedCard = selectedCards[0];
-        if (gameState.meadowCards.indexOf(selectedCard) < 0) {
+        const selectedCardName = selectedCards[0];
+        if (gameState.meadowCards.indexOf(selectedCardName) < 0) {
           throw new Error("Cannot find selected card in the Meadow.");
         }
-        gameState.pendingGameInputs.push({
-          inputType: GameInputType.SELECT_PAYMENT_FOR_CARD,
-          prevInputType: gameInput.inputType,
-          cardContext: CardName.INN,
-          card: selectedCard,
-          clientOptions: {
-            card: selectedCard,
-            paymentOptions: { resources: {} },
-          },
-        });
+
+        const selectedCard = Card.fromName(selectedCardName);
+
         gameState.addGameLogFromCard(CardName.INN, [
           player,
           " selected ",
-          Card.fromName(selectedCard),
+          selectedCard,
           " to play from the Meadow.",
         ]);
+
+        if (sumResources(selectedCard.baseCost) <= 3) {
+          selectedCard.addToCityAndPlay(gameState, gameInput);
+          gameState.addGameLogFromCard(CardName.INN, [
+            player,
+            " played ",
+            selectedCard,
+            " from the Meadow.",
+          ]);
+        } else {
+          gameState.pendingGameInputs.push({
+            inputType: GameInputType.SELECT_PAYMENT_FOR_CARD,
+            prevInputType: gameInput.inputType,
+            cardContext: CardName.INN,
+            card: selectedCardName,
+            clientOptions: {
+              card: selectedCardName,
+              paymentOptions: { resources: {} },
+            },
+          });
+        }
       } else if (
         gameInput.inputType === GameInputType.SELECT_PAYMENT_FOR_CARD &&
         gameInput.cardContext === CardName.INN

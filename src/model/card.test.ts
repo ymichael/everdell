@@ -1637,19 +1637,6 @@ describe("Card", () => {
               selectedCards: [CardName.FARM],
             },
           },
-          {
-            inputType: GameInputType.SELECT_PAYMENT_FOR_CARD,
-            prevInputType: GameInputType.SELECT_CARDS,
-            cardContext: card.name,
-            card: CardName.FARM,
-            clientOptions: {
-              card: CardName.FARM,
-              paymentOptions: {
-                cardToUse: CardName.INN,
-                resources: {},
-              },
-            },
-          },
         ]);
 
         player = gameState.getPlayer(player.playerId);
@@ -1765,7 +1752,7 @@ describe("Card", () => {
           });
         }).to.throwException(/cannot find selected card/i);
       });
-      it("should player buy card that exists in hand and meadow", () => {
+      it("should allow player to buy card that exists in hand and meadow", () => {
         const cards = [
           CardName.KING,
           CardName.QUEEN,
@@ -1801,19 +1788,6 @@ describe("Card", () => {
             minToSelect: 1,
             clientOptions: {
               selectedCards: [CardName.WIFE],
-            },
-          },
-          {
-            inputType: GameInputType.SELECT_PAYMENT_FOR_CARD,
-            prevInputType: GameInputType.SELECT_CARDS,
-            cardContext: CardName.INN,
-            card: CardName.WIFE,
-            clientOptions: {
-              card: CardName.WIFE,
-              paymentOptions: {
-                cardToUse: CardName.INN,
-                resources: {},
-              },
             },
           },
         ]);

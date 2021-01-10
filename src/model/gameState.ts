@@ -174,14 +174,14 @@ export class GameState {
       this.gameLog.splice(0, Math.floor(MAX_GAME_LOG_BUFFER / 2));
     }
     const entry = toGameText(args);
-    const debugStr = gameTextToDebugStr(entry);
-    if (
-      debugStr.startsWith("Dealing cards to") ||
-      debugStr.startsWith("Game created ")
-    ) {
-    } else {
-      console.log(debugStr);
-    }
+    // const debugStr = gameTextToDebugStr(entry);
+    // if (
+    //   debugStr.startsWith("Dealing cards to") ||
+    //   debugStr.startsWith("Game created ")
+    // ) {
+    // } else {
+    //   console.log(debugStr);
+    // }
     this.gameLog.push({ entry });
   }
 

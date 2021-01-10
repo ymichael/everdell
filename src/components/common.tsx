@@ -127,6 +127,8 @@ export const Description = ({ textParts }: { textParts: GameText }) => {
             return <GameIcon key={idx} type={part.cardType} />;
           case "symbol":
             return <GameIcon key={idx} type={part.symbol} />;
+          case "player":
+            return <span className={styles.player_part}>{part.name}</span>;
           case "entity":
             if (part.entityType === "event") {
               return (

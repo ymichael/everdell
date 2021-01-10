@@ -51,11 +51,31 @@ describe("Game", () => {
       { entry: [{ type: "text", text: "Game created with 2 players." }] },
       { entry: [{ type: "text", text: "Dealing cards to each player." }] },
       { entry: [{ type: "text", text: "Dealing cards to the Meadow." }] },
-      { entry: [{ type: "text", text: "Player #0 took GAME_END action." }] },
-      { entry: [{ type: "text", text: "Player #1 took GAME_END action." }] },
+      {
+        entry: [
+          { type: "player", name: "Player #0" },
+          { type: "text", text: " took GAME_END action." },
+        ],
+      },
+      {
+        entry: [
+          { type: "player", name: "Player #1" },
+          { type: "text", text: " took GAME_END action." },
+        ],
+      },
       { entry: [{ type: "text", text: "Game over" }] },
-      { entry: [{ type: "text", text: "Player #0 has 14 points." }] },
-      { entry: [{ type: "text", text: "Player #1 has 12 points." }] },
+      {
+        entry: [
+          { type: "player", name: "Player #0" },
+          { type: "text", text: " has 14 points." },
+        ],
+      },
+      {
+        entry: [
+          { type: "player", name: "Player #1" },
+          { type: "text", text: " has 12 points." },
+        ],
+      },
     ]);
   });
 });

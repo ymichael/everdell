@@ -496,7 +496,10 @@ export type TextPartEntity =
       entityType: "event";
       event: EventName;
     };
-
+export type TextPartPlayer = {
+  type: "player";
+  name: string;
+};
 export type TextPartIcon =
   | { type: "resource"; resourceType: ResourceType | "ANY" }
   | { type: "cardType"; cardType: CardType }
@@ -508,5 +511,6 @@ export type TextPart =
   | TextPartIcon
   | TextPartBR
   | TextPartHR
+  | TextPartPlayer
   | TextPartEntity;
 export type GameText = TextPart[];

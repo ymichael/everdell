@@ -473,7 +473,10 @@ export class GameState {
       this.addGameLog("Game over");
 
       this.players.forEach((player) => {
-        this.addGameLog(`${player.name} has ${player.getPoints(this)} points.`);
+        this.addGameLog([
+          { type: "player", name: player.name },
+          ` has ${player.getPoints(this)} points.`,
+        ]);
       });
     }
   }
@@ -483,7 +486,8 @@ export class GameState {
     switch (gameInput.inputType) {
       case GameInputType.PLAY_CARD:
         this.addGameLog([
-          { type: "text", text: `${player.name} played ` },
+          { type: "player", name: player.name },
+          { type: "text", text: ` played ` },
           {
             type: "entity",
             entityType: "card",
@@ -494,7 +498,8 @@ export class GameState {
         break;
       case GameInputType.PLACE_WORKER:
         this.addGameLog([
-          { type: "text", text: `${player.name} place a worker on ` },
+          { type: "player", name: player.name },
+          { type: "text", text: ` place a worker on ` },
           {
             type: "entity",
             entityType: "location",
@@ -505,7 +510,8 @@ export class GameState {
         break;
       case GameInputType.CLAIM_EVENT:
         this.addGameLog([
-          { type: "text", text: `${player.name} claimed the ` },
+          { type: "player", name: player.name },
+          { type: "text", text: ` claimed the ` },
           {
             type: "entity",
             entityType: "event",
@@ -515,7 +521,10 @@ export class GameState {
         ]);
         break;
       case GameInputType.PREPARE_FOR_SEASON:
-        this.addGameLog(`${player.name} took the prepare for season action.`);
+        this.addGameLog([
+          { type: "player", name: player.name },
+          { type: "text", text: ` took the prepare for season action.` },
+        ]);
         break;
       case GameInputType.SELECT_CARDS:
       case GameInputType.SELECT_PLAYED_CARDS:
@@ -550,20 +559,21 @@ export class GameState {
 
         this.addGameLog([
           contextPart,
+          { type: "text", text: ": " },
+          { type: "player", name: player.name },
           {
             type: "text",
-            text: ": ",
-          },
-          {
-            type: "text",
-            text: `${player.name} took ${gameInput.inputType} action.`,
+            text: ` took ${gameInput.inputType} action.`,
           },
         ]);
         break;
       case GameInputType.GAME_END:
       case GameInputType.VISIT_DESTINATION_CARD:
       default:
-        this.addGameLog(`${player.name} took ${gameInput.inputType} action.`);
+        this.addGameLog([
+          { type: "player", name: player.name },
+          ` took ${gameInput.inputType} action.`,
+        ]);
         break;
     }
   }

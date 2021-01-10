@@ -17,6 +17,10 @@
   font-weight: var(--font-bold);
 }
 
+.player_part {
+  border-bottom: solid 1px var(--text-color-light);
+}
+
 .resource {
   display: inline-block;
   margin-top: -10px;

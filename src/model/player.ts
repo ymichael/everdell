@@ -7,6 +7,7 @@ import {
   ResourceType,
   GameInput,
   GameInputType,
+  TextPartPlayer,
   PlayedCardInfo,
   PlayedEventInfo,
   WorkerPlacementInfo,
@@ -96,6 +97,14 @@ export class Player {
 
   get playerSecretUNSAFE(): string {
     return this.playerSecret;
+  }
+
+  getPlayerText(): TextPartPlayer {
+    return {
+      type: "player",
+      playerId: this.playerId,
+      name: this.name,
+    };
   }
 
   drawCards(gameState: GameState, count: number): void {

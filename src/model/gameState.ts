@@ -474,7 +474,7 @@ export class GameState {
 
       this.players.forEach((player) => {
         this.addGameLog([
-          { type: "player", name: player.name },
+          player.getPlayerText(),
           ` has ${player.getPoints(this)} points.`,
         ]);
       });
@@ -486,7 +486,7 @@ export class GameState {
     switch (gameInput.inputType) {
       case GameInputType.PLAY_CARD:
         this.addGameLog([
-          { type: "player", name: player.name },
+          player.getPlayerText(),
           { type: "text", text: ` played ` },
           {
             type: "entity",
@@ -498,7 +498,7 @@ export class GameState {
         break;
       case GameInputType.PLACE_WORKER:
         this.addGameLog([
-          { type: "player", name: player.name },
+          player.getPlayerText(),
           { type: "text", text: ` place a worker on ` },
           {
             type: "entity",
@@ -510,7 +510,7 @@ export class GameState {
         break;
       case GameInputType.CLAIM_EVENT:
         this.addGameLog([
-          { type: "player", name: player.name },
+          player.getPlayerText(),
           { type: "text", text: ` claimed the ` },
           {
             type: "entity",
@@ -522,7 +522,7 @@ export class GameState {
         break;
       case GameInputType.PREPARE_FOR_SEASON:
         this.addGameLog([
-          { type: "player", name: player.name },
+          player.getPlayerText(),
           { type: "text", text: ` took the prepare for season action.` },
         ]);
         break;
@@ -560,7 +560,7 @@ export class GameState {
         this.addGameLog([
           contextPart,
           { type: "text", text: ": " },
-          { type: "player", name: player.name },
+          player.getPlayerText(),
           {
             type: "text",
             text: ` took ${gameInput.inputType} action.`,
@@ -571,7 +571,7 @@ export class GameState {
       case GameInputType.VISIT_DESTINATION_CARD:
       default:
         this.addGameLog([
-          { type: "player", name: player.name },
+          player.getPlayerText(),
           ` took ${gameInput.inputType} action.`,
         ]);
         break;

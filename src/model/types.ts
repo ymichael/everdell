@@ -498,6 +498,7 @@ export type TextPartEntity =
     };
 export type TextPartPlayer = {
   type: "player";
+  playerId: string;
   name: string;
 };
 export type TextPartIcon =

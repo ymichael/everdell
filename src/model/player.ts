@@ -99,7 +99,7 @@ export class Player {
     return this.playerSecret;
   }
 
-  getPlayerText(): TextPartPlayer {
+  getGameText(): TextPartPlayer {
     return {
       type: "player",
       playerId: this.playerId,

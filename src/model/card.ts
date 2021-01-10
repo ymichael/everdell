@@ -30,7 +30,11 @@ import {
 } from "./gameStatePlayHelpers";
 import cloneDeep from "lodash/cloneDeep";
 import flatten from "lodash/flatten";
-import { toGameText, cardListToGameText } from "./gameText";
+import {
+  toGameText,
+  cardListToGameText,
+  resourceMapToGameText,
+} from "./gameText";
 import { assertUnreachable } from "../utils";
 
 type MaxWorkersInnerFn = (cardOwner: Player) => number;
@@ -237,11 +241,17 @@ export class Card<TCardType extends CardType = CardType>
     playedCard: PlayedCardInfo
   ): void {
     const player = gameState.getActivePlayer();
-    if (this.resourcesToGain) {
+    if (this.resourcesToGain && sumResources(this.resourcesToGain)) {
       player.gainResources(this.resourcesToGain);
       if (this.resourcesToGain.CARD) {
         player.drawCards(gameState, this.resourcesToGain.CARD);
       }
+      gameState.addGameLogFromCard(this.name, [
+        player,
+        "gained ",
+        ...resourceMapToGameText(this.resourcesToGain),
+        ".",
+      ]);
     }
     if (this.productionInner) {
       this.productionInner(gameState, gameInput, cardOwner, playedCard);
@@ -397,7 +407,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           player.gainResources({
             [ResourceType.VP]: numDiscarded,
           });
-          gameState.addGameLog([
+          gameState.addGameLogFromCard(CardName.BARD, [
             player,
             ` discarded ${numDiscarded} CARD to gain ${numDiscarded} VP.`,
           ]);
@@ -506,8 +516,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         const filteredOptions = revealedCards.filter((cardName) =>
           player.canAddToCity(cardName, true /* strict */)
         );
-
-        gameState.addGameLog([
+        gameState.addGameLogFromCard(CardName.CEMETARY, [
           player,
           "revealed ",
           ...cardListToGameText(revealedCards),
@@ -557,7 +566,12 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         cardOptionsUnfiltered.forEach((cardName) => {
           gameState.discardPile.addToStack(cardName);
         });
-        gameState.addGameLog([player, "played ", card, "."]);
+        gameState.addGameLogFromCard(CardName.CEMETARY, [
+          player,
+          "played ",
+          card,
+          ".",
+        ]);
       } else {
         throw new Error("Invalid input type");
       }

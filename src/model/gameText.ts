@@ -6,6 +6,7 @@ import {
   ResourceType,
   CardType,
   IGameTextEntity,
+  ProductionResourceMap,
 } from "./types";
 import flatten from "lodash/flatten";
 
@@ -98,6 +99,32 @@ export function cardListToGameText(cards: CardName[]): GameText {
       entityType: "card",
       card: cards[i],
     });
+  }
+  return ret;
+}
+
+export function resourceMapToGameText(
+  resources: ProductionResourceMap
+): GameText {
+  const ret: GameText = [];
+
+  const resourceTypes = Object.keys(resources) as (keyof typeof resources)[];
+
+  for (let i = 0; i < resourceTypes.length; i++) {
+    const resourceType = resourceTypes[i];
+    if (i !== 0) {
+      if (i === resourceTypes.length - 1) {
+        ret.push({ type: "text", text: " & " });
+      } else {
+        ret.push({ type: "text", text: ", " });
+      }
+    }
+    ret.push({ type: "text", text: `${resources[resourceType]} ` });
+    if (resourceType === "CARD") {
+      ret.push({ type: "symbol", symbol: "CARD" });
+    } else {
+      ret.push({ type: "resource", resourceType: resourceType });
+    }
   }
   return ret;
 }

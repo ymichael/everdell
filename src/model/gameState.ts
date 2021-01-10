@@ -19,6 +19,8 @@ import {
   PlayedCardInfo,
   PlayerStatus,
   GameLogEntry,
+  TextPart,
+  IGameTextEntity,
 } from "./types";
 import { GameStateJSON } from "./jsonTypes";
 import { Player } from "./player";
@@ -87,6 +89,17 @@ export class GameState {
 
   get activePlayerId(): string {
     return this._activePlayerId;
+  }
+
+  addGameLogFromCard(
+    card: CardName,
+    args: Parameters<typeof toGameText>[0]
+  ): void {
+    if (typeof args === "string") {
+      this.addGameLog([Card.fromName(card), ": ", args]);
+    } else {
+      this.addGameLog([Card.fromName(card), ": ", ...args]);
+    }
   }
 
   addGameLog(args: Parameters<typeof toGameText>[0]): void {
@@ -557,7 +570,7 @@ export class GameState {
 
         this.addGameLog([
           contextPart,
-          { type: "text", text: ": " },
+          ": ",
           player,
           {
             type: "text",

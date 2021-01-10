@@ -482,9 +482,15 @@ export class GameState {
     const player = this.getActivePlayer();
     switch (gameInput.inputType) {
       case GameInputType.PLAY_CARD:
-        this.addGameLog(
-          `${player.name} played ${gameInput.clientOptions.card}`
-        );
+        this.addGameLog([
+          { type: "text", text: `${player.name} played ` },
+          {
+            type: "entity",
+            entityType: "card",
+            card: gameInput.clientOptions.card!,
+          },
+          { type: "text", text: "." },
+        ]);
         break;
       case GameInputType.PLACE_WORKER:
         this.addGameLog([
@@ -531,9 +537,15 @@ export class GameState {
               entityType: "event" as const,
               event: gameInput.eventContext,
             }
+          : gameInput.cardContext
+          ? {
+              type: "entity" as const,
+              entityType: "card" as const,
+              card: gameInput.cardContext,
+            }
           : {
               type: "text" as const,
-              text: gameInput.cardContext || gameInput.prevInputType,
+              text: gameInput.prevInputType,
             };
 
         this.addGameLog([

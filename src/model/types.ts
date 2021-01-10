@@ -483,6 +483,11 @@ export type CardPaymentOptions = {
 export type TextPartEntity =
   | {
       type: "entity";
+      entityType: "card";
+      card: CardName;
+    }
+  | {
+      type: "entity";
       entityType: "location";
       location: LocationName;
     }

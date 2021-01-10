@@ -2,13 +2,16 @@ import {
   GameLogEntry,
   GameText,
   TextPart,
+  TextPartEntity,
   CardName,
   ResourceType,
   CardType,
   IGameTextEntity,
+  WorkerPlacementInfo,
   ProductionResourceMap,
 } from "./types";
 import flatten from "lodash/flatten";
+import { assertUnreachable } from "../utils";
 
 function isGameTextEntity(x: any): x is IGameTextEntity {
   return !!x?.getGameTextPart;
@@ -127,4 +130,36 @@ export function resourceMapToGameText(
     }
   }
   return ret;
+}
+
+export function workerPlacementToGameText(
+  workerPlacementInfo: WorkerPlacementInfo
+): GameText {
+  if (workerPlacementInfo.location) {
+    return [
+      {
+        type: "entity" as const,
+        entityType: "location" as const,
+        location: workerPlacementInfo.location,
+      },
+    ];
+  } else if (workerPlacementInfo.event) {
+    return [
+      {
+        type: "entity" as const,
+        entityType: "event" as const,
+        event: workerPlacementInfo.event,
+      },
+    ];
+  } else if (workerPlacementInfo.playedCard) {
+    return [
+      {
+        type: "entity" as const,
+        entityType: "card" as const,
+        card: workerPlacementInfo.playedCard.cardName,
+      },
+    ];
+  } else {
+    assertUnreachable(workerPlacementInfo, JSON.stringify(workerPlacementInfo));
+  }
 }

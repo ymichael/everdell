@@ -545,6 +545,11 @@ export class GameState {
       case GameInputType.SELECT_PLAYER:
       case GameInputType.SELECT_RESOURCES:
       case GameInputType.DISCARD_CARDS:
+        // TODO: Remove this whole block once we're done with location & event addGameLog calls.
+        if (gameInput.cardContext) {
+          break;
+        }
+
         const contextPart = gameInput.locationContext
           ? {
               type: "entity" as const,

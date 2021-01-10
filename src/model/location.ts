@@ -150,19 +150,20 @@ export class Location implements GameStatePlayable, IGameTextEntity {
       if (this.resourcesToGain.CARD) {
         player.drawCards(gameState, this.resourcesToGain.CARD);
       }
-      if (sumResources(this.resourcesToGain) === this.resourcesToGain.CARD) {
-        gameState.addGameLogFromLocation(this.name, [
-          player,
-          ` drew ${this.resourcesToGain.CARD} CARD.`,
-        ]);
-      } else {
-        gameState.addGameLogFromLocation(this.name, [
-          player,
-          " gained ",
-          ...resourceMapToGameText(this.resourcesToGain),
-          ".",
-        ]);
-      }
+      // TODO: commenting out because this is quite noisy.
+      // if (sumResources(this.resourcesToGain) === this.resourcesToGain.CARD) {
+      //   gameState.addGameLogFromLocation(this.name, [
+      //     player,
+      //     ` drew ${this.resourcesToGain.CARD} CARD.`,
+      //   ]);
+      // } else {
+      //   gameState.addGameLogFromLocation(this.name, [
+      //     player,
+      //     " gained ",
+      //     ...resourceMapToGameText(this.resourcesToGain),
+      //     ".",
+      //   ]);
+      // }
     }
   }
 

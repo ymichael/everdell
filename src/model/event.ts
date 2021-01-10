@@ -349,26 +349,38 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         }
 
         const prevInput = gameInput.prevInput;
-        const selectedPlayer = prevInput.clientOptions.selectedPlayer;
+        const selectedPlayerId = prevInput.clientOptions.selectedPlayer;
 
         // choosing players is optional, but we should be catching this
         // before you select resources
-        if (!selectedPlayer) {
+        if (!selectedPlayerId) {
           throw new Error("Selected player cannot be null");
         }
 
-        gameState.getPlayer(selectedPlayer).gainResources(resources);
+        const selectedPlayer = gameState.getPlayer(selectedPlayerId);
+
+        gameState.addGameLogFromEvent(
+          EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN,
+          [
+            player,
+            " gave ",
+            ...resourceMapToGameText(resources),
+            " to ",
+            selectedPlayer,
+            ` to add ${2 * numResources} VP to here.`,
+          ]
+        );
+
+        selectedPlayer.gainResources(resources);
         player.spendResources(resources);
 
         const eventInfo =
           player.claimedEvents[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN];
-
         if (!eventInfo) {
           throw new Error("Cannot find event info");
         }
 
-        // add VP to this event
-        //eventInfo.storedResources = resources;
+        // Add VP to this event
         const storedResources = eventInfo.storedResources;
 
         if (eventInfo.storedResources) {

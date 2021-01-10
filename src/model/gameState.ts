@@ -142,6 +142,28 @@ export class GameState {
     }
   }
 
+  addGameLogFromLocation(
+    location: LocationName,
+    args: Parameters<typeof toGameText>[0]
+  ): void {
+    if (typeof args === "string") {
+      this.addGameLog([Location.fromName(location), ": ", args]);
+    } else {
+      this.addGameLog([Location.fromName(location), ": ", ...args]);
+    }
+  }
+
+  addGameLogFromEvent(
+    event: EventName,
+    args: Parameters<typeof toGameText>[0]
+  ): void {
+    if (typeof args === "string") {
+      this.addGameLog([Event.fromName(event), ": ", args]);
+    } else {
+      this.addGameLog([Event.fromName(event), ": ", ...args]);
+    }
+  }
+
   addGameLog(args: Parameters<typeof toGameText>[0]): void {
     const logSize = this.gameLog.length;
     if (logSize > MAX_GAME_LOG_BUFFER) {
@@ -586,57 +608,9 @@ export class GameState {
           { type: "text", text: ` took the prepare for season action.` },
         ]);
         break;
-      case GameInputType.SELECT_CARDS:
-      case GameInputType.SELECT_PLAYED_CARDS:
-      case GameInputType.SELECT_LOCATION:
-      case GameInputType.SELECT_PAYMENT_FOR_CARD:
-      case GameInputType.SELECT_WORKER_PLACEMENT:
-      case GameInputType.SELECT_PLAYER:
-      case GameInputType.SELECT_RESOURCES:
-      case GameInputType.DISCARD_CARDS:
-        // TODO: Remove this whole block once we're done with location & event addGameLog calls.
-        if (gameInput.cardContext) {
-          break;
-        }
-
-        const contextPart = gameInput.locationContext
-          ? {
-              type: "entity" as const,
-              entityType: "location" as const,
-              location: gameInput.locationContext!,
-            }
-          : gameInput.eventContext
-          ? {
-              type: "entity" as const,
-              entityType: "event" as const,
-              event: gameInput.eventContext,
-            }
-          : gameInput.cardContext
-          ? {
-              type: "entity" as const,
-              entityType: "card" as const,
-              card: gameInput.cardContext,
-            }
-          : {
-              type: "text" as const,
-              text: gameInput.prevInputType,
-            };
-
-        this.addGameLog([
-          contextPart,
-          ": ",
-          player,
-          {
-            type: "text",
-            text: ` took ${gameInput.inputType} action.`,
-          },
-        ]);
-        break;
       case GameInputType.GAME_END:
       case GameInputType.VISIT_DESTINATION_CARD:
-      default:
         this.addGameLog([player, ` took ${gameInput.inputType} action.`]);
-        break;
     }
   }
 

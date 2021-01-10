@@ -19,7 +19,7 @@ import {
 } from "./gameState";
 import shuffle from "lodash/shuffle";
 import flatten from "lodash/flatten";
-import { strToGameText } from "../utils";
+import { toGameText } from "./gameText";
 
 export class Event implements GameStatePlayable {
   readonly playInner: GameStatePlayFn | undefined;
@@ -196,7 +196,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.BASIC_FOUR_PRODUCTION,
     type: EventType.BASIC,
     baseVP: 3,
-    eventRequirementsDescription: strToGameText("4 PRODUCTION"),
+    eventRequirementsDescription: toGameText("4 PRODUCTION"),
     canPlayCheckInner: (gameState: GameState) => {
       const player = gameState.getActivePlayer();
       if (player.getNumCardType(CardType.PRODUCTION) < 4) {
@@ -209,7 +209,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.BASIC_THREE_DESTINATION,
     type: EventType.BASIC,
     baseVP: 3,
-    eventRequirementsDescription: strToGameText("3 DESTINATION"),
+    eventRequirementsDescription: toGameText("3 DESTINATION"),
     canPlayCheckInner: (gameState: GameState) => {
       const player = gameState.getActivePlayer();
       if (player.getNumCardType(CardType.DESTINATION) < 3) {
@@ -222,7 +222,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.BASIC_THREE_GOVERNANCE,
     type: EventType.BASIC,
     baseVP: 3,
-    eventRequirementsDescription: strToGameText("3 GOVERNANCE"),
+    eventRequirementsDescription: toGameText("3 GOVERNANCE"),
     canPlayCheckInner: (gameState: GameState) => {
       const player = gameState.getActivePlayer();
       if (player.getNumCardType(CardType.GOVERNANCE) < 3) {
@@ -235,7 +235,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.BASIC_THREE_TRAVELER,
     type: EventType.BASIC,
     baseVP: 3,
-    eventRequirementsDescription: strToGameText("3 TRAVELER"),
+    eventRequirementsDescription: toGameText("3 TRAVELER"),
     canPlayCheckInner: (gameState: GameState) => {
       const player = gameState.getActivePlayer();
       if (player.getNumCardType(CardType.TRAVELER) < 3) {
@@ -250,7 +250,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     baseVP: 0,
     requiredCards: [CardName.SHOPKEEPER, CardName.POST_OFFICE],
-    eventDescription: strToGameText([
+    eventDescription: toGameText([
       "When achieved, you may give opponents up to a total of 3 ANY",
       { type: "BR" },
       "For each donation gain 2 VP.",
@@ -308,7 +308,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     baseVP: 0,
     requiredCards: [CardName.LOOKOUT, CardName.MINER_MOLE],
-    eventDescription: strToGameText([
+    eventDescription: toGameText([
       "When achieved, you may place up to 3 TWIG here.",
       { type: "HR" },
       "2 VP for each TWIG on this Event.",
@@ -402,7 +402,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     baseVP: 0,
     requiredCards: [CardName.HISTORIAN, CardName.RUINS],
-    eventDescription: strToGameText([
+    eventDescription: toGameText([
       "When achieved, reveal 5 CARD.",
       { type: "BR" },
       "You may draw any or place any beneath this Event.",
@@ -500,7 +500,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     baseVP: 0,
     requiredCards: [CardName.COURTHOUSE, CardName.RANGER],
-    eventDescription: strToGameText([
+    eventDescription: toGameText([
       "When achieved, place up to 2 Critters from your city beneath this Event.",
       { type: "HR" },
       "3 VP for each Critter beneath this Event",
@@ -597,7 +597,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     baseVP: 6,
     requiredCards: [CardName.UNDERTAKER, CardName.BARGE_TOAD],
-    eventDescription: strToGameText(
+    eventDescription: toGameText(
       "When achieved, pay 2 BERRY and discard 2 CARD from your city."
     ),
     canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
@@ -665,7 +665,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     baseVP: 0,
     requiredCards: [CardName.DOCTOR, CardName.POSTAL_PIGEON],
-    eventDescription: strToGameText(
+    eventDescription: toGameText(
       "3 VP for each husband/wife pair in every city."
     ),
     pointsInner: (gameState: GameState, playerId: string) => {
@@ -681,7 +681,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     baseVP: 0,
     requiredCards: [CardName.TEACHER, CardName.UNIVERSITY],
-    eventDescription: strToGameText([
+    eventDescription: toGameText([
       "When achieved, you may place up to 3 Critters from your hand beneath this Event.",
       { type: "HR" },
       "2 VP for each Critter beneath this Event.",
@@ -764,7 +764,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     baseVP: 0,
     requiredCards: [CardName.MONK, CardName.DUNGEON],
-    eventDescription: strToGameText("3 VP for each prisoner in your Dungeon."),
+    eventDescription: toGameText("3 VP for each prisoner in your Dungeon."),
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
 
@@ -794,7 +794,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     baseVP: 0,
     requiredCards: [CardName.MONASTERY, CardName.WANDERER],
-    eventDescription: strToGameText("3 VP for each worker in your Monastery."),
+    eventDescription: toGameText("3 VP for each worker in your Monastery."),
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
 
@@ -833,7 +833,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     baseVP: 0,
     requiredCards: [CardName.INN, CardName.BARD],
-    eventDescription: strToGameText([
+    eventDescription: toGameText([
       "When achieved, you may place up to 3 BERRY here.",
       { type: "HR" },
       "2 VP for each BERRY on this Event.",
@@ -927,7 +927,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     baseVP: 0,
     requiredCards: [CardName.WOODCARVER, CardName.CHAPEL],
-    eventDescription: strToGameText([
+    eventDescription: toGameText([
       "When achieved, draw 1 CARD and receive 1 ANY ",
       "for each VP on your Chapel.",
     ]),
@@ -1031,7 +1031,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     baseVP: 0,
     requiredCards: [CardName.CEMETARY, CardName.SHEPHERD],
-    eventDescription: strToGameText(
+    eventDescription: toGameText(
       "3 VP for each buried worker in your Cemetery."
     ),
     // 3 points for each worker in the cemetary
@@ -1092,7 +1092,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_THE_EVERDELL_GAMES,
     type: EventType.SPECIAL,
     baseVP: 9,
-    shortName: strToGameText("The Everdell Games"),
+    shortName: toGameText("The Everdell Games"),
     eventRequirementsDescription: [
       { type: "text", text: "2 Each of " },
       { type: "BR" },
@@ -1128,7 +1128,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     baseVP: 0,
     requiredCards: [CardName.PEDDLER, CardName.GENERAL_STORE],
-    eventDescription: strToGameText([
+    eventDescription: toGameText([
       "When achieved, you may place up to 3 ANY here.",
       { type: "HR" },
       "Each BERRY TWIG = 1 VP",

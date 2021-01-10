@@ -515,3 +515,7 @@ export type TextPart =
   | TextPartPlayer
   | TextPartEntity;
 export type GameText = TextPart[];
+
+export interface IGameTextEntity {
+  getGameTextPart(): TextPart;
+}

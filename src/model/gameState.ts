@@ -27,7 +27,8 @@ import { CardStack, discardPile } from "./cardStack";
 import { Location, initialLocationsMap } from "./location";
 import { Event, initialEventMap } from "./event";
 import { initialDeck } from "./deck";
-import { assertUnreachable, strToGameText } from "../utils";
+import { assertUnreachable } from "../utils";
+import { toGameText } from "./gameText";
 
 import cloneDeep from "lodash/cloneDeep";
 import isEqual from "lodash/isEqual";
@@ -88,12 +89,12 @@ export class GameState {
     return this._activePlayerId;
   }
 
-  addGameLog(args: Parameters<typeof strToGameText>[0]): void {
+  addGameLog(args: Parameters<typeof toGameText>[0]): void {
     const logSize = this.gameLog.length;
     if (logSize > MAX_GAME_LOG_BUFFER) {
       this.gameLog.splice(0, Math.floor(MAX_GAME_LOG_BUFFER / 2));
     }
-    this.gameLog.push({ entry: strToGameText(args) });
+    this.gameLog.push({ entry: toGameText(args) });
   }
 
   toJSON(includePrivate: boolean): GameStateJSON {
@@ -473,10 +474,7 @@ export class GameState {
       this.addGameLog("Game over");
 
       this.players.forEach((player) => {
-        this.addGameLog([
-          player.getGameText(),
-          ` has ${player.getPoints(this)} points.`,
-        ]);
+        this.addGameLog([player, ` has ${player.getPoints(this)} points.`]);
       });
     }
   }
@@ -486,7 +484,7 @@ export class GameState {
     switch (gameInput.inputType) {
       case GameInputType.PLAY_CARD:
         this.addGameLog([
-          player.getGameText(),
+          player,
           { type: "text", text: ` played ` },
           {
             type: "entity",
@@ -498,7 +496,7 @@ export class GameState {
         break;
       case GameInputType.PLACE_WORKER:
         this.addGameLog([
-          player.getGameText(),
+          player,
           { type: "text", text: ` place a worker on ` },
           {
             type: "entity",
@@ -510,7 +508,7 @@ export class GameState {
         break;
       case GameInputType.CLAIM_EVENT:
         this.addGameLog([
-          player.getGameText(),
+          player,
           { type: "text", text: ` claimed the ` },
           {
             type: "entity",
@@ -522,7 +520,7 @@ export class GameState {
         break;
       case GameInputType.PREPARE_FOR_SEASON:
         this.addGameLog([
-          player.getGameText(),
+          player,
           { type: "text", text: ` took the prepare for season action.` },
         ]);
         break;
@@ -560,7 +558,7 @@ export class GameState {
         this.addGameLog([
           contextPart,
           { type: "text", text: ": " },
-          player.getGameText(),
+          player,
           {
             type: "text",
             text: ` took ${gameInput.inputType} action.`,
@@ -570,10 +568,7 @@ export class GameState {
       case GameInputType.GAME_END:
       case GameInputType.VISIT_DESTINATION_CARD:
       default:
-        this.addGameLog([
-          player.getGameText(),
-          ` took ${gameInput.inputType} action.`,
-        ]);
+        this.addGameLog([player, ` took ${gameInput.inputType} action.`]);
         break;
     }
   }

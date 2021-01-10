@@ -53,26 +53,26 @@ describe("Game", () => {
       { entry: [{ type: "text", text: "Dealing cards to the Meadow." }] },
       {
         entry: [
-          gameState.players[0].getGameText(),
+          gameState.players[0].getGameTextPart(),
           { type: "text", text: " took GAME_END action." },
         ],
       },
       {
         entry: [
-          gameState.players[1].getGameText(),
+          gameState.players[1].getGameTextPart(),
           { type: "text", text: " took GAME_END action." },
         ],
       },
       { entry: [{ type: "text", text: "Game over" }] },
       {
         entry: [
-          gameState.players[0].getGameText(),
+          gameState.players[0].getGameTextPart(),
           { type: "text", text: " has 14 points." },
         ],
       },
       {
         entry: [
-          gameState.players[1].getGameText(),
+          gameState.players[1].getGameTextPart(),
           { type: "text", text: " has 12 points." },
         ],
       },

@@ -13,6 +13,7 @@ import {
   WorkerPlacementInfo,
   LocationName,
   PlayerStatus,
+  IGameTextEntity,
 } from "./types";
 import { PlayerJSON } from "./jsonTypes";
 import cloneDeep from "lodash/cloneDeep";
@@ -27,7 +28,7 @@ import { assertUnreachable } from "../utils";
 const MAX_HAND_SIZE = 8;
 const MAX_CITY_SIZE = 15;
 
-export class Player {
+export class Player implements IGameTextEntity {
   private playerSecret: string;
 
   public name: string;
@@ -99,7 +100,7 @@ export class Player {
     return this.playerSecret;
   }
 
-  getGameText(): TextPartPlayer {
+  getGameTextPart(): TextPartPlayer {
     return {
       type: "player",
       playerId: this.playerId,

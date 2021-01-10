@@ -7,7 +7,13 @@ import { PlayerJSON, GameStateJSON } from "../model/jsonTypes";
 import { Player } from "../model/player";
 import { GameBlock } from "./common";
 import { PlayerCity } from "./gameBoard";
-import { VPIcon, CardIcon, CardTypeSymbol, ResourceTypeIcon } from "./common";
+import {
+  VPIcon,
+  CardIcon,
+  CardTypeSymbol,
+  ResourceTypeIcon,
+  EmptyCitySpotIcon,
+} from "./common";
 
 export const Players = ({
   viewingPlayer,
@@ -104,6 +110,14 @@ const PlayerStatus: React.FC<{
                 </div>
               </div>
             ))}
+            <div className={styles.status_box_item_resource}>
+              <div className={styles.status_box_item_resource_icon}>
+                <EmptyCitySpotIcon />
+              </div>
+              <div className={styles.status_box_item_resource_count}>
+                {15 - playerImpl.getNumOccupiedSpacesInCity()}
+              </div>
+            </div>
           </div>
         </div>
         <div className={styles.status_box_item}>

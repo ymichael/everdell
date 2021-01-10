@@ -6,6 +6,8 @@ import {
   CardCost,
   CardType,
   CardName,
+  EventName,
+  EventType,
   GameInput,
   GameInputType,
   PlayedCardInfo,
@@ -21,6 +23,7 @@ import {
   GameStateCountPointsFn,
 } from "./gameState";
 import { Location } from "./location";
+import { Event } from "./event";
 import { Player } from "./player";
 import {
   playSpendResourceToGetVPFactory,
@@ -98,7 +101,6 @@ export class Card<TCardType extends CardType = CardType>
     playInner?: GameStatePlayFn;
     canPlayCheckInner?: GameStateCanPlayCheckFn;
     playedCardInfoDefault?: Partial<Omit<PlayedCardInfo, "playerId">>;
-    pointsInner?: (gameState: GameState, playerId: string) => number;
     maxWorkersInner?: MaxWorkersInnerFn;
     cardDescription?: GameText | undefined;
   } & (TCardType extends CardType.PRODUCTION
@@ -109,7 +111,14 @@ export class Card<TCardType extends CardType = CardType>
     : {
         resourcesToGain?: ProductionResourceMap;
         productionInner?: undefined;
-      })) {
+      }) &
+    (TCardType extends CardType.PROSPERITY
+      ? {
+          pointsInner: (gameState: GameState, playerId: string) => number;
+        }
+      : {
+          pointsInner?: (gameState: GameState, playerId: string) => number;
+        })) {
     this.name = name;
     this.baseCost = Object.freeze(baseCost);
     this.baseVP = baseVP;
@@ -1243,6 +1252,19 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       { type: "BR" },
       "2 VP for each special Event you achieved.",
     ]),
+    pointsInner: (gameState: GameState, playerId: string) => {
+      let numPoints = 0;
+      const player = gameState.getPlayer(playerId);
+      Object.keys(player.claimedEvents).forEach((eventName) => {
+        const event = Event.fromName(eventName as EventName);
+        if (event.type === EventType.BASIC) {
+          numPoints += 1;
+        } else if (event.type === EventType.SPECIAL) {
+          numPoints += 2;
+        }
+      });
+      return numPoints;
+    },
   }),
   [CardName.LOOKOUT]: new Card({
     name: CardName.LOOKOUT,

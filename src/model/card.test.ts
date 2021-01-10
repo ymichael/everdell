@@ -10,6 +10,7 @@ import {
 } from "./testHelpers";
 import {
   CardType,
+  EventName,
   LocationType,
   ResourceType,
   GameInputType,
@@ -1756,7 +1757,7 @@ describe("Card", () => {
               selectedCards: [CardName.WIFE],
             },
           });
-        }).to.throwException(/must select card from meadow/i);
+        }).to.throwException(/cannot find selected card/i);
       });
       it("should player buy card that exists in hand and meadow", () => {
         const cards = [
@@ -3037,6 +3038,19 @@ describe("Card", () => {
           },
           usedForCritter: false,
         });
+      });
+    });
+
+    describe(CardName.KING, () => {
+      it("should calculate the points correctly", () => {
+        const card = Card.fromName(CardName.KING);
+        expect(card.getPoints(gameState, player.playerId)).to.be(4);
+
+        player.placeWorkerOnEvent(EventName.BASIC_FOUR_PRODUCTION);
+        expect(card.getPoints(gameState, player.playerId)).to.be(4 + 1);
+
+        player.placeWorkerOnEvent(EventName.SPECIAL_GRADUATION_OF_SCHOLARS);
+        expect(card.getPoints(gameState, player.playerId)).to.be(4 + 1 + 2);
       });
     });
   });

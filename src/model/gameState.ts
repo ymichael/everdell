@@ -45,6 +45,8 @@ const MEADOW_SIZE = 8;
 const STARTING_PLAYER_HAND_SIZE = 5;
 const MAX_GAME_LOG_BUFFER = 100;
 
+const PRINT_GAME_LOGS = false;
+
 const gameTextToDebugStr = (gameText: GameText): string => {
   return gameText
     .map((part: TextPart, idx: number) => {
@@ -174,14 +176,10 @@ export class GameState {
       this.gameLog.splice(0, Math.floor(MAX_GAME_LOG_BUFFER / 2));
     }
     const entry = toGameText(args);
-    // const debugStr = gameTextToDebugStr(entry);
-    // if (
-    //   debugStr.startsWith("Dealing cards to") ||
-    //   debugStr.startsWith("Game created ")
-    // ) {
-    // } else {
-    //   console.log(debugStr);
-    // }
+    if (PRINT_GAME_LOGS) {
+      const debugStr = gameTextToDebugStr(entry);
+      console.log(debugStr);
+    }
     this.gameLog.push({ entry });
   }
 

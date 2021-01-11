@@ -22,7 +22,11 @@ import {
   GameStateCanPlayCheckFn,
 } from "./gameState";
 import shuffle from "lodash/shuffle";
-import { toGameText, resourceMapToGameText } from "./gameText";
+import {
+  toGameText,
+  resourceMapToGameText,
+  cardListToGameText,
+} from "./gameText";
 import { assertUnreachable } from "../utils";
 
 export class Location implements GameStatePlayable, IGameTextEntity {
@@ -787,6 +791,16 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
           );
         }
 
+        gameState.addGameLogFromLocation(
+          LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS,
+          [
+            player,
+            " took ",
+            ...cardListToGameText(cardOptions),
+            " from the Meadow.",
+          ]
+        );
+
         // add cards to player's hand
         player.addCardToHand(gameState, cardOptions[0]);
         player.addCardToHand(gameState, cardOptions[1]);
@@ -870,6 +884,12 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
         if (paymentError) {
           throw new Error(paymentError);
         }
+
+        gameState.addGameLogFromLocation(
+          LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS,
+          [player, " played ", card, " for 1 less."]
+        );
+
         player.payForCard(gameState, gameInput);
         player.removeCardFromHand(card.name);
         card.addToCityAndPlay(gameState, gameInput);

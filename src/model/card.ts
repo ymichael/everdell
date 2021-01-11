@@ -2092,9 +2092,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           throw new Error("Must specify clientOptions.selectedOption");
         }
         if (gameInput.prevInputType === GameInputType.PLAY_CARD) {
-          player.recallWorker(gameState, selectedOption);
           gameState.pendingGameInputs.push({
             inputType: GameInputType.SELECT_WORKER_PLACEMENT,
+            prevInput: gameInput,
             prevInputType: gameInput.inputType,
             options: [
               ...gameState
@@ -2113,19 +2113,26 @@ const CARD_REGISTRY: Record<CardName, Card> = {
               selectedOption: null,
             },
           });
-          gameState.addGameLogFromCard(CardName.RANGER, [
-            player,
-            " recalled worker on ",
-            ...workerPlacementToGameText(selectedOption),
-            ".",
-          ]);
         } else {
+          const recalledWorkerInfo =
+            gameInput.prevInput &&
+            gameInput.prevInput.inputType ===
+              GameInputType.SELECT_WORKER_PLACEMENT &&
+            gameInput.prevInput?.clientOptions?.selectedOption;
+          if (!recalledWorkerInfo) {
+            throw new Error("Invalid input");
+          }
+          player.recallWorker(gameState, recalledWorkerInfo);
+
           gameState.addGameLogFromCard(CardName.RANGER, [
             player,
-            " moved worker to ",
+            " moved deployed worker on ",
+            ...workerPlacementToGameText(recalledWorkerInfo),
+            " to ",
             ...workerPlacementToGameText(selectedOption),
             ".",
           ]);
+
           if (selectedOption.event) {
             gameState.handleWorkerPlacementGameInput({
               inputType: GameInputType.CLAIM_EVENT,

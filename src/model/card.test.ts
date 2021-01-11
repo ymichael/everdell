@@ -500,26 +500,29 @@ describe("Card", () => {
         expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
         expect(player.cardsInHand.length).to.be(1);
 
+        const recallWorkerInput = {
+          inputType: GameInputType.SELECT_WORKER_PLACEMENT as const,
+          prevInputType: GameInputType.PLAY_CARD,
+          cardContext: CardName.RANGER,
+          mustSelectOne: true,
+          clientOptions: {
+            selectedOption: {
+              location: LocationName.BASIC_ONE_STONE,
+            },
+          },
+          options: [
+            {
+              location: LocationName.BASIC_ONE_STONE,
+            },
+          ],
+        };
+
         const gameState2 = multiStepGameInputTest(gameState, [
           playCardInput(card.name),
+          recallWorkerInput,
           {
             inputType: GameInputType.SELECT_WORKER_PLACEMENT,
-            prevInputType: GameInputType.PLAY_CARD,
-            cardContext: CardName.RANGER,
-            mustSelectOne: true,
-            clientOptions: {
-              selectedOption: {
-                location: LocationName.BASIC_ONE_STONE,
-              },
-            },
-            options: [
-              {
-                location: LocationName.BASIC_ONE_STONE,
-              },
-            ],
-          },
-          {
-            inputType: GameInputType.SELECT_WORKER_PLACEMENT,
+            prevInput: recallWorkerInput,
             prevInputType: GameInputType.SELECT_WORKER_PLACEMENT,
             cardContext: CardName.RANGER,
             mustSelectOne: true,
@@ -532,9 +535,6 @@ describe("Card", () => {
               },
               {
                 location: LocationName.BASIC_ONE_RESIN_AND_ONE_CARD,
-              },
-              {
-                location: LocationName.BASIC_ONE_STONE,
               },
               {
                 location: LocationName.BASIC_THREE_TWIGS,

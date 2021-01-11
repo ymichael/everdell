@@ -150,6 +150,7 @@ export type GameInputSelectResources = {
 
 export type GameInputSelectWorkerPlacement = {
   inputType: GameInputType.SELECT_WORKER_PLACEMENT;
+  prevInput?: GameInput;
   prevInputType: GameInputType;
   options: WorkerPlacementInfo[];
 

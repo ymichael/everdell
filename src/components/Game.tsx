@@ -67,7 +67,11 @@ const Game: React.FC<{
           gameInputs={gameInputs}
           viewingPlayer={viewingPlayerImpl}
         />
-        <Players viewingPlayer={viewingPlayerImpl} gameState={gameState} />
+        <Players
+          viewingPlayer={viewingPlayerImpl}
+          gameState={gameStateImpl}
+          showRealtimePoints={game.gameOptions.realtimePoints}
+        />
         <ViewerUI player={viewingPlayerImpl} />
         <Locations
           gameState={gameStateImpl}

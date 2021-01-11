@@ -18,7 +18,8 @@ const GameBuilder: React.FC = () => {
       <Formik
         initialValues={{
           players: [getDummyPlayer("Player 1"), getDummyPlayer("Player 2")],
-          randomizeStartingPlayer: false,
+          randomizeStartingPlayer: true,
+          realtimePoints: true,
         }}
         onSubmit={async (values, actions) => {
           const response = await fetch("/api/create-game", {
@@ -101,12 +102,16 @@ const GameBuilder: React.FC = () => {
                         ) : (
                           <></>
                         )}
-                        <label className={styles.game_builder_randomize_start}>
+                        <label className={styles.game_builder_option}>
                           <Field
                             type="checkbox"
                             name="randomizeStartingPlayer"
                           />
-                          {"Randomize starting player"}
+                          {"Randomize Player Order"}
+                        </label>
+                        <label className={styles.game_builder_option}>
+                          <Field type="checkbox" name="realtimePoints" />
+                          {"Realtime Points"}
                         </label>
                       </div>
                     )}

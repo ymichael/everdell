@@ -53,9 +53,13 @@
 }
 
 .game_builder {
-  padding: 10px;
   display: flex;
+  width: 350px;
+  margin: 0 auto;
   flex-direction: column;
+  border: solid 1px;
+  border-radius: 10px;
+  padding-bottom: 40px;
 }
 
 .game_builder_players h2 {
@@ -97,9 +101,13 @@
   font-size: 18px;
 }
 
-.game_builder_randomize_start {
+.game_builder_option {
   padding: 5px;
   display: flex;
-  justify-content: center;
+  justify-content: left;
   font-size: 16px;
+}
+
+.game_builder_option input {
+  margin-right: 5px;
 }

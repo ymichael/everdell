@@ -5,6 +5,7 @@ import styles from "../styles/Players.module.css";
 import { CardName, ResourceType, CardType } from "../model/types";
 import { PlayerJSON, GameStateJSON } from "../model/jsonTypes";
 import { Player } from "../model/player";
+import { GameState } from "../model/gameState";
 import { GameBlock } from "./common";
 import { PlayerCity } from "./gameBoard";
 import {
@@ -18,20 +19,24 @@ import {
 export const Players = ({
   viewingPlayer,
   gameState,
+  showRealtimePoints = false,
 }: {
   viewingPlayer: Player;
-  gameState: GameStateJSON;
+  gameState: GameState;
+  showRealtimePoints?: boolean;
 }) => {
   return (
     <GameBlock title={"Players"}>
-      {gameState.players.map((player: any) => {
+      {gameState.players.map((player: Player) => {
         return (
           <PlayerStatus
             key={player.playerId}
-            player={player}
+            player={player.toJSON(true)}
+            gameState={gameState}
             viewingPlayer={viewingPlayer}
             isViewer={player.playerId === viewingPlayer.playerId}
             isActivePlayer={player.playerId === gameState.activePlayerId}
+            showRealtimePoints={showRealtimePoints}
           />
         );
       })}
@@ -41,10 +46,19 @@ export const Players = ({
 
 const PlayerStatus: React.FC<{
   player: PlayerJSON;
+  gameState: GameState;
   viewingPlayer: Player;
   isViewer: boolean;
   isActivePlayer: boolean;
-}> = ({ player, viewingPlayer, isViewer, isActivePlayer }) => {
+  showRealtimePoints?: boolean;
+}> = ({
+  player,
+  gameState,
+  viewingPlayer,
+  isViewer,
+  isActivePlayer,
+  showRealtimePoints,
+}) => {
   const [showCity, setShowCity] = useState(false);
   const playerImpl = Player.fromJSON(player);
   return (
@@ -146,6 +160,16 @@ const PlayerStatus: React.FC<{
                 {player.numWorkers - player.placedWorkers.length}
               </div>
             </div>
+            {showRealtimePoints && (
+              <div className={styles.status_box_item_resource}>
+                <div className={styles.status_box_item_resource_label}>
+                  {"POINTS"}
+                </div>
+                <div className={styles.status_box_item_resource_count}>
+                  {playerImpl.getPoints(gameState)}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

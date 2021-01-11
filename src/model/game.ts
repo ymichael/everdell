@@ -3,7 +3,7 @@ import { Player, createPlayer } from "./player";
 import { GameState } from "./gameState";
 import { Location } from "./location";
 import { Event } from "./event";
-import { GameInput, GameInputType } from "./types";
+import { GameOptions, GameInput, GameInputType } from "./types";
 import { GameJSON } from "./jsonTypes";
 import { getGameJSONById, saveGameJSONById } from "./db";
 import cloneDeep from "lodash/cloneDeep";
@@ -12,19 +12,25 @@ export class Game {
   public gameId: string;
   private gameSecret: string;
   private gameState: GameState;
+  private gameOptions: GameOptions;
 
   constructor({
     gameId,
     gameSecret,
     gameState,
+    gameOptions = null,
   }: {
     gameId: string;
     gameSecret: string;
     gameState: GameState;
+    gameOptions?: GameOptions | null;
   }) {
     this.gameId = gameId;
     this.gameSecret = gameSecret;
     this.gameState = gameState;
+    this.gameOptions = gameOptions || {
+      realtimePoints: false,
+    };
   }
 
   get gameSecretUNSAFE(): string {
@@ -60,6 +66,7 @@ export class Game {
       gameId: this.gameId,
       gameSecret: "",
       gameState: this.gameState.toJSON(includePrivate),
+      gameOptions: this.gameOptions,
       ...(includePrivate
         ? {
             gameSecret: this.gameSecret,
@@ -82,7 +89,12 @@ export class Game {
   }
 }
 
-export const createGame = async (playerNames: string[]): Promise<Game> => {
+export const createGame = async (
+  playerNames: string[],
+  gameOptions: GameOptions = {
+    realtimePoints: false,
+  }
+): Promise<Game> => {
   if (playerNames.length < 2) {
     throw new Error(
       `Unable to create a game with ${playerNames.length} players`
@@ -96,6 +108,7 @@ export const createGame = async (playerNames: string[]): Promise<Game> => {
     gameId,
     gameSecret,
     gameState: GameState.initialGameState({ players }),
+    gameOptions,
   });
 
   await game.save();

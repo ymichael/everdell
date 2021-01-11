@@ -1,4 +1,5 @@
 import {
+  GameOptions,
   CardName,
   EventName,
   Season,
@@ -17,6 +18,7 @@ export type GameJSON = {
   gameId: string;
   gameSecret: string;
   gameState: GameStateJSON;
+  gameOptions: GameOptions;
 };
 
 export type GameStateJSON = {

@@ -59,6 +59,8 @@
   padding-top: 4px;
   position: relative;
   display: inline-block;
+  font-size: 12px;
+  line-height: 22px;
   font-weight: var(--font-bold);
 }
 

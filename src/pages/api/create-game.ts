@@ -31,7 +31,11 @@ export default async (
   const players = body.randomizeStartingPlayer
     ? shuffle([...body.players])
     : [...body.players];
-  const game = await createGame(players.map((p: any) => p.name));
+  const realtimePoints = !!body.realtimePoints;
+  const game = await createGame(
+    players.map((p: any) => p.name),
+    { realtimePoints }
+  );
   res.json({
     success: "ok",
     gameUrl: `/game/${game.gameId}?gameSecret=${game.gameSecretUNSAFE}`,

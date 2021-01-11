@@ -521,3 +521,7 @@ export type GameText = TextPart[];
 export interface IGameTextEntity {
   getGameTextPart(): TextPart;
 }
+
+export type GameOptions = {
+  realtimePoints: boolean;
+};

@@ -70,6 +70,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     gameId: "testGameId",
     gameSecret: "testGameSecret",
     gameState,
+    gameOptions: {
+      realtimePoints: true,
+    },
   });
 
   // game.applyGameInput({

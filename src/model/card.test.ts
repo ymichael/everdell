@@ -487,6 +487,16 @@ describe("Card", () => {
         multiStepGameInputTest(gameState, [playCardInput(card.name)]);
       });
 
+      it("should do nothing if there's no recallable workers", () => {
+        const card = Card.fromName(CardName.RANGER);
+        player.cardsInHand = [CardName.RANGER];
+        player.gainResources(card.baseCost);
+
+        player.placeWorkerOnLocation(LocationName.JOURNEY_FIVE);
+
+        multiStepGameInputTest(gameState, [playCardInput(card.name)]);
+      });
+
       it("should prompt to move an existing worker and trigger the new placement", () => {
         const card = Card.fromName(CardName.RANGER);
         player.cardsInHand = [CardName.RANGER];

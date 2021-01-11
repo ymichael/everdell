@@ -1,3 +1,4 @@
+import { Card } from "./card";
 import {
   CardName,
   ResourceType,
@@ -641,8 +642,168 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     type: LocationType.FOREST,
     occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
     description: toGameText("Draw 2 Meadow CARD and play 1 for -1 ANY."),
-    playInner: () => {
-      throw new Error("Not Implemented");
+    canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
+      if (gameInput.inputType !== GameInputType.PLACE_WORKER) {
+        return null;
+      }
+      const player = gameState.getActivePlayer();
+      let playableCards = [];
+
+      const canAffordMeadowCardWithDiscount = gameState.meadowCards.some(
+        (cardName) => {
+          return player.canAffordCard(cardName, false, "ANY 1");
+        }
+      );
+
+      if (!canAffordMeadowCardWithDiscount) {
+        return `Cannot afford any meadow cards even after discounts`;
+      }
+
+      const canAddToCity = gameState.meadowCards.some((cardName) => {
+        return player.canAddToCity(
+          cardName,
+          true /* should be strict because we won't use other card effects */
+        );
+      });
+
+      if (!canAddToCity) {
+        return `Cannot add any of the cards to city`;
+      }
+
+      return null;
+    },
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      // select cards from meadow
+      const player = gameState.getActivePlayer();
+
+      if (gameInput.inputType === GameInputType.PLACE_WORKER) {
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: gameInput.inputType,
+          cardOptions: gameState.meadowCards,
+          maxToSelect: 2,
+          minToSelect: 2,
+          locationContext:
+            LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_CARDS &&
+        gameInput.prevInputType === GameInputType.PLACE_WORKER
+      ) {
+        const cardOptions = gameInput.clientOptions.selectedCards;
+        if (!cardOptions) {
+          throw new Error("Invalid list of cards chosen from meadow provided.");
+        }
+
+        if (cardOptions.length != 2) {
+          throw new Error("Must choose exactly 2 cards from the meadow");
+        }
+
+        // make sure player can play at least one of the chosen cards
+        const canPlayAtLeastOne =
+          player.canAffordCard(cardOptions[0], false, "ANY 1") ||
+          player.canAffordCard(cardOptions[1], false, "ANY 1");
+
+        if (!canPlayAtLeastOne) {
+          throw new Error(
+            "Must choose at least 1 card that can be played with 1 ANY discount"
+          );
+        }
+
+        // add cards to player's hand
+        player.addCardToHand(gameState, cardOptions[0]);
+        player.addCardToHand(gameState, cardOptions[1]);
+
+        // remove the cards from meadow + replenish
+        gameState.removeCardFromMeadow(cardOptions[0]);
+        gameState.removeCardFromMeadow(cardOptions[1]);
+        gameState.replenishMeadow();
+
+        // player should choose a card to play
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: gameInput.inputType,
+          cardOptions: cardOptions,
+          maxToSelect: 1,
+          minToSelect: 1,
+          locationContext:
+            LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_CARDS &&
+        gameInput.prevInputType === GameInputType.SELECT_CARDS &&
+        gameInput.locationContext ===
+          LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS
+      ) {
+        // make sure they could play card if discounted
+        const cardOptions = gameInput.clientOptions.selectedCards;
+        if (!cardOptions) {
+          throw new Error("Must select card to play.");
+        }
+
+        if (cardOptions.length !== 1) {
+          throw new Error("Must select exactly 1 card to play");
+        }
+
+        const selectedCard = cardOptions[0];
+        const canAffordCard = player.canAffordCard(
+          selectedCard,
+          false,
+          "ANY 1"
+        );
+
+        if (!canAffordCard) {
+          throw new Error("Cannot afford this card, even with discount.");
+        }
+
+        // discount cost by 1
+        // ask player how they're paying
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_PAYMENT_FOR_CARD,
+          prevInputType: gameInput.inputType,
+          locationContext:
+            LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS,
+          card: selectedCard,
+          clientOptions: {
+            card: selectedCard,
+            paymentOptions: { resources: {} },
+          },
+        });
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_PAYMENT_FOR_CARD &&
+        gameInput.prevInputType === GameInputType.SELECT_CARDS &&
+        gameInput.locationContext ===
+          LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS
+      ) {
+        if (!gameInput.clientOptions?.paymentOptions?.resources) {
+          throw new Error(
+            "Invalid input: clientOptions.paymentOptions.resources missing"
+          );
+        }
+
+        const card = Card.fromName(gameInput.card);
+        const paymentError = player.validatePaidResources(
+          gameInput.clientOptions.paymentOptions.resources,
+          card.baseCost,
+          "ANY 1"
+        );
+        if (paymentError) {
+          throw new Error(paymentError);
+        }
+        player.payForCard(gameState, gameInput);
+        player.removeCardFromHand(card.name);
+        card.addToCityAndPlay(gameState, gameInput);
+      } else {
+        throw new Error(
+          "Unexpected input type ${gameInput.inputType} with previous input type ${gameInput.prevInputType}"
+        );
+      }
     },
   }),
 };

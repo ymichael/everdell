@@ -670,7 +670,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         gameState.addGameLogFromCard(CardName.CHIP_SWEEP, [
           player,
           " activated ",
-          targetCard.name,
+          targetCard,
           ".",
         ]);
       }

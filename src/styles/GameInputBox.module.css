@@ -10,7 +10,11 @@
   cursor: pointer;
 }
 
-.input_type_form {
+.input_type_radio {
+  margin-top: 10px;
+}
+
+.input_type_form_nested {
   margin: 20px;
 }
 

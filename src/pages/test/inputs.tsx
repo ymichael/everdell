@@ -184,6 +184,28 @@ export default function TestGameInputPage(props: { game: GameJSON }) {
       <hr />
       <GameInputBox
         gameId={"testGameId"}
+        gameState={gameState1.toJSON(true)}
+        gameInputs={[
+          {
+            inputType: GameInputType.PREPARE_FOR_SEASON,
+          },
+        ]}
+        viewingPlayer={gameState1.players[0]}
+      />
+      <hr />
+      <GameInputBox
+        gameId={"testGameId"}
+        gameState={gameState1.toJSON(true)}
+        gameInputs={[
+          {
+            inputType: GameInputType.GAME_END,
+          },
+        ]}
+        viewingPlayer={gameState1.players[0]}
+      />
+      <hr />
+      <GameInputBox
+        gameId={"testGameId"}
         gameState={gameState2.toJSON(true)}
         gameInputs={[
           {

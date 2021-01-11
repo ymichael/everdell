@@ -30,7 +30,6 @@ export const GameInputBoxContainer: React.FC<{
   const updateGameState = useContext(GameUpdaterContext);
   return (
     <GameBlock title={title}>
-      <br />
       <Formik
         enableReinitialize={true}
         initialValues={initialValues}

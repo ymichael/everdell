@@ -376,6 +376,283 @@ describe("Location", () => {
     });
   });
 
+  describe("FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS", () => {
+    it("player can visit FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS", () => {
+      const meadow = [
+        CardName.HUSBAND,
+        CardName.RANGER,
+        CardName.WIFE,
+        CardName.CEMETARY,
+        CardName.THEATRE,
+        CardName.EVERTREE,
+        CardName.HUSBAND,
+        CardName.HUSBAND,
+      ];
+      gameState = testInitialGameState({ meadowCards: meadow });
+
+      const location = Location.fromName(
+        LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS
+      );
+
+      player = gameState.getActivePlayer();
+      player.gainResources({ [ResourceType.BERRY]: 5 });
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(5);
+      expect(player.hasCardInCity(CardName.HUSBAND)).to.be(false);
+
+      const gameInput = placeWorkerInput(location.name);
+      gameState.locationsMap[
+        LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS
+      ] = [];
+
+      gameState = multiStepGameInputTest(gameState, [
+        gameInput,
+        {
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: GameInputType.PLACE_WORKER,
+          cardOptions: meadow,
+          maxToSelect: 2,
+          minToSelect: 2,
+          locationContext:
+            LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS,
+          clientOptions: {
+            selectedCards: [CardName.HUSBAND, CardName.EVERTREE],
+          },
+        },
+        {
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: GameInputType.SELECT_CARDS,
+          cardOptions: [CardName.HUSBAND, CardName.EVERTREE],
+          maxToSelect: 1,
+          minToSelect: 1,
+          locationContext:
+            LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS,
+          clientOptions: {
+            selectedCards: [CardName.HUSBAND],
+          },
+        },
+        {
+          inputType: GameInputType.SELECT_PAYMENT_FOR_CARD,
+          prevInputType: GameInputType.SELECT_CARDS,
+          locationContext:
+            LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS,
+          card: CardName.HUSBAND,
+          clientOptions: {
+            card: CardName.HUSBAND,
+            paymentOptions: { resources: { [ResourceType.BERRY]: 2 } },
+          },
+        },
+      ]);
+
+      player = gameState.getPlayer(player.playerId);
+
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(3);
+      expect(player.cardsInHand).to.eql([CardName.EVERTREE]);
+      expect(player.hasCardInCity(CardName.HUSBAND)).to.be(true);
+    });
+    it("cannot visit if player cannot play any meadow cards for 1 less", () => {
+      const meadow = [
+        CardName.HUSBAND,
+        CardName.RANGER,
+        CardName.WIFE,
+        CardName.CEMETARY,
+        CardName.THEATRE,
+        CardName.EVERTREE,
+        CardName.HUSBAND,
+        CardName.HUSBAND,
+      ];
+      gameState = testInitialGameState({ meadowCards: meadow });
+
+      const location = Location.fromName(
+        LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS
+      );
+
+      player = gameState.getActivePlayer();
+
+      const gameInput = placeWorkerInput(location.name);
+      gameState.locationsMap[
+        LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS
+      ] = [];
+
+      expect(() => gameState.next(gameInput)).to.throwException(
+        /cannot afford/i
+      );
+    });
+    it("cannot visit if player has no space in city for cards in meadow", () => {
+      const meadow = [
+        CardName.HUSBAND,
+        CardName.RANGER,
+        CardName.FARM,
+        CardName.CEMETARY,
+        CardName.THEATRE,
+        CardName.EVERTREE,
+        CardName.HUSBAND,
+        CardName.HUSBAND,
+      ];
+      gameState = testInitialGameState({ meadowCards: meadow });
+
+      const location = Location.fromName(
+        LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS
+      );
+
+      player = gameState.getActivePlayer();
+      player.addToCityMulti([
+        CardName.HUSBAND,
+        CardName.RANGER,
+        CardName.FARM,
+        CardName.CEMETARY,
+        CardName.THEATRE,
+        CardName.EVERTREE,
+        CardName.HUSBAND,
+        CardName.HUSBAND,
+        CardName.HUSBAND,
+        CardName.POSTAL_PIGEON,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.POSTAL_PIGEON,
+        CardName.POSTAL_PIGEON,
+        CardName.HUSBAND,
+      ]);
+      player.gainResources({ [ResourceType.BERRY]: 5 });
+
+      const gameInput = placeWorkerInput(location.name);
+      gameState.locationsMap[
+        LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS
+      ] = [];
+
+      expect(() => gameState.next(gameInput)).to.throwException(/cannot add/i);
+    });
+    it("can visit if city is full but there is a playable card in meadow", () => {
+      const meadow = [
+        CardName.HUSBAND,
+        CardName.RANGER,
+        CardName.WIFE,
+        CardName.CEMETARY,
+        CardName.THEATRE,
+        CardName.EVERTREE,
+        CardName.HUSBAND,
+        CardName.HUSBAND,
+      ];
+      gameState = testInitialGameState({ meadowCards: meadow });
+
+      const location = Location.fromName(
+        LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS
+      );
+
+      player = gameState.getActivePlayer();
+      player.addToCityMulti([
+        CardName.HUSBAND,
+        CardName.RANGER,
+        CardName.FARM,
+        CardName.CEMETARY,
+        CardName.THEATRE,
+        CardName.EVERTREE,
+        CardName.HUSBAND,
+        CardName.HUSBAND,
+        CardName.HUSBAND,
+        CardName.POSTAL_PIGEON,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.POSTAL_PIGEON,
+        CardName.POSTAL_PIGEON,
+        CardName.HUSBAND,
+      ]);
+      player.gainResources({ [ResourceType.BERRY]: 5 });
+
+      const gameInput = placeWorkerInput(location.name);
+      gameState.locationsMap[
+        LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS
+      ] = [];
+
+      gameState = multiStepGameInputTest(gameState, [
+        gameInput,
+        {
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: GameInputType.PLACE_WORKER,
+          cardOptions: meadow,
+          maxToSelect: 2,
+          minToSelect: 2,
+          locationContext:
+            LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS,
+          clientOptions: {
+            selectedCards: [CardName.WIFE, CardName.THEATRE],
+          },
+        },
+        {
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: GameInputType.SELECT_CARDS,
+          cardOptions: [CardName.WIFE, CardName.THEATRE],
+          maxToSelect: 1,
+          minToSelect: 1,
+          locationContext:
+            LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS,
+          clientOptions: {
+            selectedCards: [CardName.WIFE],
+          },
+        },
+        {
+          inputType: GameInputType.SELECT_PAYMENT_FOR_CARD,
+          prevInputType: GameInputType.SELECT_CARDS,
+          locationContext:
+            LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS,
+          card: CardName.WIFE,
+          clientOptions: {
+            card: CardName.WIFE,
+            paymentOptions: { resources: { [ResourceType.BERRY]: 1 } },
+          },
+        },
+      ]);
+
+      player = gameState.getPlayer(player.playerId);
+
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(4);
+      expect(player.cardsInHand).to.eql([CardName.THEATRE]);
+      expect(player.hasCardInCity(CardName.WIFE)).to.be(true);
+    });
+    it("must choose at least one playable card", () => {
+      const meadow = [
+        CardName.HUSBAND,
+        CardName.RANGER,
+        CardName.WIFE,
+        CardName.CEMETARY,
+        CardName.THEATRE,
+        CardName.EVERTREE,
+        CardName.HUSBAND,
+        CardName.HUSBAND,
+      ];
+      gameState = testInitialGameState({ meadowCards: meadow });
+
+      const location = Location.fromName(
+        LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS
+      );
+
+      player = gameState.getActivePlayer();
+      player.gainResources({ [ResourceType.BERRY]: 5 });
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(5);
+
+      const gameInput = placeWorkerInput(location.name);
+      gameState.locationsMap[
+        LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS
+      ] = [];
+
+      gameState = gameState.next(gameInput);
+
+      expect(() => {
+        gameState.next({
+          inputType: GameInputType.SELECT_CARDS as const,
+          prevInputType: GameInputType.PLACE_WORKER,
+          cardOptions: meadow,
+          maxToSelect: 2,
+          minToSelect: 2,
+          locationContext:
+            LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS,
+          clientOptions: {
+            selectedCards: [CardName.CEMETARY, CardName.EVERTREE],
+          },
+        });
+      }).to.throwException(/must choose at least/i);
+    });
+  });
+
   [
     LocationName.JOURNEY_TWO,
     LocationName.JOURNEY_THREE,

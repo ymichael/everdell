@@ -542,8 +542,23 @@ export class Player implements IGameTextEntity {
     return card.getMaxWorkers(this) > workers.length;
   }
 
-  canAffordCard(cardName: CardName, isMeadowCard: boolean): boolean {
+  canAffordCard(
+    cardName: CardName,
+    isMeadowCard: boolean,
+    forceDiscount: "ANY 1" | null = null
+  ): boolean {
     const card = Card.fromName(cardName);
+
+    // if we are forcing a specific discount, don't do any other check +
+    // enforce that this discount is used
+    if (forceDiscount) {
+      return this.isPaidResourcesValid(
+        this.resources,
+        card.baseCost,
+        "ANY 1",
+        false
+      );
+    }
 
     // Check if you have the associated construction if card is a critter
     if (card.isCritter) {
@@ -657,6 +672,17 @@ export class Player implements IGameTextEntity {
         errorIfOverpay &&
         payingWithSum !== 0 &&
         payingWithSum + 3 > needToPaySum
+      ) {
+        return "Cannot overpay for cards";
+      }
+      return null;
+    }
+
+    if (discount === "ANY 1" && outstandingOwedSum <= 1) {
+      if (
+        errorIfOverpay &&
+        payingWithSum !== 0 &&
+        payingWithSum + 1 > needToPaySum
       ) {
         return "Cannot overpay for cards";
       }

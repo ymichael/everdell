@@ -231,10 +231,10 @@ export type GameInputMultiStep = (
 export type GameInput = GameInputSimple | GameInputMultiStep;
 
 export enum Season {
-  WINTER = "WINTER",
-  SPRING = "SPRING",
-  SUMMER = "SUMMER",
-  AUTUMN = "AUTUMN",
+  WINTER = "Winter",
+  SPRING = "Spring",
+  SUMMER = "Summer",
+  AUTUMN = "Autumn",
 }
 
 export enum CardType {

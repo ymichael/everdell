@@ -11,6 +11,8 @@ import {
   Season,
   ProductionResourceMap,
   GameText,
+  TextPartEntity,
+  IGameTextEntity,
 } from "./types";
 import { sumResources } from "./gameStatePlayHelpers";
 import {
@@ -20,10 +22,10 @@ import {
   GameStateCanPlayCheckFn,
 } from "./gameState";
 import shuffle from "lodash/shuffle";
-import { toGameText } from "./gameText";
+import { toGameText, resourceMapToGameText } from "./gameText";
 import { assertUnreachable } from "../utils";
 
-export class Location implements GameStatePlayable {
+export class Location implements GameStatePlayable, IGameTextEntity {
   readonly name: LocationName;
   readonly shortName: GameText;
   readonly type: LocationType;
@@ -60,6 +62,14 @@ export class Location implements GameStatePlayable {
     this.resourcesToGain = resourcesToGain || {};
     this.description = description;
     this.shortName = shortName;
+  }
+
+  getGameTextPart(): TextPartEntity {
+    return {
+      type: "entity",
+      entityType: "location",
+      location: this.name,
+    };
   }
 
   canPlay(gameState: GameState, gameInput: GameInput): boolean {
@@ -135,12 +145,26 @@ export class Location implements GameStatePlayable {
     if (this.playInner) {
       this.playInner(gameState, gameInput);
     }
-    if (this.resourcesToGain) {
+    if (this.resourcesToGain && sumResources(this.resourcesToGain)) {
       const player = gameState.getActivePlayer();
       player.gainResources(this.resourcesToGain);
       if (this.resourcesToGain.CARD) {
         player.drawCards(gameState, this.resourcesToGain.CARD);
       }
+      // TODO: commenting out because this is quite noisy.
+      // if (sumResources(this.resourcesToGain) === this.resourcesToGain.CARD) {
+      //   gameState.addGameLogFromLocation(this.name, [
+      //     player,
+      //     ` drew ${this.resourcesToGain.CARD} CARD.`,
+      //   ]);
+      // } else {
+      //   gameState.addGameLogFromLocation(this.name, [
+      //     player,
+      //     " gained ",
+      //     ...resourceMapToGameText(this.resourcesToGain),
+      //     ".",
+      //   ]);
+      // }
     }
   }
 
@@ -206,17 +230,24 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
           gameState.discardPile.addToStack(cardName);
         });
 
+        const numDiscarded = cardsToDiscard.length;
+
         // ask player which resources they want to get
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_RESOURCES,
           prevInputType: GameInputType.DISCARD_CARDS,
           locationContext: LocationName.HAVEN,
-          minResources: Math.floor(cardsToDiscard.length / 2),
-          maxResources: Math.floor(cardsToDiscard.length / 2),
+          minResources: Math.floor(numDiscarded / 2),
+          maxResources: Math.floor(numDiscarded / 2),
           clientOptions: {
             resources: {},
           },
         });
+
+        gameState.addGameLogFromLocation(LocationName.HAVEN, [
+          player,
+          ` discarded ${numDiscarded} CARD.`,
+        ]);
       } else if (gameInput.inputType === GameInputType.SELECT_RESOURCES) {
         const resources = gameInput.clientOptions.resources;
 
@@ -229,6 +260,12 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
         }
 
         player.gainResources(resources);
+        gameState.addGameLogFromLocation(LocationName.HAVEN, [
+          player,
+          " gained ",
+          ...resourceMapToGameText(resources),
+          ".",
+        ]);
       } else {
         throw new Error(`Invalid input type ${gameInput.inputType}`);
       }
@@ -390,6 +427,12 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
         }
         // Gain requested resources
         player.gainResources(resources);
+        gameState.addGameLogFromLocation(LocationName.FOREST_TWO_WILD, [
+          player,
+          " gained ",
+          ...resourceMapToGameText(resources),
+          ".",
+        ]);
       } else {
         throw new Error(`Invalid input type ${gameInput.inputType}`);
       }
@@ -437,6 +480,16 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
 
         // draw 2 cards per card discarded
         player.drawCards(gameState, cardsToDiscard.length * 2);
+
+        gameState.addGameLogFromLocation(
+          LocationName.FOREST_DISCARD_ANY_THEN_DRAW_TWO_PER_CARD,
+          [
+            player,
+            ` discarded ${cardsToDiscard.length} CARD and drew ${
+              cardsToDiscard.length * 2
+            } CARD.`,
+          ]
+        );
       } else {
         throw new Error(`Invalid input type ${gameInput.inputType}`);
       }
@@ -476,6 +529,11 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
         if (location.type !== LocationType.BASIC) {
           throw new Error("can only copy a basic location");
         }
+
+        gameState.addGameLogFromLocation(
+          LocationName.FOREST_COPY_BASIC_ONE_CARD,
+          [player, " copied ", location, "."]
+        );
 
         location.play(gameState, gameInput);
       } else {
@@ -534,6 +592,11 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
       if (gameInput.inputType === GameInputType.PLACE_WORKER) {
         player.drawCards(gameState, 2);
 
+        gameState.addGameLogFromLocation(
+          LocationName.FOREST_TWO_CARDS_ONE_WILD,
+          [player, " drew 2 CARD."]
+        );
+
         // ask the player what resource they want to gain
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_RESOURCES,
@@ -557,6 +620,10 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
           throw new Error("Must gain 1 resource");
         }
         player.gainResources(resources);
+        gameState.addGameLogFromLocation(
+          LocationName.FOREST_TWO_CARDS_ONE_WILD,
+          [player, " gained ", ...resourceMapToGameText(resources), "."]
+        );
       } else {
         throw new Error(`Invalid input type ${gameInput.inputType}`);
       }
@@ -575,7 +642,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
         const player = gameState.getActivePlayer();
         if (gameInput.inputType === GameInputType.PLACE_WORKER) {
           if (player.cardsInHand.length < 1) {
-            throw new Error("must have cards to discard");
+            throw new Error("Must have cards to discard");
           }
 
           // ask player how many cards to discard
@@ -592,9 +659,8 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
           });
         } else if (gameInput.inputType === GameInputType.DISCARD_CARDS) {
           const cardsToDiscard = gameInput.clientOptions.cardsToDiscard;
-
           if (!cardsToDiscard) {
-            throw new Error("invalid list of cards to discard");
+            throw new Error("Invalid list of cards to discard");
           }
 
           // ask the player what resource they want to gain
@@ -614,6 +680,11 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
           cardsToDiscard.forEach((cardName) => {
             player.removeCardFromHand(cardName);
           });
+
+          gameState.addGameLogFromLocation(
+            LocationName.FOREST_DISCARD_UP_TO_THREE_CARDS_TO_GAIN_WILD_PER_CARD,
+            [player, ` discarded ${cardsToDiscard.length} CARD.`]
+          );
         } else if (gameInput.inputType === GameInputType.SELECT_RESOURCES) {
           const resources = gameInput.clientOptions.resources;
           if (!resources) {
@@ -628,8 +699,11 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
           } else if (numResources !== gameInput.maxResources) {
             throw new Error(`Must gain ${gameInput.maxResources} resources`);
           }
-
           player.gainResources(resources);
+          gameState.addGameLogFromLocation(
+            LocationName.FOREST_DISCARD_UP_TO_THREE_CARDS_TO_GAIN_WILD_PER_CARD,
+            [player, " gained ", ...resourceMapToGameText(resources), "."]
+          );
         } else {
           throw new Error(`Invalid input type ${gameInput.inputType}`);
         }
@@ -868,6 +942,10 @@ function playInnerJourneyFactory(
       player.gainResources({
         [ResourceType.VP]: numPoints,
       });
+      gameState.addGameLogFromLocation(location, [
+        player,
+        ` discarded ${numPoints} CARD to gain ${numPoints} VP.`,
+      ]);
     } else {
       throw new Error(`Invalid inputType: ${gameInput.inputType}`);
     }

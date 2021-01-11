@@ -115,8 +115,10 @@ export class Player implements IGameTextEntity {
     }
   }
 
-  drawMaxCards(gameState: GameState): void {
-    this.drawCards(gameState, MAX_HAND_SIZE - this.cardsInHand.length);
+  drawMaxCards(gameState: GameState): number {
+    const numDrawn = MAX_HAND_SIZE - this.cardsInHand.length;
+    this.drawCards(gameState, numDrawn);
+    return numDrawn;
   }
 
   addCardToHand(gameState: GameState, cardName: CardName): void {

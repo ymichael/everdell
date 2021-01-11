@@ -6,6 +6,8 @@ import {
   CardCost,
   CardType,
   CardName,
+  EventName,
+  EventType,
   GameInput,
   GameInputType,
   PlayedCardInfo,
@@ -21,6 +23,7 @@ import {
   GameStateCountPointsFn,
 } from "./gameState";
 import { Location } from "./location";
+import { Event } from "./event";
 import { Player } from "./player";
 import {
   playSpendResourceToGetVPFactory,
@@ -34,6 +37,7 @@ import {
   toGameText,
   cardListToGameText,
   resourceMapToGameText,
+  workerPlacementToGameText,
 } from "./gameText";
 import { assertUnreachable } from "../utils";
 
@@ -98,7 +102,6 @@ export class Card<TCardType extends CardType = CardType>
     playInner?: GameStatePlayFn;
     canPlayCheckInner?: GameStateCanPlayCheckFn;
     playedCardInfoDefault?: Partial<Omit<PlayedCardInfo, "playerId">>;
-    pointsInner?: (gameState: GameState, playerId: string) => number;
     maxWorkersInner?: MaxWorkersInnerFn;
     cardDescription?: GameText | undefined;
   } & (TCardType extends CardType.PRODUCTION
@@ -109,7 +112,14 @@ export class Card<TCardType extends CardType = CardType>
     : {
         resourcesToGain?: ProductionResourceMap;
         productionInner?: undefined;
-      })) {
+      }) &
+    (TCardType extends CardType.PROSPERITY
+      ? {
+          pointsInner: (gameState: GameState, playerId: string) => number;
+        }
+      : {
+          pointsInner?: (gameState: GameState, playerId: string) => number;
+        })) {
     this.name = name;
     this.baseCost = Object.freeze(baseCost);
     this.baseVP = baseVP;
@@ -246,12 +256,19 @@ export class Card<TCardType extends CardType = CardType>
       if (this.resourcesToGain.CARD) {
         player.drawCards(gameState, this.resourcesToGain.CARD);
       }
-      gameState.addGameLogFromCard(this.name, [
-        player,
-        "gained ",
-        ...resourceMapToGameText(this.resourcesToGain),
-        ".",
-      ]);
+      if (sumResources(this.resourcesToGain) === this.resourcesToGain.CARD) {
+        gameState.addGameLogFromCard(this.name, [
+          player,
+          ` drew ${this.resourcesToGain.CARD} CARD.`,
+        ]);
+      } else {
+        gameState.addGameLogFromCard(this.name, [
+          player,
+          " gained ",
+          ...resourceMapToGameText(this.resourcesToGain),
+          ".",
+        ]);
+      }
     }
     if (this.productionInner) {
       this.productionInner(gameState, gameInput, cardOwner, playedCard);
@@ -279,13 +296,10 @@ export class Card<TCardType extends CardType = CardType>
             },
           };
 
-    if (
-      this.cardType === CardType.PRODUCTION ||
-      this.cardType === CardType.TRAVELER
-    ) {
-      this.playCardInner(gameState, playCardGameInput, playedCard!);
-    }
-
+    // Do this first so that logs are ordered properly:
+    // 1. play card
+    // 2. historian/shopkeeper etc
+    // 3+. card related actions..
     [CardName.HISTORIAN, CardName.SHOPKEEPER, CardName.COURTHOUSE].forEach(
       (cardName) => {
         if (player.hasCardInCity(cardName)) {
@@ -298,6 +312,13 @@ export class Card<TCardType extends CardType = CardType>
         }
       }
     );
+
+    if (
+      this.cardType === CardType.PRODUCTION ||
+      this.cardType === CardType.TRAVELER
+    ) {
+      this.playCardInner(gameState, playCardGameInput, playedCard!);
+    }
   }
 
   playCardInner(
@@ -518,13 +539,12 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         );
         gameState.addGameLogFromCard(CardName.CEMETARY, [
           player,
-          "revealed ",
+          " revealed ",
           ...cardListToGameText(revealedCards),
-          `from the ${selectedOption} ${
+          ` from the ${selectedOption} ${
             filteredOptions.length === 0 ? " but is unable to play any" : ""
           }.`,
         ]);
-
         if (filteredOptions.length !== 0) {
           gameState.pendingGameInputs.push({
             inputType: GameInputType.SELECT_CARDS,
@@ -556,6 +576,12 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         }
         const selectedCard = selectedCards[0];
         const card = Card.fromName(selectedCard);
+        gameState.addGameLogFromCard(CardName.CEMETARY, [
+          player,
+          " played ",
+          card,
+          ".",
+        ]);
         card.addToCityAndPlay(gameState, gameInput);
 
         const cardOptionsUnfiltered = [...gameInput.cardOptionsUnfiltered!];
@@ -566,12 +592,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         cardOptionsUnfiltered.forEach((cardName) => {
           gameState.discardPile.addToStack(cardName);
         });
-        gameState.addGameLogFromCard(CardName.CEMETARY, [
-          player,
-          "played ",
-          card,
-          ".",
-        ]);
       } else {
         throw new Error("Invalid input type");
       }
@@ -647,6 +667,12 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           player,
           selectedCards[0]
         );
+        gameState.addGameLogFromCard(CardName.CHIP_SWEEP, [
+          player,
+          " activated ",
+          targetCard.name,
+          ".",
+        ]);
       }
     },
     productionInner: (gameState: GameState, gameInput: GameInput) => {
@@ -742,6 +768,13 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           location.play(gameState, gameInput);
           playedClockTower.resources[ResourceType.VP] =
             (playedClockTower.resources[ResourceType.VP] || 0) - 1;
+
+          gameState.addGameLogFromCard(CardName.CLOCK_TOWER, [
+            player,
+            " spent 1 VP to activate worker on ",
+            location,
+            ".",
+          ]);
         }
       }
     },
@@ -797,6 +830,12 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           throw new Error(`Invalid resources: ${JSON.stringify(resources)}`);
         }
         player.gainResources(resources);
+        gameState.addGameLogFromCard(CardName.COURTHOUSE, [
+          player,
+          " gained ",
+          ...resourceMapToGameText(resources),
+          " for playing a Construction.",
+        ]);
       }
     },
   }),
@@ -829,6 +868,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       maxToSpend: 3,
     }),
     playInner: playSpendResourceToGetVPFactory({
+      card: CardName.DOCTOR,
       resourceType: ResourceType.BERRY,
       maxToSpend: 3,
     }),
@@ -866,7 +906,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     // 1 point per prosperty card
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
-
       return player.getNumCardType(CardType.PROSPERITY);
     },
   }),
@@ -955,6 +994,14 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           gameInput.clientOptions.selectedPlayer
         );
         selectedPlayer.addToCity(CardName.FOOL);
+        gameState.addGameLogFromCard(CardName.FOOL, [
+          player,
+          " added the ",
+          Card.fromName(CardName.FOOL),
+          " to ",
+          selectedPlayer,
+          "'s city.",
+        ]);
       } else {
         throw new Error(`Invalid input type ${gameInput.inputType}`);
       }
@@ -979,9 +1026,14 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       cardOwner: Player
     ) => {
       const player = gameState.getActivePlayer();
+      const numToGain = cardOwner.hasCardInCity(CardName.FARM) ? 2 : 1;
       player.gainResources({
-        [ResourceType.BERRY]: cardOwner.hasCardInCity(CardName.FARM) ? 2 : 1,
+        [ResourceType.BERRY]: numToGain,
       });
+      gameState.addGameLogFromCard(CardName.GENERAL_STORE, [
+        player,
+        ` gained ${numToGain} BERRY.`,
+      ]);
     },
   }),
   [CardName.HISTORIAN]: new Card({
@@ -1002,6 +1054,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         gameInput.clientOptions.card !== CardName.HISTORIAN
       ) {
         player.drawCards(gameState, 1);
+        gameState.addGameLogFromCard(CardName.HISTORIAN, [
+          player,
+          ` drew 1 CARD.`,
+        ]);
       }
     },
   }),
@@ -1032,6 +1088,12 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           throw new Error(`Invalid resources: ${JSON.stringify(resources)}`);
         }
         player.gainResources(resources);
+        gameState.addGameLogFromCard(CardName.HUSBAND, [
+          player,
+          " gained ",
+          ...resourceMapToGameText(resources),
+          ".",
+        ]);
       }
     },
     productionInner: (
@@ -1108,33 +1170,46 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         gameInput.cardContext === CardName.INN
       ) {
         const selectedCards = gameInput.clientOptions.selectedCards;
-
         if (!selectedCards) {
-          throw new Error("no card selected");
+          throw new Error("Must select card to play.");
         }
-
         if (selectedCards.length !== 1) {
-          throw new Error("incorrect number of cards selected");
+          throw new Error("Can only play 1 card.");
+        }
+        const selectedCardName = selectedCards[0];
+        if (gameState.meadowCards.indexOf(selectedCardName) < 0) {
+          throw new Error("Cannot find selected card in the Meadow.");
         }
 
-        const selectedCard = selectedCards[0];
+        const selectedCard = Card.fromName(selectedCardName);
 
-        if (gameState.meadowCards.indexOf(selectedCard) < 0) {
-          throw new Error("must select card from meadow when playing inn");
+        gameState.addGameLogFromCard(CardName.INN, [
+          player,
+          " selected ",
+          selectedCard,
+          " to play from the Meadow.",
+        ]);
+
+        if (sumResources(selectedCard.baseCost) <= 3) {
+          selectedCard.addToCityAndPlay(gameState, gameInput);
+          gameState.addGameLogFromCard(CardName.INN, [
+            player,
+            " played ",
+            selectedCard,
+            " from the Meadow.",
+          ]);
+        } else {
+          gameState.pendingGameInputs.push({
+            inputType: GameInputType.SELECT_PAYMENT_FOR_CARD,
+            prevInputType: gameInput.inputType,
+            cardContext: CardName.INN,
+            card: selectedCardName,
+            clientOptions: {
+              card: selectedCardName,
+              paymentOptions: { resources: {} },
+            },
+          });
         }
-
-        // discount cost by 3
-        // have player play card to city
-        gameState.pendingGameInputs.push({
-          inputType: GameInputType.SELECT_PAYMENT_FOR_CARD,
-          prevInputType: gameInput.inputType,
-          cardContext: CardName.INN,
-          card: selectedCard,
-          clientOptions: {
-            card: selectedCard,
-            paymentOptions: { resources: {} },
-          },
-        });
       } else if (
         gameInput.inputType === GameInputType.SELECT_PAYMENT_FOR_CARD &&
         gameInput.cardContext === CardName.INN
@@ -1155,6 +1230,12 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         }
         player.payForCard(gameState, gameInput);
         card.addToCityAndPlay(gameState, gameInput);
+        gameState.addGameLogFromCard(CardName.INN, [
+          player,
+          " played ",
+          card,
+          " from the Meadow.",
+        ]);
       }
     },
   }),
@@ -1197,6 +1278,19 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       { type: "BR" },
       "2 VP for each special Event you achieved.",
     ]),
+    pointsInner: (gameState: GameState, playerId: string) => {
+      let numPoints = 0;
+      const player = gameState.getPlayer(playerId);
+      Object.keys(player.claimedEvents).forEach((eventName) => {
+        const event = Event.fromName(eventName as EventName);
+        if (event.type === EventType.BASIC) {
+          numPoints += 1;
+        } else if (event.type === EventType.SPECIAL) {
+          numPoints += 2;
+        }
+      });
+      return numPoints;
+    },
   }),
   [CardName.LOOKOUT]: new Card({
     name: CardName.LOOKOUT,
@@ -1217,6 +1311,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       },
     ],
     playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
         // ask player which location they want to copy
         const possibleLocations = (Object.keys(
@@ -1256,10 +1351,15 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           );
         }
         if (!location.canPlay(gameState, gameInput)) {
-          throw new Error("location can't be played");
+          throw new Error("Location can't be played");
         }
-
         location.play(gameState, gameInput);
+        gameState.addGameLogFromCard(CardName.LOOKOUT, [
+          player,
+          " copied ",
+          location,
+          ".",
+        ]);
       }
     },
   }),
@@ -1290,6 +1390,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     resourcesToGain: {},
     cardDescription: toGameText("Copy 1 PRODUCTION in an opponent's city"),
     playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
       if (
         gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS &&
         gameInput.cardContext === CardName.MINER_MOLE
@@ -1316,6 +1417,14 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           cardOwner,
           selectedCards[0]
         );
+        gameState.addGameLogFromCard(CardName.MINER_MOLE, [
+          player,
+          " activated ",
+          targetCard,
+          " from ",
+          cardOwner,
+          "'s city.",
+        ]);
       }
     },
     productionInner: (gameState: GameState, gameInput: GameInput) => {
@@ -1421,7 +1530,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             )}`
           );
         }
-
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_PLAYER,
           prevInputType: gameInput.inputType,
@@ -1453,11 +1561,20 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           throw new Error("Unexpected game input");
         }
         const targetPlayer = gameState.getPlayer(selectedPlayer);
-        player.spendResources(prevInput.clientOptions.resources);
-        targetPlayer.gainResources(prevInput.clientOptions.resources);
+        const resources = prevInput.clientOptions.resources;
+        player.spendResources(resources);
+        targetPlayer.gainResources(resources);
         player.gainResources({
           [ResourceType.VP]: 4,
         });
+        gameState.addGameLogFromCard(CardName.MONASTERY, [
+          player,
+          " gave ",
+          ...resourceMapToGameText(resources),
+          " to ",
+          targetPlayer,
+          " to gain 4 VP.",
+        ]);
       } else {
         throw new Error("Invalid input type");
       }
@@ -1534,6 +1651,19 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         player.gainResources({
           [ResourceType.VP]: 2 * numBerries,
         });
+        if (numBerries === 0) {
+          gameState.addGameLogFromCard(CardName.MONK, [
+            player,
+            " decline to give any BERRY.",
+          ]);
+        } else {
+          gameState.addGameLogFromCard(CardName.MONK, [
+            player,
+            ` gave ${numBerries} BERRY to `,
+            targetPlayer,
+            ` to gain ${numBerries * 2} VP.`,
+          ]);
+        }
       }
     },
     productionInner: (gameState: GameState, gameInput: GameInput) => {
@@ -1607,6 +1737,12 @@ const CARD_REGISTRY: Record<CardName, Card> = {
               },
             });
             player.spendResources(gameInput.clientOptions.resources);
+            gameState.addGameLogFromCard(CardName.PEDDLER, [
+              player,
+              " paid ",
+              ...resourceMapToGameText(gameInput.clientOptions.resources),
+              ".",
+            ]);
           }
         } else {
           const numResources = sumResources(gameInput.clientOptions.resources);
@@ -1616,6 +1752,12 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             throw new Error("Too many resources");
           }
           player.gainResources(gameInput.clientOptions.resources);
+          gameState.addGameLogFromCard(CardName.PEDDLER, [
+            player,
+            " gained ",
+            ...resourceMapToGameText(gameInput.clientOptions.resources),
+            ".",
+          ]);
         }
       }
     },
@@ -1715,6 +1857,12 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             player.removeCardFromHand(cardName);
             selectedPlayer.addCardToHand(gameState, cardName);
           });
+          gameState.addGameLogFromCard(CardName.POST_OFFICE, [
+            player,
+            " gave ",
+            selectedPlayer,
+            " 2 CARD.",
+          ]);
           gameState.pendingGameInputs.push({
             inputType: GameInputType.SELECT_CARDS,
             prevInputType: gameInput.inputType,
@@ -1731,7 +1879,12 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             player.removeCardFromHand(cardName);
             gameState.discardPile.addToStack(cardName);
           });
-          player.drawMaxCards(gameState);
+          const numDiscarded = gameInput.clientOptions.selectedCards.length;
+          const numDrawn = player.drawMaxCards(gameState);
+          gameState.addGameLogFromCard(CardName.POST_OFFICE, [
+            player,
+            ` discarded ${numDiscarded} CARD and drew ${numDrawn} CARD.`,
+          ]);
         }
       }
     },
@@ -1750,12 +1903,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       "Discard the other.",
     ]),
     playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.PLAY_CARD) {
-        if (gameState.pendingGameInputs.length !== 0) {
-          throw new Error("Should not have any pending game input");
-        }
         const cardOptions = [gameState.drawCard(), gameState.drawCard()];
-        const player = gameState.getActivePlayer();
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_CARDS,
           prevInputType: gameInput.inputType,
@@ -1774,6 +1924,12 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             selectedCards: [],
           },
         });
+        gameState.addGameLogFromCard(CardName.POSTAL_PIGEON, [
+          player,
+          " revealed ",
+          ...cardListToGameText(cardOptions),
+          ".",
+        ]);
       } else if (
         gameInput.inputType === GameInputType.SELECT_CARDS &&
         gameInput.prevInputType === GameInputType.PLAY_CARD &&
@@ -1788,11 +1944,22 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         } else if (selectedCards.length === 1) {
           const selectedCard = selectedCards[0];
           const card = Card.fromName(selectedCard);
+          gameState.addGameLogFromCard(CardName.POSTAL_PIGEON, [
+            player,
+            " chose to play ",
+            card,
+            ".",
+          ]);
           card.addToCityAndPlay(gameState, gameInput);
           cardOptionsUnfiltered.splice(
             cardOptionsUnfiltered.indexOf(selectedCard),
             1
           );
+        } else {
+          gameState.addGameLogFromCard(CardName.POSTAL_PIGEON, [
+            player,
+            " chose to play none of the cards.",
+          ]);
         }
         cardOptionsUnfiltered.forEach((cardName) => {
           gameState.discardPile.addToStack(cardName);
@@ -1877,6 +2044,12 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             "cannot use Queen to play a card worth more than 3 base VP"
           );
         }
+        gameState.addGameLogFromCard(CardName.QUEEN, [
+          player,
+          " played ",
+          card,
+          ".",
+        ]);
         card.addToCityAndPlay(gameState, gameInput);
       }
     },
@@ -1940,7 +2113,19 @@ const CARD_REGISTRY: Record<CardName, Card> = {
               selectedOption: null,
             },
           });
+          gameState.addGameLogFromCard(CardName.RANGER, [
+            player,
+            " recalled worker on ",
+            ...workerPlacementToGameText(selectedOption),
+            ".",
+          ]);
         } else {
+          gameState.addGameLogFromCard(CardName.RANGER, [
+            player,
+            " moved worker to ",
+            ...workerPlacementToGameText(selectedOption),
+            ".",
+          ]);
           if (selectedOption.event) {
             gameState.handleWorkerPlacementGameInput({
               inputType: GameInputType.CLAIM_EVENT,
@@ -2057,6 +2242,12 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         player.gainResources(targetCard.baseCost);
         player.addToCity(CardName.RUINS);
         player.drawCards(gameState, 2);
+        gameState.addGameLogFromCard(CardName.RUINS, [
+          player,
+          " ruined ",
+          targetCard,
+          " and drew 2 CARD.",
+        ]);
       } else {
         throw new Error("Invalid input type");
       }
@@ -2108,7 +2299,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         } else {
           player.gainResources({ [ResourceType.BERRY]: 3 });
           const chapelInfo = player.getPlayedCardInfos(CardName.CHAPEL);
-
           if (chapelInfo.length > 0) {
             const chapel = chapelInfo[0].resources;
             if (!chapel) {
@@ -2117,6 +2307,15 @@ const CARD_REGISTRY: Record<CardName, Card> = {
 
             const numVP = chapel[ResourceType.VP] || 0;
             player.gainResources({ [ResourceType.VP]: numVP });
+            gameState.addGameLogFromCard(CardName.SHEPHERD, [
+              player,
+              ` gained 3 BERRY and ${numVP} VP.`,
+            ]);
+          } else {
+            gameState.addGameLogFromCard(CardName.SHEPHERD, [
+              player,
+              ` gained 3 BERRY.`,
+            ]);
           }
         }
       } else if (
@@ -2128,11 +2327,22 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       ) {
         const selectedPlayer = gameInput.clientOptions.selectedPlayer;
         if (!selectedPlayer) {
-          throw new Error("must select a player");
+          throw new Error("Must select a player");
         }
         const resourcesToGive =
           gameInput.prevInput.clientOptions.paymentOptions.resources;
-        gameState.getPlayer(selectedPlayer).gainResources(resourcesToGive);
+        const targetPlayer = gameState.getPlayer(selectedPlayer);
+        if (targetPlayer.playerId === player.playerId) {
+          throw new Error("Cannot select yourself");
+        }
+        targetPlayer.gainResources(resourcesToGive);
+        gameState.addGameLogFromCard(CardName.SHEPHERD, [
+          player,
+          " gave ",
+          targetPlayer,
+          ...resourceMapToGameText(resourcesToGive),
+          ".",
+        ]);
       } else if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
         // give the player their berries + VP, don't ask them to select a player
 
@@ -2147,6 +2357,15 @@ const CARD_REGISTRY: Record<CardName, Card> = {
 
           const numVP = chapel[ResourceType.VP] || 0;
           player.gainResources({ [ResourceType.VP]: numVP });
+          gameState.addGameLogFromCard(CardName.SHEPHERD, [
+            player,
+            ` gained 3 BERRY and ${numVP} VP.`,
+          ]);
+        } else {
+          gameState.addGameLogFromCard(CardName.SHEPHERD, [
+            player,
+            ` gained 3 BERRY.`,
+          ]);
         }
       } else {
         throw new Error(
@@ -2175,6 +2394,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         player.gainResources({
           [ResourceType.BERRY]: 1,
         });
+        gameState.addGameLogFromCard(CardName.SHOPKEEPER, [
+          player,
+          " gained 1 BERRY for playing a Critter.",
+        ]);
       }
     },
   }),
@@ -2241,12 +2464,28 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         const selectedOption = gameInput.clientOptions.selectedOption;
         if (selectedOption === "3 Twigs") {
           origPlayedCard.resources![ResourceType.TWIG]! += 3;
+          gameState.addGameLogFromCard(CardName.STOREHOUSE, [
+            player,
+            " added 3 TWIG.",
+          ]);
         } else if (selectedOption === "2 Resin") {
           origPlayedCard.resources![ResourceType.RESIN]! += 2;
+          gameState.addGameLogFromCard(CardName.STOREHOUSE, [
+            player,
+            " added 2 RESIN.",
+          ]);
         } else if (selectedOption === "1 Pebble") {
           origPlayedCard.resources![ResourceType.PEBBLE]! += 1;
+          gameState.addGameLogFromCard(CardName.STOREHOUSE, [
+            player,
+            " added 1 PEBBLE.",
+          ]);
         } else if (selectedOption === "2 Berries") {
           origPlayedCard.resources![ResourceType.BERRY]! += 2;
+          gameState.addGameLogFromCard(CardName.STOREHOUSE, [
+            player,
+            " added 2 BERRY.",
+          ]);
         } else {
           throw new Error("Must select an option!");
         }
@@ -2259,6 +2498,12 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         if (!origPlayedCard) {
           throw new Error("Cannot find played card");
         }
+        gameState.addGameLogFromCard(CardName.STOREHOUSE, [
+          player,
+          " gained ",
+          ...resourceMapToGameText(origPlayedCard.resources!),
+          ".",
+        ]);
         player.gainResources(origPlayedCard.resources!);
         origPlayedCard.resources = {
           [ResourceType.TWIG]: 0,
@@ -2331,22 +2576,26 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         ) {
           throw new Error("Invalid input");
         }
-        const selectedPlayer = gameInput.clientOptions.selectedPlayer;
-        if (!selectedPlayer) {
-          throw new Error("must select a player");
+        const selectedPlayerId = gameInput.clientOptions.selectedPlayer;
+        if (!selectedPlayerId) {
+          throw new Error("Must select a player");
         }
-        if (
-          !gameState.getPlayer(selectedPlayer) ||
-          selectedPlayer === player.playerId
-        ) {
-          throw new Error("invalid playerId provided");
+        const selectedPlayer = gameState.getPlayer(selectedPlayerId);
+        if (!selectedPlayer || selectedPlayer.playerId === player.playerId) {
+          throw new Error("Must select a different player");
         }
         const cardName = gameInput.prevInput.clientOptions.selectedCards[0];
-        gameState.getPlayer(selectedPlayer).addCardToHand(gameState, cardName);
+        selectedPlayer.addCardToHand(gameState, cardName);
         const cardOptions = gameInput.prevInput.cardOptions;
         const cardToGive =
           cardOptions[0] === cardName ? cardOptions[1] : cardOptions[0];
         player.addCardToHand(gameState, cardToGive);
+        gameState.addGameLogFromCard(CardName.TEACHER, [
+          player,
+          " drew 2 CARD and gave 1 to ",
+          selectedPlayer,
+          ".",
+        ]);
       }
     },
   }),
@@ -2411,11 +2660,20 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         gameInput.prevInputType === GameInputType.PLAY_CARD &&
         gameInput.cardContext === CardName.UNDERTAKER
       ) {
-        // discard the cards from the meadow + replenish
+        // Discard the cards from the meadow + replenish
         const selectedCards = gameInput.clientOptions.selectedCards;
         if (selectedCards.length !== 3) {
-          throw new Error("must choose exactly 3 cards to remove from meadow");
+          throw new Error(
+            "Must choose exactly 3 cards to remove from the Meadow."
+          );
         }
+
+        gameState.addGameLogFromCard(CardName.UNDERTAKER, [
+          player,
+          " discarded ",
+          ...cardListToGameText(selectedCards),
+          " from the Meadow.",
+        ]);
 
         selectedCards.forEach((cardName) => {
           gameState.removeCardFromMeadow(cardName);
@@ -2443,14 +2701,20 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         // add this card to player's hand + replenish meadow
         const selectedCards = gameInput.clientOptions.selectedCards;
         if (selectedCards.length !== 1) {
-          throw new Error("may only choose 1 card from meadow");
+          throw new Error("May only choose 1 card from the Meadow");
         }
 
         const card = selectedCards[0];
         gameState.removeCardFromMeadow(card);
         gameState.replenishMeadow();
-
         player.addCardToHand(gameState, card);
+
+        gameState.addGameLogFromCard(CardName.UNDERTAKER, [
+          player,
+          " selected ",
+          ...cardListToGameText([card]),
+          " from the Meadow.",
+        ]);
       } else {
         throw new Error(
           "Unexpected input type ${gameInput.inputType} with previous input type ${gameInput.prevInputType}"
@@ -2541,6 +2805,15 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         player.gainResources(removedCard.baseCost);
         player.gainResources(resourceToGain);
         player.gainResources({ [ResourceType.VP]: 1 });
+
+        gameState.addGameLogFromCard(CardName.UNIVERSITY, [
+          player,
+          " discarded ",
+          removedCard,
+          " from their city and gained ",
+          ...resourceMapToGameText(resourceToGain),
+          " and 1 VP.",
+        ]);
       }
     },
   }),
@@ -2586,6 +2859,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       maxToSpend: 3,
     }),
     playInner: playSpendResourceToGetVPFactory({
+      card: CardName.WOODCARVER,
       resourceType: ResourceType.TWIG,
       maxToSpend: 3,
     }),

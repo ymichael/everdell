@@ -9,6 +9,8 @@ import {
   PlayedEventInfo,
   ResourceType,
   GameText,
+  TextPartEntity,
+  IGameTextEntity,
 } from "./types";
 import { Card } from "./card";
 import {
@@ -20,9 +22,14 @@ import {
 import { sumResources } from "./gameStatePlayHelpers";
 import shuffle from "lodash/shuffle";
 import flatten from "lodash/flatten";
-import { toGameText } from "./gameText";
+import {
+  toGameText,
+  cardListToGameText,
+  resourceMapToGameText,
+  workerPlacementToGameText,
+} from "./gameText";
 
-export class Event implements GameStatePlayable {
+export class Event implements GameStatePlayable, IGameTextEntity {
   readonly playInner: GameStatePlayFn | undefined;
   readonly playedEventInfoInner: (() => PlayedEventInfo) | undefined;
   readonly pointsInner:
@@ -76,6 +83,14 @@ export class Event implements GameStatePlayable {
     this.playedEventInfoInner = playedEventInfoInner;
     this.pointsInner = pointsInner;
     this.shortName = shortName;
+  }
+
+  getGameTextPart(): TextPartEntity {
+    return {
+      type: "entity",
+      entityType: "event",
+      event: this.name,
+    };
   }
 
   getShortName(): GameText {
@@ -334,26 +349,38 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         }
 
         const prevInput = gameInput.prevInput;
-        const selectedPlayer = prevInput.clientOptions.selectedPlayer;
+        const selectedPlayerId = prevInput.clientOptions.selectedPlayer;
 
         // choosing players is optional, but we should be catching this
         // before you select resources
-        if (!selectedPlayer) {
+        if (!selectedPlayerId) {
           throw new Error("Selected player cannot be null");
         }
 
-        gameState.getPlayer(selectedPlayer).gainResources(resources);
+        const selectedPlayer = gameState.getPlayer(selectedPlayerId);
+
+        gameState.addGameLogFromEvent(
+          EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN,
+          [
+            player,
+            " gave ",
+            ...resourceMapToGameText(resources),
+            " to ",
+            selectedPlayer,
+            ` to add ${2 * numResources} VP to here.`,
+          ]
+        );
+
+        selectedPlayer.gainResources(resources);
         player.spendResources(resources);
 
         const eventInfo =
           player.claimedEvents[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN];
-
         if (!eventInfo) {
           throw new Error("Cannot find event info");
         }
 
-        // add VP to this event
-        //eventInfo.storedResources = resources;
+        // Add VP to this event
         const storedResources = eventInfo.storedResources;
 
         if (eventInfo.storedResources) {
@@ -423,6 +450,12 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         if (!selectedOption) {
           throw new Error("Must specify clientOptions.selectedOption");
         }
+        gameState.addGameLogFromEvent(EventName.SPECIAL_A_WEE_RUN_CITY, [
+          player,
+          " recalled worker on ",
+          ...workerPlacementToGameText(selectedOption),
+          ".",
+        ]);
         player.recallWorker(gameState, selectedOption);
       } else {
         throw new Error(`Invalid input type: ${gameInput}`);
@@ -489,6 +522,10 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
 
         // remove twigs from player's supply
         player.spendResources({ [ResourceType.TWIG]: numTwigs });
+        gameState.addGameLogFromEvent(
+          EventName.SPECIAL_AN_EVENING_OF_FIREWORKS,
+          [player, ` placed ${numTwigs} TWIG here (worth 2 VP each).`]
+        );
       } else {
         throw new Error(`Invalid input type ${gameInput.inputType}`);
       }
@@ -548,6 +585,11 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           gameState.drawCard(),
         ];
 
+        gameState.addGameLogFromEvent(
+          EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED,
+          [player, " revealed ", ...cardListToGameText(cardOptions), "."]
+        );
+
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_CARDS,
           prevInputType: GameInputType.CLAIM_EVENT,
@@ -565,11 +607,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         gameInput.eventContext === EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED
       ) {
         if (!gameInput.clientOptions.selectedCards) {
-          throw new Error("invalid input");
+          throw new Error("Invalid input");
         }
-
         const selectedCards = gameInput.clientOptions.selectedCards;
-
         if (selectedCards.length > 5) {
           throw new Error("Too many cards");
         }
@@ -582,7 +622,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
 
         const remainingCards = gameInput.cardOptions;
 
-        // add selected cards to player's hand
+        // Add selected cards to player's hand
         selectedCards.forEach((cardName) => {
           player.addCardToHand(gameState, cardName);
 
@@ -595,6 +635,18 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         remainingCards.forEach((cardName) => {
           (eventInfo.storedCards = eventInfo.storedCards || []).push(cardName);
         });
+
+        gameState.addGameLogFromEvent(
+          EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED,
+          [
+            player,
+            " kept ",
+            ...cardListToGameText(selectedCards),
+            " and placed ",
+            ...cardListToGameText(remainingCards),
+            " beneath the event (worth 1 VP each).",
+          ]
+        );
       } else {
         throw new Error(`Invalid input type ${gameInput.inputType}`);
       }
@@ -688,6 +740,18 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           });
           (eventInfo.storedCards = eventInfo.storedCards || []).push(cardName);
         });
+
+        gameState.addGameLogFromEvent(
+          EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES,
+          [
+            player,
+            " placed ",
+            ...cardListToGameText(
+              selectedCards.map(({ cardName }) => cardName)
+            ),
+            " from their city beneath this event (worth 3 VP each).",
+          ]
+        );
       } else {
         throw new Error(`Invalid input type ${gameInput.inputType}`);
       }
@@ -695,23 +759,20 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     // 3 points per critter beneath event
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
-
       const eventInfo =
         player.claimedEvents[EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES];
       if (!eventInfo) {
         throw new Error("Cannot find event info");
       }
-
       const storedCards = eventInfo.storedCards || [];
-
       if (storedCards.length > 2) {
-        throw new Error("too many cards stored under event");
+        throw new Error("Too many cards stored under event");
       }
 
       storedCards.forEach((cardName) => {
         const card = Card.fromName(cardName as CardName);
         if (!card.isCritter) {
-          throw new Error("cannot store critters under this event");
+          throw new Error("Cannot store critters under this event");
         }
       });
 
@@ -765,6 +826,10 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
             selectedCards: [],
           },
         });
+        gameState.addGameLogFromEvent(EventName.SPECIAL_CROAK_WART_CURE, [
+          player,
+          " spent 2 BERRY.",
+        ]);
       } else if (gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS) {
         const selectedCards = gameInput.clientOptions.selectedCards;
         if (!selectedCards) {
@@ -781,6 +846,13 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         selectedCards.forEach((playedCardInfo) => {
           player.removeCardFromCity(gameState, playedCardInfo);
         });
+
+        gameState.addGameLogFromEvent(EventName.SPECIAL_CROAK_WART_CURE, [
+          player,
+          " discarded ",
+          ...cardListToGameText(selectedCards.map(({ cardName }) => cardName)),
+          " from their city.",
+        ]);
       } else {
         throw new Error(`Invalid input type ${gameInput.inputType}`);
       }
@@ -869,6 +941,14 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           player.removeCardFromHand(cardName as CardName);
           (eventInfo.storedCards = eventInfo.storedCards || []).push(cardName);
         });
+
+        gameState.addGameLogFromEvent(
+          EventName.SPECIAL_GRADUATION_OF_SCHOLARS,
+          [
+            player,
+            ` placed ${cardsToUse.length} Critters from their hand beneath this event (worth 2 VP each).`,
+          ]
+        );
       } else {
         throw new Error(`Invalid input type ${gameInput.inputType}`);
       }
@@ -1015,6 +1095,11 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
 
         // remove berries from player's supply
         player.spendResources({ [ResourceType.BERRY]: numBerries });
+
+        gameState.addGameLogFromEvent(
+          EventName.SPECIAL_PERFORMER_IN_RESIDENCE,
+          [player, ` placed ${numBerries} BERRY here (worth 2 VP each).`]
+        );
       } else {
         throw new Error(`Invalid input type ${gameInput.inputType}`);
       }
@@ -1085,6 +1170,11 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
         player.drawCards(gameState, numVP);
 
+        gameState.addGameLogFromEvent(
+          EventName.SPECIAL_PRISTINE_CHAPEL_CEILING,
+          [player, ` drew ${numVP} CARD.`]
+        );
+
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_RESOURCES,
           prevInputType: GameInputType.CLAIM_EVENT,
@@ -1114,6 +1204,11 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
 
         // gain requested resources
         player.gainResources(resources);
+
+        gameState.addGameLogFromEvent(
+          EventName.SPECIAL_PRISTINE_CHAPEL_CEILING,
+          [player, " gained ", ...resourceMapToGameText(resources), "."]
+        );
       } else {
         throw new Error(`Invalid input type ${gameInput.inputType}`);
       }
@@ -1208,6 +1303,10 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
+        gameState.addGameLogFromEvent(EventName.SPECIAL_TAX_RELIEF, [
+          player,
+          " activated PRODUCTION.",
+        ]);
         player.activateProduction(gameState, gameInput);
       } else {
         throw new Error(`Invalid input type ${gameInput.inputType}`);
@@ -1320,6 +1419,13 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           [ResourceType.PEBBLE]: resources[ResourceType.PEBBLE] || 0,
           [ResourceType.BERRY]: resources[ResourceType.BERRY] || 0,
         });
+
+        gameState.addGameLogFromEvent(EventName.SPECIAL_UNDER_NEW_MANAGEMENT, [
+          player,
+          " placed ",
+          ...resourceMapToGameText(resources),
+          " here.",
+        ]);
       } else {
         throw new Error(`Invalid input type ${gameInput.inputType}`);
       }

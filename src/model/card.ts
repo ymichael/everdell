@@ -487,9 +487,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: true,
     associatedCard: CardName.UNDERTAKER,
     cardDescription: toGameText([
-      "Worker stays here permanently. ",
       "Reveal 4 CARD from the deck or discard pile and play 1 for free. ",
       "Discard the others.",
+      { type: "HR" },
+      "Worker stays here permanently. ",
     ]),
     maxWorkersInner: (cardOwner: Player) => {
       return cardOwner.hasCardInCity(CardName.UNDERTAKER) ? 2 : 1;
@@ -1488,7 +1489,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: true,
     associatedCard: CardName.MONK,
-    cardDescription: toGameText("Give 2 ANY to an opponent and gain 4 VP."),
+    cardDescription: toGameText([
+      "Give 2 ANY to an opponent and gain 4 VP.",
+      { type: "HR" },
+      "Worker stays here permanently.",
+    ]),
     maxWorkersInner: (cardOwner: Player) => {
       return cardOwner.hasCardInCity(CardName.MONK) ? 2 : 1;
     },

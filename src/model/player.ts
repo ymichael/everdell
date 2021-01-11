@@ -12,6 +12,7 @@ import {
   PlayedEventInfo,
   WorkerPlacementInfo,
   LocationName,
+  LocationType,
   PlayerStatus,
   IGameTextEntity,
 } from "./types";
@@ -20,6 +21,7 @@ import cloneDeep from "lodash/cloneDeep";
 import { GameState } from "./gameState";
 import { Card } from "./card";
 import { Event } from "./event";
+import { Location } from "./location";
 import { generate as uuid } from "short-uuid";
 import { sumResources } from "./gameStatePlayHelpers";
 import isEqual from "lodash/isEqual";
@@ -1010,14 +1012,20 @@ export class Player implements IGameTextEntity {
     }
   }
 
-  isRecallableWorker(WorkerPlacementInfo: WorkerPlacementInfo): boolean {
+  isRecallableWorker(workerPlacementInfo: WorkerPlacementInfo): boolean {
     // Don't remove workers from these cards.
     if (
-      WorkerPlacementInfo.playedCard &&
-      (WorkerPlacementInfo.playedCard.cardName === CardName.CEMETARY ||
-        WorkerPlacementInfo.playedCard.cardName === CardName.MONASTERY)
+      workerPlacementInfo.playedCard &&
+      (workerPlacementInfo.playedCard.cardName === CardName.CEMETARY ||
+        workerPlacementInfo.playedCard.cardName === CardName.MONASTERY)
     ) {
       return false;
+    }
+    if (workerPlacementInfo.location) {
+      const location = Location.fromName(workerPlacementInfo.location);
+      if (location.type === LocationType.JOURNEY) {
+        return false;
+      }
     }
     return true;
   }

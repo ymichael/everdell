@@ -116,7 +116,7 @@ const GameInputBoxInner = ({
         />
       ) : gameInput.inputType === GameInputType.SELECT_PAYMENT_FOR_CARD ? (
         <GameInputSelectPaymentForCard
-          name={"gameInput.clientOptions.resources"}
+          name={"gameInput.clientOptions.paymentOptions.resources"}
           gameInput={gameInput}
           viewingPlayer={viewingPlayer}
         />

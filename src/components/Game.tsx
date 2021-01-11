@@ -61,6 +61,7 @@ const Game: React.FC<{
         />
         <GameLog logs={gameState.gameLog} />
         <GameInputBox
+          key={gameState.gameStateId}
           gameId={gameId}
           gameState={gameState}
           gameInputs={gameInputs}

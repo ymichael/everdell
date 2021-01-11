@@ -9,6 +9,7 @@ import {
   PlayedCardInfo,
 } from "../model/types";
 import { Player } from "../model/player";
+import { resourceMapToGameText } from "../model/gameText";
 import { GameIcon, Description, CardTypeSymbol } from "./common";
 import { sumResources } from "../model/gameStatePlayHelpers";
 
@@ -172,10 +173,17 @@ export const PlayedCard: React.FC<{
         />
       </div>
       <div className={styles.played_card_meta}>
-        <p>Card Owner: {viewerId === cardOwnerId ? "You" : cardOwner.name}</p>
-        {"workers" in playedCard && <p>Workers: {JSON.stringify(workers)}</p>}
+        <div>
+          Card Owner: {viewerId === cardOwnerId ? "You" : cardOwner.name}
+        </div>
+        {"workers" in playedCard && (
+          <div>Workers on card: {workers.length}</div>
+        )}
         {"resources" in playedCard && (
-          <p>Resources: {JSON.stringify(resources)}</p>
+          <div>
+            On Card:{" "}
+            <Description textParts={resourceMapToGameText(resources)} />
+          </div>
         )}
       </div>
     </div>

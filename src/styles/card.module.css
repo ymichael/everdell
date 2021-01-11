@@ -152,7 +152,7 @@
   margin: auto;
 }
 
-.played_card_meta > p {
+.played_card_meta > div {
   margin: 5px 0;
   font-size: 10px;
 }

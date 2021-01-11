@@ -884,10 +884,16 @@ export type GameStateCanPlayFn = (
   gameInput: GameInput
 ) => boolean;
 
+export type GameStatePointsFn = (
+  gameState: GameState,
+  playerId: string
+) => number;
+
 export interface GameStatePlayable {
   canPlay: GameStateCanPlayFn;
   canPlayCheck: GameStateCanPlayCheckFn;
   play: GameStatePlayFn;
+  getPoints: GameStatePointsFn;
 }
 
 export type GameStateCountPointsFn = (

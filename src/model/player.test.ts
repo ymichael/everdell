@@ -1245,6 +1245,17 @@ describe("Player", () => {
       expect(points).to.be(3);
     });
 
+    it("includes journey locations", () => {
+      const player = gameState.getActivePlayer();
+      player.addToCityMulti([CardName.FARM, CardName.INN]);
+      player.gainResources({
+        [ResourceType.VP]: 5,
+      });
+      player.placeWorkerOnLocation(LocationName.JOURNEY_FIVE);
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(5);
+      expect(player.getPoints(gameState)).to.be(8 + 5);
+    });
+
     it("includes point tokens", () => {
       const player = gameState.getActivePlayer();
       player.addToCityMulti([CardName.FARM, CardName.INN]);

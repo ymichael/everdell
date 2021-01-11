@@ -38,6 +38,7 @@ export class Location implements GameStatePlayable, IGameTextEntity {
   readonly occupancy: LocationOccupancy;
   readonly playInner: GameStatePlayFn | undefined;
   readonly canPlayCheckInner: GameStateCanPlayCheckFn | undefined;
+  private baseVP: number;
 
   constructor({
     name,
@@ -48,6 +49,7 @@ export class Location implements GameStatePlayable, IGameTextEntity {
     resourcesToGain,
     playInner,
     canPlayCheckInner,
+    baseVP = 0,
   }: {
     name: LocationName;
     type: LocationType;
@@ -57,6 +59,7 @@ export class Location implements GameStatePlayable, IGameTextEntity {
     resourcesToGain?: ProductionResourceMap;
     canPlayCheckInner?: GameStateCanPlayCheckFn;
     description?: GameText | undefined;
+    baseVP?: number;
   }) {
     this.name = name;
     this.type = type;
@@ -66,6 +69,7 @@ export class Location implements GameStatePlayable, IGameTextEntity {
     this.resourcesToGain = resourcesToGain || {};
     this.description = description;
     this.shortName = shortName;
+    this.baseVP = baseVP;
   }
 
   getGameTextPart(): TextPartEntity {
@@ -74,6 +78,10 @@ export class Location implements GameStatePlayable, IGameTextEntity {
       entityType: "location",
       location: this.name,
     };
+  }
+
+  getPoints(gameState: GameState, playerId: string): number {
+    return this.baseVP;
   }
 
   canPlay(gameState: GameState, gameInput: GameInput): boolean {
@@ -278,6 +286,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
   [LocationName.JOURNEY_FIVE]: new Location({
     name: LocationName.JOURNEY_FIVE,
     shortName: toGameText("Journey 5"),
+    baseVP: 5,
     type: LocationType.JOURNEY,
     occupancy: LocationOccupancy.EXCLUSIVE,
     description: toGameText("Discard 5 CARD"),
@@ -287,6 +296,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
   [LocationName.JOURNEY_FOUR]: new Location({
     name: LocationName.JOURNEY_FOUR,
     shortName: toGameText("Journey 4"),
+    baseVP: 4,
     type: LocationType.JOURNEY,
     occupancy: LocationOccupancy.EXCLUSIVE,
     description: toGameText("Discard 4 CARD"),
@@ -296,6 +306,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
   [LocationName.JOURNEY_THREE]: new Location({
     name: LocationName.JOURNEY_THREE,
     shortName: toGameText("Journey 3"),
+    baseVP: 3,
     type: LocationType.JOURNEY,
     occupancy: LocationOccupancy.EXCLUSIVE,
     description: toGameText("Discard 3 CARD"),
@@ -305,6 +316,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
   [LocationName.JOURNEY_TWO]: new Location({
     name: LocationName.JOURNEY_TWO,
     shortName: toGameText("Journey 2"),
+    baseVP: 2,
     type: LocationType.JOURNEY,
     occupancy: LocationOccupancy.UNLIMITED,
     description: toGameText("Discard 2 CARD"),
@@ -949,7 +961,7 @@ function playInnerJourneyFactory(
     } else if (gameInput.inputType === GameInputType.DISCARD_CARDS) {
       const cardsToDiscard = gameInput.clientOptions?.cardsToDiscard;
       if (!cardsToDiscard) {
-        throw new Error("invalid input");
+        throw new Error("Invalid input");
       }
       if (cardsToDiscard.length !== numPoints) {
         throw new Error("Discarded incorrect number of cards");
@@ -959,12 +971,9 @@ function playInnerJourneyFactory(
         player.removeCardFromHand(card);
         gameState.discardPile.addToStack(card);
       });
-      player.gainResources({
-        [ResourceType.VP]: numPoints,
-      });
       gameState.addGameLogFromLocation(location, [
         player,
-        ` discarded ${numPoints} CARD to gain ${numPoints} VP.`,
+        ` discarded ${numPoints} CARD.`,
       ]);
     } else {
       throw new Error(`Invalid inputType: ${gameInput.inputType}`);

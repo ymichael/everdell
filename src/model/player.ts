@@ -294,6 +294,14 @@ export class Player implements IGameTextEntity {
       }
     });
 
+    // Locations (eg. journey)
+    this.placedWorkers.forEach((placeWorker) => {
+      if (placeWorker.location) {
+        const location = Location.fromName(placeWorker.location);
+        points += location.getPoints(gameState, this.playerId);
+      }
+    });
+
     points += this.getNumResourcesByType(ResourceType.VP);
 
     // For each husband/wife pair

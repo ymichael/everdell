@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useRef } from "react";
-import { Form, Field } from "formik";
+import { Field } from "formik";
 
 import { GameInputSelectPlayer as TGameInputSelectPlayer } from "../model/types";
 import { Player } from "../model/player";
@@ -13,7 +13,7 @@ const GameInputSelectPlayer: React.FC<{
   viewingPlayer: Player;
 }> = ({ name, gameInput, gameState, viewingPlayer }) => {
   return (
-    <Form>
+    <>
       <p>
         Select Player for{" "}
         {gameInput.locationContext ||
@@ -36,7 +36,7 @@ const GameInputSelectPlayer: React.FC<{
           </label>
         )}
       </>
-    </Form>
+    </>
   );
 };
 

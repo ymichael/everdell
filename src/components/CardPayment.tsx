@@ -9,6 +9,7 @@ import {
   GameInput,
   GameInputType,
   GameInputPlayCard,
+  CardPaymentOptions,
 } from "../model/types";
 import { ResourceTypeIcon } from "./common";
 
@@ -75,7 +76,9 @@ const OptionToUseAssociatedCard: React.FC<{
   name: string;
   cardName: CardName;
   viewingPlayer: Player;
-}> = ({ cardName, name, viewingPlayer }) => {
+  resetPaymentOptions: (withCost: boolean) => void;
+}> = ({ cardName, name, resetPaymentOptions, viewingPlayer }) => {
+  const [field, meta, helpers] = useField(name);
   const card = CardModel.fromName(cardName);
   if (
     !(
@@ -87,10 +90,18 @@ const OptionToUseAssociatedCard: React.FC<{
   ) {
     return <></>;
   }
+  const isChecked = !!meta.value;
   return (
     <div className={styles.associated_card}>
       <label>
-        <Field type={"checkbox"} name={name} />
+        <input
+          type={"checkbox"}
+          checked={isChecked}
+          onChange={() => {
+            resetPaymentOptions(isChecked);
+            helpers.setValue(!isChecked);
+          }}
+        />
         Use {card.associatedCard} to play {card.name}
       </label>
     </div>
@@ -99,8 +110,9 @@ const OptionToUseAssociatedCard: React.FC<{
 
 const CardToUseForm: React.FC<{
   name: string;
+  resetPaymentOptions: (withCost: boolean) => void;
   viewingPlayer: Player;
-}> = ({ name, viewingPlayer }) => {
+}> = ({ name, resetPaymentOptions, viewingPlayer }) => {
   const [field, meta, helpers] = useField(name);
   const cardsToUse: (CardName | null)[] = [
     CardName.QUEEN,
@@ -120,6 +132,7 @@ const CardToUseForm: React.FC<{
               value={cardToUse || "NONE"}
               checked={cardToUse === meta.value}
               onChange={() => {
+                resetPaymentOptions(!cardToUse);
                 helpers.setValue(cardToUse);
               }}
             />
@@ -133,18 +146,21 @@ const CardToUseForm: React.FC<{
 
 const CardToDungeonForm: React.FC<{
   name: string;
+  resetPaymentOptions: (withCost: boolean) => void;
   viewingPlayer: Player;
-}> = ({ name, viewingPlayer }) => {
+}> = ({ name, resetPaymentOptions, viewingPlayer }) => {
   const [field, meta, helpers] = useField(name);
   return viewingPlayer.canInvokeDungeon() ? (
     <p>
       {"Dungeon: "}
       <select
+        value={meta.value || "None"}
         onChange={(e) => {
+          resetPaymentOptions(!e.target.value);
           helpers.setValue(e.target.value || null);
         }}
       >
-        <option value={""}>None</option>
+        <option value={"None"}>None</option>
         {viewingPlayer.getPlayedCritters().map(({ cardName }, idx) => {
           return (
             <option key={idx} value={cardName}>
@@ -159,9 +175,10 @@ const CardToDungeonForm: React.FC<{
 
 const CardPayment: React.FC<{
   name: string;
+  resetPaymentOptions: (withCost: boolean) => void;
   clientOptions: GameInputPlayCard["clientOptions"];
   viewingPlayer: Player;
-}> = ({ clientOptions, name, viewingPlayer }) => {
+}> = ({ clientOptions, name, resetPaymentOptions, viewingPlayer }) => {
   return (
     <div className={styles.card_payment_form}>
       {clientOptions.card && (
@@ -169,13 +186,19 @@ const CardPayment: React.FC<{
           name={`${name}.useAssociatedCard`}
           cardName={clientOptions.card}
           viewingPlayer={viewingPlayer}
+          resetPaymentOptions={resetPaymentOptions}
         />
       )}
       <ResourcesForm name={`${name}.resources`} />
-      <CardToUseForm name={`${name}.cardToUse`} viewingPlayer={viewingPlayer} />
+      <CardToUseForm
+        name={`${name}.cardToUse`}
+        viewingPlayer={viewingPlayer}
+        resetPaymentOptions={resetPaymentOptions}
+      />
       <CardToDungeonForm
         name={`${name}.cardToDungeon`}
         viewingPlayer={viewingPlayer}
+        resetPaymentOptions={resetPaymentOptions}
       />
     </div>
   );

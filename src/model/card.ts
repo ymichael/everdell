@@ -361,7 +361,7 @@ export class Card<TCardType extends CardType = CardType>
 
   static fromName(name: CardName): Card {
     if (!CARD_REGISTRY[name]) {
-      throw new Error(`Invalid Card name: ${name}`);
+      throw new Error(`Invalid Card name: ${JSON.stringify(name)}`);
     }
     return CARD_REGISTRY[name];
   }

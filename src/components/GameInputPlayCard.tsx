@@ -3,8 +3,9 @@ import isEqual from "lodash/isEqual";
 
 import styles from "../styles/gameBoard.module.css";
 
-import { CardName, ResourceType } from "../model/types";
+import { CardName, ResourceType, CardPaymentOptions } from "../model/types";
 import { Player } from "../model/player";
+import { Card as CardModel } from "../model/card";
 
 import CardPayment from "./CardPayment";
 import Card from "./Card";
@@ -16,15 +17,39 @@ const GameInputPlayCard: React.FC<{
   viewingPlayer: Player;
 }> = ({ options = [], viewingPlayer }) => {
   const [field, meta, helpers] = useField("gameInput.clientOptions");
+  const resetPaymentOptions = (
+    cardName: CardName,
+    withCost: boolean,
+    overrides: any = {}
+  ) => {
+    const card = CardModel.fromName(cardName);
+    helpers.setValue({
+      ...meta.value,
+      ...overrides,
+      card: cardName,
+      paymentOptions: {
+        cardToUse: null,
+        cardToDungeon: null,
+        useAssociatedCard: false,
+        resources: {
+          [ResourceType.BERRY]: 0,
+          [ResourceType.TWIG]: 0,
+          [ResourceType.RESIN]: 0,
+          [ResourceType.PEBBLE]: 0,
+          ...(withCost ? card.baseCost : {}),
+        },
+      },
+    });
+  };
   return (
     <div>
       <div role="group">
         <p>Choose a card to play:</p>
         <div className={styles.items}>
-          {options.map(({ card, fromMeadow }, idx) => {
+          {options.map(({ card: cardName, fromMeadow }, idx) => {
             const isSelected =
               meta.value &&
-              meta.value.card === card &&
+              meta.value.card === cardName &&
               meta.value.fromMeadow === fromMeadow &&
               meta.value._idx === idx;
             return (
@@ -32,19 +57,9 @@ const GameInputPlayCard: React.FC<{
                 <div
                   key={idx}
                   onClick={() => {
-                    helpers.setValue({
+                    resetPaymentOptions(cardName, true, {
                       _idx: idx,
-                      card,
                       fromMeadow,
-                      paymentOptions: {
-                        cardToUse: null,
-                        resources: {
-                          [ResourceType.BERRY]: 0,
-                          [ResourceType.TWIG]: 0,
-                          [ResourceType.RESIN]: 0,
-                          [ResourceType.PEBBLE]: 0,
-                        },
-                      },
                     });
                   }}
                 >
@@ -56,7 +71,7 @@ const GameInputPlayCard: React.FC<{
                       </div>
                     }
                   >
-                    <Card name={card} />
+                    <Card name={cardName} />
                   </ItemWrapper>
                 </div>
               </div>
@@ -64,9 +79,12 @@ const GameInputPlayCard: React.FC<{
           })}
         </div>
       </div>
-      {meta.value && (
+      {meta.value?.card && (
         <CardPayment
           name={"gameInput.clientOptions.paymentOptions"}
+          resetPaymentOptions={(withCost: boolean) => {
+            resetPaymentOptions(meta.value.card, withCost);
+          }}
           clientOptions={meta.value}
           viewingPlayer={viewingPlayer}
         />

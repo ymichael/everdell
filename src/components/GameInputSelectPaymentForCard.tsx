@@ -1,6 +1,5 @@
 import * as React from "react";
 import { useRef } from "react";
-import { Form } from "formik";
 
 import { GameInputSelectPaymentForCard as TGameInputSelectPaymentForCard } from "../model/types";
 import { Player } from "../model/player";
@@ -13,10 +12,10 @@ const GameInputSelectPaymentForCard: React.FC<{
   viewingPlayer: Player;
 }> = ({ name, gameInput, viewingPlayer }) => {
   return (
-    <Form>
+    <>
       <p>Play {gameInput.card} for 3 fewer resources</p>
       <ResourcesForm name={name} />
-    </Form>
+    </>
   );
 };
 

@@ -85,7 +85,10 @@ const CardDescription = ({ card }: { card: CardModel }) => {
   return <></>;
 };
 
-const Card: React.FC<{ name: CardName }> = ({ name }) => {
+const Card: React.FC<{ name: CardName; usedForCritter?: boolean }> = ({
+  name,
+  usedForCritter = false,
+}) => {
   const card = CardModel.fromName(name as any);
   const colorClass = colorClassMap[card.cardType];
   const rarityLabel = getRarityLabel(card);
@@ -128,7 +131,14 @@ const Card: React.FC<{ name: CardName }> = ({ name }) => {
         <div className={styles.card_bottom_row}>
           <div className={styles.rarity_label}>{rarityLabel}</div>
 
-          <div className={styles.associated_card}>
+          <div
+            className={[
+              styles.associated_card,
+              usedForCritter && styles.associated_card_used,
+            ]
+              .filter(Boolean)
+              .join(" ")}
+          >
             <span className={colorClass}>{associatedCard}</span>
           </div>
         </div>
@@ -156,13 +166,13 @@ export const PlayedCard: React.FC<{
   return (
     <div className={styles.played_card_wrapper}>
       <div className={styles.played_card_card}>
-        <Card name={cardName} />
+        <Card
+          name={cardName}
+          usedForCritter={card.isConstruction && usedForCritter}
+        />
       </div>
       <div className={styles.played_card_meta}>
         <p>Card Owner: {viewerId === cardOwnerId ? "You" : cardOwner.name}</p>
-        {card.isConstruction && (
-          <p>usedForCritter: {JSON.stringify(usedForCritter)}</p>
-        )}
         {"workers" in playedCard && <p>Workers: {JSON.stringify(workers)}</p>}
         {"resources" in playedCard && (
           <p>Resources: {JSON.stringify(resources)}</p>

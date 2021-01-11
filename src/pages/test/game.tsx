@@ -49,7 +49,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     player.addToCity(CardName.RESIN_REFINERY);
     player.addToCity(CardName.INN);
     player.addToCity(CardName.FARM);
-    player.addToCity(CardName.MINE);
+    player.addToCity(CardName.MINE).usedForCritter = true;
     player.addToCity(CardName.CLOCK_TOWER);
 
     player.placeWorkerOnCard(

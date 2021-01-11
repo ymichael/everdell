@@ -32,6 +32,11 @@
   text-transform: uppercase;
 }
 
+.associated_card_used {
+  text-decoration: line-through;
+  opacity: 0.3;
+}
+
 .associated_card > span {
   border-radius: 5px 0 0 0;
   font-weight: var(--font-bold);

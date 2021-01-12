@@ -1720,6 +1720,56 @@ describe("Card", () => {
         expect(player.hasCardInCity(CardName.QUEEN)).to.be(true);
         expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
       });
+      it("should allow player buy card using another player's inn", () => {
+        const cards = [
+          CardName.KING,
+          CardName.QUEEN,
+          CardName.POSTAL_PIGEON,
+          CardName.POSTAL_PIGEON,
+          CardName.FARM,
+          CardName.HUSBAND,
+          CardName.CHAPEL,
+          CardName.MONK,
+        ];
+        gameState = testInitialGameState({ meadowCards: cards });
+        let player = gameState.getActivePlayer();
+        let player2 = gameState.players[1];
+
+        const card = Card.fromName(CardName.INN);
+
+        player2.addToCity(CardName.INN);
+
+        expect(player.numAvailableWorkers).to.be(2);
+        expect(player.hasCardInCity(CardName.QUEEN)).to.be(false);
+        expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
+
+        gameState = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            clientOptions: {
+              playedCard: player2.getFirstPlayedCard(CardName.INN),
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardContext: CardName.INN,
+            cardOptions: gameState.meadowCards,
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              selectedCards: [CardName.FARM],
+            },
+          },
+        ]);
+
+        player = gameState.getPlayer(player.playerId);
+        expect(player.numAvailableWorkers).to.be(1);
+        expect(player.hasCardInCity(CardName.FARM)).to.be(true);
+        expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
+      });
       it("should not allow player buy card in hand but not in meadow", () => {
         const cards = [
           CardName.KING,

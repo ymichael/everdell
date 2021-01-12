@@ -442,6 +442,16 @@ export class GameState {
     // If card isn't owned by active player, pay the other player a VP
     if (cardOwner.playerId !== activePlayer.playerId) {
       cardOwner.gainResources({ [ResourceType.VP]: 1 });
+      this.addGameLog([
+        cardOwner,
+        " gained 1 VP when ",
+        activePlayer,
+        " placed a worker on ",
+        ...workerPlacementToGameText({
+          playedCard: gameInput.clientOptions.playedCard!,
+        }),
+        ".",
+      ]);
     }
 
     // Take card's effect

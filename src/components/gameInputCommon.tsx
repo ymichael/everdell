@@ -3,6 +3,7 @@ import { useContext } from "react";
 import { Formik, FormikProps } from "formik";
 
 import {
+  CardType,
   GameInput,
   GameInputType,
   GameInputMultiStep,
@@ -143,19 +144,37 @@ const renderMultiStepGameInputLabel = (
         <Description
           textParts={[
             ...inputContextPrefix(gameInput),
-            { type: "text", text: `Choose one:` },
+            { type: "text", text: gameInput.label },
           ]}
         />
       );
     case GameInputType.SELECT_WORKER_PLACEMENT:
+      if (gameInput.cardContext && gameInput.cardContext === CardName.RANGER) {
+        if (gameInput.prevInputType === GameInputType.PLAY_CARD) {
+          return (
+            <Description
+              textParts={[
+                ...inputContextPrefix(gameInput),
+                { type: "text", text: `Select a deployed worker to move` },
+              ]}
+            />
+          );
+        } else {
+          return (
+            <Description
+              textParts={[
+                ...inputContextPrefix(gameInput),
+                { type: "text", text: `Place your worker` },
+              ]}
+            />
+          );
+        }
+      }
       return (
         <Description
           textParts={[
             ...inputContextPrefix(gameInput),
-            {
-              type: "text",
-              text: `Select a Worker`,
-            },
+            { type: "text", text: `Select a Worker` },
           ]}
         />
       );
@@ -171,7 +190,14 @@ const renderMultiStepGameInputLabel = (
                 gameInput.maxToSelect
               } `,
             },
-            { type: "symbol", symbol: "CARD" },
+            gameInput.cardContext &&
+            (gameInput.cardContext === CardName.MINER_MOLE ||
+              gameInput.cardContext === CardName.CHIP_SWEEP)
+              ? {
+                  type: "cardType",
+                  cardType: CardType.PRODUCTION,
+                }
+              : { type: "symbol", symbol: "CARD" },
             {
               type: "text",
               text:

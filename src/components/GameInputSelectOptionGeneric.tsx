@@ -4,7 +4,7 @@ import { GameInputSelectOptionGeneric as TGameInputSelectOptionGeneric } from ".
 import { Player } from "../model/player";
 
 import { Field } from "formik";
-import styles from "../styles/GameInputBox.module.css";
+import styles from "../styles/gameBoard.module.css";
 import { GameInputType, GameInput } from "../model/types";
 
 import isEqual from "lodash/isEqual";
@@ -15,13 +15,12 @@ const GameInputSelectOptionGeneric: React.FC<{
   viewingPlayer: Player;
 }> = ({ name, gameInput, viewingPlayer }) => {
   return (
-    <div className={styles.selector}>
+    <div className={styles.items}>
       <div role="group">
-        <p>{gameInput.label}</p>
         <div>
           {gameInput.options.map((option, idx) => {
             return (
-              <label key={idx}>
+              <label key={idx} className={styles.radio_item}>
                 <Field type="radio" name={name} value={option} />
                 {option}
               </label>

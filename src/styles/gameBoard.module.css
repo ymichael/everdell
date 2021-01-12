@@ -5,6 +5,10 @@
   flex-wrap: wrap;
 }
 
+.radio_item {
+  margin-right: 10px;
+}
+
 .items_no_wrap {
   margin-left: -10px;
   display: flex;

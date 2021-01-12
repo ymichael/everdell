@@ -506,7 +506,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_OPTION_GENERIC,
           prevInputType: gameInput.inputType,
-          label: "Select where to draw cards for the Cemetary:",
+          label: "Select where to draw cards",
           options: ["Deck", "Discard Pile"],
           cardContext: CardName.CEMETARY,
           clientOptions: {
@@ -2452,7 +2452,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         prevInputType: gameInput.inputType,
         cardContext: CardName.STOREHOUSE,
         playedCardContext: playedCard,
-        label: "Choose resource(s) to add to the Storehouse:",
+        label: "Choose resource(s) to add",
         options: ["3 Twigs", "2 Resin", "1 Pebble", "2 Berries"],
         clientOptions: {
           selectedOption: null,

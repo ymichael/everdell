@@ -32,9 +32,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     player.cardsInHand.push(CardName.FOOL);
     player.cardsInHand.push(CardName.INNKEEPER);
     player.cardsInHand.push(CardName.WANDERER);
+    player.cardsInHand.push(CardName.STOREHOUSE);
     player.cardsInHand.push(CardName.KING);
     player.cardsInHand.push(CardName.POSTAL_PIGEON);
     player.cardsInHand.push(CardName.BARD);
+    player.cardsInHand.push(CardName.MINER_MOLE);
+    player.cardsInHand.push(CardName.CHIP_SWEEP);
 
     player.gainResources({
       [ResourceType.VP]: 12,
@@ -151,6 +154,43 @@ export default function TestGameInputPage(props: { game: GameJSON }) {
     },
   });
 
+  const gameStateSelectCards2 = gameStateImpl.next({
+    inputType: GameInputType.PLAY_CARD,
+    clientOptions: {
+      card: CardName.MINER_MOLE,
+      fromMeadow: false,
+      paymentOptions: {
+        resources: { [ResourceType.BERRY]: 3 },
+      },
+    },
+  });
+
+  const gameStateSelectCards3 = gameStateImpl.next({
+    inputType: GameInputType.PLAY_CARD,
+    clientOptions: {
+      card: CardName.CHIP_SWEEP,
+      fromMeadow: false,
+      paymentOptions: {
+        resources: { [ResourceType.BERRY]: 3 },
+      },
+    },
+  });
+
+  const gameStateGeneric = gameStateImpl.next({
+    inputType: GameInputType.PLAY_CARD,
+    clientOptions: {
+      card: CardName.STOREHOUSE,
+      fromMeadow: false,
+      paymentOptions: {
+        resources: {
+          [ResourceType.TWIG]: 1,
+          [ResourceType.RESIN]: 1,
+          [ResourceType.PEBBLE]: 1,
+        },
+      },
+    },
+  });
+
   let gameStateSelectCardsFromMeadow = gameStateImpl.clone();
   gameStateSelectCardsFromMeadow.locationsMap[
     LocationName.BASIC_TWO_CARDS_AND_ONE_VP
@@ -167,7 +207,6 @@ export default function TestGameInputPage(props: { game: GameJSON }) {
   gameStateSelectCardsFromMeadow = gameStateSelectCardsFromMeadow.next({
     inputType: GameInputType.PREPARE_FOR_SEASON,
   });
-  console.log(gameStateSelectCardsFromMeadow);
 
   let gameStatePaymentForCard = gameStateImpl.next({
     inputType: GameInputType.VISIT_DESTINATION_CARD,
@@ -322,6 +361,20 @@ export default function TestGameInputPage(props: { game: GameJSON }) {
       <hr />
       <GameInputBox
         gameId={"testGameId"}
+        gameState={gameStateSelectCards2.toJSON(true)}
+        gameInputs={gameStateSelectCards2.pendingGameInputs}
+        viewingPlayer={gameStateSelectCards2.players[0]}
+      />
+      <hr />
+      <GameInputBox
+        gameId={"testGameId"}
+        gameState={gameStateSelectCards3.toJSON(true)}
+        gameInputs={gameStateSelectCards3.pendingGameInputs}
+        viewingPlayer={gameStateSelectCards3.players[0]}
+      />
+      <hr />
+      <GameInputBox
+        gameId={"testGameId"}
         gameState={gameStatePaymentForCard.toJSON(true)}
         gameInputs={gameStatePaymentForCard.pendingGameInputs}
         viewingPlayer={gameStatePaymentForCard.players[0]}
@@ -332,6 +385,13 @@ export default function TestGameInputPage(props: { game: GameJSON }) {
         gameState={gameStateSelectCardsFromMeadow.toJSON(true)}
         gameInputs={gameStateSelectCardsFromMeadow.pendingGameInputs}
         viewingPlayer={gameStateSelectCardsFromMeadow.getActivePlayer()}
+      />
+      <hr />
+      <GameInputBox
+        gameId={"testGameId"}
+        gameState={gameStateGeneric.toJSON(true)}
+        gameInputs={gameStateGeneric.pendingGameInputs}
+        viewingPlayer={gameStateGeneric.getActivePlayer()}
       />
     </>
   );

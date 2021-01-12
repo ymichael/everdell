@@ -2120,9 +2120,9 @@ describe("Card", () => {
         player1 = gameState.getPlayer(player1.playerId);
         player2 = gameState.getPlayer(player2.playerId);
 
-        expect(player1.cardsInHand).to.eql([CardName.QUEEN]);
+        expect(player1.cardsInHand).to.eql([CardName.FARM]);
 
-        expect(player2.cardsInHand).to.eql([CardName.FARM]);
+        expect(player2.cardsInHand).to.eql([CardName.QUEEN]);
       });
     });
 

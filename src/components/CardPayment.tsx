@@ -139,16 +139,37 @@ const OptionToUseAssociatedCard: React.FC<{
 
 const CardToUseForm: React.FC<{
   name: string;
+  cardName: CardName;
   resetPaymentOptions: (state: "DEFAULT" | "COST" | "ZERO") => void;
   viewingPlayer: Player;
-}> = ({ name, resetPaymentOptions, viewingPlayer }) => {
+}> = ({ name, cardName, resetPaymentOptions, viewingPlayer }) => {
   const [field, meta, helpers] = useField(name);
-  const cardsToUse: (CardName | null)[] = [
+  const card = CardModel.fromName(cardName);
+  const cardsToUse: CardName[] = [
     CardName.QUEEN,
     CardName.INNKEEPER,
-    CardName.INN,
     CardName.CRANE,
-  ].filter((cardToUse) => !cardToUse || viewingPlayer.hasCardInCity(cardToUse));
+  ].filter((cardToUse) => {
+    if (!viewingPlayer.hasCardInCity(cardToUse)) {
+      return false;
+    }
+    if (cardToUse === CardName.INNKEEPER) {
+      if (!card.isCritter) {
+        return false;
+      }
+    }
+    if (cardToUse === CardName.QUEEN) {
+      if (card.baseVP > 3) {
+        return false;
+      }
+    }
+    if (cardToUse === CardName.CRANE) {
+      if (!card.isConstruction) {
+        return false;
+      }
+    }
+    return true;
+  });
   return cardsToUse.length !== 0 ? (
     <>
       <p>Card to use:</p>
@@ -219,11 +240,14 @@ const CardPayment: React.FC<{
         />
       )}
       <ResourcesForm name={`${name}.resources`} />
-      <CardToUseForm
-        name={`${name}.cardToUse`}
-        viewingPlayer={viewingPlayer}
-        resetPaymentOptions={resetPaymentOptions}
-      />
+      {clientOptions.card && (
+        <CardToUseForm
+          name={`${name}.cardToUse`}
+          cardName={clientOptions.card}
+          viewingPlayer={viewingPlayer}
+          resetPaymentOptions={resetPaymentOptions}
+        />
+      )}
       <CardToDungeonForm
         name={`${name}.cardToDungeon`}
         viewingPlayer={viewingPlayer}

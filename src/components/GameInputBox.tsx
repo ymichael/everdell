@@ -1,6 +1,8 @@
 import * as React from "react";
 import { Form, Field } from "formik";
 import CardPayment from "./CardPayment";
+import isEqual from "lodash/isEqual";
+import omit from "lodash/omit";
 
 import styles from "../styles/GameInputBox.module.css";
 import { GameState } from "../model/gameState";
@@ -12,12 +14,14 @@ import {
 } from "../model/types";
 import { GameStateJSON } from "../model/jsonTypes";
 import { Player } from "../model/player";
+import { inputContextPrefix } from "../model/gameText";
+
 import { GameBlock } from "./common";
 
-import { GameInputBoxContainer } from "./gameInputCommon";
+import { GameInputBoxContainer, renderGameInputLabel } from "./gameInputCommon";
 import GameInputDiscardCards from "./GameInputDiscardCards";
-import GameInputSelectResources from "./GameInputSelectResources";
 import GameInputSelectPlayer from "./GameInputSelectPlayer";
+import GameInputSelectResources from "./GameInputSelectResources";
 import GameInputSelectPlayedCards from "./GameInputSelectPlayedCards";
 import GameInputSelectCards from "./GameInputSelectCards";
 import GameInputPlaceWorkerSelector from "./GameInputPlaceWorkerSelector";
@@ -42,12 +46,12 @@ const GameInputBoxText: React.FC<{
 };
 
 const gameInputSortOrder: Partial<Record<GameInputType, number>> = {
-  [GameInputType.CLAIM_EVENT]: 0,
-  [GameInputType.PLAY_CARD]: 1,
-  [GameInputType.PLACE_WORKER]: 2,
-  [GameInputType.VISIT_DESTINATION_CARD]: 3,
-  [GameInputType.PREPARE_FOR_SEASON]: 4,
-  [GameInputType.GAME_END]: 5,
+  [GameInputType.CLAIM_EVENT]: 1,
+  [GameInputType.PLAY_CARD]: 2,
+  [GameInputType.PLACE_WORKER]: 3,
+  [GameInputType.VISIT_DESTINATION_CARD]: 4,
+  [GameInputType.PREPARE_FOR_SEASON]: 5,
+  [GameInputType.GAME_END]: 6,
 };
 
 const GameInputBoxInner = ({
@@ -79,9 +83,9 @@ const GameInputBoxInner = ({
           events={gameState.getClaimableEvents()}
         />
       ) : gameInput.inputType === GameInputType.PREPARE_FOR_SEASON ? (
-        <p>Prepare for season</p>
+        <></>
       ) : gameInput.inputType === GameInputType.GAME_END ? (
-        <p>Game End</p>
+        <></>
       ) : gameInput.inputType === GameInputType.DISCARD_CARDS ? (
         <GameInputDiscardCards
           name={"gameInput.clientOptions.cardsToDiscard"}
@@ -201,7 +205,6 @@ const GameInputBox: React.FC<{
       devDebug={devDebug}
       viewingPlayer={viewingPlayer}
       initialValues={{
-        selectedInputType: gameInputs[0]?.inputType,
         gameInput: gameInputs[0],
       }}
     >
@@ -210,47 +213,39 @@ const GameInputBox: React.FC<{
           <Form>
             {false && <pre>{JSON.stringify(values, null, 2)}</pre>}
             <div role="group">
-              {gameInputs.length > 1 ? (
-                gameInputs.map((gameInput, idx) => {
-                  return (
-                    <div
-                      key={`${gameInput.inputType}-${idx}`}
-                      className={styles.input_type_radio}
-                    >
-                      <label>
-                        <Field
-                          type="radio"
-                          name="selectedInputType"
-                          value={gameInput.inputType}
-                          onChange={() => {
-                            setFieldValue(
-                              "selectedInputType",
-                              gameInput.inputType
-                            );
-                            setFieldValue("gameInput", gameInput);
-                          }}
+              {gameInputs.map((gameInput, idx) => {
+                const isSelected = isEqual(
+                  omit(values.gameInput, ["clientOptions"]),
+                  omit(gameInput, ["clientOptions"])
+                );
+                return (
+                  <div key={idx} className={styles.input_type_radio}>
+                    <label>
+                      <input
+                        type="radio"
+                        name="selectedInputType"
+                        value={idx}
+                        checked={isSelected}
+                        onChange={() => {
+                          setFieldValue("gameInput", gameInput);
+                        }}
+                      />
+                      <span className={styles.input_type_radio_span}>
+                        {renderGameInputLabel(gameInput)}
+                      </span>
+                    </label>
+                    {isSelected && (
+                      <div className={styles.input_type_form_nested}>
+                        <GameInputBoxInner
+                          gameInput={gameInput}
+                          gameState={gameStateImpl}
+                          viewingPlayer={viewingPlayer}
                         />
-                        {gameInput.inputType}
-                      </label>
-                      {values.selectedInputType === gameInput.inputType && (
-                        <div className={styles.input_type_form_nested}>
-                          <GameInputBoxInner
-                            gameInput={gameInput}
-                            gameState={gameStateImpl}
-                            viewingPlayer={viewingPlayer}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  );
-                })
-              ) : (
-                <GameInputBoxInner
-                  gameInput={gameInputs[0]}
-                  gameState={gameStateImpl}
-                  viewingPlayer={viewingPlayer}
-                />
-              )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
             <button
               className={styles.button}

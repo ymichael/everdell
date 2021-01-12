@@ -19,7 +19,6 @@ const GameInputClaimEventSelector: React.FC<{
   const [field, meta, helpers] = useField(name);
   return (
     <div role="group">
-      <p>Claim an Event:</p>
       <div className={styles.items}>
         {events.map((event, idx) => {
           const isSelected = meta.value === event;

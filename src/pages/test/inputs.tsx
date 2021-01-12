@@ -26,7 +26,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   });
   gameState.players.forEach((player, idx) => {
     player.nextSeason();
-    player.nextSeason();
 
     player.drawCards(gameState, idx);
     player.cardsInHand.push(CardName.RANGER);
@@ -56,7 +55,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     player.addToCity(CardName.MINE);
     player.addToCity(CardName.QUEEN);
     player.addToCity(CardName.LOOKOUT);
-    player.addToCity(CardName.CLOCK_TOWER);
 
     player.placeWorkerOnCard(
       gameState,
@@ -152,6 +150,24 @@ export default function TestGameInputPage(props: { game: GameJSON }) {
       },
     },
   });
+
+  let gameStateSelectCardsFromMeadow = gameStateImpl.clone();
+  gameStateSelectCardsFromMeadow.locationsMap[
+    LocationName.BASIC_TWO_CARDS_AND_ONE_VP
+  ] = [
+    gameStateSelectCardsFromMeadow.getActivePlayer().playerId,
+    gameStateSelectCardsFromMeadow.getActivePlayer().playerId,
+  ];
+  gameStateSelectCardsFromMeadow
+    .getActivePlayer()
+    .placeWorkerOnLocation(LocationName.BASIC_TWO_CARDS_AND_ONE_VP);
+  gameStateSelectCardsFromMeadow
+    .getActivePlayer()
+    .placeWorkerOnLocation(LocationName.BASIC_TWO_CARDS_AND_ONE_VP);
+  gameStateSelectCardsFromMeadow = gameStateSelectCardsFromMeadow.next({
+    inputType: GameInputType.PREPARE_FOR_SEASON,
+  });
+  console.log(gameStateSelectCardsFromMeadow);
 
   let gameStatePaymentForCard = gameStateImpl.next({
     inputType: GameInputType.VISIT_DESTINATION_CARD,
@@ -309,6 +325,13 @@ export default function TestGameInputPage(props: { game: GameJSON }) {
         gameState={gameStatePaymentForCard.toJSON(true)}
         gameInputs={gameStatePaymentForCard.pendingGameInputs}
         viewingPlayer={gameStatePaymentForCard.players[0]}
+      />
+      <hr />
+      <GameInputBox
+        gameId={"testGameId"}
+        gameState={gameStateSelectCardsFromMeadow.toJSON(true)}
+        gameInputs={gameStateSelectCardsFromMeadow.pendingGameInputs}
+        viewingPlayer={gameStateSelectCardsFromMeadow.getActivePlayer()}
       />
     </>
   );

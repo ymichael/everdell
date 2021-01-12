@@ -14,6 +14,10 @@
   margin-top: 10px;
 }
 
+.input_type_radio_span {
+  margin-left: 5px;
+}
+
 .input_type_form_nested {
   margin: 20px;
 }

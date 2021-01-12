@@ -2,13 +2,21 @@ import * as React from "react";
 import { useContext } from "react";
 import { Formik, FormikProps } from "formik";
 
-import { GameInput, GameInputType } from "../model/types";
+import {
+  GameInput,
+  GameInputType,
+  GameInputMultiStep,
+  LocationName,
+  CardName,
+} from "../model/types";
 import { Player } from "../model/player";
-import { GameBlock } from "./common";
+import { inputContextPrefix } from "../model/gameText";
+
+import { GameBlock, Description } from "./common";
+import { assertUnreachable } from "../utils";
 import { GameUpdaterContext } from "./GameUpdater";
 
 type TValues = {
-  selectedInputType: GameInputType;
   gameInput: GameInput | null;
 };
 
@@ -61,4 +69,142 @@ export const GameInputBoxContainer: React.FC<{
       </Formik>
     </GameBlock>
   );
+};
+
+const renderMultiStepGameInputLabel = (
+  gameInput: GameInputMultiStep
+): React.ReactElement => {
+  switch (gameInput.inputType) {
+    case GameInputType.DISCARD_CARDS:
+      return (
+        <Description
+          textParts={[
+            ...inputContextPrefix(gameInput),
+            {
+              type: "text",
+              text: `Discard${gameInput.minCards === 0 ? " up to" : ""} ${
+                gameInput.maxCards
+              } `,
+            },
+            { type: "symbol", symbol: "CARD" },
+          ]}
+        />
+      );
+    case GameInputType.SELECT_PLAYER:
+      return (
+        <Description
+          textParts={[
+            ...inputContextPrefix(gameInput),
+            { type: "text", text: `Select Player` },
+          ]}
+        />
+      );
+    case GameInputType.SELECT_LOCATION:
+      return (
+        <Description
+          textParts={[
+            ...inputContextPrefix(gameInput),
+            { type: "text", text: `Select Location` },
+          ]}
+        />
+      );
+    case GameInputType.SELECT_RESOURCES:
+      return (
+        <Description
+          textParts={[
+            ...inputContextPrefix(gameInput),
+            { type: "text", text: `Select Resources` },
+          ]}
+        />
+      );
+    case GameInputType.SELECT_PAYMENT_FOR_CARD:
+      return (
+        <Description
+          textParts={[
+            ...inputContextPrefix(gameInput),
+            { type: "text", text: `Play ` },
+            { type: "entity", entityType: "card", card: gameInput.card },
+
+            {
+              type: "text",
+              text:
+                gameInput.locationContext ===
+                LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS
+                  ? " with 1 fewer resource"
+                  : gameInput.cardContext === CardName.INN
+                  ? " with 3 fewer resources"
+                  : "",
+            },
+          ]}
+        />
+      );
+    case GameInputType.SELECT_OPTION_GENERIC:
+      return (
+        <Description
+          textParts={[
+            ...inputContextPrefix(gameInput),
+            { type: "text", text: `Choose one:` },
+          ]}
+        />
+      );
+    case GameInputType.SELECT_WORKER_PLACEMENT:
+      return (
+        <Description
+          textParts={[
+            ...inputContextPrefix(gameInput),
+            {
+              type: "text",
+              text: `Select a Worker`,
+            },
+          ]}
+        />
+      );
+    case GameInputType.SELECT_PLAYED_CARDS:
+    case GameInputType.SELECT_CARDS:
+      return (
+        <Description
+          textParts={[
+            ...inputContextPrefix(gameInput),
+            {
+              type: "text",
+              text: `Select${gameInput.minToSelect === 0 ? " up to" : ""} ${
+                gameInput.maxToSelect
+              } `,
+            },
+            { type: "symbol", symbol: "CARD" },
+            {
+              type: "text",
+              text:
+                gameInput.prevInputType === GameInputType.PREPARE_FOR_SEASON
+                  ? " from the Meadow"
+                  : "",
+            },
+          ]}
+        />
+      );
+    default:
+      assertUnreachable(gameInput, gameInput);
+  }
+  return <></>;
+};
+
+export const renderGameInputLabel = (
+  gameInput: GameInput
+): React.ReactElement => {
+  switch (gameInput.inputType) {
+    case GameInputType.PLAY_CARD:
+      return <span>{"Play Card"}</span>;
+    case GameInputType.PLACE_WORKER:
+      return <span>{"Visit Location"}</span>;
+    case GameInputType.VISIT_DESTINATION_CARD:
+      return <span>{"Visit Destination Card"}</span>;
+    case GameInputType.CLAIM_EVENT:
+      return <span>{"Claim Event"}</span>;
+    case GameInputType.PREPARE_FOR_SEASON:
+      return <span>{"Prepare for Season"}</span>;
+    case GameInputType.GAME_END:
+      return <span>{"End Game"}</span>;
+    default:
+      return renderMultiStepGameInputLabel(gameInput);
+  }
 };

@@ -42,42 +42,39 @@ const GameInputPlayCard: React.FC<{
     });
   };
   return (
-    <div>
-      <div role="group">
-        <p>Choose a card to play:</p>
-        <div className={styles.items}>
-          {options.map(({ card: cardName, fromMeadow }, idx) => {
-            const isSelected =
-              meta.value &&
-              meta.value.card === cardName &&
-              meta.value.fromMeadow === fromMeadow &&
-              meta.value._idx === idx;
-            return (
-              <div key={idx} className={styles.clickable}>
-                <div
-                  key={idx}
-                  onClick={() => {
-                    resetPaymentOptions(cardName, true, {
-                      _idx: idx,
-                      fromMeadow,
-                    });
-                  }}
+    <div role="group">
+      <div className={styles.items}>
+        {options.map(({ card: cardName, fromMeadow }, idx) => {
+          const isSelected =
+            meta.value &&
+            meta.value.card === cardName &&
+            meta.value.fromMeadow === fromMeadow &&
+            meta.value._idx === idx;
+          return (
+            <div key={idx} className={styles.clickable}>
+              <div
+                key={idx}
+                onClick={() => {
+                  resetPaymentOptions(cardName, true, {
+                    _idx: idx,
+                    fromMeadow,
+                  });
+                }}
+              >
+                <ItemWrapper
+                  isHighlighted={isSelected}
+                  footerChildren={
+                    <div className={styles.item_footer_text}>
+                      {fromMeadow ? "(Meadow)" : " "}
+                    </div>
+                  }
                 >
-                  <ItemWrapper
-                    isHighlighted={isSelected}
-                    footerChildren={
-                      <div className={styles.item_footer_text}>
-                        {fromMeadow ? "(Meadow)" : " "}
-                      </div>
-                    }
-                  >
-                    <Card name={cardName} />
-                  </ItemWrapper>
-                </div>
+                  <Card name={cardName} />
+                </ItemWrapper>
               </div>
-            );
-          })}
-        </div>
+            </div>
+          );
+        })}
       </div>
       {meta.value?.card && (
         <CardPayment

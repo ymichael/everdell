@@ -21,31 +21,28 @@ const GameInputVisitDestinationCard: React.FC<{
 }> = ({ name, gameState, destinations = [], viewingPlayer }) => {
   const [field, meta, helpers] = useField(name);
   return (
-    <div>
-      <div role="group">
-        <p>Select a card to visit:</p>
-        <div className={styles.items}>
-          {destinations.map((playedCard, idx) => {
-            const isSelected = isEqual(meta.value, playedCard);
-            return (
-              <ItemWrapper key={idx} isHighlighted={isSelected}>
-                <div
-                  className={styles.clickable}
-                  key={idx}
-                  onClick={() => {
-                    helpers.setValue(playedCard);
-                  }}
-                >
-                  <PlayedCard
-                    playedCard={playedCard}
-                    cardOwner={gameState.getPlayer(playedCard.cardOwnerId)}
-                    viewerId={viewingPlayer.playerId}
-                  />
-                </div>
-              </ItemWrapper>
-            );
-          })}
-        </div>
+    <div role="group">
+      <div className={styles.items}>
+        {destinations.map((playedCard, idx) => {
+          const isSelected = isEqual(meta.value, playedCard);
+          return (
+            <ItemWrapper key={idx} isHighlighted={isSelected}>
+              <div
+                className={styles.clickable}
+                key={idx}
+                onClick={() => {
+                  helpers.setValue(playedCard);
+                }}
+              >
+                <PlayedCard
+                  playedCard={playedCard}
+                  cardOwner={gameState.getPlayer(playedCard.cardOwnerId)}
+                  viewerId={viewingPlayer.playerId}
+                />
+              </div>
+            </ItemWrapper>
+          );
+        })}
       </div>
     </div>
   );

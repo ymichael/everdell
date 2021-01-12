@@ -19,27 +19,24 @@ const GameInputPlaceWorkerSelector: React.FC<{
 }> = ({ name, locations = [], viewingPlayer }) => {
   const [field, meta, helpers] = useField(name);
   return (
-    <div>
-      <div role="group">
-        <p>Choose a location:</p>
-        <div className={styles.items}>
-          {locations.map((location, idx) => {
-            const isSelected = meta.value === location;
-            return (
-              <div
-                key={idx}
-                className={styles.clickable}
-                onClick={() => {
-                  helpers.setValue(location);
-                }}
-              >
-                <ItemWrapper isHighlighted={isSelected}>
-                  <Location name={location} />
-                </ItemWrapper>
-              </div>
-            );
-          })}
-        </div>
+    <div role="group">
+      <div className={styles.items}>
+        {locations.map((location, idx) => {
+          const isSelected = meta.value === location;
+          return (
+            <div
+              key={idx}
+              className={styles.clickable}
+              onClick={() => {
+                helpers.setValue(location);
+              }}
+            >
+              <ItemWrapper isHighlighted={isSelected}>
+                <Location name={location} />
+              </ItemWrapper>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

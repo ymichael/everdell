@@ -27,48 +27,43 @@ const GameInputSelectWorkerPlacement: React.FC<{
   const locationOptions = options.filter((x) => x.location);
   const playedCardOptions = options.filter((x) => x.playedCard);
   return (
-    <>
-      <p>Choose a worker</p>
-      <>
-        <div className={styles.items}>
-          {eventOptions
-            .concat(locationOptions)
-            .concat(playedCardOptions)
-            .map((workerOption: any, idx: number) => {
-              const isSelected = isEqual(meta.value, workerOption);
-              return (
-                <div
-                  key={idx}
-                  className={styles.clickable}
-                  onClick={() => {
-                    if (!isSelected) {
-                      helpers.setValue(workerOption);
-                    } else {
-                      helpers.setValue(null);
-                    }
-                  }}
-                >
-                  <ItemWrapper isHighlighted={isSelected}>
-                    {workerOption.event ? (
-                      <Event name={workerOption.event} />
-                    ) : workerOption.location ? (
-                      <Location name={workerOption.location} />
-                    ) : workerOption.playedCard ? (
-                      <PlayedCard
-                        playedCard={workerOption.playedCard}
-                        cardOwner={gameState.getPlayer(
-                          workerOption.playedCard.cardOwnerId
-                        )}
-                        viewerId={viewingPlayer.playerId}
-                      />
-                    ) : null}
-                  </ItemWrapper>
-                </div>
-              );
-            })}
-        </div>
-      </>
-    </>
+    <div className={styles.items}>
+      {eventOptions
+        .concat(locationOptions)
+        .concat(playedCardOptions)
+        .map((workerOption: any, idx: number) => {
+          const isSelected = isEqual(meta.value, workerOption);
+          return (
+            <div
+              key={idx}
+              className={styles.clickable}
+              onClick={() => {
+                if (!isSelected) {
+                  helpers.setValue(workerOption);
+                } else {
+                  helpers.setValue(null);
+                }
+              }}
+            >
+              <ItemWrapper isHighlighted={isSelected}>
+                {workerOption.event ? (
+                  <Event name={workerOption.event} />
+                ) : workerOption.location ? (
+                  <Location name={workerOption.location} />
+                ) : workerOption.playedCard ? (
+                  <PlayedCard
+                    playedCard={workerOption.playedCard}
+                    cardOwner={gameState.getPlayer(
+                      workerOption.playedCard.cardOwnerId
+                    )}
+                    viewerId={viewingPlayer.playerId}
+                  />
+                ) : null}
+              </ItemWrapper>
+            </div>
+          );
+        })}
+    </div>
   );
 };
 

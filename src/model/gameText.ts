@@ -2,13 +2,17 @@ import {
   GameLogEntry,
   GameText,
   TextPart,
+  EventName,
+  LocationName,
   TextPartEntity,
   CardName,
   ResourceType,
   CardType,
+  GameInputType,
   IGameTextEntity,
   WorkerPlacementInfo,
   ProductionResourceMap,
+  GameInputMultiStep,
 } from "./types";
 import flatten from "lodash/flatten";
 import { assertUnreachable } from "../utils";
@@ -166,4 +170,33 @@ export function workerPlacementToGameText(
   } else {
     assertUnreachable(workerPlacementInfo, JSON.stringify(workerPlacementInfo));
   }
+}
+
+export function inputContextPrefix(gameInput: GameInputMultiStep): GameText {
+  if (gameInput.cardContext) {
+    return [
+      { type: "entity", entityType: "card", card: gameInput.cardContext },
+      { type: "text", text: ": " },
+    ];
+  }
+  if (gameInput.locationContext) {
+    return [
+      {
+        type: "entity",
+        entityType: "location",
+        location: gameInput.locationContext,
+      },
+      { type: "text", text: ": " },
+    ];
+  }
+  if (gameInput.eventContext) {
+    return [
+      { type: "entity", entityType: "event", event: gameInput.eventContext },
+      { type: "text", text: ": " },
+    ];
+  }
+  if (gameInput.prevInputType === GameInputType.PREPARE_FOR_SEASON) {
+    return [{ type: "text", text: "Prepare for Season: " }];
+  }
+  return [];
 }

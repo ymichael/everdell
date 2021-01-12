@@ -20,44 +20,41 @@ const GameInputSelectPlayedCards: React.FC<{
   const [field, meta, helpers] = useField(name);
   const selectedCardIdx = useRef<any>({});
   return (
-    <>
-      <p>Select {gameInput.maxToSelect} cards</p>
-      <div className={styles.items}>
-        {gameInput.cardOptions.map((cardInfo, idx) => {
-          const isSelected = !!selectedCardIdx.current[idx];
-          return (
-            <div
-              className={styles.clickable}
-              key={idx}
-              onClick={() => {
-                if (isSelected) {
-                  const newValue = [...meta.value];
-                  newValue.splice(newValue.indexOf(cardInfo), 1);
-                  helpers.setValue(newValue);
-                  selectedCardIdx.current[idx] = false;
+    <div className={styles.items}>
+      {gameInput.cardOptions.map((cardInfo, idx) => {
+        const isSelected = !!selectedCardIdx.current[idx];
+        return (
+          <div
+            className={styles.clickable}
+            key={idx}
+            onClick={() => {
+              if (isSelected) {
+                const newValue = [...meta.value];
+                newValue.splice(newValue.indexOf(cardInfo), 1);
+                helpers.setValue(newValue);
+                selectedCardIdx.current[idx] = false;
+              } else {
+                if (gameInput.maxToSelect === 1) {
+                  helpers.setValue([cardInfo]);
+                  selectedCardIdx.current = {};
                 } else {
-                  if (gameInput.maxToSelect === 1) {
-                    helpers.setValue([cardInfo]);
-                    selectedCardIdx.current = {};
-                  } else {
-                    helpers.setValue(meta.value.concat([cardInfo]));
-                  }
-                  selectedCardIdx.current[idx] = true;
+                  helpers.setValue(meta.value.concat([cardInfo]));
                 }
-              }}
-            >
-              <ItemWrapper isHighlighted={isSelected}>
-                <PlayedCard
-                  playedCard={cardInfo}
-                  viewerId={viewingPlayer.playerId}
-                  cardOwner={gameState.getPlayer(cardInfo.cardOwnerId)}
-                />
-              </ItemWrapper>
-            </div>
-          );
-        })}
-      </div>
-    </>
+                selectedCardIdx.current[idx] = true;
+              }
+            }}
+          >
+            <ItemWrapper isHighlighted={isSelected}>
+              <PlayedCard
+                playedCard={cardInfo}
+                viewerId={viewingPlayer.playerId}
+                cardOwner={gameState.getPlayer(cardInfo.cardOwnerId)}
+              />
+            </ItemWrapper>
+          </div>
+        );
+      })}
+    </div>
   );
 };
 

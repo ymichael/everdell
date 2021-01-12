@@ -471,7 +471,9 @@ export class GameState {
 
   handlePrepareForSeason(gameInput: GameInputPrepareForSeason): void {
     const player = this.getActivePlayer();
-
+    if (player.numAvailableWorkers !== 0) {
+      throw new Error("Still have available workers");
+    }
     if (player.playerStatus !== PlayerStatus.DURING_SEASON) {
       throw new Error(`Unexpected playerStatus: ${player.playerStatus}`);
     }

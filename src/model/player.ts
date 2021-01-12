@@ -272,41 +272,47 @@ export class Player implements IGameTextEntity {
     return Math.min(numHusbands, numWifes);
   }
 
-  getPoints(gameState: GameState): number {
+  getPointsFromCards(gameState: GameState): number {
     let points = 0;
-
-    // Points from cards
     this.forEachPlayedCard(({ cardName, resources = {} }) => {
       const card = Card.fromName(cardName);
       points += card.getPoints(gameState, this.playerId);
       points += resources[ResourceType.VP] || 0;
     });
+    points += 3 * this.getNumHusbandWifePairs();
+    return points;
+  }
 
-    // Points from events
+  getPointsFromEvents(gameState: GameState): number {
+    let points = 0;
     Object.keys(this.claimedEvents).forEach((eventName) => {
       const event = Event.fromName(eventName as EventName);
       points += event.getPoints(gameState, this.playerId);
-
       const eventInfo = this.claimedEvents[eventName as EventName];
-
       if (eventInfo && eventInfo.storedResources) {
         points += eventInfo.storedResources[ResourceType.VP] || 0;
       }
     });
+    return points;
+  }
 
-    // Locations (eg. journey)
+  getPointsFromJourney(gameState: GameState): number {
+    let points = 0;
     this.placedWorkers.forEach((placeWorker) => {
       if (placeWorker.location) {
         const location = Location.fromName(placeWorker.location);
         points += location.getPoints(gameState, this.playerId);
       }
     });
+    return points;
+  }
 
+  getPoints(gameState: GameState): number {
+    let points = 0;
+    points += this.getPointsFromCards(gameState);
+    points += this.getPointsFromEvents(gameState);
+    points += this.getPointsFromJourney(gameState);
     points += this.getNumResourcesByType(ResourceType.VP);
-
-    // For each husband/wife pair
-    points += 3 * this.getNumHusbandWifePairs();
-
     return points;
   }
 

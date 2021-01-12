@@ -4,6 +4,7 @@ import { unstable_batchedUpdates } from "react-dom";
 
 import { GameBoard, Locations, Events } from "./gameBoard";
 import Players from "./Players";
+import GamePointsBreakdown from "./GamePointsBreakdown";
 import ViewerUI from "./ViewerUI";
 import GameInputBox from "./GameInputBox";
 import GameLog from "./GameLog";
@@ -60,6 +61,12 @@ const Game: React.FC<{
           viewingPlayer={viewingPlayerImpl}
         />
         <GameLog logs={gameState.gameLog} />
+        {gameStateImpl.isGameOver() && (
+          <GamePointsBreakdown
+            gameState={gameStateImpl}
+            viewingPlayer={viewingPlayerImpl}
+          />
+        )}
         <GameInputBox
           key={gameState.gameStateId}
           gameId={gameId}

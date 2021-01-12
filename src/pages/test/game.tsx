@@ -44,7 +44,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     // City
     player.addToCity(CardName.UNIVERSITY);
     player.addToCity(CardName.DUNGEON);
-    player.addToCity(CardName.WANDERER);
+    player.addToCity(CardName.EVERTREE);
     player.addToCity(CardName.HUSBAND);
     player.addToCity(CardName.RESIN_REFINERY);
     player.addToCity(CardName.INN);

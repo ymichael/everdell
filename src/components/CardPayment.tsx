@@ -11,7 +11,7 @@ import {
   GameInputPlayCard,
   CardPaymentOptions,
 } from "../model/types";
-import { ResourceTypeIcon } from "./common";
+import { ResourceTypeIcon, Description } from "./common";
 
 import styles from "../styles/CardPayment.module.css";
 
@@ -98,16 +98,18 @@ const OptionToUseAssociatedCard: React.FC<{
 }> = ({ cardName, name, resetPaymentOptions, viewingPlayer }) => {
   const [field, meta, helpers] = useField(name);
   const card = CardModel.fromName(cardName);
-  if (
-    !(
-      card.isCritter &&
-      ((card.associatedCard &&
-        viewingPlayer.hasUnusedByCritterConstruction(card.associatedCard)) ||
-        viewingPlayer.hasUnusedByCritterConstruction(CardName.EVERTREE))
-    )
-  ) {
+  const hasUnusedAssociatedCard =
+    card.associatedCard &&
+    viewingPlayer.hasUnusedByCritterConstruction(card.associatedCard);
+  const hasUnusedEvertree = viewingPlayer.hasUnusedByCritterConstruction(
+    CardName.EVERTREE
+  );
+  const canUseAssociatedCard =
+    card.isCritter && (hasUnusedAssociatedCard || hasUnusedEvertree);
+  if (!canUseAssociatedCard) {
     return <></>;
   }
+
   const isChecked = !!meta.value;
   return (
     <div className={styles.associated_card}>
@@ -120,7 +122,16 @@ const OptionToUseAssociatedCard: React.FC<{
             helpers.setValue(!isChecked);
           }}
         />
-        Use {card.associatedCard} to play {card.name}
+        <Description
+          textParts={[
+            { type: "text", text: "Use " },
+            hasUnusedAssociatedCard
+              ? CardModel.fromName(card.associatedCard!).getGameTextPart()
+              : CardModel.fromName(CardName.EVERTREE).getGameTextPart(),
+            { type: "text", text: " to play " },
+            CardModel.fromName(card.name).getGameTextPart(),
+          ]}
+        />
       </label>
     </div>
   );

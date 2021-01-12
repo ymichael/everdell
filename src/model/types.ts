@@ -392,7 +392,7 @@ export enum CardName {
   CRANE = "Crane",
   DOCTOR = "Doctor",
   DUNGEON = "Dungeon",
-  EVERTREE = "EverTree",
+  EVERTREE = "Evertree",
   FAIRGROUNDS = "Fairgrounds",
   FARM = "Farm",
   FOOL = "Fool",

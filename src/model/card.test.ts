@@ -1425,7 +1425,10 @@ describe("Card", () => {
         player.gainResources(card.baseCost);
         player.cardsInHand.push(card.name);
 
-        gameState = gameState.next(playCardInput(card.name));
+        gameState = gameState.next(
+          playCardInput(card.name),
+          false /* autoAdvance */
+        );
 
         expect(() => {
           gameState.next({
@@ -1454,7 +1457,10 @@ describe("Card", () => {
         player.gainResources(card.baseCost);
         player.cardsInHand.push(card.name);
 
-        gameState = gameState.next(playCardInput(card.name));
+        gameState = gameState.next(
+          playCardInput(card.name),
+          false /* autoAdvance */
+        );
 
         expect(() => {
           gameState.next({

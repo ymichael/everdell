@@ -91,7 +91,7 @@ export const multiStepGameInputTest = (
     // sure we don't rely on references to objects.
     gameInput = cloneDeep(gameInput);
 
-    currGameState = currGameState.next(gameInput);
+    currGameState = currGameState.next(gameInput, false /* autoAdvance */);
     if (!isLastInput) {
       expect(
         currGameState.pendingGameInputs.map((x) => omit(x, ["clientOptions"]))

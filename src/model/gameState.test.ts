@@ -764,9 +764,13 @@ describe("GameState", () => {
       intermediateGameState = intermediateGameState.next(clockTowerInput);
       intermediateGameState = intermediateGameState.next(husbandInput);
       intermediateGameState = intermediateGameState.next(chipSweepInput);
-      intermediateGameState = intermediateGameState.next(teacherInput);
       intermediateGameState = intermediateGameState.next(
-        teacherSelectPlayerInput
+        teacherInput,
+        false /* autoAdvance */
+      );
+      intermediateGameState = intermediateGameState.next(
+        teacherSelectPlayerInput,
+        false /* autoAdvance */
       );
 
       player = intermediateGameState.getPlayer(player.playerId);

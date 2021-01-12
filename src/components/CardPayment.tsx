@@ -173,7 +173,7 @@ const CardToUseForm: React.FC<{
   return cardsToUse.length !== 0 ? (
     <>
       <p>Card to use:</p>
-      {cardsToUse.concat([null]).map((cardToUse, idx) => {
+      {[...cardsToUse, null].map((cardToUse, idx) => {
         return (
           <label key={idx}>
             <Field

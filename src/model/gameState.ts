@@ -538,7 +538,7 @@ export class GameState {
     this.addGameLog([player, ` took the game end action.`]);
   }
 
-  next(gameInput: GameInput): GameState {
+  next(gameInput: GameInput, autoAdvance: boolean = true): GameState {
     const nextGameState = this.clone();
     if (nextGameState.pendingGameInputs.length !== 0) {
       nextGameState.removeMultiStepGameInput(gameInput as any);
@@ -594,6 +594,23 @@ export class GameState {
 
     nextGameState.handleGameOver();
 
+    if (autoAdvance) {
+      if (nextGameState.pendingGameInputs.length === 1) {
+        const pendingInput = nextGameState.pendingGameInputs[0];
+        if (
+          pendingInput.inputType === GameInputType.SELECT_PLAYER &&
+          pendingInput.playerOptions.length === 1 &&
+          pendingInput.mustSelectOne
+        ) {
+          return nextGameState.next({
+            ...pendingInput,
+            clientOptions: {
+              selectedPlayer: pendingInput.playerOptions[0],
+            },
+          });
+        }
+      }
+    }
     return nextGameState;
   }
 

@@ -2,6 +2,7 @@ import * as React from "react";
 import { useRef } from "react";
 import { useField } from "formik";
 import isEqual from "lodash/isEqual";
+import uniqBy from "lodash/uniqBy";
 
 import styles from "../styles/gameBoard.module.css";
 
@@ -28,8 +29,8 @@ const GameInputSelectWorkerPlacement: React.FC<{
   const playedCardOptions = options.filter((x) => x.playedCard);
   return (
     <div className={styles.items}>
-      {eventOptions
-        .concat(locationOptions)
+      {uniqBy(eventOptions, (x) => x.event)
+        .concat(uniqBy(locationOptions, (x) => x.location))
         .concat(playedCardOptions)
         .map((workerOption: any, idx: number) => {
           const isSelected = isEqual(meta.value, workerOption);

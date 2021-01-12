@@ -1,13 +1,15 @@
 import * as React from "react";
+import { Field } from "formik";
+import isEqual from "lodash/isEqual";
 
 import { GameInputSelectOptionGeneric as TGameInputSelectOptionGeneric } from "../model/types";
 import { Player } from "../model/player";
 
-import { Field } from "formik";
 import styles from "../styles/gameBoard.module.css";
 import { GameInputType, GameInput } from "../model/types";
+import { toGameText } from "../model/gameText";
 
-import isEqual from "lodash/isEqual";
+import { Description } from "./common";
 
 const GameInputSelectOptionGeneric: React.FC<{
   name: string;
@@ -22,7 +24,7 @@ const GameInputSelectOptionGeneric: React.FC<{
             return (
               <label key={idx} className={styles.radio_item}>
                 <Field type="radio" name={name} value={option} />
-                {option}
+                <Description textParts={toGameText(option)} />
               </label>
             );
           })}

@@ -2453,7 +2453,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         cardContext: CardName.STOREHOUSE,
         playedCardContext: playedCard,
         label: "Choose resource(s) to add",
-        options: ["3 Twigs", "2 Resin", "1 Pebble", "2 Berries"],
+        options: ["3 TWIG", "2 RESIN", "1 PEBBLE", "2 BERRY"],
         clientOptions: {
           selectedOption: null,
         },
@@ -2474,25 +2474,25 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           throw new Error("Cannot find played card");
         }
         const selectedOption = gameInput.clientOptions.selectedOption;
-        if (selectedOption === "3 Twigs") {
+        if (selectedOption === "3 TWIG") {
           origPlayedCard.resources![ResourceType.TWIG]! += 3;
           gameState.addGameLogFromCard(CardName.STOREHOUSE, [
             player,
             " added 3 TWIG.",
           ]);
-        } else if (selectedOption === "2 Resin") {
+        } else if (selectedOption === "2 RESIN") {
           origPlayedCard.resources![ResourceType.RESIN]! += 2;
           gameState.addGameLogFromCard(CardName.STOREHOUSE, [
             player,
             " added 2 RESIN.",
           ]);
-        } else if (selectedOption === "1 Pebble") {
+        } else if (selectedOption === "1 PEBBLE") {
           origPlayedCard.resources![ResourceType.PEBBLE]! += 1;
           gameState.addGameLogFromCard(CardName.STOREHOUSE, [
             player,
             " added 1 PEBBLE.",
           ]);
-        } else if (selectedOption === "2 Berries") {
+        } else if (selectedOption === "2 BERRY") {
           origPlayedCard.resources![ResourceType.BERRY]! += 2;
           gameState.addGameLogFromCard(CardName.STOREHOUSE, [
             player,

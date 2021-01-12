@@ -2904,9 +2904,9 @@ describe("Card", () => {
               usedForCritter: false,
             },
             label: "Choose resource(s) to add",
-            options: ["3 Twigs", "2 Resin", "1 Pebble", "2 Berries"],
+            options: ["3 TWIG", "2 RESIN", "1 PEBBLE", "2 BERRY"],
             clientOptions: {
-              selectedOption: "3 Twigs",
+              selectedOption: "3 TWIG",
             },
           },
         ]);
@@ -2955,9 +2955,9 @@ describe("Card", () => {
               usedForCritter: false,
             },
             label: "Choose resource(s) to add",
-            options: ["3 Twigs", "2 Resin", "1 Pebble", "2 Berries"],
+            options: ["3 TWIG", "2 RESIN", "1 PEBBLE", "2 BERRY"],
             clientOptions: {
-              selectedOption: "3 Twigs",
+              selectedOption: "3 TWIG",
             },
           },
         ]);

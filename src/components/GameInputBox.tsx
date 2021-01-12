@@ -209,6 +209,28 @@ const GameInputBox: React.FC<{
       }}
     >
       {({ values, setFieldValue, isSubmitting }) => {
+        const selectedGameInput = values.gameInput;
+
+        // For inputs that require selecting multiple things, update the button
+        // text to say how many have been selected.
+        let submitLabel = "Submit";
+        if (selectedGameInput) {
+          if (
+            selectedGameInput.inputType === GameInputType.SELECT_CARDS ||
+            selectedGameInput.inputType === GameInputType.SELECT_PLAYED_CARDS
+          ) {
+            const numSelected =
+              selectedGameInput.clientOptions.selectedCards.length;
+            submitLabel = `${numSelected} Selected`;
+          } else if (
+            selectedGameInput.inputType === GameInputType.DISCARD_CARDS
+          ) {
+            const numSelected =
+              selectedGameInput.clientOptions.cardsToDiscard.length;
+            submitLabel = `${numSelected} Selected`;
+          }
+        }
+
         return (
           <Form>
             {false && <pre>{JSON.stringify(values, null, 2)}</pre>}
@@ -252,7 +274,7 @@ const GameInputBox: React.FC<{
               disabled={isSubmitting}
               type="submit"
             >
-              Submit
+              {submitLabel}
             </button>
           </Form>
         );

@@ -55,9 +55,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     player.addToCity(CardName.RESIN_REFINERY);
     player.addToCity(CardName.INN);
     player.addToCity(CardName.FARM);
+    player.addToCity(CardName.WIFE);
     player.addToCity(CardName.MINE);
     player.addToCity(CardName.QUEEN);
     player.addToCity(CardName.LOOKOUT);
+    player.addToCity(CardName.CHIP_SWEEP);
+    player.addToCity(CardName.MINER_MOLE);
 
     player.placeWorkerOnCard(
       gameState,
@@ -228,6 +231,28 @@ export default function TestGameInputPage(props: { game: GameJSON }) {
     },
   });
 
+  let gameStateMultiplePending = gameStateImpl.clone();
+  gameStateMultiplePending.getActivePlayer().nextSeason();
+  gameStateMultiplePending.locationsMap[
+    LocationName.BASIC_TWO_CARDS_AND_ONE_VP
+  ] = [
+    gameStateMultiplePending.getActivePlayer().playerId,
+    gameStateMultiplePending.getActivePlayer().playerId,
+    gameStateMultiplePending.getActivePlayer().playerId,
+  ];
+  gameStateMultiplePending
+    .getActivePlayer()
+    .placeWorkerOnLocation(LocationName.BASIC_TWO_CARDS_AND_ONE_VP);
+  gameStateMultiplePending
+    .getActivePlayer()
+    .placeWorkerOnLocation(LocationName.BASIC_TWO_CARDS_AND_ONE_VP);
+  gameStateMultiplePending
+    .getActivePlayer()
+    .placeWorkerOnLocation(LocationName.BASIC_TWO_CARDS_AND_ONE_VP);
+  gameStateMultiplePending = gameStateMultiplePending.next({
+    inputType: GameInputType.PREPARE_FOR_SEASON,
+  });
+
   return (
     <>
       <GameInputBox
@@ -392,6 +417,13 @@ export default function TestGameInputPage(props: { game: GameJSON }) {
         gameState={gameStateGeneric.toJSON(true)}
         gameInputs={gameStateGeneric.pendingGameInputs}
         viewingPlayer={gameStateGeneric.getActivePlayer()}
+      />
+      <hr />
+      <GameInputBox
+        gameId={"testGameId"}
+        gameState={gameStateMultiplePending.toJSON(true)}
+        gameInputs={gameStateMultiplePending.pendingGameInputs}
+        viewingPlayer={gameStateMultiplePending.getActivePlayer()}
       />
     </>
   );

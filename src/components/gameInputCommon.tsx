@@ -131,9 +131,9 @@ const renderMultiStepGameInputLabel = (
               text:
                 gameInput.locationContext ===
                 LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS
-                  ? " with 1 fewer resource"
+                  ? " for 1 fewer resource"
                   : gameInput.cardContext === CardName.INN
-                  ? " with 3 fewer resources"
+                  ? " for 3 fewer resources"
                   : "",
             },
           ]}

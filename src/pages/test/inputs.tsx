@@ -194,6 +194,22 @@ export default function TestGameInputPage(props: { game: GameJSON }) {
     },
   });
 
+  let gameStateClocktower = gameStateImpl.clone();
+  gameStateClocktower.locationsMap[LocationName.BASIC_TWO_CARDS_AND_ONE_VP] = [
+    gameStateClocktower.getActivePlayer().playerId,
+    gameStateClocktower.getActivePlayer().playerId,
+  ];
+  gameStateClocktower.getActivePlayer().addToCity(CardName.CLOCK_TOWER);
+  gameStateClocktower
+    .getActivePlayer()
+    .placeWorkerOnLocation(LocationName.BASIC_TWO_CARDS_AND_ONE_VP);
+  gameStateClocktower
+    .getActivePlayer()
+    .placeWorkerOnLocation(LocationName.BASIC_TWO_CARDS_AND_ONE_VP);
+  gameStateClocktower = gameStateClocktower.next({
+    inputType: GameInputType.PREPARE_FOR_SEASON,
+  });
+
   let gameStateSelectCardsFromMeadow = gameStateImpl.clone();
   gameStateSelectCardsFromMeadow.locationsMap[
     LocationName.BASIC_TWO_CARDS_AND_ONE_VP
@@ -424,6 +440,13 @@ export default function TestGameInputPage(props: { game: GameJSON }) {
         gameState={gameStateMultiplePending.toJSON(true)}
         gameInputs={gameStateMultiplePending.pendingGameInputs}
         viewingPlayer={gameStateMultiplePending.getActivePlayer()}
+      />
+      <hr />
+      <GameInputBox
+        gameId={"testGameId"}
+        gameState={gameStateClocktower.toJSON(true)}
+        gameInputs={gameStateClocktower.pendingGameInputs}
+        viewingPlayer={gameStateClocktower.getActivePlayer()}
       />
     </>
   );

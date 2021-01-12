@@ -149,25 +149,42 @@ const renderMultiStepGameInputLabel = (
         />
       );
     case GameInputType.SELECT_WORKER_PLACEMENT:
-      if (gameInput.cardContext && gameInput.cardContext === CardName.RANGER) {
-        if (gameInput.prevInputType === GameInputType.PLAY_CARD) {
+      if (gameInput.cardContext) {
+        if (gameInput.cardContext === CardName.CLOCK_TOWER) {
           return (
             <Description
               textParts={[
                 ...inputContextPrefix(gameInput),
-                { type: "text", text: `Select a deployed worker to move` },
+                { type: "text", text: "You may pay 1 " },
+                { type: "symbol", symbol: "VP" },
+                {
+                  type: "text",
+                  text: " from here to activate 1 of the following locations",
+                },
               ]}
             />
           );
-        } else {
-          return (
-            <Description
-              textParts={[
-                ...inputContextPrefix(gameInput),
-                { type: "text", text: `Place your worker` },
-              ]}
-            />
-          );
+        }
+        if (gameInput.cardContext === CardName.RANGER) {
+          if (gameInput.prevInputType === GameInputType.PLAY_CARD) {
+            return (
+              <Description
+                textParts={[
+                  ...inputContextPrefix(gameInput),
+                  { type: "text", text: `Select a deployed worker to move` },
+                ]}
+              />
+            );
+          } else {
+            return (
+              <Description
+                textParts={[
+                  ...inputContextPrefix(gameInput),
+                  { type: "text", text: `Place your worker` },
+                ]}
+              />
+            );
+          }
         }
       }
       return (

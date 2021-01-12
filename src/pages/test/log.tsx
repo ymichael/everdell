@@ -125,8 +125,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
     },
   });
-  gameState = gameState.next({
-    inputType: GameInputType.SELECT_WORKER_PLACEMENT,
+  const recallWorkerInput = {
+    inputType: GameInputType.SELECT_WORKER_PLACEMENT as const,
     prevInputType: GameInputType.PLAY_CARD,
     options: [
       {
@@ -148,10 +148,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         location: LocationName.BASIC_TWO_CARDS_AND_ONE_VP,
       },
     },
-  });
+  };
+  gameState = gameState.next(recallWorkerInput);
   gameState = gameState.next({
     inputType: GameInputType.SELECT_WORKER_PLACEMENT,
     prevInputType: GameInputType.SELECT_WORKER_PLACEMENT,
+    prevInput: recallWorkerInput,
     cardContext: CardName.RANGER,
     mustSelectOne: true,
     options: [
@@ -191,7 +193,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       cardsToDiscard: gameState.getActivePlayer().cardsInHand.slice(0, 2),
     },
   });
-
+  gameState = gameState.next({
+    inputType: GameInputType.PLACE_WORKER,
+    clientOptions: {
+      location: LocationName.BASIC_TWO_CARDS_AND_ONE_VP,
+    },
+  });
   gameState = gameState.next({
     inputType: GameInputType.PREPARE_FOR_SEASON,
   });

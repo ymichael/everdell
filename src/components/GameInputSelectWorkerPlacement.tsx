@@ -10,8 +10,8 @@ import { Player } from "../model/player";
 import { GameState } from "../model/gameState";
 
 import { ItemWrapper } from "./common";
-import Event from "./Event";
-import Location from "./Location";
+import { EventInner as Event } from "./Event";
+import { LocationInner as Location } from "./Location";
 import { PlayedCard } from "./Card";
 
 const GameInputSelectWorkerPlacement: React.FC<{

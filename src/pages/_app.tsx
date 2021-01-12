@@ -18,6 +18,7 @@ export default function App<T>({
           href="https://fonts.googleapis.com/css2?family=Allura&display=swap"
           rel="stylesheet"
         />
+        <title>🐿 Everdell</title>
       </Head>
       <Component {...pageProps} />
     </>

@@ -53,7 +53,6 @@ export default function IndexPage() {
   return (
     <div className={styles.container}>
       <Head>
-        <title>Everdell</title>
         <style>
           {`html, body {
             background-color: #f1e7ad;

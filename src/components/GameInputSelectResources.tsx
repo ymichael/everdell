@@ -10,7 +10,13 @@ const GameInputSelectResources: React.FC<{
   gameInput: TGameInputSelectResources;
   viewingPlayer: Player;
 }> = ({ name, gameInput, viewingPlayer }) => {
-  return <ResourcesForm name={name} />;
+  return (
+    <ResourcesForm
+      name={name}
+      excludeResource={gameInput.excludeResource}
+      specificResource={gameInput.specificResource}
+    />
+  );
 };
 
 export default GameInputSelectResources;

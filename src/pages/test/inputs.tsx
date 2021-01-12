@@ -269,6 +269,39 @@ export default function TestGameInputPage(props: { game: GameJSON }) {
     inputType: GameInputType.PREPARE_FOR_SEASON,
   });
 
+  let gameStateCourthouse = gameStateImpl.clone();
+  gameStateCourthouse.getActivePlayer().addToCity(CardName.COURTHOUSE);
+  gameStateCourthouse.getActivePlayer().cardsInHand.push(CardName.FAIRGROUNDS);
+  gameStateCourthouse = gameStateCourthouse.next({
+    inputType: GameInputType.PLAY_CARD,
+    clientOptions: {
+      card: CardName.FAIRGROUNDS,
+      fromMeadow: false,
+      paymentOptions: {
+        resources: {
+          [ResourceType.TWIG]: 1,
+          [ResourceType.RESIN]: 2,
+          [ResourceType.PEBBLE]: 1,
+        },
+      },
+    },
+  });
+
+  let gameStateMonk = gameStateImpl.clone();
+  gameStateMonk.getActivePlayer().cardsInHand.push(CardName.MONK);
+  gameStateMonk = gameStateMonk.next({
+    inputType: GameInputType.PLAY_CARD,
+    clientOptions: {
+      card: CardName.MONK,
+      fromMeadow: false,
+      paymentOptions: {
+        resources: {
+          [ResourceType.BERRY]: 1,
+        },
+      },
+    },
+  });
+
   return (
     <>
       <GameInputBox
@@ -447,6 +480,20 @@ export default function TestGameInputPage(props: { game: GameJSON }) {
         gameState={gameStateClocktower.toJSON(true)}
         gameInputs={gameStateClocktower.pendingGameInputs}
         viewingPlayer={gameStateClocktower.getActivePlayer()}
+      />
+      <hr />
+      <GameInputBox
+        gameId={"testGameId"}
+        gameState={gameStateCourthouse.toJSON(true)}
+        gameInputs={gameStateCourthouse.pendingGameInputs}
+        viewingPlayer={gameStateCourthouse.getActivePlayer()}
+      />
+      <hr />
+      <GameInputBox
+        gameId={"testGameId"}
+        gameState={gameStateMonk.toJSON(true)}
+        gameInputs={gameStateMonk.pendingGameInputs}
+        viewingPlayer={gameStateMonk.getActivePlayer()}
       />
     </>
   );

@@ -47,26 +47,44 @@ const ResourceTypeValueInput: React.FC<{
 
 export const ResourcesForm: React.FC<{
   name: string;
-}> = ({ name }) => {
+  excludeResource?: ResourceType | null;
+  specificResource?: ResourceType | null;
+}> = ({ name, excludeResource = null, specificResource = null }) => {
   return (
     <>
       <div className={styles.resource_input_list}>
-        <ResourceTypeValueInput
-          name={`${name}.BERRY`}
-          resourceType={ResourceType.BERRY}
-        />
-        <ResourceTypeValueInput
-          name={`${name}.TWIG`}
-          resourceType={ResourceType.TWIG}
-        />
-        <ResourceTypeValueInput
-          name={`${name}.RESIN`}
-          resourceType={ResourceType.RESIN}
-        />
-        <ResourceTypeValueInput
-          name={`${name}.PEBBLE`}
-          resourceType={ResourceType.PEBBLE}
-        />
+        {[
+          ResourceType.BERRY,
+          ResourceType.TWIG,
+          ResourceType.RESIN,
+          ResourceType.PEBBLE,
+        ].map((resource) => {
+          if (specificResource) {
+            return specificResource === resource ? (
+              <ResourceTypeValueInput
+                key={resource}
+                name={`${name}.${resource}`}
+                resourceType={resource}
+              />
+            ) : null;
+          } else if (excludeResource) {
+            return excludeResource !== resource ? (
+              <ResourceTypeValueInput
+                key={resource}
+                name={`${name}.${resource}`}
+                resourceType={resource}
+              />
+            ) : null;
+          } else {
+            return (
+              <ResourceTypeValueInput
+                key={resource}
+                name={`${name}.${resource}`}
+                resourceType={resource}
+              />
+            );
+          }
+        })}
       </div>
     </>
   );

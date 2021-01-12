@@ -94,7 +94,7 @@ const OptionToUseAssociatedCard: React.FC<{
   name: string;
   cardName: CardName;
   viewingPlayer: Player;
-  resetPaymentOptions: (withCost: boolean) => void;
+  resetPaymentOptions: (state: "DEFAULT" | "COST" | "ZERO") => void;
 }> = ({ cardName, name, resetPaymentOptions, viewingPlayer }) => {
   const [field, meta, helpers] = useField(name);
   const card = CardModel.fromName(cardName);
@@ -116,7 +116,7 @@ const OptionToUseAssociatedCard: React.FC<{
           type={"checkbox"}
           checked={isChecked}
           onChange={() => {
-            resetPaymentOptions(isChecked);
+            resetPaymentOptions(isChecked ? "COST" : "DEFAULT");
             helpers.setValue(!isChecked);
           }}
         />
@@ -128,7 +128,7 @@ const OptionToUseAssociatedCard: React.FC<{
 
 const CardToUseForm: React.FC<{
   name: string;
-  resetPaymentOptions: (withCost: boolean) => void;
+  resetPaymentOptions: (state: "DEFAULT" | "COST" | "ZERO") => void;
   viewingPlayer: Player;
 }> = ({ name, resetPaymentOptions, viewingPlayer }) => {
   const [field, meta, helpers] = useField(name);
@@ -150,7 +150,7 @@ const CardToUseForm: React.FC<{
               value={cardToUse || "NONE"}
               checked={cardToUse === meta.value}
               onChange={() => {
-                resetPaymentOptions(!cardToUse);
+                resetPaymentOptions(!cardToUse ? "DEFAULT" : "ZERO");
                 helpers.setValue(cardToUse);
               }}
             />
@@ -164,7 +164,7 @@ const CardToUseForm: React.FC<{
 
 const CardToDungeonForm: React.FC<{
   name: string;
-  resetPaymentOptions: (withCost: boolean) => void;
+  resetPaymentOptions: (state: "DEFAULT" | "COST" | "ZERO") => void;
   viewingPlayer: Player;
 }> = ({ name, resetPaymentOptions, viewingPlayer }) => {
   const [field, meta, helpers] = useField(name);
@@ -174,8 +174,8 @@ const CardToDungeonForm: React.FC<{
       <select
         value={meta.value || "None"}
         onChange={(e) => {
-          resetPaymentOptions(!e.target.value);
-          helpers.setValue(e.target.value || null);
+          resetPaymentOptions(e.target.value === "None" ? "DEFAULT" : "ZERO");
+          helpers.setValue(e.target.value !== "None" ? e.target.value : null);
         }}
       >
         <option value={"None"}>None</option>
@@ -193,7 +193,7 @@ const CardToDungeonForm: React.FC<{
 
 const CardPayment: React.FC<{
   name: string;
-  resetPaymentOptions: (withCost: boolean) => void;
+  resetPaymentOptions: (state: "DEFAULT" | "COST" | "ZERO") => void;
   clientOptions: GameInputPlayCard["clientOptions"];
   viewingPlayer: Player;
 }> = ({ clientOptions, name, resetPaymentOptions, viewingPlayer }) => {

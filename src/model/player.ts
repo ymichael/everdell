@@ -959,7 +959,7 @@ export class Player implements IGameTextEntity {
         throw new Error(
           `Insufficient ${ResourceType.TWIG}. Need ${TWIG}, but only have ${
             this.resources[ResourceType.TWIG]
-          }IG`
+          } TWIG`
         );
       }
       this.resources[ResourceType.TWIG] -= TWIG;
@@ -969,7 +969,7 @@ export class Player implements IGameTextEntity {
         throw new Error(
           `Insufficient ${ResourceType.BERRY}. Need ${BERRY}, but only have ${
             this.resources[ResourceType.BERRY]
-          }RRY`
+          } BERRY`
         );
       }
       this.resources[ResourceType.BERRY] -= BERRY;
@@ -979,7 +979,7 @@ export class Player implements IGameTextEntity {
         throw new Error(
           `Insufficient ${ResourceType.PEBBLE}. Need ${PEBBLE}, but only have ${
             this.resources[ResourceType.PEBBLE]
-          }BBLE`
+          } PEBBLE`
         );
       }
       this.resources[ResourceType.PEBBLE] -= PEBBLE;
@@ -989,7 +989,7 @@ export class Player implements IGameTextEntity {
         throw new Error(
           `Insufficient ${ResourceType.RESIN}. Need ${RESIN}, but only have ${
             this.resources[ResourceType.RESIN]
-          }SIN`
+          } RESIN`
         );
       }
       this.resources[ResourceType.RESIN] -= RESIN;

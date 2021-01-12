@@ -2596,12 +2596,17 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         if (!selectedPlayer || selectedPlayer.playerId === player.playerId) {
           throw new Error("Must select a different player");
         }
-        const cardName = gameInput.prevInput.clientOptions.selectedCards[0];
-        selectedPlayer.addCardToHand(gameState, cardName);
+
+        // based on wording of the Teacher card, the selected card is the card
+        // that the active player keeps
+        const cardToKeep = gameInput.prevInput.clientOptions.selectedCards[0];
+        player.addCardToHand(gameState, cardToKeep);
+
         const cardOptions = gameInput.prevInput.cardOptions;
         const cardToGive =
-          cardOptions[0] === cardName ? cardOptions[1] : cardOptions[0];
-        player.addCardToHand(gameState, cardToGive);
+          cardOptions[0] === cardToKeep ? cardOptions[1] : cardOptions[0];
+        selectedPlayer.addCardToHand(gameState, cardToGive);
+
         gameState.addGameLogFromCard(CardName.TEACHER, [
           player,
           " drew 2 CARD and gave 1 to ",

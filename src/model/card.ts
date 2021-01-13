@@ -1154,11 +1154,19 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
         // add pending input to select 1 card from the list of meadow cards
-
+        const resources = player.getResources();
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_CARDS,
           prevInputType: gameInput.inputType,
-          cardOptions: gameState.meadowCards,
+          cardOptions: gameState.meadowCards.filter((cardName) => {
+            const card = Card.fromName(cardName);
+            return player.isPaidResourcesValid(
+              resources,
+              card.baseCost,
+              "ANY 3",
+              false
+            );
+          }),
           maxToSelect: 1,
           minToSelect: 1,
           cardContext: CardName.INN,

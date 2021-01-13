@@ -1646,7 +1646,13 @@ describe("Card", () => {
             inputType: GameInputType.SELECT_CARDS,
             prevInputType: GameInputType.VISIT_DESTINATION_CARD,
             cardContext: CardName.INN,
-            cardOptions: gameState.meadowCards,
+            cardOptions: [
+              CardName.POSTAL_PIGEON,
+              CardName.POSTAL_PIGEON,
+              CardName.FARM,
+              CardName.HUSBAND,
+              CardName.MONK,
+            ],
             maxToSelect: 1,
             minToSelect: 1,
             clientOptions: {
@@ -1696,7 +1702,15 @@ describe("Card", () => {
             inputType: GameInputType.SELECT_CARDS,
             prevInputType: GameInputType.VISIT_DESTINATION_CARD,
             cardContext: CardName.INN,
-            cardOptions: gameState.meadowCards,
+            cardOptions: [
+              CardName.KING,
+              CardName.QUEEN,
+              CardName.POSTAL_PIGEON,
+              CardName.POSTAL_PIGEON,
+              CardName.FARM,
+              CardName.HUSBAND,
+              CardName.MONK,
+            ],
             maxToSelect: 1,
             minToSelect: 1,
             clientOptions: {
@@ -1761,7 +1775,13 @@ describe("Card", () => {
             inputType: GameInputType.SELECT_CARDS,
             prevInputType: GameInputType.VISIT_DESTINATION_CARD,
             cardContext: CardName.INN,
-            cardOptions: gameState.meadowCards,
+            cardOptions: [
+              CardName.POSTAL_PIGEON,
+              CardName.POSTAL_PIGEON,
+              CardName.FARM,
+              CardName.HUSBAND,
+              CardName.MONK,
+            ],
             maxToSelect: 1,
             minToSelect: 1,
             clientOptions: {
@@ -1776,6 +1796,7 @@ describe("Card", () => {
         expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
         expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
       });
+
       it("should not allow player buy card in hand but not in meadow", () => {
         const cards = [
           CardName.KING,
@@ -1809,7 +1830,13 @@ describe("Card", () => {
             inputType: GameInputType.SELECT_CARDS,
             prevInputType: GameInputType.VISIT_DESTINATION_CARD,
             cardContext: CardName.INN,
-            cardOptions: gameState.meadowCards,
+            cardOptions: [
+              CardName.POSTAL_PIGEON,
+              CardName.POSTAL_PIGEON,
+              CardName.FARM,
+              CardName.HUSBAND,
+              CardName.MONK,
+            ],
             maxToSelect: 1,
             minToSelect: 1,
             clientOptions: {
@@ -1818,6 +1845,7 @@ describe("Card", () => {
           });
         }).to.throwException(/cannot find selected card/i);
       });
+
       it("should allow player to buy card that exists in hand and meadow", () => {
         const cards = [
           CardName.KING,
@@ -1849,7 +1877,13 @@ describe("Card", () => {
             inputType: GameInputType.SELECT_CARDS,
             prevInputType: GameInputType.VISIT_DESTINATION_CARD,
             cardContext: CardName.INN,
-            cardOptions: gameState.meadowCards,
+            cardOptions: [
+              CardName.POSTAL_PIGEON,
+              CardName.POSTAL_PIGEON,
+              CardName.FARM,
+              CardName.HUSBAND,
+              CardName.WIFE,
+            ],
             maxToSelect: 1,
             minToSelect: 1,
             clientOptions: {

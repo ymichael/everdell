@@ -20,6 +20,6 @@ jobs:
       - name: Install Dependencies
         run: npm ci
       - name: Run build
-        run: npm run build
+        run: DB_PATH=./db/game.sqlite npm run build
       - name: Run tests
         run: npm run test

@@ -1,9 +1,7 @@
 import { generate as uuid } from "short-uuid";
 import { Player, createPlayer } from "./player";
 import { GameState } from "./gameState";
-import { Location } from "./location";
-import { Event } from "./event";
-import { GameOptions, GameInput, GameInputType } from "./types";
+import { GameOptions, GameInput } from "./types";
 import { GameJSON } from "./jsonTypes";
 import { getGameJSONById, saveGameJSONById } from "./db";
 import cloneDeep from "lodash/cloneDeep";

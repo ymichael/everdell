@@ -21,7 +21,6 @@ import {
   GameLogEntry,
   TextPart,
   GameText,
-  IGameTextEntity,
 } from "./types";
 import { GameStateJSON } from "./jsonTypes";
 import { Player } from "./player";
@@ -80,6 +79,7 @@ const gameTextToDebugStr = (gameText: GameText): string => {
           if (part.entityType === "card") {
             return part.card;
           }
+          break;
         default:
           assertUnreachable(part, `Unexpected part: ${JSON.stringify(part)}`);
       }
@@ -307,9 +307,10 @@ export class GameState {
 
   private removeMultiStepGameInput(gameInput: GameInputMultiStep): void {
     const found = this.pendingGameInputs.find((pendingGameInput) => {
+      const keysToOmit = ["clientOptions", "label"];
       return isEqual(
-        omit(pendingGameInput, ["clientOptions"]),
-        omit(gameInput, ["clientOptions"])
+        omit(pendingGameInput, keysToOmit),
+        omit(gameInput, keysToOmit)
       );
     });
     if (!found) {
@@ -549,7 +550,7 @@ export class GameState {
     this.addGameLog([player, ` took the game end action.`]);
   }
 
-  next(gameInput: GameInput, autoAdvance: boolean = true): GameState {
+  next(gameInput: GameInput, autoAdvance = true): GameState {
     const nextGameState = this.clone();
     if (nextGameState.pendingGameInputs.length !== 0) {
       nextGameState.removeMultiStepGameInput(gameInput as any);

@@ -251,7 +251,6 @@ describe("Card", () => {
           playCardInput(cardToPlay.name),
           {
             inputType: GameInputType.SELECT_OPTION_GENERIC,
-            label: "Select TWIG / RESIN / PEBBLE",
             prevInputType: GameInputType.PLAY_CARD,
             cardContext: CardName.COURTHOUSE,
             options: ["TWIG", "RESIN", "PEBBLE"],
@@ -512,7 +511,6 @@ describe("Card", () => {
           inputType: GameInputType.SELECT_WORKER_PLACEMENT as const,
           prevInputType: GameInputType.PLAY_CARD,
           cardContext: CardName.RANGER,
-          label: "Select a deployed worker to move",
           mustSelectOne: true,
           clientOptions: {
             selectedOption: {
@@ -532,7 +530,6 @@ describe("Card", () => {
           {
             inputType: GameInputType.SELECT_WORKER_PLACEMENT,
             prevInput: recallWorkerInput,
-            label: "Place your worker",
             prevInputType: GameInputType.SELECT_WORKER_PLACEMENT,
             cardContext: CardName.RANGER,
             mustSelectOne: true,
@@ -599,7 +596,6 @@ describe("Card", () => {
         const recallWorkerInput = {
           inputType: GameInputType.SELECT_WORKER_PLACEMENT as const,
           prevInputType: GameInputType.PLAY_CARD,
-          label: "Select a deployed worker to move",
           cardContext: CardName.RANGER,
           mustSelectOne: true,
           clientOptions: {
@@ -623,7 +619,6 @@ describe("Card", () => {
           {
             inputType: GameInputType.SELECT_WORKER_PLACEMENT,
             prevInput: recallWorkerInput,
-            label: "Place your worker",
             prevInputType: GameInputType.SELECT_WORKER_PLACEMENT,
             cardContext: CardName.RANGER,
             mustSelectOne: true,
@@ -1293,7 +1288,6 @@ describe("Card", () => {
           },
           {
             inputType: GameInputType.SELECT_OPTION_GENERIC,
-            label: "Select TWIG / RESIN / PEBBLE",
             prevInputType: GameInputType.PLAY_CARD,
             cardContext: CardName.COURTHOUSE,
             options: ["TWIG", "RESIN", "PEBBLE"],
@@ -1485,7 +1479,7 @@ describe("Card", () => {
       });
       it("should not allow the player to select player with no available city spaces", () => {
         gameState = testInitialGameState({ numPlayers: 3 });
-        let player = gameState.getActivePlayer();
+        const player = gameState.getActivePlayer();
         const targetPlayerId = gameState.players[1].playerId;
         const targetPlayer = gameState.getPlayer(targetPlayerId);
         const player3 = gameState.players[2].playerId;
@@ -1533,7 +1527,7 @@ describe("Card", () => {
       });
       it("should not allow the player to select player who already has a FOOL in city", () => {
         gameState = testInitialGameState({ numPlayers: 3 });
-        let player = gameState.getActivePlayer();
+        const player = gameState.getActivePlayer();
         const targetPlayerId = gameState.players[1].playerId;
         const targetPlayer = gameState.getPlayer(targetPlayerId);
         const player3 = gameState.players[2].playerId;
@@ -1843,7 +1837,7 @@ describe("Card", () => {
         ];
 
         gameState = testInitialGameState({ meadowCards: cards });
-        let player = gameState.getActivePlayer();
+        const player = gameState.getActivePlayer();
 
         const card = Card.fromName(CardName.INN);
 
@@ -1899,7 +1893,7 @@ describe("Card", () => {
         ];
         gameState = testInitialGameState({ meadowCards: cards });
         let player = gameState.getActivePlayer();
-        let player2 = gameState.players[1];
+        const player2 = gameState.players[1];
 
         const card = Card.fromName(CardName.INN);
 
@@ -1955,7 +1949,7 @@ describe("Card", () => {
           CardName.MONK,
         ];
         gameState = testInitialGameState({ meadowCards: cards });
-        let player = gameState.getActivePlayer();
+        const player = gameState.getActivePlayer();
 
         // Make sure we can play this card
         player.cardsInHand.push(CardName.WIFE);
@@ -2175,7 +2169,7 @@ describe("Card", () => {
           CardName.MONK,
         ];
         gameState = testInitialGameState({ meadowCards: cards });
-        let player = gameState.getActivePlayer();
+        const player = gameState.getActivePlayer();
 
         const card = Card.fromName(CardName.QUEEN);
 
@@ -2229,7 +2223,7 @@ describe("Card", () => {
           CardName.KING,
         ];
         gameState = testInitialGameState({ meadowCards: cards });
-        let player = gameState.getActivePlayer();
+        const player = gameState.getActivePlayer();
         const card = Card.fromName(CardName.QUEEN);
 
         // Make sure we can play this card
@@ -2270,7 +2264,6 @@ describe("Card", () => {
         const selectCardInput = {
           inputType: GameInputType.SELECT_CARDS as const,
           prevInputType: GameInputType.PLAY_CARD,
-          label: "Choose one CARD to keep",
           cardContext: CardName.TEACHER,
           cardOptions: [CardName.FARM, CardName.QUEEN],
           maxToSelect: 1,
@@ -3046,7 +3039,6 @@ describe("Card", () => {
           {
             inputType: GameInputType.SELECT_OPTION_GENERIC,
             prevInputType: GameInputType.VISIT_DESTINATION_CARD,
-            label: "Select where to draw cards",
             options: ["Deck", "Discard Pile"],
             cardContext: CardName.CEMETARY,
             clientOptions: {
@@ -3096,7 +3088,6 @@ describe("Card", () => {
             {
               inputType: GameInputType.SELECT_OPTION_GENERIC,
               prevInputType: GameInputType.VISIT_DESTINATION_CARD,
-              label: "Select where to draw cards",
               options: ["Deck", "Discard Pile"],
               cardContext: CardName.CEMETARY,
               clientOptions: {
@@ -3132,7 +3123,6 @@ describe("Card", () => {
               },
               usedForCritter: false,
             },
-            label: "Choose resource(s) to add",
             options: ["3 TWIG", "2 RESIN", "1 PEBBLE", "2 BERRY"],
             clientOptions: {
               selectedOption: "3 TWIG",
@@ -3183,7 +3173,6 @@ describe("Card", () => {
               },
               usedForCritter: false,
             },
-            label: "Choose resource(s) to add",
             options: ["3 TWIG", "2 RESIN", "1 PEBBLE", "2 BERRY"],
             clientOptions: {
               selectedOption: "3 TWIG",

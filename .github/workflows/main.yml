@@ -4,9 +4,9 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
   workflow_dispatch:
 
@@ -19,7 +19,11 @@ jobs:
         uses: actions/setup-node@v2.1.4
       - name: Install Dependencies
         run: npm ci
-      - name: Run build
-        run: DB_PATH=./db/game.sqlite npm run build
+      - name: Run prettier check
+        run: npm run format:ci
+      - name: Run typecheck
+        run: npm run typecheck
       - name: Run tests
         run: npm run test
+      - name: Run build
+        run: npm run build:ci

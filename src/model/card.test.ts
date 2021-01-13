@@ -250,18 +250,14 @@ describe("Card", () => {
         const gameState2 = multiStepGameInputTest(gameState, [
           playCardInput(cardToPlay.name),
           {
-            cardContext: CardName.COURTHOUSE,
-            inputType: GameInputType.SELECT_RESOURCES,
+            inputType: GameInputType.SELECT_OPTION_GENERIC,
             label: "Select TWIG / RESIN / PEBBLE",
             prevInputType: GameInputType.PLAY_CARD,
-            excludeResource: ResourceType.BERRY,
+            cardContext: CardName.COURTHOUSE,
+            options: ["TWIG", "RESIN", "PEBBLE"],
             clientOptions: {
-              resources: {
-                [ResourceType.PEBBLE]: 1,
-              },
+              selectedOption: "PEBBLE",
             },
-            maxResources: 1,
-            minResources: 1,
           },
         ]);
 
@@ -1295,17 +1291,13 @@ describe("Card", () => {
             },
           },
           {
-            inputType: GameInputType.SELECT_RESOURCES,
-            prevInputType: GameInputType.PLAY_CARD,
+            inputType: GameInputType.SELECT_OPTION_GENERIC,
             label: "Select TWIG / RESIN / PEBBLE",
+            prevInputType: GameInputType.PLAY_CARD,
             cardContext: CardName.COURTHOUSE,
-            maxResources: 1,
-            minResources: 1,
-            excludeResource: ResourceType.BERRY,
+            options: ["TWIG", "RESIN", "PEBBLE"],
             clientOptions: {
-              resources: {
-                [ResourceType.TWIG]: 1,
-              },
+              selectedOption: "TWIG",
             },
           },
         ]);

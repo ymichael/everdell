@@ -806,39 +806,30 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         Card.fromName(gameInput.clientOptions.card).isConstruction
       ) {
         gameState.pendingGameInputs.push({
-          inputType: GameInputType.SELECT_RESOURCES,
+          inputType: GameInputType.SELECT_OPTION_GENERIC,
           label: "Select TWIG / RESIN / PEBBLE",
           prevInputType: gameInput.inputType,
           cardContext: CardName.COURTHOUSE,
-          maxResources: 1,
-          minResources: 1,
-          excludeResource: ResourceType.BERRY,
+          options: ["TWIG", "RESIN", "PEBBLE"],
           clientOptions: {
-            resources: {},
+            selectedOption: null,
           },
         });
       } else if (
-        gameInput.inputType === GameInputType.SELECT_RESOURCES &&
+        gameInput.inputType === GameInputType.SELECT_OPTION_GENERIC &&
         gameInput.cardContext === CardName.COURTHOUSE
       ) {
-        const resources = gameInput.clientOptions?.resources;
-        if (
-          !resources ||
-          resources[ResourceType.BERRY] ||
-          (resources as any)[ResourceType.VP]
-        ) {
+        const selectedOption = gameInput.clientOptions?.selectedOption;
+        if (["TWIG", "RESIN", "PEBBLE"].indexOf(selectedOption as any) === -1) {
           throw new Error("Invalid input");
         }
-        const numToGain = sumResources(resources);
-        if (numToGain !== 1) {
-          throw new Error(`Invalid resources: ${JSON.stringify(resources)}`);
-        }
-        player.gainResources(resources);
+
+        player.gainResources({
+          [selectedOption as ResourceType]: 1,
+        });
         gameState.addGameLogFromCard(CardName.COURTHOUSE, [
           player,
-          " gained ",
-          ...resourceMapToGameText(resources),
-          " for playing a Construction.",
+          ` gained ${selectedOption} for playing a Construction.`,
         ]);
       }
     },

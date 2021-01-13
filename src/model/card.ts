@@ -738,6 +738,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           gameState.pendingGameInputs.push({
             inputType: GameInputType.SELECT_WORKER_PLACEMENT,
             prevInputType: gameInput.inputType,
+            label:
+              "You may pay 1 VP from here to activate 1 of the following locations",
             options: basicAndForestLocationOptions,
             cardContext: CardName.CLOCK_TOWER,
             mustSelectOne: false,
@@ -2095,6 +2097,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         if (recallableWorkers.length !== 0) {
           gameState.pendingGameInputs.push({
             inputType: GameInputType.SELECT_WORKER_PLACEMENT,
+            label: "Select a deployed worker to move",
             prevInputType: gameInput.inputType,
             options: recallableWorkers,
             cardContext: CardName.RANGER,
@@ -2118,6 +2121,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           });
           gameState.pendingGameInputs.push({
             inputType: GameInputType.SELECT_WORKER_PLACEMENT,
+            label: "Place your worker",
             prevInput: gameInput,
             prevInputType: gameInput.inputType,
             options: [

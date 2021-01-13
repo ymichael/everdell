@@ -514,6 +514,7 @@ describe("Card", () => {
           inputType: GameInputType.SELECT_WORKER_PLACEMENT as const,
           prevInputType: GameInputType.PLAY_CARD,
           cardContext: CardName.RANGER,
+          label: "Select a deployed worker to move",
           mustSelectOne: true,
           clientOptions: {
             selectedOption: {
@@ -533,6 +534,7 @@ describe("Card", () => {
           {
             inputType: GameInputType.SELECT_WORKER_PLACEMENT,
             prevInput: recallWorkerInput,
+            label: "Place your worker",
             prevInputType: GameInputType.SELECT_WORKER_PLACEMENT,
             cardContext: CardName.RANGER,
             mustSelectOne: true,
@@ -599,6 +601,7 @@ describe("Card", () => {
         const recallWorkerInput = {
           inputType: GameInputType.SELECT_WORKER_PLACEMENT as const,
           prevInputType: GameInputType.PLAY_CARD,
+          label: "Select a deployed worker to move",
           cardContext: CardName.RANGER,
           mustSelectOne: true,
           clientOptions: {
@@ -622,6 +625,7 @@ describe("Card", () => {
           {
             inputType: GameInputType.SELECT_WORKER_PLACEMENT,
             prevInput: recallWorkerInput,
+            label: "Place your worker",
             prevInputType: GameInputType.SELECT_WORKER_PLACEMENT,
             cardContext: CardName.RANGER,
             mustSelectOne: true,

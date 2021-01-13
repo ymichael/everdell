@@ -125,7 +125,20 @@ const renderMultiStepGameInputLabel = (
         <Description
           textParts={[
             ...inputContextPrefix(gameInput),
-            { type: "text", text: `Select Resources` },
+            {
+              type: "text",
+              text: `Select${gameInput.minResources === 0 ? " up to" : ""} ${
+                gameInput.maxResources
+              } `,
+            },
+            gameInput.specificResource
+              ? { type: "resource", resourceType: gameInput.specificResource }
+              : !gameInput.excludeResource
+              ? { type: "resource", resourceType: "ANY" }
+              : {
+                  type: "text",
+                  text: `resource${gameInput.maxResources > 1 ? "s" : ""}`,
+                },
           ]}
         />
       );

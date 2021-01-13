@@ -807,6 +807,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       ) {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_RESOURCES,
+          label: "Select TWIG / RESIN / PEBBLE",
           prevInputType: gameInput.inputType,
           cardContext: CardName.COURTHOUSE,
           maxResources: 1,

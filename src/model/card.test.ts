@@ -252,6 +252,7 @@ describe("Card", () => {
           {
             cardContext: CardName.COURTHOUSE,
             inputType: GameInputType.SELECT_RESOURCES,
+            label: "Select TWIG / RESIN / PEBBLE",
             prevInputType: GameInputType.PLAY_CARD,
             excludeResource: ResourceType.BERRY,
             clientOptions: {
@@ -1296,6 +1297,7 @@ describe("Card", () => {
           {
             inputType: GameInputType.SELECT_RESOURCES,
             prevInputType: GameInputType.PLAY_CARD,
+            label: "Select TWIG / RESIN / PEBBLE",
             cardContext: CardName.COURTHOUSE,
             maxResources: 1,
             minResources: 1,

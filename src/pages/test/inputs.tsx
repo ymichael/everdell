@@ -7,8 +7,10 @@ import {
   ResourceType,
   EventName,
   GameInputType,
+  GameInput,
 } from "../../model/types";
 import { Game as GameModel } from "../../model/game";
+import { Card } from "../../model/card";
 import { GameState } from "../../model/gameState";
 import GameInputBox from "../../components/GameInputBox";
 
@@ -54,9 +56,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     player.addToCity(CardName.HUSBAND);
     player.addToCity(CardName.RESIN_REFINERY);
     player.addToCity(CardName.INN);
-    player.addToCity(CardName.FARM);
     player.addToCity(CardName.WIFE);
-    player.addToCity(CardName.MINE);
     player.addToCity(CardName.QUEEN);
     player.addToCity(CardName.LOOKOUT);
     player.addToCity(CardName.CHIP_SWEEP);
@@ -93,42 +93,20 @@ export default function TestGameInputPage(props: { game: GameJSON }) {
   const { game } = props;
   const { gameId, gameState } = game;
   const gameStateImpl = GameState.fromJSON(gameState);
-  const gameState1 = gameStateImpl.clone();
 
-  const gameState2 = gameStateImpl.clone();
-
-  const gameStateDiscardCards = gameStateImpl.next({
-    inputType: GameInputType.PLAY_CARD,
-    clientOptions: {
-      card: CardName.BARD,
-      fromMeadow: false,
-      paymentOptions: {
-        resources: { [ResourceType.BERRY]: 3 },
-      },
-    },
-  });
-
-  const gameStateSelectWorkerPlacement = gameStateImpl.next({
-    inputType: GameInputType.PLAY_CARD,
-    clientOptions: {
-      card: CardName.RANGER,
-      fromMeadow: false,
-      paymentOptions: {
-        resources: { [ResourceType.BERRY]: 2 },
-      },
-    },
-  });
-
-  const gameStateSelectPlayer = gameStateImpl.next({
-    inputType: GameInputType.PLAY_CARD,
-    clientOptions: {
-      card: CardName.FOOL,
-      fromMeadow: false,
-      paymentOptions: {
-        resources: { [ResourceType.BERRY]: 3 },
-      },
-    },
-  });
+  const gameStatePlacedWorkers = gameStateImpl.clone();
+  gameStatePlacedWorkers.locationsMap[
+    LocationName.BASIC_TWO_CARDS_AND_ONE_VP
+  ] = [
+    gameStatePlacedWorkers.getActivePlayer().playerId,
+    gameStatePlacedWorkers.getActivePlayer().playerId,
+  ];
+  gameStatePlacedWorkers
+    .getActivePlayer()
+    .placeWorkerOnLocation(LocationName.BASIC_TWO_CARDS_AND_ONE_VP);
+  gameStatePlacedWorkers
+    .getActivePlayer()
+    .placeWorkerOnLocation(LocationName.BASIC_TWO_CARDS_AND_ONE_VP);
 
   const gameStateSelectLocation = gameStateImpl.next({
     inputType: GameInputType.VISIT_DESTINATION_CARD,
@@ -146,84 +124,13 @@ export default function TestGameInputPage(props: { game: GameJSON }) {
     },
   });
 
-  const gameStateSelectCards = gameStateImpl.next({
-    inputType: GameInputType.PLAY_CARD,
-    clientOptions: {
-      card: CardName.POSTAL_PIGEON,
-      fromMeadow: false,
-      paymentOptions: {
-        resources: { [ResourceType.BERRY]: 2 },
-      },
-    },
-  });
-
-  const gameStateSelectCards2 = gameStateImpl.next({
-    inputType: GameInputType.PLAY_CARD,
-    clientOptions: {
-      card: CardName.MINER_MOLE,
-      fromMeadow: false,
-      paymentOptions: {
-        resources: { [ResourceType.BERRY]: 3 },
-      },
-    },
-  });
-
-  const gameStateSelectCards3 = gameStateImpl.next({
-    inputType: GameInputType.PLAY_CARD,
-    clientOptions: {
-      card: CardName.CHIP_SWEEP,
-      fromMeadow: false,
-      paymentOptions: {
-        resources: { [ResourceType.BERRY]: 3 },
-      },
-    },
-  });
-
-  const gameStateGeneric = gameStateImpl.next({
-    inputType: GameInputType.PLAY_CARD,
-    clientOptions: {
-      card: CardName.STOREHOUSE,
-      fromMeadow: false,
-      paymentOptions: {
-        resources: {
-          [ResourceType.TWIG]: 1,
-          [ResourceType.RESIN]: 1,
-          [ResourceType.PEBBLE]: 1,
-        },
-      },
-    },
-  });
-
-  let gameStateClocktower = gameStateImpl.clone();
-  gameStateClocktower.locationsMap[LocationName.BASIC_TWO_CARDS_AND_ONE_VP] = [
-    gameStateClocktower.getActivePlayer().playerId,
-    gameStateClocktower.getActivePlayer().playerId,
-  ];
+  let gameStateClocktower = gameStatePlacedWorkers.clone();
   gameStateClocktower.getActivePlayer().addToCity(CardName.CLOCK_TOWER);
-  gameStateClocktower
-    .getActivePlayer()
-    .placeWorkerOnLocation(LocationName.BASIC_TWO_CARDS_AND_ONE_VP);
-  gameStateClocktower
-    .getActivePlayer()
-    .placeWorkerOnLocation(LocationName.BASIC_TWO_CARDS_AND_ONE_VP);
   gameStateClocktower = gameStateClocktower.next({
     inputType: GameInputType.PREPARE_FOR_SEASON,
   });
 
-  let gameStateSelectCardsFromMeadow = gameStateImpl.clone();
-  gameStateSelectCardsFromMeadow.locationsMap[
-    LocationName.BASIC_TWO_CARDS_AND_ONE_VP
-  ] = [
-    gameStateSelectCardsFromMeadow.getActivePlayer().playerId,
-    gameStateSelectCardsFromMeadow.getActivePlayer().playerId,
-  ];
-  gameStateSelectCardsFromMeadow
-    .getActivePlayer()
-    .placeWorkerOnLocation(LocationName.BASIC_TWO_CARDS_AND_ONE_VP);
-  gameStateSelectCardsFromMeadow
-    .getActivePlayer()
-    .placeWorkerOnLocation(LocationName.BASIC_TWO_CARDS_AND_ONE_VP);
-  gameStateSelectCardsFromMeadow = gameStateSelectCardsFromMeadow.next({
+  let gameStateSelectCardsFromMeadow = gameStatePlacedWorkers.next({
     inputType: GameInputType.PREPARE_FOR_SEASON,
   });
 
@@ -247,21 +154,11 @@ export default function TestGameInputPage(props: { game: GameJSON }) {
     },
   });
 
-  let gameStateMultiplePending = gameStateImpl.clone();
+  let gameStateMultiplePending = gameStatePlacedWorkers.clone();
   gameStateMultiplePending.getActivePlayer().nextSeason();
   gameStateMultiplePending.locationsMap[
     LocationName.BASIC_TWO_CARDS_AND_ONE_VP
-  ] = [
-    gameStateMultiplePending.getActivePlayer().playerId,
-    gameStateMultiplePending.getActivePlayer().playerId,
-    gameStateMultiplePending.getActivePlayer().playerId,
-  ];
-  gameStateMultiplePending
-    .getActivePlayer()
-    .placeWorkerOnLocation(LocationName.BASIC_TWO_CARDS_AND_ONE_VP);
-  gameStateMultiplePending
-    .getActivePlayer()
-    .placeWorkerOnLocation(LocationName.BASIC_TWO_CARDS_AND_ONE_VP);
+  ]!.push(gameStateMultiplePending.getActivePlayer().playerId);
   gameStateMultiplePending
     .getActivePlayer()
     .placeWorkerOnLocation(LocationName.BASIC_TWO_CARDS_AND_ONE_VP);
@@ -287,131 +184,61 @@ export default function TestGameInputPage(props: { game: GameJSON }) {
     },
   });
 
-  let gameStateMonk = gameStateImpl.clone();
-  gameStateMonk.getActivePlayer().cardsInHand.push(CardName.MONK);
-  gameStateMonk = gameStateMonk.next({
-    inputType: GameInputType.PLAY_CARD,
-    clientOptions: {
-      card: CardName.MONK,
-      fromMeadow: false,
-      paymentOptions: {
-        resources: {
-          [ResourceType.BERRY]: 1,
-        },
-      },
-    },
-  });
-
   return (
     <>
       <GameInputBox
         gameId={"testGameId"}
-        gameState={gameState1.toJSON(true)}
+        gameState={gameStateImpl.toJSON(true)}
         gameInputs={[]}
-        viewingPlayer={gameState1.players[1]}
+        viewingPlayer={gameStateImpl.players[1]}
       />
       <hr />
-      <GameInputBox
-        gameId={"testGameId"}
-        gameState={gameState1.toJSON(true)}
-        gameInputs={[
-          {
-            inputType: GameInputType.PREPARE_FOR_SEASON,
+      {[
+        {
+          inputType: GameInputType.PREPARE_FOR_SEASON,
+        },
+        {
+          inputType: GameInputType.GAME_END,
+        },
+        {
+          inputType: GameInputType.PLAY_CARD,
+          clientOptions: {
+            card: null,
+            fromMeadow: false,
+            paymentOptions: { resources: {} },
           },
-        ]}
-        viewingPlayer={gameState1.players[0]}
-      />
-      <hr />
-      <GameInputBox
-        gameId={"testGameId"}
-        gameState={gameState1.toJSON(true)}
-        gameInputs={[
-          {
-            inputType: GameInputType.GAME_END,
+        },
+        {
+          inputType: GameInputType.PLACE_WORKER,
+          clientOptions: {
+            location: null,
           },
-        ]}
-        viewingPlayer={gameState1.players[0]}
-      />
-      <hr />
-      <GameInputBox
-        gameId={"testGameId"}
-        gameState={gameState2.toJSON(true)}
-        gameInputs={[
-          {
-            inputType: GameInputType.PLAY_CARD,
-            clientOptions: {
-              card: null,
-              fromMeadow: false,
-              paymentOptions: { resources: {} },
-            },
+        },
+        {
+          inputType: GameInputType.CLAIM_EVENT,
+          clientOptions: {
+            event: null,
           },
-        ]}
-        viewingPlayer={gameState2.players[0]}
-      />
-      <hr />
-      <GameInputBox
-        gameId={"testGameId"}
-        gameState={gameState2.toJSON(true)}
-        gameInputs={[
-          {
-            inputType: GameInputType.PLACE_WORKER,
-            clientOptions: {
-              location: null,
-            },
+        },
+        {
+          inputType: GameInputType.VISIT_DESTINATION_CARD,
+          clientOptions: {
+            playedCard: null,
           },
-        ]}
-        viewingPlayer={gameState2.players[0]}
-      />
-      <hr />
-      <GameInputBox
-        gameId={"testGameId"}
-        gameState={gameState2.toJSON(true)}
-        gameInputs={[
-          {
-            inputType: GameInputType.CLAIM_EVENT,
-            clientOptions: {
-              event: null,
-            },
-          },
-        ]}
-        viewingPlayer={gameState2.players[0]}
-      />
-      <hr />
-      <GameInputBox
-        gameId={"testGameId"}
-        gameState={gameState2.toJSON(true)}
-        gameInputs={[
-          {
-            inputType: GameInputType.VISIT_DESTINATION_CARD,
-            clientOptions: {
-              playedCard: null,
-            },
-          },
-        ]}
-        viewingPlayer={gameState2.players[0]}
-      />
-      <hr />
-      <GameInputBox
-        gameId={"testGameId"}
-        gameState={gameStateDiscardCards.toJSON(true)}
-        gameInputs={gameStateDiscardCards.pendingGameInputs}
-        viewingPlayer={gameStateDiscardCards.players[0]}
-      />
-      <hr />
-      <GameInputBox
-        gameId={"testGameId"}
-        gameState={gameStateSelectWorkerPlacement.toJSON(true)}
-        gameInputs={gameStateSelectWorkerPlacement.pendingGameInputs}
-        viewingPlayer={gameStateSelectWorkerPlacement.players[0]}
-      />
-      <hr />
-      <GameInputBox
-        gameId={"testGameId"}
-        gameState={gameStateSelectPlayer.toJSON(true)}
-        gameInputs={gameStateSelectPlayer.pendingGameInputs}
-        viewingPlayer={gameStateSelectPlayer.players[0]}
-      />
-      <hr />
+        },
+      ].map((gameInput, idx) => {
+        return (
+          <div key={idx}>
+            <GameInputBox
+              gameId={"testGameId"}
+              gameState={gameStateImpl.toJSON(true)}
+              gameInputs={[gameInput as GameInput]}
+              viewingPlayer={gameStateImpl.players[0]}
+            />
+            <hr />
+          </div>
+        );
+      })}
       <GameInputBox
         gameId={"testGameId"}
         gameState={gameStateSelectLocation.toJSON(true)}
@@ -428,27 +255,6 @@ export default function TestGameInputPage(props: { game: GameJSON }) {
       <hr />
       <GameInputBox
         gameId={"testGameId"}
-        gameState={gameStateSelectCards.toJSON(true)}
-        gameInputs={gameStateSelectCards.pendingGameInputs}
-        viewingPlayer={gameStateSelectCards.players[0]}
-      />
-      <hr />
-      <GameInputBox
-        gameId={"testGameId"}
-        gameState={gameStateSelectCards2.toJSON(true)}
-        gameInputs={gameStateSelectCards2.pendingGameInputs}
-        viewingPlayer={gameStateSelectCards2.players[0]}
-      />
-      <hr />
-      <GameInputBox
-        gameId={"testGameId"}
-        gameState={gameStateSelectCards3.toJSON(true)}
-        gameInputs={gameStateSelectCards3.pendingGameInputs}
-        viewingPlayer={gameStateSelectCards3.players[0]}
-      />
-      <hr />
-      <GameInputBox
-        gameId={"testGameId"}
         gameState={gameStatePaymentForCard.toJSON(true)}
         gameInputs={gameStatePaymentForCard.pendingGameInputs}
         viewingPlayer={gameStatePaymentForCard.players[0]}
@@ -459,13 +265,6 @@ export default function TestGameInputPage(props: { game: GameJSON }) {
         gameState={gameStateSelectCardsFromMeadow.toJSON(true)}
         gameInputs={gameStateSelectCardsFromMeadow.pendingGameInputs}
         viewingPlayer={gameStateSelectCardsFromMeadow.getActivePlayer()}
-      />
-      <hr />
-      <GameInputBox
-        gameId={"testGameId"}
-        gameState={gameStateGeneric.toJSON(true)}
-        gameInputs={gameStateGeneric.pendingGameInputs}
-        viewingPlayer={gameStateGeneric.getActivePlayer()}
       />
       <hr />
       <GameInputBox
@@ -488,13 +287,42 @@ export default function TestGameInputPage(props: { game: GameJSON }) {
         gameInputs={gameStateCourthouse.pendingGameInputs}
         viewingPlayer={gameStateCourthouse.getActivePlayer()}
       />
-      <hr />
-      <GameInputBox
-        gameId={"testGameId"}
-        gameState={gameStateMonk.toJSON(true)}
-        gameInputs={gameStateMonk.pendingGameInputs}
-        viewingPlayer={gameStateMonk.getActivePlayer()}
-      />
+      {[
+        CardName.CHIP_SWEEP,
+        CardName.POSTAL_PIGEON,
+        CardName.MINER_MOLE,
+        CardName.FOOL,
+        CardName.RANGER,
+        CardName.BARD,
+        CardName.STOREHOUSE,
+        CardName.MONK,
+        CardName.TEACHER,
+      ].map((cardName) => {
+        let gameStateX = gameStateImpl.clone();
+        const card = Card.fromName(cardName);
+        gameStateX.getActivePlayer().cardsInHand.push(cardName);
+        gameStateX = gameStateX.next({
+          inputType: GameInputType.PLAY_CARD,
+          clientOptions: {
+            card: card.name,
+            fromMeadow: false,
+            paymentOptions: {
+              resources: card.baseCost,
+            },
+          },
+        });
+        return (
+          <div key={cardName}>
+            <hr />
+            <GameInputBox
+              gameId={"testGameId"}
+              gameState={gameStateX.toJSON(true)}
+              gameInputs={gameStateX.pendingGameInputs}
+              viewingPlayer={gameStateX.getActivePlayer()}
+            />
+          </div>
+        );
+      })}
     </>
   );
 }

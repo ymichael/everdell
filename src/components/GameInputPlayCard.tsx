@@ -19,10 +19,15 @@ const GameInputPlayCard: React.FC<{
   const [field, meta, helpers] = useField("gameInput.clientOptions");
   const resetPaymentOptions = (
     cardName: CardName,
-    withCost: boolean,
+    state: "DEFAULT" | "COST" | "ZERO",
     overrides: any = {}
   ) => {
     const card = CardModel.fromName(cardName);
+    const canUseAssociatedCard =
+      card.isCritter &&
+      card.associatedCard &&
+      viewingPlayer.hasUnusedByCritterConstruction(card.associatedCard);
+
     helpers.setValue({
       ...meta.value,
       ...overrides,
@@ -30,13 +35,15 @@ const GameInputPlayCard: React.FC<{
       paymentOptions: {
         cardToUse: null,
         cardToDungeon: null,
-        useAssociatedCard: false,
+        useAssociatedCard: state === "DEFAULT" ? canUseAssociatedCard : false,
         resources: {
           [ResourceType.BERRY]: 0,
           [ResourceType.TWIG]: 0,
           [ResourceType.RESIN]: 0,
           [ResourceType.PEBBLE]: 0,
-          ...(withCost ? card.baseCost : {}),
+          ...((state === "DEFAULT" && !canUseAssociatedCard) || state === "COST"
+            ? card.baseCost
+            : {}),
         },
       },
     });
@@ -55,7 +62,7 @@ const GameInputPlayCard: React.FC<{
               <div
                 key={idx}
                 onClick={() => {
-                  resetPaymentOptions(cardName, true, {
+                  resetPaymentOptions(cardName, "DEFAULT", {
                     _idx: idx,
                     fromMeadow,
                   });
@@ -79,8 +86,8 @@ const GameInputPlayCard: React.FC<{
       {meta.value?.card && (
         <CardPayment
           name={"gameInput.clientOptions.paymentOptions"}
-          resetPaymentOptions={(withCost: boolean) => {
-            resetPaymentOptions(meta.value.card, withCost);
+          resetPaymentOptions={(state: "DEFAULT" | "COST" | "ZERO") => {
+            resetPaymentOptions(meta.value.card, state);
           }}
           clientOptions={meta.value}
           viewingPlayer={viewingPlayer}

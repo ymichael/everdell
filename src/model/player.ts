@@ -1051,59 +1051,65 @@ export class Player implements IGameTextEntity {
   recallWorker(
     gameState: GameState,
     workerPlacementInfo: WorkerPlacementInfo,
-    removeFromPlacedWorkers = true
+    opts: {
+      removeFromGameState?: boolean;
+      removeFromPlacedWorkers?: boolean;
+    } = {}
   ): void {
+    const { removeFromGameState = true, removeFromPlacedWorkers = true } = opts;
     if (!this.isRecallableWorker(workerPlacementInfo)) {
       throw new Error("Cannot recall worker");
     }
-    const toRemove:
-      | WorkerPlacementInfo
-      | undefined = this.placedWorkers.find((placedWorker) =>
-      isEqual(placedWorker, workerPlacementInfo)
-    );
-    if (!toRemove) {
-      throw new Error("Cannot find worker");
-    }
     if (removeFromPlacedWorkers) {
+      const toRemove:
+        | WorkerPlacementInfo
+        | undefined = this.placedWorkers.find((placedWorker) =>
+        isEqual(placedWorker, workerPlacementInfo)
+      );
+      if (!toRemove) {
+        throw new Error("Cannot find worker");
+      }
       this.placedWorkers.splice(this.placedWorkers.indexOf(toRemove), 1);
     }
-    const { location, playedCard, event } = toRemove;
-    // Update gameState/other objects
-    if (location) {
-      const workers = gameState.locationsMap[location];
-      if (!workers) {
-        throw new Error(`Couldn't find location ${location}`);
-      }
-      const idx = workers.indexOf(this.playerId);
-      if (idx !== -1) {
-        workers.splice(idx, 1);
-      } else {
-        throw new Error(`Couldn't find worker at location: ${location}`);
-      }
-    } else if (event) {
-      // Don't need to do anything for event
-    } else if (playedCard) {
-      const cardOwner = gameState.getPlayer(playedCard.cardOwnerId);
-      let removedWorker = false;
-      cardOwner
-        .getPlayedCardInfos(playedCard.cardName)
-        .forEach(({ workers = [] }) => {
-          if (!removedWorker) {
-            const idx = workers.indexOf(this.playerId);
-            if (idx !== -1) {
-              workers.splice(idx, 1);
-              removedWorker = true;
+    if (removeFromGameState) {
+      const { location, playedCard, event } = workerPlacementInfo;
+      // Update gameState/other objects
+      if (location) {
+        const workers = gameState.locationsMap[location];
+        if (!workers) {
+          throw new Error(`Couldn't find location ${location}`);
+        }
+        const idx = workers.indexOf(this.playerId);
+        if (idx !== -1) {
+          workers.splice(idx, 1);
+        } else {
+          throw new Error(`Couldn't find worker at location: ${location}`);
+        }
+      } else if (event) {
+        // Don't need to do anything for event
+      } else if (playedCard) {
+        const cardOwner = gameState.getPlayer(playedCard.cardOwnerId);
+        let removedWorker = false;
+        cardOwner
+          .getPlayedCardInfos(playedCard.cardName)
+          .forEach(({ workers = [] }) => {
+            if (!removedWorker) {
+              const idx = workers.indexOf(this.playerId);
+              if (idx !== -1) {
+                workers.splice(idx, 1);
+                removedWorker = true;
+              }
             }
-          }
-        });
-    } else {
-      throw new Error(
-        `Unexpected Worker Placement: ${JSON.stringify(
-          workerPlacementInfo,
-          null,
-          2
-        )}`
-      );
+          });
+      } else {
+        throw new Error(
+          `Unexpected Worker Placement: ${JSON.stringify(
+            workerPlacementInfo,
+            null,
+            2
+          )}`
+        );
+      }
     }
   }
 
@@ -1113,11 +1119,9 @@ export class Player implements IGameTextEntity {
     }
     this.placedWorkers = this.placedWorkers.filter((workerPlacementInfo) => {
       if (this.isRecallableWorker(workerPlacementInfo)) {
-        this.recallWorker(
-          gameState,
-          workerPlacementInfo,
-          false /* removedFromPlacedWorkers */
-        );
+        this.recallWorker(gameState, workerPlacementInfo, {
+          removeFromPlacedWorkers: false,
+        });
         return false;
       } else {
         return true;

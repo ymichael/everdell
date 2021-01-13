@@ -1,9 +1,31 @@
 import * as React from "react";
-import { useCallback, useEffect } from "react";
+import { useCallback, useRef, useEffect } from "react";
 import { CardName, GameInput } from "../model/types";
 import { GameJSON, PlayerJSON } from "../model/jsonTypes";
 
 export const GameUpdaterContext = React.createContext<() => void>(() => {});
+
+function checkNotificationPromise() {
+  try {
+    Notification.requestPermission().then();
+  } catch (e) {
+    return false;
+  }
+  return true;
+}
+
+function enableNotifications() {
+  // Let's check if the browser supports notifications
+  if (!("Notification" in window)) {
+    console.log("This browser does not support notifications.");
+  } else {
+    if (checkNotificationPromise()) {
+      Notification.requestPermission().then((permission) => {});
+    } else {
+      Notification.requestPermission(function (permission) {});
+    }
+  }
+}
 
 const GameUpdater: React.FC<{
   gameId: string;
@@ -25,6 +47,7 @@ const GameUpdater: React.FC<{
   gameStateId,
   onUpdate,
 }) => {
+  const isFirstLoadRef = useRef(true);
   const updateGameState = useCallback(async () => {
     const queryParts = [
       `gameId=${gameId}`,
@@ -43,11 +66,24 @@ const GameUpdater: React.FC<{
       onUpdate(json);
     }
   }, [children, gameId, playerId, playerSecret, gameStateId, onUpdate]);
+
   useEffect(() => {
+    enableNotifications();
+
     let timer: any = null;
     if (activePlayerId !== playerId) {
       timer = setInterval(updateGameState, 2000);
+    } else {
+      if (!isFirstLoadRef.current) {
+        if (Notification.permission === "granted") {
+          new Notification("🐿 Everdell", {
+            body: "It's your turn!",
+            icon: "/images/notif_icon.png",
+          });
+        }
+      }
     }
+    isFirstLoadRef.current = false;
     return () => {
       clearInterval(timer);
     };

@@ -18,7 +18,8 @@ export default function App<T>({
           href="https://fonts.googleapis.com/css2?family=Allura&display=swap"
           rel="stylesheet"
         />
-        <title>🐿 Everdell</title>
+        <link rel="shortcut icon" href="/images/favicon.png" />
+        <title>Everdell</title>
       </Head>
       <Component {...pageProps} />
     </>

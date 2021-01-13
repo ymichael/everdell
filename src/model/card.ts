@@ -738,6 +738,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           gameState.pendingGameInputs.push({
             inputType: GameInputType.SELECT_WORKER_PLACEMENT,
             prevInputType: gameInput.inputType,
+            label:
+              "You may pay 1 VP from here to activate 1 of the following locations",
             options: basicAndForestLocationOptions,
             cardContext: CardName.CLOCK_TOWER,
             mustSelectOne: false,
@@ -804,38 +806,30 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         Card.fromName(gameInput.clientOptions.card).isConstruction
       ) {
         gameState.pendingGameInputs.push({
-          inputType: GameInputType.SELECT_RESOURCES,
+          inputType: GameInputType.SELECT_OPTION_GENERIC,
+          label: "Select TWIG / RESIN / PEBBLE",
           prevInputType: gameInput.inputType,
           cardContext: CardName.COURTHOUSE,
-          maxResources: 1,
-          minResources: 1,
-          excludeResource: ResourceType.BERRY,
+          options: ["TWIG", "RESIN", "PEBBLE"],
           clientOptions: {
-            resources: {},
+            selectedOption: null,
           },
         });
       } else if (
-        gameInput.inputType === GameInputType.SELECT_RESOURCES &&
+        gameInput.inputType === GameInputType.SELECT_OPTION_GENERIC &&
         gameInput.cardContext === CardName.COURTHOUSE
       ) {
-        const resources = gameInput.clientOptions?.resources;
-        if (
-          !resources ||
-          resources[ResourceType.BERRY] ||
-          (resources as any)[ResourceType.VP]
-        ) {
+        const selectedOption = gameInput.clientOptions?.selectedOption;
+        if (["TWIG", "RESIN", "PEBBLE"].indexOf(selectedOption as any) === -1) {
           throw new Error("Invalid input");
         }
-        const numToGain = sumResources(resources);
-        if (numToGain !== 1) {
-          throw new Error(`Invalid resources: ${JSON.stringify(resources)}`);
-        }
-        player.gainResources(resources);
+
+        player.gainResources({
+          [selectedOption as ResourceType]: 1,
+        });
         gameState.addGameLogFromCard(CardName.COURTHOUSE, [
           player,
-          " gained ",
-          ...resourceMapToGameText(resources),
-          " for playing a Construction.",
+          ` gained ${selectedOption} for playing a Construction.`,
         ]);
       }
     },
@@ -1134,17 +1128,20 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
         const resources = player.getResources();
-        const canAffordMeadowCard = gameState.meadowCards.some((cardName) => {
+        const canPlayMeadowCard = gameState.meadowCards.some((cardName) => {
           const card = Card.fromName(cardName);
-          return player.isPaidResourcesValid(
-            resources,
-            card.baseCost,
-            "ANY 3",
-            false
+          return (
+            player.canAddToCity(cardName, true /* strict */) &&
+            player.isPaidResourcesValid(
+              resources,
+              card.baseCost,
+              "ANY 3",
+              false
+            )
           );
         });
-        if (!canAffordMeadowCard) {
-          return `Cannot afford any meadow cards even after discounts`;
+        if (!canPlayMeadowCard) {
+          return `Cannot play any cards from the Meadow`;
         }
       }
       return null;
@@ -1154,11 +1151,22 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
         // add pending input to select 1 card from the list of meadow cards
-
+        const resources = player.getResources();
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_CARDS,
           prevInputType: gameInput.inputType,
-          cardOptions: gameState.meadowCards,
+          cardOptions: gameState.meadowCards.filter((cardName) => {
+            const card = Card.fromName(cardName);
+            return (
+              player.canAddToCity(cardName, true /* strict */) &&
+              player.isPaidResourcesValid(
+                resources,
+                card.baseCost,
+                "ANY 3",
+                false
+              )
+            );
+          }),
           maxToSelect: 1,
           minToSelect: 1,
           cardContext: CardName.INN,
@@ -1181,8 +1189,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         if (gameState.meadowCards.indexOf(selectedCardName) < 0) {
           throw new Error("Cannot find selected card in the Meadow.");
         }
-
         const selectedCard = Card.fromName(selectedCardName);
+        if (!player.canAddToCity(selectedCardName, true /* strict */)) {
+          throw new Error(`Unable to add ${selectedCardName} to city`);
+        }
 
         gameState.addGameLogFromCard(CardName.INN, [
           player,
@@ -2079,6 +2089,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         if (recallableWorkers.length !== 0) {
           gameState.pendingGameInputs.push({
             inputType: GameInputType.SELECT_WORKER_PLACEMENT,
+            label: "Select a deployed worker to move",
             prevInputType: gameInput.inputType,
             options: recallableWorkers,
             cardContext: CardName.RANGER,
@@ -2097,8 +2108,12 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           throw new Error("Must specify clientOptions.selectedOption");
         }
         if (gameInput.prevInputType === GameInputType.PLAY_CARD) {
+          player.recallWorker(gameState, selectedOption, {
+            removeFromGameState: false,
+          });
           gameState.pendingGameInputs.push({
             inputType: GameInputType.SELECT_WORKER_PLACEMENT,
+            label: "Place your worker",
             prevInput: gameInput,
             prevInputType: gameInput.inputType,
             options: [
@@ -2127,8 +2142,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           if (!recalledWorkerInfo) {
             throw new Error("Invalid input");
           }
-          player.recallWorker(gameState, recalledWorkerInfo);
-
+          player.recallWorker(gameState, recalledWorkerInfo, {
+            removeFromPlacedWorkers: false,
+          });
           gameState.addGameLogFromCard(CardName.RANGER, [
             player,
             " moved deployed worker on ",
@@ -2543,6 +2559,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       const cardOptions = [gameState.drawCard(), gameState.drawCard()];
       gameState.pendingGameInputs.push({
         inputType: GameInputType.SELECT_CARDS,
+        label: "Choose one CARD to keep",
         prevInputType: gameInput.inputType,
         cardOptions: cardOptions,
         maxToSelect: 1,
@@ -2560,10 +2577,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         gameInput.cardContext === CardName.TEACHER
       ) {
         if (!gameInput.clientOptions.selectedCards) {
-          throw new Error("invalid selected cards");
+          throw new Error("Invalid selected cards");
         }
         if (gameInput.clientOptions.selectedCards.length !== 1) {
-          throw new Error("incorrect number of cards selected");
+          throw new Error("Incorrect number of cards selected");
         }
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_PLAYER,

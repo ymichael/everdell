@@ -250,17 +250,14 @@ describe("Card", () => {
         const gameState2 = multiStepGameInputTest(gameState, [
           playCardInput(cardToPlay.name),
           {
-            cardContext: CardName.COURTHOUSE,
-            inputType: GameInputType.SELECT_RESOURCES,
+            inputType: GameInputType.SELECT_OPTION_GENERIC,
+            label: "Select TWIG / RESIN / PEBBLE",
             prevInputType: GameInputType.PLAY_CARD,
-            excludeResource: ResourceType.BERRY,
+            cardContext: CardName.COURTHOUSE,
+            options: ["TWIG", "RESIN", "PEBBLE"],
             clientOptions: {
-              resources: {
-                [ResourceType.PEBBLE]: 1,
-              },
+              selectedOption: "PEBBLE",
             },
-            maxResources: 1,
-            minResources: 1,
           },
         ]);
 
@@ -514,6 +511,7 @@ describe("Card", () => {
           inputType: GameInputType.SELECT_WORKER_PLACEMENT as const,
           prevInputType: GameInputType.PLAY_CARD,
           cardContext: CardName.RANGER,
+          label: "Select a deployed worker to move",
           mustSelectOne: true,
           clientOptions: {
             selectedOption: {
@@ -533,6 +531,7 @@ describe("Card", () => {
           {
             inputType: GameInputType.SELECT_WORKER_PLACEMENT,
             prevInput: recallWorkerInput,
+            label: "Place your worker",
             prevInputType: GameInputType.SELECT_WORKER_PLACEMENT,
             cardContext: CardName.RANGER,
             mustSelectOne: true,
@@ -574,6 +573,97 @@ describe("Card", () => {
           gameState2.locationsMap[LocationName.BASIC_TWO_TWIGS_AND_ONE_CARD]
         ).to.eql([player.playerId]);
         expect(player.numAvailableWorkers).to.be(1);
+        expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(2);
+        expect(player.cardsInHand.length).to.be(1);
+      });
+
+      it("should not allow moving the worker back to the same location", () => {
+        const card = Card.fromName(CardName.RANGER);
+        player.cardsInHand = [CardName.RANGER];
+        player.gainResources(card.baseCost);
+
+        gameState.locationsMap[LocationName.BASIC_ONE_STONE]!.push(
+          player.playerId
+        );
+        gameState.locationsMap[LocationName.BASIC_TWO_TWIGS_AND_ONE_CARD]!.push(
+          player.playerId
+        );
+        player.placeWorkerOnLocation(LocationName.BASIC_ONE_STONE);
+        player.placeWorkerOnLocation(LocationName.BASIC_TWO_TWIGS_AND_ONE_CARD);
+        expect(player.numAvailableWorkers).to.be(0);
+
+        expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+        expect(player.cardsInHand.length).to.be(1);
+
+        const recallWorkerInput = {
+          inputType: GameInputType.SELECT_WORKER_PLACEMENT as const,
+          prevInputType: GameInputType.PLAY_CARD,
+          label: "Select a deployed worker to move",
+          cardContext: CardName.RANGER,
+          mustSelectOne: true,
+          clientOptions: {
+            selectedOption: {
+              location: LocationName.BASIC_ONE_STONE,
+            },
+          },
+          options: [
+            {
+              location: LocationName.BASIC_ONE_STONE,
+            },
+            {
+              location: LocationName.BASIC_TWO_TWIGS_AND_ONE_CARD,
+            },
+          ],
+        };
+
+        const gameState2 = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+          recallWorkerInput,
+          {
+            inputType: GameInputType.SELECT_WORKER_PLACEMENT,
+            prevInput: recallWorkerInput,
+            label: "Place your worker",
+            prevInputType: GameInputType.SELECT_WORKER_PLACEMENT,
+            cardContext: CardName.RANGER,
+            mustSelectOne: true,
+            options: [
+              {
+                location: LocationName.BASIC_ONE_BERRY,
+              },
+              {
+                location: LocationName.BASIC_ONE_BERRY_AND_ONE_CARD,
+              },
+              {
+                location: LocationName.BASIC_ONE_RESIN_AND_ONE_CARD,
+              },
+              {
+                location: LocationName.BASIC_THREE_TWIGS,
+              },
+              {
+                location: LocationName.BASIC_TWO_CARDS_AND_ONE_VP,
+              },
+              {
+                location: LocationName.BASIC_TWO_RESIN,
+              },
+              {
+                location: LocationName.BASIC_TWO_TWIGS_AND_ONE_CARD,
+              },
+              {
+                location: LocationName.HAVEN,
+              },
+            ],
+            clientOptions: {
+              selectedOption: {
+                location: LocationName.BASIC_TWO_TWIGS_AND_ONE_CARD,
+              },
+            },
+          },
+        ]);
+        player = gameState2.getPlayer(player.playerId);
+        expect(
+          gameState2.locationsMap[LocationName.BASIC_TWO_TWIGS_AND_ONE_CARD]
+        ).to.eql([player.playerId, player.playerId]);
+        expect(player.numAvailableWorkers).to.be(0);
         expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(2);
         expect(player.cardsInHand.length).to.be(1);
       });
@@ -1201,16 +1291,13 @@ describe("Card", () => {
             },
           },
           {
-            inputType: GameInputType.SELECT_RESOURCES,
+            inputType: GameInputType.SELECT_OPTION_GENERIC,
+            label: "Select TWIG / RESIN / PEBBLE",
             prevInputType: GameInputType.PLAY_CARD,
             cardContext: CardName.COURTHOUSE,
-            maxResources: 1,
-            minResources: 1,
-            excludeResource: ResourceType.BERRY,
+            options: ["TWIG", "RESIN", "PEBBLE"],
             clientOptions: {
-              resources: {
-                [ResourceType.TWIG]: 1,
-              },
+              selectedOption: "TWIG",
             },
           },
         ]);
@@ -1425,7 +1512,10 @@ describe("Card", () => {
         player.gainResources(card.baseCost);
         player.cardsInHand.push(card.name);
 
-        gameState = gameState.next(playCardInput(card.name));
+        gameState = gameState.next(
+          playCardInput(card.name),
+          false /* autoAdvance */
+        );
 
         expect(() => {
           gameState.next({
@@ -1454,7 +1544,10 @@ describe("Card", () => {
         player.gainResources(card.baseCost);
         player.cardsInHand.push(card.name);
 
-        gameState = gameState.next(playCardInput(card.name));
+        gameState = gameState.next(
+          playCardInput(card.name),
+          false /* autoAdvance */
+        );
 
         expect(() => {
           gameState.next({
@@ -1640,7 +1733,13 @@ describe("Card", () => {
             inputType: GameInputType.SELECT_CARDS,
             prevInputType: GameInputType.VISIT_DESTINATION_CARD,
             cardContext: CardName.INN,
-            cardOptions: gameState.meadowCards,
+            cardOptions: [
+              CardName.POSTAL_PIGEON,
+              CardName.POSTAL_PIGEON,
+              CardName.FARM,
+              CardName.HUSBAND,
+              CardName.MONK,
+            ],
             maxToSelect: 1,
             minToSelect: 1,
             clientOptions: {
@@ -1655,6 +1754,7 @@ describe("Card", () => {
         expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
         expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
       });
+
       it("should allow player buy card from meadow if cost is > 3", () => {
         const cards = [
           CardName.KING,
@@ -1690,7 +1790,15 @@ describe("Card", () => {
             inputType: GameInputType.SELECT_CARDS,
             prevInputType: GameInputType.VISIT_DESTINATION_CARD,
             cardContext: CardName.INN,
-            cardOptions: gameState.meadowCards,
+            cardOptions: [
+              CardName.KING,
+              CardName.QUEEN,
+              CardName.POSTAL_PIGEON,
+              CardName.POSTAL_PIGEON,
+              CardName.FARM,
+              CardName.HUSBAND,
+              CardName.MONK,
+            ],
             maxToSelect: 1,
             minToSelect: 1,
             clientOptions: {
@@ -1720,6 +1828,63 @@ describe("Card", () => {
         expect(player.hasCardInCity(CardName.QUEEN)).to.be(true);
         expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
       });
+
+      it("should not allow player to buy unplayable card from meadow", () => {
+        const cards = [
+          CardName.KING,
+          CardName.QUEEN,
+          CardName.POSTAL_PIGEON,
+          CardName.POSTAL_PIGEON,
+          CardName.FARM,
+          CardName.HUSBAND,
+          CardName.CHAPEL,
+          CardName.MONK,
+        ];
+
+        gameState = testInitialGameState({ meadowCards: cards });
+        let player = gameState.getActivePlayer();
+
+        const card = Card.fromName(CardName.INN);
+
+        // Make sure we can play this card
+        player.gainResources({ [ResourceType.BERRY]: 4 });
+        player.addToCity(CardName.INN);
+        // Already have QUEEN & KING in city.
+        player.addToCity(CardName.QUEEN);
+        player.addToCity(CardName.KING);
+
+        expect(player.numAvailableWorkers).to.be(2);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(4);
+
+        expect(() => {
+          multiStepGameInputTest(gameState, [
+            {
+              inputType: GameInputType.VISIT_DESTINATION_CARD,
+              clientOptions: {
+                playedCard: player.getFirstPlayedCard(CardName.INN),
+              },
+            },
+            {
+              inputType: GameInputType.SELECT_CARDS,
+              prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+              cardContext: CardName.INN,
+              cardOptions: [
+                CardName.POSTAL_PIGEON,
+                CardName.POSTAL_PIGEON,
+                CardName.FARM,
+                CardName.HUSBAND,
+                CardName.MONK,
+              ],
+              maxToSelect: 1,
+              minToSelect: 1,
+              clientOptions: {
+                selectedCards: [CardName.QUEEN],
+              },
+            },
+          ]);
+        }).to.throwException(/unable to add queen to city/i);
+      });
+
       it("should allow player buy card using another player's inn", () => {
         const cards = [
           CardName.KING,
@@ -1755,7 +1920,13 @@ describe("Card", () => {
             inputType: GameInputType.SELECT_CARDS,
             prevInputType: GameInputType.VISIT_DESTINATION_CARD,
             cardContext: CardName.INN,
-            cardOptions: gameState.meadowCards,
+            cardOptions: [
+              CardName.POSTAL_PIGEON,
+              CardName.POSTAL_PIGEON,
+              CardName.FARM,
+              CardName.HUSBAND,
+              CardName.MONK,
+            ],
             maxToSelect: 1,
             minToSelect: 1,
             clientOptions: {
@@ -1770,6 +1941,7 @@ describe("Card", () => {
         expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
         expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
       });
+
       it("should not allow player buy card in hand but not in meadow", () => {
         const cards = [
           CardName.KING,
@@ -1803,7 +1975,13 @@ describe("Card", () => {
             inputType: GameInputType.SELECT_CARDS,
             prevInputType: GameInputType.VISIT_DESTINATION_CARD,
             cardContext: CardName.INN,
-            cardOptions: gameState.meadowCards,
+            cardOptions: [
+              CardName.POSTAL_PIGEON,
+              CardName.POSTAL_PIGEON,
+              CardName.FARM,
+              CardName.HUSBAND,
+              CardName.MONK,
+            ],
             maxToSelect: 1,
             minToSelect: 1,
             clientOptions: {
@@ -1812,6 +1990,7 @@ describe("Card", () => {
           });
         }).to.throwException(/cannot find selected card/i);
       });
+
       it("should allow player to buy card that exists in hand and meadow", () => {
         const cards = [
           CardName.KING,
@@ -1843,7 +2022,13 @@ describe("Card", () => {
             inputType: GameInputType.SELECT_CARDS,
             prevInputType: GameInputType.VISIT_DESTINATION_CARD,
             cardContext: CardName.INN,
-            cardOptions: gameState.meadowCards,
+            cardOptions: [
+              CardName.POSTAL_PIGEON,
+              CardName.POSTAL_PIGEON,
+              CardName.FARM,
+              CardName.HUSBAND,
+              CardName.WIFE,
+            ],
             maxToSelect: 1,
             minToSelect: 1,
             clientOptions: {
@@ -2081,33 +2266,26 @@ describe("Card", () => {
         expect(player1.cardsInHand.length).to.be(1);
         expect(player2.cardsInHand.length).to.be(0);
 
+        const selectCardInput = {
+          inputType: GameInputType.SELECT_CARDS as const,
+          prevInputType: GameInputType.PLAY_CARD,
+          label: "Choose one CARD to keep",
+          cardContext: CardName.TEACHER,
+          cardOptions: [CardName.FARM, CardName.QUEEN],
+          maxToSelect: 1,
+          minToSelect: 1,
+          clientOptions: {
+            selectedCards: [CardName.FARM],
+          },
+        };
+
         gameState = multiStepGameInputTest(gameState, [
           playCardInput(card.name),
-          {
-            inputType: GameInputType.SELECT_CARDS,
-            prevInputType: GameInputType.PLAY_CARD,
-            cardContext: CardName.TEACHER,
-            cardOptions: [CardName.FARM, CardName.QUEEN],
-            maxToSelect: 1,
-            minToSelect: 1,
-            clientOptions: {
-              selectedCards: [CardName.FARM],
-            },
-          },
+          selectCardInput,
           {
             inputType: GameInputType.SELECT_PLAYER,
             prevInputType: GameInputType.SELECT_CARDS,
-            prevInput: {
-              inputType: GameInputType.SELECT_CARDS,
-              prevInputType: GameInputType.PLAY_CARD,
-              cardContext: CardName.TEACHER,
-              cardOptions: [CardName.FARM, CardName.QUEEN],
-              maxToSelect: 1,
-              minToSelect: 1,
-              clientOptions: {
-                selectedCards: [CardName.FARM],
-              },
-            },
+            prevInput: selectCardInput,
             playerOptions: [player2.playerId],
             mustSelectOne: true,
             cardContext: CardName.TEACHER,

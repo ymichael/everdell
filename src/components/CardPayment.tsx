@@ -11,7 +11,7 @@ import {
   GameInputPlayCard,
   CardPaymentOptions,
 } from "../model/types";
-import { ResourceTypeIcon } from "./common";
+import { ResourceTypeIcon, Description } from "./common";
 
 import styles from "../styles/CardPayment.module.css";
 
@@ -94,20 +94,22 @@ const OptionToUseAssociatedCard: React.FC<{
   name: string;
   cardName: CardName;
   viewingPlayer: Player;
-  resetPaymentOptions: (withCost: boolean) => void;
+  resetPaymentOptions: (state: "DEFAULT" | "COST" | "ZERO") => void;
 }> = ({ cardName, name, resetPaymentOptions, viewingPlayer }) => {
   const [field, meta, helpers] = useField(name);
   const card = CardModel.fromName(cardName);
-  if (
-    !(
-      card.isCritter &&
-      ((card.associatedCard &&
-        viewingPlayer.hasUnusedByCritterConstruction(card.associatedCard)) ||
-        viewingPlayer.hasUnusedByCritterConstruction(CardName.EVERTREE))
-    )
-  ) {
+  const hasUnusedAssociatedCard =
+    card.associatedCard &&
+    viewingPlayer.hasUnusedByCritterConstruction(card.associatedCard);
+  const hasUnusedEvertree = viewingPlayer.hasUnusedByCritterConstruction(
+    CardName.EVERTREE
+  );
+  const canUseAssociatedCard =
+    card.isCritter && (hasUnusedAssociatedCard || hasUnusedEvertree);
+  if (!canUseAssociatedCard) {
     return <></>;
   }
+
   const isChecked = !!meta.value;
   return (
     <div className={styles.associated_card}>
@@ -116,11 +118,20 @@ const OptionToUseAssociatedCard: React.FC<{
           type={"checkbox"}
           checked={isChecked}
           onChange={() => {
-            resetPaymentOptions(isChecked);
+            resetPaymentOptions(isChecked ? "COST" : "DEFAULT");
             helpers.setValue(!isChecked);
           }}
         />
-        Use {card.associatedCard} to play {card.name}
+        <Description
+          textParts={[
+            { type: "text", text: "Use " },
+            hasUnusedAssociatedCard
+              ? CardModel.fromName(card.associatedCard!).getGameTextPart()
+              : CardModel.fromName(CardName.EVERTREE).getGameTextPart(),
+            { type: "text", text: " to play " },
+            CardModel.fromName(card.name).getGameTextPart(),
+          ]}
+        />
       </label>
     </div>
   );
@@ -128,20 +139,41 @@ const OptionToUseAssociatedCard: React.FC<{
 
 const CardToUseForm: React.FC<{
   name: string;
-  resetPaymentOptions: (withCost: boolean) => void;
+  cardName: CardName;
+  resetPaymentOptions: (state: "DEFAULT" | "COST" | "ZERO") => void;
   viewingPlayer: Player;
-}> = ({ name, resetPaymentOptions, viewingPlayer }) => {
+}> = ({ name, cardName, resetPaymentOptions, viewingPlayer }) => {
   const [field, meta, helpers] = useField(name);
-  const cardsToUse: (CardName | null)[] = [
+  const card = CardModel.fromName(cardName);
+  const cardsToUse: CardName[] = [
     CardName.QUEEN,
     CardName.INNKEEPER,
-    CardName.INN,
     CardName.CRANE,
-  ].filter((cardToUse) => !cardToUse || viewingPlayer.hasCardInCity(cardToUse));
+  ].filter((cardToUse) => {
+    if (!viewingPlayer.hasCardInCity(cardToUse)) {
+      return false;
+    }
+    if (cardToUse === CardName.INNKEEPER) {
+      if (!card.isCritter) {
+        return false;
+      }
+    }
+    if (cardToUse === CardName.QUEEN) {
+      if (card.baseVP > 3) {
+        return false;
+      }
+    }
+    if (cardToUse === CardName.CRANE) {
+      if (!card.isConstruction) {
+        return false;
+      }
+    }
+    return true;
+  });
   return cardsToUse.length !== 0 ? (
     <>
       <p>Card to use:</p>
-      {cardsToUse.concat([null]).map((cardToUse, idx) => {
+      {[...cardsToUse, null].map((cardToUse, idx) => {
         return (
           <label key={idx}>
             <Field
@@ -150,7 +182,7 @@ const CardToUseForm: React.FC<{
               value={cardToUse || "NONE"}
               checked={cardToUse === meta.value}
               onChange={() => {
-                resetPaymentOptions(!cardToUse);
+                resetPaymentOptions(!cardToUse ? "DEFAULT" : "ZERO");
                 helpers.setValue(cardToUse);
               }}
             />
@@ -164,7 +196,7 @@ const CardToUseForm: React.FC<{
 
 const CardToDungeonForm: React.FC<{
   name: string;
-  resetPaymentOptions: (withCost: boolean) => void;
+  resetPaymentOptions: (state: "DEFAULT" | "COST" | "ZERO") => void;
   viewingPlayer: Player;
 }> = ({ name, resetPaymentOptions, viewingPlayer }) => {
   const [field, meta, helpers] = useField(name);
@@ -174,8 +206,8 @@ const CardToDungeonForm: React.FC<{
       <select
         value={meta.value || "None"}
         onChange={(e) => {
-          resetPaymentOptions(!e.target.value);
-          helpers.setValue(e.target.value || null);
+          resetPaymentOptions(e.target.value === "None" ? "DEFAULT" : "ZERO");
+          helpers.setValue(e.target.value !== "None" ? e.target.value : null);
         }}
       >
         <option value={"None"}>None</option>
@@ -193,7 +225,7 @@ const CardToDungeonForm: React.FC<{
 
 const CardPayment: React.FC<{
   name: string;
-  resetPaymentOptions: (withCost: boolean) => void;
+  resetPaymentOptions: (state: "DEFAULT" | "COST" | "ZERO") => void;
   clientOptions: GameInputPlayCard["clientOptions"];
   viewingPlayer: Player;
 }> = ({ clientOptions, name, resetPaymentOptions, viewingPlayer }) => {
@@ -208,11 +240,14 @@ const CardPayment: React.FC<{
         />
       )}
       <ResourcesForm name={`${name}.resources`} />
-      <CardToUseForm
-        name={`${name}.cardToUse`}
-        viewingPlayer={viewingPlayer}
-        resetPaymentOptions={resetPaymentOptions}
-      />
+      {clientOptions.card && (
+        <CardToUseForm
+          name={`${name}.cardToUse`}
+          cardName={clientOptions.card}
+          viewingPlayer={viewingPlayer}
+          resetPaymentOptions={resetPaymentOptions}
+        />
+      )}
       <CardToDungeonForm
         name={`${name}.cardToDungeon`}
         viewingPlayer={viewingPlayer}

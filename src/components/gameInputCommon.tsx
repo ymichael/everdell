@@ -11,7 +11,7 @@ import {
   CardName,
 } from "../model/types";
 import { Player } from "../model/player";
-import { inputContextPrefix } from "../model/gameText";
+import { inputContextPrefix, toGameText } from "../model/gameText";
 
 import { GameBlock, Description } from "./common";
 import { assertUnreachable } from "../utils";
@@ -75,6 +75,17 @@ export const GameInputBoxContainer: React.FC<{
 const renderMultiStepGameInputLabel = (
   gameInput: GameInputMultiStep
 ): React.ReactElement => {
+  if (gameInput.label) {
+    return (
+      <Description
+        textParts={[
+          ...inputContextPrefix(gameInput),
+          ...toGameText(gameInput.label),
+        ]}
+      />
+    );
+  }
+
   switch (gameInput.inputType) {
     case GameInputType.DISCARD_CARDS:
       return (
@@ -114,7 +125,20 @@ const renderMultiStepGameInputLabel = (
         <Description
           textParts={[
             ...inputContextPrefix(gameInput),
-            { type: "text", text: `Select Resources` },
+            {
+              type: "text",
+              text: `Select${gameInput.minResources === 0 ? " up to" : ""} ${
+                gameInput.maxResources
+              } `,
+            },
+            gameInput.specificResource
+              ? { type: "resource", resourceType: gameInput.specificResource }
+              : !gameInput.excludeResource
+              ? { type: "resource", resourceType: "ANY" }
+              : {
+                  type: "text",
+                  text: `resource${gameInput.maxResources > 1 ? "s" : ""}`,
+                },
           ]}
         />
       );
@@ -144,49 +168,11 @@ const renderMultiStepGameInputLabel = (
         <Description
           textParts={[
             ...inputContextPrefix(gameInput),
-            { type: "text", text: gameInput.label },
+            { type: "text", text: "Choose an Option" },
           ]}
         />
       );
     case GameInputType.SELECT_WORKER_PLACEMENT:
-      if (gameInput.cardContext) {
-        if (gameInput.cardContext === CardName.CLOCK_TOWER) {
-          return (
-            <Description
-              textParts={[
-                ...inputContextPrefix(gameInput),
-                { type: "text", text: "You may pay 1 " },
-                { type: "symbol", symbol: "VP" },
-                {
-                  type: "text",
-                  text: " from here to activate 1 of the following locations",
-                },
-              ]}
-            />
-          );
-        }
-        if (gameInput.cardContext === CardName.RANGER) {
-          if (gameInput.prevInputType === GameInputType.PLAY_CARD) {
-            return (
-              <Description
-                textParts={[
-                  ...inputContextPrefix(gameInput),
-                  { type: "text", text: `Select a deployed worker to move` },
-                ]}
-              />
-            );
-          } else {
-            return (
-              <Description
-                textParts={[
-                  ...inputContextPrefix(gameInput),
-                  { type: "text", text: `Place your worker` },
-                ]}
-              />
-            );
-          }
-        }
-      }
       return (
         <Description
           textParts={[

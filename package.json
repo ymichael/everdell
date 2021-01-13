@@ -12,6 +12,7 @@
     "build": "next build",
     "start": "DB_PATH=./db/game.sqlite next start -p $PORT",
     "format": "prettier --write src",
+    "format:check": "prettier --check src",
     "lint": "eslint src --quiet --ext .ts,ts"
   },
   "dependencies": {

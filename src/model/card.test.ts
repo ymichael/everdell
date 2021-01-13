@@ -1479,7 +1479,7 @@ describe("Card", () => {
       });
       it("should not allow the player to select player with no available city spaces", () => {
         gameState = testInitialGameState({ numPlayers: 3 });
-        let player = gameState.getActivePlayer();
+        const player = gameState.getActivePlayer();
         const targetPlayerId = gameState.players[1].playerId;
         const targetPlayer = gameState.getPlayer(targetPlayerId);
         const player3 = gameState.players[2].playerId;
@@ -1527,7 +1527,7 @@ describe("Card", () => {
       });
       it("should not allow the player to select player who already has a FOOL in city", () => {
         gameState = testInitialGameState({ numPlayers: 3 });
-        let player = gameState.getActivePlayer();
+        const player = gameState.getActivePlayer();
         const targetPlayerId = gameState.players[1].playerId;
         const targetPlayer = gameState.getPlayer(targetPlayerId);
         const player3 = gameState.players[2].playerId;
@@ -1837,7 +1837,7 @@ describe("Card", () => {
         ];
 
         gameState = testInitialGameState({ meadowCards: cards });
-        let player = gameState.getActivePlayer();
+        const player = gameState.getActivePlayer();
 
         const card = Card.fromName(CardName.INN);
 
@@ -1893,7 +1893,7 @@ describe("Card", () => {
         ];
         gameState = testInitialGameState({ meadowCards: cards });
         let player = gameState.getActivePlayer();
-        let player2 = gameState.players[1];
+        const player2 = gameState.players[1];
 
         const card = Card.fromName(CardName.INN);
 
@@ -1949,7 +1949,7 @@ describe("Card", () => {
           CardName.MONK,
         ];
         gameState = testInitialGameState({ meadowCards: cards });
-        let player = gameState.getActivePlayer();
+        const player = gameState.getActivePlayer();
 
         // Make sure we can play this card
         player.cardsInHand.push(CardName.WIFE);
@@ -2169,7 +2169,7 @@ describe("Card", () => {
           CardName.MONK,
         ];
         gameState = testInitialGameState({ meadowCards: cards });
-        let player = gameState.getActivePlayer();
+        const player = gameState.getActivePlayer();
 
         const card = Card.fromName(CardName.QUEEN);
 
@@ -2223,7 +2223,7 @@ describe("Card", () => {
           CardName.KING,
         ];
         gameState = testInitialGameState({ meadowCards: cards });
-        let player = gameState.getActivePlayer();
+        const player = gameState.getActivePlayer();
         const card = Card.fromName(CardName.QUEEN);
 
         // Make sure we can play this card

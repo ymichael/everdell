@@ -32,7 +32,6 @@ import {
   getPointsPerRarityLabel,
 } from "./gameStatePlayHelpers";
 import cloneDeep from "lodash/cloneDeep";
-import flatten from "lodash/flatten";
 import {
   toGameText,
   cardListToGameText,

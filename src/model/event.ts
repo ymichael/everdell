@@ -21,7 +21,6 @@ import {
 } from "./gameState";
 import { sumResources } from "./gameStatePlayHelpers";
 import shuffle from "lodash/shuffle";
-import flatten from "lodash/flatten";
 import {
   toGameText,
   cardListToGameText,
@@ -339,9 +338,8 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         gameInput.prevInput &&
         gameInput.prevInput.inputType === GameInputType.SELECT_PLAYER
       ) {
-        let resources = gameInput.clientOptions.resources;
-        let numResources = sumResources(resources);
-
+        const resources = gameInput.clientOptions.resources;
+        const numResources = sumResources(resources);
         if (numResources > gameInput.maxResources) {
           throw new Error(
             "Cannot give more than {gameInput.clientOptions.maxResources} resources to this player."

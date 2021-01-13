@@ -1499,7 +1499,7 @@ describe("Event", () => {
         player.claimedEvents[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN]
       ).to.be(undefined);
 
-      let selectFirstOppo = {
+      const selectFirstOppo = {
         inputType: GameInputType.SELECT_PLAYER as const,
         prevInputType: GameInputType.CLAIM_EVENT,
         playerOptions: gameState.players
@@ -1512,7 +1512,7 @@ describe("Event", () => {
         clientOptions: { selectedPlayer: player2.playerId },
       };
 
-      let selectFirstResource = {
+      const selectFirstResource = {
         inputType: GameInputType.SELECT_RESOURCES as const,
         prevInputType: GameInputType.SELECT_PLAYER,
         prevInput: selectFirstOppo,
@@ -1524,7 +1524,7 @@ describe("Event", () => {
         },
       };
 
-      let selectSecondOppo = {
+      const selectSecondOppo = {
         inputType: GameInputType.SELECT_PLAYER as const,
         prevInputType: GameInputType.SELECT_RESOURCES,
         prevInput: selectFirstResource,
@@ -1538,7 +1538,7 @@ describe("Event", () => {
         clientOptions: { selectedPlayer: player4.playerId },
       };
 
-      let selectSecondResource = {
+      const selectSecondResource = {
         inputType: GameInputType.SELECT_RESOURCES as const,
         prevInputType: GameInputType.SELECT_PLAYER,
         prevInput: selectSecondOppo,
@@ -1550,7 +1550,7 @@ describe("Event", () => {
         },
       };
 
-      let selectThirdOppo = {
+      const selectThirdOppo = {
         inputType: GameInputType.SELECT_PLAYER as const,
         prevInputType: GameInputType.SELECT_RESOURCES,
         prevInput: selectSecondResource,
@@ -1564,7 +1564,7 @@ describe("Event", () => {
         clientOptions: { selectedPlayer: player3.playerId },
       };
 
-      let selectThirdResource = {
+      const selectThirdResource = {
         inputType: GameInputType.SELECT_RESOURCES as const,
         prevInputType: GameInputType.SELECT_PLAYER,
         prevInput: selectThirdOppo,
@@ -1631,7 +1631,7 @@ describe("Event", () => {
         player.claimedEvents[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN]
       ).to.be(undefined);
 
-      let selectFirstOppo = {
+      const selectFirstOppo = {
         inputType: GameInputType.SELECT_PLAYER as const,
         prevInputType: GameInputType.CLAIM_EVENT,
         playerOptions: gameState.players
@@ -1644,7 +1644,7 @@ describe("Event", () => {
         clientOptions: { selectedPlayer: player2.playerId },
       };
 
-      let selectFirstResource = {
+      const selectFirstResource = {
         inputType: GameInputType.SELECT_RESOURCES as const,
         prevInputType: GameInputType.SELECT_PLAYER,
         prevInput: selectFirstOppo,
@@ -1656,7 +1656,7 @@ describe("Event", () => {
         },
       };
 
-      let selectSecondOppo = {
+      const selectSecondOppo = {
         inputType: GameInputType.SELECT_PLAYER as const,
         prevInputType: GameInputType.SELECT_RESOURCES,
         prevInput: selectFirstResource,
@@ -1670,7 +1670,7 @@ describe("Event", () => {
         clientOptions: { selectedPlayer: player4.playerId },
       };
 
-      let selectSecondResource = {
+      const selectSecondResource = {
         inputType: GameInputType.SELECT_RESOURCES as const,
         prevInputType: GameInputType.SELECT_PLAYER,
         prevInput: selectSecondOppo,
@@ -1682,7 +1682,7 @@ describe("Event", () => {
         },
       };
 
-      let selectThirdOppo = {
+      const selectThirdOppo = {
         inputType: GameInputType.SELECT_PLAYER as const,
         prevInputType: GameInputType.SELECT_RESOURCES,
         prevInput: selectSecondResource,
@@ -1732,10 +1732,8 @@ describe("Event", () => {
       );
       gameState = testInitialGameState({ numPlayers: 4 });
       const gameInput = claimEventInput(event.name);
-      let player = gameState.getActivePlayer();
-      let player2 = gameState.players[1];
-      let player3 = gameState.players[2];
-      let player4 = gameState.players[3];
+      const player = gameState.getActivePlayer();
+      const player2 = gameState.players[1];
 
       gameState.eventsMap[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN] = null;
 
@@ -1752,7 +1750,7 @@ describe("Event", () => {
         player.claimedEvents[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN]
       ).to.be(undefined);
 
-      let selectFirstOppo = {
+      const selectFirstOppo = {
         inputType: GameInputType.SELECT_PLAYER as const,
         prevInputType: GameInputType.CLAIM_EVENT,
         playerOptions: gameState.players
@@ -1765,7 +1763,7 @@ describe("Event", () => {
         clientOptions: { selectedPlayer: player2.playerId },
       };
 
-      let selectFirstResource = {
+      const selectFirstResource = {
         inputType: GameInputType.SELECT_RESOURCES as const,
         prevInputType: GameInputType.SELECT_PLAYER,
         prevInput: selectFirstOppo,
@@ -1790,10 +1788,10 @@ describe("Event", () => {
       );
       gameState = testInitialGameState({ numPlayers: 4 });
       const gameInput = claimEventInput(event.name);
-      let player = gameState.getActivePlayer();
-      let player2 = gameState.players[1];
-      let player3 = gameState.players[2];
-      let player4 = gameState.players[3];
+      const player = gameState.getActivePlayer();
+      const player2 = gameState.players[1];
+      const player3 = gameState.players[2];
+      const player4 = gameState.players[3];
 
       gameState.eventsMap[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN] = null;
 
@@ -1810,7 +1808,7 @@ describe("Event", () => {
         player.claimedEvents[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN]
       ).to.be(undefined);
 
-      let selectFirstOppo = {
+      const selectFirstOppo = {
         inputType: GameInputType.SELECT_PLAYER as const,
         prevInputType: GameInputType.CLAIM_EVENT,
         playerOptions: gameState.players
@@ -1823,7 +1821,7 @@ describe("Event", () => {
         clientOptions: { selectedPlayer: player2.playerId },
       };
 
-      let selectFirstResource = {
+      const selectFirstResource = {
         inputType: GameInputType.SELECT_RESOURCES as const,
         prevInputType: GameInputType.SELECT_PLAYER,
         prevInput: selectFirstOppo,
@@ -1835,7 +1833,7 @@ describe("Event", () => {
         },
       };
 
-      let selectSecondOppo = {
+      const selectSecondOppo = {
         inputType: GameInputType.SELECT_PLAYER as const,
         prevInputType: GameInputType.SELECT_RESOURCES,
         prevInput: selectFirstResource,
@@ -1849,7 +1847,7 @@ describe("Event", () => {
         clientOptions: { selectedPlayer: player4.playerId },
       };
 
-      let selectSecondResource = {
+      const selectSecondResource = {
         inputType: GameInputType.SELECT_RESOURCES as const,
         prevInputType: GameInputType.SELECT_PLAYER,
         prevInput: selectSecondOppo,

@@ -136,8 +136,7 @@
 }
 
 .color_associated_card_critter {
-  background: #ffffff;
-  color: #000000;
+  color: var(--text-color-light);
 }
 
 .color_destination_gradient {

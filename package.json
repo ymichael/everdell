@@ -6,13 +6,16 @@
   },
   "private": true,
   "scripts": {
+    "dev": "DB_PATH=./db/game.sqlite next dev",
     "test": "DB_PATH=./db.test.sqlite mocha -r ts-node/register src/**/*.test.ts",
     "test:watch": "DB_PATH=./db.test.sqlite mocha -r ts-node/register --watch --extension ts src/**/*.test.ts",
-    "dev": "DB_PATH=./db/game.sqlite next dev",
+    "typecheck": "tsc",
+    "typecheck:watch": "tsc --watch",
     "build": "next build",
+    "build:ci": "DB_PATH=./db/game.sqlite npm run build",
     "start": "DB_PATH=./db/game.sqlite next start -p $PORT",
     "format": "prettier --write src",
-    "format:check": "prettier --check src",
+    "format:ci": "prettier --check src",
     "lint": "eslint src --quiet --ext .ts,ts"
   },
   "dependencies": {

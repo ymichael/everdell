@@ -184,7 +184,7 @@ export type GameInputSelectLocation = {
 export type GameInputSelectOptionGeneric = {
   inputType: GameInputType.SELECT_OPTION_GENERIC;
   prevInputType: GameInputType;
-  label: string;
+  label?: string;
   options: string[];
   locationContext?: LocationName;
   cardContext?: CardName;

@@ -251,7 +251,6 @@ describe("Card", () => {
           playCardInput(cardToPlay.name),
           {
             inputType: GameInputType.SELECT_OPTION_GENERIC,
-            label: "Select TWIG / RESIN / PEBBLE",
             prevInputType: GameInputType.PLAY_CARD,
             cardContext: CardName.COURTHOUSE,
             options: ["TWIG", "RESIN", "PEBBLE"],
@@ -512,7 +511,6 @@ describe("Card", () => {
           inputType: GameInputType.SELECT_WORKER_PLACEMENT as const,
           prevInputType: GameInputType.PLAY_CARD,
           cardContext: CardName.RANGER,
-          label: "Select a deployed worker to move",
           mustSelectOne: true,
           clientOptions: {
             selectedOption: {
@@ -532,7 +530,6 @@ describe("Card", () => {
           {
             inputType: GameInputType.SELECT_WORKER_PLACEMENT,
             prevInput: recallWorkerInput,
-            label: "Place your worker",
             prevInputType: GameInputType.SELECT_WORKER_PLACEMENT,
             cardContext: CardName.RANGER,
             mustSelectOne: true,
@@ -599,7 +596,6 @@ describe("Card", () => {
         const recallWorkerInput = {
           inputType: GameInputType.SELECT_WORKER_PLACEMENT as const,
           prevInputType: GameInputType.PLAY_CARD,
-          label: "Select a deployed worker to move",
           cardContext: CardName.RANGER,
           mustSelectOne: true,
           clientOptions: {
@@ -623,7 +619,6 @@ describe("Card", () => {
           {
             inputType: GameInputType.SELECT_WORKER_PLACEMENT,
             prevInput: recallWorkerInput,
-            label: "Place your worker",
             prevInputType: GameInputType.SELECT_WORKER_PLACEMENT,
             cardContext: CardName.RANGER,
             mustSelectOne: true,
@@ -1293,7 +1288,6 @@ describe("Card", () => {
           },
           {
             inputType: GameInputType.SELECT_OPTION_GENERIC,
-            label: "Select TWIG / RESIN / PEBBLE",
             prevInputType: GameInputType.PLAY_CARD,
             cardContext: CardName.COURTHOUSE,
             options: ["TWIG", "RESIN", "PEBBLE"],
@@ -2270,7 +2264,6 @@ describe("Card", () => {
         const selectCardInput = {
           inputType: GameInputType.SELECT_CARDS as const,
           prevInputType: GameInputType.PLAY_CARD,
-          label: "Choose one CARD to keep",
           cardContext: CardName.TEACHER,
           cardOptions: [CardName.FARM, CardName.QUEEN],
           maxToSelect: 1,
@@ -3046,7 +3039,6 @@ describe("Card", () => {
           {
             inputType: GameInputType.SELECT_OPTION_GENERIC,
             prevInputType: GameInputType.VISIT_DESTINATION_CARD,
-            label: "Select where to draw cards",
             options: ["Deck", "Discard Pile"],
             cardContext: CardName.CEMETARY,
             clientOptions: {
@@ -3096,7 +3088,6 @@ describe("Card", () => {
             {
               inputType: GameInputType.SELECT_OPTION_GENERIC,
               prevInputType: GameInputType.VISIT_DESTINATION_CARD,
-              label: "Select where to draw cards",
               options: ["Deck", "Discard Pile"],
               cardContext: CardName.CEMETARY,
               clientOptions: {
@@ -3132,7 +3123,6 @@ describe("Card", () => {
               },
               usedForCritter: false,
             },
-            label: "Choose resource(s) to add",
             options: ["3 TWIG", "2 RESIN", "1 PEBBLE", "2 BERRY"],
             clientOptions: {
               selectedOption: "3 TWIG",
@@ -3183,7 +3173,6 @@ describe("Card", () => {
               },
               usedForCritter: false,
             },
-            label: "Choose resource(s) to add",
             options: ["3 TWIG", "2 RESIN", "1 PEBBLE", "2 BERRY"],
             clientOptions: {
               selectedOption: "3 TWIG",

@@ -307,9 +307,10 @@ export class GameState {
 
   private removeMultiStepGameInput(gameInput: GameInputMultiStep): void {
     const found = this.pendingGameInputs.find((pendingGameInput) => {
+      const keysToOmit = ["clientOptions", "label"];
       return isEqual(
-        omit(pendingGameInput, ["clientOptions"]),
-        omit(gameInput, ["clientOptions"])
+        omit(pendingGameInput, keysToOmit),
+        omit(gameInput, keysToOmit)
       );
     });
     if (!found) {

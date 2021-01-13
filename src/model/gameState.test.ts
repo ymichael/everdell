@@ -599,8 +599,6 @@ describe("GameState", () => {
         {
           cardContext: CardName.CLOCK_TOWER,
           inputType: GameInputType.SELECT_WORKER_PLACEMENT,
-          label:
-            "You may pay 1 VP from here to activate 1 of the following locations",
           mustSelectOne: false,
           options: [
             {
@@ -636,8 +634,6 @@ describe("GameState", () => {
         {
           cardContext: CardName.CLOCK_TOWER,
           inputType: GameInputType.SELECT_WORKER_PLACEMENT,
-          label:
-            "You may pay 1 VP from here to activate 1 of the following locations",
           mustSelectOne: false,
           options: [
             {
@@ -696,8 +692,6 @@ describe("GameState", () => {
       const clockTowerInput = {
         cardContext: CardName.CLOCK_TOWER,
         inputType: GameInputType.SELECT_WORKER_PLACEMENT as const,
-        label:
-          "You may pay 1 VP from here to activate 1 of the following locations",
         prevInputType: GameInputType.PREPARE_FOR_SEASON,
         mustSelectOne: false,
         options: [
@@ -748,7 +742,6 @@ describe("GameState", () => {
         inputType: GameInputType.SELECT_CARDS as const,
         prevInputType: GameInputType.SELECT_WORKER_PLACEMENT,
         cardContext: CardName.TEACHER,
-        label: "Choose one CARD to keep",
         cardOptions: [CardName.TEACHER, CardName.TEACHER],
         maxToSelect: 1,
         minToSelect: 1,

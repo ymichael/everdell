@@ -93,9 +93,10 @@ export const multiStepGameInputTest = (
 
     currGameState = currGameState.next(gameInput, false /* autoAdvance */);
     if (!isLastInput) {
+      const keysToOmit = ["label", "clientOptions"];
       expect(
-        currGameState.pendingGameInputs.map((x) => omit(x, ["clientOptions"]))
-      ).to.eql([omit(pendingGameInputs[idx + 1], ["clientOptions"])]);
+        currGameState.pendingGameInputs.map((x) => omit(x, keysToOmit))
+      ).to.eql([omit(pendingGameInputs[idx + 1], keysToOmit)]);
       expect(player.playerId).to.be(currGameState.getActivePlayer().playerId);
     } else {
       expect(currGameState.pendingGameInputs).to.eql([]);

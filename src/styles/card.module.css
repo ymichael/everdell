@@ -135,6 +135,11 @@
   background: #476f80;
 }
 
+.color_associated_card_critter {
+  background: #ffffff;
+  color: #000000;
+}
+
 .color_destination_gradient {
   background: linear-gradient(111.09deg, #c26473 -23.53%, #431f24 116.69%),
     linear-gradient(0deg, #b84a5b, #b84a5b);

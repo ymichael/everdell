@@ -86,6 +86,35 @@ const CardDescription = ({ card }: { card: CardModel }) => {
   return <></>;
 };
 
+const AssociatedCard = ({
+  card,
+  usedForCritter = false,
+}: {
+  card: CardModel;
+  usedForCritter?: boolean;
+}) => {
+  const colorClass = colorClassMap[card.cardType];
+  const associatedCard = getAssociatedCard(card);
+  return (
+    <div
+      className={[
+        styles.associated_card,
+        usedForCritter && styles.associated_card_used,
+      ]
+        .filter(Boolean)
+        .join(" ")}
+    >
+      <span
+        className={
+          card.isCritter ? styles.color_associated_card_critter : colorClass
+        }
+      >
+        {associatedCard}
+      </span>
+    </div>
+  );
+};
+
 const Card: React.FC<{ name: CardName; usedForCritter?: boolean }> = ({
   name,
   usedForCritter = false,
@@ -131,17 +160,7 @@ const Card: React.FC<{ name: CardName; usedForCritter?: boolean }> = ({
         </div>
         <div className={styles.card_bottom_row}>
           <div className={styles.rarity_label}>{rarityLabel}</div>
-
-          <div
-            className={[
-              styles.associated_card,
-              usedForCritter && styles.associated_card_used,
-            ]
-              .filter(Boolean)
-              .join(" ")}
-          >
-            <span className={colorClass}>{associatedCard}</span>
-          </div>
+          <AssociatedCard card={card} usedForCritter={usedForCritter} />
         </div>
       </div>
     </>

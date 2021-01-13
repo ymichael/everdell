@@ -31,9 +31,9 @@ export default function TestPage() {
     LocationName
   ) as LocationName[];
 
-  const [showCards, setShowCards] = useState(false);
-  const [showLocations, setShowLocations] = useState(false);
-  const [showEvents, setShowEvents] = useState(false);
+  const [showCards, setShowCards] = useState(true);
+  const [showLocations, setShowLocations] = useState(true);
+  const [showEvents, setShowEvents] = useState(true);
   const [filter, setFilter] = useState("");
 
   useEffect(() => {

@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useState } from "react";
 import Head from "next/head";
+import Link from "next/link";
 import styles from "../styles/Home.module.css";
 
 import GameBuilder from "../components/GameBuilder";
@@ -36,6 +37,9 @@ const Main: React.FC = () => {
           >
             About the Game
           </a>
+          <Link href="/test/ui">
+            <a className={styles.link}>Game Cards</a>
+          </Link>
           <a
             target="_blank"
             href="https://github.com/ymichael/everdell"

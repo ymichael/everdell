@@ -121,6 +121,12 @@ export const Description = ({ textParts }: { textParts: GameText }) => {
         switch (part.type) {
           case "text":
             return part.text;
+          case "em":
+            return (
+              <span key={idx} className={styles.em_part}>
+                {part.text}
+              </span>
+            );
           case "BR":
             return <br key={idx} />;
           case "HR":

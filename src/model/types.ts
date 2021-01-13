@@ -513,6 +513,7 @@ export type TextPartBR = { type: "BR" };
 export type TextPartHR = { type: "HR" };
 export type TextPart =
   | { type: "text"; text: string }
+  | { type: "em"; text: string }
   | TextPartIcon
   | TextPartBR
   | TextPartHR

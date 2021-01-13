@@ -449,11 +449,12 @@ describe("Card", () => {
         multiStepGameInputTest(gameState, [playCardInput(card.name)]);
       });
 
-      it("should gain a wild resource if there's a available wife", () => {
+      it("should gain a wild resource if there's a available wife and farm in city", () => {
         const card = Card.fromName(CardName.HUSBAND);
 
         player.cardsInHand = [CardName.HUSBAND];
         player.addToCity(CardName.WIFE);
+        player.addToCity(CardName.FARM);
         player.gainResources(card.baseCost);
 
         const gameState2 = multiStepGameInputTest(gameState, [

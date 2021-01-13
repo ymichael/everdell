@@ -12,6 +12,10 @@
   flex-direction: column;
 }
 
+.em_part {
+  font-weight: var(--font-bold);
+}
+
 .entity_part {
   border-bottom: solid 1px var(--text-color-light);
   font-weight: var(--font-bold);

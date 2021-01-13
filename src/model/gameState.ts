@@ -52,6 +52,7 @@ const gameTextToDebugStr = (gameText: GameText): string => {
     .map((part: TextPart, idx: number) => {
       switch (part.type) {
         case "text":
+        case "em":
           return part.text;
         case "BR":
           return "\n";

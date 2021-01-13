@@ -4,9 +4,9 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
   workflow_dispatch:
 
@@ -23,3 +23,5 @@ jobs:
         run: DB_PATH=./db/game.sqlite npm run build
       - name: Run tests
         run: npm run test
+      - name: Run prettier check
+        run: npm run format:check

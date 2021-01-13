@@ -1,4 +1,4 @@
-# Everdell
+# 🐿 Everdell
 
 ![CI](https://github.com/ymichael/everdell/workflows/CI/badge.svg)
 

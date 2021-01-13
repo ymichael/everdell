@@ -2113,6 +2113,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           throw new Error("Must specify clientOptions.selectedOption");
         }
         if (gameInput.prevInputType === GameInputType.PLAY_CARD) {
+          player.recallWorker(gameState, selectedOption, {
+            removeFromGameState: false,
+          });
           gameState.pendingGameInputs.push({
             inputType: GameInputType.SELECT_WORKER_PLACEMENT,
             prevInput: gameInput,
@@ -2143,8 +2146,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           if (!recalledWorkerInfo) {
             throw new Error("Invalid input");
           }
-          player.recallWorker(gameState, recalledWorkerInfo);
-
+          player.recallWorker(gameState, recalledWorkerInfo, {
+            removeFromPlacedWorkers: false,
+          });
           gameState.addGameLogFromCard(CardName.RANGER, [
             player,
             " moved deployed worker on ",

@@ -577,6 +577,95 @@ describe("Card", () => {
         expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(2);
         expect(player.cardsInHand.length).to.be(1);
       });
+
+      it("should not allow moving the worker back to the same location", () => {
+        const card = Card.fromName(CardName.RANGER);
+        player.cardsInHand = [CardName.RANGER];
+        player.gainResources(card.baseCost);
+
+        gameState.locationsMap[LocationName.BASIC_ONE_STONE]!.push(
+          player.playerId
+        );
+        gameState.locationsMap[LocationName.BASIC_TWO_TWIGS_AND_ONE_CARD]!.push(
+          player.playerId
+        );
+        player.placeWorkerOnLocation(LocationName.BASIC_ONE_STONE);
+        player.placeWorkerOnLocation(LocationName.BASIC_TWO_TWIGS_AND_ONE_CARD);
+        expect(player.numAvailableWorkers).to.be(0);
+
+        expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+        expect(player.cardsInHand.length).to.be(1);
+
+        const recallWorkerInput = {
+          inputType: GameInputType.SELECT_WORKER_PLACEMENT as const,
+          prevInputType: GameInputType.PLAY_CARD,
+          cardContext: CardName.RANGER,
+          mustSelectOne: true,
+          clientOptions: {
+            selectedOption: {
+              location: LocationName.BASIC_ONE_STONE,
+            },
+          },
+          options: [
+            {
+              location: LocationName.BASIC_ONE_STONE,
+            },
+            {
+              location: LocationName.BASIC_TWO_TWIGS_AND_ONE_CARD,
+            },
+          ],
+        };
+
+        const gameState2 = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+          recallWorkerInput,
+          {
+            inputType: GameInputType.SELECT_WORKER_PLACEMENT,
+            prevInput: recallWorkerInput,
+            prevInputType: GameInputType.SELECT_WORKER_PLACEMENT,
+            cardContext: CardName.RANGER,
+            mustSelectOne: true,
+            options: [
+              {
+                location: LocationName.BASIC_ONE_BERRY,
+              },
+              {
+                location: LocationName.BASIC_ONE_BERRY_AND_ONE_CARD,
+              },
+              {
+                location: LocationName.BASIC_ONE_RESIN_AND_ONE_CARD,
+              },
+              {
+                location: LocationName.BASIC_THREE_TWIGS,
+              },
+              {
+                location: LocationName.BASIC_TWO_CARDS_AND_ONE_VP,
+              },
+              {
+                location: LocationName.BASIC_TWO_RESIN,
+              },
+              {
+                location: LocationName.BASIC_TWO_TWIGS_AND_ONE_CARD,
+              },
+              {
+                location: LocationName.HAVEN,
+              },
+            ],
+            clientOptions: {
+              selectedOption: {
+                location: LocationName.BASIC_TWO_TWIGS_AND_ONE_CARD,
+              },
+            },
+          },
+        ]);
+        player = gameState2.getPlayer(player.playerId);
+        expect(
+          gameState2.locationsMap[LocationName.BASIC_TWO_TWIGS_AND_ONE_CARD]
+        ).to.eql([player.playerId, player.playerId]);
+        expect(player.numAvailableWorkers).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(2);
+        expect(player.cardsInHand.length).to.be(1);
+      });
     });
 
     describe(CardName.POST_OFFICE, () => {

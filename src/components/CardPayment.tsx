@@ -162,6 +162,9 @@ const CardToUseForm: React.FC<{
       if (card.baseVP > 3) {
         return false;
       }
+      if (viewingPlayer.numAvailableWorkers < 1) {
+        return false;
+      }
     }
     if (cardToUse === CardName.CRANE) {
       if (!card.isConstruction) {

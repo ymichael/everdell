@@ -2563,6 +2563,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       const cardOptions = [gameState.drawCard(), gameState.drawCard()];
       gameState.pendingGameInputs.push({
         inputType: GameInputType.SELECT_CARDS,
+        label: "Choose one CARD to keep",
         prevInputType: gameInput.inputType,
         cardOptions: cardOptions,
         maxToSelect: 1,
@@ -2580,10 +2581,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         gameInput.cardContext === CardName.TEACHER
       ) {
         if (!gameInput.clientOptions.selectedCards) {
-          throw new Error("invalid selected cards");
+          throw new Error("Invalid selected cards");
         }
         if (gameInput.clientOptions.selectedCards.length !== 1) {
-          throw new Error("incorrect number of cards selected");
+          throw new Error("Incorrect number of cards selected");
         }
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_PLAYER,

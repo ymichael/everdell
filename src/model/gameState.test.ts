@@ -742,6 +742,7 @@ describe("GameState", () => {
         inputType: GameInputType.SELECT_CARDS as const,
         prevInputType: GameInputType.SELECT_WORKER_PLACEMENT,
         cardContext: CardName.TEACHER,
+        label: "Choose one CARD to keep",
         cardOptions: [CardName.TEACHER, CardName.TEACHER],
         maxToSelect: 1,
         minToSelect: 1,

@@ -2268,33 +2268,26 @@ describe("Card", () => {
         expect(player1.cardsInHand.length).to.be(1);
         expect(player2.cardsInHand.length).to.be(0);
 
+        const selectCardInput = {
+          inputType: GameInputType.SELECT_CARDS as const,
+          prevInputType: GameInputType.PLAY_CARD,
+          label: "Choose one CARD to keep",
+          cardContext: CardName.TEACHER,
+          cardOptions: [CardName.FARM, CardName.QUEEN],
+          maxToSelect: 1,
+          minToSelect: 1,
+          clientOptions: {
+            selectedCards: [CardName.FARM],
+          },
+        };
+
         gameState = multiStepGameInputTest(gameState, [
           playCardInput(card.name),
-          {
-            inputType: GameInputType.SELECT_CARDS,
-            prevInputType: GameInputType.PLAY_CARD,
-            cardContext: CardName.TEACHER,
-            cardOptions: [CardName.FARM, CardName.QUEEN],
-            maxToSelect: 1,
-            minToSelect: 1,
-            clientOptions: {
-              selectedCards: [CardName.FARM],
-            },
-          },
+          selectCardInput,
           {
             inputType: GameInputType.SELECT_PLAYER,
             prevInputType: GameInputType.SELECT_CARDS,
-            prevInput: {
-              inputType: GameInputType.SELECT_CARDS,
-              prevInputType: GameInputType.PLAY_CARD,
-              cardContext: CardName.TEACHER,
-              cardOptions: [CardName.FARM, CardName.QUEEN],
-              maxToSelect: 1,
-              minToSelect: 1,
-              clientOptions: {
-                selectedCards: [CardName.FARM],
-              },
-            },
+            prevInput: selectCardInput,
             playerOptions: [player2.playerId],
             mustSelectOne: true,
             cardContext: CardName.TEACHER,

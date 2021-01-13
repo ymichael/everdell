@@ -11,7 +11,7 @@ import {
   CardName,
 } from "../model/types";
 import { Player } from "../model/player";
-import { inputContextPrefix } from "../model/gameText";
+import { inputContextPrefix, toGameText } from "../model/gameText";
 
 import { GameBlock, Description } from "./common";
 import { assertUnreachable } from "../utils";
@@ -75,6 +75,17 @@ export const GameInputBoxContainer: React.FC<{
 const renderMultiStepGameInputLabel = (
   gameInput: GameInputMultiStep
 ): React.ReactElement => {
+  if (gameInput.label) {
+    return (
+      <Description
+        textParts={[
+          ...inputContextPrefix(gameInput),
+          ...toGameText(gameInput.label),
+        ]}
+      />
+    );
+  }
+
   switch (gameInput.inputType) {
     case GameInputType.DISCARD_CARDS:
       return (
@@ -144,7 +155,7 @@ const renderMultiStepGameInputLabel = (
         <Description
           textParts={[
             ...inputContextPrefix(gameInput),
-            { type: "text", text: gameInput.label },
+            { type: "text", text: "Choose an Option" },
           ]}
         />
       );

@@ -99,6 +99,7 @@ export type GameInputSelectPlayer = {
 export type GameInputSelectCards = {
   inputType: GameInputType.SELECT_CARDS;
   prevInputType: GameInputType;
+  label?: string;
   cardOptions: CardName[];
   cardOptionsUnfiltered?: CardName[];
 
@@ -227,6 +228,7 @@ export type GameInputMultiStep = (
   cardContext?: CardName;
   locationContext?: LocationName;
   prevInput?: GameInput;
+  label?: string;
 };
 
 export type GameInput = GameInputSimple | GameInputMultiStep;

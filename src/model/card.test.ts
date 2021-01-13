@@ -1667,6 +1667,7 @@ describe("Card", () => {
         expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
         expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
       });
+
       it("should allow player buy card from meadow if cost is > 3", () => {
         const cards = [
           CardName.KING,
@@ -1740,6 +1741,63 @@ describe("Card", () => {
         expect(player.hasCardInCity(CardName.QUEEN)).to.be(true);
         expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
       });
+
+      it("should not allow player to buy unplayable card from meadow", () => {
+        const cards = [
+          CardName.KING,
+          CardName.QUEEN,
+          CardName.POSTAL_PIGEON,
+          CardName.POSTAL_PIGEON,
+          CardName.FARM,
+          CardName.HUSBAND,
+          CardName.CHAPEL,
+          CardName.MONK,
+        ];
+
+        gameState = testInitialGameState({ meadowCards: cards });
+        let player = gameState.getActivePlayer();
+
+        const card = Card.fromName(CardName.INN);
+
+        // Make sure we can play this card
+        player.gainResources({ [ResourceType.BERRY]: 4 });
+        player.addToCity(CardName.INN);
+        // Already have QUEEN & KING in city.
+        player.addToCity(CardName.QUEEN);
+        player.addToCity(CardName.KING);
+
+        expect(player.numAvailableWorkers).to.be(2);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(4);
+
+        expect(() => {
+          multiStepGameInputTest(gameState, [
+            {
+              inputType: GameInputType.VISIT_DESTINATION_CARD,
+              clientOptions: {
+                playedCard: player.getFirstPlayedCard(CardName.INN),
+              },
+            },
+            {
+              inputType: GameInputType.SELECT_CARDS,
+              prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+              cardContext: CardName.INN,
+              cardOptions: [
+                CardName.POSTAL_PIGEON,
+                CardName.POSTAL_PIGEON,
+                CardName.FARM,
+                CardName.HUSBAND,
+                CardName.MONK,
+              ],
+              maxToSelect: 1,
+              minToSelect: 1,
+              clientOptions: {
+                selectedCards: [CardName.QUEEN],
+              },
+            },
+          ]);
+        }).to.throwException(/unable to add queen to city/i);
+      });
+
       it("should allow player buy card using another player's inn", () => {
         const cards = [
           CardName.KING,

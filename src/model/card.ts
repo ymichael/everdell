@@ -1134,17 +1134,20 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
         const resources = player.getResources();
-        const canAffordMeadowCard = gameState.meadowCards.some((cardName) => {
+        const canPlayMeadowCard = gameState.meadowCards.some((cardName) => {
           const card = Card.fromName(cardName);
-          return player.isPaidResourcesValid(
-            resources,
-            card.baseCost,
-            "ANY 3",
-            false
+          return (
+            player.canAddToCity(cardName, true /* strict */) &&
+            player.isPaidResourcesValid(
+              resources,
+              card.baseCost,
+              "ANY 3",
+              false
+            )
           );
         });
-        if (!canAffordMeadowCard) {
-          return `Cannot afford any meadow cards even after discounts`;
+        if (!canPlayMeadowCard) {
+          return `Cannot play any cards from the Meadow`;
         }
       }
       return null;
@@ -1160,11 +1163,14 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           prevInputType: gameInput.inputType,
           cardOptions: gameState.meadowCards.filter((cardName) => {
             const card = Card.fromName(cardName);
-            return player.isPaidResourcesValid(
-              resources,
-              card.baseCost,
-              "ANY 3",
-              false
+            return (
+              player.canAddToCity(cardName, true /* strict */) &&
+              player.isPaidResourcesValid(
+                resources,
+                card.baseCost,
+                "ANY 3",
+                false
+              )
             );
           }),
           maxToSelect: 1,
@@ -1189,8 +1195,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         if (gameState.meadowCards.indexOf(selectedCardName) < 0) {
           throw new Error("Cannot find selected card in the Meadow.");
         }
-
         const selectedCard = Card.fromName(selectedCardName);
+        if (!player.canAddToCity(selectedCardName, true /* strict */)) {
+          throw new Error(`Unable to add ${selectedCardName} to city`);
+        }
 
         gameState.addGameLogFromCard(CardName.INN, [
           player,

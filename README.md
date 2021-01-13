@@ -1,5 +1,7 @@
 # Everdell
 
+![CI](https://github.com/ymichael/everdell/workflows/CI/badge.svg)
+
 **Everdell Board Game**
 
 We highly recommend [purchasing this board game](https://www.starling.games/everdell) for personal use. If you want to play with people online, you can use this web app.

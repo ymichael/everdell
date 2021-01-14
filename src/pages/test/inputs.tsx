@@ -298,6 +298,7 @@ export default function TestGameInputPage(props: { game: GameJSON }) {
         CardName.MONK,
         CardName.TEACHER,
         CardName.DOCTOR,
+        CardName.PEDDLER,
         CardName.WOODCARVER,
       ].map((cardName) => {
         let gameStateX = gameStateImpl.clone();

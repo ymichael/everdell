@@ -1794,6 +1794,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           if (numResources !== 0) {
             gameState.pendingGameInputs.push({
               inputType: GameInputType.SELECT_RESOURCES,
+              label: `Choose ${numResources} ANY to gain`,
               prevInputType: gameInput.inputType,
               cardContext: CardName.PEDDLER,
               maxResources: numResources,
@@ -1832,6 +1833,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       if (player.getNumResources() !== 0) {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_RESOURCES,
+          label: `Pay up to 2 ANY to gain an equal amount of ANY`,
           prevInputType: gameInput.inputType,
           cardContext: CardName.PEDDLER,
           maxResources: 2,

@@ -2519,6 +2519,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     ]),
     maxWorkersInner: () => 1,
     playedCardInfoDefault: {
+      workers: [],
       resources: {
         [ResourceType.TWIG]: 0,
         [ResourceType.RESIN]: 0,

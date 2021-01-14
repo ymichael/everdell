@@ -1,3 +1,5 @@
+import isEqual from "lodash/isEqual";
+import omit from "lodash/omit";
 import {
   CardCost,
   CardName,
@@ -24,7 +26,6 @@ import { Event } from "./event";
 import { Location } from "./location";
 import { generate as uuid } from "short-uuid";
 import { sumResources } from "./gameStatePlayHelpers";
-import isEqual from "lodash/isEqual";
 import { assertUnreachable } from "../utils";
 
 const MAX_HAND_SIZE = 8;
@@ -452,7 +453,8 @@ export class Player implements IGameTextEntity {
 
   findPlayedCard(playedCard: PlayedCardInfo): PlayedCardInfo | undefined {
     return this.getPlayedCardInfos(playedCard.cardName).find((x) => {
-      return isEqual(x, playedCard);
+      // Omit workers because we might place a worker before run call this.
+      return isEqual(omit(x, ["workers"]), omit(playedCard, ["workers"]));
     });
   }
 

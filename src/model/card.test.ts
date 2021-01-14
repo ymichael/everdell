@@ -3115,6 +3115,7 @@ describe("Card", () => {
             playedCardContext: {
               cardName: card.name,
               cardOwnerId: player.playerId,
+              workers: [],
               resources: {
                 BERRY: 0,
                 PEBBLE: 0,
@@ -3141,6 +3142,7 @@ describe("Card", () => {
             RESIN: 0,
             TWIG: 3,
           },
+          workers: [],
           usedForCritter: false,
         });
       });
@@ -3172,6 +3174,7 @@ describe("Card", () => {
                 TWIG: 0,
               },
               usedForCritter: false,
+              workers: [],
             },
             options: ["3 TWIG", "2 RESIN", "1 PEBBLE", "2 BERRY"],
             clientOptions: {
@@ -3185,6 +3188,7 @@ describe("Card", () => {
           {
             cardName: card.name,
             cardOwnerId: player.playerId,
+            workers: [],
             resources: {
               BERRY: 5,
               PEBBLE: 0,
@@ -3195,6 +3199,7 @@ describe("Card", () => {
           },
           {
             cardName: card.name,
+            workers: [],
             cardOwnerId: player.playerId,
             resources: {
               BERRY: 0,
@@ -3215,6 +3220,7 @@ describe("Card", () => {
         expect(player.getFirstPlayedCard(card.name)).to.eql({
           cardName: card.name,
           cardOwnerId: player.playerId,
+          workers: [],
           resources: {
             BERRY: 5,
             PEBBLE: 0,
@@ -3238,6 +3244,7 @@ describe("Card", () => {
         expect(player.getFirstPlayedCard(card.name)).to.eql({
           cardName: card.name,
           cardOwnerId: player.playerId,
+          workers: [player.playerId],
           resources: {
             BERRY: 0,
             PEBBLE: 0,
@@ -3246,6 +3253,51 @@ describe("Card", () => {
           },
           usedForCritter: false,
         });
+      });
+
+      it("should give player resources after visiting the storehouse", () => {
+        const card = Card.fromName(CardName.STOREHOUSE);
+        const storehouse = player.addToCity(card.name);
+        storehouse.resources![ResourceType.BERRY]! = 5;
+
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+
+        gameState = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD as const,
+            clientOptions: {
+              playedCard: player.getFirstPlayedCard(card.name),
+            },
+          },
+        ]);
+
+        player = gameState.getPlayer(player.playerId);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(5);
+        expect(player.getFirstPlayedCard(card.name)).to.eql({
+          cardName: card.name,
+          workers: [player.playerId],
+          cardOwnerId: player.playerId,
+          resources: {
+            BERRY: 0,
+            PEBBLE: 0,
+            RESIN: 0,
+            TWIG: 0,
+          },
+          usedForCritter: false,
+        });
+
+        gameState.nextPlayer();
+        player = gameState.getPlayer(player.playerId);
+        expect(() => {
+          multiStepGameInputTest(gameState, [
+            {
+              inputType: GameInputType.VISIT_DESTINATION_CARD as const,
+              clientOptions: {
+                playedCard: player.getFirstPlayedCard(card.name),
+              },
+            },
+          ]);
+        }).to.throwException(/cannot place worker on card/i);
       });
     });
 

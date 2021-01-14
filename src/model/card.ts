@@ -632,15 +632,15 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         throw new Error("Invalid input type");
       }
       const player = gameState.getActivePlayer();
-      const playedShepherds = player.getPlayedCardInfos(CardName.SHEPHERD);
-      if (playedShepherds.length === 0) {
+      const chapelInfo = player.getPlayedCardInfos(CardName.CHAPEL);
+      if (chapelInfo.length === 0) {
         throw new Error("Invalid action");
       }
-      const playedShepherd = playedShepherds[0];
-      (playedShepherd.resources![ResourceType.VP] as number) += 1;
+      const playedChapel = chapelInfo[0];
+      (playedChapel.resources![ResourceType.VP] as number) += 1;
       player.drawCards(
         gameState,
-        playedShepherd.resources![ResourceType.VP] as number
+        (playedChapel.resources![ResourceType.VP] as number) * 2
       );
     },
   }),

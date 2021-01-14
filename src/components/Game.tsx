@@ -74,7 +74,7 @@ const Game: React.FC<{
         />
         <Players
           viewingPlayer={viewingPlayerImpl}
-          gameState={gameStateImpl}
+          gameStateJSON={gameState}
           showRealtimePoints={game.gameOptions.realtimePoints}
         />
         <ViewerUI player={viewingPlayerImpl} />

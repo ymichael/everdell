@@ -18,24 +18,26 @@ import {
 
 export const Players = ({
   viewingPlayer,
-  gameState,
+  gameStateJSON,
   showRealtimePoints = false,
 }: {
   viewingPlayer: Player;
-  gameState: GameState;
+  gameStateJSON: GameStateJSON;
   showRealtimePoints?: boolean;
 }) => {
   return (
     <GameBlock title={"Players"}>
-      {gameState.players.map((player: Player) => {
+      {gameStateJSON.players.map((playerJSON: PlayerJSON) => {
         return (
           <PlayerStatus
-            key={player.playerId}
-            player={player.toJSON(true)}
-            gameState={gameState}
+            key={playerJSON.playerId}
+            player={playerJSON}
+            gameStateJSON={gameStateJSON}
             viewingPlayer={viewingPlayer}
-            isViewer={player.playerId === viewingPlayer.playerId}
-            isActivePlayer={player.playerId === gameState.activePlayerId}
+            isViewer={playerJSON.playerId === viewingPlayer.playerId}
+            isActivePlayer={
+              playerJSON.playerId === gameStateJSON.activePlayerId
+            }
             showRealtimePoints={showRealtimePoints}
           />
         );
@@ -46,14 +48,14 @@ export const Players = ({
 
 const PlayerStatus: React.FC<{
   player: PlayerJSON;
-  gameState: GameState;
+  gameStateJSON: GameStateJSON;
   viewingPlayer: Player;
   isViewer: boolean;
   isActivePlayer: boolean;
   showRealtimePoints?: boolean;
 }> = ({
   player,
-  gameState,
+  gameStateJSON,
   viewingPlayer,
   isViewer,
   isActivePlayer,
@@ -166,7 +168,7 @@ const PlayerStatus: React.FC<{
                   {"POINTS"}
                 </div>
                 <div className={styles.status_box_item_resource_count}>
-                  {playerImpl.getPoints(gameState)}
+                  {playerImpl.getPoints(GameState.fromJSON(gameStateJSON))}
                 </div>
               </div>
             )}

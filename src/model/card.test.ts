@@ -2038,6 +2038,89 @@ describe("Card", () => {
       });
     });
 
+    describe(CardName.CHAPEL, () => {
+      it("when player visits, should add a VP and give 2 cards per VP on Chapel", () => {
+        let player = gameState.getActivePlayer();
+        const card = Card.fromName(CardName.CHAPEL);
+
+        player.addToCity(CardName.CHAPEL);
+
+        expect(player.numAvailableWorkers).to.be(2);
+        expect(player.getFirstPlayedCard(CardName.CHAPEL)).to.eql({
+          cardName: CardName.CHAPEL,
+          cardOwnerId: player.playerId,
+          usedForCritter: false,
+          workers: [],
+          resources: { [ResourceType.VP]: 0 },
+        });
+
+        let chapelInfo = player.getFirstPlayedCard(CardName.CHAPEL);
+        let chapelResources = chapelInfo.resources || { [ResourceType.VP]: 0 };
+        let numVP = chapelResources[ResourceType.VP] || 0;
+        expect(numVP).to.be(0);
+        expect(player.cardsInHand.length).to.be(0);
+
+        gameState = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            clientOptions: {
+              playedCard: player.getFirstPlayedCard(CardName.CHAPEL),
+            },
+          },
+        ]);
+
+        player = gameState.getPlayer(player.playerId);
+        expect(player.numAvailableWorkers).to.be(1);
+        expect(player.cardsInHand.length).to.be(2);
+
+        chapelInfo = player.getFirstPlayedCard(CardName.CHAPEL);
+        chapelResources = chapelInfo.resources || { [ResourceType.VP]: 0 };
+        numVP = chapelResources[ResourceType.VP] || 0;
+        expect(numVP).to.be(1);
+      });
+
+      it("should give additional cards when Chapel has already has VP on it", () => {
+        let player = gameState.getActivePlayer();
+        const card = Card.fromName(CardName.CHAPEL);
+
+        player.addToCity(CardName.CHAPEL);
+        let chapelInfo = player.getFirstPlayedCard(CardName.CHAPEL);
+        let chapelResources = chapelInfo.resources || { [ResourceType.VP]: 0 };
+        chapelResources[ResourceType.VP] = 1;
+
+        expect(player.numAvailableWorkers).to.be(2);
+        expect(player.getFirstPlayedCard(CardName.CHAPEL)).to.eql({
+          cardName: CardName.CHAPEL,
+          cardOwnerId: player.playerId,
+          usedForCritter: false,
+          workers: [],
+          resources: { [ResourceType.VP]: 1 },
+        });
+
+        let numVP = chapelResources[ResourceType.VP] || 0;
+        expect(numVP).to.be(1);
+        expect(player.cardsInHand.length).to.be(0);
+
+        gameState = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            clientOptions: {
+              playedCard: player.getFirstPlayedCard(CardName.CHAPEL),
+            },
+          },
+        ]);
+
+        player = gameState.getPlayer(player.playerId);
+        expect(player.numAvailableWorkers).to.be(1);
+        expect(player.cardsInHand.length).to.be(4);
+
+        chapelInfo = player.getFirstPlayedCard(CardName.CHAPEL);
+        chapelResources = chapelInfo.resources || { [ResourceType.VP]: 0 };
+        numVP = chapelResources[ResourceType.VP] || 0;
+        expect(numVP).to.be(2);
+      });
+    });
+
     describe(CardName.QUEEN, () => {
       it("should allow player to buy card for less than 3 points for free", () => {
         const cards = [

@@ -165,6 +165,13 @@ const CardToUseForm: React.FC<{
       if (viewingPlayer.numAvailableWorkers < 1) {
         return false;
       }
+      if (
+        !viewingPlayer.canPlaceWorkerOnCard(
+          viewingPlayer.getFirstPlayedCard(CardName.QUEEN)
+        )
+      ) {
+        return false;
+      }
     }
     if (cardToUse === CardName.CRANE) {
       if (!card.isConstruction) {

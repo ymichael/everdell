@@ -199,7 +199,7 @@ export const PlayedCard: React.FC<{
           <div>Workers on card: {workers.length}</div>
         )}
         {"pairedCards" in playedCard && (
-          <div>Beneath Card: {playedCard.pairedCards.length}</div>
+          <div>Beneath Card: {(playedCard.pairedCards || []).length}</div>
         )}
         {"resources" in playedCard && (
           <div>

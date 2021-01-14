@@ -75,12 +75,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     },
   });
 
-  // game.applyGameInput({
-  //   inputType: GameInputType.CLAIM_EVENT,
-  //   clientOptions: {
-  //     event: EventName.BASIC_FOUR_PRODUCTION,
-  //   },
-  // });
   game.applyGameInput({
     inputType: GameInputType.PLACE_WORKER,
     clientOptions: {
@@ -125,6 +119,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   //     },
   //   },
   // });
+  game.applyGameInput({
+    inputType: GameInputType.CLAIM_EVENT,
+    clientOptions: {
+      event: EventName.BASIC_THREE_GOVERNANCE,
+    },
+  });
 
   const player = game.getActivePlayer();
   const isActivePlayer = true;

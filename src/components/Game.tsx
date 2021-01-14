@@ -7,7 +7,6 @@ import Players from "./Players";
 import GamePointsBreakdown from "./GamePointsBreakdown";
 import ViewerUI from "./ViewerUI";
 import GameInputBox from "./GameInputBox";
-import GameLog from "./GameLog";
 import GameUpdater from "./GameUpdater";
 import { Player } from "../model/player";
 import { GameState } from "../model/gameState";
@@ -60,7 +59,6 @@ const Game: React.FC<{
           gameState={gameStateImpl}
           viewingPlayer={viewingPlayerImpl}
         />
-        <GameLog logs={gameState.gameLog} />
         {gameStateImpl.isGameOver() && (
           <GamePointsBreakdown
             gameState={gameStateImpl}

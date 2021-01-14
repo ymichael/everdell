@@ -777,7 +777,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           if (!locationsMap || locationsMap.indexOf(player.playerId) === -1) {
             throw new Error("Can't find worker at location");
           }
-          location.play(gameState, gameInput);
+          location.triggerLocation(gameState);
           playedClockTower.resources[ResourceType.VP] =
             (playedClockTower.resources[ResourceType.VP] || 0) - 1;
 
@@ -1409,7 +1409,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         if (!location.canPlay(gameState, gameInput)) {
           throw new Error("Location can't be played");
         }
-        location.play(gameState, gameInput);
+        location.triggerLocation(gameState);
         gameState.addGameLogFromCard(CardName.LOOKOUT, [
           player,
           " copied ",

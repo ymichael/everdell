@@ -756,7 +756,7 @@ export class GameState {
     return keys.filter((eventName) => {
       const event = Event.fromName(eventName);
       return event.canPlay(this, {
-        inputType: GameInputType.CLAIM_EVENT as const,
+        inputType: GameInputType.CLAIM_EVENT,
         clientOptions: {
           event: eventName,
         },
@@ -769,7 +769,7 @@ export class GameState {
     return keys.filter((locationName) => {
       const location = Location.fromName(locationName);
       return location.canPlay(this, {
-        inputType: GameInputType.PLACE_WORKER as const,
+        inputType: GameInputType.PLACE_WORKER,
         clientOptions: {
           location: locationName,
         },

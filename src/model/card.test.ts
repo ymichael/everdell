@@ -1641,6 +1641,75 @@ describe("Card", () => {
         expect(player1.cardsInHand.length).to.be(1);
       });
 
+      it("should allow player to copy FOREST_DISCARD_ANY_THEN_DRAW_TWO_PER_CARD", () => {
+        gameState.locationsMap[
+          LocationName.FOREST_DISCARD_ANY_THEN_DRAW_TWO_PER_CARD
+        ] = [];
+        let player1 = gameState.getActivePlayer();
+        player1.addToCity(CardName.LOOKOUT);
+        player1.cardsInHand = [
+          CardName.FARM,
+          CardName.FARM,
+          CardName.FARM,
+          CardName.FARM,
+        ];
+        gameState.locationsMap[LocationName.BASIC_TWO_CARDS_AND_ONE_VP] = [
+          player1.playerId,
+        ];
+        player1.placeWorkerOnLocation(LocationName.BASIC_TWO_CARDS_AND_ONE_VP);
+
+        expect(player1.numAvailableWorkers).to.be(1);
+        expect(player1.cardsInHand.length).to.be(4);
+
+        gameState = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            clientOptions: {
+              playedCard: player1.getFirstPlayedCard(CardName.LOOKOUT),
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_LOCATION,
+            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardContext: CardName.LOOKOUT,
+            locationOptions: ((Object.keys(
+              gameState.locationsMap
+            ) as unknown) as LocationName[]).filter((name) => {
+              const location = Location.fromName(name);
+              return (
+                location.type === LocationType.BASIC ||
+                location.type === LocationType.FOREST
+              );
+            }),
+            clientOptions: {
+              selectedLocation:
+                LocationName.FOREST_DISCARD_ANY_THEN_DRAW_TWO_PER_CARD,
+            },
+          },
+          {
+            inputType: GameInputType.DISCARD_CARDS,
+            prevInputType: GameInputType.PLACE_WORKER,
+            locationContext:
+              LocationName.FOREST_DISCARD_ANY_THEN_DRAW_TWO_PER_CARD,
+            minCards: 0,
+            maxCards: 8,
+            clientOptions: {
+              cardsToDiscard: [
+                CardName.FARM,
+                CardName.FARM,
+                CardName.FARM,
+                CardName.FARM,
+              ],
+            },
+          },
+        ]);
+
+        player1 = gameState.getPlayer(player1.playerId);
+
+        expect(player1.numAvailableWorkers).to.be(0);
+        expect(player1.cardsInHand.length).to.be(8);
+      });
+
       it("should allow player to copy location with a worker on it", () => {
         gameState.locationsMap[LocationName.FOREST_TWO_BERRY_ONE_CARD] = [];
         let player1 = gameState.getActivePlayer();

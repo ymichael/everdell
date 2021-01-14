@@ -154,6 +154,18 @@ export class Location implements GameStatePlayable, IGameTextEntity {
     if (canPlayError) {
       throw new Error(canPlayError);
     }
+    this.triggerLocation(gameState, gameInput);
+  }
+
+  triggerLocation(
+    gameState: GameState,
+    gameInput: GameInput = {
+      inputType: GameInputType.PLACE_WORKER,
+      clientOptions: {
+        location: this.name,
+      },
+    }
+  ): void {
     if (this.playInner) {
       this.playInner(gameState, gameInput);
     }
@@ -551,7 +563,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
           [player, " copied ", location, "."]
         );
 
-        location.play(gameState, gameInput);
+        location.triggerLocation(gameState);
       } else {
         throw new Error(`Invalid input type ${gameInput.inputType}`);
       }

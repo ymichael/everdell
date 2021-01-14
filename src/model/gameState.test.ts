@@ -584,12 +584,12 @@ describe("GameState", () => {
       expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
 
       // Use up all workers
+      gameState.locationsMap[LocationName.FOREST_TWO_WILD] = [player.playerId];
       gameState.locationsMap[LocationName.BASIC_ONE_BERRY]!.push(
-        player.playerId,
         player.playerId
       );
       player.placeWorkerOnLocation(LocationName.BASIC_ONE_BERRY);
-      player.placeWorkerOnLocation(LocationName.BASIC_ONE_BERRY);
+      player.placeWorkerOnLocation(LocationName.FOREST_TWO_WILD);
 
       const gameStateNoActivate = multiStepGameInputTest(gameState, [
         {
@@ -604,7 +604,7 @@ describe("GameState", () => {
               location: LocationName.BASIC_ONE_BERRY,
             },
             {
-              location: LocationName.BASIC_ONE_BERRY,
+              location: LocationName.FOREST_TWO_WILD,
             },
           ],
           clientOptions: {
@@ -639,19 +639,31 @@ describe("GameState", () => {
               location: LocationName.BASIC_ONE_BERRY,
             },
             {
-              location: LocationName.BASIC_ONE_BERRY,
+              location: LocationName.FOREST_TWO_WILD,
             },
           ],
           clientOptions: {
             selectedOption: {
-              location: LocationName.BASIC_ONE_BERRY,
+              location: LocationName.FOREST_TWO_WILD,
             },
           },
           prevInputType: GameInputType.PREPARE_FOR_SEASON,
         },
+        {
+          inputType: GameInputType.SELECT_RESOURCES,
+          prevInputType: GameInputType.PLACE_WORKER,
+          locationContext: LocationName.FOREST_TWO_WILD,
+          maxResources: 2,
+          minResources: 2,
+          clientOptions: {
+            resources: {
+              [ResourceType.BERRY]: 2,
+            },
+          },
+        },
       ]);
       player = gameStateWithActivate.getPlayer(player.playerId);
-      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(3);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(4);
       expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(2);
       expect(player.numAvailableWorkers).to.be(3);
       expect(player.getPlayedCardInfos(CardName.CLOCK_TOWER)?.[0]).to.eql({

@@ -85,7 +85,63 @@ export class Location implements GameStatePlayable, IGameTextEntity {
   }
 
   canPlay(gameState: GameState, gameInput: GameInput): boolean {
+    if (gameInput.inputType === GameInputType.PLACE_WORKER) {
+      const canPlaceWorkerCheckErr = this.canPlaceWorkerCheck(
+        gameState,
+        gameInput
+      );
+      if (canPlaceWorkerCheckErr) {
+        return false;
+      }
+    }
     return !this.canPlayCheck(gameState, gameInput);
+  }
+
+  canPlaceWorkerCheck(
+    gameState: GameState,
+    gameInput: GameInput
+  ): string | null {
+    const player = gameState.getActivePlayer();
+    if (player.numAvailableWorkers <= 0) {
+      return `Active player (${player.name}) doesn't have any workers to place.`;
+    }
+    switch (this.occupancy) {
+      case LocationOccupancy.EXCLUSIVE:
+        if (gameState.locationsMap[this.name]!.length !== 0) {
+          return `Location ${
+            this.name
+          } is occupied. \nGame Locations: ${JSON.stringify(
+            gameState.locationsMap,
+            null,
+            2
+          )}`;
+        }
+        break;
+      case LocationOccupancy.EXCLUSIVE_FOUR:
+        if (
+          !(
+            gameState.locationsMap[this.name]!.length <
+            (gameState.players.length < 4 ? 1 : 2)
+          )
+        ) {
+          return `Location ${
+            this.name
+          } is occupied. \nGame Locations: ${JSON.stringify(
+            gameState.locationsMap,
+            null,
+            2
+          )}`;
+        }
+        break;
+      case LocationOccupancy.UNLIMITED:
+        break;
+      default:
+        assertUnreachable(
+          this.occupancy,
+          `Unexpected occupancy: ${this.occupancy}`
+        );
+    }
+    return null;
   }
 
   canPlayCheck(gameState: GameState, gameInput: GameInput): string | null {
@@ -97,48 +153,6 @@ export class Location implements GameStatePlayable, IGameTextEntity {
         null,
         2
       )}`;
-    }
-    if (gameInput.inputType === GameInputType.PLACE_WORKER) {
-      const player = gameState.getActivePlayer();
-      if (player.numAvailableWorkers <= 0) {
-        return `Active player (${player.playerId}) doesn't have any workers to place.`;
-      }
-      switch (this.occupancy) {
-        case LocationOccupancy.EXCLUSIVE:
-          if (gameState.locationsMap[this.name]!.length !== 0) {
-            return `Location ${
-              this.name
-            } is occupied. \nGame Locations: ${JSON.stringify(
-              gameState.locationsMap,
-              null,
-              2
-            )}`;
-          }
-          break;
-        case LocationOccupancy.EXCLUSIVE_FOUR:
-          if (
-            !(
-              gameState.locationsMap[this.name]!.length <
-              (gameState.players.length < 4 ? 1 : 2)
-            )
-          ) {
-            return `Location ${
-              this.name
-            } is occupied. \nGame Locations: ${JSON.stringify(
-              gameState.locationsMap,
-              null,
-              2
-            )}`;
-          }
-          break;
-        case LocationOccupancy.UNLIMITED:
-          break;
-        default:
-          assertUnreachable(
-            this.occupancy,
-            `Unexpected occupancy: ${this.occupancy}`
-          );
-      }
     }
     if (this.canPlayCheckInner) {
       const errorMsg = this.canPlayCheckInner(gameState, gameInput);
@@ -167,6 +181,12 @@ export class Location implements GameStatePlayable, IGameTextEntity {
     }
   ): void {
     if (this.playInner) {
+      if (this.canPlayCheckInner) {
+        const errorMsg = this.canPlayCheckInner(gameState, gameInput);
+        if (errorMsg) {
+          throw new Error(errorMsg);
+        }
+      }
       this.playInner(gameState, gameInput);
     }
     if (this.resourcesToGain && sumResources(this.resourcesToGain)) {
@@ -775,7 +795,6 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
       return null;
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      // select cards from meadow
       const player = gameState.getActivePlayer();
 
       if (gameInput.inputType === GameInputType.PLACE_WORKER) {

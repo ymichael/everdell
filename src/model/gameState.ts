@@ -764,16 +764,24 @@ export class GameState {
     });
   };
 
-  getPlayableLocations = (): LocationName[] => {
+  getPlayableLocations = (
+    { checkCanPlaceWorker }: { checkCanPlaceWorker: boolean } = {
+      checkCanPlaceWorker: true,
+    }
+  ): LocationName[] => {
     const keys = (Object.keys(this.locationsMap) as unknown) as LocationName[];
     return keys.filter((locationName) => {
       const location = Location.fromName(locationName);
-      return location.canPlay(this, {
-        inputType: GameInputType.PLACE_WORKER,
+      const gameInput = {
+        inputType: GameInputType.PLACE_WORKER as const,
         clientOptions: {
           location: locationName,
         },
-      });
+      };
+      if (!checkCanPlaceWorker) {
+        return !location.canPlayCheck(this, gameInput);
+      }
+      return location.canPlay(this, gameInput);
     });
   };
 

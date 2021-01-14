@@ -1369,22 +1369,29 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
-        // ask player which location they want to copy
-        const possibleLocations = (Object.keys(
-          gameState.locationsMap
-        ) as unknown) as LocationName[];
+        // Ask player which location they want to copy
+        const possibleLocations = gameState
+          .getPlayableLocations({ checkCanPlaceWorker: false })
+          .map((locationName) => {
+            return Location.fromName(locationName);
+          })
+          .filter((location) => {
+            return (
+              location.type === LocationType.BASIC ||
+              location.type === LocationType.FOREST
+            );
+          });
+
+        if (possibleLocations.length === 0) {
+          // This should never happen because there are unlimited basic locations.
+          throw new Error("No location available to copy.");
+        }
 
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_LOCATION,
           prevInputType: gameInput.inputType,
           cardContext: CardName.LOOKOUT,
-          locationOptions: possibleLocations.filter((locationName) => {
-            const location = Location.fromName(locationName);
-            return (
-              location.type === LocationType.BASIC ||
-              location.type === LocationType.FOREST
-            );
-          }),
+          locationOptions: possibleLocations.map((x) => x.name),
           clientOptions: {
             selectedLocation: null,
           },
@@ -1394,7 +1401,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         gameInput.cardContext === CardName.LOOKOUT
       ) {
         const selectedLocation = gameInput.clientOptions.selectedLocation;
-        if (!selectedLocation) {
+        if (
+          !selectedLocation ||
+          gameInput.locationOptions.indexOf(selectedLocation) === -1
+        ) {
           throw new Error("Invalid location selected");
         }
         const location = Location.fromName(selectedLocation);

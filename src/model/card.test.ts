@@ -1567,6 +1567,10 @@ describe("Card", () => {
         expect(player1.numAvailableWorkers).to.be(2);
         expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
 
+        // All cards player can't play
+        expect(gameState.meadowCards).to.eql([]);
+        gameState.meadowCards.push(CardName.LOOKOUT);
+
         gameState = multiStepGameInputTest(gameState, [
           {
             inputType: GameInputType.VISIT_DESTINATION_CARD,
@@ -1578,15 +1582,17 @@ describe("Card", () => {
             inputType: GameInputType.SELECT_LOCATION,
             prevInputType: GameInputType.VISIT_DESTINATION_CARD,
             cardContext: CardName.LOOKOUT,
-            locationOptions: ((Object.keys(
-              gameState.locationsMap
-            ) as unknown) as LocationName[]).filter((name) => {
-              const location = Location.fromName(name);
-              return (
-                location.type === LocationType.BASIC ||
-                location.type === LocationType.FOREST
-              );
-            }),
+            locationOptions: gameState
+              .getPlayableLocations({
+                checkCanPlaceWorker: false,
+              })
+              .filter((name) => {
+                const location = Location.fromName(name);
+                return (
+                  location.type === LocationType.BASIC ||
+                  location.type === LocationType.FOREST
+                );
+              }),
             clientOptions: {
               selectedLocation: LocationName.BASIC_ONE_BERRY,
             },
@@ -1619,15 +1625,17 @@ describe("Card", () => {
             inputType: GameInputType.SELECT_LOCATION,
             prevInputType: GameInputType.VISIT_DESTINATION_CARD,
             cardContext: CardName.LOOKOUT,
-            locationOptions: ((Object.keys(
-              gameState.locationsMap
-            ) as unknown) as LocationName[]).filter((name) => {
-              const location = Location.fromName(name);
-              return (
-                location.type === LocationType.BASIC ||
-                location.type === LocationType.FOREST
-              );
-            }),
+            locationOptions: gameState
+              .getPlayableLocations({
+                checkCanPlaceWorker: false,
+              })
+              .filter((name) => {
+                const location = Location.fromName(name);
+                return (
+                  location.type === LocationType.BASIC ||
+                  location.type === LocationType.FOREST
+                );
+              }),
             clientOptions: {
               selectedLocation: LocationName.FOREST_TWO_BERRY_ONE_CARD,
             },
@@ -1639,6 +1647,60 @@ describe("Card", () => {
         expect(player1.numAvailableWorkers).to.be(1);
         expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
         expect(player1.cardsInHand.length).to.be(1);
+      });
+
+      it("should only allow player to copy a playable forest location", () => {
+        // simulate player not being able to visit this location:
+        gameState.locationsMap[
+          LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS
+        ] = [];
+        gameState.locationsMap[
+          LocationName.FOREST_DISCARD_ANY_THEN_DRAW_TWO_PER_CARD
+        ] = [];
+
+        let player1 = gameState.getActivePlayer();
+
+        // Use first worker
+        gameState.locationsMap[LocationName.BASIC_TWO_CARDS_AND_ONE_VP] = [
+          player1.playerId,
+        ];
+        player1.placeWorkerOnLocation(LocationName.BASIC_TWO_CARDS_AND_ONE_VP);
+
+        player1.addToCity(CardName.LOOKOUT);
+
+        expect(player1.numAvailableWorkers).to.be(1);
+        expect(player1.cardsInHand.length).to.be(0);
+
+        expect(() => {
+          multiStepGameInputTest(gameState, [
+            {
+              inputType: GameInputType.VISIT_DESTINATION_CARD,
+              clientOptions: {
+                playedCard: player1.getFirstPlayedCard(CardName.LOOKOUT),
+              },
+            },
+            {
+              inputType: GameInputType.SELECT_LOCATION,
+              prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+              cardContext: CardName.LOOKOUT,
+              locationOptions: gameState
+                .getPlayableLocations({
+                  checkCanPlaceWorker: false,
+                })
+                .filter((name) => {
+                  const location = Location.fromName(name);
+                  return (
+                    location.type === LocationType.BASIC ||
+                    location.type === LocationType.FOREST
+                  );
+                }),
+              clientOptions: {
+                selectedLocation:
+                  LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS,
+              },
+            },
+          ]);
+        }).to.throwException(/invalid location selected/i);
       });
 
       it("should allow player to copy FOREST_DISCARD_ANY_THEN_DRAW_TWO_PER_CARD", () => {
@@ -1672,15 +1734,17 @@ describe("Card", () => {
             inputType: GameInputType.SELECT_LOCATION,
             prevInputType: GameInputType.VISIT_DESTINATION_CARD,
             cardContext: CardName.LOOKOUT,
-            locationOptions: ((Object.keys(
-              gameState.locationsMap
-            ) as unknown) as LocationName[]).filter((name) => {
-              const location = Location.fromName(name);
-              return (
-                location.type === LocationType.BASIC ||
-                location.type === LocationType.FOREST
-              );
-            }),
+            locationOptions: gameState
+              .getPlayableLocations({
+                checkCanPlaceWorker: false,
+              })
+              .filter((name) => {
+                const location = Location.fromName(name);
+                return (
+                  location.type === LocationType.BASIC ||
+                  location.type === LocationType.FOREST
+                );
+              }),
             clientOptions: {
               selectedLocation:
                 LocationName.FOREST_DISCARD_ANY_THEN_DRAW_TWO_PER_CARD,
@@ -1733,15 +1797,17 @@ describe("Card", () => {
             inputType: GameInputType.SELECT_LOCATION,
             prevInputType: GameInputType.VISIT_DESTINATION_CARD,
             cardContext: CardName.LOOKOUT,
-            locationOptions: ((Object.keys(
-              gameState.locationsMap
-            ) as unknown) as LocationName[]).filter((name) => {
-              const location = Location.fromName(name);
-              return (
-                location.type === LocationType.BASIC ||
-                location.type === LocationType.FOREST
-              );
-            }),
+            locationOptions: gameState
+              .getPlayableLocations({
+                checkCanPlaceWorker: false,
+              })
+              .filter((name) => {
+                const location = Location.fromName(name);
+                return (
+                  location.type === LocationType.BASIC ||
+                  location.type === LocationType.FOREST
+                );
+              }),
             clientOptions: {
               selectedLocation: LocationName.FOREST_TWO_BERRY_ONE_CARD,
             },

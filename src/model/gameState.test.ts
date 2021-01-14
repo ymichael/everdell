@@ -9,9 +9,11 @@ import {
   EventName,
   PlayerStatus,
   ResourceType,
+  LocationType,
 } from "./types";
 import { Event } from "./event";
 import { Card } from "./card";
+import { Location } from "./location";
 import {
   testInitialGameState,
   multiStepGameInputTest,
@@ -81,6 +83,100 @@ describe("GameState", () => {
         CardName.MINER_MOLE,
         CardName.MINE,
         CardName.FARM,
+      ]);
+    });
+  });
+
+  describe("getPlayableLocations", () => {
+    it("should account for active player numAvailableWorkers", () => {
+      expect(gameState.getPlayableLocations()).to.eql([
+        ...Location.byType(LocationType.BASIC),
+        ...Location.byType(LocationType.HAVEN),
+      ]);
+
+      // Use up all workers
+      const player = gameState.getActivePlayer();
+      gameState.locationsMap[LocationName.BASIC_ONE_BERRY]!.push(
+        player.playerId,
+        player.playerId
+      );
+      player.placeWorkerOnLocation(LocationName.BASIC_ONE_BERRY);
+      player.placeWorkerOnLocation(LocationName.BASIC_ONE_BERRY);
+
+      expect(gameState.getPlayableLocations()).to.eql([]);
+      expect(
+        gameState.getPlayableLocations({
+          checkCanPlaceWorker: false,
+        })
+      ).to.eql([
+        ...Location.byType(LocationType.BASIC),
+        ...Location.byType(LocationType.HAVEN),
+      ]);
+    });
+
+    it("should account for location occupancy restrictions", () => {
+      expect(gameState.getPlayableLocations()).to.eql([
+        ...Location.byType(LocationType.BASIC),
+        ...Location.byType(LocationType.HAVEN),
+      ]);
+
+      // Use put one worker on exclusive location
+      const player = gameState.getActivePlayer();
+      gameState.locationsMap[LocationName.BASIC_ONE_STONE]!.push(
+        player.playerId
+      );
+      player.placeWorkerOnLocation(LocationName.BASIC_ONE_STONE);
+
+      expect(gameState.getPlayableLocations()).to.eql([
+        ...Location.byType(LocationType.BASIC).filter(
+          (x) => x !== LocationName.BASIC_ONE_STONE
+        ),
+        ...Location.byType(LocationType.HAVEN),
+      ]);
+      expect(
+        gameState.getPlayableLocations({
+          checkCanPlaceWorker: false,
+        })
+      ).to.eql([
+        ...Location.byType(LocationType.BASIC),
+        ...Location.byType(LocationType.HAVEN),
+      ]);
+    });
+
+    it("should account for forest location occupancy restrictions", () => {
+      gameState = testInitialGameState({ numPlayers: 4 });
+
+      // Add one forest location
+      gameState.locationsMap[LocationName.FOREST_TWO_WILD] = [];
+
+      const player = gameState.getActivePlayer();
+
+      expect(gameState.getPlayableLocations()).to.eql([
+        ...Location.byType(LocationType.BASIC),
+        ...Location.byType(LocationType.HAVEN),
+        LocationName.FOREST_TWO_WILD,
+      ]);
+      // Put one worker on exclusive forest location
+      gameState.locationsMap[LocationName.FOREST_TWO_WILD]!.push(
+        player.playerId
+      );
+      player.placeWorkerOnLocation(LocationName.FOREST_TWO_WILD);
+
+      expect(gameState.getPlayableLocations()).to.eql([
+        ...Location.byType(LocationType.BASIC),
+        ...Location.byType(LocationType.HAVEN),
+        LocationName.FOREST_TWO_WILD,
+      ]);
+
+      // Put another one worker on exclusive forest location
+      gameState.locationsMap[LocationName.FOREST_TWO_WILD]!.push(
+        gameState.players[1].playerId
+      );
+      gameState.players[1].placeWorkerOnLocation(LocationName.FOREST_TWO_WILD);
+
+      expect(gameState.getPlayableLocations()).to.eql([
+        ...Location.byType(LocationType.BASIC),
+        ...Location.byType(LocationType.HAVEN),
       ]);
     });
   });

@@ -573,7 +573,6 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
         }
 
         const location = Location.fromName(selectedLocation);
-
         if (location.type !== LocationType.BASIC) {
           throw new Error("can only copy a basic location");
         }

@@ -10,6 +10,7 @@ import {
   GameStatePlayFn,
   GameStateCountPointsFn,
 } from "./gameState";
+import { toGameText } from "./gameText";
 
 import { Card } from "./card";
 
@@ -67,6 +68,7 @@ export function gainProductionSpendResourceToGetVPFactory({
       gameState.pendingGameInputs.push({
         inputType: GameInputType.SELECT_RESOURCES,
         prevInputType: gameInput.inputType,
+        label: `Pay up to ${maxToSpend} ${resourceType} to gain 1 VP each`,
         cardContext: card,
         maxResources: maxToSpend,
         minResources: 0,

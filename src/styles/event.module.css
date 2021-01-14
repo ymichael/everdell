@@ -1,8 +1,7 @@
 .event {
   min-height: 100px;
-  width: 200px;
+  width: 150px;
   border-radius: 5px;
-
   border: solid 2px #91894e;
   display: flex;
   justify-content: center;
@@ -25,7 +24,7 @@
 }
 
 .event_row {
-  padding: 5px 10px;
+  padding: 5px;
   text-align: center;
   font-size: 12px;
   line-height: 22px;

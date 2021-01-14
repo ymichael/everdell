@@ -1,6 +1,5 @@
 .items {
   margin-left: -10px;
-  margin-bottom: 20px;
   display: flex;
   flex-wrap: wrap;
 }
@@ -33,10 +32,12 @@
 
 .forest_locations {
   height: 100%;
-  padding: 10px 0;
+  margin-left: -10px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+}
+.forest_locations > div {
+  min-height: 120px;
 }
 
 .clickable {

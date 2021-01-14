@@ -14,6 +14,7 @@ import { GameState } from "../model/gameState";
 import { Event as EventModel } from "../model/event";
 import { Location as LocationModel } from "../model/location";
 
+import GameLog from "./GameLog";
 import Card, { PlayedCard } from "./Card";
 import Location from "./Location";
 import Event from "./Event";
@@ -144,25 +145,26 @@ export const Events: React.FC<{ gameState: GameState }> = ({ gameState }) => {
     const claimedBy = playerId ? gameState.getPlayer(playerId).name : null;
     return <Event key={name} name={name} claimedBy={claimedBy} />;
   };
-
   const allEvents = Object.keys(gameState.eventsMap) as EventName[];
+  const allEventObj = allEvents.map((eventName) =>
+    EventModel.fromName(eventName)
+  );
+
   return (
     <GameBlock title={"Events"}>
       <div className={styles.items}>
-        {allEvents
-          .filter((eventName) => {
-            const event = EventModel.fromName(eventName);
+        {allEventObj
+          .filter((event) => {
             return event.type === EventType.BASIC;
           })
-          .map((eventName) => renderClaimedEvent(eventName))}
+          .map((event) => renderClaimedEvent(event.name))}
       </div>
       <div className={styles.items}>
-        {allEvents
-          .filter((eventName) => {
-            const event = EventModel.fromName(eventName);
+        {allEventObj
+          .filter((event) => {
             return event.type !== EventType.BASIC;
           })
-          .map((eventName) => renderClaimedEvent(eventName))}
+          .map((event) => renderClaimedEvent(event.name))}
       </div>
     </GameBlock>
   );
@@ -196,11 +198,17 @@ export const GameBoard: React.FC<{
 }> = ({ gameState, viewingPlayer }) => {
   return (
     <div className={styles.game_board}>
-      <div className={styles.game_board_meadow}>
-        <Meadow meadowCards={gameState.meadowCards} />
+      <div>
+        <div className={styles.game_board_meadow}>
+          <Meadow meadowCards={gameState.meadowCards} />
+        </div>
+        <GameLog logs={gameState.gameLog} />
       </div>
       <div>
         <ForestLocations gameState={gameState} viewingPlayer={viewingPlayer} />
+      </div>
+      <div className={styles.game_board_events}>
+        <Events gameState={gameState} />
       </div>
     </div>
   );

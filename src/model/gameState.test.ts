@@ -28,7 +28,6 @@ describe("GameState", () => {
   describe("meadow", () => {
     it("should replenish meadow", () => {
       expect(gameState.meadowCards).to.eql([]);
-
       // Stack the deck
       const topOfDeck = [
         CardName.FARM,
@@ -809,6 +808,69 @@ describe("GameState", () => {
       gameState = gameState.next({ inputType: GameInputType.GAME_END });
       player1 = gameState.getPlayer(player1.playerId);
       expect(player1.playerStatus).to.be(PlayerStatus.GAME_ENDED);
+    });
+  });
+
+  describe("gameLog", () => {
+    it("should report game end information", () => {
+      gameState.players[0].addToCity(CardName.FARM); // 1
+      gameState.players[0].addToCity(CardName.QUEEN); // 4
+      gameState.players[0].addToCity(CardName.KING); // 4 + 0 events
+      gameState.players[0].gainResources({
+        [ResourceType.VP]: 5,
+      });
+
+      gameState.players[1].addToCity(CardName.ARCHITECT); // 2 + 2
+      gameState.players[1].addToCity(CardName.HISTORIAN); // 1
+      gameState.players[1].addToCity(CardName.HUSBAND); // 2
+      gameState.players[1].addToCity(CardName.WIFE); // 2 + 3 (for husband)
+      gameState.players[1].gainResources({
+        [ResourceType.RESIN]: 1,
+        [ResourceType.PEBBLE]: 1,
+      });
+
+      gameState.players.forEach((player) => {
+        player.nextSeason();
+        player.nextSeason();
+        player.nextSeason();
+      });
+      expect(gameState.gameLog).eql([
+        { entry: [{ type: "text", text: "Game created with 2 players." }] },
+        { entry: [{ type: "text", text: "Dealing cards to each player." }] },
+        { entry: [{ type: "text", text: "Dealing cards to the Meadow." }] },
+      ]);
+      gameState = gameState.next({ inputType: GameInputType.GAME_END });
+      gameState = gameState.next({ inputType: GameInputType.GAME_END });
+      expect(gameState.gameLog).eql([
+        { entry: [{ type: "text", text: "Game created with 2 players." }] },
+        { entry: [{ type: "text", text: "Dealing cards to each player." }] },
+        { entry: [{ type: "text", text: "Dealing cards to the Meadow." }] },
+        {
+          entry: [
+            gameState.players[0].getGameTextPart(),
+            { type: "text", text: " took the game end action." },
+          ],
+        },
+        {
+          entry: [
+            gameState.players[1].getGameTextPart(),
+            { type: "text", text: " took the game end action." },
+          ],
+        },
+        { entry: [{ type: "text", text: "Game over" }] },
+        {
+          entry: [
+            gameState.players[0].getGameTextPart(),
+            { type: "text", text: " has 14 points." },
+          ],
+        },
+        {
+          entry: [
+            gameState.players[1].getGameTextPart(),
+            { type: "text", text: " has 12 points." },
+          ],
+        },
+      ]);
     });
   });
 });

@@ -528,12 +528,12 @@ export class Player implements IGameTextEntity {
       );
     }
 
-    const { workers = [] } = origPlayedCard;
-    if (workers.length >= card.getMaxWorkers(cardOwner)) {
+    origPlayedCard.workers = origPlayedCard.workers || [];
+    if (origPlayedCard.workers.length >= card.getMaxWorkers(cardOwner)) {
       throw new Error(`Couldn't place worker: ${JSON.stringify(playedCard)}`);
     }
 
-    workers.push(this.playerId);
+    origPlayedCard.workers.push(this.playerId);
     this.placeWorkerCommon({ playedCard });
   }
 

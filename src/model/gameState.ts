@@ -375,7 +375,8 @@ export class GameState {
         player.addCardToHand(this, cardName);
       });
       this.addGameLog([
-        "Prepare for season: ",
+        { type: "em", text: "Prepare for season" },
+        ": ",
         player,
         " selected ",
         ...cardListToGameText(selectedCards),
@@ -506,7 +507,8 @@ export class GameState {
       player.currentSeason === Season.SUMMER
     ) {
       this.addGameLog([
-        "Prepare for season: ",
+        { type: "em", text: "Prepare for season" },
+        ": ",
         player,
         " activated PRODUCTION.",
       ]);
@@ -526,14 +528,16 @@ export class GameState {
     player.playerStatus = PlayerStatus.DURING_SEASON;
     player.recallWorkers(this);
     this.addGameLog([
-      "Prepare for season: ",
+      { type: "em", text: "Prepare for season" },
+      ": ",
       player,
       " recalled their workers.",
     ]);
 
     player.nextSeason();
     this.addGameLog([
-      "Prepare for season: ",
+      { type: "em", text: "Prepare for season" },
+      ": ",
       player,
       " is now in ",
       player.currentSeason,

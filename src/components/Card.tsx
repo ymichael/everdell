@@ -9,7 +9,7 @@ import {
   PlayedCardInfo,
 } from "../model/types";
 import { Player } from "../model/player";
-import { resourceMapToGameText } from "../model/gameText";
+import { resourceMapToGameText, toGameText } from "../model/gameText";
 import { GameIcon, Description, CardTypeSymbol } from "./common";
 import { sumResources } from "../model/gameStatePlayHelpers";
 
@@ -199,7 +199,14 @@ export const PlayedCard: React.FC<{
           <div>Workers on card: {workers.length}</div>
         )}
         {"pairedCards" in playedCard && (
-          <div>Beneath Card: {(playedCard.pairedCards || []).length}</div>
+          <div>
+            Beneath Card:{" "}
+            <Description
+              textParts={toGameText(
+                `${(playedCard.pairedCards || []).length} CARD`
+              )}
+            />
+          </div>
         )}
         {"resources" in playedCard && (
           <div>

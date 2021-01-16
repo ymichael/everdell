@@ -164,6 +164,12 @@ const Card: React.FC<{ name: CardName; usedForCritter?: boolean }> = ({
               <div className={styles.worker_spot}>
                 <WorkerSpotIcon />
               </div>
+              {(card.name === CardName.MONASTERY ||
+                card.name === CardName.CEMETARY) && (
+                <div className={styles.worker_spot}>
+                  <WorkerSpotIcon locked={true} />
+                </div>
+              )}
             </div>
           )}
           <div className={styles.card_description}>

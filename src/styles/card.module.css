@@ -55,10 +55,12 @@
 .card_cost {
   display: flex;
   flex: auto;
+  height: 30px;
 }
 
 .card_cost_item {
   padding: 5px;
+  max-height: 30px;
 }
 
 .card_description {
@@ -161,9 +163,15 @@
   font-size: 10px;
 }
 
+.worker_spot_row {
+  margin: auto;
+  display: flex;
+}
+
 .worker_spot {
   position: relative;
-  margin: 0 auto;
-  width: 45px;
+  display: inline-block;
+  margin: 0 8px;
+  width: 40px;
   height: 25px;
 }

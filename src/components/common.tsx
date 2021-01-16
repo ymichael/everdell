@@ -44,8 +44,12 @@ export const CardIcon = () => {
   return <Image src="/images/card.png" layout="fill" />;
 };
 
-export const WorkerSpotIcon = () => {
-  return <Image src="/images/worker_spot.png" layout="fill" />;
+export const WorkerSpotIcon = ({ locked = false }: { locked?: boolean }) => {
+  if (locked) {
+    return <Image src="/images/worker_spot_locked.png" layout="fill" />;
+  } else {
+    return <Image src="/images/worker_spot.png" layout="fill" />;
+  }
 };
 
 export const EmptyCitySpotIcon = () => {

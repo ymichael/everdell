@@ -55,14 +55,20 @@ describe("Card", () => {
     it("Storehouse is not a destination card, but can have a worker placed on it", () => {
       let card = Card.fromName(CardName.STOREHOUSE);
       expect(card.cardType).to.be(CardType.PRODUCTION);
-      expect(card.getMaxWorkers(gameState.getActivePlayer())).to.be(1);
+      expect(
+        card.getNumWorkerSpotsForPlayer(gameState.getActivePlayer())
+      ).to.be(1);
 
       card = Card.fromName(CardName.POST_OFFICE);
       expect(card.cardType).to.be(CardType.DESTINATION);
-      expect(card.getMaxWorkers(gameState.getActivePlayer())).to.be(1);
+      expect(
+        card.getNumWorkerSpotsForPlayer(gameState.getActivePlayer())
+      ).to.be(1);
 
       card = Card.fromName(CardName.FARM);
-      expect(card.getMaxWorkers(gameState.getActivePlayer())).to.be(0);
+      expect(
+        card.getNumWorkerSpotsForPlayer(gameState.getActivePlayer())
+      ).to.be(0);
     });
   });
 

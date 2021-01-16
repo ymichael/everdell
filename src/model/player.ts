@@ -396,7 +396,7 @@ export class Player implements IGameTextEntity {
     this.forEachPlayedCard((playedCard) => {
       const { cardName, workers = [] } = playedCard;
       const card = Card.fromName(cardName);
-      if (card.getMaxWorkers(this) > workers.length) {
+      if (card.getNumWorkerSpotsForPlayer(this) > workers.length) {
         ret.push(playedCard);
       }
     });
@@ -529,7 +529,10 @@ export class Player implements IGameTextEntity {
     }
 
     origPlayedCard.workers = origPlayedCard.workers || [];
-    if (origPlayedCard.workers.length >= card.getMaxWorkers(cardOwner)) {
+    if (
+      origPlayedCard.workers.length >=
+      card.getNumWorkerSpotsForPlayer(cardOwner)
+    ) {
       throw new Error(`Couldn't place worker: ${JSON.stringify(playedCard)}`);
     }
 
@@ -557,7 +560,7 @@ export class Player implements IGameTextEntity {
       return false;
     }
 
-    return card.getMaxWorkers(this) > workers.length;
+    return card.getNumWorkerSpotsForPlayer(this) > workers.length;
   }
 
   canAffordCard(

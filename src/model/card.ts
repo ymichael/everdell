@@ -40,7 +40,7 @@ import {
 } from "./gameText";
 import { assertUnreachable } from "../utils";
 
-type MaxWorkersInnerFn = (cardOwner: Player) => number;
+type NumWorkersInnerFn = (cardOwner: Player) => number;
 type ProductionInnerFn = (
   gameState: GameState,
   gameInput: GameInput,
@@ -70,7 +70,8 @@ export class Card<TCardType extends CardType = CardType>
 
   readonly productionInner: ProductionInnerFn | undefined;
   readonly resourcesToGain: ProductionResourceMap | undefined;
-  readonly maxWorkersInner: MaxWorkersInnerFn | undefined;
+  readonly numWorkersForPlayerInner: NumWorkersInnerFn | undefined;
+  readonly maxWorkerSpots: number;
 
   constructor({
     name,
@@ -88,7 +89,8 @@ export class Card<TCardType extends CardType = CardType>
     canPlayCheckInner, // called when we check canPlay function
     playedCardInfoDefault,
     pointsInner, // computed if specified + added to base points
-    maxWorkersInner,
+    maxWorkerSpots = null,
+    numWorkersForPlayerInner,
   }: {
     name: CardName;
     baseCost: CardCost;
@@ -101,7 +103,8 @@ export class Card<TCardType extends CardType = CardType>
     playInner?: GameStatePlayFn;
     canPlayCheckInner?: GameStateCanPlayCheckFn;
     playedCardInfoDefault?: Partial<Omit<PlayedCardInfo, "playerId">>;
-    maxWorkersInner?: MaxWorkersInnerFn;
+    maxWorkerSpots?: number | null;
+    numWorkersForPlayerInner?: NumWorkersInnerFn;
     cardDescription?: GameText | undefined;
   } & (TCardType extends CardType.PRODUCTION
     ? {
@@ -138,7 +141,13 @@ export class Card<TCardType extends CardType = CardType>
     this.productionInner = productionInner;
     this.resourcesToGain = resourcesToGain;
 
-    this.maxWorkersInner = maxWorkersInner;
+    this.maxWorkerSpots =
+      maxWorkerSpots == null
+        ? cardType === CardType.DESTINATION
+          ? 1
+          : 0
+        : maxWorkerSpots;
+    this.numWorkersForPlayerInner = numWorkersForPlayerInner;
   }
 
   getGameTextPart(): TextPartEntity {
@@ -339,18 +348,11 @@ export class Card<TCardType extends CardType = CardType>
     );
   }
 
-  takeWorkers(): boolean {
-    return !!this.maxWorkersInner || this.cardType === CardType.DESTINATION;
-  }
-
-  getMaxWorkers(cardOwner: Player): number {
-    if (this.maxWorkersInner) {
-      return this.maxWorkersInner(cardOwner);
+  getNumWorkerSpotsForPlayer(cardOwner: Player): number {
+    if (this.numWorkersForPlayerInner) {
+      return this.numWorkersForPlayerInner(cardOwner);
     }
-    if (this.cardType === CardType.DESTINATION) {
-      return 1;
-    }
-    return 0;
+    return this.maxWorkerSpots;
   }
 
   getNumResourcesInCost(): number {
@@ -501,7 +503,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       { type: "HR" },
       "Worker stays here permanently. ",
     ]),
-    maxWorkersInner: (cardOwner: Player) => {
+    maxWorkerSpots: 2,
+    numWorkersForPlayerInner: (cardOwner: Player) => {
       return cardOwner.hasCardInCity(CardName.UNDERTAKER) ? 2 : 1;
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
@@ -1563,7 +1566,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       { type: "HR" },
       "Worker stays here permanently.",
     ]),
-    maxWorkersInner: (cardOwner: Player) => {
+    maxWorkerSpots: 2,
+    numWorkersForPlayerInner: (cardOwner: Player) => {
       return cardOwner.hasCardInCity(CardName.MONK) ? 2 : 1;
     },
     canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
@@ -2533,7 +2537,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       { type: "HR" },
       "Place worker: Take all resources on this card.",
     ]),
-    maxWorkersInner: () => 1,
+    maxWorkerSpots: 1,
+    numWorkersForPlayerInner: () => 1,
     playedCardInfoDefault: {
       workers: [],
       resources: {

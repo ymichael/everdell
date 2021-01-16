@@ -159,13 +159,12 @@ const Card: React.FC<{ name: CardName; usedForCritter?: boolean }> = ({
               );
             })}
           </div>
-          {card.takeWorkers() && (
+          {card.maxWorkerSpots !== 0 && (
             <div className={styles.worker_spot_row}>
               <div className={styles.worker_spot}>
                 <WorkerSpotIcon />
               </div>
-              {(card.name === CardName.MONASTERY ||
-                card.name === CardName.CEMETARY) && (
+              {card.maxWorkerSpots == 2 && (
                 <div className={styles.worker_spot}>
                   <WorkerSpotIcon locked={true} />
                 </div>

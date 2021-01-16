@@ -30,7 +30,7 @@ If applicable, add screenshots to help explain your problem.
 
 **Browser / Device Info (if relevant):**
 
-- OS [e.g. iOS]:
+- OS [e.g. Windows, Mac, iOS, Android, etc]:
 - Browser [e.g. chrome, safari]:
 - Version [e.g. 22]:
 

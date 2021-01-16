@@ -79,7 +79,7 @@ const GameBuilder: React.FC = () => {
                                   -{" "}
                                 </button>
                               )}
-                              {numPlayers <= 6 && (
+                              {numPlayers < 4 && (
                                 <button
                                   type="button"
                                   tabIndex={-1}

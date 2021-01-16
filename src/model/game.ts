@@ -93,7 +93,7 @@ export const createGame = async (
     realtimePoints: false,
   }
 ): Promise<Game> => {
-  if (playerNames.length < 2) {
+  if (playerNames.length < 2 || playerNames.length > 4) {
     throw new Error(
       `Unable to create a game with ${playerNames.length} players`
     );

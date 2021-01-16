@@ -1802,7 +1802,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         gameInput.inputType === GameInputType.SELECT_RESOURCES &&
         gameInput.cardContext === CardName.PEDDLER
       ) {
-        if (gameInput.prevInputType === GameInputType.PLAY_CARD) {
+        if (gameInput.prevInputType !== GameInputType.SELECT_RESOURCES) {
           const numResources = sumResources(gameInput.clientOptions.resources);
           if (numResources < gameInput.minResources) {
             throw new Error("Too few resources");

@@ -1,7 +1,17 @@
 .items {
   margin-left: -10px;
   display: flex;
-  flex-wrap: wrap;
+  flex-flow: row wrap;
+}
+
+.event_items {
+  margin-left: -10px;
+  display: flex;
+}
+
+.event_items_col {
+  display: flex;
+  flex-direction: column;
 }
 
 .radio_item {
@@ -22,8 +32,8 @@
 .location_items {
   margin-left: -10px;
   display: flex;
-  flex-wrap: wrap;
-  width: 1000px;
+  flex-flow: row wrap;
+  width: 840px;
 }
 
 .game_board {
@@ -31,13 +41,9 @@
 }
 
 .forest_locations {
-  height: 100%;
   margin-left: -10px;
   display: flex;
   flex-direction: column;
-}
-.forest_locations > div {
-  min-height: 120px;
 }
 
 .clickable {
@@ -50,4 +56,10 @@
   font-size: 10px;
   text-align: center;
   text-transform: uppercase;
+}
+
+.locations_and_events {
+  display: flex;
+  flex-direction: row;
+  justify-items: flex-start;
 }

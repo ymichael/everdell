@@ -2,7 +2,7 @@ import * as React from "react";
 import { useState, useCallback, useEffect } from "react";
 import { unstable_batchedUpdates } from "react-dom";
 
-import { GameBoard, Locations, Events } from "./gameBoard";
+import { GameBoard, LocationsAndEvents } from "./gameBoard";
 import Players from "./Players";
 import GamePointsBreakdown from "./GamePointsBreakdown";
 import ViewerUI from "./ViewerUI";
@@ -78,11 +78,10 @@ const Game: React.FC<{
           showRealtimePoints={game.gameOptions.realtimePoints}
         />
         <ViewerUI player={viewingPlayerImpl} />
-        <Locations
+        <LocationsAndEvents
           gameState={gameStateImpl}
           viewingPlayer={viewingPlayerImpl}
         />
-        <Events gameState={gameStateImpl} />
       </GameUpdater>
     </div>
   );

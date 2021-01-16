@@ -43,6 +43,18 @@ export const Meadow: React.FC<{ meadowCards: CardName[] }> = ({
   );
 };
 
+export const LocationsAndEvents: React.FC<{
+  gameState: GameState;
+  viewingPlayer: Player;
+}> = ({ gameState, viewingPlayer }) => {
+  return (
+    <div className={styles.locations_and_events}>
+      <Locations gameState={gameState} viewingPlayer={viewingPlayer} />
+      <Events gameState={gameState} />
+    </div>
+  );
+};
+
 export const Locations: React.FC<{
   gameState: GameState;
   viewingPlayer: Player;
@@ -51,18 +63,16 @@ export const Locations: React.FC<{
   const allLocations = Object.keys(locationsMap) as LocationName[];
   const allLocationObjs = allLocations.map((x) => LocationModel.fromName(x));
 
-  const allForestLocationObjs = allLocationObjs.filter(
-    (x) => x.type === LocationType.FOREST
-  );
-  const allBasicLocationObjs = allLocationObjs.filter(
-    (x) => x.type === LocationType.BASIC
-  );
-  const allJourneyLocationObjs = allLocationObjs.filter(
-    (x) => x.type === LocationType.JOURNEY
-  );
-  const allHavenLocationObjs = allLocationObjs.filter(
-    (x) => x.type === LocationType.HAVEN
-  );
+  const sortOrder: Record<LocationType, number> = {
+    [LocationType.FOREST]: 1,
+    [LocationType.BASIC]: 2,
+    [LocationType.HAVEN]: 3,
+    [LocationType.JOURNEY]: 4,
+  };
+
+  allLocationObjs.sort((a, b) => {
+    return sortOrder[a.type] - sortOrder[b.type];
+  });
 
   const renderLocationWithPlayerNames = (name: LocationName) => {
     return (
@@ -81,22 +91,7 @@ export const Locations: React.FC<{
   return (
     <GameBlock title={"Locations"}>
       <div className={styles.location_items}>
-        {allForestLocationObjs.map((location, idx) => {
-          return renderLocationWithPlayerNames(location.name);
-        })}
-      </div>
-      <div className={styles.location_items}>
-        {allBasicLocationObjs.map((location, idx) => {
-          return renderLocationWithPlayerNames(location.name);
-        })}
-      </div>
-      <div className={styles.location_items}>
-        {allJourneyLocationObjs.map((location, idx) => {
-          return renderLocationWithPlayerNames(location.name);
-        })}
-      </div>
-      <div className={styles.location_items}>
-        {allHavenLocationObjs.map((location, idx) => {
+        {allLocationObjs.map((location, idx) => {
           return renderLocationWithPlayerNames(location.name);
         })}
       </div>
@@ -139,32 +134,48 @@ export const ForestLocations: React.FC<{
   );
 };
 
-export const Events: React.FC<{ gameState: GameState }> = ({ gameState }) => {
+export const Events: React.FC<{
+  gameState: GameState;
+  numColumns?: number;
+}> = ({ gameState, numColumns = 3 }) => {
   const renderClaimedEvent = (name: EventName) => {
     const playerId = gameState.eventsMap[name];
     const claimedBy = playerId ? gameState.getPlayer(playerId).name : null;
-    return <Event key={name} name={name} claimedBy={claimedBy} />;
+    return (
+      <div key={name} className={styles.event_item}>
+        <Event name={name} claimedBy={claimedBy} />
+      </div>
+    );
   };
   const allEvents = Object.keys(gameState.eventsMap) as EventName[];
   const allEventObj = allEvents.map((eventName) =>
     EventModel.fromName(eventName)
   );
 
+  allEventObj.sort((a, b) => {
+    return (
+      (a.type === EventType.BASIC ? -1 : 1) -
+      (b.type === EventType.BASIC ? -1 : 1)
+    );
+  });
+
+  const columns: EventModel[][] = [];
+  allEventObj.forEach((event, idx) => {
+    const colIdx = idx % numColumns;
+    columns[colIdx] = columns[colIdx] || [];
+    columns[colIdx]!.push(event);
+  });
+
   return (
     <GameBlock title={"Events"}>
-      <div className={styles.items}>
-        {allEventObj
-          .filter((event) => {
-            return event.type === EventType.BASIC;
-          })
-          .map((event) => renderClaimedEvent(event.name))}
-      </div>
-      <div className={styles.items}>
-        {allEventObj
-          .filter((event) => {
-            return event.type !== EventType.BASIC;
-          })
-          .map((event) => renderClaimedEvent(event.name))}
+      <div className={styles.event_items}>
+        {columns.map((events) => {
+          return (
+            <div className={styles.event_items_col}>
+              {events.map((event) => renderClaimedEvent(event.name))}
+            </div>
+          );
+        })}
       </div>
     </GameBlock>
   );
@@ -208,7 +219,7 @@ export const GameBoard: React.FC<{
         <ForestLocations gameState={gameState} viewingPlayer={viewingPlayer} />
       </div>
       <div className={styles.game_board_events}>
-        <Events gameState={gameState} />
+        <Events gameState={gameState} numColumns={2} />
       </div>
     </div>
   );

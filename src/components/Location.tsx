@@ -63,7 +63,14 @@ const Location: React.FC<{
   }
   if (viewingPlayer) {
     if (location.type === LocationType.JOURNEY) {
-      acceptingWorkers = viewingPlayer.currentSeason === Season.AUTUMN;
+      if (viewingPlayer.currentSeason === Season.AUTUMN) {
+        acceptingWorkers =
+          location.occupancy === LocationOccupancy.EXCLUSIVE
+            ? playerWorkers.length === 0
+            : true;
+      } else {
+        acceptingWorkers = false;
+      }
     }
   }
   if (gameState) {

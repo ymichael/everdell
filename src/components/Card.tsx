@@ -10,7 +10,12 @@ import {
 } from "../model/types";
 import { Player } from "../model/player";
 import { resourceMapToGameText, toGameText } from "../model/gameText";
-import { GameIcon, Description, CardTypeSymbol } from "./common";
+import {
+  GameIcon,
+  WorkerSpotIcon,
+  Description,
+  CardTypeSymbol,
+} from "./common";
 import { sumResources } from "../model/gameStatePlayHelpers";
 
 var colorClassMap = {
@@ -154,6 +159,13 @@ const Card: React.FC<{ name: CardName; usedForCritter?: boolean }> = ({
               );
             })}
           </div>
+          {card.takeWorkers() && (
+            <div className={styles.worker_spot_row}>
+              <div className={styles.worker_spot}>
+                <WorkerSpotIcon />
+              </div>
+            </div>
+          )}
           <div className={styles.card_description}>
             <CardDescription card={card} />
           </div>

@@ -160,3 +160,10 @@
   margin: 5px 0;
   font-size: 10px;
 }
+
+.worker_spot {
+  position: relative;
+  margin: 0 auto;
+  width: 45px;
+  height: 25px;
+}

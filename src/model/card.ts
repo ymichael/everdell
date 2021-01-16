@@ -339,6 +339,10 @@ export class Card<TCardType extends CardType = CardType>
     );
   }
 
+  takeWorkers(): boolean {
+    return !!this.maxWorkersInner || this.cardType === CardType.DESTINATION;
+  }
+
   getMaxWorkers(cardOwner: Player): number {
     if (this.maxWorkersInner) {
       return this.maxWorkersInner(cardOwner);

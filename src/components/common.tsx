@@ -44,6 +44,10 @@ export const CardIcon = () => {
   return <Image src="/images/card.png" layout="fill" />;
 };
 
+export const WorkerSpotIcon = () => {
+  return <Image src="/images/worker_spot.png" layout="fill" />;
+};
+
 export const EmptyCitySpotIcon = () => {
   return <Image src="/images/city_slot.png" layout="fill" />;
 };

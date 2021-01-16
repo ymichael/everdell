@@ -41,9 +41,14 @@
 }
 
 .forest_locations {
+  height: 100%;
   margin-left: -10px;
   display: flex;
   flex-direction: column;
+}
+
+.forest_locations > div {
+  min-height: 120px;
 }
 
 .clickable {

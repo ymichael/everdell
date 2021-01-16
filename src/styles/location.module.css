@@ -49,16 +49,28 @@
   border: solid 2px #bb9e66;
 }
 
-.location_type {
-  text-align: center;
-  text-transform: uppercase;
-  font-size: 10px;
-  font-weight: var(--font-bold);
-  margin: 5px;
-}
-
 .location_center {
   padding: 10px;
   text-align: center;
   font-size: 14px;
+}
+
+.location_type {
+  text-align: center;
+  margin: 5px;
+}
+
+.location_bot {
+  display: flex;
+  text-transform: uppercase;
+  font-size: 10px;
+  font-weight: var(--font-bold);
+  justify-content: space-between;
+}
+
+.location_bot_spacer,
+.location_occupancy {
+  width: 30px;
+  margin: 5px;
+  text-align: right;
 }

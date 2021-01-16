@@ -42,7 +42,11 @@ export const LocationInner: React.FC<{ name: LocationName }> = ({ name }) => {
           <Description textParts={location.description || location.shortName} />
         </div>
         <div className={styles.location_bot}>
+          <div className={styles.location_bot_spacer}> </div>
           <div className={styles.location_type}>{location.type}</div>
+          <div className={styles.location_occupancy}>
+            {location.occupancy === LocationOccupancy.UNLIMITED ? "1+" : ""}
+          </div>
         </div>
       </div>
     </>

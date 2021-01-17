@@ -449,6 +449,7 @@ describe("Location", () => {
       expect(player.cardsInHand).to.eql([CardName.EVERTREE]);
       expect(player.hasCardInCity(CardName.HUSBAND)).to.be(true);
     });
+
     it("cannot visit if player cannot play any meadow cards for 1 less", () => {
       const meadow = [
         CardName.HUSBAND,
@@ -477,6 +478,7 @@ describe("Location", () => {
         /cannot afford/i
       );
     });
+
     it("cannot visit if player has no space in city for cards in meadow", () => {
       const meadow = [
         CardName.HUSBAND,
@@ -521,6 +523,7 @@ describe("Location", () => {
 
       expect(() => gameState.next(gameInput)).to.throwException(/cannot add/i);
     });
+
     it("can visit if city is full but there is a playable card in meadow", () => {
       const meadow = [
         CardName.HUSBAND,
@@ -608,6 +611,7 @@ describe("Location", () => {
       expect(player.cardsInHand).to.eql([CardName.THEATRE]);
       expect(player.hasCardInCity(CardName.WIFE)).to.be(true);
     });
+
     it("must choose at least one playable card", () => {
       const meadow = [
         CardName.HUSBAND,
@@ -650,6 +654,63 @@ describe("Location", () => {
           },
         });
       }).to.throwException(/must choose at least/i);
+    });
+
+    it("doesn't prompt for payment if card is already free", () => {
+      const meadow = [
+        CardName.HUSBAND,
+        CardName.RANGER,
+        CardName.WIFE,
+        CardName.CEMETARY,
+        CardName.THEATRE,
+        CardName.EVERTREE,
+        CardName.HUSBAND,
+        CardName.CRANE,
+      ];
+      gameState = testInitialGameState({ meadowCards: meadow });
+
+      const location = Location.fromName(
+        LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS
+      );
+
+      player = gameState.getActivePlayer();
+      expect(player.hasCardInCity(CardName.CRANE)).to.be(false);
+      expect(player.cardsInHand.length).to.be(0);
+
+      const gameInput = placeWorkerInput(location.name);
+      gameState.locationsMap[
+        LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS
+      ] = [];
+
+      gameState = multiStepGameInputTest(gameState, [
+        gameInput,
+        {
+          inputType: GameInputType.SELECT_CARDS as const,
+          prevInputType: GameInputType.PLACE_WORKER,
+          cardOptions: meadow,
+          maxToSelect: 2,
+          minToSelect: 2,
+          locationContext:
+            LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS,
+          clientOptions: {
+            selectedCards: [CardName.CEMETARY, CardName.CRANE],
+          },
+        },
+        {
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: GameInputType.SELECT_CARDS,
+          cardOptions: [CardName.CEMETARY, CardName.CRANE],
+          maxToSelect: 1,
+          minToSelect: 1,
+          locationContext:
+            LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS,
+          clientOptions: { selectedCards: [CardName.CRANE] },
+        },
+      ]);
+      player = gameState.getPlayer(player.playerId);
+      expect(player.hasCardInCity(CardName.CRANE)).to.be(true);
+      expect(player.hasCardInCity(CardName.CEMETARY)).to.be(false);
+      expect(player.cardsInHand.length).to.be(1);
     });
   });
 

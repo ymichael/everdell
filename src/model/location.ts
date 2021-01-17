@@ -881,9 +881,10 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
           throw new Error("Must select exactly 1 card to play");
         }
 
-        const selectedCard = cardOptions[0];
+        const selectedCardName = cardOptions[0];
+        const selectedCard = Card.fromName(selectedCardName);
         const canAffordCard = player.canAffordCard(
-          selectedCard,
+          selectedCardName,
           false,
           "ANY 1"
         );
@@ -892,16 +893,25 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
           throw new Error("Cannot afford this card, even with discount.");
         }
 
-        // discount cost by 1
-        // ask player how they're paying
+        if (sumResources(selectedCard.baseCost) <= 1) {
+          gameState.addGameLogFromLocation(
+            LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS,
+            [player, " played ", selectedCard, " for 1 less."]
+          );
+          player.removeCardFromHand(selectedCardName);
+          selectedCard.addToCityAndPlay(gameState, gameInput);
+          return;
+        }
+
+        // Card cost more than 1, ask player how they're paying:
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_PAYMENT_FOR_CARD,
           prevInputType: gameInput.inputType,
           locationContext:
             LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS,
-          card: selectedCard,
+          card: selectedCardName,
           clientOptions: {
-            card: selectedCard,
+            card: selectedCardName,
             paymentOptions: { resources: {} },
           },
         });

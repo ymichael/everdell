@@ -1484,12 +1484,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         if (targetCard.cardType !== CardType.PRODUCTION) {
           throw new Error("Can only copy production cards");
         }
-        targetCard.gainProduction(
-          gameState,
-          gameInput,
-          cardOwner,
-          selectedCards[0]
-        );
         gameState.addGameLogFromCard(CardName.MINER_MOLE, [
           player,
           " activated ",
@@ -1498,6 +1492,12 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           cardOwner,
           "'s city.",
         ]);
+        targetCard.gainProduction(
+          gameState,
+          gameInput,
+          cardOwner,
+          selectedCards[0]
+        );
       }
     },
     productionInner: (gameState: GameState, gameInput: GameInput) => {

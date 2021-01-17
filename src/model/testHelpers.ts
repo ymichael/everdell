@@ -77,11 +77,11 @@ export function testInitialGameState(
 export const multiStepGameInputTest = (
   gameState: GameState,
   pendingGameInputs: GameInput[],
-  opts: { autoAdvance?: boolean } = {}
+  opts: { autoAdvance?: boolean; skipMultiPendingInputCheck?: boolean } = {}
 ): GameState => {
   let currGameState = gameState.clone();
   const player = currGameState.getActivePlayer();
-  const { autoAdvance = false } = opts;
+  const { autoAdvance = false, skipMultiPendingInputCheck = false } = opts;
 
   // Sanity check
   expect(currGameState.pendingGameInputs).to.eql([]);
@@ -96,9 +96,11 @@ export const multiStepGameInputTest = (
     currGameState = currGameState.next(gameInput, autoAdvance);
     if (!isLastInput) {
       const keysToOmit = ["label", "clientOptions"];
-      expect(
-        currGameState.pendingGameInputs.map((x) => omit(x, keysToOmit))
-      ).to.eql([omit(pendingGameInputs[idx + 1], keysToOmit)]);
+      if (!skipMultiPendingInputCheck) {
+        expect(
+          currGameState.pendingGameInputs.map((x) => omit(x, keysToOmit))
+        ).to.eql([omit(pendingGameInputs[idx + 1], keysToOmit)]);
+      }
       expect(player.playerId).to.be(currGameState.getActivePlayer().playerId);
     } else {
       expect(currGameState.pendingGameInputs).to.eql([]);

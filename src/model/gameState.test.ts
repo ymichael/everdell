@@ -549,11 +549,12 @@ describe("GameState", () => {
       expect(player.numAvailableWorkers).to.be(3);
     });
 
-    it("WINTER: should auto advance MONK/DOCTOR/WOODCARVER if there are no other pending inputs", () => {
+    it("WINTER: should auto advance MONK/DOCTOR/WOODCARVER/PEDDLER if there are no other pending inputs", () => {
       let player = gameState.getActivePlayer();
       player.addToCity(CardName.MONK);
       player.addToCity(CardName.DOCTOR);
       player.addToCity(CardName.WOODCARVER);
+      player.addToCity(CardName.PEDDLER);
 
       expect(player.currentSeason).to.be(Season.WINTER);
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
@@ -579,11 +580,12 @@ describe("GameState", () => {
       expect(player.numAvailableWorkers).to.be(3);
     });
 
-    it("WINTER: should NOT auto advance MONK/DOCTOR/WOODCARVER if there are other pending inputs", () => {
+    it("WINTER: should NOT auto advance MONK/DOCTOR/WOODCARVER/PEDDLER if there are other pending inputs", () => {
       let player = gameState.getActivePlayer();
       player.addToCity(CardName.MONK);
       player.addToCity(CardName.DOCTOR);
       player.addToCity(CardName.WOODCARVER);
+      player.addToCity(CardName.PEDDLER);
       player.addToCity(CardName.FARM);
 
       expect(player.currentSeason).to.be(Season.WINTER);
@@ -619,6 +621,94 @@ describe("GameState", () => {
       player = gameState.getPlayer(player.playerId);
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
       expect(player.getNumResourcesByType(ResourceType.VP)).to.be(1);
+      expect(player.numAvailableWorkers).to.be(3);
+    });
+
+    it("WINTER: should NOT auto advance MONK/DOCTOR/WOODCARVER/PEDDLER if there are other pending inputs", () => {
+      let player = gameState.getActivePlayer();
+      player.addToCity(CardName.MONK);
+      player.addToCity(CardName.DOCTOR);
+      player.addToCity(CardName.WOODCARVER);
+      player.addToCity(CardName.PEDDLER);
+      player.addToCity(CardName.FARM);
+      player.addToCity(CardName.MINE);
+
+      expect(player.currentSeason).to.be(Season.WINTER);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+
+      // Use up all workers
+      gameState.locationsMap[LocationName.BASIC_TWO_CARDS_AND_ONE_VP]!.push(
+        player.playerId,
+        player.playerId
+      );
+      player.placeWorkerOnLocation(LocationName.BASIC_TWO_CARDS_AND_ONE_VP);
+      player.placeWorkerOnLocation(LocationName.BASIC_TWO_CARDS_AND_ONE_VP);
+
+      gameState = multiStepGameInputTest(
+        gameState,
+        [
+          { inputType: GameInputType.PREPARE_FOR_SEASON },
+          {
+            inputType: GameInputType.SELECT_RESOURCES,
+            toSpend: true,
+            prevInputType: GameInputType.PREPARE_FOR_SEASON,
+            cardContext: CardName.DOCTOR,
+            maxResources: 3,
+            minResources: 0,
+            specificResource: ResourceType.BERRY,
+            clientOptions: { resources: { [ResourceType.BERRY]: 1 } },
+          },
+          {
+            inputType: GameInputType.SELECT_RESOURCES,
+            toSpend: true,
+            prevInputType: GameInputType.PREPARE_FOR_SEASON,
+            cardContext: CardName.PEDDLER,
+            maxResources: 2,
+            minResources: 0,
+            clientOptions: {
+              resources: {
+                [ResourceType.PEBBLE]: 1,
+              },
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_RESOURCES,
+            toSpend: false,
+            prevInputType: GameInputType.SELECT_RESOURCES,
+            cardContext: CardName.PEDDLER,
+            maxResources: 1,
+            minResources: 1,
+            clientOptions: {
+              resources: {
+                [ResourceType.TWIG]: 1,
+              },
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_RESOURCES,
+            toSpend: true,
+            prevInputType: GameInputType.PREPARE_FOR_SEASON,
+            cardContext: CardName.WOODCARVER,
+            maxResources: 3,
+            minResources: 0,
+            specificResource: ResourceType.TWIG,
+            clientOptions: {
+              resources: {
+                [ResourceType.TWIG]: 1,
+              },
+            },
+          },
+        ],
+        { autoAdvance: true, skipMultiPendingInputCheck: true }
+      );
+
+      player = gameState.getPlayer(player.playerId);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(2);
       expect(player.numAvailableWorkers).to.be(3);
     });
 

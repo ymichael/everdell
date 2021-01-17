@@ -184,6 +184,12 @@ export class GameState {
     this.gameLog.push({ entry });
   }
 
+  debugPrintLogs(): void {
+    this.gameLog.forEach((log) => {
+      console.log(gameTextToDebugStr(log.entry));
+    });
+  }
+
   toJSON(includePrivate: boolean): GameStateJSON {
     return cloneDeep({
       ...{

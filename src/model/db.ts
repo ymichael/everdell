@@ -49,7 +49,7 @@ class PgDb implements IDb {
   constructor(pgUrl: string) {
     this.pgUrl = pgUrl;
 
-    const config = {
+    const config: any = {
       connectionString: this.pgUrl,
     };
     if (this.pgUrl.indexOf("localhost") === -1) {

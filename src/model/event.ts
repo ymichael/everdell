@@ -297,6 +297,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       ) {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_RESOURCES,
+          toSpend: true,
           prevInputType: gameInput.inputType,
           prevInput: gameInput,
           maxResources: 3,
@@ -323,6 +324,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
 
           gameState.pendingGameInputs.push({
             inputType: GameInputType.SELECT_RESOURCES,
+            toSpend: true,
             prevInputType: gameInput.inputType,
             prevInput: gameInput,
             maxResources: prevMax - prevResourcesGiven,
@@ -483,6 +485,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         // ask player how many twigs to add to card
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_RESOURCES,
+          toSpend: true,
           prevInputType: GameInputType.CLAIM_EVENT,
           eventContext: EventName.SPECIAL_AN_EVENING_OF_FIREWORKS,
           maxResources: 3,
@@ -1056,6 +1059,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         // ask player how many berries to add to card
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_RESOURCES,
+          toSpend: true,
           prevInputType: GameInputType.CLAIM_EVENT,
           eventContext: EventName.SPECIAL_PERFORMER_IN_RESIDENCE,
           maxResources: 3,
@@ -1173,16 +1177,19 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           [player, ` drew ${numVP} CARD.`]
         );
 
-        gameState.pendingGameInputs.push({
-          inputType: GameInputType.SELECT_RESOURCES,
-          prevInputType: GameInputType.CLAIM_EVENT,
-          eventContext: EventName.SPECIAL_PRISTINE_CHAPEL_CEILING,
-          maxResources: numVP,
-          minResources: 0,
-          clientOptions: {
-            resources: {},
-          },
-        });
+        if (numVP !== 0) {
+          gameState.pendingGameInputs.push({
+            inputType: GameInputType.SELECT_RESOURCES,
+            toSpend: false,
+            prevInputType: GameInputType.CLAIM_EVENT,
+            eventContext: EventName.SPECIAL_PRISTINE_CHAPEL_CEILING,
+            maxResources: numVP,
+            minResources: 0,
+            clientOptions: {
+              resources: {},
+            },
+          });
+        }
       } else if (gameInput.inputType === GameInputType.SELECT_RESOURCES) {
         const resources = gameInput.clientOptions.resources;
         if (!resources) {
@@ -1374,6 +1381,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         // ask player how many resources to add to card
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_RESOURCES,
+          toSpend: true,
           prevInputType: GameInputType.CLAIM_EVENT,
           eventContext: EventName.SPECIAL_UNDER_NEW_MANAGEMENT,
           maxResources: 3,

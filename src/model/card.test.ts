@@ -466,6 +466,7 @@ describe("Card", () => {
           playCardInput(card.name),
           {
             inputType: GameInputType.SELECT_RESOURCES,
+            toSpend: false,
             prevInputType: GameInputType.PLAY_CARD,
             cardContext: CardName.HUSBAND,
             maxResources: 1,
@@ -816,6 +817,7 @@ describe("Card", () => {
           playCardInput(card.name),
           {
             inputType: GameInputType.SELECT_RESOURCES,
+            toSpend: true,
             prevInputType: GameInputType.PLAY_CARD,
             cardContext: CardName.PEDDLER,
             maxResources: 2,
@@ -829,6 +831,7 @@ describe("Card", () => {
           },
           {
             inputType: GameInputType.SELECT_RESOURCES,
+            toSpend: false,
             prevInputType: GameInputType.SELECT_RESOURCES,
             cardContext: CardName.PEDDLER,
             maxResources: 2,
@@ -861,6 +864,7 @@ describe("Card", () => {
             playCardInput(card.name),
             {
               inputType: GameInputType.SELECT_RESOURCES,
+              toSpend: true,
               prevInputType: GameInputType.PLAY_CARD,
               cardContext: CardName.PEDDLER,
               maxResources: 2,
@@ -890,6 +894,7 @@ describe("Card", () => {
             playCardInput(card.name),
             {
               inputType: GameInputType.SELECT_RESOURCES,
+              toSpend: true,
               prevInputType: GameInputType.PLAY_CARD,
               cardContext: CardName.PEDDLER,
               maxResources: 2,
@@ -928,6 +933,7 @@ describe("Card", () => {
         const selectResourceGameInput = {
           inputType: GameInputType.SELECT_RESOURCES as const,
           prevInputType: GameInputType.PLAY_CARD as const,
+          toSpend: true,
           cardContext: CardName.MONK,
           maxResources: 2,
           minResources: 0,
@@ -982,6 +988,7 @@ describe("Card", () => {
 
         const selectResourceGameInput = {
           inputType: GameInputType.SELECT_RESOURCES as const,
+          toSpend: true,
           prevInputType: GameInputType.PLAY_CARD as const,
           cardContext: CardName.MONK,
           maxResources: 2,
@@ -1027,6 +1034,7 @@ describe("Card", () => {
 
         const selectResourceGameInput = {
           inputType: GameInputType.SELECT_RESOURCES as const,
+          toSpend: true,
           prevInputType: GameInputType.PLAY_CARD as const,
           cardContext: CardName.MONK,
           maxResources: 2,
@@ -1072,6 +1080,7 @@ describe("Card", () => {
 
         const selectResourceGameInput = {
           inputType: GameInputType.SELECT_RESOURCES as const,
+          toSpend: true,
           prevInputType: GameInputType.PLAY_CARD as const,
           cardContext: CardName.MONK,
           maxResources: 2,
@@ -2784,6 +2793,7 @@ describe("Card", () => {
           playCardInput(card.name),
           {
             inputType: GameInputType.SELECT_RESOURCES,
+            toSpend: true,
             prevInputType: GameInputType.PLAY_CARD,
             cardContext: CardName.DOCTOR,
             specificResource: ResourceType.BERRY,
@@ -2831,6 +2841,7 @@ describe("Card", () => {
           playCardInput(card.name),
           {
             inputType: GameInputType.SELECT_RESOURCES,
+            toSpend: true,
             prevInputType: GameInputType.PLAY_CARD,
             cardContext: CardName.WOODCARVER,
             specificResource: ResourceType.TWIG,
@@ -2909,7 +2920,9 @@ describe("Card", () => {
           },
           {
             inputType: GameInputType.SELECT_RESOURCES,
+            cardContext: CardName.UNIVERSITY,
             prevInputType: GameInputType.SELECT_PLAYED_CARDS,
+            toSpend: false,
             prevInput: {
               inputType: GameInputType.SELECT_PLAYED_CARDS,
               prevInputType: GameInputType.VISIT_DESTINATION_CARD,
@@ -2946,7 +2959,6 @@ describe("Card", () => {
                 ],
               },
             },
-            cardContext: CardName.UNIVERSITY,
             maxResources: 1,
             minResources: 1,
             clientOptions: {
@@ -3001,7 +3013,9 @@ describe("Card", () => {
           },
           {
             inputType: GameInputType.SELECT_RESOURCES,
+            cardContext: CardName.UNIVERSITY,
             prevInputType: GameInputType.SELECT_PLAYED_CARDS,
+            toSpend: false,
             prevInput: {
               inputType: GameInputType.SELECT_PLAYED_CARDS,
               prevInputType: GameInputType.VISIT_DESTINATION_CARD,
@@ -3017,7 +3031,6 @@ describe("Card", () => {
                 selectedCards: [...player.getPlayedCardInfos(CardName.LOOKOUT)],
               },
             },
-            cardContext: CardName.UNIVERSITY,
             maxResources: 1,
             minResources: 1,
             clientOptions: {
@@ -3074,7 +3087,9 @@ describe("Card", () => {
           },
           {
             inputType: GameInputType.SELECT_RESOURCES,
+            cardContext: CardName.UNIVERSITY,
             prevInputType: GameInputType.SELECT_PLAYED_CARDS,
+            toSpend: false,
             prevInput: {
               inputType: GameInputType.SELECT_PLAYED_CARDS,
               prevInputType: GameInputType.VISIT_DESTINATION_CARD,
@@ -3088,7 +3103,6 @@ describe("Card", () => {
                 selectedCards: [...player1.getPlayedCardInfos(CardName.INN)],
               },
             },
-            cardContext: CardName.UNIVERSITY,
             maxResources: 1,
             minResources: 1,
             clientOptions: {
@@ -3140,6 +3154,8 @@ describe("Card", () => {
           {
             inputType: GameInputType.SELECT_RESOURCES,
             prevInputType: GameInputType.SELECT_PLAYED_CARDS,
+            cardContext: CardName.UNIVERSITY,
+            toSpend: false,
             prevInput: {
               inputType: GameInputType.SELECT_PLAYED_CARDS,
               prevInputType: GameInputType.VISIT_DESTINATION_CARD,
@@ -3157,7 +3173,6 @@ describe("Card", () => {
                 ],
               },
             },
-            cardContext: CardName.UNIVERSITY,
             maxResources: 1,
             minResources: 1,
             clientOptions: {
@@ -3197,6 +3212,7 @@ describe("Card", () => {
           inputType: GameInputType.SELECT_RESOURCES as const,
           prevInputType: GameInputType.VISIT_DESTINATION_CARD,
           cardContext: CardName.MONASTERY,
+          toSpend: true,
           clientOptions: {
             resources: {
               [ResourceType.BERRY]: 2,

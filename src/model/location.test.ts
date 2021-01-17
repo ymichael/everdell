@@ -126,6 +126,7 @@ describe("Location", () => {
         gameInput,
         {
           inputType: GameInputType.SELECT_RESOURCES,
+          toSpend: false,
           prevInputType: GameInputType.PLACE_WORKER,
           locationContext: LocationName.FOREST_TWO_WILD,
           maxResources: 2,
@@ -161,6 +162,7 @@ describe("Location", () => {
         gameInput,
         {
           inputType: GameInputType.SELECT_RESOURCES,
+          toSpend: false,
           prevInputType: GameInputType.PLACE_WORKER,
           locationContext: LocationName.FOREST_TWO_CARDS_ONE_WILD,
           maxResources: 1,
@@ -212,6 +214,7 @@ describe("Location", () => {
         },
         {
           inputType: GameInputType.SELECT_RESOURCES,
+          toSpend: false,
           prevInputType: GameInputType.DISCARD_CARDS,
           locationContext:
             LocationName.FOREST_DISCARD_UP_TO_THREE_CARDS_TO_GAIN_WILD_PER_CARD,
@@ -316,6 +319,7 @@ describe("Location", () => {
         },
         {
           inputType: GameInputType.SELECT_RESOURCES,
+          toSpend: false,
           prevInputType: GameInputType.DISCARD_CARDS,
           locationContext: LocationName.HAVEN,
           maxResources: 2,

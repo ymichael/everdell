@@ -279,6 +279,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
         // ask player which resources they want to get
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_RESOURCES,
+          toSpend: false,
           prevInputType: GameInputType.DISCARD_CARDS,
           locationContext: LocationName.HAVEN,
           minResources: Math.floor(numDiscarded / 2),
@@ -453,6 +454,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
         // ask the player what resources they want to gain
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_RESOURCES,
+          toSpend: false,
           prevInputType: GameInputType.PLACE_WORKER,
           locationContext: LocationName.FOREST_TWO_WILD,
           maxResources: 2,
@@ -647,6 +649,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
         // ask the player what resource they want to gain
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_RESOURCES,
+          toSpend: false,
           prevInputType: GameInputType.PLACE_WORKER,
           locationContext: LocationName.FOREST_TWO_CARDS_ONE_WILD,
           maxResources: 1,
@@ -713,6 +716,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
           // ask the player what resource they want to gain
           gameState.pendingGameInputs.push({
             inputType: GameInputType.SELECT_RESOURCES,
+            toSpend: false,
             prevInputType: GameInputType.DISCARD_CARDS,
             locationContext:
               LocationName.FOREST_DISCARD_UP_TO_THREE_CARDS_TO_GAIN_WILD_PER_CARD,

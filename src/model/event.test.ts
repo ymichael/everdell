@@ -385,6 +385,7 @@ describe("Event", () => {
         gameInput,
         {
           inputType: GameInputType.SELECT_RESOURCES,
+          toSpend: true,
           prevInputType: GameInputType.CLAIM_EVENT,
           eventContext: EventName.SPECIAL_AN_EVENING_OF_FIREWORKS,
           maxResources: 3,
@@ -487,6 +488,7 @@ describe("Event", () => {
       expect(() => {
         gameState.next({
           inputType: GameInputType.SELECT_RESOURCES,
+          toSpend: true,
           prevInputType: GameInputType.CLAIM_EVENT,
           eventContext: EventName.SPECIAL_AN_EVENING_OF_FIREWORKS,
           maxResources: 3,
@@ -500,6 +502,7 @@ describe("Event", () => {
       expect(() => {
         gameState.next({
           inputType: GameInputType.SELECT_RESOURCES,
+          toSpend: true,
           prevInputType: GameInputType.CLAIM_EVENT,
           eventContext: EventName.SPECIAL_AN_EVENING_OF_FIREWORKS,
           maxResources: 3,
@@ -536,6 +539,7 @@ describe("Event", () => {
         gameInput,
         {
           inputType: GameInputType.SELECT_RESOURCES,
+          toSpend: true,
           prevInputType: GameInputType.CLAIM_EVENT,
           eventContext: EventName.SPECIAL_PERFORMER_IN_RESIDENCE,
           maxResources: 3,
@@ -637,6 +641,7 @@ describe("Event", () => {
       expect(() => {
         gameState.next({
           inputType: GameInputType.SELECT_RESOURCES,
+          toSpend: true,
           prevInputType: GameInputType.CLAIM_EVENT,
           eventContext: EventName.SPECIAL_PERFORMER_IN_RESIDENCE,
           maxResources: 3,
@@ -650,6 +655,7 @@ describe("Event", () => {
       expect(() => {
         gameState.next({
           inputType: GameInputType.SELECT_RESOURCES,
+          toSpend: true,
           prevInputType: GameInputType.CLAIM_EVENT,
           eventContext: EventName.SPECIAL_PERFORMER_IN_RESIDENCE,
           maxResources: 3,
@@ -690,6 +696,7 @@ describe("Event", () => {
         gameInput,
         {
           inputType: GameInputType.SELECT_RESOURCES,
+          toSpend: true,
           prevInputType: GameInputType.CLAIM_EVENT,
           eventContext: EventName.SPECIAL_UNDER_NEW_MANAGEMENT,
           maxResources: 3,
@@ -755,6 +762,7 @@ describe("Event", () => {
         gameInput,
         {
           inputType: GameInputType.SELECT_RESOURCES,
+          toSpend: true,
           prevInputType: GameInputType.CLAIM_EVENT,
           eventContext: EventName.SPECIAL_UNDER_NEW_MANAGEMENT,
           maxResources: 3,
@@ -813,6 +821,7 @@ describe("Event", () => {
         gameInput,
         {
           inputType: GameInputType.SELECT_RESOURCES,
+          toSpend: true,
           prevInputType: GameInputType.CLAIM_EVENT,
           eventContext: EventName.SPECIAL_UNDER_NEW_MANAGEMENT,
           maxResources: 3,
@@ -913,6 +922,7 @@ describe("Event", () => {
         gameInput,
         {
           inputType: GameInputType.SELECT_RESOURCES,
+          toSpend: false,
           prevInputType: GameInputType.CLAIM_EVENT,
           eventContext: EventName.SPECIAL_PRISTINE_CHAPEL_CEILING,
           maxResources: 2,
@@ -952,19 +962,7 @@ describe("Event", () => {
         player.claimedEvents[EventName.SPECIAL_PRISTINE_CHAPEL_CEILING]
       ).to.be(undefined);
 
-      gameState = multiStepGameInputTest(gameState, [
-        gameInput,
-        {
-          inputType: GameInputType.SELECT_RESOURCES,
-          prevInputType: GameInputType.CLAIM_EVENT,
-          eventContext: EventName.SPECIAL_PRISTINE_CHAPEL_CEILING,
-          maxResources: 0,
-          minResources: 0,
-          clientOptions: {
-            resources: {},
-          },
-        },
-      ]);
+      gameState = multiStepGameInputTest(gameState, [gameInput]);
       player = gameState.getPlayer(player.playerId);
 
       // check to make sure the right cards are still in the city
@@ -1440,6 +1438,7 @@ describe("Event", () => {
         },
         {
           inputType: GameInputType.SELECT_RESOURCES,
+          toSpend: true,
           prevInputType: GameInputType.SELECT_PLAYER,
           prevInput: {
             inputType: GameInputType.SELECT_PLAYER,
@@ -1514,6 +1513,7 @@ describe("Event", () => {
 
       const selectFirstResource = {
         inputType: GameInputType.SELECT_RESOURCES as const,
+        toSpend: true,
         prevInputType: GameInputType.SELECT_PLAYER,
         prevInput: selectFirstOppo,
         maxResources: 3,
@@ -1540,6 +1540,7 @@ describe("Event", () => {
 
       const selectSecondResource = {
         inputType: GameInputType.SELECT_RESOURCES as const,
+        toSpend: true,
         prevInputType: GameInputType.SELECT_PLAYER,
         prevInput: selectSecondOppo,
         maxResources: 2,
@@ -1566,6 +1567,7 @@ describe("Event", () => {
 
       const selectThirdResource = {
         inputType: GameInputType.SELECT_RESOURCES as const,
+        toSpend: true,
         prevInputType: GameInputType.SELECT_PLAYER,
         prevInput: selectThirdOppo,
         maxResources: 1,
@@ -1646,6 +1648,7 @@ describe("Event", () => {
 
       const selectFirstResource = {
         inputType: GameInputType.SELECT_RESOURCES as const,
+        toSpend: true,
         prevInputType: GameInputType.SELECT_PLAYER,
         prevInput: selectFirstOppo,
         maxResources: 3,
@@ -1672,6 +1675,7 @@ describe("Event", () => {
 
       const selectSecondResource = {
         inputType: GameInputType.SELECT_RESOURCES as const,
+        toSpend: true,
         prevInputType: GameInputType.SELECT_PLAYER,
         prevInput: selectSecondOppo,
         maxResources: 2,
@@ -1765,6 +1769,7 @@ describe("Event", () => {
 
       const selectFirstResource = {
         inputType: GameInputType.SELECT_RESOURCES as const,
+        toSpend: true,
         prevInputType: GameInputType.SELECT_PLAYER,
         prevInput: selectFirstOppo,
         maxResources: 3,
@@ -1824,6 +1829,7 @@ describe("Event", () => {
       const selectFirstResource = {
         inputType: GameInputType.SELECT_RESOURCES as const,
         prevInputType: GameInputType.SELECT_PLAYER,
+        toSpend: true,
         prevInput: selectFirstOppo,
         maxResources: 3,
         minResources: 0,
@@ -1850,6 +1856,7 @@ describe("Event", () => {
       const selectSecondResource = {
         inputType: GameInputType.SELECT_RESOURCES as const,
         prevInputType: GameInputType.SELECT_PLAYER,
+        toSpend: true,
         prevInput: selectSecondOppo,
         maxResources: 2,
         minResources: 0,

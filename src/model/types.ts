@@ -137,6 +137,7 @@ export type GameInputSelectResources = {
   maxResources: number;
   minResources: number;
 
+  toSpend: boolean;
   excludeResource?: ResourceType;
   specificResource?: ResourceType;
 

@@ -747,6 +747,7 @@ describe("GameState", () => {
         },
         {
           inputType: GameInputType.SELECT_RESOURCES,
+          toSpend: false,
           prevInputType: GameInputType.PLACE_WORKER,
           locationContext: LocationName.FOREST_TWO_WILD,
           maxResources: 2,
@@ -818,6 +819,7 @@ describe("GameState", () => {
 
       const husbandInput = {
         inputType: GameInputType.SELECT_RESOURCES as const,
+        toSpend: false,
         prevInputType: GameInputType.SELECT_WORKER_PLACEMENT,
         cardContext: CardName.HUSBAND,
         maxResources: 1,

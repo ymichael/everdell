@@ -1141,6 +1141,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       ) {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_RESOURCES,
+          toSpend: false,
           prevInputType: gameInput.inputType,
           cardContext: CardName.HUSBAND,
           maxResources: 1,
@@ -1589,6 +1590,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_RESOURCES,
+          toSpend: true,
           prevInputType: gameInput.inputType,
           cardContext: CardName.MONASTERY,
           maxResources: 2,
@@ -1747,12 +1749,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       }
     },
     productionInner: (gameState: GameState, gameInput: GameInput) => {
-      const player = gameState.getActivePlayer();
-      if (player.getNumResourcesByType(ResourceType.BERRY) === 0) {
-        return;
-      }
       gameState.pendingGameInputs.push({
         inputType: GameInputType.SELECT_RESOURCES,
+        toSpend: true,
         prevInputType: gameInput.inputType,
         maxResources: 2,
         minResources: 0,
@@ -1812,6 +1811,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           if (numResources !== 0) {
             gameState.pendingGameInputs.push({
               inputType: GameInputType.SELECT_RESOURCES,
+              toSpend: false,
               label: `Choose ${numResources} ANY to gain`,
               prevInputType: gameInput.inputType,
               cardContext: CardName.PEDDLER,
@@ -1847,20 +1847,18 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       }
     },
     productionInner: (gameState: GameState, gameInput: GameInput) => {
-      const player = gameState.getActivePlayer();
-      if (player.getNumResources() !== 0) {
-        gameState.pendingGameInputs.push({
-          inputType: GameInputType.SELECT_RESOURCES,
-          label: `Pay up to 2 ANY to gain an equal amount of ANY`,
-          prevInputType: gameInput.inputType,
-          cardContext: CardName.PEDDLER,
-          maxResources: 2,
-          minResources: 0,
-          clientOptions: {
-            resources: {},
-          },
-        });
-      }
+      gameState.pendingGameInputs.push({
+        inputType: GameInputType.SELECT_RESOURCES,
+        toSpend: true,
+        label: `Pay up to 2 ANY to gain an equal amount of ANY`,
+        prevInputType: gameInput.inputType,
+        cardContext: CardName.PEDDLER,
+        maxResources: 2,
+        minResources: 0,
+        clientOptions: {
+          resources: {},
+        },
+      });
     },
   }),
   [CardName.POST_OFFICE]: new Card({
@@ -2905,11 +2903,12 @@ const CARD_REGISTRY: Record<CardName, Card> = {
 
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_RESOURCES,
+          cardContext: CardName.UNIVERSITY,
           prevInputType: gameInput.inputType,
+          toSpend: false,
           prevInput: gameInput,
           maxResources: 1,
           minResources: 1,
-          cardContext: CardName.UNIVERSITY,
           clientOptions: {
             resources: {},
           },

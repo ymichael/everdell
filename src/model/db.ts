@@ -48,9 +48,17 @@ class PgDb implements IDb {
 
   constructor(pgUrl: string) {
     this.pgUrl = pgUrl;
-    this.pool = new Pool({
+
+    const config = {
       connectionString: this.pgUrl,
-    });
+    };
+    if (this.pgUrl.indexOf("localhost") === -1) {
+      config.ssl = {
+        // https://devcenter.heroku.com/articles/heroku-postgresql#connecting-in-node-js
+        rejectUnauthorized: false,
+      };
+    }
+    this.pool = new Pool(config);
   }
 
   async createGamesTableIfNotExists(): Promise<void> {

@@ -800,9 +800,13 @@ describe("Card", () => {
 
         player.cardsInHand = [CardName.PEDDLER];
         player.gainResources(card.baseCost);
-        multiStepGameInputTest(gameState, [playCardInput(card.name)], {
-          autoAdvance: true,
-        });
+        gameState = multiStepGameInputTest(
+          gameState,
+          [playCardInput(card.name)],
+          {
+            autoAdvance: true,
+          }
+        );
       });
 
       it("should allow player to swap 2 resources", () => {
@@ -919,9 +923,13 @@ describe("Card", () => {
 
         player.cardsInHand = [CardName.MONK];
         player.gainResources(card.baseCost);
-        multiStepGameInputTest(gameState, [playCardInput(card.name)], {
-          autoAdvance: true,
-        });
+        gameState = multiStepGameInputTest(
+          gameState,
+          [playCardInput(card.name)],
+          {
+            autoAdvance: true,
+          }
+        );
       });
 
       it("should allow player to give up 2 berries for vp", () => {
@@ -978,6 +986,7 @@ describe("Card", () => {
             .getPlayer(targetPlayerId)
             .getNumResourcesByType(ResourceType.BERRY)
         ).to.be(2);
+        gameState2.debugPrintLogs();
       });
 
       it("should not allow player to give up non-existent berries", () => {

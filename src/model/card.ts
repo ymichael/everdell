@@ -1685,6 +1685,13 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         const numBerries =
           gameInput.clientOptions.resources[ResourceType.BERRY] || 0;
         if (numBerries === 0) {
+          // Only log if its not an auto advanced input.
+          if (!gameInput.isAutoAdvancedInput) {
+            gameState.addGameLogFromCard(CardName.MONK, [
+              player,
+              " decline to give up any BERRY.",
+            ]);
+          }
           return;
         }
         if (numBerries > 2) {
@@ -1733,19 +1740,12 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         player.gainResources({
           [ResourceType.VP]: 2 * numBerries,
         });
-        if (numBerries === 0) {
-          gameState.addGameLogFromCard(CardName.MONK, [
-            player,
-            " decline to give any BERRY.",
-          ]);
-        } else {
-          gameState.addGameLogFromCard(CardName.MONK, [
-            player,
-            ` gave ${numBerries} BERRY to `,
-            targetPlayer,
-            ` to gain ${numBerries * 2} VP.`,
-          ]);
-        }
+        gameState.addGameLogFromCard(CardName.MONK, [
+          player,
+          ` gave ${numBerries} BERRY to `,
+          targetPlayer,
+          ` to gain ${numBerries * 2} VP.`,
+        ]);
       }
     },
     productionInner: (gameState: GameState, gameInput: GameInput) => {

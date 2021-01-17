@@ -313,7 +313,7 @@ export class GameState {
 
   private removeMultiStepGameInput(gameInput: GameInputMultiStep): void {
     const found = this.pendingGameInputs.find((pendingGameInput) => {
-      const keysToOmit = ["clientOptions", "label"];
+      const keysToOmit = ["clientOptions", "label", "isAutoAdvancedInput"];
       return isEqual(
         omit(pendingGameInput, keysToOmit),
         omit(gameInput, keysToOmit)
@@ -656,9 +656,15 @@ export class GameState {
         pendingInput.specificResource &&
         player.getNumResourcesByType(pendingInput.specificResource) == 0
       ) {
-        return pendingInput;
+        return {
+          ...pendingInput,
+          isAutoAdvancedInput: true,
+        };
       } else if (player.getNumCardCostResources() == 0) {
-        return pendingInput;
+        return {
+          ...pendingInput,
+          isAutoAdvancedInput: true,
+        };
       }
     }
 

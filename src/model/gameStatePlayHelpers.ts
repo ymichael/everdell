@@ -33,10 +33,13 @@ export function playSpendResourceToGetVPFactory({
         );
       }
       if (numToSpend === 0) {
-        gameState.addGameLogFromCard(card, [
-          player,
-          ` decline to spend any ${resourceType}.`,
-        ]);
+        // Only log if its not an auto advanced input.
+        if (!gameInput.isAutoAdvancedInput) {
+          gameState.addGameLogFromCard(card, [
+            player,
+            ` decline to spend any ${resourceType}.`,
+          ]);
+        }
       } else {
         gameState.addGameLogFromCard(card, [
           player,

@@ -76,10 +76,12 @@ export function testInitialGameState(
 
 export const multiStepGameInputTest = (
   gameState: GameState,
-  pendingGameInputs: GameInput[]
+  pendingGameInputs: GameInput[],
+  opts: { autoAdvance?: boolean } = {}
 ): GameState => {
   let currGameState = gameState.clone();
   const player = currGameState.getActivePlayer();
+  const { autoAdvance = false } = opts;
 
   // Sanity check
   expect(currGameState.pendingGameInputs).to.eql([]);
@@ -91,7 +93,7 @@ export const multiStepGameInputTest = (
     // sure we don't rely on references to objects.
     gameInput = cloneDeep(gameInput);
 
-    currGameState = currGameState.next(gameInput, false /* autoAdvance */);
+    currGameState = currGameState.next(gameInput, autoAdvance);
     if (!isLastInput) {
       const keysToOmit = ["label", "clientOptions"];
       expect(

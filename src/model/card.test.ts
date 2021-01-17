@@ -800,7 +800,9 @@ describe("Card", () => {
 
         player.cardsInHand = [CardName.PEDDLER];
         player.gainResources(card.baseCost);
-        multiStepGameInputTest(gameState, [playCardInput(card.name)]);
+        multiStepGameInputTest(gameState, [playCardInput(card.name)], {
+          autoAdvance: true,
+        });
       });
 
       it("should allow player to swap 2 resources", () => {
@@ -917,7 +919,9 @@ describe("Card", () => {
 
         player.cardsInHand = [CardName.MONK];
         player.gainResources(card.baseCost);
-        multiStepGameInputTest(gameState, [playCardInput(card.name)]);
+        multiStepGameInputTest(gameState, [playCardInput(card.name)], {
+          autoAdvance: true,
+        });
       });
 
       it("should allow player to give up 2 berries for vp", () => {
@@ -2772,9 +2776,13 @@ describe("Card", () => {
         // Make sure we can play this card
         player.gainResources(card.baseCost);
         player.addCardToHand(gameState, card.name);
-        gameState = multiStepGameInputTest(gameState, [
-          playCardInput(card.name),
-        ]);
+        gameState = multiStepGameInputTest(
+          gameState,
+          [playCardInput(card.name)],
+          {
+            autoAdvance: true,
+          }
+        );
         player = gameState.getPlayer(player.playerId);
         expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
         expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
@@ -2820,9 +2828,12 @@ describe("Card", () => {
         // Make sure we can play this card
         player.gainResources(card.baseCost);
         player.addCardToHand(gameState, card.name);
-        gameState = multiStepGameInputTest(gameState, [
-          playCardInput(card.name),
-        ]);
+
+        gameState = multiStepGameInputTest(
+          gameState,
+          [playCardInput(card.name)],
+          { autoAdvance: true }
+        );
         player = gameState.getPlayer(player.playerId);
         expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
         expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);

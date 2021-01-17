@@ -321,6 +321,15 @@ export class Player implements IGameTextEntity {
     return { ...this.resources };
   }
 
+  getNumCardCostResources(): number {
+    return (
+      this.getNumResourcesByType(ResourceType.TWIG) +
+      this.getNumResourcesByType(ResourceType.BERRY) +
+      this.getNumResourcesByType(ResourceType.PEBBLE) +
+      this.getNumResourcesByType(ResourceType.RESIN)
+    );
+  }
+
   getNumResources(): number {
     return sumResources(this.resources);
   }

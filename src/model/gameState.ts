@@ -625,6 +625,19 @@ export class GameState {
             },
           });
         }
+        if (
+          pendingInput.inputType === GameInputType.SELECT_RESOURCES &&
+          pendingInput.toSpend
+        ) {
+          if (
+            pendingInput.specificResource &&
+            player.getNumResourcesByType(pendingInput.specificResource) == 0
+          ) {
+            return nextGameState.next(pendingInput);
+          } else if (player.getNumCardCostResources() == 0) {
+            return nextGameState.next(pendingInput);
+          }
+        }
       }
     }
     return nextGameState;

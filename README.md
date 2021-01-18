@@ -2,7 +2,7 @@
 
 ![CI](https://github.com/ymichael/everdell/workflows/CI/badge.svg)
 
-**Everdell Board Game**
+**Play Everdell Online**
 
 We highly recommend [purchasing this board game](https://www.starling.games/everdell) for personal use and all of its expansions! This app is useful if you want to play with people online or play test community mods to the game.
 

@@ -465,8 +465,12 @@ export class Player implements IGameTextEntity {
 
   findPlayedCard(playedCard: PlayedCardInfo): PlayedCardInfo | undefined {
     return this.getPlayedCardInfos(playedCard.cardName).find((x) => {
-      // Omit workers because we might place a worker before run call this.
-      return isEqual(omit(x, ["workers"]), omit(playedCard, ["workers"]));
+      // Omit workers & resources because we might place have stale references in pending gameInput.
+      // TODO: Fix this
+      return isEqual(
+        omit(x, ["workers", "resources"]),
+        omit(playedCard, ["workers", "resources"])
+      );
     });
   }
 

@@ -3628,7 +3628,7 @@ describe("Card", () => {
         });
       });
 
-      it("should add resources to the correct storehouse", () => {
+      xit("should add resources to the correct storehouse", () => {
         const card = Card.fromName(CardName.STOREHOUSE);
         player.cardsInHand = [card.name];
 

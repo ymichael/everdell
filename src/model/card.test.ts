@@ -2152,6 +2152,51 @@ describe("Card", () => {
       });
     });
 
+    describe(CardName.DUNGEON, () => {
+      it("should allow players to play a card even if city is full", () => {
+        const card = Card.fromName(CardName.DUNGEON);
+        player.addToCity(card.name);
+        player.cardsInHand.push(CardName.FARM);
+        for (let i = 0; i < 14; i++) {
+          player.addToCity(CardName.HUSBAND);
+        }
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(CardName.FARM, {
+            paymentOptions: {
+              resources: {
+                [ResourceType.TWIG]: 0,
+                [ResourceType.RESIN]: 0,
+              },
+              cardToDungeon: CardName.HUSBAND,
+            },
+          }),
+        ]);
+      });
+
+      it("should NOT allow players to use DUNGEON with WANDERER if city is full", () => {
+        const card = Card.fromName(CardName.DUNGEON);
+        player.addToCity(card.name);
+        player.cardsInHand.push(CardName.FARM);
+        for (let i = 0; i < 14; i++) {
+          player.addToCity(CardName.HUSBAND);
+        }
+        player.addToCity(CardName.WANDERER);
+        expect(() => {
+          [player, gameState] = multiStepGameInputTest(gameState, [
+            playCardInput(CardName.FARM, {
+              paymentOptions: {
+                resources: {
+                  [ResourceType.TWIG]: 0,
+                  [ResourceType.RESIN]: 0,
+                },
+                cardToDungeon: CardName.WANDERER,
+              },
+            }),
+          ]);
+        }).to.throwException(/unable to add Farm/i);
+      });
+    });
+
     describe(CardName.CHAPEL, () => {
       it("when player visits, should add a VP and give 2 cards per VP on Chapel", () => {
         let player = gameState.getActivePlayer();

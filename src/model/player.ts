@@ -222,6 +222,9 @@ export class Player implements IGameTextEntity {
       if (card.isConstruction && this.hasCardInCity(CardName.CRANE)) {
         return true;
       }
+      if (this.canInvokeDungeon()) {
+        return true;
+      }
     }
 
     if (
@@ -242,7 +245,6 @@ export class Player implements IGameTextEntity {
       }
     }
 
-    // TODO: dungeoning
     const numOccupiedSpacesInCity = this.getNumOccupiedSpacesInCity();
     return numOccupiedSpacesInCity < MAX_CITY_SIZE;
   }

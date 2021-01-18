@@ -986,7 +986,6 @@ describe("Card", () => {
             .getPlayer(targetPlayerId)
             .getNumResourcesByType(ResourceType.BERRY)
         ).to.be(2);
-        gameState2.debugPrintLogs();
       });
 
       it("should not allow player to give up non-existent berries", () => {

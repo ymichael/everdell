@@ -2093,6 +2093,65 @@ describe("Card", () => {
       });
     });
 
+    describe(CardName.RUINS, () => {
+      it("should not be playable if there's no construction in the city", () => {
+        const card = Card.fromName(CardName.RUINS);
+        player.cardsInHand.push(card.name);
+        expect(() => {
+          [player, gameState] = multiStepGameInputTest(gameState, [
+            playCardInput(card.name),
+          ]);
+        }).to.throwException(/Require an existing construction to play Ruins/i);
+      });
+
+      it("should be playable if there's a construction in the city", () => {
+        const card = Card.fromName(CardName.RUINS);
+        player.cardsInHand.push(card.name);
+        player.addToCity(CardName.FARM);
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+          {
+            inputType: GameInputType.SELECT_PLAYED_CARDS,
+            prevInputType: GameInputType.PLAY_CARD,
+            cardOptions: player.getPlayedCardInfos(CardName.FARM),
+            cardContext: CardName.RUINS,
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              selectedCards: [player.getFirstPlayedCard(CardName.FARM)],
+            },
+          },
+        ]);
+        expect(player.hasCardInCity(CardName.FARM)).to.be(false);
+        expect(player.hasCardInCity(CardName.RUINS)).to.be(true);
+      });
+
+      it("should be playable even if there's no space in the city", () => {
+        const card = Card.fromName(CardName.RUINS);
+        player.cardsInHand.push(card.name);
+        player.addToCity(CardName.FARM);
+        for (let i = 0; i < 14; i++) {
+          player.addToCity(CardName.HUSBAND);
+        }
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+          {
+            inputType: GameInputType.SELECT_PLAYED_CARDS,
+            prevInputType: GameInputType.PLAY_CARD,
+            cardOptions: player.getPlayedCardInfos(CardName.FARM),
+            cardContext: CardName.RUINS,
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              selectedCards: [player.getFirstPlayedCard(CardName.FARM)],
+            },
+          },
+        ]);
+        expect(player.hasCardInCity(CardName.FARM)).to.be(false);
+        expect(player.hasCardInCity(CardName.RUINS)).to.be(true);
+      });
+    });
+
     describe(CardName.CHAPEL, () => {
       it("when player visits, should add a VP and give 2 cards per VP on Chapel", () => {
         let player = gameState.getActivePlayer();

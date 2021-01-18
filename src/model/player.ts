@@ -212,12 +212,6 @@ export class Player implements IGameTextEntity {
     if (cardName === CardName.WANDERER) {
       return true;
     }
-    if (
-      cardName === CardName.RUINS &&
-      this.getPlayedConstructions().length !== 0
-    ) {
-      return true;
-    }
 
     // If strict is true, we're about to add this card to the city
     // otherwise, account for cards that can make space.
@@ -228,6 +222,13 @@ export class Player implements IGameTextEntity {
       if (card.isConstruction && this.hasCardInCity(CardName.CRANE)) {
         return true;
       }
+    }
+
+    if (
+      cardName === CardName.RUINS &&
+      this.getPlayedConstructions().length !== 0
+    ) {
+      return true;
     }
 
     if (cardName === CardName.HUSBAND || cardName === CardName.WIFE) {

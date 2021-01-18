@@ -592,6 +592,8 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_CARDS,
           prevInputType: GameInputType.CLAIM_EVENT,
+          label:
+            "Select up to 5 CARD to draw. The rest will be placed beneath this Event (worth 1 VP each).",
           eventContext: EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED,
           maxToSelect: 5,
           minToSelect: 0,

@@ -2372,6 +2372,94 @@ describe("Card", () => {
           });
         }).to.throwException(/no playable cards/i);
       });
+
+      it("should not allow player to visit the queen if there are no playable cards", () => {
+        const cards = [
+          CardName.WIFE,
+          CardName.WIFE,
+          CardName.WIFE,
+          CardName.WIFE,
+          CardName.WIFE,
+          CardName.WIFE,
+          CardName.WIFE,
+          CardName.WIFE,
+        ];
+        gameState = testInitialGameState({ meadowCards: cards });
+        const player = gameState.getActivePlayer();
+        const card = Card.fromName(CardName.QUEEN);
+
+        // Make sure we can play this card
+        player.gainResources(card.baseCost);
+        player.cardsInHand.push(CardName.WIFE);
+        player.addToCity(CardName.QUEEN);
+        for (let i = 0; i < 14; i++) {
+          player.addToCity(CardName.FARM);
+        }
+
+        expect(() => {
+          gameState.next({
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            clientOptions: {
+              playedCard: player.getFirstPlayedCard(CardName.QUEEN),
+            },
+          });
+        }).to.throwException(/no playable cards/i);
+      });
+
+      it("should allow player to visit the queen and play RUINS if the city is full", () => {
+        const card = Card.fromName(CardName.QUEEN);
+        const cards = [
+          CardName.WIFE,
+          CardName.WIFE,
+          CardName.WIFE,
+          CardName.WIFE,
+          CardName.WIFE,
+          CardName.WIFE,
+          CardName.WIFE,
+          CardName.WIFE,
+        ];
+        gameState = testInitialGameState({ meadowCards: cards });
+        let player = gameState.getActivePlayer();
+
+        // Make sure we can play this card
+        player.gainResources(card.baseCost);
+        player.cardsInHand.push(CardName.RUINS);
+        player.addToCity(CardName.QUEEN);
+        for (let i = 0; i < 14; i++) {
+          player.addToCity(CardName.FARM);
+        }
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            clientOptions: {
+              playedCard: player.getFirstPlayedCard(CardName.QUEEN),
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardOptions: [CardName.RUINS],
+            maxToSelect: 1,
+            minToSelect: 1,
+            cardContext: CardName.QUEEN,
+            clientOptions: { selectedCards: [CardName.RUINS] },
+          },
+          {
+            inputType: GameInputType.SELECT_PLAYED_CARDS,
+            prevInputType: GameInputType.PLAY_CARD,
+            cardOptions: player.getPlayedCardInfos(CardName.FARM),
+            cardContext: CardName.RUINS,
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              selectedCards: [player.getFirstPlayedCard(CardName.FARM)],
+            },
+          },
+        ]);
+
+        expect(player.hasCardInCity(CardName.RUINS)).to.be(true);
+      });
     });
 
     describe(CardName.TEACHER, () => {

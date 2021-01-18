@@ -2071,7 +2071,13 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           ...player.cardsInHand,
         ].some((cardName) => {
           const card = Card.fromName(cardName);
-          return card.baseVP <= 3;
+          return (
+            card.baseVP <= 3 &&
+            player.canAddToCity(
+              cardName,
+              true /* strict because we won't use other card effects */
+            )
+          );
         });
         if (!hasPlayableCard) {
           return "No playable cards worth less than 3 VP";
@@ -2082,23 +2088,19 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
-        // find all cards worth up to 3 baseVP
-
+        // Find all playable cards worth up to 3 baseVP
         const playableCards: CardName[] = [];
-
-        player.cardsInHand.forEach((cardName) => {
-          const card = Card.fromName(cardName as CardName);
-          if (card.baseVP <= 3) {
-            playableCards.push(card.name);
+        [...player.cardsInHand, ...gameState.meadowCards].forEach(
+          (cardName) => {
+            const card = Card.fromName(cardName as CardName);
+            if (
+              card.baseVP <= 3 &&
+              player.canAddToCity(cardName, true /* strict */)
+            ) {
+              playableCards.push(card.name);
+            }
           }
-        });
-
-        gameState.meadowCards.forEach((cardName) => {
-          const card = Card.fromName(cardName as CardName);
-          if (card.baseVP <= 3) {
-            playableCards.push(card.name);
-          }
-        });
+        );
 
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_CARDS,

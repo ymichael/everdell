@@ -694,7 +694,19 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       const player = gameState.getActivePlayer();
       const cardOptions = player
         .getAllPlayedCardsByType(CardType.PRODUCTION)
-        .filter(({ cardName }) => cardName !== CardName.CHIP_SWEEP);
+        .filter(({ cardName }) => {
+          // Filter out useless cards.
+          if (
+            cardName === CardName.HUSBAND &&
+            !(
+              player.hasCardInCity(CardName.WIFE) &&
+              player.hasCardInCity(CardName.FARM)
+            )
+          ) {
+            return false;
+          }
+          return cardName !== CardName.CHIP_SWEEP;
+        });
       if (cardOptions.length !== 0) {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_PLAYED_CARDS,
@@ -1526,6 +1538,16 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         if (
           playedCardInfo.cardName === CardName.STOREHOUSE &&
           playedCardInfo.cardOwnerId !== player.playerId
+        ) {
+          return false;
+        }
+        const cardOwner = gameState.getPlayer(playedCardInfo.cardOwnerId);
+        if (
+          playedCardInfo.cardName === CardName.HUSBAND &&
+          !(
+            cardOwner.hasCardInCity(CardName.WIFE) &&
+            cardOwner.hasCardInCity(CardName.FARM)
+          )
         ) {
           return false;
         }

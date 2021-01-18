@@ -1288,10 +1288,39 @@ describe("Card", () => {
 
         expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(1);
       });
+
+      it("should not allow the player to copy their HUSBAND (if they are missing a WIFE AND FARM)", () => {
+        const card = Card.fromName(CardName.CHIP_SWEEP);
+
+        player.addToCity(CardName.HUSBAND);
+        player.addToCity(CardName.FARM);
+
+        // Make sure we can play this card
+        player.gainResources(card.baseCost);
+        player.cardsInHand.push(card.name);
+        expect(player.hasCardInCity(card.name)).to.be(false);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+          {
+            inputType: GameInputType.SELECT_PLAYED_CARDS,
+            prevInputType: GameInputType.PLAY_CARD,
+            cardContext: CardName.CHIP_SWEEP,
+            maxToSelect: 1,
+            minToSelect: 1,
+            cardOptions: [...player.getPlayedCardInfos(CardName.FARM)],
+            clientOptions: {
+              selectedCards: player.getPlayedCardInfos(CardName.FARM),
+            },
+          },
+        ]);
+
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
+      });
     });
 
     describe(CardName.MINER_MOLE, () => {
-      it("should allow the player to copy another player's production card", () => {
+      it("should allow the player to copy another player's GENERAL_STORE", () => {
         const card = Card.fromName(CardName.MINER_MOLE);
 
         let player1 = gameState.getActivePlayer();
@@ -1326,6 +1355,89 @@ describe("Card", () => {
 
         // 2 berries because player 2 has a farm
         expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
+      });
+
+      it("should allow the player to copy another player's HUSBAND", () => {
+        const card = Card.fromName(CardName.MINER_MOLE);
+
+        let player1 = gameState.getActivePlayer();
+        const player2 = gameState.players[1];
+
+        player2.addToCity(CardName.HUSBAND);
+        player2.addToCity(CardName.WIFE);
+        player2.addToCity(CardName.FARM);
+
+        // Make sure we can play this card
+        player1.gainResources(card.baseCost);
+        player1.cardsInHand.push(card.name);
+
+        expect(player1.hasCardInCity(card.name)).to.be(false);
+
+        [player1, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+          {
+            inputType: GameInputType.SELECT_PLAYED_CARDS,
+            prevInputType: GameInputType.PLAY_CARD,
+            cardContext: CardName.MINER_MOLE,
+            maxToSelect: 1,
+            minToSelect: 1,
+            cardOptions: [
+              ...player2.getPlayedCardInfos(CardName.HUSBAND),
+              ...player2.getPlayedCardInfos(CardName.FARM),
+            ],
+            clientOptions: {
+              selectedCards: player2.getPlayedCardInfos(CardName.HUSBAND),
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_RESOURCES,
+            toSpend: false,
+            prevInputType: GameInputType.SELECT_PLAYED_CARDS,
+            cardContext: CardName.HUSBAND,
+            maxResources: 1,
+            minResources: 1,
+            clientOptions: {
+              resources: {
+                [ResourceType.BERRY]: 1,
+              },
+            },
+          },
+        ]);
+
+        expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
+      });
+
+      it("should not allow the player to copy another player's HUSBAND (if they are missing a WIFE AND FARM)", () => {
+        const card = Card.fromName(CardName.MINER_MOLE);
+
+        let player1 = gameState.getActivePlayer();
+        const player2 = gameState.players[1];
+
+        player2.addToCity(CardName.HUSBAND);
+        player2.addToCity(CardName.FARM);
+
+        // Make sure we can play this card
+        player1.gainResources(card.baseCost);
+        player1.cardsInHand.push(card.name);
+
+        expect(player1.hasCardInCity(card.name)).to.be(false);
+
+        [player1, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+          {
+            inputType: GameInputType.SELECT_PLAYED_CARDS,
+            prevInputType: GameInputType.PLAY_CARD,
+            cardContext: CardName.MINER_MOLE,
+            maxToSelect: 1,
+            minToSelect: 1,
+            cardOptions: [...player2.getPlayedCardInfos(CardName.FARM)],
+            clientOptions: {
+              selectedCards: player2.getPlayedCardInfos(CardName.FARM),
+            },
+          },
+        ]);
+
+        expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
       });
 
       it("should allow the player to copy another player's miner mole", () => {

@@ -222,12 +222,16 @@ export class Player implements IGameTextEntity {
       if (card.isConstruction && this.hasCardInCity(CardName.CRANE)) {
         return true;
       }
-      if (
-        cardName === CardName.RUINS &&
-        this.getPlayedConstructions().length !== 0
-      ) {
+      if (this.canInvokeDungeon()) {
         return true;
       }
+    }
+
+    if (
+      cardName === CardName.RUINS &&
+      this.getPlayedConstructions().length !== 0
+    ) {
+      return true;
     }
 
     if (cardName === CardName.HUSBAND || cardName === CardName.WIFE) {
@@ -241,7 +245,6 @@ export class Player implements IGameTextEntity {
       }
     }
 
-    // TODO: dungeoning
     const numOccupiedSpacesInCity = this.getNumOccupiedSpacesInCity();
     return numOccupiedSpacesInCity < MAX_CITY_SIZE;
   }
@@ -319,6 +322,15 @@ export class Player implements IGameTextEntity {
 
   getResources(): Record<ResourceType, number> {
     return { ...this.resources };
+  }
+
+  getNumCardCostResources(): number {
+    return (
+      this.getNumResourcesByType(ResourceType.TWIG) +
+      this.getNumResourcesByType(ResourceType.BERRY) +
+      this.getNumResourcesByType(ResourceType.PEBBLE) +
+      this.getNumResourcesByType(ResourceType.RESIN)
+    );
   }
 
   getNumResources(): number {
@@ -620,10 +632,6 @@ export class Player implements IGameTextEntity {
     const wildDiscount =
       // Dungeon
       this.canInvokeDungeon() ||
-      // Inn
-      (isMeadowCard &&
-        this.hasCardInCity(CardName.INN) &&
-        this.canPlaceWorkerOnCard(this.getFirstPlayedCard(CardName.INN))) ||
       // Crane
       (card.isConstruction && this.hasCardInCity(CardName.CRANE));
 

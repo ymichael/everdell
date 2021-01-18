@@ -10,8 +10,6 @@ import {
   GameStatePlayFn,
   GameStateCountPointsFn,
 } from "./gameState";
-import { toGameText } from "./gameText";
-
 import { Card } from "./card";
 
 export function playSpendResourceToGetVPFactory({
@@ -33,10 +31,13 @@ export function playSpendResourceToGetVPFactory({
         );
       }
       if (numToSpend === 0) {
-        gameState.addGameLogFromCard(card, [
-          player,
-          ` decline to spend any ${resourceType}.`,
-        ]);
+        // Only log if its not an auto advanced input.
+        if (!gameInput.isAutoAdvancedInput) {
+          gameState.addGameLogFromCard(card, [
+            player,
+            ` decline to spend any ${resourceType}.`,
+          ]);
+        }
       } else {
         gameState.addGameLogFromCard(card, [
           player,
@@ -63,21 +64,19 @@ export function gainProductionSpendResourceToGetVPFactory({
   maxToSpend: number;
 }): GameStatePlayFn {
   return (gameState: GameState, gameInput: GameInput) => {
-    const player = gameState.getActivePlayer();
-    if (player.getNumResourcesByType(resourceType) !== 0) {
-      gameState.pendingGameInputs.push({
-        inputType: GameInputType.SELECT_RESOURCES,
-        prevInputType: gameInput.inputType,
-        label: `Pay up to ${maxToSpend} ${resourceType} to gain 1 VP each`,
-        cardContext: card,
-        maxResources: maxToSpend,
-        minResources: 0,
-        specificResource: resourceType,
-        clientOptions: {
-          resources: {},
-        },
-      });
-    }
+    gameState.pendingGameInputs.push({
+      inputType: GameInputType.SELECT_RESOURCES,
+      toSpend: true,
+      prevInputType: gameInput.inputType,
+      label: `Pay up to ${maxToSpend} ${resourceType} to gain 1 VP each`,
+      cardContext: card,
+      maxResources: maxToSpend,
+      minResources: 0,
+      specificResource: resourceType,
+      clientOptions: {
+        resources: {},
+      },
+    });
   };
 }
 

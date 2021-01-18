@@ -122,10 +122,11 @@ describe("Location", () => {
 
       expect(location.canPlay(gameState, gameInput)).to.be(true);
 
-      gameState = multiStepGameInputTest(gameState, [
+      [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
         {
           inputType: GameInputType.SELECT_RESOURCES,
+          toSpend: false,
           prevInputType: GameInputType.PLACE_WORKER,
           locationContext: LocationName.FOREST_TWO_WILD,
           maxResources: 2,
@@ -138,9 +139,6 @@ describe("Location", () => {
           },
         },
       ]);
-
-      player = gameState.getPlayer(player.playerId);
-
       expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(1);
       expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
     });
@@ -157,10 +155,11 @@ describe("Location", () => {
       expect(location.canPlay(gameState, gameInput)).to.be(true);
       expect(player.cardsInHand.length).to.be(0);
 
-      gameState = multiStepGameInputTest(gameState, [
+      [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
         {
           inputType: GameInputType.SELECT_RESOURCES,
+          toSpend: false,
           prevInputType: GameInputType.PLACE_WORKER,
           locationContext: LocationName.FOREST_TWO_CARDS_ONE_WILD,
           maxResources: 1,
@@ -172,8 +171,6 @@ describe("Location", () => {
           },
         },
       ]);
-
-      player = gameState.getPlayer(player.playerId);
 
       expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(1);
       expect(player.cardsInHand.length).to.be(2);
@@ -197,7 +194,7 @@ describe("Location", () => {
       expect(location.canPlay(gameState, gameInput)).to.be(true);
       expect(player.cardsInHand.length).to.be(4);
 
-      gameState = multiStepGameInputTest(gameState, [
+      [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
         {
           inputType: GameInputType.DISCARD_CARDS,
@@ -212,6 +209,7 @@ describe("Location", () => {
         },
         {
           inputType: GameInputType.SELECT_RESOURCES,
+          toSpend: false,
           prevInputType: GameInputType.DISCARD_CARDS,
           locationContext:
             LocationName.FOREST_DISCARD_UP_TO_THREE_CARDS_TO_GAIN_WILD_PER_CARD,
@@ -225,8 +223,6 @@ describe("Location", () => {
           },
         },
       ]);
-
-      player = gameState.getPlayer(player.playerId);
 
       expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(1);
       expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(2);
@@ -253,7 +249,7 @@ describe("Location", () => {
       expect(location.canPlay(gameState, gameInput)).to.be(true);
       expect(player.cardsInHand.length).to.be(6);
 
-      gameState = multiStepGameInputTest(gameState, [
+      [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
         {
           inputType: GameInputType.DISCARD_CARDS,
@@ -272,8 +268,6 @@ describe("Location", () => {
           },
         },
       ]);
-
-      player = gameState.getPlayer(player.playerId);
 
       // player gained 8 cards but already had 2 in hand + can't have more than 8 cards in hand
       expect(player.cardsInHand.length).to.be(8);
@@ -297,7 +291,7 @@ describe("Location", () => {
       expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
       expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
 
-      gameState = multiStepGameInputTest(gameState, [
+      [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
         {
           inputType: GameInputType.DISCARD_CARDS,
@@ -316,6 +310,7 @@ describe("Location", () => {
         },
         {
           inputType: GameInputType.SELECT_RESOURCES,
+          toSpend: false,
           prevInputType: GameInputType.DISCARD_CARDS,
           locationContext: LocationName.HAVEN,
           maxResources: 2,
@@ -332,8 +327,6 @@ describe("Location", () => {
       expect(gameState.getActivePlayer().playerId).not.to.be.eql(
         player.playerId
       );
-
-      player = gameState.getPlayer(player.playerId);
 
       // player gained 8 cards but already had 2 in hand + can't have more than 8 cards in hand
       expect(player.cardsInHand.length).to.be(2);
@@ -356,7 +349,7 @@ describe("Location", () => {
       expect(location.canPlay(gameState, gameInput)).to.be(true);
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
 
-      gameState = multiStepGameInputTest(gameState, [
+      [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
         {
           inputType: GameInputType.SELECT_LOCATION,
@@ -368,8 +361,6 @@ describe("Location", () => {
           },
         },
       ]);
-
-      player = gameState.getPlayer(player.playerId);
 
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
       expect(player.cardsInHand.length).to.be(3);
@@ -404,7 +395,7 @@ describe("Location", () => {
         LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS
       ] = [];
 
-      gameState = multiStepGameInputTest(gameState, [
+      [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
         {
           inputType: GameInputType.SELECT_CARDS,
@@ -443,12 +434,11 @@ describe("Location", () => {
         },
       ]);
 
-      player = gameState.getPlayer(player.playerId);
-
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(3);
       expect(player.cardsInHand).to.eql([CardName.EVERTREE]);
       expect(player.hasCardInCity(CardName.HUSBAND)).to.be(true);
     });
+
     it("cannot visit if player cannot play any meadow cards for 1 less", () => {
       const meadow = [
         CardName.HUSBAND,
@@ -473,10 +463,46 @@ describe("Location", () => {
         LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS
       ] = [];
 
-      expect(() => gameState.next(gameInput)).to.throwException(
-        /cannot afford/i
-      );
+      expect(() => gameState.next(gameInput)).to.throwException(/cannot play/i);
     });
+
+    it("cannot visit edge case", () => {
+      const meadow = [
+        // No space for these
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+
+        // Cannot afford
+        CardName.WANDERER,
+      ];
+
+      gameState = testInitialGameState({ meadowCards: meadow });
+      const location = Location.fromName(
+        LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS
+      );
+
+      player = gameState.getActivePlayer();
+      player.gainResources({
+        [ResourceType.TWIG]: 5,
+        [ResourceType.PEBBLE]: 5,
+        [ResourceType.RESIN]: 5,
+      });
+      for (let i = 0; i < 15; i++) {
+        player.addToCity(CardName.HUSBAND);
+      }
+
+      const gameInput = placeWorkerInput(location.name);
+      gameState.locationsMap[
+        LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS
+      ] = [];
+      expect(() => gameState.next(gameInput)).to.throwException(/cannot play/i);
+    });
+
     it("cannot visit if player has no space in city for cards in meadow", () => {
       const meadow = [
         CardName.HUSBAND,
@@ -519,8 +545,9 @@ describe("Location", () => {
         LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS
       ] = [];
 
-      expect(() => gameState.next(gameInput)).to.throwException(/cannot add/i);
+      expect(() => gameState.next(gameInput)).to.throwException(/cannot play/i);
     });
+
     it("can visit if city is full but there is a playable card in meadow", () => {
       const meadow = [
         CardName.HUSBAND,
@@ -563,7 +590,7 @@ describe("Location", () => {
         LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS
       ] = [];
 
-      gameState = multiStepGameInputTest(gameState, [
+      [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
         {
           inputType: GameInputType.SELECT_CARDS,
@@ -602,12 +629,11 @@ describe("Location", () => {
         },
       ]);
 
-      player = gameState.getPlayer(player.playerId);
-
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(4);
       expect(player.cardsInHand).to.eql([CardName.THEATRE]);
       expect(player.hasCardInCity(CardName.WIFE)).to.be(true);
     });
+
     it("must choose at least one playable card", () => {
       const meadow = [
         CardName.HUSBAND,
@@ -650,6 +676,62 @@ describe("Location", () => {
           },
         });
       }).to.throwException(/must choose at least/i);
+    });
+
+    it("doesn't prompt for payment if card is already free", () => {
+      const meadow = [
+        CardName.HUSBAND,
+        CardName.RANGER,
+        CardName.WIFE,
+        CardName.CEMETARY,
+        CardName.THEATRE,
+        CardName.EVERTREE,
+        CardName.HUSBAND,
+        CardName.CRANE,
+      ];
+      gameState = testInitialGameState({ meadowCards: meadow });
+
+      const location = Location.fromName(
+        LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS
+      );
+
+      player = gameState.getActivePlayer();
+      expect(player.hasCardInCity(CardName.CRANE)).to.be(false);
+      expect(player.cardsInHand.length).to.be(0);
+
+      const gameInput = placeWorkerInput(location.name);
+      gameState.locationsMap[
+        LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS
+      ] = [];
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        gameInput,
+        {
+          inputType: GameInputType.SELECT_CARDS as const,
+          prevInputType: GameInputType.PLACE_WORKER,
+          cardOptions: meadow,
+          maxToSelect: 2,
+          minToSelect: 2,
+          locationContext:
+            LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS,
+          clientOptions: {
+            selectedCards: [CardName.CEMETARY, CardName.CRANE],
+          },
+        },
+        {
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: GameInputType.SELECT_CARDS,
+          cardOptions: [CardName.CEMETARY, CardName.CRANE],
+          maxToSelect: 1,
+          minToSelect: 1,
+          locationContext:
+            LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS,
+          clientOptions: { selectedCards: [CardName.CRANE] },
+        },
+      ]);
+      expect(player.hasCardInCity(CardName.CRANE)).to.be(true);
+      expect(player.hasCardInCity(CardName.CEMETARY)).to.be(false);
+      expect(player.cardsInHand.length).to.be(1);
     });
   });
 

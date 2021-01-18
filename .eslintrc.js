@@ -8,4 +8,12 @@ module.exports = {
     "@typescript-eslint/ban-types": "off",
     "@typescript-eslint/no-unused-vars": ["error", { args: "none" }],
   },
+  overrides: [
+    {
+      files: ["**/*.test.ts"],
+      rules: {
+        "@typescript-eslint/no-unused-vars": "off",
+      },
+    },
+  ],
 };

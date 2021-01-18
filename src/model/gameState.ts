@@ -184,6 +184,12 @@ export class GameState {
     this.gameLog.push({ entry });
   }
 
+  debugPrintLogs(): void {
+    this.gameLog.forEach((log) => {
+      console.log(gameTextToDebugStr(log.entry));
+    });
+  }
+
   toJSON(includePrivate: boolean): GameStateJSON {
     return cloneDeep({
       ...{
@@ -307,7 +313,7 @@ export class GameState {
 
   private removeMultiStepGameInput(gameInput: GameInputMultiStep): void {
     const found = this.pendingGameInputs.find((pendingGameInput) => {
-      const keysToOmit = ["clientOptions", "label"];
+      const keysToOmit = ["clientOptions", "label", "isAutoAdvancedInput"];
       return isEqual(
         omit(pendingGameInput, keysToOmit),
         omit(gameInput, keysToOmit)
@@ -611,23 +617,58 @@ export class GameState {
     nextGameState.handleGameOver();
 
     if (autoAdvance) {
-      if (nextGameState.pendingGameInputs.length === 1) {
-        const pendingInput = nextGameState.pendingGameInputs[0];
-        if (
-          pendingInput.inputType === GameInputType.SELECT_PLAYER &&
-          pendingInput.playerOptions.length === 1 &&
-          pendingInput.mustSelectOne
-        ) {
-          return nextGameState.next({
-            ...pendingInput,
-            clientOptions: {
-              selectedPlayer: pendingInput.playerOptions[0],
-            },
-          });
+      const autoAdvancedPendingInputs = nextGameState.pendingGameInputs.map(
+        (pendingInput) => {
+          return nextGameState.getAutoAdvancePendingInputIfExists(pendingInput);
         }
+      );
+      if (
+        autoAdvancedPendingInputs.every(Boolean) &&
+        nextGameState.pendingGameInputs.length !== 0
+      ) {
+        return nextGameState.next(autoAdvancedPendingInputs[0]!);
       }
     }
     return nextGameState;
+  }
+
+  private getAutoAdvancePendingInputIfExists(
+    pendingInput: GameInputMultiStep
+  ): GameInputMultiStep | null {
+    const player = this.getActivePlayer();
+    if (
+      pendingInput.inputType === GameInputType.SELECT_PLAYER &&
+      pendingInput.playerOptions.length === 1 &&
+      pendingInput.mustSelectOne
+    ) {
+      return {
+        ...pendingInput,
+        clientOptions: {
+          selectedPlayer: pendingInput.playerOptions[0],
+        },
+      };
+    }
+    if (
+      pendingInput.inputType === GameInputType.SELECT_RESOURCES &&
+      pendingInput.toSpend
+    ) {
+      if (
+        pendingInput.specificResource &&
+        player.getNumResourcesByType(pendingInput.specificResource) == 0
+      ) {
+        return {
+          ...pendingInput,
+          isAutoAdvancedInput: true,
+        };
+      } else if (player.getNumCardCostResources() == 0) {
+        return {
+          ...pendingInput,
+          isAutoAdvancedInput: true,
+        };
+      }
+    }
+
+    return null;
   }
 
   private handleGameOver(): void {

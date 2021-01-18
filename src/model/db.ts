@@ -1,27 +1,122 @@
-import sqlite3 from "sqlite3";
 import path from "path";
 import fs from "fs";
+
+import sqlite3 from "sqlite3";
+import { Pool } from "pg";
+
 import { GameJSON } from "./jsonTypes";
 
+const pgUrl = process.env.DATABASE_URL;
+// fallback sqlite db path.
 const dbPath = process.env.DB_PATH;
-if (!dbPath) {
-  console.error(
-    `Must specify DB_PATH env variable: ENV: ${JSON.stringify(
-      process.env,
-      null,
-      2
-    )}`
-  );
+
+if (!pgUrl && !dbPath) {
+  console.error("Must specify either DATABASE_URL or DB_PATH env variable.");
   process.exit(-1);
 }
-const dbFolder = path.dirname(dbPath);
 
-let _instance: DB | null = null;
+let _instance: IDb | null = null;
 
-export class DB {
+const getDbInstance = (): IDb => {
+  if (!_instance) {
+    if (dbPath) {
+      _instance = new SqliteDb(dbPath);
+    }
+    if (pgUrl) {
+      _instance = new PgDb(pgUrl);
+    }
+    if (!_instance) {
+      throw new Error("Unable to instantiate DB instance.");
+    }
+  }
+  return _instance;
+};
+
+interface IDb {
+  createGamesTableIfNotExists(): Promise<void>;
+  saveGame(gameId: string, gameJSON: string): Promise<void>;
+  createGame(gameId: string, gameJSON: string): Promise<void>;
+  updateGame(gameId: string, gameJSON: string): Promise<void>;
+  hasSavedGame(gameId: string): Promise<boolean>;
+  getGameJSONById(gameId: string): Promise<GameJSON | null>;
+}
+
+class PgDb implements IDb {
+  private pgUrl: string;
+  private pool: Pool;
+
+  constructor(pgUrl: string) {
+    this.pgUrl = pgUrl;
+
+    const config: any = {
+      connectionString: this.pgUrl,
+    };
+    if (this.pgUrl.indexOf("localhost") === -1) {
+      config.ssl = {
+        // https://devcenter.heroku.com/articles/heroku-postgresql#connecting-in-node-js
+        rejectUnauthorized: false,
+      };
+    }
+    this.pool = new Pool(config);
+  }
+
+  async createGamesTableIfNotExists(): Promise<void> {
+    await this.pool.query(
+      `CREATE TABLE IF NOT EXISTS
+        games(
+          game_id varchar,
+          game text,
+          created_time timestamp default now(),
+          PRIMARY KEY (game_id)
+        )`
+    );
+  }
+
+  async saveGame(gameId: string, gameJSON: string): Promise<void> {
+    const hasSavedGame = await this.hasSavedGame(gameId);
+    if (hasSavedGame) {
+      await this.updateGame(gameId, gameJSON);
+    } else {
+      await this.createGame(gameId, gameJSON);
+    }
+  }
+
+  async createGame(gameId: string, gameJSON: string): Promise<void> {
+    await this.pool.query("INSERT INTO games(game_id, game) VALUES($1, $2)", [
+      gameId,
+      gameJSON,
+    ]);
+  }
+
+  async updateGame(gameId: string, gameJSON: string): Promise<void> {
+    await this.pool.query("UPDATE games SET game = $1 WHERE game_id = $2", [
+      gameJSON,
+      gameId,
+    ]);
+  }
+
+  async hasSavedGame(gameId: string): Promise<boolean> {
+    const result = await this.pool.query(
+      "SELECT game_id FROM games WHERE game_id = $1",
+      [gameId]
+    );
+    return result.rows.length === 1;
+  }
+
+  async getGameJSONById(gameId: string): Promise<GameJSON | null> {
+    const result = await this.pool.query(
+      "SELECT game game FROM games WHERE game_id = $1",
+      [gameId]
+    );
+    return result.rows.length === 1 ? JSON.parse(result.rows[0].game) : null;
+  }
+}
+
+class SqliteDb implements IDb {
   private db: sqlite3.Database;
 
-  constructor() {
+  constructor(dbPath: string) {
+    const dbFolder = path.dirname(dbPath);
     if (!fs.existsSync(dbFolder)) {
       fs.mkdirSync(dbFolder);
     }
@@ -125,19 +220,12 @@ export class DB {
       );
     });
   }
-
-  static getInstance(): DB {
-    if (!_instance) {
-      _instance = new DB();
-    }
-    return _instance;
-  }
 }
 
 export const getGameJSONById = async (
   gameId: string
 ): Promise<GameJSON | null> => {
-  const db = DB.getInstance();
+  const db = getDbInstance();
   await db.createGamesTableIfNotExists();
   return db.getGameJSONById(gameId);
 };
@@ -146,7 +234,7 @@ export const saveGameJSONById = async (
   gameId: string,
   gameJSON: GameJSON
 ): Promise<void> => {
-  const db = DB.getInstance();
+  const db = getDbInstance();
   await db.createGamesTableIfNotExists();
   return db.saveGame(gameId, JSON.stringify(gameJSON));
 };

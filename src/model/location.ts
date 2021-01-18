@@ -279,6 +279,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
         // ask player which resources they want to get
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_RESOURCES,
+          toSpend: false,
           prevInputType: GameInputType.DISCARD_CARDS,
           locationContext: LocationName.HAVEN,
           minResources: Math.floor(numDiscarded / 2),
@@ -453,6 +454,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
         // ask the player what resources they want to gain
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_RESOURCES,
+          toSpend: false,
           prevInputType: GameInputType.PLACE_WORKER,
           locationContext: LocationName.FOREST_TWO_WILD,
           maxResources: 2,
@@ -647,6 +649,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
         // ask the player what resource they want to gain
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_RESOURCES,
+          toSpend: false,
           prevInputType: GameInputType.PLACE_WORKER,
           locationContext: LocationName.FOREST_TWO_CARDS_ONE_WILD,
           maxResources: 1,
@@ -713,6 +716,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
           // ask the player what resource they want to gain
           gameState.pendingGameInputs.push({
             inputType: GameInputType.SELECT_RESOURCES,
+            toSpend: false,
             prevInputType: GameInputType.DISCARD_CARDS,
             locationContext:
               LocationName.FOREST_DISCARD_UP_TO_THREE_CARDS_TO_GAIN_WILD_PER_CARD,
@@ -768,29 +772,19 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
         return null;
       }
       const player = gameState.getActivePlayer();
-      const playableCards = [];
 
-      const canAffordMeadowCardWithDiscount = gameState.meadowCards.some(
-        (cardName) => {
-          return player.canAffordCard(cardName, false, "ANY 1");
-        }
-      );
-
-      if (!canAffordMeadowCardWithDiscount) {
-        return `Cannot afford any meadow cards even after discounts`;
-      }
-
-      const canAddToCity = gameState.meadowCards.some((cardName) => {
-        return player.canAddToCity(
-          cardName,
-          true /* should be strict because we won't use other card effects */
+      const hasPlayableCard = gameState.meadowCards.some((cardName) => {
+        return (
+          player.canAffordCard(cardName, false, "ANY 1") &&
+          player.canAddToCity(
+            cardName,
+            true /* strict because we won't use other card effects */
+          )
         );
       });
-
-      if (!canAddToCity) {
-        return `Cannot add any of the cards to city`;
+      if (!hasPlayableCard) {
+        return `Cannot play any meadow cards even after discounts`;
       }
-
       return null;
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
@@ -822,10 +816,19 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
           throw new Error("Must choose exactly 2 cards from the meadow");
         }
 
-        // make sure player can play at least one of the chosen cards
+        const isCardPlayable = (cardName: CardName): boolean => {
+          return (
+            player.canAffordCard(cardName, false, "ANY 1") &&
+            player.canAddToCity(
+              cardName,
+              true /* strict because we won't use other card effects */
+            )
+          );
+        };
+
+        // Make sure player can play at least one of the chosen cards
         const canPlayAtLeastOne =
-          player.canAffordCard(cardOptions[0], false, "ANY 1") ||
-          player.canAffordCard(cardOptions[1], false, "ANY 1");
+          isCardPlayable(cardOptions[0]) || isCardPlayable(cardOptions[1]);
 
         if (!canPlayAtLeastOne) {
           throw new Error(
@@ -881,9 +884,10 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
           throw new Error("Must select exactly 1 card to play");
         }
 
-        const selectedCard = cardOptions[0];
+        const selectedCardName = cardOptions[0];
+        const selectedCard = Card.fromName(selectedCardName);
         const canAffordCard = player.canAffordCard(
-          selectedCard,
+          selectedCardName,
           false,
           "ANY 1"
         );
@@ -892,16 +896,25 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
           throw new Error("Cannot afford this card, even with discount.");
         }
 
-        // discount cost by 1
-        // ask player how they're paying
+        if (sumResources(selectedCard.baseCost) <= 1) {
+          gameState.addGameLogFromLocation(
+            LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS,
+            [player, " played ", selectedCard, " for 1 less."]
+          );
+          player.removeCardFromHand(selectedCardName);
+          selectedCard.addToCityAndPlay(gameState, gameInput);
+          return;
+        }
+
+        // Card cost more than 1, ask player how they're paying:
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_PAYMENT_FOR_CARD,
           prevInputType: gameInput.inputType,
           locationContext:
             LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS,
-          card: selectedCard,
+          card: selectedCardName,
           clientOptions: {
-            card: selectedCard,
+            card: selectedCardName,
             paymentOptions: { resources: {} },
           },
         });

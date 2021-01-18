@@ -129,8 +129,8 @@ describe("Player", () => {
       expect(p.canAddToCity(CardName.FARM, true /* strict */)).to.be(false);
       expect(p.canAddToCity(CardName.FARM, false /* strict */)).to.be(false);
 
-      // ruins is okay if not strict
-      expect(p.canAddToCity(CardName.RUINS, true /* strict */)).to.be(false);
+      // ruins is okay always
+      expect(p.canAddToCity(CardName.RUINS, true /* strict */)).to.be(true);
       expect(p.canAddToCity(CardName.RUINS, false /* strict */)).to.be(true);
     });
   });

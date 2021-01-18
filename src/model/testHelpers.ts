@@ -1,6 +1,6 @@
 import expect from "expect.js";
 import { GameState } from "./gameState";
-import { createPlayer } from "./player";
+import { createPlayer, Player } from "./player";
 import { Location } from "./location";
 import { Event } from "./event";
 import { Card } from "./card";
@@ -74,12 +74,15 @@ export function testInitialGameState(
   return gameState;
 }
 
+// Returns the active player from the given game state and next gameState!
 export const multiStepGameInputTest = (
   gameState: GameState,
-  pendingGameInputs: GameInput[]
-): GameState => {
+  pendingGameInputs: GameInput[],
+  opts: { autoAdvance?: boolean; skipMultiPendingInputCheck?: boolean } = {}
+): [Player, GameState] => {
   let currGameState = gameState.clone();
   const player = currGameState.getActivePlayer();
+  const { autoAdvance = false, skipMultiPendingInputCheck = false } = opts;
 
   // Sanity check
   expect(currGameState.pendingGameInputs).to.eql([]);
@@ -91,12 +94,14 @@ export const multiStepGameInputTest = (
     // sure we don't rely on references to objects.
     gameInput = cloneDeep(gameInput);
 
-    currGameState = currGameState.next(gameInput, false /* autoAdvance */);
+    currGameState = currGameState.next(gameInput, autoAdvance);
     if (!isLastInput) {
       const keysToOmit = ["label", "clientOptions"];
-      expect(
-        currGameState.pendingGameInputs.map((x) => omit(x, keysToOmit))
-      ).to.eql([omit(pendingGameInputs[idx + 1], keysToOmit)]);
+      if (!skipMultiPendingInputCheck) {
+        expect(
+          currGameState.pendingGameInputs.map((x) => omit(x, keysToOmit))
+        ).to.eql([omit(pendingGameInputs[idx + 1], keysToOmit)]);
+      }
       expect(player.playerId).to.be(currGameState.getActivePlayer().playerId);
     } else {
       expect(currGameState.pendingGameInputs).to.eql([]);
@@ -105,7 +110,8 @@ export const multiStepGameInputTest = (
       );
     }
   });
-  return currGameState;
+
+  return [currGameState.getPlayer(player.playerId), currGameState];
 };
 
 export const playCardInput = (

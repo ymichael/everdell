@@ -2,7 +2,6 @@ import {
   ResourceType,
   ProductionResourceMap,
   LocationType,
-  LocationName,
   CardCost,
   CardType,
   CardName,
@@ -695,7 +694,19 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       const player = gameState.getActivePlayer();
       const cardOptions = player
         .getAllPlayedCardsByType(CardType.PRODUCTION)
-        .filter(({ cardName }) => cardName !== CardName.CHIP_SWEEP);
+        .filter(({ cardName }) => {
+          // Filter out useless cards.
+          if (
+            cardName === CardName.HUSBAND &&
+            !(
+              player.hasCardInCity(CardName.WIFE) &&
+              player.hasCardInCity(CardName.FARM)
+            )
+          ) {
+            return false;
+          }
+          return cardName !== CardName.CHIP_SWEEP;
+        });
       if (cardOptions.length !== 0) {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_PLAYED_CARDS,
@@ -1141,6 +1152,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       ) {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_RESOURCES,
+          toSpend: false,
           prevInputType: gameInput.inputType,
           cardContext: CardName.HUSBAND,
           maxResources: 1,
@@ -1490,12 +1502,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         if (targetCard.cardType !== CardType.PRODUCTION) {
           throw new Error("Can only copy production cards");
         }
-        targetCard.gainProduction(
-          gameState,
-          gameInput,
-          cardOwner,
-          selectedCards[0]
-        );
         gameState.addGameLogFromCard(CardName.MINER_MOLE, [
           player,
           " activated ",
@@ -1504,6 +1510,12 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           cardOwner,
           "'s city.",
         ]);
+        targetCard.gainProduction(
+          gameState,
+          gameInput,
+          cardOwner,
+          selectedCards[0]
+        );
       }
     },
     productionInner: (gameState: GameState, gameInput: GameInput) => {
@@ -1532,6 +1544,16 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         if (
           playedCardInfo.cardName === CardName.STOREHOUSE &&
           playedCardInfo.cardOwnerId !== player.playerId
+        ) {
+          return false;
+        }
+        const cardOwner = gameState.getPlayer(playedCardInfo.cardOwnerId);
+        if (
+          playedCardInfo.cardName === CardName.HUSBAND &&
+          !(
+            cardOwner.hasCardInCity(CardName.WIFE) &&
+            cardOwner.hasCardInCity(CardName.FARM)
+          )
         ) {
           return false;
         }
@@ -1595,6 +1617,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_RESOURCES,
+          toSpend: true,
           prevInputType: gameInput.inputType,
           cardContext: CardName.MONASTERY,
           maxResources: 2,
@@ -1689,6 +1712,13 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         const numBerries =
           gameInput.clientOptions.resources[ResourceType.BERRY] || 0;
         if (numBerries === 0) {
+          // Only log if its not an auto advanced input.
+          if (!gameInput.isAutoAdvancedInput) {
+            gameState.addGameLogFromCard(CardName.MONK, [
+              player,
+              " decline to give up any BERRY.",
+            ]);
+          }
           return;
         }
         if (numBerries > 2) {
@@ -1737,28 +1767,18 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         player.gainResources({
           [ResourceType.VP]: 2 * numBerries,
         });
-        if (numBerries === 0) {
-          gameState.addGameLogFromCard(CardName.MONK, [
-            player,
-            " decline to give any BERRY.",
-          ]);
-        } else {
-          gameState.addGameLogFromCard(CardName.MONK, [
-            player,
-            ` gave ${numBerries} BERRY to `,
-            targetPlayer,
-            ` to gain ${numBerries * 2} VP.`,
-          ]);
-        }
+        gameState.addGameLogFromCard(CardName.MONK, [
+          player,
+          ` gave ${numBerries} BERRY to `,
+          targetPlayer,
+          ` to gain ${numBerries * 2} VP.`,
+        ]);
       }
     },
     productionInner: (gameState: GameState, gameInput: GameInput) => {
-      const player = gameState.getActivePlayer();
-      if (player.getNumResourcesByType(ResourceType.BERRY) === 0) {
-        return;
-      }
       gameState.pendingGameInputs.push({
         inputType: GameInputType.SELECT_RESOURCES,
+        toSpend: true,
         prevInputType: gameInput.inputType,
         maxResources: 2,
         minResources: 0,
@@ -1818,6 +1838,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           if (numResources !== 0) {
             gameState.pendingGameInputs.push({
               inputType: GameInputType.SELECT_RESOURCES,
+              toSpend: false,
               label: `Choose ${numResources} ANY to gain`,
               prevInputType: gameInput.inputType,
               cardContext: CardName.PEDDLER,
@@ -1853,20 +1874,18 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       }
     },
     productionInner: (gameState: GameState, gameInput: GameInput) => {
-      const player = gameState.getActivePlayer();
-      if (player.getNumResources() !== 0) {
-        gameState.pendingGameInputs.push({
-          inputType: GameInputType.SELECT_RESOURCES,
-          label: `Pay up to 2 ANY to gain an equal amount of ANY`,
-          prevInputType: gameInput.inputType,
-          cardContext: CardName.PEDDLER,
-          maxResources: 2,
-          minResources: 0,
-          clientOptions: {
-            resources: {},
-          },
-        });
-      }
+      gameState.pendingGameInputs.push({
+        inputType: GameInputType.SELECT_RESOURCES,
+        toSpend: true,
+        label: `Pay up to 2 ANY to gain an equal amount of ANY`,
+        prevInputType: gameInput.inputType,
+        cardContext: CardName.PEDDLER,
+        maxResources: 2,
+        minResources: 0,
+        clientOptions: {
+          resources: {},
+        },
+      });
     },
   }),
   [CardName.POST_OFFICE]: new Card({
@@ -2080,7 +2099,13 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           ...player.cardsInHand,
         ].some((cardName) => {
           const card = Card.fromName(cardName);
-          return card.baseVP <= 3;
+          return (
+            card.baseVP <= 3 &&
+            player.canAddToCity(
+              cardName,
+              true /* strict because we won't use other card effects */
+            )
+          );
         });
         if (!hasPlayableCard) {
           return "No playable cards worth less than 3 VP";
@@ -2091,23 +2116,19 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
-        // find all cards worth up to 3 baseVP
-
+        // Find all playable cards worth up to 3 baseVP
         const playableCards: CardName[] = [];
-
-        player.cardsInHand.forEach((cardName) => {
-          const card = Card.fromName(cardName as CardName);
-          if (card.baseVP <= 3) {
-            playableCards.push(card.name);
+        [...player.cardsInHand, ...gameState.meadowCards].forEach(
+          (cardName) => {
+            const card = Card.fromName(cardName as CardName);
+            if (
+              card.baseVP <= 3 &&
+              player.canAddToCity(cardName, true /* strict */)
+            ) {
+              playableCards.push(card.name);
+            }
           }
-        });
-
-        gameState.meadowCards.forEach((cardName) => {
-          const card = Card.fromName(cardName as CardName);
-          if (card.baseVP <= 3) {
-            playableCards.push(card.name);
-          }
-        });
+        );
 
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_CARDS,
@@ -2911,11 +2932,12 @@ const CARD_REGISTRY: Record<CardName, Card> = {
 
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_RESOURCES,
+          cardContext: CardName.UNIVERSITY,
           prevInputType: gameInput.inputType,
+          toSpend: false,
           prevInput: gameInput,
           maxResources: 1,
           minResources: 1,
-          cardContext: CardName.UNIVERSITY,
           clientOptions: {
             resources: {},
           },

@@ -14,6 +14,7 @@ import {
 import { Event } from "./event";
 import { Card } from "./card";
 import { Location } from "./location";
+import { Player } from "./player";
 import {
   testInitialGameState,
   multiStepGameInputTest,
@@ -22,9 +23,11 @@ import {
 
 describe("GameState", () => {
   let gameState: GameState;
+  let player: Player;
 
   beforeEach(() => {
     gameState = testInitialGameState();
+    player = gameState.getActivePlayer();
   });
 
   describe("meadow", () => {
@@ -217,8 +220,6 @@ describe("GameState", () => {
     });
 
     it("should be able to play constructions if city is full (w/ crane)", () => {
-      let player = gameState.getActivePlayer();
-
       player.cardsInHand.push(CardName.FARM);
       player.gainResources(Card.fromName(CardName.FARM).baseCost);
       player.cardsInHand.push(CardName.MINE);
@@ -255,7 +256,7 @@ describe("GameState", () => {
       expect(player.hasCardInCity(CardName.CRANE)).to.be(true);
       expect(player.hasCardInCity(CardName.MINE)).to.be(false);
 
-      gameState = multiStepGameInputTest(gameState, [
+      [player, gameState] = multiStepGameInputTest(gameState, [
         playCardInput(CardName.MINE, {
           paymentOptions: {
             resources: {
@@ -273,8 +274,6 @@ describe("GameState", () => {
     });
 
     it("should be able to play critters if city is full (w/ innkeeper)", () => {
-      let player = gameState.getActivePlayer();
-
       player.cardsInHand.push(CardName.FARM);
       player.gainResources(Card.fromName(CardName.FARM).baseCost);
       player.cardsInHand.push(CardName.MINE);
@@ -310,7 +309,7 @@ describe("GameState", () => {
 
       expect(player.hasCardInCity(CardName.INNKEEPER)).to.be(true);
       expect(player.hasCardInCity(CardName.WIFE)).to.be(false);
-      gameState = multiStepGameInputTest(gameState, [
+      [player, gameState] = multiStepGameInputTest(gameState, [
         playCardInput(CardName.WIFE, {
           paymentOptions: {
             resources: {
@@ -343,7 +342,6 @@ describe("GameState", () => {
     });
 
     it("should be able to play RUINS if city is full (w/ construction)", () => {
-      let player = gameState.getActivePlayer();
       player.cardsInHand.push(CardName.RUINS);
       player.gainResources(Card.fromName(CardName.RUINS).baseCost);
 
@@ -359,7 +357,7 @@ describe("GameState", () => {
       ]);
 
       expect(player.hasCardInCity(CardName.RUINS)).to.be(false);
-      gameState = multiStepGameInputTest(gameState, [
+      [player, gameState] = multiStepGameInputTest(gameState, [
         playCardInput(CardName.RUINS, {
           paymentOptions: {
             resources: {},
@@ -520,7 +518,6 @@ describe("GameState", () => {
 
   describe("PREPARE_FOR_SEASON", () => {
     it("should activate production in WINTER", () => {
-      let player = gameState.getActivePlayer();
       player.addToCity(CardName.FARM);
       player.addToCity(CardName.FARM);
       player.addToCity(CardName.MINE);
@@ -537,20 +534,176 @@ describe("GameState", () => {
       player.placeWorkerOnLocation(LocationName.BASIC_TWO_CARDS_AND_ONE_VP);
       player.placeWorkerOnLocation(LocationName.BASIC_TWO_CARDS_AND_ONE_VP);
 
-      const gameState2 = multiStepGameInputTest(gameState, [
-        {
-          inputType: GameInputType.PREPARE_FOR_SEASON,
-        },
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        { inputType: GameInputType.PREPARE_FOR_SEASON },
       ]);
 
-      player = gameState2.getPlayer(player.playerId);
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
       expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(2);
       expect(player.numAvailableWorkers).to.be(3);
     });
 
+    it("WINTER: should auto advance MONK/DOCTOR/WOODCARVER/PEDDLER if there are no other pending inputs", () => {
+      player.addToCity(CardName.MONK);
+      player.addToCity(CardName.DOCTOR);
+      player.addToCity(CardName.WOODCARVER);
+      player.addToCity(CardName.PEDDLER);
+
+      expect(player.currentSeason).to.be(Season.WINTER);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+
+      // Use up all workers
+      gameState.locationsMap[LocationName.BASIC_TWO_CARDS_AND_ONE_VP]!.push(
+        player.playerId,
+        player.playerId
+      );
+      player.placeWorkerOnLocation(LocationName.BASIC_TWO_CARDS_AND_ONE_VP);
+      player.placeWorkerOnLocation(LocationName.BASIC_TWO_CARDS_AND_ONE_VP);
+
+      [player, gameState] = multiStepGameInputTest(
+        gameState,
+        [{ inputType: GameInputType.PREPARE_FOR_SEASON }],
+        { autoAdvance: true }
+      );
+
+      player = gameState.getPlayer(player.playerId);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+      expect(player.numAvailableWorkers).to.be(3);
+    });
+
+    it("WINTER: should NOT auto advance MONK/DOCTOR/WOODCARVER/PEDDLER if there are other pending inputs", () => {
+      player.addToCity(CardName.MONK);
+      player.addToCity(CardName.DOCTOR);
+      player.addToCity(CardName.WOODCARVER);
+      player.addToCity(CardName.PEDDLER);
+      player.addToCity(CardName.FARM);
+
+      expect(player.currentSeason).to.be(Season.WINTER);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+
+      // Use up all workers
+      gameState.locationsMap[LocationName.BASIC_TWO_CARDS_AND_ONE_VP]!.push(
+        player.playerId,
+        player.playerId
+      );
+      player.placeWorkerOnLocation(LocationName.BASIC_TWO_CARDS_AND_ONE_VP);
+      player.placeWorkerOnLocation(LocationName.BASIC_TWO_CARDS_AND_ONE_VP);
+
+      [player, gameState] = multiStepGameInputTest(
+        gameState,
+        [
+          { inputType: GameInputType.PREPARE_FOR_SEASON },
+          {
+            inputType: GameInputType.SELECT_RESOURCES,
+            toSpend: true,
+            prevInputType: GameInputType.PREPARE_FOR_SEASON,
+            cardContext: CardName.DOCTOR,
+            maxResources: 3,
+            minResources: 0,
+            specificResource: ResourceType.BERRY,
+            clientOptions: { resources: { [ResourceType.BERRY]: 1 } },
+          },
+        ],
+        { autoAdvance: true, skipMultiPendingInputCheck: true }
+      );
+
+      player = gameState.getPlayer(player.playerId);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(1);
+      expect(player.numAvailableWorkers).to.be(3);
+    });
+
+    it("WINTER: should NOT auto advance MONK/DOCTOR/WOODCARVER/PEDDLER if there are other pending inputs", () => {
+      player.addToCity(CardName.MONK);
+      player.addToCity(CardName.DOCTOR);
+      player.addToCity(CardName.WOODCARVER);
+      player.addToCity(CardName.PEDDLER);
+      player.addToCity(CardName.FARM);
+      player.addToCity(CardName.MINE);
+
+      expect(player.currentSeason).to.be(Season.WINTER);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+
+      // Use up all workers
+      gameState.locationsMap[LocationName.BASIC_TWO_CARDS_AND_ONE_VP]!.push(
+        player.playerId,
+        player.playerId
+      );
+      player.placeWorkerOnLocation(LocationName.BASIC_TWO_CARDS_AND_ONE_VP);
+      player.placeWorkerOnLocation(LocationName.BASIC_TWO_CARDS_AND_ONE_VP);
+
+      [player, gameState] = multiStepGameInputTest(
+        gameState,
+        [
+          { inputType: GameInputType.PREPARE_FOR_SEASON },
+          {
+            inputType: GameInputType.SELECT_RESOURCES,
+            toSpend: true,
+            prevInputType: GameInputType.PREPARE_FOR_SEASON,
+            cardContext: CardName.DOCTOR,
+            maxResources: 3,
+            minResources: 0,
+            specificResource: ResourceType.BERRY,
+            clientOptions: { resources: { [ResourceType.BERRY]: 1 } },
+          },
+          {
+            inputType: GameInputType.SELECT_RESOURCES,
+            toSpend: true,
+            prevInputType: GameInputType.PREPARE_FOR_SEASON,
+            cardContext: CardName.PEDDLER,
+            maxResources: 2,
+            minResources: 0,
+            clientOptions: {
+              resources: {
+                [ResourceType.PEBBLE]: 1,
+              },
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_RESOURCES,
+            toSpend: false,
+            prevInputType: GameInputType.SELECT_RESOURCES,
+            cardContext: CardName.PEDDLER,
+            maxResources: 1,
+            minResources: 1,
+            clientOptions: {
+              resources: {
+                [ResourceType.TWIG]: 1,
+              },
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_RESOURCES,
+            toSpend: true,
+            prevInputType: GameInputType.PREPARE_FOR_SEASON,
+            cardContext: CardName.WOODCARVER,
+            maxResources: 3,
+            minResources: 0,
+            specificResource: ResourceType.TWIG,
+            clientOptions: {
+              resources: {
+                [ResourceType.TWIG]: 1,
+              },
+            },
+          },
+        ],
+        { autoAdvance: true, skipMultiPendingInputCheck: true }
+      );
+
+      player = gameState.getPlayer(player.playerId);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(2);
+      expect(player.numAvailableWorkers).to.be(3);
+    });
+
     it("should activate production in SUMMER", () => {
-      let player = gameState.getActivePlayer();
       player.addToCity(CardName.FARM);
       player.addToCity(CardName.FARM);
       player.addToCity(CardName.MINE);
@@ -575,20 +728,16 @@ describe("GameState", () => {
       player.placeWorkerOnLocation(LocationName.BASIC_TWO_CARDS_AND_ONE_VP);
       player.placeWorkerOnLocation(LocationName.BASIC_TWO_CARDS_AND_ONE_VP);
 
-      const gameState2 = multiStepGameInputTest(gameState, [
-        {
-          inputType: GameInputType.PREPARE_FOR_SEASON,
-        },
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        { inputType: GameInputType.PREPARE_FOR_SEASON },
       ]);
 
-      player = gameState2.getPlayer(player.playerId);
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
       expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(2);
       expect(player.numAvailableWorkers).to.be(6);
     });
 
     it("should draw 2 cards from the meadow in SPRING", () => {
-      let player = gameState.getActivePlayer();
       player.addToCity(CardName.FARM);
       player.addToCity(CardName.FARM);
       player.addToCity(CardName.MINE);
@@ -636,7 +785,7 @@ describe("GameState", () => {
         CardName.INN,
       ]);
 
-      const gameState2 = multiStepGameInputTest(gameState, [
+      [player, gameState] = multiStepGameInputTest(gameState, [
         {
           inputType: GameInputType.PREPARE_FOR_SEASON,
         },
@@ -652,11 +801,10 @@ describe("GameState", () => {
         },
       ]);
 
-      player = gameState2.getPlayer(player.playerId);
       expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
       expect(player.numAvailableWorkers).to.be(4);
       expect(player.cardsInHand).to.eql([CardName.MINE, CardName.QUEEN]);
-      expect(gameState2.meadowCards).to.eql([
+      expect(gameState.meadowCards).to.eql([
         CardName.FARM,
         CardName.KING,
         CardName.CASTLE,
@@ -669,7 +817,6 @@ describe("GameState", () => {
     });
 
     it("should prompt to activate CLOCK_TOWER before recalling workers", () => {
-      let player = gameState.getActivePlayer();
       player.addToCity(CardName.CLOCK_TOWER);
       player.addToCity(CardName.FARM);
       player.addToCity(CardName.FARM);
@@ -687,42 +834,53 @@ describe("GameState", () => {
       player.placeWorkerOnLocation(LocationName.BASIC_ONE_BERRY);
       player.placeWorkerOnLocation(LocationName.FOREST_TWO_WILD);
 
-      const gameStateNoActivate = multiStepGameInputTest(gameState, [
-        {
-          inputType: GameInputType.PREPARE_FOR_SEASON,
-        },
-        {
-          cardContext: CardName.CLOCK_TOWER,
-          inputType: GameInputType.SELECT_WORKER_PLACEMENT,
-          mustSelectOne: false,
-          options: [
-            {
-              location: LocationName.BASIC_ONE_BERRY,
-            },
-            {
-              location: LocationName.FOREST_TWO_WILD,
-            },
-          ],
-          clientOptions: {
-            selectedOption: null,
+      const [playerNoActivate, gameStateNoActivate] = multiStepGameInputTest(
+        gameState,
+        [
+          {
+            inputType: GameInputType.PREPARE_FOR_SEASON,
           },
-          prevInputType: GameInputType.PREPARE_FOR_SEASON,
-        },
-      ]);
-      player = gameStateNoActivate.getPlayer(player.playerId);
-      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
-      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(2);
-      expect(player.numAvailableWorkers).to.be(3);
-      expect(player.getPlayedCardInfos(CardName.CLOCK_TOWER)?.[0]).to.eql({
+          {
+            cardContext: CardName.CLOCK_TOWER,
+            inputType: GameInputType.SELECT_WORKER_PLACEMENT,
+            mustSelectOne: false,
+            options: [
+              {
+                location: LocationName.BASIC_ONE_BERRY,
+              },
+              {
+                location: LocationName.FOREST_TWO_WILD,
+              },
+            ],
+            clientOptions: {
+              selectedOption: null,
+            },
+            prevInputType: GameInputType.PREPARE_FOR_SEASON,
+          },
+        ]
+      );
+      expect(playerNoActivate.getNumResourcesByType(ResourceType.BERRY)).to.be(
+        2
+      );
+      expect(playerNoActivate.getNumResourcesByType(ResourceType.PEBBLE)).to.be(
+        2
+      );
+      expect(playerNoActivate.numAvailableWorkers).to.be(3);
+      expect(
+        playerNoActivate.getPlayedCardInfos(CardName.CLOCK_TOWER)?.[0]
+      ).to.eql({
         cardName: CardName.CLOCK_TOWER,
-        cardOwnerId: player.playerId,
+        cardOwnerId: playerNoActivate.playerId,
         resources: {
           [ResourceType.VP]: 3,
         },
         usedForCritter: false,
       });
 
-      const gameStateWithActivate = multiStepGameInputTest(gameState, [
+      const [
+        playerWithActivate,
+        gameStateWithActivate,
+      ] = multiStepGameInputTest(gameState, [
         {
           inputType: GameInputType.PREPARE_FOR_SEASON,
         },
@@ -747,6 +905,7 @@ describe("GameState", () => {
         },
         {
           inputType: GameInputType.SELECT_RESOURCES,
+          toSpend: false,
           prevInputType: GameInputType.PLACE_WORKER,
           locationContext: LocationName.FOREST_TWO_WILD,
           maxResources: 2,
@@ -758,13 +917,18 @@ describe("GameState", () => {
           },
         },
       ]);
-      player = gameStateWithActivate.getPlayer(player.playerId);
-      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(4);
-      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(2);
-      expect(player.numAvailableWorkers).to.be(3);
-      expect(player.getPlayedCardInfos(CardName.CLOCK_TOWER)?.[0]).to.eql({
+      expect(
+        playerWithActivate.getNumResourcesByType(ResourceType.BERRY)
+      ).to.be(4);
+      expect(
+        playerWithActivate.getNumResourcesByType(ResourceType.PEBBLE)
+      ).to.be(2);
+      expect(playerWithActivate.numAvailableWorkers).to.be(3);
+      expect(
+        playerWithActivate.getPlayedCardInfos(CardName.CLOCK_TOWER)?.[0]
+      ).to.eql({
         cardName: CardName.CLOCK_TOWER,
-        cardOwnerId: player.playerId,
+        cardOwnerId: playerWithActivate.playerId,
         resources: {
           [ResourceType.VP]: 2,
         },
@@ -773,7 +937,6 @@ describe("GameState", () => {
     });
 
     it("should work for CLOCK_TOWER + multiple multi-step productions", () => {
-      let player = gameState.getActivePlayer();
       player.addToCity(CardName.CLOCK_TOWER);
       player.addToCity(CardName.TEACHER);
       player.addToCity(CardName.CHIP_SWEEP);
@@ -818,6 +981,7 @@ describe("GameState", () => {
 
       const husbandInput = {
         inputType: GameInputType.SELECT_RESOURCES as const,
+        toSpend: false,
         prevInputType: GameInputType.SELECT_WORKER_PLACEMENT,
         cardContext: CardName.HUSBAND,
         maxResources: 1,

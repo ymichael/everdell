@@ -2,7 +2,6 @@ import {
   ResourceType,
   ProductionResourceMap,
   LocationType,
-  LocationName,
   CardCost,
   CardType,
   CardName,

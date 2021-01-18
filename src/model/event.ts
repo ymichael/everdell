@@ -381,8 +381,6 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         }
 
         // Add VP to this event
-        const storedResources = eventInfo.storedResources;
-
         if (eventInfo.storedResources) {
           const storedVP = eventInfo.storedResources[ResourceType.VP];
           const vpToStore = storedVP ? storedVP : 0;

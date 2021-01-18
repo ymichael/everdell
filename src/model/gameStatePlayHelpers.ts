@@ -10,8 +10,6 @@ import {
   GameStatePlayFn,
   GameStateCountPointsFn,
 } from "./gameState";
-import { toGameText } from "./gameText";
-
 import { Card } from "./card";
 
 export function playSpendResourceToGetVPFactory({

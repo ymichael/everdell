@@ -772,7 +772,6 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
         return null;
       }
       const player = gameState.getActivePlayer();
-      const playableCards = [];
 
       const canAffordMeadowCardWithDiscount = gameState.meadowCards.some(
         (cardName) => {

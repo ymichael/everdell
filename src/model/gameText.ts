@@ -1,10 +1,6 @@
 import {
-  GameLogEntry,
   GameText,
   TextPart,
-  EventName,
-  LocationName,
-  TextPartEntity,
   CardName,
   ResourceType,
   CardType,

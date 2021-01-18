@@ -1583,7 +1583,7 @@ describe("Card", () => {
           LocationName.FOREST_DISCARD_ANY_THEN_DRAW_TWO_PER_CARD
         ] = [];
 
-        let player1 = gameState.getActivePlayer();
+        const player1 = gameState.getActivePlayer();
 
         // Use first worker
         gameState.locationsMap[LocationName.BASIC_TWO_CARDS_AND_ONE_VP] = [

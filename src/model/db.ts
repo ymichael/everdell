@@ -7,7 +7,6 @@ import { Pool } from "pg";
 import { GameJSON } from "./jsonTypes";
 
 const pgUrl = process.env.DATABASE_URL;
-const usePG = !!pgUrl;
 // fallback sqlite db path.
 const dbPath = process.env.DB_PATH;
 

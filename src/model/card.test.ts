@@ -1841,6 +1841,11 @@ describe("Card", () => {
           CardName.MONK,
         ];
         gameState = testInitialGameState({ meadowCards: cards });
+        gameState.deck.addToStack(CardName.WIFE);
+
+        let idx = gameState.meadowCards.indexOf(CardName.WIFE);
+        expect(idx).to.be(-1);
+
         let player = gameState.getActivePlayer();
 
         const card = Card.fromName(CardName.INN);
@@ -1889,6 +1894,9 @@ describe("Card", () => {
         expect(player.hasCardInCity(CardName.FARM)).to.be(true);
         expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
         expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
+
+        let wifeInMeadow = gameState.meadowCards.indexOf(CardName.WIFE) >= 0;
+        expect(wifeInMeadow).to.be(true);
       });
 
       it("should allow player buy card from meadow if cost is > 3", () => {
@@ -1903,6 +1911,11 @@ describe("Card", () => {
           CardName.MONK,
         ];
         gameState = testInitialGameState({ meadowCards: cards });
+        gameState.deck.addToStack(CardName.RANGER);
+
+        let idx = gameState.meadowCards.indexOf(CardName.RANGER);
+        expect(idx).to.be(-1);
+
         let player = gameState.getActivePlayer();
 
         const card = Card.fromName(CardName.INN);
@@ -1963,6 +1976,10 @@ describe("Card", () => {
         expect(player.numAvailableWorkers).to.be(1);
         expect(player.hasCardInCity(CardName.QUEEN)).to.be(true);
         expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
+
+        let rangerInMeadow =
+          gameState.meadowCards.indexOf(CardName.RANGER) >= 0;
+        expect(rangerInMeadow).to.be(true);
       });
 
       it("should not allow player to buy unplayable card from meadow", () => {
@@ -2033,6 +2050,11 @@ describe("Card", () => {
           CardName.MONK,
         ];
         gameState = testInitialGameState({ meadowCards: cards });
+        gameState.deck.addToStack(CardName.DOCTOR);
+
+        const idx = gameState.meadowCards.indexOf(CardName.DOCTOR);
+        expect(idx).to.be(-1);
+
         let player = gameState.getActivePlayer();
         const player2 = gameState.players[1];
 
@@ -2076,6 +2098,10 @@ describe("Card", () => {
         expect(player.hasCardInCity(CardName.FARM)).to.be(true);
         expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
         expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
+
+        let doctorInMeadow =
+          gameState.meadowCards.indexOf(CardName.DOCTOR) >= 0;
+        expect(doctorInMeadow).to.be(true);
       });
 
       it("should not allow player buy card in hand but not in meadow", () => {
@@ -2140,6 +2166,10 @@ describe("Card", () => {
         ];
         gameState = testInitialGameState({ meadowCards: cards });
         let player = gameState.getActivePlayer();
+        gameState.deck.addToStack(CardName.LOOKOUT);
+
+        const idx = gameState.meadowCards.indexOf(CardName.LOOKOUT);
+        expect(idx).to.be(-1);
 
         player.addToCity(CardName.INN);
         player.cardsInHand.push(CardName.WIFE);
@@ -2176,6 +2206,16 @@ describe("Card", () => {
 
         expect(player.numAvailableWorkers).to.be(1);
         expect(player.hasCardInCity(CardName.WIFE)).to.be(true);
+
+        const hasWifeInHand = player.cardsInHand.indexOf(CardName.WIFE) >= 0;
+        expect(hasWifeInHand).to.be(true);
+
+        const wifeInMeadow = gameState.meadowCards.indexOf(CardName.WIFE) >= 0;
+        expect(wifeInMeadow).to.be(false);
+
+        const lookoutInMeadow =
+          gameState.meadowCards.indexOf(CardName.LOOKOUT) >= 0;
+        expect(lookoutInMeadow).to.be(true);
       });
     });
 

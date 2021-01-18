@@ -1248,6 +1248,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         ]);
 
         if (sumResources(selectedCard.baseCost) <= 3) {
+          gameState.removeCardFromMeadow(selectedCard.name);
+          gameState.replenishMeadow();
           selectedCard.addToCityAndPlay(gameState, gameInput);
           gameState.addGameLogFromCard(CardName.INN, [
             player,
@@ -1287,6 +1289,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         }
         player.payForCard(gameState, gameInput);
         card.addToCityAndPlay(gameState, gameInput);
+
+        gameState.removeCardFromMeadow(card.name);
+        gameState.replenishMeadow();
+
         gameState.addGameLogFromCard(CardName.INN, [
           player,
           " played ",

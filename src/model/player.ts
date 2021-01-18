@@ -1,5 +1,7 @@
 import isEqual from "lodash/isEqual";
 import omit from "lodash/omit";
+import cloneDeep from "lodash/cloneDeep";
+import merge from "lodash/merge";
 import {
   CardCost,
   CardName,
@@ -19,7 +21,6 @@ import {
   IGameTextEntity,
 } from "./types";
 import { PlayerJSON } from "./jsonTypes";
-import cloneDeep from "lodash/cloneDeep";
 import { GameState } from "./gameState";
 import { Card } from "./card";
 import { Event } from "./event";
@@ -463,15 +464,78 @@ export class Player implements IGameTextEntity {
     return playedCards[0];
   }
 
-  findPlayedCard(playedCard: PlayedCardInfo): PlayedCardInfo | undefined {
-    return this.getPlayedCardInfos(playedCard.cardName).find((x) => {
-      // Omit workers & resources because we might place have stale references in pending gameInput.
-      // TODO: Fix this
-      return isEqual(
-        omit(x, ["workers", "resources"]),
-        omit(playedCard, ["workers", "resources"])
-      );
+  updatePlayedCard(
+    gameState: GameState,
+    origPlayedCard: PlayedCardInfo,
+    newPlayedCard: PlayedCardInfo
+  ): void {
+    let found = false;
+
+    const origPlayedCardCopy = cloneDeep(origPlayedCard);
+    this.getPlayedCardInfos(origPlayedCard.cardName).forEach((x) => {
+      if (!found && isEqual(x, origPlayedCardCopy)) {
+        merge(x, newPlayedCard);
+        found = true;
+      }
     });
+
+    // Make sure we update all existing playedCardInfo references.
+    gameState.updatePendingGameInputs((gameInput) => {
+      switch (gameInput.inputType) {
+        case GameInputType.SELECT_CARDS:
+        case GameInputType.SELECT_LOCATION:
+        case GameInputType.SELECT_PAYMENT_FOR_CARD:
+        case GameInputType.SELECT_RESOURCES:
+        case GameInputType.DISCARD_CARDS:
+        case GameInputType.SELECT_PLAYER:
+        case GameInputType.SELECT_WORKER_PLACEMENT:
+          return gameInput;
+
+        case GameInputType.SELECT_OPTION_GENERIC:
+          if (
+            gameInput.playedCardContext &&
+            isEqual(gameInput.playedCardContext, origPlayedCardCopy)
+          ) {
+            return {
+              ...gameInput,
+              playedCardContext: newPlayedCard,
+            };
+          }
+          return gameInput;
+        case GameInputType.SELECT_PLAYED_CARDS:
+          return {
+            ...gameInput,
+            cardOptions: gameInput.cardOptions.map((x) =>
+              isEqual(x, origPlayedCardCopy) ? newPlayedCard : x
+            ),
+          };
+
+        default:
+          assertUnreachable(gameInput, JSON.stringify(gameInput, null, 2));
+      }
+    });
+
+    if (!found) {
+      throw new Error(
+        `Cannot find played card for: ${
+          origPlayedCard.cardName
+        }\n ${JSON.stringify(origPlayedCard, null, 2)}`
+      );
+    }
+  }
+
+  findPlayedCard(
+    playedCard: PlayedCardInfo
+  ): Readonly<PlayedCardInfo> | undefined {
+    // console.log(JSON.stringify(playedCard, null, 2));
+    const ret = this.getPlayedCardInfos(playedCard.cardName).find((x) => {
+      return isEqual(x, playedCard);
+    });
+    if (ret) {
+      return Object.freeze(ret);
+    }
+    // Be a little forgiving here because we might have stale references in pending gameInput.
+    return this.getPlayedCardInfos(playedCard.cardName)[0];
   }
 
   hasUnusedByCritterConstruction(cardName: CardName): boolean {
@@ -544,15 +608,18 @@ export class Player implements IGameTextEntity {
       );
     }
 
-    origPlayedCard.workers = origPlayedCard.workers || [];
-    if (
-      origPlayedCard.workers.length >=
-      card.getNumWorkerSpotsForPlayer(cardOwner)
-    ) {
+    const workers = origPlayedCard.workers || [];
+    if (workers.length >= card.getNumWorkerSpotsForPlayer(cardOwner)) {
       throw new Error(`Couldn't place worker: ${JSON.stringify(playedCard)}`);
     }
 
-    origPlayedCard.workers.push(this.playerId);
+    workers.push(this.playerId);
+
+    cardOwner.updatePlayedCard(gameState, origPlayedCard, {
+      ...cloneDeep(origPlayedCard),
+      workers,
+    });
+
     this.placeWorkerCommon({ playedCard });
   }
 

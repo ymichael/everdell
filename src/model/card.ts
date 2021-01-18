@@ -2608,26 +2608,27 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           throw new Error("Cannot find played card");
         }
         const selectedOption = gameInput.clientOptions.selectedOption;
+        const newPlayedCard = cloneDeep(origPlayedCard);
         if (selectedOption === "3 TWIG") {
-          origPlayedCard.resources![ResourceType.TWIG]! += 3;
+          newPlayedCard.resources![ResourceType.TWIG]! += 3;
           gameState.addGameLogFromCard(CardName.STOREHOUSE, [
             player,
             " added 3 TWIG.",
           ]);
         } else if (selectedOption === "2 RESIN") {
-          origPlayedCard.resources![ResourceType.RESIN]! += 2;
+          newPlayedCard.resources![ResourceType.RESIN]! += 2;
           gameState.addGameLogFromCard(CardName.STOREHOUSE, [
             player,
             " added 2 RESIN.",
           ]);
         } else if (selectedOption === "1 PEBBLE") {
-          origPlayedCard.resources![ResourceType.PEBBLE]! += 1;
+          newPlayedCard.resources![ResourceType.PEBBLE]! += 1;
           gameState.addGameLogFromCard(CardName.STOREHOUSE, [
             player,
             " added 1 PEBBLE.",
           ]);
         } else if (selectedOption === "2 BERRY") {
-          origPlayedCard.resources![ResourceType.BERRY]! += 2;
+          newPlayedCard.resources![ResourceType.BERRY]! += 2;
           gameState.addGameLogFromCard(CardName.STOREHOUSE, [
             player,
             " added 2 BERRY.",
@@ -2635,6 +2636,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         } else {
           throw new Error("Must select an option!");
         }
+        player.updatePlayedCard(gameState, origPlayedCard, newPlayedCard);
       } else if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
         const playedCard = gameInput.clientOptions.playedCard;
         if (!playedCard) {
@@ -2651,12 +2653,16 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           ".",
         ]);
         player.gainResources(origPlayedCard.resources!);
-        origPlayedCard.resources = {
-          [ResourceType.TWIG]: 0,
-          [ResourceType.RESIN]: 0,
-          [ResourceType.PEBBLE]: 0,
-          [ResourceType.BERRY]: 0,
-        };
+
+        player.updatePlayedCard(gameState, origPlayedCard, {
+          ...cloneDeep(origPlayedCard),
+          resources: {
+            [ResourceType.TWIG]: 0,
+            [ResourceType.RESIN]: 0,
+            [ResourceType.PEBBLE]: 0,
+            [ResourceType.BERRY]: 0,
+          },
+        });
       }
     },
   }),

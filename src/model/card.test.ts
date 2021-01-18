@@ -3628,7 +3628,7 @@ describe("Card", () => {
         });
       });
 
-      xit("should add resources to the correct storehouse", () => {
+      it("should add resources to the correct storehouse", () => {
         const card = Card.fromName(CardName.STOREHOUSE);
         player.cardsInHand = [card.name];
 
@@ -3732,6 +3732,118 @@ describe("Card", () => {
             TWIG: 0,
           },
           usedForCritter: false,
+        });
+      });
+
+      it("should allow multiple CHIP_SWEEP to add resources to same correct storehouse", () => {
+        player.addToCity(CardName.CHIP_SWEEP);
+        player.addToCity(CardName.CHIP_SWEEP);
+        player.addToCity(CardName.STOREHOUSE);
+
+        // Use up all workers
+        gameState.locationsMap[LocationName.BASIC_TWO_CARDS_AND_ONE_VP]!.push(
+          player.playerId,
+          player.playerId
+        );
+        player.placeWorkerOnLocation(LocationName.BASIC_TWO_CARDS_AND_ONE_VP);
+        player.placeWorkerOnLocation(LocationName.BASIC_TWO_CARDS_AND_ONE_VP);
+
+        [player, gameState] = multiStepGameInputTest(
+          gameState,
+          [
+            { inputType: GameInputType.PREPARE_FOR_SEASON },
+            {
+              inputType: GameInputType.SELECT_PLAYED_CARDS,
+              prevInputType: GameInputType.PREPARE_FOR_SEASON,
+              cardOptions: [player.getFirstPlayedCard(CardName.STOREHOUSE)],
+              cardContext: CardName.CHIP_SWEEP,
+              maxToSelect: 1,
+              minToSelect: 1,
+              clientOptions: {
+                selectedCards: [player.getFirstPlayedCard(CardName.STOREHOUSE)],
+              },
+            },
+            {
+              inputType: GameInputType.SELECT_OPTION_GENERIC,
+              prevInputType: GameInputType.PREPARE_FOR_SEASON,
+              cardContext: CardName.STOREHOUSE,
+              playedCardContext: player.getFirstPlayedCard(CardName.STOREHOUSE),
+              options: ["3 TWIG", "2 RESIN", "1 PEBBLE", "2 BERRY"],
+              clientOptions: { selectedOption: "3 TWIG" },
+            },
+            {
+              inputType: GameInputType.SELECT_PLAYED_CARDS,
+              prevInputType: GameInputType.PREPARE_FOR_SEASON,
+              cardOptions: [
+                {
+                  ...player.getFirstPlayedCard(CardName.STOREHOUSE),
+                  resources: {
+                    [ResourceType.TWIG]: 3,
+                    [ResourceType.RESIN]: 0,
+                    [ResourceType.PEBBLE]: 0,
+                    [ResourceType.BERRY]: 0,
+                  },
+                },
+              ],
+              cardContext: CardName.CHIP_SWEEP,
+              maxToSelect: 1,
+              minToSelect: 1,
+              clientOptions: {
+                selectedCards: [
+                  {
+                    ...player.getFirstPlayedCard(CardName.STOREHOUSE),
+                    resources: {
+                      [ResourceType.TWIG]: 3,
+                      [ResourceType.RESIN]: 0,
+                      [ResourceType.PEBBLE]: 0,
+                      [ResourceType.BERRY]: 0,
+                    },
+                  },
+                ],
+              },
+            },
+            {
+              inputType: GameInputType.SELECT_OPTION_GENERIC,
+              prevInputType: GameInputType.SELECT_PLAYED_CARDS,
+              cardContext: CardName.STOREHOUSE,
+              playedCardContext: {
+                ...player.getFirstPlayedCard(CardName.STOREHOUSE),
+                resources: {
+                  [ResourceType.TWIG]: 3,
+                  [ResourceType.RESIN]: 0,
+                  [ResourceType.PEBBLE]: 0,
+                  [ResourceType.BERRY]: 0,
+                },
+              },
+              options: ["3 TWIG", "2 RESIN", "1 PEBBLE", "2 BERRY"],
+              clientOptions: { selectedOption: "3 TWIG" },
+            },
+            {
+              inputType: GameInputType.SELECT_OPTION_GENERIC,
+              prevInputType: GameInputType.SELECT_PLAYED_CARDS,
+              cardContext: CardName.STOREHOUSE,
+              playedCardContext: {
+                ...player.getFirstPlayedCard(CardName.STOREHOUSE),
+                resources: {
+                  [ResourceType.TWIG]: 6,
+                  [ResourceType.RESIN]: 0,
+                  [ResourceType.PEBBLE]: 0,
+                  [ResourceType.BERRY]: 0,
+                },
+              },
+              options: ["3 TWIG", "2 RESIN", "1 PEBBLE", "2 BERRY"],
+              clientOptions: { selectedOption: "3 TWIG" },
+            },
+          ],
+          { skipMultiPendingInputCheck: true }
+        );
+
+        expect(player.getFirstPlayedCard(CardName.STOREHOUSE)).to.eql({
+          cardOwnerId: player.playerId,
+          cardName: CardName.STOREHOUSE,
+          usedForCritter: false,
+          workers: [],
+          resources: { TWIG: 9, RESIN: 0, PEBBLE: 0, BERRY: 0 },
         });
       });
 

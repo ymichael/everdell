@@ -90,7 +90,7 @@ const gameTextToDebugStr = (gameText: GameText): string => {
 export class GameState {
   readonly gameStateId: number;
   private _activePlayerId: Player["playerId"];
-  readonly pendingGameInputs: GameInputMultiStep[];
+  public pendingGameInputs: GameInputMultiStep[];
   readonly players: Player[];
   readonly meadowCards: CardName[];
   readonly discardPile: CardStack;
@@ -309,6 +309,12 @@ export class GameState {
 
     player.placeWorkerOnLocation(location.name);
     this.locationsMap[location.name]!.push(player.playerId);
+  }
+
+  updatePendingGameInputs(
+    mapFn: (gameInput: GameInputMultiStep) => GameInputMultiStep
+  ): void {
+    this.pendingGameInputs = this.pendingGameInputs.map(mapFn);
   }
 
   private removeMultiStepGameInput(gameInput: GameInputMultiStep): void {

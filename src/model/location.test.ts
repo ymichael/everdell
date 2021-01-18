@@ -463,9 +463,44 @@ describe("Location", () => {
         LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS
       ] = [];
 
-      expect(() => gameState.next(gameInput)).to.throwException(
-        /cannot afford/i
+      expect(() => gameState.next(gameInput)).to.throwException(/cannot play/i);
+    });
+
+    it("cannot visit edge case", () => {
+      const meadow = [
+        // No space for these
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+
+        // Cannot afford
+        CardName.WANDERER,
+      ];
+
+      gameState = testInitialGameState({ meadowCards: meadow });
+      const location = Location.fromName(
+        LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS
       );
+
+      player = gameState.getActivePlayer();
+      player.gainResources({
+        [ResourceType.TWIG]: 5,
+        [ResourceType.PEBBLE]: 5,
+        [ResourceType.RESIN]: 5,
+      });
+      for (let i = 0; i < 15; i++) {
+        player.addToCity(CardName.HUSBAND);
+      }
+
+      const gameInput = placeWorkerInput(location.name);
+      gameState.locationsMap[
+        LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS
+      ] = [];
+      expect(() => gameState.next(gameInput)).to.throwException(/cannot play/i);
     });
 
     it("cannot visit if player has no space in city for cards in meadow", () => {
@@ -510,7 +545,7 @@ describe("Location", () => {
         LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS
       ] = [];
 
-      expect(() => gameState.next(gameInput)).to.throwException(/cannot add/i);
+      expect(() => gameState.next(gameInput)).to.throwException(/cannot play/i);
     });
 
     it("can visit if city is full but there is a playable card in meadow", () => {

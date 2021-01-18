@@ -773,27 +773,18 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
       }
       const player = gameState.getActivePlayer();
 
-      const canAffordMeadowCardWithDiscount = gameState.meadowCards.some(
-        (cardName) => {
-          return player.canAffordCard(cardName, false, "ANY 1");
-        }
-      );
-
-      if (!canAffordMeadowCardWithDiscount) {
-        return `Cannot afford any meadow cards even after discounts`;
-      }
-
-      const canAddToCity = gameState.meadowCards.some((cardName) => {
-        return player.canAddToCity(
-          cardName,
-          true /* should be strict because we won't use other card effects */
+      const hasPlayableCard = gameState.meadowCards.some((cardName) => {
+        return (
+          player.canAffordCard(cardName, false, "ANY 1") &&
+          player.canAddToCity(
+            cardName,
+            true /* strict because we won't use other card effects */
+          )
         );
       });
-
-      if (!canAddToCity) {
-        return `Cannot add any of the cards to city`;
+      if (!hasPlayableCard) {
+        return `Cannot play any meadow cards even after discounts`;
       }
-
       return null;
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
@@ -825,10 +816,19 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
           throw new Error("Must choose exactly 2 cards from the meadow");
         }
 
-        // make sure player can play at least one of the chosen cards
+        const isCardPlayable = (cardName: CardName): boolean => {
+          return (
+            player.canAffordCard(cardName, false, "ANY 1") &&
+            player.canAddToCity(
+              cardName,
+              true /* strict because we won't use other card effects */
+            )
+          );
+        };
+
+        // Make sure player can play at least one of the chosen cards
         const canPlayAtLeastOne =
-          player.canAffordCard(cardOptions[0], false, "ANY 1") ||
-          player.canAffordCard(cardOptions[1], false, "ANY 1");
+          isCardPlayable(cardOptions[0]) || isCardPlayable(cardOptions[1]);
 
         if (!canPlayAtLeastOne) {
           throw new Error(

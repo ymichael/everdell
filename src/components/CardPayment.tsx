@@ -118,7 +118,9 @@ const OptionToUseAssociatedCard: React.FC<{
           type={"checkbox"}
           checked={isChecked}
           onChange={() => {
-            resetPaymentOptions(isChecked ? "COST" : "DEFAULT");
+            resetPaymentOptions(
+              isChecked ? "COST" : hasUnusedEvertree ? "ZERO" : "DEFAULT"
+            );
             helpers.setValue(!isChecked);
           }}
         />

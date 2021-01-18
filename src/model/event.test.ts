@@ -271,7 +271,7 @@ describe("Event", () => {
         undefined
       );
 
-      gameState = multiStepGameInputTest(gameState, [
+      [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
         {
           inputType: GameInputType.SELECT_PLAYED_CARDS,
@@ -290,7 +290,6 @@ describe("Event", () => {
           },
         },
       ]);
-      player = gameState.getPlayer(player.playerId);
 
       // check to make sure the right cards are still in the city
       expect(player.hasCardInCity(CardName.UNDERTAKER)).to.eql(false);
@@ -330,7 +329,7 @@ describe("Event", () => {
         player.claimedEvents[EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES]
       ).to.be(undefined);
 
-      gameState = multiStepGameInputTest(gameState, [
+      [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
         {
           inputType: GameInputType.SELECT_PLAYED_CARDS,
@@ -348,7 +347,6 @@ describe("Event", () => {
           },
         },
       ]);
-      player = gameState.getPlayer(player.playerId);
 
       // check to make sure the right cards are still in the city
       expect(player.hasCardInCity(CardName.RANGER)).to.eql(false);
@@ -381,7 +379,7 @@ describe("Event", () => {
         player.claimedEvents[EventName.SPECIAL_AN_EVENING_OF_FIREWORKS]
       ).to.be(undefined);
 
-      gameState = multiStepGameInputTest(gameState, [
+      [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
         {
           inputType: GameInputType.SELECT_RESOURCES,
@@ -395,7 +393,6 @@ describe("Event", () => {
           },
         },
       ]);
-      player = gameState.getPlayer(player.playerId);
 
       // check to make sure the right cards are still in the city
       expect(player.hasCardInCity(CardName.LOOKOUT)).to.eql(true);
@@ -420,6 +417,7 @@ describe("Event", () => {
 
       expect(event.getPoints(gameState, player.playerId)).to.be(6);
     });
+
     it("should calculate points correctly", () => {
       const event = Event.fromName(EventName.SPECIAL_AN_EVENING_OF_FIREWORKS);
 
@@ -463,6 +461,7 @@ describe("Event", () => {
         event.getPoints(gameState, player.playerId);
       }).to.throwException(/invalid number of/i);
     });
+
     it("can't put incorrect resources or number of twigs", () => {
       const event = Event.fromName(EventName.SPECIAL_AN_EVENING_OF_FIREWORKS);
 
@@ -535,7 +534,7 @@ describe("Event", () => {
         player.claimedEvents[EventName.SPECIAL_PERFORMER_IN_RESIDENCE]
       ).to.be(undefined);
 
-      gameState = multiStepGameInputTest(gameState, [
+      [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
         {
           inputType: GameInputType.SELECT_RESOURCES,
@@ -549,7 +548,6 @@ describe("Event", () => {
           },
         },
       ]);
-      player = gameState.getPlayer(player.playerId);
 
       // check to make sure the right cards are still in the city
       expect(player.hasCardInCity(CardName.BARD)).to.eql(true);
@@ -573,6 +571,7 @@ describe("Event", () => {
       });
       expect(event.getPoints(gameState, player.playerId)).to.be(6);
     });
+
     it("should calculate points correctly", () => {
       const event = Event.fromName(EventName.SPECIAL_PERFORMER_IN_RESIDENCE);
 
@@ -616,6 +615,7 @@ describe("Event", () => {
         event.getPoints(gameState, player.playerId);
       }).to.throwException(/invalid number of/i);
     });
+
     it("can't put incorrect resources or number of berries", () => {
       const event = Event.fromName(EventName.SPECIAL_PERFORMER_IN_RESIDENCE);
 
@@ -692,7 +692,7 @@ describe("Event", () => {
         player.claimedEvents[EventName.SPECIAL_UNDER_NEW_MANAGEMENT]
       ).to.be(undefined);
 
-      gameState = multiStepGameInputTest(gameState, [
+      [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
         {
           inputType: GameInputType.SELECT_RESOURCES,
@@ -710,7 +710,6 @@ describe("Event", () => {
           },
         },
       ]);
-      player = gameState.getPlayer(player.playerId);
 
       // check to make sure the right cards are still in the city
       expect(player.hasCardInCity(CardName.PEDDLER)).to.eql(true);
@@ -740,6 +739,7 @@ describe("Event", () => {
       // 1 pt per twig and berry, 2 pts per resin and pebble
       expect(event.getPoints(gameState, player.playerId)).to.be(5);
     });
+
     it("can claim event without having resources", () => {
       const event = Event.fromName(EventName.SPECIAL_UNDER_NEW_MANAGEMENT);
       const gameInput = claimEventInput(event.name);
@@ -758,7 +758,7 @@ describe("Event", () => {
         player.claimedEvents[EventName.SPECIAL_UNDER_NEW_MANAGEMENT]
       ).to.be(undefined);
 
-      gameState = multiStepGameInputTest(gameState, [
+      [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
         {
           inputType: GameInputType.SELECT_RESOURCES,
@@ -772,7 +772,6 @@ describe("Event", () => {
           },
         },
       ]);
-      player = gameState.getPlayer(player.playerId);
 
       // check to make sure the right cards are still in the city
       expect(player.hasCardInCity(CardName.PEDDLER)).to.eql(true);
@@ -794,6 +793,7 @@ describe("Event", () => {
       // 1 pt per twig and berry, 2 pts per resin and pebble
       expect(event.getPoints(gameState, player.playerId)).to.be(0);
     });
+
     it("can claim event without placing resources", () => {
       const event = Event.fromName(EventName.SPECIAL_UNDER_NEW_MANAGEMENT);
       const gameInput = claimEventInput(event.name);
@@ -817,7 +817,7 @@ describe("Event", () => {
         player.claimedEvents[EventName.SPECIAL_UNDER_NEW_MANAGEMENT]
       ).to.be(undefined);
 
-      gameState = multiStepGameInputTest(gameState, [
+      [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
         {
           inputType: GameInputType.SELECT_RESOURCES,
@@ -831,7 +831,6 @@ describe("Event", () => {
           },
         },
       ]);
-      player = gameState.getPlayer(player.playerId);
 
       // check to make sure the right cards are still in the city
       expect(player.hasCardInCity(CardName.PEDDLER)).to.eql(true);
@@ -857,6 +856,7 @@ describe("Event", () => {
       // 1 pt per twig and berry, 2 pts per resin and pebble
       expect(event.getPoints(gameState, player.playerId)).to.be(0);
     });
+
     it("should calculate points correctly", () => {
       const event = Event.fromName(EventName.SPECIAL_UNDER_NEW_MANAGEMENT);
 
@@ -896,6 +896,7 @@ describe("Event", () => {
       expect(event.getPoints(gameState, player.playerId)).to.be(0);
     });
   });
+
   describe(EventName.SPECIAL_PRISTINE_CHAPEL_CEILING, () => {
     it("should be able to claim event", () => {
       const event = Event.fromName(EventName.SPECIAL_PRISTINE_CHAPEL_CEILING);
@@ -918,7 +919,7 @@ describe("Event", () => {
         player.claimedEvents[EventName.SPECIAL_PRISTINE_CHAPEL_CEILING]
       ).to.be(undefined);
 
-      gameState = multiStepGameInputTest(gameState, [
+      [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
         {
           inputType: GameInputType.SELECT_RESOURCES,
@@ -935,7 +936,6 @@ describe("Event", () => {
           },
         },
       ]);
-      player = gameState.getPlayer(player.playerId);
 
       // check to make sure the right cards are still in the city
       expect(player.hasCardInCity(CardName.CHAPEL)).to.eql(true);
@@ -944,6 +944,7 @@ describe("Event", () => {
       expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
       expect(event.getPoints(gameState, player.playerId)).to.be(4);
     });
+
     it("if no resources on chapel, claim event but don't get points or resources", () => {
       const event = Event.fromName(EventName.SPECIAL_PRISTINE_CHAPEL_CEILING);
       const gameInput = claimEventInput(event.name);
@@ -962,8 +963,7 @@ describe("Event", () => {
         player.claimedEvents[EventName.SPECIAL_PRISTINE_CHAPEL_CEILING]
       ).to.be(undefined);
 
-      gameState = multiStepGameInputTest(gameState, [gameInput]);
-      player = gameState.getPlayer(player.playerId);
+      [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
 
       // check to make sure the right cards are still in the city
       expect(player.hasCardInCity(CardName.CHAPEL)).to.eql(true);
@@ -1001,7 +1001,7 @@ describe("Event", () => {
         player.claimedEvents[EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED]
       ).to.be(undefined);
 
-      gameState = multiStepGameInputTest(gameState, [
+      [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
         {
           inputType: GameInputType.SELECT_CARDS,
@@ -1021,7 +1021,6 @@ describe("Event", () => {
           },
         },
       ]);
-      player = gameState.getPlayer(player.playerId);
 
       // player should have 0 cards in hand
       expect(player.cardsInHand.length).to.be(0);
@@ -1046,6 +1045,7 @@ describe("Event", () => {
       ]);
       expect(event.getPoints(gameState, player.playerId)).to.be(5);
     });
+
     it("should be able to claim event and store subset of revealed cards", () => {
       const event = Event.fromName(
         EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED
@@ -1073,7 +1073,7 @@ describe("Event", () => {
         player.claimedEvents[EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED]
       ).to.be(undefined);
 
-      gameState = multiStepGameInputTest(gameState, [
+      [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
         {
           inputType: GameInputType.SELECT_CARDS,
@@ -1093,7 +1093,6 @@ describe("Event", () => {
           },
         },
       ]);
-      player = gameState.getPlayer(player.playerId);
 
       // player should have Queen and King
       expect(player.cardsInHand).to.eql([CardName.QUEEN, CardName.KING]);
@@ -1117,6 +1116,7 @@ describe("Event", () => {
 
       expect(event.getPoints(gameState, player.playerId)).to.be(3);
     });
+
     it("should be able to claim event and take all revealed cards into hand", () => {
       const event = Event.fromName(
         EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED
@@ -1144,7 +1144,7 @@ describe("Event", () => {
         player.claimedEvents[EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED]
       ).to.be(undefined);
 
-      gameState = multiStepGameInputTest(gameState, [
+      [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
         {
           inputType: GameInputType.SELECT_CARDS,
@@ -1171,7 +1171,6 @@ describe("Event", () => {
           },
         },
       ]);
-      player = gameState.getPlayer(player.playerId);
 
       expect(player.cardsInHand).to.eql([
         CardName.QUEEN,
@@ -1196,6 +1195,7 @@ describe("Event", () => {
 
       expect(event.getPoints(gameState, player.playerId)).to.be(0);
     });
+
     it("should not be able to claim event if missing cards", () => {
       const event = Event.fromName(
         EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED
@@ -1238,8 +1238,6 @@ describe("Event", () => {
 
       gameState = gameState.next(gameInput);
 
-      player = gameState.getPlayer(player.playerId);
-
       expect(player.claimedEvents[EventName.SPECIAL_TAX_RELIEF]);
       expect(event.getPoints(gameState, player.playerId)).to.be(3);
     });
@@ -1259,9 +1257,7 @@ describe("Event", () => {
       );
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
 
-      gameState = gameState.next(gameInput);
-
-      player = gameState.getPlayer(player.playerId);
+      [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
 
       expect(player.claimedEvents[EventName.SPECIAL_TAX_RELIEF]);
       expect(event.getPoints(gameState, player.playerId)).to.be(3);
@@ -1290,7 +1286,7 @@ describe("Event", () => {
 
       const recallableWorkers = player.getRecallableWorkers();
 
-      gameState = multiStepGameInputTest(gameState, [
+      [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
         {
           inputType: GameInputType.SELECT_WORKER_PLACEMENT,
@@ -1306,10 +1302,10 @@ describe("Event", () => {
           },
         },
       ]);
-      player = gameState.getPlayer(player.playerId);
       expect(player.numAvailableWorkers).to.be(1);
       expect(event.getPoints(gameState, player.playerId)).to.be(4);
     });
+
     it("should allow player to reclaim worker on event", () => {
       const event = Event.fromName(EventName.SPECIAL_A_WEE_RUN_CITY);
       const gameInput = claimEventInput(event.name);
@@ -1325,7 +1321,7 @@ describe("Event", () => {
 
       player.placeWorkerOnLocation(LocationName.BASIC_ONE_BERRY);
 
-      gameState = multiStepGameInputTest(gameState, [
+      [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
         {
           inputType: GameInputType.SELECT_WORKER_PLACEMENT,
@@ -1341,12 +1337,12 @@ describe("Event", () => {
           },
         },
       ]);
-      player = gameState.getPlayer(player.playerId);
 
       // should still be 1 because one worker is still on the basic location
       expect(player.numAvailableWorkers).to.be(1);
       expect(event.getPoints(gameState, player.playerId)).to.be(4);
     });
+
     it("should be claimable even if player hadn't yet placed workers", () => {
       const event = Event.fromName(EventName.SPECIAL_A_WEE_RUN_CITY);
       const gameInput = claimEventInput(event.name);
@@ -1358,7 +1354,7 @@ describe("Event", () => {
 
       expect(player.numAvailableWorkers).to.be(2);
 
-      gameState = multiStepGameInputTest(gameState, [
+      [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
         {
           inputType: GameInputType.SELECT_WORKER_PLACEMENT,
@@ -1371,7 +1367,6 @@ describe("Event", () => {
           },
         },
       ]);
-      player = gameState.getPlayer(player.playerId);
 
       // should still be 1 because one worker is still on the basic location
       expect(player.numAvailableWorkers).to.be(2);
@@ -1380,30 +1375,6 @@ describe("Event", () => {
   });
 
   describe(EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN, () => {
-    it("should be able to claim event", () => {
-      const event = Event.fromName(
-        EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN
-      );
-      const gameInput = claimEventInput(event.name);
-      let player = gameState.getActivePlayer();
-
-      gameState.eventsMap[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN] = null;
-
-      player.addToCity(CardName.SHOPKEEPER);
-      player.addToCity(CardName.POST_OFFICE);
-
-      expect(
-        player.claimedEvents[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN]
-      ).to.be(undefined);
-
-      gameState = gameState.next(gameInput);
-
-      player = gameState.getPlayer(player.playerId);
-
-      expect(
-        player.claimedEvents[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN]
-      );
-    });
     it("should allow player to pay other players (give multiple to one person)", () => {
       const event = Event.fromName(
         EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN
@@ -1422,7 +1393,7 @@ describe("Event", () => {
         player.claimedEvents[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN]
       ).to.be(undefined);
 
-      gameState = multiStepGameInputTest(gameState, [
+      [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
         {
           inputType: GameInputType.SELECT_PLAYER,
@@ -1461,7 +1432,6 @@ describe("Event", () => {
         },
       ]);
 
-      player = gameState.getPlayer(player.playerId);
       player2 = gameState.getPlayer(player2.playerId);
 
       expect(
@@ -1472,6 +1442,7 @@ describe("Event", () => {
       expect(player.getPoints(gameState)).to.be(9);
       expect(player2.getNumResourcesByType(ResourceType.TWIG)).to.be(3);
     });
+
     it("should work with more than 2 players", () => {
       const event = Event.fromName(
         EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN
@@ -1578,7 +1549,7 @@ describe("Event", () => {
         },
       };
 
-      gameState = multiStepGameInputTest(gameState, [
+      [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
         selectFirstOppo,
         selectFirstResource,
@@ -1588,7 +1559,6 @@ describe("Event", () => {
         selectThirdResource,
       ]);
 
-      player = gameState.getPlayer(player.playerId);
       player2 = gameState.getPlayer(player2.playerId);
       player3 = gameState.getPlayer(player3.playerId);
       player4 = gameState.getPlayer(player4.playerId);
@@ -1607,6 +1577,7 @@ describe("Event", () => {
       expect(player3.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
       expect(player4.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
     });
+
     it("should be able to give fewer than 3 resources", () => {
       const event = Event.fromName(
         EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN
@@ -1700,7 +1671,7 @@ describe("Event", () => {
         clientOptions: { selectedPlayer: null },
       };
 
-      gameState = multiStepGameInputTest(gameState, [
+      [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
         selectFirstOppo,
         selectFirstResource,
@@ -1709,7 +1680,6 @@ describe("Event", () => {
         selectThirdOppo,
       ]);
 
-      player = gameState.getPlayer(player.playerId);
       player2 = gameState.getPlayer(player2.playerId);
       player3 = gameState.getPlayer(player3.playerId);
       player4 = gameState.getPlayer(player4.playerId);
@@ -1730,6 +1700,7 @@ describe("Event", () => {
       expect(player3.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
       expect(player4.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
     });
+
     it("should not be able to give more than 3 resources", () => {
       const event = Event.fromName(
         EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN
@@ -1787,6 +1758,7 @@ describe("Event", () => {
         gameState.next(selectFirstResource);
       }).to.throwException(/cannot give/i);
     });
+
     it("should not be able to give more than 3 resources across all donations", () => {
       const event = Event.fromName(
         EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN

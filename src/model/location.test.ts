@@ -122,7 +122,7 @@ describe("Location", () => {
 
       expect(location.canPlay(gameState, gameInput)).to.be(true);
 
-      gameState = multiStepGameInputTest(gameState, [
+      [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
         {
           inputType: GameInputType.SELECT_RESOURCES,
@@ -139,9 +139,6 @@ describe("Location", () => {
           },
         },
       ]);
-
-      player = gameState.getPlayer(player.playerId);
-
       expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(1);
       expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
     });
@@ -158,7 +155,7 @@ describe("Location", () => {
       expect(location.canPlay(gameState, gameInput)).to.be(true);
       expect(player.cardsInHand.length).to.be(0);
 
-      gameState = multiStepGameInputTest(gameState, [
+      [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
         {
           inputType: GameInputType.SELECT_RESOURCES,
@@ -174,8 +171,6 @@ describe("Location", () => {
           },
         },
       ]);
-
-      player = gameState.getPlayer(player.playerId);
 
       expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(1);
       expect(player.cardsInHand.length).to.be(2);
@@ -199,7 +194,7 @@ describe("Location", () => {
       expect(location.canPlay(gameState, gameInput)).to.be(true);
       expect(player.cardsInHand.length).to.be(4);
 
-      gameState = multiStepGameInputTest(gameState, [
+      [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
         {
           inputType: GameInputType.DISCARD_CARDS,
@@ -229,8 +224,6 @@ describe("Location", () => {
         },
       ]);
 
-      player = gameState.getPlayer(player.playerId);
-
       expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(1);
       expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(2);
       expect(player.cardsInHand.length).to.be(1);
@@ -256,7 +249,7 @@ describe("Location", () => {
       expect(location.canPlay(gameState, gameInput)).to.be(true);
       expect(player.cardsInHand.length).to.be(6);
 
-      gameState = multiStepGameInputTest(gameState, [
+      [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
         {
           inputType: GameInputType.DISCARD_CARDS,
@@ -275,8 +268,6 @@ describe("Location", () => {
           },
         },
       ]);
-
-      player = gameState.getPlayer(player.playerId);
 
       // player gained 8 cards but already had 2 in hand + can't have more than 8 cards in hand
       expect(player.cardsInHand.length).to.be(8);
@@ -300,7 +291,7 @@ describe("Location", () => {
       expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
       expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
 
-      gameState = multiStepGameInputTest(gameState, [
+      [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
         {
           inputType: GameInputType.DISCARD_CARDS,
@@ -337,8 +328,6 @@ describe("Location", () => {
         player.playerId
       );
 
-      player = gameState.getPlayer(player.playerId);
-
       // player gained 8 cards but already had 2 in hand + can't have more than 8 cards in hand
       expect(player.cardsInHand.length).to.be(2);
 
@@ -360,7 +349,7 @@ describe("Location", () => {
       expect(location.canPlay(gameState, gameInput)).to.be(true);
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
 
-      gameState = multiStepGameInputTest(gameState, [
+      [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
         {
           inputType: GameInputType.SELECT_LOCATION,
@@ -372,8 +361,6 @@ describe("Location", () => {
           },
         },
       ]);
-
-      player = gameState.getPlayer(player.playerId);
 
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
       expect(player.cardsInHand.length).to.be(3);
@@ -408,7 +395,7 @@ describe("Location", () => {
         LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS
       ] = [];
 
-      gameState = multiStepGameInputTest(gameState, [
+      [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
         {
           inputType: GameInputType.SELECT_CARDS,
@@ -446,8 +433,6 @@ describe("Location", () => {
           },
         },
       ]);
-
-      player = gameState.getPlayer(player.playerId);
 
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(3);
       expect(player.cardsInHand).to.eql([CardName.EVERTREE]);
@@ -570,7 +555,7 @@ describe("Location", () => {
         LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS
       ] = [];
 
-      gameState = multiStepGameInputTest(gameState, [
+      [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
         {
           inputType: GameInputType.SELECT_CARDS,
@@ -608,8 +593,6 @@ describe("Location", () => {
           },
         },
       ]);
-
-      player = gameState.getPlayer(player.playerId);
 
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(4);
       expect(player.cardsInHand).to.eql([CardName.THEATRE]);
@@ -686,7 +669,7 @@ describe("Location", () => {
         LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS
       ] = [];
 
-      gameState = multiStepGameInputTest(gameState, [
+      [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
         {
           inputType: GameInputType.SELECT_CARDS as const,
@@ -711,7 +694,6 @@ describe("Location", () => {
           clientOptions: { selectedCards: [CardName.CRANE] },
         },
       ]);
-      player = gameState.getPlayer(player.playerId);
       expect(player.hasCardInCity(CardName.CRANE)).to.be(true);
       expect(player.hasCardInCity(CardName.CEMETARY)).to.be(false);
       expect(player.cardsInHand.length).to.be(1);

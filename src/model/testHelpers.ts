@@ -1,6 +1,6 @@
 import expect from "expect.js";
 import { GameState } from "./gameState";
-import { createPlayer } from "./player";
+import { createPlayer, Player } from "./player";
 import { Location } from "./location";
 import { Event } from "./event";
 import { Card } from "./card";
@@ -74,11 +74,12 @@ export function testInitialGameState(
   return gameState;
 }
 
+// Returns the active player from the given game state and next gameState!
 export const multiStepGameInputTest = (
   gameState: GameState,
   pendingGameInputs: GameInput[],
   opts: { autoAdvance?: boolean; skipMultiPendingInputCheck?: boolean } = {}
-): GameState => {
+): [Player, GameState] => {
   let currGameState = gameState.clone();
   const player = currGameState.getActivePlayer();
   const { autoAdvance = false, skipMultiPendingInputCheck = false } = opts;
@@ -109,7 +110,8 @@ export const multiStepGameInputTest = (
       );
     }
   });
-  return currGameState;
+
+  return [currGameState.getPlayer(player.playerId), currGameState];
 };
 
 export const playCardInput = (

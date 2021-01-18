@@ -632,10 +632,6 @@ export class Player implements IGameTextEntity {
     const wildDiscount =
       // Dungeon
       this.canInvokeDungeon() ||
-      // Inn
-      (isMeadowCard &&
-        this.hasCardInCity(CardName.INN) &&
-        this.canPlaceWorkerOnCard(this.getFirstPlayedCard(CardName.INN))) ||
       // Crane
       (card.isConstruction && this.hasCardInCity(CardName.CRANE));
 

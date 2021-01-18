@@ -527,7 +527,6 @@ export class Player implements IGameTextEntity {
   findPlayedCard(
     playedCard: PlayedCardInfo
   ): Readonly<PlayedCardInfo> | undefined {
-    // console.log(JSON.stringify(playedCard, null, 2));
     const ret = this.getPlayedCardInfos(playedCard.cardName).find((x) => {
       return isEqual(x, playedCard);
     });

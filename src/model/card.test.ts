@@ -1111,8 +1111,22 @@ describe("Card", () => {
       it("should have tests", () => {});
     });
 
-    xdescribe(CardName.FAIRGROUNDS, () => {
-      it("should have tests", () => {});
+    describe(CardName.FAIRGROUNDS, () => {
+      it("draws player 2 CARD when played", () => {
+        const card = Card.fromName(CardName.FAIRGROUNDS);
+
+        // Make sure we can play this card
+        player.gainResources(card.baseCost);
+        player.addCardToHand(gameState, card.name);
+
+        expect(player.cardsInHand.length).to.be(1);
+        expect(player.hasCardInCity(card.name)).to.be(false);
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+        ]);
+        expect(player.cardsInHand.length).to.be(2);
+        expect(player.hasCardInCity(card.name)).to.be(true);
+      });
     });
 
     describe(CardName.FARM, () => {

@@ -2424,6 +2424,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       "Gain 3 BERRY, then gain 1 VP for each VP on your ",
       { type: "entity", entityType: "card", card: CardName.CHAPEL },
       ".",
+      { type: "HR" },
+      "If paying for card with resources, pay resources to an opponent.",
     ]),
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
@@ -3002,7 +3004,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: false,
     associatedCard: CardName.LOOKOUT,
-    cardDescription: toGameText("Draw 3 CARD."),
+    cardDescription: toGameText([
+      "Draw 3 CARD.",
+      { type: "HR" },
+      "Does not take up a space in your city.",
+    ]),
     resourcesToGain: {
       CARD: 3,
     },

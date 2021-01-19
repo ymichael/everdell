@@ -2489,6 +2489,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           player,
           " gave ",
           targetPlayer,
+          " ",
           ...resourceMapToGameText(resourcesToGive),
           ".",
         ]);

@@ -184,6 +184,76 @@ describe("GameState", () => {
     });
   });
 
+  describe("nextPlayer", () => {
+    it("should change active player to the next player", () => {
+      gameState = testInitialGameState({ numPlayers: 4 });
+      let player0Id = gameState.players[0].playerId;
+      let player1Id = gameState.players[1].playerId;
+      let player2Id = gameState.players[2].playerId;
+      let player3Id = gameState.players[3].playerId;
+
+      expect(gameState.getActivePlayer().playerId).to.be(player0Id);
+      gameState.nextPlayer();
+      expect(gameState.getActivePlayer().playerId).to.be(player1Id);
+      gameState.nextPlayer();
+      expect(gameState.getActivePlayer().playerId).to.be(player2Id);
+      gameState.nextPlayer();
+      expect(gameState.getActivePlayer().playerId).to.be(player3Id);
+      gameState.nextPlayer();
+      expect(gameState.getActivePlayer().playerId).to.be(player0Id);
+    });
+
+    it("should account for GAME_END", () => {
+      gameState = testInitialGameState({ numPlayers: 4 });
+      let player0Id = gameState.players[0].playerId;
+      let player1Id = gameState.players[1].playerId;
+      let player2Id = gameState.players[2].playerId;
+      let player3Id = gameState.players[3].playerId;
+
+      expect(gameState.getActivePlayer().playerId).to.be(player0Id);
+      gameState.nextPlayer();
+      expect(gameState.getActivePlayer().playerId).to.be(player1Id);
+
+      gameState.getActivePlayer().playerStatus = PlayerStatus.GAME_ENDED;
+      gameState.nextPlayer();
+      expect(gameState.getActivePlayer().playerId).to.be(player2Id);
+      gameState.nextPlayer();
+      expect(gameState.getActivePlayer().playerId).to.be(player3Id);
+      gameState.nextPlayer();
+      expect(gameState.getActivePlayer().playerId).to.be(player0Id);
+
+      // Skips player1
+      gameState.nextPlayer();
+      expect(gameState.getActivePlayer().playerId).to.be(player2Id);
+
+      gameState.getActivePlayer().playerStatus = PlayerStatus.GAME_ENDED;
+      gameState.nextPlayer();
+      expect(gameState.getActivePlayer().playerId).to.be(player3Id);
+
+      gameState.nextPlayer();
+      expect(gameState.getActivePlayer().playerId).to.be(player0Id);
+
+      // Skips player1 & player2
+      gameState.nextPlayer();
+      expect(gameState.getActivePlayer().playerId).to.be(player3Id);
+
+      gameState.getActivePlayer().playerStatus = PlayerStatus.GAME_ENDED;
+      gameState.nextPlayer();
+      expect(gameState.getActivePlayer().playerId).to.be(player0Id);
+
+      // Skips everyone else
+      gameState.nextPlayer();
+      expect(gameState.getActivePlayer().playerId).to.be(player0Id);
+
+      gameState.nextPlayer();
+      expect(gameState.getActivePlayer().playerId).to.be(player0Id);
+
+      gameState.getActivePlayer().playerStatus = PlayerStatus.GAME_ENDED;
+      gameState.nextPlayer();
+      expect(gameState.getActivePlayer().playerId).to.be(player0Id);
+    });
+  });
+
   describe("PLAY_CARD", () => {
     it("should be able to pay for the card to play it", () => {
       const card = Card.fromName(CardName.FARM);

@@ -216,10 +216,19 @@ export class GameState {
     const remainingPlayers = this.getRemainingPlayers();
     if (remainingPlayers.length !== 0) {
       const player = this.getActivePlayer();
-      const playerIdx = remainingPlayers.indexOf(player);
-      const nextPlayer =
-        remainingPlayers[(playerIdx + 1) % remainingPlayers.length];
-      this._activePlayerId = nextPlayer.playerId;
+
+      // Make a list of 2 copies of the players list so we'll encounter
+      // each player at least once no matter where we start in the first list.
+      const playerTurnOrder = [...this.players, ...this.players];
+
+      const startIdx = playerTurnOrder.indexOf(player);
+      for (let i = startIdx + 1; i < playerTurnOrder.length; i++) {
+        // Find the first next player that doesn't have a GAME_ENDED status.
+        if (playerTurnOrder[i].playerStatus !== PlayerStatus.GAME_ENDED) {
+          this._activePlayerId = playerTurnOrder[i].playerId;
+          break;
+        }
+      }
     }
   }
 

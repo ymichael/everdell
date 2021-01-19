@@ -252,6 +252,37 @@ describe("Card", () => {
       });
     });
 
+    describe(CardName.CASTLE, () => {
+      it("should be worth 1 VP per common construction", () => {
+        const card = Card.fromName(CardName.CASTLE);
+        player.addToCity(card.name);
+
+        expect(card.getPoints(gameState, player.playerId)).to.be(4);
+
+        player.addToCity(CardName.FARM);
+        player.addToCity(CardName.FARM);
+        player.addToCity(CardName.FARM);
+        expect(card.getPoints(gameState, player.playerId)).to.be(4 + 3);
+      });
+
+      it("does not count unique constructions / critters", () => {
+        const card = Card.fromName(CardName.CASTLE);
+        player.addToCity(card.name);
+
+        expect(card.getPoints(gameState, player.playerId)).to.be(4);
+
+        player.addToCity(CardName.EVERTREE);
+        player.addToCity(CardName.PALACE);
+        player.addToCity(CardName.DUNGEON);
+        expect(card.getPoints(gameState, player.playerId)).to.be(4);
+
+        player.addToCity(CardName.WIFE);
+        player.addToCity(CardName.RANGER);
+        player.addToCity(CardName.QUEEN);
+        expect(card.getPoints(gameState, player.playerId)).to.be(4);
+      });
+    });
+
     describe(CardName.FARM, () => {
       it("should have card to play it", () => {
         const card = Card.fromName(CardName.FARM);

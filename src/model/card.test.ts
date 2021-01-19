@@ -73,6 +73,30 @@ describe("Card", () => {
   });
 
   describe("Card Specific", () => {
+    describe(CardName.ARCHITECT, () => {
+      it("should be worth 1 VP per unused RESIN/PEBBLE", () => {
+        const card = Card.fromName(CardName.ARCHITECT);
+
+        expect(card.getPoints(gameState, player.playerId)).to.be(2);
+
+        player.gainResources({ [ResourceType.PEBBLE]: 1 });
+        expect(card.getPoints(gameState, player.playerId)).to.be(3);
+
+        player.gainResources({ [ResourceType.RESIN]: 2 });
+        expect(card.getPoints(gameState, player.playerId)).to.be(5);
+      });
+
+      it("should be worth 1 VP per unused RESIN/PEBBLE up to 6 MAX", () => {
+        const card = Card.fromName(CardName.ARCHITECT);
+
+        expect(card.getPoints(gameState, player.playerId)).to.be(2);
+
+        player.gainResources({ [ResourceType.PEBBLE]: 10 });
+        player.gainResources({ [ResourceType.RESIN]: 10 });
+        expect(card.getPoints(gameState, player.playerId)).to.be(2 + 6);
+      });
+    });
+
     describe(CardName.FARM, () => {
       it("should have card to play it", () => {
         const card = Card.fromName(CardName.FARM);

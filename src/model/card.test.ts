@@ -209,6 +209,49 @@ describe("Card", () => {
       });
     });
 
+    describe(CardName.BARGE_TOAD, () => {
+      it("should gain 0 TWIG if no FARM in city", () => {
+        const card = Card.fromName(CardName.BARGE_TOAD);
+        player.cardsInHand.push(card.name);
+        player.gainResources(card.baseCost);
+
+        expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+        ]);
+        expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+      });
+
+      it("should gain 2 TWIG if one FARM in city", () => {
+        const card = Card.fromName(CardName.BARGE_TOAD);
+        player.cardsInHand.push(card.name);
+        player.gainResources(card.baseCost);
+        player.addToCity(CardName.FARM);
+
+        expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+        ]);
+        expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(2);
+      });
+
+      it("should gain 2 TWIG per FARM in city", () => {
+        const card = Card.fromName(CardName.BARGE_TOAD);
+        player.cardsInHand.push(card.name);
+        player.gainResources(card.baseCost);
+        player.addToCity(CardName.FARM);
+        player.addToCity(CardName.FARM);
+        player.addToCity(CardName.FARM);
+        player.addToCity(CardName.FARM);
+
+        expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+        ]);
+        expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(8);
+      });
+    });
+
     describe(CardName.FARM, () => {
       it("should have card to play it", () => {
         const card = Card.fromName(CardName.FARM);

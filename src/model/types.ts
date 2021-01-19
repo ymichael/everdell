@@ -72,6 +72,8 @@ export type GameInputDiscardCards = {
   minCards: number;
   maxCards: number;
 
+  isAutoAdvancedInput?: boolean;
+
   locationContext?: LocationName;
   cardContext?: CardName;
   eventContext?: EventName;

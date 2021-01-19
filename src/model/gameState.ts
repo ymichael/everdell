@@ -655,6 +655,17 @@ export class GameState {
       };
     }
     if (
+      pendingInput.inputType === GameInputType.DISCARD_CARDS &&
+      pendingInput.minCards === 0 &&
+      player.cardsInHand.length === 0
+    ) {
+      return {
+        ...pendingInput,
+        isAutoAdvancedInput: true,
+      };
+    }
+
+    if (
       pendingInput.inputType === GameInputType.SELECT_RESOURCES &&
       pendingInput.toSpend
     ) {

@@ -425,6 +425,17 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             throw new Error("Discarding too many cards");
           }
           const numDiscarded = gameInput.clientOptions.cardsToDiscard.length;
+          if (numDiscarded === 0 && gameInput.isAutoAdvancedInput) {
+            gameState.addGameLogFromCard(CardName.BARD, [
+              player,
+              ` has no CARD to discard.`,
+            ]);
+          } else {
+            gameState.addGameLogFromCard(CardName.BARD, [
+              player,
+              ` discarded ${numDiscarded} CARD to gain ${numDiscarded} VP.`,
+            ]);
+          }
           gameInput.clientOptions.cardsToDiscard.forEach((cardName) => {
             player.removeCardFromHand(cardName);
             gameState.discardPile.addToStack(cardName);
@@ -432,10 +443,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           player.gainResources({
             [ResourceType.VP]: numDiscarded,
           });
-          gameState.addGameLogFromCard(CardName.BARD, [
-            player,
-            ` discarded ${numDiscarded} CARD to gain ${numDiscarded} VP.`,
-          ]);
         }
       } else {
         throw new Error(`Unexpected input type ${gameInput.inputType}`);

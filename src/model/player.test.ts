@@ -32,6 +32,16 @@ describe("Player", () => {
   });
 
   describe("canAddToCity", () => {
+    it("should account for unique cards", () => {
+      const p = gameState.getActivePlayer();
+      expect(p.canAddToCity(CardName.KING, true /* strict */)).to.be(true);
+      expect(p.canAddToCity(CardName.KING, false /* strict */)).to.be(true);
+
+      p.addToCity(CardName.KING);
+      expect(p.canAddToCity(CardName.KING, true /* strict */)).to.be(false);
+      expect(p.canAddToCity(CardName.KING, false /* strict */)).to.be(false);
+    });
+
     it("should be able to add cards to city if there is space", () => {
       const p = gameState.getActivePlayer();
       expect(p.canAddToCity(CardName.FARM, true /* strict */)).to.be(true);

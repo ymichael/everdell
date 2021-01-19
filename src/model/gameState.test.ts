@@ -205,10 +205,10 @@ describe("GameState", () => {
 
     it("should account for GAME_END", () => {
       gameState = testInitialGameState({ numPlayers: 4 });
-      let player0Id = gameState.players[0].playerId;
-      let player1Id = gameState.players[1].playerId;
-      let player2Id = gameState.players[2].playerId;
-      let player3Id = gameState.players[3].playerId;
+      const player0Id = gameState.players[0].playerId;
+      const player1Id = gameState.players[1].playerId;
+      const player2Id = gameState.players[2].playerId;
+      const player3Id = gameState.players[3].playerId;
 
       expect(gameState.getActivePlayer().playerId).to.be(player0Id);
       gameState.nextPlayer();

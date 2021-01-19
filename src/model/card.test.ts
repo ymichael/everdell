@@ -283,6 +283,188 @@ describe("Card", () => {
       });
     });
 
+    describe(CardName.CEMETARY, () => {
+      it("allow player to play one revealed card", () => {
+        player.addToCity(CardName.CEMETARY);
+
+        // Add some cards to make sure we only give player valid options.
+        player.addToCity(CardName.UNIVERSITY);
+        player.addToCity(CardName.KING);
+        player.addToCity(CardName.FARM);
+
+        // Add some cards to the discard pile.
+        gameState.discardPile.addToStack(CardName.FARM);
+        gameState.discardPile.addToStack(CardName.FARM);
+        gameState.discardPile.addToStack(CardName.FARM);
+        gameState.discardPile.addToStack(CardName.FARM);
+
+        gameState.deck.addToStack(CardName.KING);
+        gameState.deck.addToStack(CardName.QUEEN);
+        gameState.deck.addToStack(CardName.FARM);
+        gameState.deck.addToStack(CardName.UNIVERSITY);
+
+        expect(player.numAvailableWorkers).to.be(2);
+        expect(player.hasCardInCity(CardName.QUEEN)).to.be(false);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            clientOptions: {
+              playedCard: player.getFirstPlayedCard(CardName.CEMETARY),
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_OPTION_GENERIC,
+            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+            options: ["Deck", "Discard Pile"],
+            cardContext: CardName.CEMETARY,
+            clientOptions: {
+              selectedOption: "Deck",
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: GameInputType.SELECT_OPTION_GENERIC,
+            cardContext: CardName.CEMETARY,
+            cardOptions: [CardName.FARM, CardName.QUEEN],
+            cardOptionsUnfiltered: [
+              CardName.UNIVERSITY,
+              CardName.FARM,
+              CardName.QUEEN,
+              CardName.KING,
+            ],
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              selectedCards: [CardName.QUEEN],
+            },
+          },
+        ]);
+
+        expect(player.hasCardInCity(CardName.QUEEN)).to.be(true);
+      });
+
+      it("skip card selection if none are playable", () => {
+        player.addToCity(CardName.CEMETARY);
+
+        // Add some cards to make sure we only give player valid options.
+        player.addToCity(CardName.UNIVERSITY);
+        player.addToCity(CardName.KING);
+
+        // Add some cards to the discard pile.
+        gameState.discardPile.addToStack(CardName.FARM);
+        gameState.discardPile.addToStack(CardName.FARM);
+        gameState.discardPile.addToStack(CardName.FARM);
+        gameState.discardPile.addToStack(CardName.FARM);
+
+        gameState.deck.addToStack(CardName.KING);
+        gameState.deck.addToStack(CardName.KING);
+        gameState.deck.addToStack(CardName.KING);
+        gameState.deck.addToStack(CardName.KING);
+
+        expect(player.numAvailableWorkers).to.be(2);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            clientOptions: {
+              playedCard: player.getFirstPlayedCard(CardName.CEMETARY),
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_OPTION_GENERIC,
+            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+            options: ["Deck", "Discard Pile"],
+            cardContext: CardName.CEMETARY,
+            clientOptions: {
+              selectedOption: "Deck",
+            },
+          },
+        ]);
+      });
+
+      it("should auto advance if there aren't any cards in the discard pile", () => {
+        player.addToCity(CardName.CEMETARY);
+
+        expect(gameState.discardPile.length).to.be(0);
+        expect(player.numAvailableWorkers).to.be(2);
+        expect(player.hasCardInCity(CardName.QUEEN)).to.be(false);
+
+        gameState.deck.addToStack(CardName.KING);
+        gameState.deck.addToStack(CardName.QUEEN);
+        gameState.deck.addToStack(CardName.FARM);
+        gameState.deck.addToStack(CardName.UNIVERSITY);
+
+        expect(player.numAvailableWorkers).to.be(2);
+        expect(player.hasCardInCity(CardName.QUEEN)).to.be(false);
+
+        [player, gameState] = multiStepGameInputTest(
+          gameState,
+          [
+            {
+              inputType: GameInputType.VISIT_DESTINATION_CARD,
+              clientOptions: {
+                playedCard: player.getFirstPlayedCard(CardName.CEMETARY),
+              },
+            },
+            {
+              inputType: GameInputType.SELECT_CARDS,
+              prevInputType: GameInputType.SELECT_OPTION_GENERIC,
+              cardContext: CardName.CEMETARY,
+              cardOptions: [
+                CardName.UNIVERSITY,
+                CardName.FARM,
+                CardName.QUEEN,
+                CardName.KING,
+              ],
+              cardOptionsUnfiltered: [
+                CardName.UNIVERSITY,
+                CardName.FARM,
+                CardName.QUEEN,
+                CardName.KING,
+              ],
+              maxToSelect: 1,
+              minToSelect: 1,
+              clientOptions: {
+                selectedCards: [CardName.QUEEN],
+              },
+            },
+          ],
+          { autoAdvance: true }
+        );
+
+        expect(player.hasCardInCity(CardName.QUEEN)).to.be(true);
+      });
+
+      it("should not allow discard pile as an option if there aren't any cards there", () => {
+        player.addToCity(CardName.CEMETARY);
+
+        expect(gameState.discardPile.length).to.be(0);
+        expect(player.numAvailableWorkers).to.be(2);
+        expect(player.hasCardInCity(CardName.QUEEN)).to.be(false);
+
+        expect(() => {
+          multiStepGameInputTest(gameState, [
+            {
+              inputType: GameInputType.VISIT_DESTINATION_CARD,
+              clientOptions: {
+                playedCard: player.getFirstPlayedCard(CardName.CEMETARY),
+              },
+            },
+            {
+              inputType: GameInputType.SELECT_OPTION_GENERIC,
+              prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+              options: ["Deck"],
+              cardContext: CardName.CEMETARY,
+              clientOptions: {
+                selectedOption: "Discard Pile",
+              },
+            },
+          ]);
+        }).to.throwException(/unable to draw card from discard/i);
+      });
+    });
+
     describe(CardName.FARM, () => {
       it("should have card to play it", () => {
         const card = Card.fromName(CardName.FARM);
@@ -3605,92 +3787,6 @@ describe("Card", () => {
         expect(player.getNumResourcesByType(ResourceType.VP)).to.be(4);
         expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
         expect(targetPlayer.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
-      });
-    });
-
-    describe(CardName.CEMETARY, () => {
-      it("allow player to play one revealed card", () => {
-        player.addToCity(CardName.CEMETARY);
-
-        // Add some cards to make sure we only give player valid options.
-        player.addToCity(CardName.UNIVERSITY);
-        player.addToCity(CardName.KING);
-        player.addToCity(CardName.FARM);
-
-        gameState.deck.addToStack(CardName.KING);
-        gameState.deck.addToStack(CardName.QUEEN);
-        gameState.deck.addToStack(CardName.FARM);
-        gameState.deck.addToStack(CardName.UNIVERSITY);
-
-        expect(player.numAvailableWorkers).to.be(2);
-        expect(player.hasCardInCity(CardName.QUEEN)).to.be(false);
-
-        [player, gameState] = multiStepGameInputTest(gameState, [
-          {
-            inputType: GameInputType.VISIT_DESTINATION_CARD,
-            clientOptions: {
-              playedCard: player.getFirstPlayedCard(CardName.CEMETARY),
-            },
-          },
-          {
-            inputType: GameInputType.SELECT_OPTION_GENERIC,
-            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
-            options: ["Deck", "Discard Pile"],
-            cardContext: CardName.CEMETARY,
-            clientOptions: {
-              selectedOption: "Deck",
-            },
-          },
-          {
-            inputType: GameInputType.SELECT_CARDS,
-            prevInputType: GameInputType.SELECT_OPTION_GENERIC,
-            cardContext: CardName.CEMETARY,
-            cardOptions: [CardName.FARM, CardName.QUEEN],
-            cardOptionsUnfiltered: [
-              CardName.UNIVERSITY,
-              CardName.FARM,
-              CardName.QUEEN,
-              CardName.KING,
-            ],
-            maxToSelect: 1,
-            minToSelect: 1,
-            clientOptions: {
-              // these are the cards the player wants to remove
-              // from their city
-              selectedCards: [CardName.QUEEN],
-            },
-          },
-        ]);
-
-        expect(player.hasCardInCity(CardName.QUEEN)).to.be(true);
-      });
-
-      it("error if no cards in discard pile", () => {
-        player.addToCity(CardName.CEMETARY);
-
-        expect(gameState.discardPile.length).to.be(0);
-        expect(player.numAvailableWorkers).to.be(2);
-        expect(player.hasCardInCity(CardName.QUEEN)).to.be(false);
-
-        expect(() => {
-          multiStepGameInputTest(gameState, [
-            {
-              inputType: GameInputType.VISIT_DESTINATION_CARD,
-              clientOptions: {
-                playedCard: player.getFirstPlayedCard(CardName.CEMETARY),
-              },
-            },
-            {
-              inputType: GameInputType.SELECT_OPTION_GENERIC,
-              prevInputType: GameInputType.VISIT_DESTINATION_CARD,
-              options: ["Deck", "Discard Pile"],
-              cardContext: CardName.CEMETARY,
-              clientOptions: {
-                selectedOption: "Discard Pile",
-              },
-            },
-          ]);
-        }).to.throwException(/unable to draw card from discard/i);
       });
     });
 

@@ -664,6 +664,17 @@ export class GameState {
         isAutoAdvancedInput: true,
       };
     }
+    if (
+      pendingInput.inputType === GameInputType.SELECT_OPTION_GENERIC &&
+      pendingInput.options.length === 1
+    ) {
+      return {
+        ...pendingInput,
+        clientOptions: {
+          selectedOption: pendingInput.options[0],
+        },
+      };
+    }
 
     if (
       pendingInput.inputType === GameInputType.SELECT_RESOURCES &&

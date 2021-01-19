@@ -525,7 +525,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           inputType: GameInputType.SELECT_OPTION_GENERIC,
           prevInputType: gameInput.inputType,
           label: "Select where to draw cards",
-          options: ["Deck", "Discard Pile"],
+          options: [
+            gameState.deck.length >= 4 && "Deck",
+            gameState.discardPile.length >= 4 && "Discard Pile",
+          ].filter(Boolean) as string[],
           cardContext: CardName.CEMETARY,
           clientOptions: {
             selectedOption: null,
@@ -560,7 +563,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           player,
           " revealed ",
           ...cardListToGameText(revealedCards),
-          ` from the ${selectedOption} ${
+          ` from the ${selectedOption}${
             filteredOptions.length === 0 ? " but is unable to play any" : ""
           }.`,
         ]);

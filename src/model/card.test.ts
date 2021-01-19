@@ -938,8 +938,77 @@ describe("Card", () => {
       });
     });
 
-    xdescribe(CardName.CRANE, () => {
-      it("should have tests", () => {});
+    describe(CardName.CRANE, () => {
+      it("should make constructions 3 cheaper", () => {
+        player.addToCity(CardName.CRANE);
+        player.cardsInHand.push(CardName.FARM);
+
+        expect(() => {
+          multiStepGameInputTest(gameState, [playCardInput(CardName.FARM)]);
+        }).to.throwException(/can't spend/i);
+
+        expect(() => {
+          multiStepGameInputTest(gameState, [
+            playCardInput(CardName.FARM, {
+              paymentOptions: {
+                resources: {
+                  [ResourceType.TWIG]: 0,
+                  [ResourceType.RESIN]: 0,
+                },
+              },
+            }),
+          ]);
+        }).to.throwException(/insufficient/i);
+
+        expect(player.hasCardInCity(CardName.CRANE)).to.be(true);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(CardName.FARM, {
+            paymentOptions: {
+              cardToUse: CardName.CRANE,
+              resources: {
+                [ResourceType.TWIG]: 0,
+                [ResourceType.RESIN]: 0,
+              },
+            },
+          }),
+        ]);
+
+        expect(player.hasCardInCity(CardName.CRANE)).to.be(false);
+        expect(player.hasCardInCity(CardName.FARM)).to.be(true);
+      });
+
+      it("cannot be used for critters", () => {
+        player.addToCity(CardName.CRANE);
+        player.cardsInHand.push(CardName.WIFE);
+
+        expect(() => {
+          multiStepGameInputTest(gameState, [playCardInput(CardName.WIFE)]);
+        }).to.throwException(/can't spend/i);
+
+        expect(() => {
+          multiStepGameInputTest(gameState, [
+            playCardInput(CardName.WIFE, {
+              paymentOptions: {
+                resources: { [ResourceType.BERRY]: 0 },
+              },
+            }),
+          ]);
+        }).to.throwException(/insufficient/i);
+
+        expect(player.hasCardInCity(CardName.CRANE)).to.be(true);
+
+        expect(() => {
+          multiStepGameInputTest(gameState, [
+            playCardInput(CardName.WIFE, {
+              paymentOptions: {
+                cardToUse: CardName.CRANE,
+                resources: { [ResourceType.BERRY]: 0 },
+              },
+            }),
+          ]);
+        }).to.throwException(/not a construction/i);
+      });
     });
 
     describe(CardName.DOCTOR, () => {

@@ -5,6 +5,11 @@ import { GameJSON, PlayerJSON } from "../model/jsonTypes";
 
 export const GameUpdaterContext = React.createContext<() => void>(() => {});
 
+const isNotificationsSupported =
+  typeof Notification !== "undefined" &&
+  typeof window !== "undefined" &&
+  "Notification" in window;
+
 function checkNotificationPromise() {
   try {
     Notification.requestPermission().then();
@@ -16,7 +21,7 @@ function checkNotificationPromise() {
 
 function enableNotifications() {
   // Let's check if the browser supports notifications
-  if (!("Notification" in window)) {
+  if (!isNotificationsSupported) {
     console.log("This browser does not support notifications.");
   } else {
     if (checkNotificationPromise()) {
@@ -75,11 +80,18 @@ const GameUpdater: React.FC<{
       timer = setInterval(updateGameState, 2000);
     } else {
       if (!isFirstLoadRef.current) {
-        if (Notification.permission === "granted") {
-          new Notification("🐿 Everdell", {
-            body: "It's your turn!",
-            icon: "/images/notif_icon.png",
-          });
+        try {
+          if (
+            isNotificationsSupported &&
+            Notification.permission === "granted"
+          ) {
+            new Notification("🐿 Everdell", {
+              body: "It's your turn!",
+              icon: "/images/notif_icon.png",
+            });
+          }
+        } catch (e) {
+          // ignore
         }
       }
     }

@@ -169,9 +169,9 @@ export const Events: React.FC<{
   return (
     <GameBlock title={"Events"}>
       <div className={styles.event_items}>
-        {columns.map((events) => {
+        {columns.map((events, idx) => {
           return (
-            <div className={styles.event_items_col}>
+            <div key={idx} className={styles.event_items_col}>
               {events.map((event) => renderClaimedEvent(event.name))}
             </div>
           );

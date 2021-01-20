@@ -24,20 +24,22 @@ const GameLog: React.FC<{ logs: GameLogEntry[]; fixedHeight?: boolean }> = ({
           .join(" ")}
         ref={logsElRef}
       >
-        {logs.map(({ entry }, idx) => {
-          return (
-            <div
-              key={idx}
-              className={styles.log}
-              ref={idx == logs.length - 1 ? lastLogElRef : null}
-            >
-              <span className={styles.log_prefix}>{">> "}</span>
-              <span>
-                <Description textParts={entry} />
-              </span>
-            </div>
-          );
-        })}
+        <div className={styles.logs_inner}>
+          {logs.map(({ entry }, idx) => {
+            return (
+              <div
+                key={idx}
+                className={styles.log}
+                ref={idx == logs.length - 1 ? lastLogElRef : null}
+              >
+                <span className={styles.log_prefix}>{">> "}</span>
+                <span>
+                  <Description textParts={entry} />
+                </span>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </GameBlock>
   );

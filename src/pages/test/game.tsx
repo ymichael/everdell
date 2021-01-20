@@ -16,7 +16,7 @@ import { testInitialGameState } from "../../model/testHelpers";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   // Create Test Game Here
-  const playerNames = ["Michael", "Elynn"];
+  const playerNames = ["Michael", "Elynn", "Chris", "Vanessa"];
   const numPlayers = playerNames.length;
   let gameState = testInitialGameState({
     numPlayers,
@@ -26,8 +26,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     shuffleDeck: true,
   });
   gameState.players.forEach((player, idx) => {
-    player.nextSeason();
-    player.nextSeason();
+    for (let i = 0; i < idx; i++) {
+      player.nextSeason();
+    }
 
     player.drawCards(gameState, idx);
     player.cardsInHand.push(CardName.RANGER);

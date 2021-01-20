@@ -1,8 +1,15 @@
 import * as React from "react";
 import { useState } from "react";
+import Image from "next/image";
 
 import styles from "../styles/Players.module.css";
-import { CardName, ResourceType, CardType } from "../model/types";
+import {
+  PlayerStatus as TPlayerStatus,
+  Season,
+  CardName,
+  ResourceType,
+  CardType,
+} from "../model/types";
 import { PlayerJSON, GameStateJSON } from "../model/jsonTypes";
 import { Player } from "../model/player";
 import { GameState } from "../model/gameState";
@@ -66,23 +73,68 @@ const PlayerStatus: React.FC<{
   return (
     <>
       <div
-        onClick={() => {
-          if (!isViewer) {
-            setShowCity(!showCity);
-          }
-        }}
         className={[styles.status_box, isViewer && styles.viewer_status_box]
           .filter(Boolean)
           .join(" ")}
       >
         <div className={styles.status_box_item}>
           <div className={styles.status_box_bio}>
-            <div className={styles.status_box_bio_name}>{player.name}</div>
-            <div className={styles.status_box_bio_meta}>
-              {isActivePlayer ? "[active]" : ""}
+            <div className={styles.status_box_bio_row}>
+              <div className={styles.status_box_bio_name}>{player.name}</div>
+              <div>
+                <div
+                  onClick={() => {
+                    setShowCity(!showCity);
+                  }}
+                  style={{ cursor: "pointer" }}
+                  className={styles.status_box_item_resource_icon}
+                >
+                  <Image src="/images/info.png" layout="fill" />
+                </div>
+              </div>
             </div>
-            <div className={styles.status_box_bio_season}>
-              {player.currentSeason.toLowerCase()}
+
+            <div className={styles.status_box_bio_meta}>
+              {player.playerStatus === TPlayerStatus.GAME_ENDED ? (
+                <div
+                  className={[
+                    styles.status_box_bio_pill,
+                    styles.pill_game_ended,
+                  ].join(" ")}
+                >
+                  passed
+                </div>
+              ) : (
+                <>
+                  <div
+                    className={[
+                      styles.status_box_bio_pill,
+                      player.currentSeason === Season.WINTER &&
+                        styles.pill_WINTER,
+                      player.currentSeason === Season.SPRING &&
+                        styles.pill_SPRING,
+                      player.currentSeason === Season.SUMMER &&
+                        styles.pill_SUMMER,
+                      player.currentSeason === Season.AUTUMN &&
+                        styles.pill_AUTUMN,
+                    ]
+                      .filter(Boolean)
+                      .join(" ")}
+                  >
+                    {player.currentSeason.toLowerCase()}
+                  </div>
+                  {isActivePlayer && (
+                    <div
+                      className={[
+                        styles.status_box_bio_pill,
+                        styles.pill_active,
+                      ].join(" ")}
+                    >
+                      active
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -176,7 +228,9 @@ const PlayerStatus: React.FC<{
         </div>
       </div>
       {showCity && (
-        <PlayerCity player={playerImpl} viewerId={viewingPlayer.playerId} />
+        <div className={styles.status_box_city}>
+          <PlayerCity player={playerImpl} viewerId={viewingPlayer.playerId} />
+        </div>
       )}
     </>
   );

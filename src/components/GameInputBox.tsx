@@ -162,6 +162,24 @@ const GameInputBoxInner = ({
   );
 };
 
+const getInitialSelectedGameInput = (
+  gameInput: GameInput,
+  gameState: GameState
+): GameInput => {
+  if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
+    const claimableEvents = gameState.getClaimableEvents();
+    if (claimableEvents.length === 1) {
+      return {
+        ...gameInput,
+        clientOptions: {
+          event: claimableEvents[0],
+        },
+      };
+    }
+  }
+  return gameInput;
+};
+
 const GameInputBox: React.FC<{
   gameId: string;
   title?: string;
@@ -205,7 +223,7 @@ const GameInputBox: React.FC<{
       devDebug={devDebug}
       viewingPlayer={viewingPlayer}
       initialValues={{
-        gameInput: gameInputs[0],
+        gameInput: getInitialSelectedGameInput(gameInputs[0], gameStateImpl),
       }}
     >
       {({ values, setFieldValue, isSubmitting }) => {
@@ -249,7 +267,13 @@ const GameInputBox: React.FC<{
                         value={idx}
                         checked={isSelected}
                         onChange={() => {
-                          setFieldValue("gameInput", gameInput);
+                          setFieldValue(
+                            "gameInput",
+                            getInitialSelectedGameInput(
+                              gameInput,
+                              gameStateImpl
+                            )
+                          );
                         }}
                       />
                       <span className={styles.input_type_radio_span}>

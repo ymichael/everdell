@@ -272,7 +272,7 @@ export class GameState {
 
   private handlePlayCardGameInput(gameInput: GameInputPlayCard): void {
     if (!gameInput.clientOptions?.card) {
-      throw new Error("Must specify card to play.");
+      throw new Error("Please select a card to play.");
     }
 
     const card = Card.fromName(gameInput.clientOptions.card);
@@ -301,7 +301,7 @@ export class GameState {
 
   private handlePlaceWorkerGameInput(gameInput: GameInputPlaceWorker): void {
     if (!gameInput.clientOptions?.location) {
-      throw new Error("Need to specify clientOptions.location");
+      throw new Error("Please select a location to visit");
     }
 
     const location = Location.fromName(gameInput.clientOptions.location);
@@ -412,7 +412,7 @@ export class GameState {
 
   private handleClaimEventGameInput(gameInput: GameInputClaimEvent): void {
     if (!gameInput.clientOptions?.event) {
-      throw new Error("Need to specify clientOptions.event");
+      throw new Error("Please select an event to claim");
     }
 
     const event = Event.fromName(gameInput.clientOptions.event);
@@ -432,7 +432,7 @@ export class GameState {
     gameInput: GameInputVisitDestinationCard
   ): void {
     if (!gameInput.clientOptions?.playedCard) {
-      throw new Error("Need to specify clientOptions.playedCard");
+      throw new Error("Please select a card to visit");
     }
     const playedCard = gameInput.clientOptions.playedCard;
     const cardOwner = this.getPlayer(playedCard.cardOwnerId);

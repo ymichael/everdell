@@ -29,6 +29,19 @@
   padding: 20px 0;
 }
 
+.city_stats {
+  font-size: 14px;
+  padding-top: 5px;
+  padding-bottom: 15px;
+  margin-left: -5px;
+  color: #999;
+}
+
+.city_stat {
+  display: inline-block;
+  padding: 0 5px;
+}
+
 .location_items {
   margin-left: -10px;
   display: flex;

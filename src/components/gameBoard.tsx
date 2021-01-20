@@ -186,18 +186,45 @@ export const PlayerCity: React.FC<{ player: Player; viewerId: string }> = ({
   viewerId,
 }) => {
   const playedCards = player.getAllPlayedCards();
+
+  const labelToCount: [string, number][] = [
+    ["Critters", player.getNumPlayedCritters()],
+    ["Constructions", player.getNumPlayedConstructions()],
+    ["Common Critters", player.getNumPlayedCommonCritters()],
+    ["Common Constructions", player.getNumPlayedCommonConstructions()],
+    ["Unique Critters", player.getNumPlayedUniqueCritters()],
+    ["Unique Constructions", player.getNumPlayedUniqueConstructions()],
+  ];
+
   return playedCards.length !== 0 ? (
-    <div className={styles.items}>
-      {playedCards.map((playedCard, idx) => (
-        <ItemWrapper key={idx}>
-          <PlayedCard
-            playedCard={playedCard}
-            viewerId={viewerId}
-            cardOwner={player}
-          />
-        </ItemWrapper>
-      ))}
-    </div>
+    <>
+      <div className={styles.city_stats}>
+        {labelToCount
+          .filter(([_, count]) => count)
+          .map(([label, count], idx) => {
+            return (
+              <React.Fragment key={label}>
+                {idx !== 0 && "/"}
+                <div className={styles.city_stat}>
+                  <span>{label}: </span>
+                  <span>{count}</span>
+                </div>
+              </React.Fragment>
+            );
+          })}
+      </div>
+      <div className={styles.items}>
+        {playedCards.map((playedCard, idx) => (
+          <ItemWrapper key={idx}>
+            <PlayedCard
+              playedCard={playedCard}
+              viewerId={viewerId}
+              cardOwner={player}
+            />
+          </ItemWrapper>
+        ))}
+      </div>
+    </>
   ) : (
     <div className={styles.empty_city}>City is empty.</div>
   );

@@ -341,6 +341,42 @@ export class Player implements IGameTextEntity {
     return this.resources[resourceType];
   }
 
+  getNumPlayedConstructions(): number {
+    return this.getPlayedConstructions().length;
+  }
+
+  getNumPlayedUniqueConstructions(): number {
+    return this.getPlayedConstructions().filter((playedCardInfo) => {
+      const card = Card.fromName(playedCardInfo.cardName);
+      return card.isUnique;
+    }).length;
+  }
+
+  getNumPlayedCommonConstructions(): number {
+    return this.getPlayedConstructions().filter((playedCardInfo) => {
+      const card = Card.fromName(playedCardInfo.cardName);
+      return !card.isUnique;
+    }).length;
+  }
+
+  getNumPlayedUniqueCritters(): number {
+    return this.getPlayedCritters().filter((playedCardInfo) => {
+      const card = Card.fromName(playedCardInfo.cardName);
+      return card.isUnique;
+    }).length;
+  }
+
+  getNumPlayedCommonCritters(): number {
+    return this.getPlayedCritters().filter((playedCardInfo) => {
+      const card = Card.fromName(playedCardInfo.cardName);
+      return !card.isUnique;
+    }).length;
+  }
+
+  getNumPlayedCritters(): number {
+    return this.getPlayedCritters().length;
+  }
+
   getPlayedConstructions(): PlayedCardInfo[] {
     const constructionsInCity: PlayedCardInfo[] = [];
     this.forEachPlayedCard((playedCardInfo) => {

@@ -576,9 +576,12 @@ export class GameState {
   }
 
   next(gameInput: GameInput, autoAdvance = true): GameState {
-    const nextGameState = this.clone();
-    if (nextGameState.pendingGameInputs.length !== 0) {
-      nextGameState.removeMultiStepGameInput(gameInput as any);
+    return this.clone().nextInner(gameInput, autoAdvance);
+  }
+
+  private nextInner(gameInput: GameInput, autoAdvance = true): GameState {
+    if (this.pendingGameInputs.length !== 0) {
+      this.removeMultiStepGameInput(gameInput as any);
     }
     switch (gameInput.inputType) {
       case GameInputType.SELECT_CARDS:
@@ -590,22 +593,21 @@ export class GameState {
       case GameInputType.SELECT_RESOURCES:
       case GameInputType.DISCARD_CARDS:
       case GameInputType.SELECT_OPTION_GENERIC:
-        nextGameState.handleMultiStepGameInput(gameInput);
+        this.handleMultiStepGameInput(gameInput);
         break;
       case GameInputType.PLAY_CARD:
-        nextGameState.handlePlayCardGameInput(gameInput);
+        this.handlePlayCardGameInput(gameInput);
         break;
       case GameInputType.PLACE_WORKER:
       case GameInputType.VISIT_DESTINATION_CARD:
       case GameInputType.CLAIM_EVENT:
-        nextGameState.handleWorkerPlacementGameInput(gameInput);
+        this.handleWorkerPlacementGameInput(gameInput);
         break;
       case GameInputType.PREPARE_FOR_SEASON:
-        nextGameState.handlePrepareForSeason(gameInput);
+        this.handlePrepareForSeason(gameInput);
         break;
       case GameInputType.GAME_END:
-        nextGameState.handleGameEndGameInput(gameInput);
-        //throw new Error("Not Implemented");
+        this.handleGameEndGameInput(gameInput);
         break;
       default:
         assertUnreachable(
@@ -614,49 +616,49 @@ export class GameState {
         );
     }
 
-    const player = nextGameState.getActivePlayer();
+    const player = this.getActivePlayer();
 
     // A player is preparing for season, complete that first.
     if (
-      nextGameState.pendingGameInputs.length === 0 &&
+      this.pendingGameInputs.length === 0 &&
       player.playerStatus === PlayerStatus.PREPARING_FOR_SEASON
     ) {
-      nextGameState.prepareForSeason(player, gameInput);
+      this.prepareForSeason(player, gameInput);
     }
 
     // If there are no more pending game inputs go to the next player.
-    if (nextGameState.pendingGameInputs.length === 0) {
-      nextGameState.nextPlayer();
+    if (this.pendingGameInputs.length === 0) {
+      this.nextPlayer();
     }
 
-    nextGameState.handleGameOver();
+    this.handleGameOver();
 
     if (autoAdvance) {
-      // Check if we can advance any select player inputs.
-      const selectPlayerInputs = nextGameState.pendingGameInputs.find(
-        (input) => {
-          return input.inputType === GameInputType.SELECT_PLAYER;
-        }
-      );
-      const selectPlayerGameInput =
-        selectPlayerInputs &&
-        nextGameState.getAutoAdvanceInput(selectPlayerInputs);
-      if (selectPlayerGameInput) {
-        return nextGameState.next(selectPlayerGameInput);
-      }
-
-      // Check if we can advance other types of inputs.
-      const pendingInputs = nextGameState.pendingGameInputs.map((input) => {
-        return nextGameState.getAutoAdvanceInput(input);
-      });
-      if (
-        pendingInputs.every(Boolean) &&
-        nextGameState.pendingGameInputs.length !== 0
-      ) {
-        return nextGameState.next(pendingInputs[0]!);
-      }
+      return this.maybeAutoAdvance();
     }
-    return nextGameState;
+
+    return this;
+  }
+
+  private maybeAutoAdvance(): GameState {
+    // Check if we can advance any select player inputs.
+    const selectPlayerInputs = this.pendingGameInputs.find((input) => {
+      return input.inputType === GameInputType.SELECT_PLAYER;
+    });
+    const selectPlayerGameInput =
+      selectPlayerInputs && this.getAutoAdvanceInput(selectPlayerInputs);
+    if (selectPlayerGameInput) {
+      return this.next(selectPlayerGameInput);
+    }
+
+    // Check if we can advance other types of inputs.
+    const pendingInputs = this.pendingGameInputs.map((input) => {
+      return this.getAutoAdvanceInput(input);
+    });
+    if (pendingInputs.every(Boolean) && this.pendingGameInputs.length !== 0) {
+      return this.next(pendingInputs[0]!);
+    }
+    return this;
   }
 
   private getAutoAdvanceInput(

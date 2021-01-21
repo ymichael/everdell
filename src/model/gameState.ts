@@ -46,7 +46,7 @@ const MAX_GAME_LOG_BUFFER = 100;
 
 const PRINT_GAME_LOGS = false;
 
-const gameTextToDebugStr = (gameText: GameText): string => {
+export const gameTextToDebugStr = (gameText: GameText): string => {
   return gameText
     .map((part: TextPart, idx: number) => {
       switch (part.type) {

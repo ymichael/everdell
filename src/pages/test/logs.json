@@ -1,0 +1,5830 @@
+[
+  [
+    {
+      "type": "text",
+      "text": "Game created with 2 players."
+    }
+  ],
+  [
+    {
+      "type": "text",
+      "text": "Dealing cards to each player."
+    }
+  ],
+  [
+    {
+      "type": "text",
+      "text": "Dealing cards to the Meadow."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "d6prdZbsJ5rogGhTpZdmj5",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Bard"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Bard"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "d6prdZbsJ5rogGhTpZdmj5",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " has no "
+    },
+    {
+      "type": "symbol",
+      "symbol": "CARD"
+    },
+    {
+      "type": "text",
+      "text": " to discard."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Bard"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "xmtdHaxpSquVTEWzkD5ehZ",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " discarded 2 "
+    },
+    {
+      "type": "symbol",
+      "symbol": "CARD"
+    },
+    {
+      "type": "text",
+      "text": " to gain 2 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Bard"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "pvFiCdrFg6eXc2wQctAzxE",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " discarded 1 "
+    },
+    {
+      "type": "symbol",
+      "symbol": "CARD"
+    },
+    {
+      "type": "text",
+      "text": " to gain 1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "vXBHMk8JSAD97aHi5F1Zmf",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Barge Toad"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "wBaWGUuGnrpX6e4TMhaWyg",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " place a worker on "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Cemetary"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Cemetary"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "wBaWGUuGnrpX6e4TMhaWyg",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " revealed "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "University"
+    },
+    {
+      "type": "text",
+      "text": ", "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Farm"
+    },
+    {
+      "type": "text",
+      "text": ", "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Queen"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "King"
+    },
+    {
+      "type": "text",
+      "text": " from the Deck."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Cemetary"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "wBaWGUuGnrpX6e4TMhaWyg",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Queen"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Cemetary"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "kWoTLNt9RDQ1ghuR6GZHTK",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " revealed "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "King"
+    },
+    {
+      "type": "text",
+      "text": ", "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "King"
+    },
+    {
+      "type": "text",
+      "text": ", "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "King"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "King"
+    },
+    {
+      "type": "text",
+      "text": " from the Deck but is unable to play any."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "8nZXeUdcS3AFHhrtXfecYg",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " place a worker on "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Chapel"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "1ycarLL5dkdadV9SRjQeDg",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Chip Sweep"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Mine"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "bQXKPizc5ttk9A2sNJHf9U",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gained "
+    },
+    {
+      "type": "text",
+      "text": "1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "PEBBLE"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Chip Sweep"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "bQXKPizc5ttk9A2sNJHf9U",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " activated "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Mine"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Farm"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "fA1EGAxh8KDrTcREkmq8jD",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gained "
+    },
+    {
+      "type": "text",
+      "text": "1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "BERRY"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Chip Sweep"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "fA1EGAxh8KDrTcREkmq8jD",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " activated "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Farm"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "pfKMqFU3q2BNWAuL7xaBSR",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " took the prepare for season action."
+    }
+  ],
+  [
+    {
+      "type": "em",
+      "text": "Prepare for season"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "pfKMqFU3q2BNWAuL7xaBSR",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " activated "
+    },
+    {
+      "type": "cardType",
+      "cardType": "PRODUCTION"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "em",
+      "text": "Prepare for season"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "pfKMqFU3q2BNWAuL7xaBSR",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " recalled their workers."
+    }
+  ],
+  [
+    {
+      "type": "em",
+      "text": "Prepare for season"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "pfKMqFU3q2BNWAuL7xaBSR",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " is now in "
+    },
+    {
+      "type": "text",
+      "text": "Spring"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Clock Tower"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "sLqsiKnLu1EQRAck3HiACU",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " spent 1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": " to activate worker on "
+    },
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "TWO_WILD"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "TWO_WILD"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "sLqsiKnLu1EQRAck3HiACU",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gained "
+    },
+    {
+      "type": "text",
+      "text": "2 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "BERRY"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Clock Tower"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "dXVG1eZuoxcVz3DpTSLBxe",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " spent 1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": " to activate worker on "
+    },
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "ONE_BERRY"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Husband"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "dXVG1eZuoxcVz3DpTSLBxe",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gained "
+    },
+    {
+      "type": "text",
+      "text": "1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "BERRY"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Teacher"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "dXVG1eZuoxcVz3DpTSLBxe",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " drew 2 "
+    },
+    {
+      "type": "symbol",
+      "symbol": "CARD"
+    },
+    {
+      "type": "text",
+      "text": " and gave 1 to "
+    },
+    {
+      "type": "player",
+      "playerId": "7ZVv7VcYVimWAzo2251D8x",
+      "name": "Player #1"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "sWgtdizztWPj8CWjAJ5ihv",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Husband"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "baho1fS9NDh6NrC9fUhX2H",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Farm"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Courthouse"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "baho1fS9NDh6NrC9fUhX2H",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gained "
+    },
+    {
+      "type": "resource",
+      "resourceType": "PEBBLE"
+    },
+    {
+      "type": "text",
+      "text": " for playing a Construction."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "hpxkWqvtdNwptwCH4MvMdv",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Farm"
+    },
+    {
+      "type": "text",
+      "text": " using "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Crane"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "oZvWnYzk9PZStvPQGMCocj",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Doctor"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Doctor"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "2fF7UDmzdczUGuyBkUxoBL",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " spent 3 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "BERRY"
+    },
+    {
+      "type": "text",
+      "text": " to gain 3 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "b6z5aoMWGfmRnB6pcSGYSn",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Farm"
+    },
+    {
+      "type": "text",
+      "text": " by adding "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Husband"
+    },
+    {
+      "type": "text",
+      "text": " to "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Dungeon"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "7dwjsDAjwVpwjorqH3UjTY",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Farm"
+    },
+    {
+      "type": "text",
+      "text": " by adding "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Wanderer"
+    },
+    {
+      "type": "text",
+      "text": " to "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Dungeon"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "izRz63NbDx5fkgAJveLwdm",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Fairgrounds"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Fairgrounds"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "izRz63NbDx5fkgAJveLwdm",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " drew 2 "
+    },
+    {
+      "type": "symbol",
+      "symbol": "CARD"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "cAQzpDNsy2wctSMoAHPWvP",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Fool"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Fool"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "cAQzpDNsy2wctSMoAHPWvP",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " added the "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Fool"
+    },
+    {
+      "type": "text",
+      "text": " to "
+    },
+    {
+      "type": "player",
+      "playerId": "eEr68e1d5JUXumaA119553",
+      "name": "Player #1"
+    },
+    {
+      "type": "text",
+      "text": "'s city."
+    }
+  ],
+  [
+    {
+      "type": "text",
+      "text": "Game created with 3 players."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "adajk63zh2hKqrTJNf4f13",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "General Store"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "General Store"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "adajk63zh2hKqrTJNf4f13",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gained 1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "BERRY"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "General Store"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "bPXicJ3ytHGtJt9cVpXqCm",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gained 2 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "BERRY"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "cQNuhzt62sPpjiQRDRCT7a",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Mine"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Historian"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "cQNuhzt62sPpjiQRDRCT7a",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " drew 1 "
+    },
+    {
+      "type": "symbol",
+      "symbol": "CARD"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "n62F3Ts554SaikLbkUucuz",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Shopkeeper"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "nSzBPSVeii5DFvr1tJAqrP",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Historian"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "pEwLf887zZjErqSrYWVs8K",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " place a worker on "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Inn"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Inn"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "pEwLf887zZjErqSrYWVs8K",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " selected "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Farm"
+    },
+    {
+      "type": "text",
+      "text": " to play from the Meadow."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Inn"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "pEwLf887zZjErqSrYWVs8K",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Farm"
+    },
+    {
+      "type": "text",
+      "text": " from the Meadow."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Inn"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "25Xj3Ax4LQ4qmDG4uHN4Vo",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " selected "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Queen"
+    },
+    {
+      "type": "text",
+      "text": " to play from the Meadow."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Inn"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "25Xj3Ax4LQ4qmDG4uHN4Vo",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Queen"
+    },
+    {
+      "type": "text",
+      "text": " from the Meadow."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "5BST9sZpKcfDCDDnKktkiL",
+      "name": "Player #1"
+    },
+    {
+      "type": "text",
+      "text": " gained 1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": " when "
+    },
+    {
+      "type": "player",
+      "playerId": "5K9XVpUagrT9LdU7DAmXE7",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " placed a worker on "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Inn"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Inn"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "vpxTFeWW8VL3Y4gAfiZ7y4",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " selected "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Wife"
+    },
+    {
+      "type": "text",
+      "text": " to play from the Meadow."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Inn"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "vpxTFeWW8VL3Y4gAfiZ7y4",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Wife"
+    },
+    {
+      "type": "text",
+      "text": " from the Meadow."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "ddJAYmQy5vYTSQFKs5Fscw",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " place a worker on "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Lookout"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Lookout"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "ddJAYmQy5vYTSQFKs5Fscw",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " copied "
+    },
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "ONE_BERRY"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Lookout"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "8ZmnQivfmmr89Kz6QVkJk4",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " copied "
+    },
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "TWO_BERRY_ONE_CARD"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Lookout"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "hXV81k1E9RuexHGHwHZoKx",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " copied "
+    },
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "DISCARD_ANY_THEN_DRAW_TWO_PER_CARD"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "DISCARD_ANY_THEN_DRAW_TWO_PER_CARD"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "hXV81k1E9RuexHGHwHZoKx",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " discarded 4 "
+    },
+    {
+      "type": "symbol",
+      "symbol": "CARD"
+    },
+    {
+      "type": "text",
+      "text": " and drew 8 "
+    },
+    {
+      "type": "symbol",
+      "symbol": "CARD"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "kxrpvKRNMJgkS5MTr881zR",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Miner Mole"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Miner Mole"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "kxrpvKRNMJgkS5MTr881zR",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " activated "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "General Store"
+    },
+    {
+      "type": "text",
+      "text": " from "
+    },
+    {
+      "type": "player",
+      "playerId": "uWvXy8NfuLtzr72pccGT78",
+      "name": "Player #1"
+    },
+    {
+      "type": "text",
+      "text": "'s city."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Miner Mole"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "e9a1yEJXKS6PCmbxwuFBrB",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " activated "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Husband"
+    },
+    {
+      "type": "text",
+      "text": " from "
+    },
+    {
+      "type": "player",
+      "playerId": "iQqsfyinmatuMKY939RSG2",
+      "name": "Player #1"
+    },
+    {
+      "type": "text",
+      "text": "'s city."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Miner Mole"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "myAMXfsJMt3amDVbiv7hde",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " activated "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Farm"
+    },
+    {
+      "type": "text",
+      "text": " from "
+    },
+    {
+      "type": "player",
+      "playerId": "gLed3WjTMQRwznRaQpkafP",
+      "name": "Player #1"
+    },
+    {
+      "type": "text",
+      "text": "'s city."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Miner Mole"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "pi9ULG214L1Lo7dFHEUtqN",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " activated "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "General Store"
+    },
+    {
+      "type": "text",
+      "text": " from "
+    },
+    {
+      "type": "player",
+      "playerId": "pi9ULG214L1Lo7dFHEUtqN",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": "'s city."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "2s5vd2Nt5k8BudWMi6pHd9",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " place a worker on "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Monastery"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Monastery"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "2s5vd2Nt5k8BudWMi6pHd9",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gave "
+    },
+    {
+      "type": "text",
+      "text": "2 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "BERRY"
+    },
+    {
+      "type": "text",
+      "text": " to "
+    },
+    {
+      "type": "player",
+      "playerId": "gm8yRvpJdfpRfps3Uf2GmJ",
+      "name": "Player #1"
+    },
+    {
+      "type": "text",
+      "text": " to gain 4 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "58gjvkSzh3fiG1biRnvWba",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Monk"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Monk"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "coF2fEotT5jgYJ553nXZEL",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gave 2 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "BERRY"
+    },
+    {
+      "type": "text",
+      "text": " to "
+    },
+    {
+      "type": "player",
+      "playerId": "mUicp1wbV8TyBzepRMwjXa",
+      "name": "Player #1"
+    },
+    {
+      "type": "text",
+      "text": " to gain 4 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "5q7KHMQuYhP1b7Jp66ubVm",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Peddler"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Peddler"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "act3V3sh4xBdoH674BqGVD",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " paid "
+    },
+    {
+      "type": "text",
+      "text": "1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "PEBBLE"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "text",
+      "text": "1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "RESIN"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Peddler"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "act3V3sh4xBdoH674BqGVD",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gained "
+    },
+    {
+      "type": "text",
+      "text": "2 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "BERRY"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "a66fcopzCW9yDaaeRzrjdB",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Postal Pigeon"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Postal Pigeon"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "a66fcopzCW9yDaaeRzrjdB",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " revealed "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Mine"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Farm"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Postal Pigeon"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "a66fcopzCW9yDaaeRzrjdB",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " chose to play "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Mine"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Postal Pigeon"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "iiB2g5ZUp1N2VLPgzfmcYU",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " revealed "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Queen"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "King"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Postal Pigeon"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "iiB2g5ZUp1N2VLPgzfmcYU",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " chose to play none of the cards."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Shopkeeper"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "x7JK6AEuKsYrihgpspRGTT",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gained 1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "BERRY"
+    },
+    {
+      "type": "text",
+      "text": " for playing a Critter."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Postal Pigeon"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "x7JK6AEuKsYrihgpspRGTT",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " revealed "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Farm"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Wanderer"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Postal Pigeon"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "x7JK6AEuKsYrihgpspRGTT",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " chose to play "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Wanderer"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Wanderer"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "x7JK6AEuKsYrihgpspRGTT",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " drew 3 "
+    },
+    {
+      "type": "symbol",
+      "symbol": "CARD"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Postal Pigeon"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "qcT1cMqjLn9462BoEawJTa",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " chose to play "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Farm"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Courthouse"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "qcT1cMqjLn9462BoEawJTa",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gained "
+    },
+    {
+      "type": "resource",
+      "resourceType": "TWIG"
+    },
+    {
+      "type": "text",
+      "text": " for playing a Construction."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "pbkVoTD9vPvPQ6XUTKSRhY",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " place a worker on "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Post Office"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Post Office"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "pbkVoTD9vPvPQ6XUTKSRhY",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gave "
+    },
+    {
+      "type": "player",
+      "playerId": "6UM9DqDj444PHALdm82Mmq",
+      "name": "Player #1"
+    },
+    {
+      "type": "text",
+      "text": " 2 "
+    },
+    {
+      "type": "symbol",
+      "symbol": "CARD"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Post Office"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "pbkVoTD9vPvPQ6XUTKSRhY",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " discarded 2 "
+    },
+    {
+      "type": "symbol",
+      "symbol": "CARD"
+    },
+    {
+      "type": "text",
+      "text": " and drew 8 "
+    },
+    {
+      "type": "symbol",
+      "symbol": "CARD"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "rH8rJfzbCq7E7tDHGXYWA6",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " place a worker on "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Queen"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Queen"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "rH8rJfzbCq7E7tDHGXYWA6",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Husband"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Queen"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "arL9CHNyLfixy1XYGAhwq6",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Fairgrounds"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Queen"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "1n2UHwTKngCqfYftwo4Tfx",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Ruins"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Ruins"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "1n2UHwTKngCqfYftwo4Tfx",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " ruined "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Farm"
+    },
+    {
+      "type": "text",
+      "text": " and drew 2 "
+    },
+    {
+      "type": "symbol",
+      "symbol": "CARD"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "bJ3wQL4V1yjo2ETkcNoxJi",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Ranger"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Ranger"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "uqMUF74ySjdHp6WMHuDgDN",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " moved deployed worker on "
+    },
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "ONE_STONE"
+    },
+    {
+      "type": "text",
+      "text": " to "
+    },
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "TWO_TWIGS_AND_ONE_CARD"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "uqMUF74ySjdHp6WMHuDgDN",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " place a worker on "
+    },
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "TWO_TWIGS_AND_ONE_CARD"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "7Tj42LGpuYrrBBZQ3nCEum",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Ruins"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "owcLi7MNho97zrXZkM8w4N",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Shepherd"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Shepherd"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "owcLi7MNho97zrXZkM8w4N",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gave "
+    },
+    {
+      "type": "player",
+      "playerId": "pPrUHhDrEuFJRfVkcAffJQ",
+      "name": "Player #1"
+    },
+    {
+      "type": "text",
+      "text": " "
+    },
+    {
+      "type": "text",
+      "text": "3 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "BERRY"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Shepherd"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "xzDHkXrqDuL5G6au47ve5s",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gave "
+    },
+    {
+      "type": "player",
+      "playerId": "6BtgK1xqdm7MDH7nXCZPDY",
+      "name": "Player #1"
+    },
+    {
+      "type": "text",
+      "text": " "
+    },
+    {
+      "type": "text",
+      "text": "1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "TWIG"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "text",
+      "text": "2 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "BERRY"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Queen"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "qgEW7krryQXhFrNyvfhWWi",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Shepherd"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Shepherd"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "qgEW7krryQXhFrNyvfhWWi",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gained 3 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "BERRY"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "mq2DJk6bXtibj8NF3ZJkW4",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Queen"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "9LsuLSzF9BKxcf77igEtZo",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Storehouse"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Storehouse"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "9LsuLSzF9BKxcf77igEtZo",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " added 3 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "TWIG"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "rGizBzEgDezFuHBnB2GJD5",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " place a worker on "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Storehouse"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Storehouse"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "rGizBzEgDezFuHBnB2GJD5",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gained "
+    },
+    {
+      "type": "text",
+      "text": "5 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "BERRY"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Chip Sweep"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "ooZT7eLoaCjS6XAsqtN2Dg",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " activated "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Storehouse"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "qaBFkPjY8nvsVptLVogRGD",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Teacher"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "mERr7mUNG88FD8KrFYT8uM",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Undertaker"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Undertaker"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "mERr7mUNG88FD8KrFYT8uM",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " discarded "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Queen"
+    },
+    {
+      "type": "text",
+      "text": ", "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "King"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Chapel"
+    },
+    {
+      "type": "text",
+      "text": " from the Meadow."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Undertaker"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "mERr7mUNG88FD8KrFYT8uM",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " selected "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Teacher"
+    },
+    {
+      "type": "text",
+      "text": " from the Meadow."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "rwAACtk2zP8jw25a9biiMm",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " place a worker on "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "University"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "University"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "rwAACtk2zP8jw25a9biiMm",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " discarded "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Farm"
+    },
+    {
+      "type": "text",
+      "text": " from their city and gained "
+    },
+    {
+      "type": "text",
+      "text": "1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "BERRY"
+    },
+    {
+      "type": "text",
+      "text": " and 1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "University"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "tz7MEZbnc2EVS6tpxDBs11",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " discarded "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Lookout"
+    },
+    {
+      "type": "text",
+      "text": " from their city and gained "
+    },
+    {
+      "type": "text",
+      "text": "1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "TWIG"
+    },
+    {
+      "type": "text",
+      "text": " and 1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "University"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "6pscX8DwgEodAgS9BG7tk5",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " discarded "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Inn"
+    },
+    {
+      "type": "text",
+      "text": " from their city and gained "
+    },
+    {
+      "type": "text",
+      "text": "1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "TWIG"
+    },
+    {
+      "type": "text",
+      "text": " and 1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "University"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "hPDKbpCHBpNWH8PGK4Mo18",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " discarded "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Monastery"
+    },
+    {
+      "type": "text",
+      "text": " from their city and gained "
+    },
+    {
+      "type": "text",
+      "text": "1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "TWIG"
+    },
+    {
+      "type": "text",
+      "text": " and 1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "8jAG5WX98FAXVJEDgCW8UR",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Wanderer"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "2q9CW7vw2o9hUND8bS6M7s",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Woodcarver"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Woodcarver"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "wbQtzJMKA2cPyE4EB5DJ1y",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " spent 3 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "TWIG"
+    },
+    {
+      "type": "text",
+      "text": " to gain 3 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "piCXgMjeQyL7Yr9FbfrNt7",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " claimed the "
+    },
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "GRADUATION OF SCHOLARS"
+    },
+    {
+      "type": "text",
+      "text": " event."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "GRADUATION OF SCHOLARS"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "piCXgMjeQyL7Yr9FbfrNt7",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " placed 3 Critters from their hand beneath this event (worth 2 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": " each)."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "2HzNM7r65WkWYn2DzigYq9",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " claimed the "
+    },
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "CROAK WART CURE"
+    },
+    {
+      "type": "text",
+      "text": " event."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "CROAK WART CURE"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "2HzNM7r65WkWYn2DzigYq9",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " spent 2 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "BERRY"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "CROAK WART CURE"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "2HzNM7r65WkWYn2DzigYq9",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " discarded "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Undertaker"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Farm"
+    },
+    {
+      "type": "text",
+      "text": " from their city."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "hwQ2CGiXhmXtwY8sR6AiAa",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " claimed the "
+    },
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "CAPTURE OF THE ACORN THIEVES"
+    },
+    {
+      "type": "text",
+      "text": " event."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "CAPTURE OF THE ACORN THIEVES"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "hwQ2CGiXhmXtwY8sR6AiAa",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " placed "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Postal Pigeon"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Ranger"
+    },
+    {
+      "type": "text",
+      "text": " from their city beneath this event (worth 3 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": " each)."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "sKRnLVgSpGicFLJ7B2UT8Q",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " claimed the "
+    },
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "AN EVENING OF FIREWORKS"
+    },
+    {
+      "type": "text",
+      "text": " event."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "AN EVENING OF FIREWORKS"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "sKRnLVgSpGicFLJ7B2UT8Q",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " placed 3 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "TWIG"
+    },
+    {
+      "type": "text",
+      "text": " here (worth 2 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": " each)."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "7m6yNrZ2Vr6FvBcB7egTNG",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " claimed the "
+    },
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "PERFORMER IN RESIDENCE"
+    },
+    {
+      "type": "text",
+      "text": " event."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "PERFORMER IN RESIDENCE"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "7m6yNrZ2Vr6FvBcB7egTNG",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " placed 3 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "BERRY"
+    },
+    {
+      "type": "text",
+      "text": " here (worth 2 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": " each)."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "785V7f9L1xVCfUD7ywLX99",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " claimed the "
+    },
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "UNDER NEW MANAGEMENT"
+    },
+    {
+      "type": "text",
+      "text": " event."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "UNDER NEW MANAGEMENT"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "785V7f9L1xVCfUD7ywLX99",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " placed "
+    },
+    {
+      "type": "text",
+      "text": "1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "TWIG"
+    },
+    {
+      "type": "text",
+      "text": ", "
+    },
+    {
+      "type": "text",
+      "text": "1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "RESIN"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "text",
+      "text": "1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "PEBBLE"
+    },
+    {
+      "type": "text",
+      "text": " here."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "UNDER NEW MANAGEMENT"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "j5S73b2waQZ3pUZfowk3ry",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " placed "
+    },
+    {
+      "type": "text",
+      "text": " here."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "5ge7YptB3ogLaGphbQ1aXG",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " claimed the "
+    },
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "PRISTINE CHAPEL CEILING"
+    },
+    {
+      "type": "text",
+      "text": " event."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "PRISTINE CHAPEL CEILING"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "5ge7YptB3ogLaGphbQ1aXG",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " drew 2 "
+    },
+    {
+      "type": "symbol",
+      "symbol": "CARD"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "PRISTINE CHAPEL CEILING"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "5ge7YptB3ogLaGphbQ1aXG",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gained "
+    },
+    {
+      "type": "text",
+      "text": "1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "TWIG"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "text",
+      "text": "1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "RESIN"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "PRISTINE CHAPEL CEILING"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "7bahL8Nbg93YwrXHWJnM66",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " drew 0 "
+    },
+    {
+      "type": "symbol",
+      "symbol": "CARD"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "qkgUmsMwRAR9wJsAgVHWTA",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " claimed the "
+    },
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "ANCIENT SCROLLS DISCOVERED"
+    },
+    {
+      "type": "text",
+      "text": " event."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "ANCIENT SCROLLS DISCOVERED"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "qkgUmsMwRAR9wJsAgVHWTA",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " revealed "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Queen"
+    },
+    {
+      "type": "text",
+      "text": ", "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Fool"
+    },
+    {
+      "type": "text",
+      "text": ", "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Postal Pigeon"
+    },
+    {
+      "type": "text",
+      "text": ", "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Queen"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "King"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "ANCIENT SCROLLS DISCOVERED"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "qkgUmsMwRAR9wJsAgVHWTA",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " kept "
+    },
+    {
+      "type": "text",
+      "text": " and placed "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Queen"
+    },
+    {
+      "type": "text",
+      "text": ", "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Fool"
+    },
+    {
+      "type": "text",
+      "text": ", "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Postal Pigeon"
+    },
+    {
+      "type": "text",
+      "text": ", "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Queen"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "King"
+    },
+    {
+      "type": "text",
+      "text": " beneath the event (worth 1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": " each)."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "ANCIENT SCROLLS DISCOVERED"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "axtuJqYgxPRUKQDiawUCm4",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " kept "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Queen"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "King"
+    },
+    {
+      "type": "text",
+      "text": " and placed "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Fool"
+    },
+    {
+      "type": "text",
+      "text": ", "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Postal Pigeon"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Queen"
+    },
+    {
+      "type": "text",
+      "text": " beneath the event (worth 1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": " each)."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "ANCIENT SCROLLS DISCOVERED"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "qxtvZgFFm2cUNHuyuEDjx5",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " kept "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Queen"
+    },
+    {
+      "type": "text",
+      "text": ", "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Fool"
+    },
+    {
+      "type": "text",
+      "text": ", "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Postal Pigeon"
+    },
+    {
+      "type": "text",
+      "text": ", "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Queen"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "King"
+    },
+    {
+      "type": "text",
+      "text": " and placed "
+    },
+    {
+      "type": "text",
+      "text": " beneath the event (worth 1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": " each)."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "jFKu4yLrjZr71HTSm1cw5z",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " claimed the "
+    },
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "TAX RELIEF"
+    },
+    {
+      "type": "text",
+      "text": " event."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "TAX RELIEF"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "jFKu4yLrjZr71HTSm1cw5z",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " activated "
+    },
+    {
+      "type": "cardType",
+      "cardType": "PRODUCTION"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "8tHdF1eJ7JLgB7qQW8tgcB",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " claimed the "
+    },
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "A WEE RUN CITY"
+    },
+    {
+      "type": "text",
+      "text": " event."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "A WEE RUN CITY"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "8tHdF1eJ7JLgB7qQW8tgcB",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " recalled worker on "
+    },
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "ONE_BERRY"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "A WEE RUN CITY"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "kt2Awaz1nx13F1eY5h19xD",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " recalled worker on "
+    },
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "A WEE RUN CITY"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "5NdoAyp3oQwFivbG8jgDcM",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " claimed the "
+    },
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "A BRILLIANT MARKETING PLAN"
+    },
+    {
+      "type": "text",
+      "text": " event."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "A BRILLIANT MARKETING PLAN"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "5NdoAyp3oQwFivbG8jgDcM",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gave "
+    },
+    {
+      "type": "text",
+      "text": "3 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "TWIG"
+    },
+    {
+      "type": "text",
+      "text": " to "
+    },
+    {
+      "type": "player",
+      "playerId": "9ENPdNKZySC2mZY3pKeE3o",
+      "name": "Player #1"
+    },
+    {
+      "type": "text",
+      "text": " to add 6 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": " to here."
+    }
+  ],
+  [
+    {
+      "type": "text",
+      "text": "Game created with 4 players."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "A BRILLIANT MARKETING PLAN"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "rJhNCV6g4mUKy9TSR51anU",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gave "
+    },
+    {
+      "type": "text",
+      "text": "1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "TWIG"
+    },
+    {
+      "type": "text",
+      "text": " to "
+    },
+    {
+      "type": "player",
+      "playerId": "oaMgd6UKYER9ADZ6us8wws",
+      "name": "Player #1"
+    },
+    {
+      "type": "text",
+      "text": " to add 2 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": " to here."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "A BRILLIANT MARKETING PLAN"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "rJhNCV6g4mUKy9TSR51anU",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gave "
+    },
+    {
+      "type": "text",
+      "text": "1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "RESIN"
+    },
+    {
+      "type": "text",
+      "text": " to "
+    },
+    {
+      "type": "player",
+      "playerId": "6i91pNv4z2kQLG4dZah4tn",
+      "name": "Player #3"
+    },
+    {
+      "type": "text",
+      "text": " to add 2 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": " to here."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "A BRILLIANT MARKETING PLAN"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "rJhNCV6g4mUKy9TSR51anU",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gave "
+    },
+    {
+      "type": "text",
+      "text": "1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "BERRY"
+    },
+    {
+      "type": "text",
+      "text": " to "
+    },
+    {
+      "type": "player",
+      "playerId": "kVhtBvxz4HLMejmAoLJehn",
+      "name": "Player #2"
+    },
+    {
+      "type": "text",
+      "text": " to add 2 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": " to here."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "n4E3TFV5SWtc1zvASR5Vrq",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Mine"
+    },
+    {
+      "type": "text",
+      "text": " using "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Crane"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "xACUEWfyPqGhj8EQM7zob9",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Wife"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "xACUEWfyPqGhj8EQM7zob9",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Wife"
+    },
+    {
+      "type": "text",
+      "text": " using "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Innkeeper"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "1wiEYVgFqi8LApUJxm81Ss",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " claimed the "
+    },
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "FOUR PRODUCTION CARDS"
+    },
+    {
+      "type": "text",
+      "text": " event."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Doctor"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "9yvQgUocQj1sQ9eGCVnAGD",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " spent 1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "BERRY"
+    },
+    {
+      "type": "text",
+      "text": " to gain 1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Peddler"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "poJSXK2zbKgNNrbQfbgGJT",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " paid "
+    },
+    {
+      "type": "text",
+      "text": "1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "PEBBLE"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Peddler"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "poJSXK2zbKgNNrbQfbgGJT",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gained "
+    },
+    {
+      "type": "text",
+      "text": "1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "TWIG"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Woodcarver"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "poJSXK2zbKgNNrbQfbgGJT",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " spent 1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "TWIG"
+    },
+    {
+      "type": "text",
+      "text": " to gain 1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "em",
+      "text": "Prepare for season"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "3KiYBtwVxkcrg8t7867hJo",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " is now in "
+    },
+    {
+      "type": "text",
+      "text": "Autumn"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "em",
+      "text": "Prepare for season"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "smrtxvMYatkHy91gfGkvE2",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " is now in "
+    },
+    {
+      "type": "text",
+      "text": "Summer"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "em",
+      "text": "Prepare for season"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "smrtxvMYatkHy91gfGkvE2",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " selected "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Mine"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Queen"
+    },
+    {
+      "type": "text",
+      "text": " from the Meadow."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "nij6R7spUJQjtQmMfoFqiu",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " took the game end action."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "5XeEYWXdtCqzjyX4K3TFHv",
+      "name": "Player #1"
+    },
+    {
+      "type": "text",
+      "text": " took the game end action."
+    }
+  ],
+  [
+    {
+      "type": "text",
+      "text": "Game over"
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "u6h8KNSa4Lz2ofy6CnS2pa",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " has 14 points."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "5XeEYWXdtCqzjyX4K3TFHv",
+      "name": "Player #1"
+    },
+    {
+      "type": "text",
+      "text": " has 12 points."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "76SwbGs3wjKkPm8gFkPk7d",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " place a worker on "
+    },
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "ONE_BERRY"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "buVVMk6rSR1PS4eegHfEPi",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " place a worker on "
+    },
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "ONE_BERRY_AND_ONE_CARD"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "ktc1z1Qjxg7spcM4cD9eti",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " place a worker on "
+    },
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "TWO_BERRY_ONE_CARD"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "4KdDqroP9sHYbiMEAAQpzM",
+      "name": "Player #1"
+    },
+    {
+      "type": "text",
+      "text": " place a worker on "
+    },
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "TWO_BERRY_ONE_CARD"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "4EYcBBbgUXweMZ7acCg2tB",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " place a worker on "
+    },
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "TWO_WILD"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "TWO_WILD"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "4EYcBBbgUXweMZ7acCg2tB",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gained "
+    },
+    {
+      "type": "text",
+      "text": "1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "TWIG"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "text",
+      "text": "1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "RESIN"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "w9RBVcmHoYbJSuyC9a8ty4",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " place a worker on "
+    },
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "TWO_CARDS_ONE_WILD"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "TWO_CARDS_ONE_WILD"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "w9RBVcmHoYbJSuyC9a8ty4",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " drew 2 "
+    },
+    {
+      "type": "symbol",
+      "symbol": "CARD"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "TWO_CARDS_ONE_WILD"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "w9RBVcmHoYbJSuyC9a8ty4",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gained "
+    },
+    {
+      "type": "text",
+      "text": "1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "TWIG"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "rW3A8XLPMXTNRtWRhMZWLD",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " place a worker on "
+    },
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "DISCARD_UP_TO_THREE_CARDS_TO_GAIN_WILD_PER_CARD"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "DISCARD_UP_TO_THREE_CARDS_TO_GAIN_WILD_PER_CARD"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "rW3A8XLPMXTNRtWRhMZWLD",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " discarded 3 "
+    },
+    {
+      "type": "symbol",
+      "symbol": "CARD"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "DISCARD_UP_TO_THREE_CARDS_TO_GAIN_WILD_PER_CARD"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "rW3A8XLPMXTNRtWRhMZWLD",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gained "
+    },
+    {
+      "type": "text",
+      "text": "1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "TWIG"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "text",
+      "text": "2 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "RESIN"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "1wvEd3WrEf7boXp5MXXVcX",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " place a worker on "
+    },
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "DISCARD_ANY_THEN_DRAW_TWO_PER_CARD"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "fTVJ9PTu6kpJJdYyGjdj7C",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " place a worker on "
+    },
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "HAVEN"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "HAVEN"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "fTVJ9PTu6kpJJdYyGjdj7C",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " discarded 4 "
+    },
+    {
+      "type": "symbol",
+      "symbol": "CARD"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "HAVEN"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "fTVJ9PTu6kpJJdYyGjdj7C",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gained "
+    },
+    {
+      "type": "text",
+      "text": "1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "TWIG"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "text",
+      "text": "1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "RESIN"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "qjnERBqpKywQnoJaK8qa7N",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " place a worker on "
+    },
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "COPY_BASIC_ONE_CARD"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "COPY_BASIC_ONE_CARD"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "qjnERBqpKywQnoJaK8qa7N",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " copied "
+    },
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "ONE_BERRY"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "cm9px5Uh2CKKnTvtkfuBwg",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " place a worker on "
+    },
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "cm9px5Uh2CKKnTvtkfuBwg",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " took "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Husband"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Evertree"
+    },
+    {
+      "type": "text",
+      "text": " from the Meadow."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "cm9px5Uh2CKKnTvtkfuBwg",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Husband"
+    },
+    {
+      "type": "text",
+      "text": " for 1 less."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "mYo3imDHQhEeEbLo1WhU9E",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " took "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Wife"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Theatre"
+    },
+    {
+      "type": "text",
+      "text": " from the Meadow."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "mYo3imDHQhEeEbLo1WhU9E",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Wife"
+    },
+    {
+      "type": "text",
+      "text": " for 1 less."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "iSbqSoD4RMtrXqZg9M2M8t",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " took "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Cemetary"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Crane"
+    },
+    {
+      "type": "text",
+      "text": " from the Meadow."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "iSbqSoD4RMtrXqZg9M2M8t",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Crane"
+    },
+    {
+      "type": "text",
+      "text": " for 1 less."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "cfUzgyxKyDzeD9PLCFKEpn",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Innkeeper"
+    },
+    {
+      "type": "text",
+      "text": " by occupying "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Inn"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "cxuJGMKf7DuEd3ZCZCZe6y",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Husband"
+    },
+    {
+      "type": "text",
+      "text": " by occupying "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Farm"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "aumi5sxBukwt99sNV1fm7o",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Husband"
+    },
+    {
+      "type": "text",
+      "text": " by occupying "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Evertree"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "mrRkoMSrrpYt3pFkWuAeom",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Wife"
+    },
+    {
+      "type": "text",
+      "text": " using "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Queen"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "7eihMNmMMXDZQeSsiSGjWB",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Farm"
+    },
+    {
+      "type": "text",
+      "text": " by adding "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Wife"
+    },
+    {
+      "type": "text",
+      "text": " to "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Dungeon"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ]
+]

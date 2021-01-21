@@ -632,22 +632,34 @@ export class GameState {
     nextGameState.handleGameOver();
 
     if (autoAdvance) {
-      const autoAdvancedPendingInputs = nextGameState.pendingGameInputs.map(
-        (pendingInput) => {
-          return nextGameState.getAutoAdvancePendingInputIfExists(pendingInput);
+      // Check if we can advance any select player inputs.
+      const selectPlayerInputs = nextGameState.pendingGameInputs.find(
+        (input) => {
+          return input.inputType === GameInputType.SELECT_PLAYER;
         }
       );
+      const selectPlayerGameInput =
+        selectPlayerInputs &&
+        nextGameState.getAutoAdvanceInput(selectPlayerInputs);
+      if (selectPlayerGameInput) {
+        return nextGameState.next(selectPlayerGameInput);
+      }
+
+      // Check if we can advance other types of inputs.
+      const pendingInputs = nextGameState.pendingGameInputs.map((input) => {
+        return nextGameState.getAutoAdvanceInput(input);
+      });
       if (
-        autoAdvancedPendingInputs.every(Boolean) &&
+        pendingInputs.every(Boolean) &&
         nextGameState.pendingGameInputs.length !== 0
       ) {
-        return nextGameState.next(autoAdvancedPendingInputs[0]!);
+        return nextGameState.next(pendingInputs[0]!);
       }
     }
     return nextGameState;
   }
 
-  private getAutoAdvancePendingInputIfExists(
+  private getAutoAdvanceInput(
     pendingInput: GameInputMultiStep
   ): GameInputMultiStep | null {
     const player = this.getActivePlayer();

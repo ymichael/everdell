@@ -1219,6 +1219,26 @@ describe("Card", () => {
         ).to.be(true);
       });
 
+      it("should auto advance player selection if only 1 option", () => {
+        const targetPlayerId = gameState.players[1].playerId;
+        const card = Card.fromName(CardName.FOOL);
+
+        // Make sure we can play this card
+        player.gainResources(card.baseCost);
+        player.cardsInHand.push(card.name);
+
+        [player, gameState] = multiStepGameInputTest(
+          gameState,
+          [playCardInput(card.name)],
+          { autoAdvance: true }
+        );
+
+        expect(player.hasCardInCity(card.name)).to.be(false);
+        expect(
+          gameState.getPlayer(targetPlayerId).hasCardInCity(card.name)
+        ).to.be(true);
+      });
+
       it("should not allow the player to select player with no available city spaces", () => {
         gameState = testInitialGameState({ numPlayers: 3 });
         const player = gameState.getActivePlayer();

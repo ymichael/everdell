@@ -3,14 +3,7 @@ import { Field, useField } from "formik";
 
 import { Card as CardModel } from "../model/card";
 import { Player } from "../model/player";
-import {
-  ResourceType,
-  CardName,
-  GameInput,
-  GameInputType,
-  GameInputPlayCard,
-  CardPaymentOptions,
-} from "../model/types";
+import { ResourceType, CardName, GameInputPlayCard } from "../model/types";
 import { ResourceTypeIcon, Description } from "./common";
 
 import styles from "../styles/CardPayment.module.css";
@@ -19,7 +12,7 @@ const ResourceTypeValueInput: React.FC<{
   resourceType: ResourceType;
   name: string;
 }> = ({ resourceType, name }) => {
-  const [field, meta, helpers] = useField(name);
+  const [_field, meta, helpers] = useField(name);
   return (
     <div className={styles.resource_input}>
       <div className={styles.resource_icon}>
@@ -33,8 +26,10 @@ const ResourceTypeValueInput: React.FC<{
           let val = 0;
           try {
             val = parseInt(e.target.value);
-          } catch (e) {}
-          helpers.setValue(parseInt(e.target.value) || 0);
+          } catch (e) {
+            val = 0;
+          }
+          helpers.setValue(val);
         }}
         onChange={(e) => {
           helpers.setValue(e.target.value);
@@ -96,7 +91,7 @@ const OptionToUseAssociatedCard: React.FC<{
   viewingPlayer: Player;
   resetPaymentOptions: (state: "DEFAULT" | "COST" | "ZERO") => void;
 }> = ({ cardName, name, resetPaymentOptions, viewingPlayer }) => {
-  const [field, meta, helpers] = useField(name);
+  const [_field, meta, helpers] = useField(name);
   const card = CardModel.fromName(cardName);
   const hasUnusedAssociatedCard =
     card.associatedCard &&
@@ -145,7 +140,7 @@ const CardToUseForm: React.FC<{
   resetPaymentOptions: (state: "DEFAULT" | "COST" | "ZERO") => void;
   viewingPlayer: Player;
 }> = ({ name, cardName, resetPaymentOptions, viewingPlayer }) => {
-  const [field, meta, helpers] = useField(name);
+  const [_field, meta, helpers] = useField(name);
   const card = CardModel.fromName(cardName);
   const cardsToUse: CardName[] = [
     CardName.QUEEN,
@@ -211,7 +206,7 @@ const CardToDungeonForm: React.FC<{
   resetPaymentOptions: (state: "DEFAULT" | "COST" | "ZERO") => void;
   viewingPlayer: Player;
 }> = ({ name, resetPaymentOptions, viewingPlayer }) => {
-  const [field, meta, helpers] = useField(name);
+  const [_field, meta, helpers] = useField(name);
   return viewingPlayer.canInvokeDungeon() ? (
     <p>
       {"Dungeon: "}

@@ -1,11 +1,10 @@
 import { GetServerSideProps } from "next";
 
-import { GameJSON, GameStateJSON, PlayerJSON } from "../../model/jsonTypes";
+import { GameJSON } from "../../model/jsonTypes";
 import {
   CardName,
   LocationName,
   ResourceType,
-  EventName,
   GameInputType,
   GameInput,
 } from "../../model/types";
@@ -19,7 +18,7 @@ import { testInitialGameState } from "../../model/testHelpers";
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const playerNames = ["Michael", "Elynn", "Chris", "Vanessa"];
   const numPlayers = playerNames.length;
-  let gameState = testInitialGameState({
+  const gameState = testInitialGameState({
     numPlayers,
     playerNames,
     noForestLocations: true,
@@ -91,7 +90,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 export default function TestGameInputPage(props: { game: GameJSON }) {
   const { game } = props;
-  const { gameId, gameState } = game;
+  const { gameState } = game;
   const gameStateImpl = GameState.fromJSON(gameState);
 
   const gameStatePlacedWorkers = gameStateImpl.clone();
@@ -130,7 +129,7 @@ export default function TestGameInputPage(props: { game: GameJSON }) {
     inputType: GameInputType.PREPARE_FOR_SEASON,
   });
 
-  let gameStateSelectCardsFromMeadow = gameStatePlacedWorkers.next({
+  const gameStateSelectCardsFromMeadow = gameStatePlacedWorkers.next({
     inputType: GameInputType.PREPARE_FOR_SEASON,
   });
 

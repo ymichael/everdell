@@ -6,7 +6,6 @@ import styles from "../styles/gameBoard.module.css";
 
 import {
   CardName,
-  GameInputType,
   GameInputSelectCards as TGameInputSelectCards,
 } from "../model/types";
 import { Player } from "../model/player";
@@ -19,7 +18,7 @@ const GameInputSelectCards: React.FC<{
   gameInput: TGameInputSelectCards;
   viewingPlayer: Player;
 }> = ({ name, gameInput, viewingPlayer }) => {
-  const [field, meta, helpers] = useField(name);
+  const [_field, meta, helpers] = useField(name);
   const selectedCardIdx = useRef<any>({});
   return (
     <div className={styles.items}>

@@ -1,13 +1,7 @@
 import * as React from "react";
 import { Card as CardModel } from "../model/card";
 import styles from "../styles/card.module.css";
-import {
-  ResourceType,
-  CardCost,
-  CardType,
-  CardName,
-  PlayedCardInfo,
-} from "../model/types";
+import { ResourceType, CardName, PlayedCardInfo } from "../model/types";
 import { Player } from "../model/player";
 import { resourceMapToGameText, toGameText } from "../model/gameText";
 import {
@@ -18,7 +12,7 @@ import {
 } from "./common";
 import { sumResources } from "../model/gameStatePlayHelpers";
 
-var colorClassMap = {
+const colorClassMap = {
   GOVERNANCE: styles.color_governance,
   PROSPERITY: styles.color_prosperity,
   PRODUCTION: styles.color_production,
@@ -29,8 +23,8 @@ var colorClassMap = {
 // determine rarity label, which is unique vs. common and
 // critter vs. construction
 const getRarityLabel = (card: CardModel) => {
-  var rarity = card.isUnique ? "Unique" : "Common";
-  var category = card.isCritter ? "Critter" : "Construction";
+  const rarity = card.isUnique ? "Unique" : "Common";
+  const category = card.isCritter ? "Critter" : "Construction";
   return rarity + " " + category;
 };
 
@@ -127,7 +121,6 @@ const Card: React.FC<{ name: CardName; usedForCritter?: boolean }> = ({
   const card = CardModel.fromName(name as any);
   const colorClass = colorClassMap[card.cardType];
   const rarityLabel = getRarityLabel(card);
-  const associatedCard = getAssociatedCard(card);
   return (
     <>
       <div className={styles.card}>
@@ -218,11 +211,7 @@ export const PlayedCard: React.FC<{
         {"pairedCards" in playedCard && (
           <div>
             Beneath Card:{" "}
-            <Description
-              textParts={toGameText(
-                `${(playedCard.pairedCards || []).length} CARD`
-              )}
-            />
+            <Description textParts={toGameText(`${pairedCards.length} CARD`)} />
           </div>
         )}
         {"resources" in playedCard && (

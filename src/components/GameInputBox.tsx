@@ -1,20 +1,13 @@
 import * as React from "react";
-import { Form, Field } from "formik";
-import CardPayment from "./CardPayment";
+import { Form } from "formik";
 import isEqual from "lodash/isEqual";
 import omit from "lodash/omit";
 
 import styles from "../styles/GameInputBox.module.css";
 import { GameState } from "../model/gameState";
-import {
-  ResourceType,
-  GameInputType,
-  GameInput,
-  CardName,
-} from "../model/types";
+import { GameInputType, GameInput } from "../model/types";
 import { GameStateJSON } from "../model/jsonTypes";
 import { Player } from "../model/player";
-import { inputContextPrefix } from "../model/gameText";
 
 import { GameBlock } from "./common";
 

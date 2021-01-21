@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { unstable_batchedUpdates } from "react-dom";
 
 import { GameBoard, LocationsAndEvents } from "./gameBoard";
@@ -10,7 +10,7 @@ import GameInputBox from "./GameInputBox";
 import GameUpdater from "./GameUpdater";
 import { Player } from "../model/player";
 import { GameState } from "../model/gameState";
-import { CardName, GameInput } from "../model/types";
+import { GameInput } from "../model/types";
 import { GameJSON, PlayerJSON } from "../model/jsonTypes";
 
 import styles from "../styles/Game.module.css";

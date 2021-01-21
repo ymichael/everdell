@@ -112,16 +112,6 @@ export const GameIcon = ({
   );
 };
 
-const ICON_TYPES: Record<any, any> = {
-  ...ResourceType,
-  ...CardType,
-  CARD: "CARD",
-  VP: "VP",
-  ANY: "ANY",
-};
-
-const cardTypeList = [];
-
 export const Description = ({ textParts }: { textParts: GameText }) => {
   return textParts ? (
     <span>
@@ -179,6 +169,7 @@ export const Description = ({ textParts }: { textParts: GameText }) => {
                 </span>
               );
             }
+            break;
           default:
             assertUnreachable(part, `Unexpected part: ${JSON.stringify(part)}`);
         }

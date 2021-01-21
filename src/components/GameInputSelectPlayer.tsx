@@ -1,5 +1,4 @@
 import * as React from "react";
-import { useRef } from "react";
 import { Field } from "formik";
 
 import styles from "../styles/gameBoard.module.css";

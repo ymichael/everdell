@@ -1,5 +1,4 @@
 import * as React from "react";
-import { useRef } from "react";
 import { useField } from "formik";
 import isEqual from "lodash/isEqual";
 import uniqBy from "lodash/uniqBy";
@@ -21,7 +20,7 @@ const GameInputSelectWorkerPlacement: React.FC<{
   gameState: GameState;
   viewingPlayer: Player;
 }> = ({ gameInput, name, gameState, viewingPlayer }) => {
-  const [field, meta, helpers] = useField(name);
+  const [_field, meta, helpers] = useField(name);
 
   const options = gameInput.options;
   const eventOptions = options.filter((x) => x.event);

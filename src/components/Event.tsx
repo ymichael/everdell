@@ -1,19 +1,11 @@
 import * as React from "react";
-import { Event as EventModel } from "../model/event";
-import { GameState } from "../model/gameState";
+
 import styles from "../styles/event.module.css";
-import {
-  ResourceType,
-  CardCost,
-  CardType,
-  CardName,
-  PlayedCardInfo,
-  EventName,
-  EventType,
-} from "../model/types";
-import { Player } from "../model/player";
-import { Description, CardTypeSymbol, ItemWrapper } from "./common";
-import { sumResources } from "../model/gameStatePlayHelpers";
+
+import { Event as EventModel } from "../model/event";
+import { EventName, EventType } from "../model/types";
+
+import { Description, ItemWrapper } from "./common";
 
 export const EventInner: React.FC<{
   name: EventName;

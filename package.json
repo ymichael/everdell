@@ -17,7 +17,7 @@
     "start": "DB_PATH=./db/game.sqlite next start -p $PORT",
     "format": "prettier --write src",
     "format:ci": "prettier --check src",
-    "lint": "eslint src --quiet --ext .ts,ts"
+    "lint": "eslint src --quiet --ext .ts,tsx"
   },
   "dependencies": {
     "expect.js": "^0.3.1",

@@ -8,7 +8,6 @@ import {
   EventName,
   GameInputType,
 } from "../../model/types";
-import { GameState } from "../../model/gameState";
 import GameLog from "../../components/GameLog";
 
 import { testInitialGameState } from "../../model/testHelpers";

@@ -2,9 +2,7 @@ import * as React from "react";
 import styles from "../styles/gameBoard.module.css";
 import {
   CardName,
-  EventNameToPlayerId,
   EventName,
-  LocationNameToPlayerIds,
   LocationName,
   LocationType,
   EventType,

@@ -1,12 +1,10 @@
 import * as React from "react";
 import { Field } from "formik";
-import isEqual from "lodash/isEqual";
 
 import { GameInputSelectOptionGeneric as TGameInputSelectOptionGeneric } from "../model/types";
 import { Player } from "../model/player";
 
 import styles from "../styles/gameBoard.module.css";
-import { GameInputType, GameInput } from "../model/types";
 import { toGameText } from "../model/gameText";
 
 import { Description } from "./common";

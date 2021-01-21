@@ -1,6 +1,5 @@
 import * as React from "react";
 import { GameJSON } from "../model/jsonTypes";
-import { Player } from "../model/player";
 import { GameState } from "../model/gameState";
 import { GameBlock } from "./common";
 

@@ -6,7 +6,6 @@ import styles from "../styles/Players.module.css";
 import {
   PlayerStatus as TPlayerStatus,
   Season,
-  CardName,
   ResourceType,
   CardType,
 } from "../model/types";

@@ -1,4 +1,4 @@
-import * as react from "react";
+import * as React from "react";
 import styles from "../styles/GamePointsBreakdown.module.css";
 
 import { ResourceType } from "../model/types";

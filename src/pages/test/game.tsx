@@ -18,7 +18,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   // Create Test Game Here
   const playerNames = ["Michael", "Elynn", "Chris", "Vanessa"];
   const numPlayers = playerNames.length;
-  let gameState = testInitialGameState({
+  const gameState = testInitialGameState({
     numPlayers,
     playerNames,
     noForestLocations: true,

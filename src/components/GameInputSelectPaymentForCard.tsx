@@ -1,5 +1,4 @@
 import * as React from "react";
-import { useRef } from "react";
 
 import { GameInputSelectPaymentForCard as TGameInputSelectPaymentForCard } from "../model/types";
 import { Player } from "../model/player";

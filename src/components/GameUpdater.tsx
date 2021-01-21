@@ -1,9 +1,12 @@
 import * as React from "react";
 import { useCallback, useRef, useEffect } from "react";
-import { CardName, GameInput } from "../model/types";
+import { GameInput } from "../model/types";
 import { GameJSON, PlayerJSON } from "../model/jsonTypes";
 
-export const GameUpdaterContext = React.createContext<() => void>(() => {});
+const noop = () => {
+  return;
+};
+export const GameUpdaterContext = React.createContext<() => void>(noop);
 
 const isNotificationsSupported =
   typeof Notification !== "undefined" &&
@@ -25,9 +28,9 @@ function enableNotifications() {
     console.log("This browser does not support notifications.");
   } else {
     if (checkNotificationPromise()) {
-      Notification.requestPermission().then((permission) => {});
+      Notification.requestPermission().then(noop);
     } else {
-      Notification.requestPermission(function (permission) {});
+      Notification.requestPermission(noop);
     }
   }
 }

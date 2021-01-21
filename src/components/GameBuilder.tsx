@@ -4,7 +4,7 @@ import { Formik, Form, Field, FieldArray } from "formik";
 import styles from "../styles/Home.module.css";
 
 let playerIdx = 0;
-const getDummyPlayer = (name: string = "") => {
+const getDummyPlayer = (name = "") => {
   playerIdx++;
   return {
     name: name || `Player ${playerIdx}`,

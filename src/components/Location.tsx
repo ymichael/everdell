@@ -1,15 +1,11 @@
 import * as React from "react";
 import styles from "../styles/location.module.css";
 
-import { Card as CardModel } from "../model/card";
 import { Player } from "../model/player";
 import { GameState } from "../model/gameState";
 import { Location as LocationModel } from "../model/location";
-import { sumResources } from "../model/gameStatePlayHelpers";
 import {
   Season,
-  ProductionResourceMap,
-  ResourceType,
   LocationName,
   LocationType,
   LocationOccupancy,
@@ -22,14 +18,6 @@ const colorClassMap = {
   HAVEN: styles.color_haven,
   JOURNEY: styles.color_journey,
 };
-
-const resourceTypeList = [
-  ResourceType.BERRY,
-  ResourceType.TWIG,
-  ResourceType.PEBBLE,
-  ResourceType.RESIN,
-  "CARD" as const,
-];
 
 export const LocationInner: React.FC<{ name: LocationName }> = ({ name }) => {
   const location = LocationModel.fromName(name as any);

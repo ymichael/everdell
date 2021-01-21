@@ -1,14 +1,11 @@
 import * as React from "react";
-import { useRef } from "react";
 import { useField } from "formik";
 
 import styles from "../styles/gameBoard.module.css";
 
 import { LocationName } from "../model/types";
 import { Player } from "../model/player";
-import { GameInputType, GameInput } from "../model/types";
 
-import Card from "./Card";
 import { LocationInner as Location } from "./Location";
 import { ItemWrapper } from "./common";
 
@@ -17,7 +14,7 @@ const GameInputPlaceWorkerSelector: React.FC<{
   locations: LocationName[];
   viewingPlayer: Player;
 }> = ({ name, locations = [], viewingPlayer }) => {
-  const [field, meta, helpers] = useField(name);
+  const [_field, meta, helpers] = useField(name);
   return (
     <div role="group">
       <div className={styles.items}>

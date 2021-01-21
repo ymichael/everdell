@@ -1,5 +1,4 @@
 import * as React from "react";
-import { useRef } from "react";
 
 import { GameInputSelectResources as TGameInputSelectResources } from "../model/types";
 import { Player } from "../model/player";

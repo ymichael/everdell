@@ -17,7 +17,7 @@ const GameInputSelectPlayedCards: React.FC<{
   gameInput: TGameInputSelectPlayedCards;
   viewingPlayer: Player;
 }> = ({ name, gameState, gameInput, viewingPlayer }) => {
-  const [field, meta, helpers] = useField(name);
+  const [_field, meta, helpers] = useField(name);
   const selectedCardIdx = useRef<any>({});
   return (
     <div className={styles.items}>

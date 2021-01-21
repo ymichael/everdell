@@ -1,5 +1,4 @@
 import * as React from "react";
-import { useRef } from "react";
 import { useField } from "formik";
 import isEqual from "lodash/isEqual";
 
@@ -8,7 +7,6 @@ import styles from "../styles/gameBoard.module.css";
 import { PlayedCardInfo } from "../model/types";
 import { Player } from "../model/player";
 import { GameState } from "../model/gameState";
-import { GameInputType, GameInput } from "../model/types";
 
 import { PlayedCard } from "./Card";
 import { ItemWrapper } from "./common";
@@ -19,7 +17,7 @@ const GameInputVisitDestinationCard: React.FC<{
   destinations: PlayedCardInfo[];
   viewingPlayer: Player;
 }> = ({ name, gameState, destinations = [], viewingPlayer }) => {
-  const [field, meta, helpers] = useField(name);
+  const [_field, meta, helpers] = useField(name);
   return (
     <div role="group">
       <div className={styles.items}>

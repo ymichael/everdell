@@ -1,12 +1,10 @@
 import * as React from "react";
-import { useRef } from "react";
 import { useField } from "formik";
 
 import styles from "../styles/gameBoard.module.css";
 
 import { EventName } from "../model/types";
 import { Player } from "../model/player";
-import { GameInputType, GameInput } from "../model/types";
 
 import { EventInner as Event } from "./Event";
 import { ItemWrapper } from "./common";
@@ -16,7 +14,7 @@ const GameInputClaimEventSelector: React.FC<{
   events: EventName[];
   viewingPlayer: Player;
 }> = ({ events = [], name, viewingPlayer }) => {
-  const [field, meta, helpers] = useField(name);
+  const [_field, meta, helpers] = useField(name);
   return (
     <div role="group">
       <div className={styles.items}>

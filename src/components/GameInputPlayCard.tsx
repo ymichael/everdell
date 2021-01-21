@@ -1,22 +1,21 @@
 import * as React from "react";
-import isEqual from "lodash/isEqual";
+import { useField } from "formik";
 
 import styles from "../styles/gameBoard.module.css";
 
-import { CardName, ResourceType, CardPaymentOptions } from "../model/types";
+import { CardName, ResourceType } from "../model/types";
 import { Player } from "../model/player";
 import { Card as CardModel } from "../model/card";
 
 import CardPayment from "./CardPayment";
 import Card from "./Card";
 import { ItemWrapper } from "./common";
-import { useField } from "formik";
 
 const GameInputPlayCard: React.FC<{
   options: { card: CardName; fromMeadow: boolean }[];
   viewingPlayer: Player;
 }> = ({ options = [], viewingPlayer }) => {
-  const [field, meta, helpers] = useField("gameInput.clientOptions");
+  const [_field, meta, helpers] = useField("gameInput.clientOptions");
   const resetPaymentOptions = (
     cardName: CardName,
     state: "DEFAULT" | "COST" | "ZERO",

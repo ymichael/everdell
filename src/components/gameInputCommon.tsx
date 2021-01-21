@@ -204,6 +204,7 @@ const renderMultiStepGameInputLabel = (
             {
               type: "text",
               text:
+                !gameInput.cardContext &&
                 gameInput.prevInputType === GameInputType.PREPARE_FOR_SEASON
                   ? " from the Meadow"
                   : "",

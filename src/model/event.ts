@@ -1462,21 +1462,36 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
   }),
 };
 
+const baseGameSpecialEvents: EventName[] = [
+  EventName.SPECIAL_GRADUATION_OF_SCHOLARS,
+  EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN,
+  EventName.SPECIAL_PERFORMER_IN_RESIDENCE,
+  EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES,
+  EventName.SPECIAL_MINISTERING_TO_MISCREANTS,
+  EventName.SPECIAL_CROAK_WART_CURE,
+  EventName.SPECIAL_AN_EVENING_OF_FIREWORKS,
+  EventName.SPECIAL_A_WEE_RUN_CITY,
+  EventName.SPECIAL_TAX_RELIEF,
+  EventName.SPECIAL_UNDER_NEW_MANAGEMENT,
+  EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED,
+  EventName.SPECIAL_FLYING_DOCTOR_SERVICE,
+  EventName.SPECIAL_PATH_OF_THE_PILGRIMS,
+  EventName.SPECIAL_REMEMBERING_THE_FALLEN,
+  EventName.SPECIAL_PRISTINE_CHAPEL_CEILING,
+  EventName.SPECIAL_THE_EVERDELL_GAMES,
+];
+
 export const initialEventMap = (): EventNameToPlayerId => {
   const ret: EventNameToPlayerId = {};
   [...Event.byType(EventType.BASIC)].forEach((ty) => {
     ret[ty] = null;
   });
 
-  const specialEvents = shuffle(Event.byType(EventType.SPECIAL));
-  if (specialEvents.length < 4) {
-    throw new Error("Not enough Special Events available");
-  }
-
-  const chosenSpecialEvents = specialEvents.slice(0, 4);
-  [...chosenSpecialEvents].forEach((ty) => {
-    ret[ty] = null;
-  });
+  shuffle(baseGameSpecialEvents)
+    .slice(0, 4)
+    .forEach((ty) => {
+      ret[ty] = null;
+    });
 
   return ret;
 };

@@ -957,15 +957,24 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
   }),
 };
 
+const baseGameForestLocations: LocationName[] = [
+  LocationName.FOREST_TWO_BERRY_ONE_CARD,
+  LocationName.FOREST_TWO_WILD,
+  LocationName.FOREST_DISCARD_ANY_THEN_DRAW_TWO_PER_CARD,
+  LocationName.FOREST_COPY_BASIC_ONE_CARD,
+  LocationName.FOREST_ONE_PEBBLE_THREE_CARD,
+  LocationName.FOREST_ONE_TWIG_RESIN_BERRY,
+  LocationName.FOREST_THREE_BERRY,
+  LocationName.FOREST_TWO_RESIN_ONE_TWIG,
+  LocationName.FOREST_TWO_CARDS_ONE_WILD,
+  LocationName.FOREST_DISCARD_UP_TO_THREE_CARDS_TO_GAIN_WILD_PER_CARD,
+  LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS,
+];
+
 export const initialLocationsMap = (
   numPlayers: number
 ): LocationNameToPlayerIds => {
-  const forestLocations = shuffle(Location.byType(LocationType.FOREST));
-
-  if (forestLocations.length < 4 || forestLocations.length < 3) {
-    throw new Error("Not enough Special Events available");
-  }
-  const forestLocationsToPlay = forestLocations.slice(
+  const forestLocationsToPlay = shuffle(baseGameForestLocations).slice(
     0,
     numPlayers == 2 ? 3 : 4
   );

@@ -8,6 +8,8 @@ import { GameBlock, ItemWrapper } from "../../components/common";
 import Card from "../../components/Card";
 import Location from "../../components/Location";
 import Event from "../../components/Event";
+
+import { Card as CardModel } from "../../model/card";
 import { CardName, LocationName, EventName } from "../../model/types";
 
 const ItemsList: React.FC<{ title: string; visible: boolean }> = ({
@@ -31,6 +33,7 @@ export default function TestPage() {
     LocationName
   ) as LocationName[];
 
+  const [showPearlbrookOnly, setShowPearlbrookOnly] = useState(false);
   const [showCards, setShowCards] = useState(true);
   const [showLocations, setShowLocations] = useState(true);
   const [showEvents, setShowEvents] = useState(true);
@@ -60,11 +63,32 @@ export default function TestPage() {
             setFilter(e.target.value.toLowerCase());
           }}
         />
+        &nbsp;&nbsp;&middot;&nbsp;&nbsp;
+        <label>
+          <input
+            type="checkbox"
+            checked={showPearlbrookOnly}
+            onChange={() => {
+              setShowPearlbrookOnly(!showPearlbrookOnly);
+            }}
+          />
+          Pearlbrook only
+        </label>
       </div>
       <ItemsList title={"Cards"} visible={showCards}>
         {allCards
           .filter((x) => {
-            return !filter || x.toLowerCase().indexOf(filter) !== -1;
+            if (filter) {
+              if (x.toLowerCase().indexOf(filter) === -1) {
+                return false;
+              }
+            }
+            if (showPearlbrookOnly) {
+              if (!CardModel.fromName(x).isPearlbrook) {
+                return false;
+              }
+            }
+            return true;
           })
           .map((card) => {
             return (
@@ -77,7 +101,12 @@ export default function TestPage() {
       <ItemsList title={"Locations"} visible={showLocations}>
         {allLocations
           .filter((x) => {
-            return !filter || x.toLowerCase().indexOf(filter) !== -1;
+            if (filter) {
+              if (x.toLowerCase().indexOf(filter) === -1) {
+                return false;
+              }
+            }
+            return true;
           })
           .map((loc) => {
             return <Location key={loc} name={loc} />;
@@ -86,7 +115,12 @@ export default function TestPage() {
       <ItemsList title={"Events"} visible={showEvents}>
         {allEvents
           .filter((x) => {
-            return !filter || x.toLowerCase().indexOf(filter) !== -1;
+            if (filter) {
+              if (x.toLowerCase().indexOf(filter) === -1) {
+                return false;
+              }
+            }
+            return true;
           })
           .map((evt) => {
             return <Event key={evt} name={evt} />;

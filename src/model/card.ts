@@ -3065,9 +3065,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     associatedCard: CardName.MESSENGER,
     cardType: CardType.GOVERNANCE,
     cardDescription: toGameText([
-      "Draw 2 CARD when PEARL gained.",
+      "Increase your hand size by 1 for every PEARL you have.",
       { type: "BR" },
-      "Increase hand size by one for each PEARL.",
+      "Also draw 2 CARD every time you gain a PEARL.",
     ]),
     isConstruction: true,
     isUnique: true,
@@ -3106,13 +3106,18 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     cardType: CardType.TRAVELER,
     cardDescription: toGameText([
       "Draw 1 CARD and gain 1 VP",
+      { type: "HR" },
+      "Must share a space with a Construction.",
       { type: "BR" },
-      "Does not take up space in your city.",
+      "When visiting a River Destination, this Messenger is considered the same color as the shared Construction.",
     ]),
     baseVP: 0,
     isConstruction: false,
     isUnique: false,
     baseCost: { [ResourceType.BERRY]: 2 },
+    canPlayCheckInner: () => {
+      throw new Error("Not Implemented");
+    },
     playInner: () => {
       throw new Error("Not Implemented");
     },
@@ -3123,9 +3128,13 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     associatedCard: CardName.HARBOR,
     cardType: CardType.PROSPERITY,
     cardDescription: toGameText([
-      "Worth 1 VP per Pearlbrook card in your city.",
+      "Worth 1 VP for each Pearlbrook card in your city.",
+      { type: "BR" },
+      "Do not count ",
+      { type: "em", text: "Adornments" },
+      ".",
     ]),
-    baseVP: 0,
+    baseVP: 2,
     isUnique: true,
     isConstruction: false,
     baseCost: {
@@ -3144,7 +3153,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     associatedCard: CardName.PIRATE_SHIP,
     cardType: CardType.TRAVELER,
     cardDescription: toGameText([
-      "Reveal 4 CARD, if total if greater than 7 points, gain 1 PEARL.",
+      "Discard up to 4 CARD to draw and reveal an equal amount of CARD.",
+      { type: "BR" },
+      "If total point base value of drawn CARD is at least 7, gain 1 PEARL.",
+      { type: "HR" },
+      "Does not take up a space in your city.",
     ]),
     baseVP: 1,
     isConstruction: false,
@@ -3162,9 +3175,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     associatedCard: CardName.PIRATE,
     cardType: CardType.DESTINATION,
     cardDescription: toGameText([
-      "Place in an opponent's city.",
-      { type: "BR" },
-      "Gain 1 VP and 1 ANY per opponent PEARL.",
+      "Move this ",
+      { type: "entity", entityType: "card", card: CardName.PIRATE_SHIP },
+      " to an empty space in an opponent's city. ",
+      "Then gain 1 ANY and 1 VP per PEARL that opponent has, up to a maximum of 3.",
     ]),
     isUnique: false,
     isConstruction: true,
@@ -3209,6 +3223,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     resourcesToGain: {},
     baseCost: {
       [ResourceType.BERRY]: 3,
+    },
+    productionInner: () => {
+      throw new Error("Not Implemented");
     },
     playInner: () => {
       throw new Error("Not Implemented");

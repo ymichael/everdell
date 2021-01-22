@@ -63,7 +63,7 @@
 .card_cost {
   display: flex;
   flex: auto;
-  height: 30px;
+  min-height: 8px;
 }
 
 .card_cost_item {

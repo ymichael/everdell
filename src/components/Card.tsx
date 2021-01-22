@@ -138,7 +138,10 @@ const Card: React.FC<{ name: CardName; usedForCritter?: boolean }> = ({
             <span className={styles.card_header_vp_number}>{card.baseVP}</span>
           </div>
           <div className={[styles.card_header, colorClass].join(" ")}>
-            {name}
+            <span>{name}</span>
+            {card.isPearlbrook && (
+              <span className={styles.pearlbrook}>pearlbrook</span>
+            )}
           </div>
         </div>
         <div className={styles.info_row}>

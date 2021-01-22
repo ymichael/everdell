@@ -63,6 +63,7 @@ export class Card<TCardType extends CardType = CardType>
   readonly cardType: TCardType;
   readonly isUnique: boolean;
   readonly isCritter: boolean;
+  readonly isPearlbrook: boolean;
   readonly isConstruction: boolean;
   readonly associatedCard: CardName | null;
   readonly isOpenDestination: boolean;
@@ -83,6 +84,7 @@ export class Card<TCardType extends CardType = CardType>
     resourcesToGain,
     productionInner,
     cardDescription,
+    isPearlbrook = false,
     isOpenDestination = false, // if the destination is an open destination
     playInner, // called when the card is played
     canPlayCheckInner, // called when we check canPlay function
@@ -99,6 +101,7 @@ export class Card<TCardType extends CardType = CardType>
     isConstruction: boolean;
     associatedCard: CardName | null;
     isOpenDestination?: boolean;
+    isPearlbrook?: boolean;
     playInner?: GameStatePlayFn;
     canPlayCheckInner?: GameStateCanPlayCheckFn;
     playedCardInfoDefault?: Partial<Omit<PlayedCardInfo, "playerId">>;
@@ -135,6 +138,7 @@ export class Card<TCardType extends CardType = CardType>
     this.playedCardInfoDefault = playedCardInfoDefault;
     this.pointsInner = pointsInner;
     this.cardDescription = cardDescription;
+    this.isPearlbrook = isPearlbrook;
 
     // Production cards
     this.productionInner = productionInner;
@@ -3052,8 +3056,126 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     }),
   }),
 
-  // Pearlbrook
+  /**
+   * WIP: Pearlbrook Cards
+   */
+  [CardName.BRIDGE]: new Card({
+    isPearlbrook: true,
+    name: CardName.BRIDGE,
+    associatedCard: CardName.MESSENGER,
+    cardType: CardType.GOVERNANCE,
+    cardDescription: toGameText([
+      "Draw 2 CARD when PEARL gained.",
+      { type: "BR" },
+      "Increase hand size by one for each PEARL.",
+    ]),
+    isConstruction: true,
+    isUnique: true,
+    baseVP: 1,
+    baseCost: {
+      [ResourceType.TWIG]: 2,
+      [ResourceType.PEBBLE]: 1,
+    },
+    playInner: () => {
+      throw new Error("Not Implemented");
+    },
+  }),
+  [CardName.HARBOR]: new Card({
+    isPearlbrook: true,
+    name: CardName.HARBOR,
+    associatedCard: CardName.SHIPWRIGHT,
+    cardType: CardType.PRODUCTION,
+    cardDescription: toGameText("If you have at least 2 PEARL, gain 2 ANY."),
+    isUnique: true,
+    isConstruction: true,
+    baseVP: 3,
+    resourcesToGain: {},
+    baseCost: {
+      [ResourceType.TWIG]: 3,
+      [ResourceType.RESIN]: 1,
+      [ResourceType.PEBBLE]: 1,
+    },
+    playInner: () => {
+      throw new Error("Not Implemented");
+    },
+  }),
+  [CardName.MESSENGER]: new Card({
+    isPearlbrook: true,
+    name: CardName.MESSENGER,
+    associatedCard: CardName.BRIDGE,
+    cardType: CardType.TRAVELER,
+    cardDescription: toGameText([
+      "Draw 1 CARD and gain 1 VP",
+      { type: "BR" },
+      "Does not take up space in your city.",
+    ]),
+    baseVP: 0,
+    isConstruction: false,
+    isUnique: false,
+    baseCost: { [ResourceType.BERRY]: 2 },
+    playInner: () => {
+      throw new Error("Not Implemented");
+    },
+  }),
+  [CardName.SHIPWRIGHT]: new Card({
+    isPearlbrook: true,
+    name: CardName.SHIPWRIGHT,
+    associatedCard: CardName.HARBOR,
+    cardType: CardType.PROSPERITY,
+    cardDescription: toGameText([
+      "Worth 1 VP per Pearlbrook card in your city.",
+    ]),
+    baseVP: 0,
+    isUnique: true,
+    isConstruction: false,
+    baseCost: {
+      [ResourceType.BERRY]: 4,
+    },
+    pointsInner: () => {
+      throw new Error("Not Implemented");
+    },
+    playInner: () => {
+      throw new Error("Not Implemented");
+    },
+  }),
+  [CardName.PIRATE]: new Card({
+    isPearlbrook: true,
+    name: CardName.PIRATE,
+    associatedCard: CardName.PIRATE_SHIP,
+    cardType: CardType.TRAVELER,
+    cardDescription: toGameText([
+      "Reveal 4 CARD, if total if greater than 7 points, gain 1 PEARL.",
+    ]),
+    baseVP: 1,
+    isConstruction: false,
+    isUnique: false,
+    baseCost: {
+      [ResourceType.BERRY]: 3,
+    },
+    playInner: () => {
+      throw new Error("Not Implemented");
+    },
+  }),
+  [CardName.PIRATE_SHIP]: new Card({
+    isPearlbrook: true,
+    name: CardName.PIRATE_SHIP,
+    associatedCard: CardName.PIRATE,
+    cardType: CardType.DESTINATION,
+    cardDescription: toGameText([
+      "Place in an opponent's city.",
+      { type: "BR" },
+      "Gain 1 VP and 1 ANY per opponent PEARL.",
+    ]),
+    isUnique: false,
+    isConstruction: true,
+    baseVP: 0,
+    baseCost: {},
+    playInner: () => {
+      throw new Error("Not Implemented");
+    },
+  }),
   [CardName.FERRY]: new Card({
+    isPearlbrook: true,
     name: CardName.FERRY,
     associatedCard: CardName.FERRY_FERRET,
     cardType: CardType.DESTINATION,
@@ -3076,6 +3198,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     },
   }),
   [CardName.FERRY_FERRET]: new Card({
+    isPearlbrook: true,
     name: CardName.FERRY_FERRET,
     associatedCard: CardName.FERRY,
     cardType: CardType.PRODUCTION,

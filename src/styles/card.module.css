@@ -13,12 +13,20 @@
 }
 
 .card_header {
-  padding: 10px;
+  height: 35px;
   font-weight: var(--font-bold);
   font-size: 12px;
   text-align: center;
   color: #ffffff;
   text-transform: uppercase;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.pearlbrook {
+  font-size: 8px;
+  font-weight: normal;
 }
 
 .card_bottom_row {

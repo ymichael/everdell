@@ -436,8 +436,14 @@ export enum CardName {
   WOODCARVER = "Woodcarver",
 
   // Pearlbrook
-  FERRY_FERRET = "Ferry Ferret",
+  BRIDGE = "Bridge",
   FERRY = "Ferry",
+  FERRY_FERRET = "Ferry Ferret",
+  HARBOR = "Harbor",
+  MESSENGER = "Messenger",
+  PIRATE = "Pirate",
+  PIRATE_SHIP = "Pirate Ship",
+  SHIPWRIGHT = "Shipwright",
 }
 
 export enum ResourceType {

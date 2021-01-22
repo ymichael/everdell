@@ -79,7 +79,7 @@ const Game: React.FC<{
             gameState.gameOptions.realtimePoints ||
             // Game options used to be on the game object.
             // Keeping this for backwards compatibility.
-            (game as any).gameOptions.realtimePoints
+            !!(game as any)?.gameOptions?.realtimePoints
           }
         />
         <ViewerUI player={viewingPlayerImpl} />

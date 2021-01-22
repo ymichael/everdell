@@ -3051,4 +3051,44 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       maxToSpend: 3,
     }),
   }),
+
+  // Pearlbrook
+  [CardName.FERRY]: new Card({
+    name: CardName.FERRY,
+    associatedCard: CardName.FERRY_FERRET,
+    cardType: CardType.DESTINATION,
+    cardDescription: toGameText([
+      "Copy any revealed ",
+      { type: "em", text: "River Destination" },
+      ".",
+      { type: "HR" },
+      "Other players may visit this card.",
+    ]),
+    isConstruction: true,
+    isUnique: true,
+    baseVP: 2,
+    baseCost: {
+      [ResourceType.TWIG]: 2,
+      [ResourceType.RESIN]: 2,
+    },
+    playInner: () => {
+      throw new Error("Not Implemented");
+    },
+  }),
+  [CardName.FERRY_FERRET]: new Card({
+    name: CardName.FERRY_FERRET,
+    associatedCard: CardName.FERRY,
+    cardType: CardType.PRODUCTION,
+    cardDescription: toGameText("If you have at least 2 PEARL, gain 2 VP"),
+    isConstruction: false,
+    isUnique: true,
+    baseVP: 1,
+    resourcesToGain: {},
+    baseCost: {
+      [ResourceType.BERRY]: 3,
+    },
+    playInner: () => {
+      throw new Error("Not Implemented");
+    },
+  }),
 };

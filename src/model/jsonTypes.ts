@@ -18,11 +18,11 @@ export type GameJSON = {
   gameId: string;
   gameSecret: string;
   gameState: GameStateJSON;
-  gameOptions: GameOptions;
 };
 
 export type GameStateJSON = {
   gameStateId: number;
+  gameOptions: GameOptions;
   activePlayerId: string;
   players: PlayerJSON[];
   meadowCards: CardName[];

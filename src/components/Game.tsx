@@ -75,7 +75,12 @@ const Game: React.FC<{
         <Players
           viewingPlayer={viewingPlayerImpl}
           gameStateJSON={gameState}
-          showRealtimePoints={game.gameOptions.realtimePoints}
+          showRealtimePoints={
+            gameState.gameOptions.realtimePoints ||
+            // Game options used to be on the game object.
+            // Keeping this for backwards compatibility.
+            (game as any).gameOptions.realtimePoints
+          }
         />
         <ViewerUI player={viewingPlayerImpl} />
         <LocationsAndEvents

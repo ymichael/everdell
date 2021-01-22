@@ -542,4 +542,5 @@ export interface IGameTextEntity {
 
 export type GameOptions = {
   realtimePoints: boolean;
+  pearlbrook: boolean;
 };

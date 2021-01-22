@@ -10,6 +10,7 @@ import {
   LocationType,
   EventName,
   EventType,
+  GameOptions,
   GameInput,
   GameInputType,
   GameInputPlayCard,
@@ -25,6 +26,7 @@ export function testInitialGameState(
     cardsInHand?: CardName[];
     noForestLocations?: boolean;
     noSpecialEvents?: boolean;
+    gameOptions?: Partial<GameOptions>;
     meadowCards?: CardName[];
     shuffleDeck?: boolean;
   } = {}
@@ -37,6 +39,7 @@ export function testInitialGameState(
     noForestLocations = true,
     noSpecialEvents = true,
     shuffleDeck = false,
+    gameOptions = {},
   } = opts;
   const players = [];
   for (let i = 0; i < numPlayers; i++) {
@@ -45,6 +48,7 @@ export function testInitialGameState(
   const gameState = GameState.initialGameState({
     players,
     shuffleDeck,
+    gameOptions,
   });
   while (gameState.meadowCards.length) {
     gameState.meadowCards.pop();

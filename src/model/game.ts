@@ -10,7 +10,7 @@ export class Game {
   public gameId: string;
   private gameSecret: string;
   private gameState: GameState;
-  private gameOptions: GameOptions;
+  private gameOptionsDeprecated: Partial<GameOptions>;
 
   constructor({
     gameId,
@@ -21,14 +21,12 @@ export class Game {
     gameId: string;
     gameSecret: string;
     gameState: GameState;
-    gameOptions?: GameOptions | null;
+    gameOptions?: Partial<GameOptions> | null;
   }) {
     this.gameId = gameId;
     this.gameSecret = gameSecret;
     this.gameState = gameState;
-    this.gameOptions = gameOptions || {
-      realtimePoints: false,
-    };
+    this.gameOptionsDeprecated = gameOptions || {};
   }
 
   get gameSecretUNSAFE(): string {
@@ -64,7 +62,8 @@ export class Game {
       gameId: this.gameId,
       gameSecret: "",
       gameState: this.gameState.toJSON(includePrivate),
-      gameOptions: this.gameOptions,
+      // Deprecated, remove after 3/1/21
+      gameOptions: this.gameOptionsDeprecated,
       ...(includePrivate
         ? {
             gameSecret: this.gameSecret,
@@ -89,7 +88,7 @@ export class Game {
 
 export const createGame = async (
   playerNames: string[],
-  gameOptions: GameOptions = {
+  gameOptions: Partial<GameOptions> = {
     realtimePoints: false,
   }
 ): Promise<Game> => {
@@ -105,8 +104,7 @@ export const createGame = async (
   const game = new Game({
     gameId,
     gameSecret,
-    gameState: GameState.initialGameState({ players }),
-    gameOptions,
+    gameState: GameState.initialGameState({ players, gameOptions }),
   });
 
   await game.save();

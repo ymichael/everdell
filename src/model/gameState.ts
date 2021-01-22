@@ -1,26 +1,27 @@
 import {
-  Season,
-  GameInputType,
-  GameInput,
-  GameInputPlayCard,
-  GameInputClaimEvent,
-  GameInputPlaceWorker,
-  GameInputVisitDestinationCard,
-  GameInputPrepareForSeason,
-  GameInputMultiStep,
-  GameInputGameEnd,
   CardName,
   EventName,
+  EventNameToPlayerId,
+  GameInput,
+  GameInputClaimEvent,
+  GameInputGameEnd,
+  GameInputMultiStep,
+  GameInputPlaceWorker,
+  GameInputPlayCard,
+  GameInputPrepareForSeason,
+  GameInputType,
+  GameInputVisitDestinationCard,
+  GameInputWorkerPlacementTypes,
+  GameLogEntry,
+  GameOptions,
+  GameText,
   LocationName,
   LocationNameToPlayerIds,
-  EventNameToPlayerId,
-  ResourceType,
-  GameInputWorkerPlacementTypes,
   PlayedCardInfo,
   PlayerStatus,
-  GameLogEntry,
+  ResourceType,
+  Season,
   TextPart,
-  GameText,
 } from "./types";
 import { GameStateJSON } from "./jsonTypes";
 import { Player } from "./player";
@@ -89,6 +90,7 @@ export const gameTextToDebugStr = (gameText: GameText): string => {
 
 export class GameState {
   readonly gameStateId: number;
+  readonly gameOptions: GameOptions;
   private _activePlayerId: Player["playerId"];
   public pendingGameInputs: GameInputMultiStep[];
   readonly players: Player[];
@@ -109,6 +111,7 @@ export class GameState {
     locationsMap,
     eventsMap,
     gameLog = [],
+    gameOptions = {},
     pendingGameInputs = [],
   }: {
     gameStateId: number;
@@ -121,6 +124,7 @@ export class GameState {
     eventsMap: EventNameToPlayerId;
     pendingGameInputs: GameInputMultiStep[];
     gameLog: GameLogEntry[];
+    gameOptions?: Partial<GameOptions>;
   }) {
     this.gameStateId = gameStateId;
     this.players = players;
@@ -132,6 +136,11 @@ export class GameState {
     this._activePlayerId = activePlayerId || players[0].playerId;
     this.pendingGameInputs = pendingGameInputs;
     this.gameLog = gameLog;
+    this.gameOptions = {
+      realtimePoints: false,
+      pearlbrook: false,
+      ...gameOptions,
+    };
   }
 
   get activePlayerId(): string {
@@ -203,6 +212,7 @@ export class GameState {
         deck: this.deck.toJSON(includePrivate),
         discardPile: this.discardPile.toJSON(includePrivate),
         gameLog: this.gameLog,
+        gameOptions: this.gameOptions,
       },
       ...(includePrivate
         ? {
@@ -777,9 +787,11 @@ export class GameState {
 
   static initialGameState({
     players,
+    gameOptions = {},
     shuffleDeck = true,
   }: {
     players: Player[];
+    gameOptions: Partial<GameOptions>;
     shuffleDeck?: boolean;
   }): GameState {
     if (players.length < 2) {
@@ -794,6 +806,7 @@ export class GameState {
       discardPile: discardPile(),
       locationsMap: initialLocationsMap(players.length),
       eventsMap: initialEventMap(),
+      gameOptions,
       gameLog: [],
       pendingGameInputs: [],
     });

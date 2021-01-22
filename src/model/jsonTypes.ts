@@ -47,13 +47,7 @@ export type PlayerJSON = {
   playedCards: Partial<Record<CardName, PlayedCardInfo[]>>;
   numCardsInHand: number;
   cardsInHand: CardName[];
-  resources: {
-    [ResourceType.VP]: number;
-    [ResourceType.TWIG]: number;
-    [ResourceType.BERRY]: number;
-    [ResourceType.PEBBLE]: number;
-    [ResourceType.RESIN]: number;
-  };
+  resources: Record<ResourceType, number>;
   currentSeason: Season;
   numWorkers: number;
   claimedEvents: Partial<Record<EventName, PlayedEventInfo>>;

@@ -61,6 +61,7 @@ export class Player implements IGameTextEntity {
       [ResourceType.BERRY]: 0,
       [ResourceType.PEBBLE]: 0,
       [ResourceType.RESIN]: 0,
+      [ResourceType.PEARL]: 0,
     },
     currentSeason = Season.WINTER,
     numWorkers = 2,
@@ -73,13 +74,7 @@ export class Player implements IGameTextEntity {
     playerId?: string;
     playedCards?: Partial<Record<CardName, PlayedCardInfo[]>>;
     cardsInHand?: CardName[];
-    resources?: {
-      [ResourceType.VP]: number;
-      [ResourceType.TWIG]: number;
-      [ResourceType.BERRY]: number;
-      [ResourceType.PEBBLE]: number;
-      [ResourceType.RESIN]: number;
-    };
+    resources?: Record<ResourceType, number>;
     currentSeason?: Season;
     numWorkers?: number;
     claimedEvents?: Partial<Record<EventName, PlayedEventInfo>>;

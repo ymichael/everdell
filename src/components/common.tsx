@@ -79,6 +79,8 @@ export const ResourceTypeIcon = ({
         <Image src="/images/pebble.png" layout="fill" />
       ) : resourceType === ResourceType.RESIN ? (
         <Image src="/images/resin.png" layout="fill" />
+      ) : resourceType === ResourceType.PEARL ? (
+        <Image src="/images/pearl.png" layout="fill" />
       ) : (
         <>{resourceType}</>
       )}

@@ -440,6 +440,7 @@ export enum ResourceType {
   TWIG = "TWIG",
   RESIN = "RESIN",
   BERRY = "BERRY",
+  PEARL = "PEARL",
   PEBBLE = "PEBBLE",
   VP = "VP",
 }

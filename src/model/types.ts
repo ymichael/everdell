@@ -544,6 +544,7 @@ export type GameOptions = {
 };
 
 export enum AdornmentName {}
+
 export enum MonumentName {}
 
 export enum RiverDestinationType {
@@ -551,4 +552,19 @@ export enum RiverDestinationType {
   CITIZEN = "CITIZEN",
   LOCATION = "LOCATION",
 }
-export enum RiverDestinationName {}
+
+export enum RiverDestinationName {
+  SHOAL = "Shoal",
+  GUS_THE_GARDENER = "Gus the Gardener",
+  BOSLEY_THE_ARTIST = "Bosley the Artist",
+  CRUSTINA_THE_CONSTABLE = "Crustina the Constable",
+  ILUMINOR_THE_INVENTOR = "Iluminor the Inventor",
+  SNOUT_THE_EXPLORER = "Snout the Explorer",
+  OMICRON_THE_ELDER = "Omicron the Elder",
+  BALLROOM = "Ballroom",
+  WATERMILL = "Watermill",
+  OBSERVATORY = "Observatory",
+  MARKET = "Market",
+  GREAT_HALL = "Great Hall",
+  GARDENS = "Gardens",
+}

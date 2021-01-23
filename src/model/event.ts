@@ -277,146 +277,78 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     }),
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
-      // if claim event, ask player to choose a playerId
-      if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
-        gameState.pendingGameInputs.push({
-          inputType: GameInputType.SELECT_PLAYER,
-          label:
-            "You may select a player to give resources to (worth 2 VP each)",
-          prevInputType: gameInput.inputType,
-          playerOptions: gameState.players
-            .filter((p) => {
-              return p.playerId !== player.playerId;
-            })
-            .map((p) => p.playerId),
-          mustSelectOne: false, // you don't have to choose anyone
-          eventContext: EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN,
-          clientOptions: { selectedPlayer: null },
-        });
-      } else if (
-        gameInput.inputType === GameInputType.SELECT_PLAYER &&
-        gameInput.prevInputType === GameInputType.CLAIM_EVENT
+      if (
+        gameInput.inputType === GameInputType.CLAIM_EVENT ||
+        (gameInput.inputType === GameInputType.SELECT_RESOURCES &&
+          gameInput.prevInput &&
+          gameInput.prevInput.inputType === GameInputType.SELECT_PLAYER)
       ) {
-        if (!gameInput.clientOptions.selectedPlayer) {
-          return;
-        }
-        const selectedPlayer = gameState.getPlayer(
-          gameInput.clientOptions.selectedPlayer
-        );
+        let maxResources = 3;
+        if (
+          gameInput.inputType === GameInputType.SELECT_RESOURCES &&
+          gameInput.prevInput &&
+          gameInput.prevInput.inputType === GameInputType.SELECT_PLAYER
+        ) {
+          const resources = gameInput.clientOptions.resources;
+          const numResources = sumResources(resources);
+          if (numResources > gameInput.maxResources) {
+            throw new Error(
+              "Cannot give more than {gameInput.clientOptions.maxResources} resources."
+            );
+          }
 
-        gameState.pendingGameInputs.push({
-          inputType: GameInputType.SELECT_RESOURCES,
-          toSpend: true,
-          label: [`Give up to 3 ANY to `, selectedPlayer.getGameTextPart()],
-          prevInputType: gameInput.inputType,
-          prevInput: gameInput,
-          maxResources: 3,
-          minResources: 0,
-          eventContext: EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN,
-          clientOptions: {
-            resources: {},
-          },
-        });
-      } else if (
-        gameInput.inputType === GameInputType.SELECT_PLAYER &&
-        gameInput.prevInput &&
-        gameInput.prevInput.inputType === GameInputType.SELECT_RESOURCES
-      ) {
-        // only ask active player to choose resources to donate if they selected a player.
-        // if selectedPlayer is null, we assume the active player is done choosing players
-        // to donate resources to (ie, no more points)
-        if (gameInput.clientOptions.selectedPlayer) {
           const prevInput = gameInput.prevInput;
-          const selectedPlayer = gameState.getPlayer(
-            gameInput.clientOptions.selectedPlayer
+          const selectedPlayerId = prevInput.clientOptions.selectedPlayer;
+
+          // choosing players is optional, but we should be catching this
+          // before you select resources
+          if (!selectedPlayerId) {
+            throw new Error("Selected player cannot be null");
+          }
+
+          const selectedPlayer = gameState.getPlayer(selectedPlayerId);
+
+          gameState.addGameLogFromEvent(
+            EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN,
+            [
+              player,
+              " gave ",
+              ...resourceMapToGameText(resources),
+              " to ",
+              selectedPlayer,
+              ` to add ${2 * numResources} VP to here.`,
+            ]
           );
-          const prevMax = prevInput.maxResources;
-          const prevResourcesGiven = sumResources(
-            prevInput.clientOptions.resources
-          );
 
-          gameState.pendingGameInputs.push({
-            inputType: GameInputType.SELECT_RESOURCES,
-            label: [
-              `Give up to ${prevMax - prevResourcesGiven} ANY to `,
-              selectedPlayer.getGameTextPart(),
-            ],
-            toSpend: true,
-            prevInputType: gameInput.inputType,
-            prevInput: gameInput,
-            maxResources: prevMax - prevResourcesGiven,
-            minResources: 0,
-            eventContext: EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN,
-            clientOptions: {
-              resources: {},
-            },
-          });
+          selectedPlayer.gainResources(resources);
+          player.spendResources(resources);
+
+          const eventInfo =
+            player.claimedEvents[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN];
+          if (!eventInfo) {
+            throw new Error("Cannot find event info");
+          }
+
+          // Add VP to this event
+          if (eventInfo.storedResources) {
+            const storedVP = eventInfo.storedResources[ResourceType.VP];
+            const vpToStore = storedVP ? storedVP : 0;
+            eventInfo.storedResources = {
+              [ResourceType.VP]: numResources * 2 + vpToStore,
+            };
+          } else {
+            eventInfo.storedResources = { [ResourceType.VP]: numResources * 2 };
+          }
+
+          maxResources = gameInput.maxResources - numResources;
         }
-      } else if (
-        gameInput.inputType === GameInputType.SELECT_RESOURCES &&
-        gameInput.prevInput &&
-        gameInput.prevInput.inputType === GameInputType.SELECT_PLAYER
-      ) {
-        const resources = gameInput.clientOptions.resources;
-        const numResources = sumResources(resources);
-        if (numResources > gameInput.maxResources) {
-          throw new Error(
-            "Cannot give more than {gameInput.clientOptions.maxResources} resources to this player."
-          );
-        }
-
-        const prevInput = gameInput.prevInput;
-        const selectedPlayerId = prevInput.clientOptions.selectedPlayer;
-
-        // choosing players is optional, but we should be catching this
-        // before you select resources
-        if (!selectedPlayerId) {
-          throw new Error("Selected player cannot be null");
-        }
-
-        const selectedPlayer = gameState.getPlayer(selectedPlayerId);
-
-        gameState.addGameLogFromEvent(
-          EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN,
-          [
-            player,
-            " gave ",
-            ...resourceMapToGameText(resources),
-            " to ",
-            selectedPlayer,
-            ` to add ${2 * numResources} VP to here.`,
-          ]
-        );
-
-        selectedPlayer.gainResources(resources);
-        player.spendResources(resources);
-
-        const eventInfo =
-          player.claimedEvents[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN];
-        if (!eventInfo) {
-          throw new Error("Cannot find event info");
-        }
-
-        // Add VP to this event
-        if (eventInfo.storedResources) {
-          const storedVP = eventInfo.storedResources[ResourceType.VP];
-          const vpToStore = storedVP ? storedVP : 0;
-          eventInfo.storedResources = {
-            [ResourceType.VP]: numResources * 2 + vpToStore,
-          };
-        } else {
-          eventInfo.storedResources = { [ResourceType.VP]: numResources * 2 };
-        }
-
-        const newMaxResources = gameInput.maxResources - numResources;
-
-        if (newMaxResources > 0) {
+        if (maxResources > 0) {
           gameState.pendingGameInputs.push({
             inputType: GameInputType.SELECT_PLAYER,
+            prevInput: gameInput,
             label:
               "You may select a player to give resources to (worth 2 VP each)",
             prevInputType: gameInput.inputType,
-            prevInput: gameInput,
             playerOptions: gameState.players
               .filter((p) => {
                 return p.playerId !== player.playerId;
@@ -427,6 +359,45 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
             clientOptions: { selectedPlayer: null },
           });
         }
+      } else if (gameInput.inputType === GameInputType.SELECT_PLAYER) {
+        // only ask active player to choose resources to donate if they selected a player.
+        // if selectedPlayer is null, we assume the active player is done choosing players
+        // to donate resources to (ie, no more points)
+        if (!gameInput.clientOptions.selectedPlayer) {
+          return;
+        }
+        const selectedPlayer = gameState.getPlayer(
+          gameInput.clientOptions.selectedPlayer
+        );
+        let maxToGive = 3;
+        if (
+          gameInput.prevInput &&
+          gameInput.prevInput.inputType === GameInputType.SELECT_RESOURCES
+        ) {
+          const prevInput = gameInput.prevInput;
+          const prevMax = prevInput.maxResources;
+          const prevResourcesGiven = sumResources(
+            prevInput.clientOptions.resources
+          );
+          maxToGive = prevMax - prevResourcesGiven;
+        }
+
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_RESOURCES,
+          label: [
+            `Give up to ${maxToGive} ANY to `,
+            selectedPlayer.getGameTextPart(),
+          ],
+          toSpend: true,
+          prevInputType: gameInput.inputType,
+          prevInput: gameInput,
+          maxResources: maxToGive,
+          minResources: 0,
+          eventContext: EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN,
+          clientOptions: {
+            resources: {},
+          },
+        });
       } else {
         throw new Error(`Invalid input type: ${gameInput}`);
       }

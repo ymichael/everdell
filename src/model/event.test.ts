@@ -1365,43 +1365,37 @@ describe("Event", () => {
         player.claimedEvents[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN]
       ).to.be(undefined);
 
+      const selectPlayerInput = {
+        inputType: GameInputType.SELECT_PLAYER as const,
+        prevInput: gameInput,
+        prevInputType: GameInputType.CLAIM_EVENT,
+        playerOptions: gameState.players
+          .filter((p) => {
+            return p.playerId !== player.playerId;
+          })
+          .map((p) => p.playerId),
+        mustSelectOne: false,
+        eventContext: EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN,
+        clientOptions: { selectedPlayer: player2.playerId },
+      };
+
+      const selectResourcesInput = {
+        inputType: GameInputType.SELECT_RESOURCES as const,
+        toSpend: true,
+        prevInputType: GameInputType.SELECT_PLAYER,
+        prevInput: selectPlayerInput,
+        maxResources: 3,
+        minResources: 0,
+        eventContext: EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN,
+        clientOptions: {
+          resources: { [ResourceType.TWIG]: 3 },
+        },
+      };
+
       [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
-        {
-          inputType: GameInputType.SELECT_PLAYER,
-          prevInputType: GameInputType.CLAIM_EVENT,
-          playerOptions: gameState.players
-            .filter((p) => {
-              return p.playerId !== player.playerId;
-            })
-            .map((p) => p.playerId),
-          mustSelectOne: false,
-          eventContext: EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN,
-          clientOptions: { selectedPlayer: player2.playerId },
-        },
-        {
-          inputType: GameInputType.SELECT_RESOURCES,
-          toSpend: true,
-          prevInputType: GameInputType.SELECT_PLAYER,
-          prevInput: {
-            inputType: GameInputType.SELECT_PLAYER,
-            prevInputType: GameInputType.CLAIM_EVENT,
-            playerOptions: gameState.players
-              .filter((p) => {
-                return p.playerId !== player.playerId;
-              })
-              .map((p) => p.playerId),
-            mustSelectOne: false,
-            eventContext: EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN,
-            clientOptions: { selectedPlayer: player2.playerId },
-          },
-          maxResources: 3,
-          minResources: 0,
-          eventContext: EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN,
-          clientOptions: {
-            resources: { [ResourceType.TWIG]: 3 },
-          },
-        },
+        selectPlayerInput,
+        selectResourcesInput,
       ]);
 
       player2 = gameState.getPlayer(player2.playerId);
@@ -1443,6 +1437,7 @@ describe("Event", () => {
 
       const selectFirstOppo = {
         inputType: GameInputType.SELECT_PLAYER as const,
+        prevInput: gameInput,
         prevInputType: GameInputType.CLAIM_EVENT,
         playerOptions: gameState.players
           .filter((p) => {
@@ -1578,6 +1573,7 @@ describe("Event", () => {
 
       const selectFirstOppo = {
         inputType: GameInputType.SELECT_PLAYER as const,
+        prevInput: gameInput,
         prevInputType: GameInputType.CLAIM_EVENT,
         playerOptions: gameState.players
           .filter((p) => {
@@ -1699,6 +1695,7 @@ describe("Event", () => {
 
       const selectFirstOppo = {
         inputType: GameInputType.SELECT_PLAYER as const,
+        prevInput: gameInput,
         prevInputType: GameInputType.CLAIM_EVENT,
         playerOptions: gameState.players
           .filter((p) => {
@@ -1759,6 +1756,7 @@ describe("Event", () => {
 
       const selectFirstOppo = {
         inputType: GameInputType.SELECT_PLAYER as const,
+        prevInput: gameInput,
         prevInputType: GameInputType.CLAIM_EVENT,
         playerOptions: gameState.players
           .filter((p) => {

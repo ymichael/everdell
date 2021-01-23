@@ -38,6 +38,7 @@
   display: flex;
   color: #ffffff;
   text-transform: uppercase;
+  text-align: right;
 }
 
 .associated_card_used {

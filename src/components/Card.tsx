@@ -20,6 +20,47 @@ const colorClassMap = {
   TRAVELER: styles.color_traveler,
 };
 
+function romanize(num: number): string {
+  if (isNaN(num)) return "";
+  var digits = String(+num).split(""),
+    key = [
+      "",
+      "C",
+      "CC",
+      "CCC",
+      "CD",
+      "D",
+      "DC",
+      "DCC",
+      "DCCC",
+      "CM",
+      "",
+      "X",
+      "XX",
+      "XXX",
+      "XL",
+      "L",
+      "LX",
+      "LXX",
+      "LXXX",
+      "XC",
+      "",
+      "I",
+      "II",
+      "III",
+      "IV",
+      "V",
+      "VI",
+      "VII",
+      "VIII",
+      "IX",
+    ],
+    roman = "",
+    i = 3;
+  while (i--) roman = (key[+(digits.pop() as any) + i * 10] || "") + roman;
+  return Array(+digits.join("") + 1).join("M") + roman;
+}
+
 // determine rarity label, which is unique vs. common and
 // critter vs. construction
 const getRarityLabel = (card: CardModel) => {
@@ -172,7 +213,10 @@ const Card: React.FC<{ name: CardName; usedForCritter?: boolean }> = ({
           </div>
         </div>
         <div className={styles.card_bottom_row}>
-          <div className={styles.rarity_label}>{rarityLabel}</div>
+          <div className={styles.rarity_label}>
+            {rarityLabel}
+            &nbsp;&middot;&nbsp;{romanize(card.numInDeck)}
+          </div>
           <AssociatedCard card={card} usedForCritter={usedForCritter} />
         </div>
       </div>

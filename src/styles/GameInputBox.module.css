@@ -1,7 +1,7 @@
 .button {
   background-color: inherit;
   color: inherit;
-  border: solid 2px;
+  border: solid 2px var(--border-color);
   padding: 5px 15px;
   font-size: 16px;
   border-radius: 8px;

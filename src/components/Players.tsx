@@ -15,6 +15,7 @@ import { GameState } from "../model/gameState";
 import { GameBlock } from "./common";
 import { PlayerCity } from "./gameBoard";
 import {
+  InfoIconSvg,
   VPIcon,
   CardIcon,
   CardTypeSymbol,
@@ -87,10 +88,12 @@ const PlayerStatus: React.FC<{
                   onClick={() => {
                     setShowCity(!showCity);
                   }}
-                  style={{ cursor: "pointer" }}
+                  style={{
+                    cursor: "pointer",
+                  }}
                   className={styles.status_box_item_resource_icon}
                 >
-                  <Image src="/images/info.png" layout="fill" />
+                  <InfoIconSvg />
                 </div>
               </div>
             </div>

@@ -31,19 +31,6 @@
   justify-content: space-between;
 }
 
-.city_button {
-  width: 90px;
-  text-align: center;
-  position: relative;
-  cursor: pointer;
-  display: inline-block;
-  font-size: 12px;
-  padding: 4px 10px;
-  margin: 1px 0;
-  border-radius: 15px;
-  border: solid 2px #ddd;
-}
-
 .status_box_bio_meta {
   display: flex;
 }
@@ -55,30 +42,35 @@
   margin-bottom: 2px;
   margin-right: 2px;
   border-radius: 15px;
-  border: solid 2px;
+  border: solid 2px var(--border-color);
   font-weight: var(--font-bold);
 }
 
 .pill_WINTER {
   background-color: #cdecff;
   color: #00449e;
+  border: solid 2px #00449e;
 }
 
 .pill_SPRING {
   background-color: #e8fdf5;
   color: #19a974;
+  border: solid 2px #19a974;
 }
 .pill_SUMMER {
   background-color: #fbf1a9;
   color: #ff6300;
+  border: solid 2px #ff6300;
 }
 .pill_AUTUMN {
   background-color: #f1efeb;
   color: #796a53;
+  border: solid 2px #796a53;
 }
 
 .pill_game_ended {
   color: #999;
+  border: solid 2px #999;
   background-color: #eee;
 }
 
@@ -99,7 +91,7 @@
   height: 100%;
   display: flex;
   padding: 0 5px;
-  border-left: solid 1px black;
+  border-left: solid 1px var(--border-color);
 }
 
 .status_box_item_resource {
@@ -119,6 +111,13 @@
   font-size: 12px;
   line-height: 22px;
   font-weight: var(--font-bold);
+}
+
+.status_box_item_resource_icon svg {
+  padding-top: 4px;
+  width: 24px;
+  height: 24px;
+  fill: var(--text-color);
 }
 
 .status_box_item_resource_icon {

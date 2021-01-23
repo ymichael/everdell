@@ -3,6 +3,7 @@
   width: 150px;
   border-radius: 5px;
   border: solid 2px var(--border-color-evt);
+  background-color: var(--bg-color-item);
   display: flex;
   justify-content: center;
   align-self: flex-start;

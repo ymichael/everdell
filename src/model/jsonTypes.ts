@@ -1,4 +1,5 @@
 import {
+  AdornmentName,
   GameOptions,
   CardName,
   EventName,
@@ -53,4 +54,6 @@ export type PlayerJSON = {
   claimedEvents: Partial<Record<EventName, PlayedEventInfo>>;
   placedWorkers: WorkerPlacementInfo[];
   playerStatus: PlayerStatus;
+  adornmentsInHand: AdornmentName[];
+  playedAdornments: AdornmentName[];
 };

@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "DB_PATH=./db/game.sqlite next dev",
     "dev:pg": "DATABASE_URL=postgresql://localhost next dev",
-    "collect_logs": "DUMP_GAME_LOGS=1 npm run test -- -r src/model/testHooks.ts",
+    "collect_test_data": "DUMP_GAME_TEST_DATA=1 npm run test -- -r src/model/testHooks.ts",
     "test": "DB_PATH=./db.test.sqlite mocha -r ts-node/register src/**/*.test.ts",
     "test:watch": "npm run test -- --watch --extension ts",
     "typecheck": "tsc",

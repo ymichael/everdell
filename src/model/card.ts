@@ -2226,7 +2226,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       ) {
         const selectedCards = gameInput.clientOptions.selectedCards;
         if (!selectedCards) {
-          throw new Error("no card selected");
+          throw new Error("No card selected");
         }
         if (selectedCards.length !== 1) {
           throw new Error("incorrect number of cards selected");
@@ -2238,12 +2238,85 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             "cannot use Queen to play a card worth more than 3 base VP"
           );
         }
-        gameState.addGameLogFromCard(CardName.QUEEN, [
-          player,
-          " played ",
-          card,
-          ".",
-        ]);
+
+        const cardExistInHand = player.cardsInHand.indexOf(card.name) !== -1;
+        const cardExistInMeadow =
+          gameState.meadowCards.indexOf(card.name) !== -1;
+
+        if (cardExistInHand && cardExistInMeadow) {
+          gameState.pendingGameInputs.push({
+            inputType: GameInputType.SELECT_OPTION_GENERIC,
+            prevInputType: gameInput.inputType,
+            prevInput: gameInput,
+            cardContext: CardName.QUEEN,
+            label: ["Select where to play ", card.getGameTextPart(), " from"],
+            options: ["Meadow", "Hand"],
+            clientOptions: {
+              selectedOption: null,
+            },
+          });
+        } else if (cardExistInMeadow || cardExistInHand) {
+          if (cardExistInMeadow) {
+            gameState.removeCardFromMeadow(card.name);
+            gameState.addGameLogFromCard(CardName.QUEEN, [
+              player,
+              " played ",
+              card,
+              " from the Meadow.",
+            ]);
+          } else {
+            player.removeCardFromHand(card.name);
+            gameState.addGameLogFromCard(CardName.QUEEN, [
+              player,
+              " played ",
+              card,
+              " from their hand.",
+            ]);
+          }
+          card.addToCityAndPlay(gameState, gameInput);
+        } else {
+          throw new Error(
+            "Cannot find the selected card in the Meadow or your hand."
+          );
+        }
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_OPTION_GENERIC &&
+        gameInput.cardContext === CardName.QUEEN &&
+        gameInput.prevInput &&
+        gameInput.prevInput.inputType === GameInputType.SELECT_CARDS
+      ) {
+        const selectedCards = gameInput.prevInput.clientOptions.selectedCards;
+        if (!selectedCards) {
+          throw new Error("No card selected");
+        }
+        if (selectedCards.length !== 1) {
+          throw new Error("Incorrect number of cards selected");
+        }
+        const card = Card.fromName(selectedCards[0]);
+        if (card.baseVP > 3) {
+          throw new Error(
+            "Cannot use Queen to play a card worth more than 3 base VP"
+          );
+        }
+        if (gameInput.clientOptions.selectedOption === "Meadow") {
+          gameState.removeCardFromMeadow(card.name);
+          gameState.addGameLogFromCard(CardName.QUEEN, [
+            player,
+            " played ",
+            card,
+            " from the Meadow.",
+          ]);
+        } else if (gameInput.clientOptions.selectedOption === "Hand") {
+          player.removeCardFromHand(card.name);
+          gameState.addGameLogFromCard(CardName.QUEEN, [
+            player,
+            " played ",
+            card,
+            " from their hand.",
+          ]);
+        } else {
+          throw new Error("Please choose one of the options");
+        }
         card.addToCityAndPlay(gameState, gameInput);
       }
     },

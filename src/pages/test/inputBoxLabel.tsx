@@ -1,6 +1,5 @@
 import { GetServerSideProps } from "next";
 
-import GameLog from "../../components/GameLog";
 import { GameInputMultiStep } from "../../model/types";
 import { renderGameInputLabel } from "../../components/gameInputCommon";
 import pendingGameInputsJSON from "./pendingGameInputs.json";

@@ -3,7 +3,6 @@ import { useContext } from "react";
 import { Formik, FormikProps } from "formik";
 
 import {
-  CardType,
   GameInput,
   GameInputType,
   GameInputMultiStep,

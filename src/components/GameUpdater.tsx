@@ -81,10 +81,11 @@ const GameUpdater: React.FC<{
     enableNotifications();
 
     let timer: any = null;
-    if (!isGameOver && activePlayerId !== playerId) {
+    const isActivePlayer = activePlayerId === playerId;
+    if (!isGameOver && !isActivePlayer) {
       timer = setInterval(updateGameState, 2000);
     } else {
-      if (!isFirstLoadRef.current) {
+      if (isActivePlayer && !isFirstLoadRef.current) {
         try {
           if (
             isNotificationsSupported &&

@@ -3,7 +3,6 @@ import styles from "../styles/GamePointsBreakdown.module.css";
 
 import { ResourceType } from "../model/types";
 import { GameState } from "../model/gameState";
-import { Player } from "../model/player";
 
 import { GameBlock, Description } from "./common";
 

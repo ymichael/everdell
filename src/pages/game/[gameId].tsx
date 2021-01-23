@@ -21,7 +21,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   // Render admin page showing links for all players
   const isGameAdmin = !!(gameSecret && game.gameSecretUNSAFE === gameSecret);
   const player = playerSecret && game.getPlayerBySecret(playerSecret as string);
-  const isPlayer = !!player;
   const isActivePlayer =
     player && player.playerId === game.getActivePlayer().playerId;
 

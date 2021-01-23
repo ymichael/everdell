@@ -1,4 +1,5 @@
 import {
+  ExpansionType,
   CardName,
   CardType,
   EventType,
@@ -37,7 +38,7 @@ export class Event implements GameStatePlayable, IGameTextEntity {
 
   readonly name: EventName;
   readonly shortName: GameText | undefined;
-  readonly isPearlbrook: boolean;
+  readonly expansion: ExpansionType | null;
   readonly type: EventType;
   readonly baseVP: number;
   readonly requiredCards: CardName[] | undefined;
@@ -51,7 +52,6 @@ export class Event implements GameStatePlayable, IGameTextEntity {
     name,
     type,
     baseVP,
-    isPearlbrook = false,
     shortName,
     requiredCards,
     eventDescription,
@@ -60,11 +60,12 @@ export class Event implements GameStatePlayable, IGameTextEntity {
     canPlayCheckInner, // called when we check canPlay function
     playedEventInfoInner, // used for cards that accumulate other cards or resources
     pointsInner, // computed if specified + added to base points
+    expansion = null,
   }: {
     name: EventName;
     type: EventType;
     baseVP: number;
-    isPearlbrook?: boolean;
+    expansion?: ExpansionType | null;
     shortName?: GameText | undefined;
     requiredCards?: CardName[];
     eventDescription?: GameText;
@@ -76,7 +77,7 @@ export class Event implements GameStatePlayable, IGameTextEntity {
   }) {
     this.name = name;
     this.type = type;
-    this.isPearlbrook = isPearlbrook;
+    this.expansion = expansion;
     this.baseVP = baseVP;
     this.requiredCards = requiredCards;
     this.eventDescription = eventDescription;
@@ -1485,7 +1486,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       { type: "BR" },
       "Or you may gain 5 VP.",
     ]),
-    isPearlbrook: true,
+    expansion: ExpansionType.PEARLBROOK,
     playInner: (gameState: GameState, gameInput: GameInput) => {
       throw new Error("Not Implemented");
     },
@@ -1500,7 +1501,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       { type: "entity", entityType: "card", card: CardName.STOREHOUSE },
       " for each resource there, up to 6.",
     ]),
-    isPearlbrook: true,
+    expansion: ExpansionType.PEARLBROOK,
     playInner: (gameState: GameState, gameInput: GameInput) => {
       throw new Error("Not Implemented");
     },
@@ -1519,7 +1520,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       { type: "em", text: "Critters" },
       " beneath this Event.",
     ]),
-    isPearlbrook: true,
+    expansion: ExpansionType.PEARLBROOK,
     playInner: (gameState: GameState, gameInput: GameInput) => {
       throw new Error("Not Implemented");
     },
@@ -1534,7 +1535,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       { type: "BR" },
       "Gain 1 VP for each CARD given this way.",
     ]),
-    isPearlbrook: true,
+    expansion: ExpansionType.PEARLBROOK,
     playInner: (gameState: GameState, gameInput: GameInput) => {
       throw new Error("Not Implemented");
     },
@@ -1547,7 +1548,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     eventDescription: toGameText([
       "When achieved, you may play 1 CARD from the Meadow worth up to 3 VP for free.",
     ]),
-    isPearlbrook: true,
+    expansion: ExpansionType.PEARLBROOK,
     playInner: (gameState: GameState, gameInput: GameInput) => {
       throw new Error("Not Implemented");
     },
@@ -1562,7 +1563,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       { type: "entity", entityType: "card", card: CardName.FERRY_FERRET },
       " or ",
       { type: "entity", entityType: "card", card: CardName.TWIG_BARGE },
-      "facedown beneath this event.",
+      " facedown beneath this event.",
       { type: "HR" },
       "If ",
       { type: "entity", entityType: "card", card: CardName.FERRY_FERRET },
@@ -1572,7 +1573,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       { type: "entity", entityType: "card", card: CardName.TWIG_BARGE },
       ", gain 2 ANY",
     ]),
-    isPearlbrook: true,
+    expansion: ExpansionType.PEARLBROOK,
     playInner: (gameState: GameState, gameInput: GameInput) => {
       throw new Error("Not Implemented");
     },

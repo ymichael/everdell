@@ -10,7 +10,14 @@ import Location from "../../components/Location";
 import Event from "../../components/Event";
 
 import { Card as CardModel } from "../../model/card";
-import { CardName, LocationName, EventName } from "../../model/types";
+import { Location as LocationModel } from "../../model/location";
+import { Event as EventModel } from "../../model/event";
+import {
+  ExpansionType,
+  CardName,
+  LocationName,
+  EventName,
+} from "../../model/types";
 
 const ItemsList: React.FC<{ title: string; visible: boolean }> = ({
   title,
@@ -84,7 +91,9 @@ export default function TestPage() {
               }
             }
             if (showPearlbrookOnly) {
-              if (!CardModel.fromName(x).isPearlbrook) {
+              if (
+                CardModel.fromName(x).expansion !== ExpansionType.PEARLBROOK
+              ) {
                 return false;
               }
             }
@@ -106,6 +115,13 @@ export default function TestPage() {
                 return false;
               }
             }
+            if (showPearlbrookOnly) {
+              if (
+                LocationModel.fromName(x).expansion !== ExpansionType.PEARLBROOK
+              ) {
+                return false;
+              }
+            }
             return true;
           })
           .map((loc) => {
@@ -117,6 +133,13 @@ export default function TestPage() {
           .filter((x) => {
             if (filter) {
               if (x.toLowerCase().indexOf(filter) === -1) {
+                return false;
+              }
+            }
+            if (showPearlbrookOnly) {
+              if (
+                EventModel.fromName(x).expansion !== ExpansionType.PEARLBROOK
+              ) {
                 return false;
               }
             }

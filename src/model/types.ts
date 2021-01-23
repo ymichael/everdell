@@ -583,3 +583,7 @@ export enum RiverDestinationName {
   GREAT_HALL = "Great Hall",
   GARDENS = "Gardens",
 }
+
+export enum ExpansionType {
+  PEARLBROOK = "PEARLBROOK",
+}

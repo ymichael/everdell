@@ -1,4 +1,5 @@
 import {
+  ExpansionType,
   ResourceType,
   ProductionResourceMap,
   LocationType,
@@ -64,7 +65,7 @@ export class Card<TCardType extends CardType = CardType>
   readonly cardType: TCardType;
   readonly isUnique: boolean;
   readonly isCritter: boolean;
-  readonly isPearlbrook: boolean;
+  readonly expansion: ExpansionType | null;
   readonly isConstruction: boolean;
   readonly associatedCard: CardName | null;
   readonly isOpenDestination: boolean;
@@ -86,7 +87,7 @@ export class Card<TCardType extends CardType = CardType>
     resourcesToGain,
     productionInner,
     cardDescription,
-    isPearlbrook = false,
+    expansion = null,
     isOpenDestination = false, // if the destination is an open destination
     playInner, // called when the card is played
     canPlayCheckInner, // called when we check canPlay function
@@ -104,7 +105,7 @@ export class Card<TCardType extends CardType = CardType>
     isConstruction: boolean;
     associatedCard: CardName | null;
     isOpenDestination?: boolean;
-    isPearlbrook?: boolean;
+    expansion?: ExpansionType | null;
     playInner?: GameStatePlayFn;
     canPlayCheckInner?: GameStateCanPlayCheckFn;
     playedCardInfoDefault?: Partial<Omit<PlayedCardInfo, "playerId">>;
@@ -142,7 +143,7 @@ export class Card<TCardType extends CardType = CardType>
     this.playedCardInfoDefault = playedCardInfoDefault;
     this.pointsInner = pointsInner;
     this.cardDescription = cardDescription;
-    this.isPearlbrook = isPearlbrook;
+    this.expansion = expansion;
 
     // Production cards
     this.productionInner = productionInner;
@@ -3225,7 +3226,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
    * WIP: Pearlbrook Cards
    */
   [CardName.BRIDGE]: new Card({
-    isPearlbrook: true,
+    expansion: ExpansionType.PEARLBROOK,
     name: CardName.BRIDGE,
     associatedCard: CardName.MESSENGER,
     cardType: CardType.GOVERNANCE,
@@ -3247,7 +3248,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     },
   }),
   [CardName.HARBOR]: new Card({
-    isPearlbrook: true,
+    expansion: ExpansionType.PEARLBROOK,
     name: CardName.HARBOR,
     associatedCard: CardName.SHIPWRIGHT,
     cardType: CardType.PRODUCTION,
@@ -3267,7 +3268,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     },
   }),
   [CardName.MESSENGER]: new Card({
-    isPearlbrook: true,
+    expansion: ExpansionType.PEARLBROOK,
     name: CardName.MESSENGER,
     associatedCard: CardName.BRIDGE,
     cardType: CardType.TRAVELER,
@@ -3291,7 +3292,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     },
   }),
   [CardName.SHIPWRIGHT]: new Card({
-    isPearlbrook: true,
+    expansion: ExpansionType.PEARLBROOK,
     name: CardName.SHIPWRIGHT,
     associatedCard: CardName.HARBOR,
     cardType: CardType.PROSPERITY,
@@ -3317,7 +3318,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     },
   }),
   [CardName.PIRATE]: new Card({
-    isPearlbrook: true,
+    expansion: ExpansionType.PEARLBROOK,
     name: CardName.PIRATE,
     associatedCard: CardName.PIRATE_SHIP,
     cardType: CardType.TRAVELER,
@@ -3340,7 +3341,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     },
   }),
   [CardName.PIRATE_SHIP]: new Card({
-    isPearlbrook: true,
+    expansion: ExpansionType.PEARLBROOK,
     name: CardName.PIRATE_SHIP,
     associatedCard: CardName.PIRATE,
     cardType: CardType.DESTINATION,
@@ -3360,7 +3361,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     },
   }),
   [CardName.FERRY]: new Card({
-    isPearlbrook: true,
+    expansion: ExpansionType.PEARLBROOK,
     name: CardName.FERRY,
     associatedCard: CardName.FERRY_FERRET,
     cardType: CardType.DESTINATION,
@@ -3384,7 +3385,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     },
   }),
   [CardName.FERRY_FERRET]: new Card({
-    isPearlbrook: true,
+    expansion: ExpansionType.PEARLBROOK,
     name: CardName.FERRY_FERRET,
     associatedCard: CardName.FERRY,
     cardType: CardType.PRODUCTION,

@@ -1,5 +1,3 @@
-# This is a basic workflow to help you get started with Actions
-
 name: CI
 
 on:
@@ -24,14 +22,10 @@ jobs:
         env:
           cache-name: cache-node-modules
         with:
-          path: |
-            ./node_modules
-            ./.next/cache
+          path: ./node_modules
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
       - name: Install Dependencies
         if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci
@@ -42,8 +36,9 @@ jobs:
         run: npm run lint
       - name: Run typecheck
         run: npm run typecheck
-      - name: Run tests
+      - name: Run unit tests
         run: npm run test
+
   e2e-test:
     runs-on: ubuntu-latest
     steps:
@@ -57,17 +52,18 @@ jobs:
         env:
           cache-name: cache-node-modules
         with:
-          path: |
-            ./node_modules
-            ./.next/cache
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          path: ./node_modules
+          key: ${{ runner.os }}-node_modules-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+            ${{ runner.os }}-node_modules-${{ env.cache-name }}-
       - name: Install Dependencies
         if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci
+
+      - uses: actions/cache@v2
+        with:
+          path: ${{ github.workspace }}/.next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}
 
       - name: Run build
         run: npm run build:ci

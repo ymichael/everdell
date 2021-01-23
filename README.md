@@ -40,12 +40,16 @@ Some important types that are used throughout the codebase:
 
 The following test pages exist to make UI development easier:
 
-| Path           | Description                                             |
-| -------------- | ------------------------------------------------------- |
-| `/test/ui`     | Listing of all cards, locations, events as rendered     |
-| `/test/inputs` | Preview of the various variants of the user input forms |
-| `/test/log`    | Preview of the game log ui                              |
-| `/test/game`   | Preview of an ongoing game (non-functional)             |
+| Path                  | Description                                             |
+| --------------------- | ------------------------------------------------------- |
+| `/test/ui`            | Listing of all cards, locations, events as rendered     |
+| `/test/inputs`        | Preview of the various variants of the user input forms |
+| `/test/log`           | Preview of the game log ui                              |
+| `/test/inputBoxLabel` | Preview of the input box labels                         |
+| `/test/game`          | Preview of an ongoing game (non-functional)             |
+
+`/test/log` and `/test/inputBoxLabel` are rendered from JSON data collected when running our unit tests.
+To regenerate these, you can run `npm run collect_test_data`
 
 ### Persistence
 

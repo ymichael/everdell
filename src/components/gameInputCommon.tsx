@@ -222,6 +222,8 @@ export const renderGameInputLabel = (
       return <span>{"Prepare for Season"}</span>;
     case GameInputType.GAME_END:
       return <span>{"End Game"}</span>;
+    case GameInputType.CLAIM_ADORNMENT:
+      return <span>{"Claim Adornment"}</span>;
     default:
       return renderMultiStepGameInputLabel(gameInput);
   }

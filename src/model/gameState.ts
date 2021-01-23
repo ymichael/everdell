@@ -509,6 +509,8 @@ export class GameState {
       case GameInputType.VISIT_DESTINATION_CARD:
         this.handleVisitDestinationCardGameInput(gameInput);
         break;
+      case GameInputType.CLAIM_ADORNMENT:
+        break;
       default:
         assertUnreachable(
           gameInput,
@@ -623,6 +625,8 @@ export class GameState {
         break;
       case GameInputType.GAME_END:
         this.handleGameEndGameInput(gameInput);
+        break;
+      case GameInputType.CLAIM_ADORNMENT:
         break;
       default:
         assertUnreachable(

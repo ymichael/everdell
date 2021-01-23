@@ -15,6 +15,8 @@ export enum GameInputType {
   DISCARD_CARDS = "DISCARD_CARDS",
   SELECT_PAYMENT_FOR_CARD = "SELECT_PAYMENT_FOR_CARD",
   SELECT_OPTION_GENERIC = "SELECT_OPTION_GENERIC",
+
+  CLAIM_ADORNMENT = "CLAIM_ADORNMENT",
 }
 
 export type GameInputPlaceWorker = {
@@ -47,6 +49,13 @@ export type GameInputClaimEvent = {
   };
 };
 
+export type GameInputClaimAdornment = {
+  inputType: GameInputType.CLAIM_ADORNMENT;
+  clientOptions: {
+    adornment: AdornmentName | null;
+  };
+};
+
 export type GameInputGameEnd = {
   inputType: GameInputType.GAME_END;
 };
@@ -58,7 +67,8 @@ export type GameInputPrepareForSeason = {
 export type GameInputWorkerPlacementTypes =
   | GameInputClaimEvent
   | GameInputPlaceWorker
-  | GameInputVisitDestinationCard;
+  | GameInputVisitDestinationCard
+  | GameInputClaimAdornment;
 
 export type GameInputSimple =
   | GameInputWorkerPlacementTypes
@@ -229,6 +239,7 @@ export type GameInputMultiStep = (
   eventContext?: EventName;
   cardContext?: CardName;
   locationContext?: LocationName;
+  adornmentContext?: AdornmentName;
   prevInput?: GameInput;
   label?: string | (string | TextPart)[] | GameText;
 };
@@ -481,6 +492,13 @@ export type CardCost = {
   [ResourceType.RESIN]?: number;
 };
 
+export type WonderCost = {
+  [ResourceType.TWIG]: number;
+  [ResourceType.PEBBLE]: number;
+  [ResourceType.RESIN]: number;
+  [ResourceType.PEARL]: number;
+};
+
 export enum PlayerStatus {
   DURING_SEASON = "DURING_SEASON",
   PREPARING_FOR_SEASON = "PREPARING_FOR_SEASON",
@@ -558,7 +576,12 @@ export type GameOptions = {
   pearlbrook: boolean;
 };
 
-export enum MonumentName {}
+export enum WonderName {
+  SUNBLAZE_BRIDGE = "Sunblaze Bridge",
+  STARFALLS_FLAME = "Starfalls flame",
+  HOPEWATCH_GATE = "Hopewatch Gate",
+  MISTRISE_FOUNTAIN = "Mistrise Fountain",
+}
 
 export enum RiverDestinationType {
   SHOAL = "SHOAL",

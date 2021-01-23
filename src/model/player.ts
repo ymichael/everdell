@@ -2,6 +2,7 @@ import isEqual from "lodash/isEqual";
 import cloneDeep from "lodash/cloneDeep";
 import merge from "lodash/merge";
 import {
+  AdornmentName,
   CardCost,
   CardName,
   CardType,
@@ -49,6 +50,9 @@ export class Player implements IGameTextEntity {
 
   public playerStatus: PlayerStatus;
 
+  public adornmentsInHand: AdornmentName[];
+  public playedAdornments: AdornmentName[];
+
   constructor({
     name,
     playerSecret = uuid(),
@@ -68,6 +72,8 @@ export class Player implements IGameTextEntity {
     claimedEvents = {},
     placedWorkers = [],
     playerStatus = PlayerStatus.DURING_SEASON,
+    adornmentsInHand = [],
+    playedAdornments = [],
   }: {
     name: string;
     playerSecret?: string;
@@ -80,6 +86,8 @@ export class Player implements IGameTextEntity {
     claimedEvents?: Partial<Record<EventName, PlayedEventInfo>>;
     placedWorkers?: WorkerPlacementInfo[];
     playerStatus?: PlayerStatus;
+    adornmentsInHand?: AdornmentName[];
+    playedAdornments?: AdornmentName[];
   }) {
     this.playerId = playerId;
     this.playerSecret = playerSecret;
@@ -92,6 +100,10 @@ export class Player implements IGameTextEntity {
     this.claimedEvents = claimedEvents;
     this.placedWorkers = placedWorkers;
     this.playerStatus = playerStatus;
+
+    // pearlbrook only
+    this.adornmentsInHand = adornmentsInHand;
+    this.playedAdornments = playedAdornments;
   }
 
   get playerSecretUNSAFE(): string {
@@ -1280,6 +1292,8 @@ export class Player implements IGameTextEntity {
             cardsInHand: this.cardsInHand,
           }
         : {}),
+      adornmentsInHand: this.adornmentsInHand,
+      playedAdornments: this.playedAdornments,
     });
   }
 

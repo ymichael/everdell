@@ -143,7 +143,7 @@ const GameInputBoxInner = ({
           viewingPlayer={viewingPlayer}
           locations={gameInput.locationOptions}
         />
-      ) : gameInput.inputType === GameInputType.CLAIM_ADORNMENT ? (
+      ) : gameInput.inputType === GameInputType.PLAY_ADORNMENT ? (
         <></>
       ) : (
         <>

@@ -16,7 +16,7 @@ export enum GameInputType {
   SELECT_PAYMENT_FOR_CARD = "SELECT_PAYMENT_FOR_CARD",
   SELECT_OPTION_GENERIC = "SELECT_OPTION_GENERIC",
 
-  CLAIM_ADORNMENT = "CLAIM_ADORNMENT",
+  PLAY_ADORNMENT = "PLAY_ADORNMENT",
 }
 
 export type GameInputPlaceWorker = {
@@ -49,8 +49,8 @@ export type GameInputClaimEvent = {
   };
 };
 
-export type GameInputClaimAdornment = {
-  inputType: GameInputType.CLAIM_ADORNMENT;
+export type GameInputPlayAdornment = {
+  inputType: GameInputType.PLAY_ADORNMENT;
   clientOptions: {
     adornment: AdornmentName | null;
   };
@@ -68,7 +68,7 @@ export type GameInputWorkerPlacementTypes =
   | GameInputClaimEvent
   | GameInputPlaceWorker
   | GameInputVisitDestinationCard
-  | GameInputClaimAdornment;
+  | GameInputPlayAdornment;
 
 export type GameInputSimple =
   | GameInputWorkerPlacementTypes
@@ -545,6 +545,11 @@ export type TextPartEntity =
       type: "entity";
       entityType: "event";
       event: EventName;
+    }
+  | {
+      type: "entity";
+      entityType: "adornment";
+      adornment: AdornmentName;
     };
 export type TextPartPlayer = {
   type: "player";

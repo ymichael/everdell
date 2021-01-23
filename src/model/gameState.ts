@@ -1,4 +1,5 @@
 import {
+  AdornmentName,
   CardName,
   EventName,
   EventNameToPlayerId,
@@ -7,6 +8,7 @@ import {
   GameInputGameEnd,
   GameInputMultiStep,
   GameInputPlaceWorker,
+  GameInputPlayAdornment,
   GameInputPlayCard,
   GameInputPrepareForSeason,
   GameInputType,
@@ -25,6 +27,7 @@ import {
 } from "./types";
 import { GameStateJSON } from "./jsonTypes";
 import { Player } from "./player";
+import { Adornment } from "./adornment";
 import { Card } from "./card";
 import { CardStack, discardPile } from "./cardStack";
 import { Location, initialLocationsMap } from "./location";
@@ -513,6 +516,25 @@ export class GameState {
     card.play(this, gameInput);
   }
 
+  private handlePlayAdornmentGameInput(
+    gameInput: GameInputPlayAdornment
+  ): void {
+    if (!gameInput.clientOptions?.adornment) {
+      throw new Error("Please select an adornment to play");
+    }
+
+    const adornment = Adornment.fromName(gameInput.clientOptions.adornment);
+    const canPlayErr = adornment.canPlayCheck(this, gameInput);
+    if (canPlayErr) {
+      throw new Error(canPlayErr);
+    }
+
+    const player = this.getActivePlayer();
+    this.addGameLog([player, " played ", adornment, "."]);
+
+    adornment.play(this, gameInput);
+  }
+
   handleWorkerPlacementGameInput(
     gameInput: GameInputWorkerPlacementTypes
   ): void {
@@ -526,7 +548,8 @@ export class GameState {
       case GameInputType.VISIT_DESTINATION_CARD:
         this.handleVisitDestinationCardGameInput(gameInput);
         break;
-      case GameInputType.CLAIM_ADORNMENT:
+      case GameInputType.PLAY_ADORNMENT:
+        this.handlePlayAdornmentGameInput(gameInput);
         break;
       default:
         assertUnreachable(
@@ -635,6 +658,7 @@ export class GameState {
       case GameInputType.PLACE_WORKER:
       case GameInputType.VISIT_DESTINATION_CARD:
       case GameInputType.CLAIM_EVENT:
+      case GameInputType.PLAY_ADORNMENT:
         this.handleWorkerPlacementGameInput(gameInput);
         break;
       case GameInputType.PREPARE_FOR_SEASON:
@@ -642,8 +666,6 @@ export class GameState {
         break;
       case GameInputType.GAME_END:
         this.handleGameEndGameInput(gameInput);
-        break;
-      case GameInputType.CLAIM_ADORNMENT:
         break;
       default:
         assertUnreachable(

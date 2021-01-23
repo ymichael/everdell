@@ -54,8 +54,8 @@ function romanize(num: number): string {
       "VII",
       "VIII",
       "IX",
-    ],
-    roman = "",
+    ];
+  let roman = "",
     i = 3;
   while (i--) roman = (key[+(digits.pop() as any) + i * 10] || "") + roman;
   return Array(+digits.join("") + 1).join("M") + roman;

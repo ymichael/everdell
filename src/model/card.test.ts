@@ -2202,8 +2202,19 @@ describe("Card", () => {
       });
     });
 
-    xdescribe(CardName.MINE, () => {
-      it("should have tests", () => {});
+    describe(CardName.MINE, () => {
+      it("gain 1 PEBBLE when played", () => {
+        const card = Card.fromName(CardName.MINE);
+        player.cardsInHand.push(card.name);
+        player.gainResources(card.baseCost);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+        ]);
+
+        expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(1);
+        expect(player.hasCardInCity(card.name)).to.be(true);
+      });
     });
 
     describe(CardName.MINER_MOLE, () => {
@@ -3521,8 +3532,19 @@ describe("Card", () => {
       });
     });
 
-    xdescribe(CardName.RESIN_REFINERY, () => {
-      it("should have tests", () => {});
+    describe(CardName.RESIN_REFINERY, () => {
+      it("should gain 1 RESIN when played", () => {
+        const card = Card.fromName(CardName.RESIN_REFINERY);
+        player.cardsInHand.push(card.name);
+        player.gainResources(card.baseCost);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+        ]);
+
+        expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
+        expect(player.hasCardInCity(card.name)).to.be(true);
+      });
     });
 
     describe(CardName.RUINS, () => {
@@ -4148,8 +4170,19 @@ describe("Card", () => {
       it("should have tests", () => {});
     });
 
-    xdescribe(CardName.TWIG_BARGE, () => {
-      it("should have tests", () => {});
+    describe(CardName.TWIG_BARGE, () => {
+      it("gain 2 TWIG when played", () => {
+        const card = Card.fromName(CardName.TWIG_BARGE);
+        player.cardsInHand.push(card.name);
+        player.gainResources(card.baseCost);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+        ]);
+
+        expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(2);
+        expect(player.hasCardInCity(card.name)).to.be(true);
+      });
     });
 
     describe(CardName.UNDERTAKER, () => {
@@ -4586,8 +4619,25 @@ describe("Card", () => {
       });
     });
 
-    xdescribe(CardName.WIFE, () => {
-      it("should have tests", () => {});
+    describe(CardName.WIFE, () => {
+      it("should be worth 3 points when paired with HUSBAND", () => {
+        expect(player.getPointsFromCards(gameState)).to.be(0);
+
+        player.addToCity(CardName.WIFE);
+        expect(player.getPointsFromCards(gameState)).to.be(2);
+
+        player.addToCity(CardName.WIFE);
+        expect(player.getPointsFromCards(gameState)).to.be(4);
+
+        player.addToCity(CardName.HUSBAND);
+        expect(player.getPointsFromCards(gameState)).to.be(6 + 3);
+
+        player.addToCity(CardName.HUSBAND);
+        expect(player.getPointsFromCards(gameState)).to.be(8 + 3 + 3);
+
+        player.addToCity(CardName.HUSBAND);
+        expect(player.getPointsFromCards(gameState)).to.be(10 + 3 + 3);
+      });
     });
 
     describe(CardName.WOODCARVER, () => {

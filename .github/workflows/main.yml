@@ -24,9 +24,9 @@ jobs:
         env:
           cache-name: cache-node-modules
         with:
-          path:
-            - ./node_modules
-            - ./.next/cache
+          path: |
+            ./node_modules
+            ./.next/cache
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
@@ -57,9 +57,9 @@ jobs:
         env:
           cache-name: cache-node-modules
         with:
-          path:
-            - ./node_modules
-            - ./.next/cache
+          path: |
+            ./node_modules
+            ./.next/cache
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-

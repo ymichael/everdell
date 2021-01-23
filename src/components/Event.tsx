@@ -86,10 +86,8 @@ export const Event = ({
       footerChildren={
         claimedBy && (
           <div className={styles.claimed_by}>
-            <span className={styles.claimed_by_text}>
-              {"✔ "}
-              {claimedBy}
-            </span>
+            <span className={styles.claimed_label}>{"Claimed: "}</span>
+            <span className={styles.claimed_by_text}>{claimedBy}</span>
           </div>
         )
       }

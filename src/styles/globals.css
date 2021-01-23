@@ -28,24 +28,23 @@
   --border-color-evt: #91894e;
 }
 
-/*
-@media (prefers-color-scheme: dark) {
+/*@media (prefers-color-scheme: dark) {
   :root {
-    --text-color: #ebf4fa;
-    --text-color-light: #d5d7d8;
-    --text-color-inv: #eaebeb;
-    --bg-color: #1d1f20;
+    --text-color: #fcfdfd;
+    --text-color-light: #c6d7df;
+    --text-color-inv: #fdf6e3;
+    --bg-color: #23363f;
 
-    --border-color: #454a4d;
-    --border-color-evt: #454a4d;
+    --border-color: #111a1e;
+    --border-color-evt: var(--border-color);
 
     --color-vp: #775d0d;
     --color-vp-text: #d5d7d8;
     --color-dest: #541b1c;
     --color-prod: #384426;
-    --color-pros: #2d2442;
+    --color-pros: #433663;
     --color-trav: #3d352a;
-    --color-gov: #1d2d34;
+    --color-gov: #29404a;
     --color-loc: #d5d7d8;
 
     --color-loc-basic: #4e5627;

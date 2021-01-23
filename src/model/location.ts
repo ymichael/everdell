@@ -1,6 +1,7 @@
 import { Card } from "./card";
 import {
   CardName,
+  ExpansionType,
   ResourceType,
   LocationName,
   LocationType,
@@ -33,6 +34,7 @@ export class Location implements GameStatePlayable, IGameTextEntity {
   readonly name: LocationName;
   readonly shortName: GameText;
   readonly type: LocationType;
+  readonly expansion: ExpansionType | null;
   readonly description: GameText | undefined;
   readonly resourcesToGain: ProductionResourceMap;
   readonly occupancy: LocationOccupancy;
@@ -50,10 +52,12 @@ export class Location implements GameStatePlayable, IGameTextEntity {
     playInner,
     canPlayCheckInner,
     baseVP = 0,
+    expansion = null,
   }: {
     name: LocationName;
     type: LocationType;
     occupancy: LocationOccupancy;
+    expansion?: ExpansionType | null;
     shortName: GameText;
     playInner?: GameStatePlayFn;
     resourcesToGain?: ProductionResourceMap;
@@ -63,6 +67,7 @@ export class Location implements GameStatePlayable, IGameTextEntity {
   }) {
     this.name = name;
     this.type = type;
+    this.expansion = expansion;
     this.occupancy = occupancy;
     this.playInner = playInner;
     this.canPlayCheckInner = canPlayCheckInner;
@@ -962,6 +967,69 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
           "Unexpected input type ${gameInput.inputType} with previous input type ${gameInput.prevInputType}"
         );
       }
+    },
+  }),
+
+  [LocationName.FOREST_TWO_PEBBLE_ONE_CARD]: new Location({
+    name: LocationName.FOREST_TWO_PEBBLE_ONE_CARD,
+    type: LocationType.FOREST,
+    occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
+    shortName: toGameText(["PEBBLE", "PEBBLE", "CARD"]),
+    resourcesToGain: {
+      [ResourceType.PEBBLE]: 2,
+      CARD: 1,
+    },
+    expansion: ExpansionType.PEARLBROOK,
+  }),
+  [LocationName.FOREST_RESIN_PEBBLE_OR_FOUR_CARDS]: new Location({
+    name: LocationName.FOREST_RESIN_PEBBLE_OR_FOUR_CARDS,
+    type: LocationType.FOREST,
+    occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
+    shortName: toGameText(["RESIN", "PEBBLE or 4 CARD"]),
+    description: toGameText(["1 RESIN & 1 PEBBLE or 4 CARD"]),
+    resourcesToGain: {},
+    expansion: ExpansionType.PEARLBROOK,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
+    },
+  }),
+  [LocationName.FOREST_ACTIVATE_2_PRODUCTION]: new Location({
+    name: LocationName.FOREST_ACTIVATE_2_PRODUCTION,
+    type: LocationType.FOREST,
+    occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
+    shortName: toGameText("Activate 2 PRODUCTION in your city"),
+    resourcesToGain: {},
+    expansion: ExpansionType.PEARLBROOK,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
+    },
+  }),
+  [LocationName.FOREST_BERRY_PEBBLE_CARD]: new Location({
+    name: LocationName.FOREST_BERRY_PEBBLE_CARD,
+    type: LocationType.FOREST,
+    occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
+    shortName: toGameText(["BERRY", "PEBBLE", "CARD"]),
+    resourcesToGain: {
+      [ResourceType.BERRY]: 1,
+      [ResourceType.PEBBLE]: 1,
+      CARD: 1,
+    },
+    expansion: ExpansionType.PEARLBROOK,
+  }),
+  [LocationName.FOREST_DISCARD_2_MEADOW_DRAW_2_MEADOW_GAIN_ANY]: new Location({
+    name: LocationName.FOREST_DISCARD_2_MEADOW_DRAW_2_MEADOW_GAIN_ANY,
+    type: LocationType.FOREST,
+    occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
+    shortName: toGameText(["-2, then +2 Meadow CARD, +1 ANY"]),
+    description: toGameText([
+      "Discard 2 Meadow cards, replenish, then draw 2 Meadow cards.",
+      { type: "BR" },
+      "Also gain 1 ANY",
+    ]),
+    resourcesToGain: {},
+    expansion: ExpansionType.PEARLBROOK,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
     },
   }),
 };

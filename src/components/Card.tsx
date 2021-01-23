@@ -1,7 +1,12 @@
 import * as React from "react";
 import { Card as CardModel } from "../model/card";
 import styles from "../styles/card.module.css";
-import { ResourceType, CardName, PlayedCardInfo } from "../model/types";
+import {
+  ExpansionType,
+  ResourceType,
+  CardName,
+  PlayedCardInfo,
+} from "../model/types";
 import { Player } from "../model/player";
 import { resourceMapToGameText, toGameText } from "../model/gameText";
 import {
@@ -180,8 +185,8 @@ const Card: React.FC<{ name: CardName; usedForCritter?: boolean }> = ({
           </div>
           <div className={[styles.card_header, colorClass].join(" ")}>
             <span>{name}</span>
-            {card.isPearlbrook && (
-              <span className={styles.pearlbrook}>pearlbrook</span>
+            {card.expansion && (
+              <span className={styles.expansion}>{card.expansion}</span>
             )}
           </div>
         </div>

@@ -192,7 +192,7 @@ export function inputContextPrefix(gameInput: GameInputMultiStep): GameText {
     ];
   }
   if (gameInput.prevInputType === GameInputType.PREPARE_FOR_SEASON) {
-    return [{ type: "text", text: "Prepare for Season: " }];
+    return [{ type: "em", text: "Prepare for Season: " }];
   }
   return [];
 }

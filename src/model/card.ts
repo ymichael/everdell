@@ -575,6 +575,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           gameState.pendingGameInputs.push({
             inputType: GameInputType.SELECT_CARDS,
             prevInputType: gameInput.inputType,
+            label: "Select 1 CARD to play for free",
             cardOptions: filteredOptions,
             cardOptionsUnfiltered: revealedCards,
             maxToSelect: 1,
@@ -725,6 +726,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_PLAYED_CARDS,
           prevInputType: gameInput.inputType,
+          label: "Select 1 PRODUCTION to activate",
           cardOptions,
           cardContext: CardName.CHIP_SWEEP,
           maxToSelect: 1,
@@ -1227,6 +1229,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_CARDS,
           prevInputType: gameInput.inputType,
+          label: "Select 1 CARD from the Meadow to play for 3 fewer ANY",
           cardOptions: gameState.meadowCards.filter((cardName) => {
             const card = Card.fromName(cardName);
             return (
@@ -1581,6 +1584,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           inputType: GameInputType.SELECT_PLAYED_CARDS,
           prevInputType: gameInput.inputType,
           cardContext: CardName.MINER_MOLE,
+          label: "Select 1 PRODUCTION to activate",
           cardOptions,
           maxToSelect: 1,
           minToSelect: 1,
@@ -2359,6 +2363,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           gameState.pendingGameInputs.push({
             inputType: GameInputType.SELECT_PLAYED_CARDS,
             prevInputType: gameInput.inputType,
+            label: "Select 1 Construction to discard",
             cardOptions,
             cardContext: CardName.RUINS,
             maxToSelect: 1,
@@ -2933,6 +2938,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         // choose a card to destroy
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_PLAYED_CARDS,
+          label: "Select 1 CARD to discard from your city",
           prevInputType: gameInput.inputType,
           cardOptions: player
             .getAllPlayedCards()

@@ -547,6 +547,7 @@ export class GameState {
     } else {
       this.pendingGameInputs.push({
         inputType: GameInputType.SELECT_CARDS,
+        label: "Select 2 CARD from the Meadow",
         prevInputType: GameInputType.PREPARE_FOR_SEASON,
         cardOptions: this.meadowCards,
         maxToSelect: 2,

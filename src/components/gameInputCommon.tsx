@@ -193,22 +193,7 @@ const renderMultiStepGameInputLabel = (
                 gameInput.maxToSelect
               } `,
             },
-            gameInput.cardContext &&
-            (gameInput.cardContext === CardName.MINER_MOLE ||
-              gameInput.cardContext === CardName.CHIP_SWEEP)
-              ? {
-                  type: "cardType",
-                  cardType: CardType.PRODUCTION,
-                }
-              : { type: "symbol", symbol: "CARD" },
-            {
-              type: "text",
-              text:
-                !gameInput.cardContext &&
-                gameInput.prevInputType === GameInputType.PREPARE_FOR_SEASON
-                  ? " from the Meadow"
-                  : "",
-            },
+            { type: "symbol", symbol: "CARD" },
           ]}
         />
       );

@@ -18,6 +18,7 @@ const Main: React.FC = () => {
       ) : (
         <div className={styles.links}>
           <button
+            id={"js-new-game"}
             className={styles.button}
             onClick={() => setShowGameBuilder(true)}
           >

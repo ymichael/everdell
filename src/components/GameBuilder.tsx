@@ -14,7 +14,7 @@ const getDummyPlayer = (name = "") => {
 const GameBuilder: React.FC = () => {
   const router = useRouter();
   return (
-    <div>
+    <div id={"js-game-builder"}>
       <Formik
         initialValues={{
           players: [getDummyPlayer("Player 1"), getDummyPlayer("Player 2")],
@@ -117,7 +117,11 @@ const GameBuilder: React.FC = () => {
                     )}
                   />
                 </div>
-                <button className={styles.button} type="submit">
+                <button
+                  id={"js-game-builder-submit"}
+                  className={styles.button}
+                  type="submit"
+                >
                   Start Game
                 </button>
               </div>

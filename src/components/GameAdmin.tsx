@@ -16,7 +16,7 @@ const GameAdmin = ({
   devDebugMode: boolean;
 }) => {
   return (
-    <div className={styles.container}>
+    <div id={"js-game-admin"} className={styles.container}>
       <GameBlock title={"Game Created"}>
         <div className={styles.label}>
           Copy links to share with other players:

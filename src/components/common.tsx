@@ -8,12 +8,20 @@ import { GameText, TextPart, ResourceType, CardType } from "../model/types";
 import { assertUnreachable } from "../utils";
 
 export const GameBlockTitle: React.FC = ({ children }) => {
-  return <div className={styles.title}>{children}</div>;
+  return (
+    <div id={"js-game-block-title"} className={styles.title}>
+      {children}
+    </div>
+  );
 };
 
-export const GameBlock: React.FC<{ title: string }> = ({ title, children }) => {
+export const GameBlock: React.FC<{ title: string; id?: string }> = ({
+  title,
+  id,
+  children,
+}) => {
   return (
-    <div className={styles.block}>
+    <div id={id} className={styles.block}>
       <GameBlockTitle>{title}</GameBlockTitle>
       {children}
     </div>

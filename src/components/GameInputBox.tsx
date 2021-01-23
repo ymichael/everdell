@@ -33,7 +33,7 @@ const GameInputBoxText: React.FC<{
 }> = ({ title = "Game Input", text }) => {
   return (
     <GameBlock title={title}>
-      <p>{text}</p>
+      <p id={"js-game-input-box-text"}>{text}</p>
     </GameBlock>
   );
 };

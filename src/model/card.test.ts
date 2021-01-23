@@ -1820,8 +1820,106 @@ describe("Card", () => {
       });
     });
 
-    xdescribe(CardName.INNKEEPER, () => {
-      it("should have tests", () => {});
+    describe(CardName.INNKEEPER, () => {
+      it("can be used to play a critter for 3 BERRY less", () => {
+        const card = Card.fromName(CardName.WIFE);
+        player.addToCity(CardName.INNKEEPER);
+        player.cardsInHand.push(card.name);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+
+        expect(player.hasCardInCity(card.name)).to.be(false);
+        expect(player.hasCardInCity(CardName.INNKEEPER)).to.be(true);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name, {
+            paymentOptions: {
+              resources: { [ResourceType.BERRY]: 0 },
+              cardToUse: CardName.INNKEEPER,
+            },
+          }),
+        ]);
+
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+        expect(player.hasCardInCity(card.name)).to.be(true);
+        expect(player.hasCardInCity(CardName.INNKEEPER)).to.be(false);
+      });
+
+      it("can be used to play a critter even if city is full", () => {
+        const card = Card.fromName(CardName.WIFE);
+        player.addToCity(CardName.INNKEEPER);
+        player.cardsInHand.push(card.name);
+
+        for (let i = 0; i < 14; i++) {
+          player.addToCity(CardName.FARM);
+        }
+
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+        expect(player.getNumOccupiedSpacesInCity()).to.be(15);
+        expect(player.hasCardInCity(card.name)).to.be(false);
+        expect(player.hasCardInCity(CardName.INNKEEPER)).to.be(true);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name, {
+            paymentOptions: {
+              resources: { [ResourceType.BERRY]: 0 },
+              cardToUse: CardName.INNKEEPER,
+            },
+          }),
+        ]);
+
+        expect(player.getNumOccupiedSpacesInCity()).to.be(15);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+        expect(player.hasCardInCity(card.name)).to.be(true);
+        expect(player.hasCardInCity(CardName.INNKEEPER)).to.be(false);
+      });
+
+      it("can be used to play a critter that cost more then 3 BERRY", () => {
+        const card = Card.fromName(CardName.QUEEN);
+        player.addToCity(CardName.INNKEEPER);
+        player.cardsInHand.push(card.name);
+        player.gainResources({ [ResourceType.BERRY]: 2 });
+
+        expect(player.hasCardInCity(card.name)).to.be(false);
+        expect(player.hasCardInCity(CardName.INNKEEPER)).to.be(true);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name, {
+            paymentOptions: {
+              resources: { [ResourceType.BERRY]: 2 },
+              cardToUse: CardName.INNKEEPER,
+            },
+          }),
+        ]);
+
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+        expect(player.hasCardInCity(card.name)).to.be(true);
+        expect(player.hasCardInCity(CardName.INNKEEPER)).to.be(false);
+      });
+
+      it("cannot be used to play a construction", () => {
+        const card = Card.fromName(CardName.FARM);
+        player.addToCity(CardName.INNKEEPER);
+        player.cardsInHand.push(card.name);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+
+        expect(player.hasCardInCity(card.name)).to.be(false);
+        expect(player.hasCardInCity(CardName.INNKEEPER)).to.be(true);
+
+        expect(() => {
+          multiStepGameInputTest(gameState, [
+            playCardInput(card.name, {
+              paymentOptions: {
+                resources: {
+                  [ResourceType.TWIG]: 0,
+                  [ResourceType.RESIN]: 0,
+                },
+                cardToUse: CardName.INNKEEPER,
+              },
+            }),
+          ]);
+        }).to.throwException(/not a critter/i);
+      });
     });
 
     xdescribe(CardName.JUDGE, () => {

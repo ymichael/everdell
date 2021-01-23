@@ -16,7 +16,7 @@ jobs:
       - name: Setup Node.js environment
         uses: actions/setup-node@v2.1.4
 
-      - name: Cache node modules
+      - name: node_modules cache
         id: cache
         uses: actions/cache@v2
         env:
@@ -44,7 +44,7 @@ jobs:
       - name: Setup Node.js environment
         uses: actions/setup-node@v2.1.4
 
-      - name: Cache node modules
+      - name: node_modules cache
         id: cache
         uses: actions/cache@v2
         env:
@@ -56,7 +56,8 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci
 
-      - uses: actions/cache@v2
+      - name: nextjs cache
+        uses: actions/cache@v2
         with:
           path: ${{ github.workspace }}/.next/cache
           key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}

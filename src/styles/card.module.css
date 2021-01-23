@@ -3,8 +3,7 @@
   width: 200px;
   border-radius: 5px;
   position: relative;
-
-  border: 1px solid;
+  border: 1px solid var(--border-color);
   overflow: hidden;
   display: flex;
   align-self: flex-start;
@@ -17,7 +16,7 @@
   font-weight: var(--font-bold);
   font-size: 12px;
   text-align: center;
-  color: #ffffff;
+  color: var(--text-color-inv);
   text-transform: uppercase;
   display: flex;
   flex-direction: column;
@@ -36,7 +35,7 @@
 
 .associated_card {
   display: flex;
-  color: #ffffff;
+  color: var(--text-color);
   text-transform: uppercase;
   text-align: right;
 }
@@ -49,6 +48,7 @@
 .associated_card > span {
   border-radius: 5px 0 0 0;
   font-weight: var(--font-bold);
+  color: var(--text-color-inv);
   padding: 5px;
   font-size: 10px;
   align-self: flex-end;
@@ -113,7 +113,7 @@
   display: inline-block;
   margin-top: -14px;
   vertical-align: middle;
-  color: #3c1346;
+  color: var(--color-vp-text);
 }
 
 .card_header_symbol {
@@ -123,36 +123,31 @@
 }
 
 .color_victory_point {
-  background: #e3b117;
+  background: var(--color-vp);
 }
 
 .color_destination {
-  background: #943032;
+  background: var(--color-dest);
 }
 
 .color_production {
-  background: #88a55e;
+  background: var(--color-prod);
 }
 
 .color_prosperity {
-  background: #534279;
+  background: var(--color-pros);
 }
 
 .color_traveler {
-  background: #796a53;
+  background: var(--color-trav);
 }
 
 .color_governance {
-  background: #476f80;
+  background: var(--color-gov);
 }
 
 .color_associated_card_critter {
   color: var(--text-color-light);
-}
-
-.color_destination_gradient {
-  background: linear-gradient(111.09deg, #c26473 -23.53%, #431f24 116.69%),
-    linear-gradient(0deg, #b84a5b, #b84a5b);
 }
 
 .played_card_wrapper {

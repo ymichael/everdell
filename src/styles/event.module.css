@@ -2,7 +2,7 @@
   min-height: 100px;
   width: 150px;
   border-radius: 5px;
-  border: solid 2px #91894e;
+  border: solid 2px var(--border-color-evt);
   display: flex;
   justify-content: center;
   align-self: flex-start;
@@ -52,5 +52,4 @@
   font-size: 10px;
   font-weight: var(--font-bold);
   align-self: center;
-  text-shadow: 2px 2px white;
 }

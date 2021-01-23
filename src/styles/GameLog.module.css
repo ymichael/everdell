@@ -2,7 +2,7 @@
   width: 100%;
   margin: 10px 0;
   border-radius: 5px;
-  border: solid 2px;
+  border: 2px solid var(--border-color);
   font-size: 14px;
 
   overflow-y: scroll;

@@ -1,7 +1,7 @@
 .status_box {
   height: 100px;
   width: fit-content;
-  border: solid 1px;
+  border: solid 1px var(--border-color);
   display: flex;
   margin: 5px 0;
   border-radius: 5px;

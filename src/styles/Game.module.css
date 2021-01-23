@@ -3,6 +3,6 @@
   display: flex;
   justify-content: center;
   flex-direction: column;
-  color: #2b2c1a;
+  color: var(--text-color);
   width: 1420px;
 }

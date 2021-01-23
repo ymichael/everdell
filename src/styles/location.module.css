@@ -2,12 +2,9 @@
   height: 100px;
   width: 200px;
   border-radius: 5px;
-
-  border: 1px solid;
-
+  color: var(--color-loc);
+  border: 1px solid var(--color-loc);
   overflow: hidden;
-  color: #13463c;
-
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -34,19 +31,19 @@
 }
 
 .color_basic.location {
-  border: solid 2px #88a55e;
+  border: solid 2px var(--color-loc-basic);
 }
 
 .color_forest.location {
-  border: solid 2px #4e5627;
+  border: solid 2px var(--color-loc-forest);
 }
 
 .color_haven.location {
-  border: solid 2px #ddcf9d;
+  border: solid 2px var(--color-loc-haven);
 }
 
 .color_journey.location {
-  border: solid 2px #bb9e66;
+  border: solid 2px var(--color-loc-journey);
 }
 
 .location_center {

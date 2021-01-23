@@ -1,5 +1,9 @@
+import shuffle from "lodash/shuffle";
+import cloneDeep from "lodash/cloneDeep";
+import mapValues from "lodash/mapValues";
+
 import {
-  RiverDestinationMap,
+  RiverDestinationMapSpots,
   RiverDestinationType,
   RiverDestinationName,
   GameText,
@@ -7,7 +11,7 @@ import {
   TextPartEntity,
   IGameTextEntity,
 } from "./types";
-import shuffle from "lodash/shuffle";
+import { RiverDestinationMapJSON } from "./jsonTypes";
 import { toGameText } from "./gameText";
 import { GameState, GameStatePlayable } from "./gameState";
 
@@ -76,6 +80,35 @@ export class RiverDestination implements GameStatePlayable, IGameTextEntity {
   }
 }
 
+export class RiverDestinationMap {
+  readonly spots: RiverDestinationMapSpots;
+
+  constructor({ spots }: { spots: RiverDestinationMapSpots }) {
+    this.spots = spots;
+  }
+
+  static fromJSON(json: RiverDestinationMapJSON): RiverDestinationMap {
+    return new RiverDestinationMap(json);
+  }
+
+  toJSON(includePrivate: boolean): RiverDestinationMapJSON {
+    return cloneDeep({
+      spots: mapValues(this.spots, (spot) => {
+        if (includePrivate) {
+          return spot;
+        }
+        if (spot.revealed) {
+          return spot;
+        }
+        return {
+          ...spot,
+          name: null,
+        };
+      }),
+    });
+  }
+}
+
 export const initialRiverDestinationMap = (): RiverDestinationMap => {
   // Choose 2 random CITIZEN, 2 random LOCATION, shuffle, place them.
   const [a, b, ...restCitizen] = shuffle(
@@ -85,33 +118,35 @@ export const initialRiverDestinationMap = (): RiverDestinationMap => {
     RiverDestination.byType(RiverDestinationType.LOCATION)
   );
   const chosenRiverDestinations = shuffle([a, b, c, d]);
-  return {
-    SHOAL: {
-      name: RiverDestinationName.SHOAL,
-      ambassadors: [],
-      revealed: true,
+  return new RiverDestinationMap({
+    spots: {
+      SHOAL: {
+        name: RiverDestinationName.SHOAL,
+        ambassadors: [],
+        revealed: true,
+      },
+      THREE_PRODUCTION: {
+        name: chosenRiverDestinations[0],
+        ambassadors: [],
+        revealed: false,
+      },
+      TWO_DESTINATION: {
+        name: chosenRiverDestinations[1],
+        ambassadors: [],
+        revealed: false,
+      },
+      TWO_GOVERNANCE: {
+        name: chosenRiverDestinations[2],
+        ambassadors: [],
+        revealed: false,
+      },
+      TWO_TRAVELER: {
+        name: chosenRiverDestinations[3],
+        ambassadors: [],
+        revealed: false,
+      },
     },
-    THREE_PRODUCTION: {
-      name: chosenRiverDestinations[0],
-      ambassadors: [],
-      revealed: false,
-    },
-    TWO_DESTINATION: {
-      name: chosenRiverDestinations[1],
-      ambassadors: [],
-      revealed: false,
-    },
-    TWO_GOVERNANCE: {
-      name: chosenRiverDestinations[2],
-      ambassadors: [],
-      revealed: false,
-    },
-    TWO_TRAVELER: {
-      name: chosenRiverDestinations[3],
-      ambassadors: [],
-      revealed: false,
-    },
-  };
+  });
 };
 
 const REGISTRY: Record<RiverDestinationName, RiverDestination> = {

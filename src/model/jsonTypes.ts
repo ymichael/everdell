@@ -1,4 +1,5 @@
 import {
+  RiverDestinationMapSpots,
   GameOptions,
   CardName,
   EventName,
@@ -53,4 +54,8 @@ export type PlayerJSON = {
   claimedEvents: Partial<Record<EventName, PlayedEventInfo>>;
   placedWorkers: WorkerPlacementInfo[];
   playerStatus: PlayerStatus;
+};
+
+export type RiverDestinationMapJSON = {
+  spots: RiverDestinationMapSpots;
 };

@@ -139,6 +139,9 @@ const renderMultiStepGameInputLabel = (
                   type: "text",
                   text: `resource${gameInput.maxResources > 1 ? "s" : ""}`,
                 },
+            gameInput.toSpend
+              ? { type: "text", text: " to spend" }
+              : { type: "text", text: " to gain" },
           ]}
         />
       );
@@ -155,11 +158,12 @@ const renderMultiStepGameInputLabel = (
               text:
                 gameInput.locationContext ===
                 LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS
-                  ? " for 1 fewer resource"
+                  ? " for 1 less "
                   : gameInput.cardContext === CardName.INN
-                  ? " for 3 fewer resources"
+                  ? " for 3 less "
                   : "",
             },
+            { type: "resource", resourceType: `ANY` },
           ]}
         />
       );

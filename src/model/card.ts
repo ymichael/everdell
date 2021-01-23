@@ -412,6 +412,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       if (gameInput.inputType === GameInputType.PLAY_CARD) {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.DISCARD_CARDS,
+          label: "Discard up to 5 CARD to gain 1 VP each",
           prevInputType: gameInput.inputType,
           minCards: 0,
           maxCards: 5,
@@ -528,7 +529,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_OPTION_GENERIC,
           prevInputType: gameInput.inputType,
-          label: "Select where to draw cards",
+          label: "Select where to draw CARD",
           options: [
             gameState.deck.length >= 4 && "Deck",
             gameState.discardPile.length >= 4 && "Discard Pile",
@@ -1019,6 +1020,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_PLAYER,
           prevInputType: gameInput.inputType,
+          label: [
+            "Select player to play ",
+            { type: "entity", entityType: "card", card: CardName.FOOL },
+          ],
           cardContext: CardName.FOOL,
           playerOptions: gameState.players
             .filter((p) => {
@@ -1432,6 +1437,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_LOCATION,
           prevInputType: gameInput.inputType,
+          label: "Select location to copy",
           cardContext: CardName.LOOKOUT,
           locationOptions: possibleLocations.map((x) => x.name),
           clientOptions: {
@@ -1636,6 +1642,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_RESOURCES,
           toSpend: true,
+          label: "Select 2 ANY to give to another player",
           prevInputType: gameInput.inputType,
           cardContext: CardName.MONASTERY,
           maxResources: 2,
@@ -1658,6 +1665,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_PLAYER,
           prevInputType: gameInput.inputType,
+          label: [
+            "Select player to give ",
+            ...resourceMapToGameText(gameInput.clientOptions.resources),
+          ],
           prevInput: gameInput,
           cardContext: CardName.MONASTERY,
           playerOptions: gameState.players
@@ -1748,6 +1759,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_PLAYER,
           prevInputType: gameInput.inputType,
+          label: `Select player to give ${numBerries} BERRY`,
           prevInput: gameInput,
           cardContext: CardName.MONK,
           playerOptions: gameState.players
@@ -1796,6 +1808,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     productionInner: (gameState: GameState, gameInput: GameInput) => {
       gameState.pendingGameInputs.push({
         inputType: GameInputType.SELECT_RESOURCES,
+        label: "Give another player up to 2 BERRY to gain 2 VP each",
         toSpend: true,
         prevInputType: gameInput.inputType,
         maxResources: 2,
@@ -1938,6 +1951,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_PLAYER,
+          label: "Select Player to give 2 CARD",
           prevInputType: gameInput.inputType,
           cardContext: CardName.POST_OFFICE,
           playerOptions: gameState.players
@@ -1955,9 +1969,16 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         if (!gameInput.clientOptions.selectedPlayer) {
           throw new Error("Must select a player");
         }
+        const selectedPlayer = gameState.getPlayer(
+          gameInput.clientOptions.selectedPlayer
+        );
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_CARDS,
           prevInputType: gameInput.inputType,
+          label: [
+            "Select 2 CARD to give to ",
+            selectedPlayer.getGameTextPart(),
+          ],
           prevInput: gameInput,
           cardContext: CardName.POST_OFFICE,
           cardOptions: player.cardsInHand,
@@ -1997,6 +2018,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           gameState.pendingGameInputs.push({
             inputType: GameInputType.SELECT_CARDS,
             prevInputType: gameInput.inputType,
+            label: `Select any number of CARD to discard from your hand`,
             cardContext: CardName.POST_OFFICE,
             cardOptions: player.cardsInHand,
             maxToSelect: player.cardsInHand.length,
@@ -2041,6 +2063,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           inputType: GameInputType.SELECT_CARDS,
           prevInputType: gameInput.inputType,
           cardContext: CardName.POSTAL_PIGEON,
+          label: `Select up to 1 CARD to play for free`,
           maxToSelect: 1,
           minToSelect: 0,
           cardOptions: cardOptions.filter((cardName) => {
@@ -2151,6 +2174,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_CARDS,
           prevInputType: gameInput.inputType,
+          label: "Select CARD to play for free",
           cardOptions: playableCards,
           maxToSelect: 1,
           minToSelect: 1,
@@ -2363,7 +2387,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           gameState.pendingGameInputs.push({
             inputType: GameInputType.SELECT_PLAYED_CARDS,
             prevInputType: gameInput.inputType,
-            label: "Select 1 Construction to discard",
+            label: "Select 1 Construction to discard from your city",
             cardOptions,
             cardContext: CardName.RUINS,
             maxToSelect: 1,
@@ -2445,6 +2469,13 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         ) {
           gameState.pendingGameInputs.push({
             inputType: GameInputType.SELECT_PLAYER,
+            label: [
+              "Select Player to pay ",
+              ...resourceMapToGameText(
+                gameInput.clientOptions.paymentOptions.resources
+              ),
+              " to",
+            ],
             prevInputType: gameInput.inputType,
             prevInput: gameInput,
             playerOptions: gameState.players
@@ -2730,6 +2761,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         }
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_PLAYER,
+          label: "Select player to give the other CARD",
           prevInputType: gameInput.inputType,
           prevInput: gameInput,
           playerOptions: gameState.players
@@ -2831,6 +2863,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_CARDS,
           prevInputType: gameInput.inputType,
+          label: "Discard 3 CARD from the Meadow",
           cardOptions: gameState.meadowCards,
           maxToSelect: 3,
           minToSelect: 3,
@@ -2869,6 +2902,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_CARDS,
           prevInputType: gameInput.inputType,
+          label: "Select 1 CARD from the Meadow to keep",
           cardOptions: gameState.meadowCards,
           maxToSelect: 1,
           minToSelect: 1,

@@ -281,6 +281,8 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_PLAYER,
+          label:
+            "You may select a player to give resources to (worth 2 VP each)",
           prevInputType: gameInput.inputType,
           playerOptions: gameState.players
             .filter((p) => {
@@ -295,9 +297,17 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         gameInput.inputType === GameInputType.SELECT_PLAYER &&
         gameInput.prevInputType === GameInputType.CLAIM_EVENT
       ) {
+        if (!gameInput.clientOptions.selectedPlayer) {
+          return;
+        }
+        const selectedPlayer = gameState.getPlayer(
+          gameInput.clientOptions.selectedPlayer
+        );
+
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_RESOURCES,
           toSpend: true,
+          label: [`Give up to 3 ANY to `, selectedPlayer.getGameTextPart()],
           prevInputType: gameInput.inputType,
           prevInput: gameInput,
           maxResources: 3,
@@ -317,6 +327,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         // to donate resources to (ie, no more points)
         if (gameInput.clientOptions.selectedPlayer) {
           const prevInput = gameInput.prevInput;
+          const selectedPlayer = gameState.getPlayer(
+            gameInput.clientOptions.selectedPlayer
+          );
           const prevMax = prevInput.maxResources;
           const prevResourcesGiven = sumResources(
             prevInput.clientOptions.resources
@@ -324,6 +337,10 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
 
           gameState.pendingGameInputs.push({
             inputType: GameInputType.SELECT_RESOURCES,
+            label: [
+              `Give up to ${prevMax - prevResourcesGiven} ANY to `,
+              selectedPlayer.getGameTextPart(),
+            ],
             toSpend: true,
             prevInputType: gameInput.inputType,
             prevInput: gameInput,
@@ -396,6 +413,8 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         if (newMaxResources > 0) {
           gameState.pendingGameInputs.push({
             inputType: GameInputType.SELECT_PLAYER,
+            label:
+              "You may select a player to give resources to (worth 2 VP each)",
             prevInputType: gameInput.inputType,
             prevInput: gameInput,
             playerOptions: gameState.players
@@ -432,6 +451,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         if (recallableWorkers.length !== 0) {
           gameState.pendingGameInputs.push({
             inputType: GameInputType.SELECT_WORKER_PLACEMENT,
+            label: "Select a deployed worker to bring back",
             prevInputType: gameInput.inputType,
             options: recallableWorkers,
             eventContext: EventName.SPECIAL_A_WEE_RUN_CITY,
@@ -484,6 +504,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_RESOURCES,
           toSpend: true,
+          label: "Place up to 3 TWIG on this event (worth 2 VP each)",
           prevInputType: GameInputType.CLAIM_EVENT,
           eventContext: EventName.SPECIAL_AN_EVENING_OF_FIREWORKS,
           maxResources: 3,
@@ -593,7 +614,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           inputType: GameInputType.SELECT_CARDS,
           prevInputType: GameInputType.CLAIM_EVENT,
           label:
-            "Select up to 5 CARD to draw. The rest will be placed beneath this Event (worth 1 VP each).",
+            "Select up to 5 CARD to keep. The rest will be placed beneath this Event (worth 1 VP each).",
           eventContext: EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED,
           maxToSelect: 5,
           minToSelect: 0,
@@ -697,6 +718,11 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_PLAYED_CARDS,
           prevInputType: GameInputType.CLAIM_EVENT,
+          label: [
+            "Place up to 2 ",
+            { type: "em", text: "Critters" },
+            " from your city beneath this Event. (Worth 3 VP each)",
+          ],
           eventContext: EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES,
           cardOptions: crittersInCity,
           maxToSelect: 2,
@@ -819,10 +845,11 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_PLAYED_CARDS,
           prevInputType: GameInputType.CLAIM_EVENT,
+          label: "Discard 2 CARD from your city",
           eventContext: EventName.SPECIAL_CROAK_WART_CURE,
           cardOptions: player.getAllPlayedCards(),
           maxToSelect: 2,
-          minToSelect: 0,
+          minToSelect: 2,
           clientOptions: {
             selectedCards: [],
           },
@@ -836,8 +863,8 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         if (!selectedCards) {
           throw new Error("invalid input");
         }
-        if (selectedCards.length > 2) {
-          throw new Error("Too many cards");
+        if (selectedCards.length != 2) {
+          throw new Error("Must select 2 cards to discard");
         }
         const eventInfo =
           player.claimedEvents[EventName.SPECIAL_CROAK_WART_CURE];
@@ -905,6 +932,11 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_CARDS,
           prevInputType: GameInputType.CLAIM_EVENT,
+          label: [
+            "Place up to 3 ",
+            { type: "em", text: "Critters" },
+            " from your hand beneath this Event (worth 2 VP each)",
+          ],
           eventContext: EventName.SPECIAL_GRADUATION_OF_SCHOLARS,
           cardOptions: critterCardsInHand,
           maxToSelect: 3,
@@ -1060,6 +1092,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_RESOURCES,
           toSpend: true,
+          label: "Place up to 3 BERRY here (worth 2 VP each)",
           prevInputType: GameInputType.CLAIM_EVENT,
           eventContext: EventName.SPECIAL_PERFORMER_IN_RESIDENCE,
           maxResources: 3,
@@ -1181,10 +1214,11 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           gameState.pendingGameInputs.push({
             inputType: GameInputType.SELECT_RESOURCES,
             toSpend: false,
+            label: `Gain ${numVP} ANY`,
             prevInputType: GameInputType.CLAIM_EVENT,
             eventContext: EventName.SPECIAL_PRISTINE_CHAPEL_CEILING,
             maxResources: numVP,
-            minResources: 0,
+            minResources: numVP,
             clientOptions: {
               resources: {},
             },
@@ -1381,6 +1415,8 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         // ask player how many resources to add to card
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_RESOURCES,
+          label:
+            "Place up to 3 ANY here (worth 1 VP per BERRY / TWIG & 2 VP per RESIN / PEBBLE)",
           toSpend: true,
           prevInputType: GameInputType.CLAIM_EVENT,
           eventContext: EventName.SPECIAL_UNDER_NEW_MANAGEMENT,

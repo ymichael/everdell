@@ -279,6 +279,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
         // ask player which resources they want to get
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_RESOURCES,
+          label: `Gain ${Math.floor(numDiscarded / 2)} ANY`,
           toSpend: false,
           prevInputType: GameInputType.DISCARD_CARDS,
           locationContext: LocationName.HAVEN,
@@ -454,6 +455,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
         // ask the player what resources they want to gain
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_RESOURCES,
+          label: "Gain 2 ANY",
           toSpend: false,
           prevInputType: GameInputType.PLACE_WORKER,
           locationContext: LocationName.FOREST_TWO_WILD,
@@ -508,6 +510,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.DISCARD_CARDS,
           prevInputType: GameInputType.PLACE_WORKER,
+          label: "Select CARD to discard",
           locationContext:
             LocationName.FOREST_DISCARD_ANY_THEN_DRAW_TWO_PER_CARD,
           minCards: 0,
@@ -557,10 +560,11 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
       if (gameInput.inputType === GameInputType.PLACE_WORKER) {
         player.drawCards(gameState, 1);
 
-        // ask player which location they want to copy
+        // Ask player which location they want to copy
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_LOCATION,
           prevInputType: GameInputType.PLACE_WORKER,
+          label: "Select basic location to copy",
           locationContext: LocationName.FOREST_COPY_BASIC_ONE_CARD,
           locationOptions: Location.byType(LocationType.BASIC),
           clientOptions: {
@@ -649,6 +653,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
         // ask the player what resource they want to gain
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_RESOURCES,
+          label: "Gain 1 ANY",
           toSpend: false,
           prevInputType: GameInputType.PLACE_WORKER,
           locationContext: LocationName.FOREST_TWO_CARDS_ONE_WILD,
@@ -699,6 +704,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
           gameState.pendingGameInputs.push({
             inputType: GameInputType.DISCARD_CARDS,
             prevInputType: GameInputType.PLACE_WORKER,
+            label: "Discard up to 3 CARD & gain 1 ANY for each CARD",
             locationContext:
               LocationName.FOREST_DISCARD_UP_TO_THREE_CARDS_TO_GAIN_WILD_PER_CARD,
             minCards: 0,
@@ -717,6 +723,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
           gameState.pendingGameInputs.push({
             inputType: GameInputType.SELECT_RESOURCES,
             toSpend: false,
+            label: `Gain ${cardsToDiscard.length} ANY`,
             prevInputType: GameInputType.DISCARD_CARDS,
             locationContext:
               LocationName.FOREST_DISCARD_UP_TO_THREE_CARDS_TO_GAIN_WILD_PER_CARD,
@@ -794,6 +801,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_CARDS,
           prevInputType: gameInput.inputType,
+          label: "Draw 2 CARD from the Meadow",
           cardOptions: gameState.meadowCards,
           maxToSelect: 2,
           minToSelect: 2,
@@ -859,6 +867,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_CARDS,
           prevInputType: gameInput.inputType,
+          label: "Select CARD to play for one less ANY",
           cardOptions: cardOptions,
           maxToSelect: 1,
           minToSelect: 1,

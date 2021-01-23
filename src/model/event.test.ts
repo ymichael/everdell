@@ -173,10 +173,10 @@ describe("Event", () => {
         CardName.FARM,
       ];
 
-      // check if the player can claim the event
+      // Check if the player can claim the event
       expect(event.canPlay(gameState, gameInput)).to.be(true);
 
-      // try to claim the event + check that you get the correct game state back
+      // Try to claim the event + check that you get the correct game state back
       expect(gameState.pendingGameInputs).to.eql([]);
       expect(
         player.claimedEvents[EventName.SPECIAL_GRADUATION_OF_SCHOLARS]
@@ -184,14 +184,8 @@ describe("Event", () => {
 
       expect(event.canPlay(gameState, gameInput)).to.be(true);
 
-      const gameState2 = gameState.next(gameInput);
-      expect(player.playerId).to.be(gameState2.getActivePlayer().playerId);
-      player = gameState2.getActivePlayer();
-      expect(
-        player.claimedEvents[EventName.SPECIAL_GRADUATION_OF_SCHOLARS]
-      ).to.eql({ storedCards: [] });
-
-      expect(gameState2.pendingGameInputs).to.eql([
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        gameInput,
         {
           inputType: GameInputType.SELECT_CARDS,
           prevInputType: GameInputType.CLAIM_EVENT,
@@ -206,36 +200,14 @@ describe("Event", () => {
           maxToSelect: 3,
           minToSelect: 0,
           clientOptions: {
-            selectedCards: [],
+            selectedCards: [
+              CardName.POSTAL_PIGEON,
+              CardName.HUSBAND,
+              CardName.WIFE,
+            ],
           },
         },
       ]);
-
-      const gameState3 = gameState2.next({
-        inputType: GameInputType.SELECT_CARDS,
-        prevInputType: GameInputType.CLAIM_EVENT,
-        eventContext: EventName.SPECIAL_GRADUATION_OF_SCHOLARS,
-        cardOptions: [
-          CardName.POSTAL_PIGEON,
-          CardName.HUSBAND,
-          CardName.WIFE,
-          CardName.FOOL,
-        ],
-        maxToSelect: 3,
-        minToSelect: 0,
-        clientOptions: {
-          selectedCards: [
-            CardName.POSTAL_PIGEON,
-            CardName.HUSBAND,
-            CardName.WIFE,
-          ],
-        },
-      });
-
-      expect(player.playerId).to.not.be(gameState3.getActivePlayer().playerId);
-
-      player = gameState3.getPlayer(player.playerId);
-
       expect(
         player.claimedEvents[EventName.SPECIAL_GRADUATION_OF_SCHOLARS]
       ).to.eql({
@@ -279,7 +251,7 @@ describe("Event", () => {
           eventContext: EventName.SPECIAL_CROAK_WART_CURE,
           cardOptions: player.getAllPlayedCards(),
           maxToSelect: 2,
-          minToSelect: 0,
+          minToSelect: 2,
           clientOptions: {
             // these are the cards the player wants to remove
             // from their city
@@ -927,7 +899,7 @@ describe("Event", () => {
           prevInputType: GameInputType.CLAIM_EVENT,
           eventContext: EventName.SPECIAL_PRISTINE_CHAPEL_CEILING,
           maxResources: 2,
-          minResources: 0,
+          minResources: 2,
           clientOptions: {
             resources: {
               [ResourceType.TWIG]: 1,

@@ -165,6 +165,7 @@ describe("Card", () => {
             inputType: GameInputType.DISCARD_CARDS,
             prevInputType: GameInputType.PLAY_CARD,
             cardContext: CardName.BARD,
+            label: "Discard up to 5 CARD to gain 1 VP each",
             minCards: 0,
             maxCards: 5,
             clientOptions: {

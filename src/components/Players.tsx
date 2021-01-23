@@ -1,6 +1,5 @@
 import * as React from "react";
 import { useState } from "react";
-import Image from "next/image";
 
 import styles from "../styles/Players.module.css";
 import {

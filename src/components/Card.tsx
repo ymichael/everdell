@@ -22,7 +22,7 @@ const colorClassMap = {
 
 function romanize(num: number): string {
   if (isNaN(num)) return "";
-  var digits = String(+num).split(""),
+  const digits = String(+num).split(""),
     key = [
       "",
       "C",

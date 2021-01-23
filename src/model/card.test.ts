@@ -1108,8 +1108,24 @@ describe("Card", () => {
       });
     });
 
-    xdescribe(CardName.EVERTREE, () => {
-      it("should have tests", () => {});
+    describe(CardName.EVERTREE, () => {
+      it("should be worth 1 extra point per purple card", () => {
+        player.addToCity(CardName.EVERTREE);
+
+        const card = Card.fromName(CardName.EVERTREE);
+        const playerId = player.playerId;
+
+        expect(card.getPoints(gameState, playerId)).to.be(5 + 1);
+
+        player.addToCity(CardName.WIFE);
+        expect(card.getPoints(gameState, playerId)).to.be(5 + 2);
+
+        player.addToCity(CardName.PALACE);
+        expect(card.getPoints(gameState, playerId)).to.be(5 + 3);
+
+        player.addToCity(CardName.UNIVERSITY);
+        expect(card.getPoints(gameState, playerId)).to.be(5 + 3);
+      });
     });
 
     describe(CardName.FAIRGROUNDS, () => {
@@ -2650,8 +2666,29 @@ describe("Card", () => {
       });
     });
 
-    xdescribe(CardName.PALACE, () => {
-      it("should have tests", () => {});
+    describe(CardName.PALACE, () => {
+      it("worth 1 vp more per unique construction", () => {
+        const card = Card.fromName(CardName.PALACE);
+        player.addToCity(card.name);
+        const playerId = player.playerId;
+
+        expect(card.getPoints(gameState, playerId)).to.be(4 + 1);
+
+        player.addToCity(CardName.DUNGEON);
+        expect(card.getPoints(gameState, playerId)).to.be(4 + 2);
+
+        player.addToCity(CardName.THEATRE);
+        expect(card.getPoints(gameState, playerId)).to.be(4 + 3);
+
+        player.addToCity(CardName.UNIVERSITY);
+        expect(card.getPoints(gameState, playerId)).to.be(4 + 4);
+
+        player.addToCity(CardName.FARM);
+        expect(card.getPoints(gameState, playerId)).to.be(4 + 4);
+
+        player.addToCity(CardName.RANGER);
+        expect(card.getPoints(gameState, playerId)).to.be(4 + 4);
+      });
     });
 
     describe(CardName.PEDDLER, () => {
@@ -3606,8 +3643,29 @@ describe("Card", () => {
       });
     });
 
-    xdescribe(CardName.SCHOOL, () => {
-      it("should have tests", () => {});
+    describe(CardName.SCHOOL, () => {
+      it("worth 1 extra VP per common critter", () => {
+        const card = Card.fromName(CardName.SCHOOL);
+        player.addToCity(card.name);
+        const playerId = player.playerId;
+
+        expect(card.getPoints(gameState, playerId)).to.be(2 + 0);
+
+        player.addToCity(CardName.DUNGEON);
+        expect(card.getPoints(gameState, playerId)).to.be(2 + 0);
+
+        player.addToCity(CardName.RANGER);
+        expect(card.getPoints(gameState, playerId)).to.be(2 + 0);
+
+        player.addToCity(CardName.HUSBAND);
+        expect(card.getPoints(gameState, playerId)).to.be(2 + 1);
+
+        player.addToCity(CardName.WANDERER);
+        expect(card.getPoints(gameState, playerId)).to.be(2 + 2);
+
+        player.addToCity(CardName.WANDERER);
+        expect(card.getPoints(gameState, playerId)).to.be(2 + 3);
+      });
     });
 
     describe(CardName.SHEPHERD, () => {
@@ -4166,8 +4224,29 @@ describe("Card", () => {
       });
     });
 
-    xdescribe(CardName.THEATRE, () => {
-      it("should have tests", () => {});
+    describe(CardName.THEATRE, () => {
+      it("worth 1 extra VP per unique critter", () => {
+        const card = Card.fromName(CardName.THEATRE);
+        player.addToCity(card.name);
+        const playerId = player.playerId;
+
+        expect(card.getPoints(gameState, playerId)).to.be(3 + 0);
+
+        player.addToCity(CardName.DUNGEON);
+        expect(card.getPoints(gameState, playerId)).to.be(3 + 0);
+
+        player.addToCity(CardName.RANGER);
+        expect(card.getPoints(gameState, playerId)).to.be(3 + 1);
+
+        player.addToCity(CardName.HUSBAND);
+        expect(card.getPoints(gameState, playerId)).to.be(3 + 1);
+
+        player.addToCity(CardName.WANDERER);
+        expect(card.getPoints(gameState, playerId)).to.be(3 + 1);
+
+        player.addToCity(CardName.BARD);
+        expect(card.getPoints(gameState, playerId)).to.be(3 + 2);
+      });
     });
 
     describe(CardName.TWIG_BARGE, () => {

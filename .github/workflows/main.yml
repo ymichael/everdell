@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  unit-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -27,5 +27,20 @@ jobs:
         run: npm run typecheck
       - name: Run tests
         run: npm run test
+  e2e-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v2.1.4
+      - name: Install Dependencies
+        run: npm ci
       - name: Run build
         run: npm run build:ci
+      - name: Start server
+        run: |
+          PORT=3000 npm run start &
+          sleep 5 && 
+          curl http://localhost:3000/api/status -I
+      - name: Run ui tests
+        run: npm run test-ui

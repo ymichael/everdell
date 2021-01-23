@@ -60,6 +60,7 @@ export class Card<TCardType extends CardType = CardType>
   readonly name: CardName;
   readonly baseCost: CardCost;
   readonly baseVP: number;
+  readonly numInDeck: number;
   readonly cardType: TCardType;
   readonly isUnique: boolean;
   readonly isCritter: boolean;
@@ -78,6 +79,7 @@ export class Card<TCardType extends CardType = CardType>
     baseCost,
     baseVP,
     cardType,
+    numInDeck,
     isUnique,
     isConstruction,
     associatedCard,
@@ -98,6 +100,7 @@ export class Card<TCardType extends CardType = CardType>
     baseVP: number;
     cardType: TCardType;
     isUnique: boolean;
+    numInDeck: number;
     isConstruction: boolean;
     associatedCard: CardName | null;
     isOpenDestination?: boolean;
@@ -127,6 +130,7 @@ export class Card<TCardType extends CardType = CardType>
     this.name = name;
     this.baseCost = Object.freeze(baseCost);
     this.baseVP = baseVP;
+    this.numInDeck = numInDeck;
     this.cardType = cardType;
     this.isUnique = isUnique;
     this.isCritter = !isConstruction;
@@ -378,6 +382,7 @@ export class Card<TCardType extends CardType = CardType>
 const CARD_REGISTRY: Record<CardName, Card> = {
   [CardName.ARCHITECT]: new Card({
     name: CardName.ARCHITECT,
+    numInDeck: 2,
     cardType: CardType.PROSPERITY,
     baseCost: { [ResourceType.BERRY]: 4 },
     baseVP: 2,
@@ -398,6 +403,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
   }),
   [CardName.BARD]: new Card({
     name: CardName.BARD,
+    numInDeck: 2,
     cardType: CardType.TRAVELER,
     baseCost: { [ResourceType.BERRY]: 3 },
     baseVP: 0,
@@ -456,6 +462,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
   }),
   [CardName.BARGE_TOAD]: new Card({
     name: CardName.BARGE_TOAD,
+    numInDeck: 3,
     cardType: CardType.PRODUCTION,
     baseCost: { [ResourceType.BERRY]: 2 },
     baseVP: 1,
@@ -482,6 +489,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
   }),
   [CardName.CASTLE]: new Card({
     name: CardName.CASTLE,
+    numInDeck: 2,
     cardType: CardType.PROSPERITY,
     baseCost: {
       [ResourceType.TWIG]: 2,
@@ -502,6 +510,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
   }),
   [CardName.CEMETARY]: new Card({
     name: CardName.CEMETARY,
+    numInDeck: 2,
     cardType: CardType.DESTINATION,
     baseCost: { [ResourceType.PEBBLE]: 2 },
     baseVP: 0,
@@ -627,6 +636,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
   }),
   [CardName.CHAPEL]: new Card({
     name: CardName.CHAPEL,
+    numInDeck: 2,
     cardType: CardType.DESTINATION,
     baseCost: {
       [ResourceType.TWIG]: 2,
@@ -668,6 +678,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
   }),
   [CardName.CHIP_SWEEP]: new Card({
     name: CardName.CHIP_SWEEP,
+    numInDeck: 3,
     cardType: CardType.PRODUCTION,
     baseCost: { [ResourceType.BERRY]: 3 },
     baseVP: 2,
@@ -741,6 +752,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
   }),
   [CardName.CLOCK_TOWER]: new Card({
     name: CardName.CLOCK_TOWER,
+    numInDeck: 3,
     cardType: CardType.GOVERNANCE,
     baseCost: { [ResourceType.TWIG]: 3, [ResourceType.PEBBLE]: 1 },
     baseVP: 0,
@@ -828,6 +840,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
   }),
   [CardName.COURTHOUSE]: new Card({
     name: CardName.COURTHOUSE,
+    numInDeck: 2,
     cardType: CardType.GOVERNANCE,
     baseCost: {
       [ResourceType.TWIG]: 1,
@@ -882,6 +895,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
   }),
   [CardName.CRANE]: new Card({
     name: CardName.CRANE,
+    numInDeck: 3,
     cardType: CardType.GOVERNANCE,
     baseCost: { [ResourceType.PEBBLE]: 1 },
     baseVP: 1,
@@ -902,6 +916,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     name: CardName.DOCTOR,
     cardType: CardType.PRODUCTION,
     baseCost: { [ResourceType.BERRY]: 4 },
+    numInDeck: 2,
     baseVP: 4,
     isUnique: true,
     isConstruction: false,
@@ -923,6 +938,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     name: CardName.DUNGEON,
     cardType: CardType.GOVERNANCE,
     baseCost: { [ResourceType.RESIN]: 1, [ResourceType.PEBBLE]: 2 },
+    numInDeck: 2,
     baseVP: 0,
     isUnique: true,
     isConstruction: true,
@@ -950,6 +966,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       [ResourceType.RESIN]: 3,
       [ResourceType.PEBBLE]: 3,
     },
+    numInDeck: 2,
     baseVP: 5,
     isUnique: true,
     isConstruction: true,
@@ -969,6 +986,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       [ResourceType.RESIN]: 2,
       [ResourceType.PEBBLE]: 1,
     },
+    numInDeck: 3,
     baseVP: 3,
     isUnique: true,
     isConstruction: true,
@@ -982,6 +1000,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     name: CardName.FARM,
     cardType: CardType.PRODUCTION,
     baseCost: { [ResourceType.TWIG]: 2, [ResourceType.RESIN]: 1 },
+    numInDeck: 8,
     baseVP: 1,
     isUnique: false,
     isConstruction: true,
@@ -995,6 +1014,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     cardType: CardType.TRAVELER,
     baseCost: { [ResourceType.BERRY]: 3 },
     baseVP: -2,
+    numInDeck: 2,
     isUnique: true,
     isConstruction: false,
     associatedCard: CardName.FAIRGROUNDS,
@@ -1067,6 +1087,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     cardType: CardType.PRODUCTION,
     baseCost: { [ResourceType.RESIN]: 1, [ResourceType.PEBBLE]: 1 },
     baseVP: 1,
+    numInDeck: 3,
     isUnique: false,
     isConstruction: true,
     associatedCard: CardName.SHOPKEEPER,
@@ -1097,6 +1118,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     cardType: CardType.GOVERNANCE,
     baseCost: { [ResourceType.BERRY]: 2 },
     baseVP: 1,
+    numInDeck: 3,
     isUnique: true,
     isConstruction: false,
     associatedCard: CardName.CLOCK_TOWER,
@@ -1126,6 +1148,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     cardType: CardType.PRODUCTION,
     baseCost: { [ResourceType.BERRY]: 3 },
     baseVP: 2,
+    numInDeck: 4,
     isUnique: false,
     isConstruction: false,
     associatedCard: CardName.FARM,
@@ -1190,6 +1213,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     cardType: CardType.DESTINATION,
     baseCost: { [ResourceType.TWIG]: 2, [ResourceType.RESIN]: 1 },
     baseVP: 2,
+    numInDeck: 3,
     isUnique: false,
     isConstruction: true,
     associatedCard: CardName.INNKEEPER,
@@ -1341,6 +1365,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     cardType: CardType.GOVERNANCE,
     baseCost: { [ResourceType.BERRY]: 1 },
     baseVP: 1,
+    numInDeck: 3,
     isUnique: true,
     isConstruction: false,
     associatedCard: CardName.INN,
@@ -1357,6 +1382,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     cardType: CardType.GOVERNANCE,
     baseCost: { [ResourceType.BERRY]: 3 },
     baseVP: 2,
+    numInDeck: 2,
     isUnique: true,
     isConstruction: false,
     associatedCard: CardName.COURTHOUSE,
@@ -1373,6 +1399,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     cardType: CardType.PROSPERITY,
     baseCost: { [ResourceType.BERRY]: 6 },
     baseVP: 4,
+    numInDeck: 2,
     isUnique: true,
     isConstruction: false,
     associatedCard: CardName.CASTLE,
@@ -1404,6 +1431,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       [ResourceType.PEBBLE]: 1,
     },
     baseVP: 2,
+    numInDeck: 2,
     isUnique: true,
     isConstruction: true,
     associatedCard: CardName.WANDERER,
@@ -1486,6 +1514,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       [ResourceType.PEBBLE]: 1,
     },
     baseVP: 2,
+    numInDeck: 3,
     isUnique: false,
     isConstruction: true,
     associatedCard: CardName.MINER_MOLE,
@@ -1498,6 +1527,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     cardType: CardType.PRODUCTION,
     baseCost: { [ResourceType.BERRY]: 3 },
     baseVP: 1,
+    numInDeck: 3,
     isUnique: false,
     isConstruction: false,
     associatedCard: CardName.MINE,
@@ -1610,6 +1640,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       [ResourceType.PEBBLE]: 1,
     },
     baseVP: 1,
+    numInDeck: 2,
     isUnique: true,
     isConstruction: true,
     associatedCard: CardName.MONK,
@@ -1721,6 +1752,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     cardType: CardType.PRODUCTION,
     baseCost: { [ResourceType.BERRY]: 1 },
     baseVP: 0,
+    numInDeck: 2,
     isUnique: true,
     isConstruction: false,
     associatedCard: CardName.MONASTERY,
@@ -1830,6 +1862,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       [ResourceType.PEBBLE]: 3,
     },
     baseVP: 4,
+    numInDeck: 2,
     isUnique: true,
     isConstruction: true,
     associatedCard: CardName.QUEEN,
@@ -1846,6 +1879,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     cardType: CardType.PRODUCTION,
     baseCost: { [ResourceType.BERRY]: 2 },
     baseVP: 1,
+    numInDeck: 3,
     isUnique: false,
     isConstruction: false,
     associatedCard: CardName.RUINS,
@@ -1924,6 +1958,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     cardType: CardType.DESTINATION,
     baseCost: { [ResourceType.TWIG]: 1, [ResourceType.RESIN]: 2 },
     baseVP: 2,
+    numInDeck: 3,
     isUnique: false,
     isConstruction: true,
     associatedCard: CardName.POSTAL_PIGEON,
@@ -2047,6 +2082,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     cardType: CardType.TRAVELER,
     baseCost: { [ResourceType.BERRY]: 2 },
     baseVP: 0,
+    numInDeck: 3,
     isUnique: false,
     isConstruction: false,
     associatedCard: CardName.POST_OFFICE,
@@ -2128,6 +2164,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     cardType: CardType.DESTINATION,
     baseCost: { [ResourceType.BERRY]: 5 },
     baseVP: 4,
+    numInDeck: 2,
     isUnique: true,
     isConstruction: false,
     associatedCard: CardName.PALACE,
@@ -2216,6 +2253,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     cardType: CardType.TRAVELER,
     baseCost: { [ResourceType.BERRY]: 2 },
     baseVP: 1,
+    numInDeck: 2,
     isUnique: true,
     isConstruction: false,
     associatedCard: CardName.DUNGEON,
@@ -2336,6 +2374,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     cardType: CardType.PRODUCTION,
     baseCost: { [ResourceType.RESIN]: 1, [ResourceType.PEBBLE]: 1 },
     baseVP: 1,
+    numInDeck: 3,
     isUnique: false,
     isConstruction: true,
     associatedCard: CardName.CHIP_SWEEP,
@@ -2348,6 +2387,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     cardType: CardType.TRAVELER,
     baseCost: {},
     baseVP: 0,
+    numInDeck: 3,
     isUnique: false,
     isConstruction: true,
     associatedCard: CardName.PEDDLER,
@@ -2434,6 +2474,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     cardType: CardType.PROSPERITY,
     baseCost: { [ResourceType.TWIG]: 2, [ResourceType.RESIN]: 2 },
     baseVP: 2,
+    numInDeck: 2,
     isUnique: true,
     isConstruction: true,
     associatedCard: CardName.TEACHER,
@@ -2450,6 +2491,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     cardType: CardType.TRAVELER,
     baseCost: { [ResourceType.BERRY]: 3 },
     baseVP: 1,
+    numInDeck: 2,
     isUnique: true,
     isConstruction: false,
     associatedCard: CardName.CHAPEL,
@@ -2571,6 +2613,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     cardType: CardType.GOVERNANCE,
     baseCost: { [ResourceType.BERRY]: 2 },
     baseVP: 1,
+    numInDeck: 3,
     isUnique: true,
     isConstruction: false,
     associatedCard: CardName.GENERAL_STORE,
@@ -2606,6 +2649,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       [ResourceType.PEBBLE]: 1,
     },
     baseVP: 2,
+    numInDeck: 3,
     isUnique: false,
     isConstruction: true,
     associatedCard: CardName.WOODCARVER,
@@ -2724,6 +2768,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     cardType: CardType.PRODUCTION,
     baseCost: { [ResourceType.BERRY]: 2 },
     baseVP: 2,
+    numInDeck: 3,
     isUnique: false,
     isConstruction: false,
     associatedCard: CardName.SCHOOL,
@@ -2820,6 +2865,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       [ResourceType.PEBBLE]: 1,
     },
     baseVP: 3,
+    numInDeck: 2,
     isUnique: true,
     isConstruction: true,
     associatedCard: CardName.BARD,
@@ -2836,6 +2882,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     cardType: CardType.PRODUCTION,
     baseCost: { [ResourceType.TWIG]: 1, [ResourceType.PEBBLE]: 1 },
     baseVP: 1,
+    numInDeck: 3,
     isUnique: false,
     isConstruction: true,
     associatedCard: CardName.BARGE_TOAD,
@@ -2848,6 +2895,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     cardType: CardType.TRAVELER,
     baseCost: { [ResourceType.BERRY]: 2 },
     baseVP: 1,
+    numInDeck: 2,
     isUnique: true,
     isConstruction: false,
     associatedCard: CardName.CEMETARY,
@@ -2945,6 +2993,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     cardType: CardType.DESTINATION,
     baseCost: { [ResourceType.RESIN]: 1, [ResourceType.PEBBLE]: 2 },
     baseVP: 3,
+    numInDeck: 2,
     isUnique: true,
     isConstruction: true,
     associatedCard: CardName.DOCTOR,
@@ -3045,6 +3094,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     cardType: CardType.TRAVELER,
     baseCost: { [ResourceType.BERRY]: 2 },
     baseVP: 1,
+    numInDeck: 3,
     isUnique: false,
     isConstruction: false,
     associatedCard: CardName.LOOKOUT,
@@ -3062,6 +3112,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     cardType: CardType.PROSPERITY,
     baseCost: { [ResourceType.BERRY]: 2 },
     baseVP: 2,
+    numInDeck: 4,
     isUnique: false,
     isConstruction: false,
     associatedCard: CardName.FARM,
@@ -3079,6 +3130,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     cardType: CardType.PRODUCTION,
     baseCost: { [ResourceType.BERRY]: 2 },
     baseVP: 2,
+    numInDeck: 3,
     isUnique: false,
     isConstruction: false,
     associatedCard: CardName.STOREHOUSE,
@@ -3112,6 +3164,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: true,
     isUnique: true,
     baseVP: 1,
+    numInDeck: 2,
     baseCost: {
       [ResourceType.TWIG]: 2,
       [ResourceType.PEBBLE]: 1,
@@ -3129,6 +3182,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: true,
     baseVP: 3,
+    numInDeck: 2,
     resourcesToGain: {},
     baseCost: {
       [ResourceType.TWIG]: 3,
@@ -3152,6 +3206,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       "When visiting a River Destination, this Messenger is considered the same color as the shared Construction.",
     ]),
     baseVP: 0,
+    numInDeck: 3,
     isConstruction: false,
     isUnique: false,
     baseCost: { [ResourceType.BERRY]: 2 },
@@ -3175,6 +3230,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       ".",
     ]),
     baseVP: 2,
+    numInDeck: 2,
     isUnique: true,
     isConstruction: false,
     baseCost: {
@@ -3200,6 +3256,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       "Does not take up a space in your city.",
     ]),
     baseVP: 1,
+    numInDeck: 3,
     isConstruction: false,
     isUnique: false,
     baseCost: {
@@ -3223,6 +3280,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: true,
     baseVP: 0,
+    numInDeck: 3,
     baseCost: {},
     playInner: () => {
       throw new Error("Not Implemented");
@@ -3243,6 +3301,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: true,
     isUnique: true,
     baseVP: 2,
+    numInDeck: 3,
     baseCost: {
       [ResourceType.TWIG]: 2,
       [ResourceType.RESIN]: 2,
@@ -3260,6 +3319,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: false,
     isUnique: true,
     baseVP: 1,
+    numInDeck: 2,
     resourcesToGain: {},
     baseCost: {
       [ResourceType.BERRY]: 3,

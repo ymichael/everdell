@@ -15,6 +15,8 @@ export enum GameInputType {
   DISCARD_CARDS = "DISCARD_CARDS",
   SELECT_PAYMENT_FOR_CARD = "SELECT_PAYMENT_FOR_CARD",
   SELECT_OPTION_GENERIC = "SELECT_OPTION_GENERIC",
+
+  CLAIM_ADORNMENT = "CLAIM_ADORNMENT",
 }
 
 export type GameInputPlaceWorker = {
@@ -47,6 +49,13 @@ export type GameInputClaimEvent = {
   };
 };
 
+export type GameInputClaimAdornment = {
+  inputType: GameInputType.CLAIM_ADORNMENT;
+  clientOptions: {
+    adornment: AdornmentName | null;
+  };
+};
+
 export type GameInputGameEnd = {
   inputType: GameInputType.GAME_END;
 };
@@ -58,7 +67,8 @@ export type GameInputPrepareForSeason = {
 export type GameInputWorkerPlacementTypes =
   | GameInputClaimEvent
   | GameInputPlaceWorker
-  | GameInputVisitDestinationCard;
+  | GameInputVisitDestinationCard
+  | GameInputClaimAdornment;
 
 export type GameInputSimple =
   | GameInputWorkerPlacementTypes
@@ -229,6 +239,7 @@ export type GameInputMultiStep = (
   eventContext?: EventName;
   cardContext?: CardName;
   locationContext?: LocationName;
+  adornmentContext?: AdornmentName;
   prevInput?: GameInput;
   label?: string | (string | TextPart)[] | GameText;
 };

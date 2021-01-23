@@ -147,7 +147,7 @@
 }
 
 .color_associated_card_critter {
-  color: var(--text-color-light);
+  color: var(--text-color-light) !important;
 }
 
 .played_card_wrapper {

@@ -1,11 +1,25 @@
-import { GameText, GameInput, TextPartEntity, IGameTextEntity } from "./types";
+import {
+  AdornmentName,
+  GameText,
+  GameInput,
+  TextPartEntity,
+  IGameTextEntity,
+} from "./types";
 import { GameState, GameStatePlayable } from "./gameState";
 
 // Pearlbrook Adornment
 export class Adornment implements GameStatePlayable, IGameTextEntity {
+  readonly name: AdornmentName;
   readonly description: GameText;
 
-  constructor({ description }: { description: GameText }) {
+  constructor({
+    name,
+    description,
+  }: {
+    name: AdornmentName;
+    description: GameText;
+  }) {
+    this.name = name;
     this.description = description;
   }
 

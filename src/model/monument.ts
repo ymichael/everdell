@@ -1,18 +1,28 @@
-import { GameText, GameInput, TextPartEntity, IGameTextEntity } from "./types";
+import {
+  MonumentName,
+  GameText,
+  GameInput,
+  TextPartEntity,
+  IGameTextEntity,
+} from "./types";
 import { GameState, GameStatePlayable } from "./gameState";
 
 // Pearlbrook Monuments
 export class Monument implements GameStatePlayable, IGameTextEntity {
+  readonly name: MonumentName;
   readonly description: GameText;
   readonly baseVP: number;
 
   constructor({
+    name,
     baseVP,
     description,
   }: {
+    name: MonumentName;
     baseVP: number;
     description: GameText;
   }) {
+    this.name = name;
     this.baseVP = baseVP;
     this.description = description;
   }

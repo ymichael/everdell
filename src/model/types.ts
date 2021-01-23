@@ -542,3 +542,13 @@ export type GameOptions = {
   realtimePoints: boolean;
   pearlbrook: boolean;
 };
+
+export enum AdornmentName {}
+export enum MonumentName {}
+
+export enum RiverDestinationType {
+  SHOAL = "SHOAL",
+  CITIZEN = "CITIZEN",
+  LOCATION = "LOCATION",
+}
+export enum RiverDestinationName {}

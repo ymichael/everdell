@@ -1,11 +1,30 @@
-import { GameText, GameInput, TextPartEntity, IGameTextEntity } from "./types";
+import {
+  RiverDestinationType,
+  RiverDestinationName,
+  GameText,
+  GameInput,
+  TextPartEntity,
+  IGameTextEntity,
+} from "./types";
 import { GameState, GameStatePlayable } from "./gameState";
 
 // Pearlbrook River Destination
 export class RiverDesination implements GameStatePlayable, IGameTextEntity {
+  readonly name: RiverDestinationName;
+  readonly type: RiverDestinationType;
   readonly description: GameText;
 
-  constructor({ description }: { description: GameText }) {
+  constructor({
+    name,
+    type,
+    description,
+  }: {
+    name: RiverDestinationName;
+    type: RiverDestinationType;
+    description: GameText;
+  }) {
+    this.name = name;
+    this.type = type;
     this.description = description;
   }
 

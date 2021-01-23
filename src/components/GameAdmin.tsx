@@ -18,8 +18,10 @@ const GameAdmin = ({
   return (
     <div className={styles.container}>
       <GameBlock title={"Game Created"}>
-        <p>Copy links to share with other players:</p>
-        <ul>
+        <div className={styles.label}>
+          Copy links to share with other players:
+        </div>
+        <ul className={styles.links}>
           {game.gameState.players.map((p: any, idx: number) => (
             <li key={idx}>
               <a href={`/game/${game.gameId}?playerSecret=${p.playerSecret}`}>
@@ -28,7 +30,16 @@ const GameAdmin = ({
             </li>
           ))}
         </ul>
-        <i>Game ID: {game.gameId}</i>
+
+        <div className={styles.footer}>
+          <i>
+            Game ID: {game.gameId}
+            &nbsp;&middot;&nbsp;
+            <a target="_blank" href={`/game/${game.gameId}`}>
+              spectator link
+            </a>
+          </i>
+        </div>
       </GameBlock>
       {devDebugMode && (
         <>

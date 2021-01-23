@@ -9,8 +9,7 @@ import { GameBlock, Description } from "./common";
 
 const GamePointsBreakdown: React.FC<{
   gameState: GameState;
-  viewingPlayer: Player;
-}> = ({ gameState, viewingPlayer }) => {
+}> = ({ gameState }) => {
   return (
     <GameBlock title={"Points Breakdown"}>
       <div>

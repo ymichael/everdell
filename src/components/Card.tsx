@@ -229,7 +229,7 @@ export default Card;
 export const PlayedCard: React.FC<{
   playedCard: PlayedCardInfo;
   cardOwner: Player;
-  viewerId: string;
+  viewerId: string | null;
 }> = ({ playedCard, cardOwner, viewerId }) => {
   const {
     cardOwnerId,

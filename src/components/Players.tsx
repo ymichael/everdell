@@ -27,7 +27,7 @@ export const Players = ({
   gameStateJSON,
   showRealtimePoints = false,
 }: {
-  viewingPlayer: Player;
+  viewingPlayer: Player | null;
   gameStateJSON: GameStateJSON;
   showRealtimePoints?: boolean;
 }) => {
@@ -40,7 +40,9 @@ export const Players = ({
             player={playerJSON}
             gameStateJSON={gameStateJSON}
             viewingPlayer={viewingPlayer}
-            isViewer={playerJSON.playerId === viewingPlayer.playerId}
+            isViewer={
+              !!viewingPlayer && playerJSON.playerId === viewingPlayer.playerId
+            }
             isActivePlayer={
               playerJSON.playerId === gameStateJSON.activePlayerId
             }
@@ -55,7 +57,7 @@ export const Players = ({
 const PlayerStatus: React.FC<{
   player: PlayerJSON;
   gameStateJSON: GameStateJSON;
-  viewingPlayer: Player;
+  viewingPlayer: Player | null;
   isViewer: boolean;
   isActivePlayer: boolean;
   showRealtimePoints?: boolean;
@@ -228,7 +230,10 @@ const PlayerStatus: React.FC<{
       </div>
       {showCity && (
         <div className={styles.status_box_city}>
-          <PlayerCity player={playerImpl} viewerId={viewingPlayer.playerId} />
+          <PlayerCity
+            player={playerImpl}
+            viewerId={viewingPlayer?.playerId || null}
+          />
         </div>
       )}
     </>

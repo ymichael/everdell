@@ -38,8 +38,9 @@ function enableNotifications() {
 const GameUpdater: React.FC<{
   gameId: string;
   activePlayerId: string;
-  playerId: string;
-  playerSecret: string;
+  isGameOver: boolean;
+  playerId: string | null;
+  playerSecret: string | null;
   gameStateId: number;
   onUpdate: (responseJSON: {
     game: GameJSON;
@@ -49,6 +50,7 @@ const GameUpdater: React.FC<{
 }> = ({
   children,
   gameId,
+  isGameOver,
   playerId,
   playerSecret,
   activePlayerId,
@@ -79,7 +81,7 @@ const GameUpdater: React.FC<{
     enableNotifications();
 
     let timer: any = null;
-    if (activePlayerId !== playerId) {
+    if (!isGameOver && activePlayerId !== playerId) {
       timer = setInterval(updateGameState, 2000);
     } else {
       if (!isFirstLoadRef.current) {
@@ -102,7 +104,7 @@ const GameUpdater: React.FC<{
     return () => {
       clearInterval(timer);
     };
-  }, [activePlayerId]);
+  }, [isGameOver, activePlayerId]);
   return (
     <GameUpdaterContext.Provider value={updateGameState}>
       {children}

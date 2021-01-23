@@ -179,7 +179,7 @@ const GameInputBox: React.FC<{
   devDebug?: boolean;
   gameState: GameStateJSON;
   gameInputs: GameInput[];
-  viewingPlayer: Player;
+  viewingPlayer: Player | null;
 }> = ({
   title = "Game Input",
   devDebug = false,
@@ -192,6 +192,14 @@ const GameInputBox: React.FC<{
   const activePlayerImpl = gameStateImpl.getActivePlayer();
   if (gameStateImpl.getRemainingPlayers().length === 0) {
     return <GameInputBoxText title={title} text={`Game Over!`} />;
+  }
+  if (!viewingPlayer) {
+    return (
+      <GameInputBoxText
+        title={title}
+        text={`${activePlayerImpl.name}'s turn`}
+      />
+    );
   }
   if (gameState.activePlayerId !== viewingPlayer.playerId) {
     return (

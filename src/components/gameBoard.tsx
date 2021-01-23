@@ -43,7 +43,7 @@ export const Meadow: React.FC<{ meadowCards: CardName[] }> = ({
 
 export const LocationsAndEvents: React.FC<{
   gameState: GameState;
-  viewingPlayer: Player;
+  viewingPlayer: Player | null;
 }> = ({ gameState, viewingPlayer }) => {
   return (
     <div className={styles.locations_and_events}>
@@ -55,7 +55,7 @@ export const LocationsAndEvents: React.FC<{
 
 export const Locations: React.FC<{
   gameState: GameState;
-  viewingPlayer: Player;
+  viewingPlayer: Player | null;
 }> = ({ gameState, viewingPlayer }) => {
   const locationsMap = gameState.locationsMap;
   const allLocations = Object.keys(locationsMap) as LocationName[];
@@ -99,7 +99,7 @@ export const Locations: React.FC<{
 
 export const ForestLocations: React.FC<{
   gameState: GameState;
-  viewingPlayer: Player;
+  viewingPlayer: Player | null;
 }> = ({ gameState, viewingPlayer }) => {
   const locationsMap = gameState.locationsMap;
   const allLocations = Object.keys(locationsMap) as LocationName[];
@@ -179,10 +179,10 @@ export const Events: React.FC<{
   );
 };
 
-export const PlayerCity: React.FC<{ player: Player; viewerId: string }> = ({
-  player,
-  viewerId,
-}) => {
+export const PlayerCity: React.FC<{
+  player: Player;
+  viewerId: string | null;
+}> = ({ player, viewerId }) => {
   const playedCards = player.getAllPlayedCards();
 
   const labelToCount: [string, number][] = [
@@ -230,7 +230,7 @@ export const PlayerCity: React.FC<{ player: Player; viewerId: string }> = ({
 
 export const GameBoard: React.FC<{
   gameState: GameState;
-  viewingPlayer: Player;
+  viewingPlayer: Player | null;
 }> = ({ gameState, viewingPlayer }) => {
   return (
     <div className={styles.game_board}>

@@ -18,7 +18,7 @@ import styles from "../styles/Game.module.css";
 const Game: React.FC<{
   game: GameJSON;
   gameInputs: GameInput[];
-  viewingPlayer: PlayerJSON;
+  viewingPlayer: PlayerJSON | null;
 }> = (props) => {
   const [game, setGame] = useState(props.game);
   const [gameInputs, setGameInputs] = useState(props.gameInputs);
@@ -35,21 +35,24 @@ const Game: React.FC<{
   );
 
   const { gameId, gameState } = game;
-  const { playerId, playerSecret } = viewingPlayer;
+  const { playerId = null, playerSecret = null } = viewingPlayer || {};
   gameState.players = gameState.players.map((player) => {
-    if (player.playerId === viewingPlayer.playerId) {
+    if (viewingPlayer && player.playerId === viewingPlayer.playerId) {
       return viewingPlayer;
     } else {
       return player;
     }
   });
-  const viewingPlayerImpl = Player.fromJSON(viewingPlayer);
+  const viewingPlayerImpl = viewingPlayer
+    ? Player.fromJSON(viewingPlayer)
+    : null;
   const gameStateImpl = GameState.fromJSON(gameState);
   return (
     <div className={styles.container}>
       <GameUpdater
         gameId={gameId}
         playerId={playerId}
+        isGameOver={gameStateImpl.isGameOver()}
         activePlayerId={gameState.activePlayerId}
         playerSecret={playerSecret as string}
         gameStateId={gameState.gameStateId}
@@ -60,10 +63,7 @@ const Game: React.FC<{
           viewingPlayer={viewingPlayerImpl}
         />
         {gameStateImpl.isGameOver() && (
-          <GamePointsBreakdown
-            gameState={gameStateImpl}
-            viewingPlayer={viewingPlayerImpl}
-          />
+          <GamePointsBreakdown gameState={gameStateImpl} />
         )}
         <GameInputBox
           key={gameState.gameStateId}
@@ -82,7 +82,7 @@ const Game: React.FC<{
             !!(game as any)?.gameOptions?.realtimePoints
           }
         />
-        <ViewerUI player={viewingPlayerImpl} />
+        {viewingPlayerImpl && <ViewerUI player={viewingPlayerImpl} />}
         <LocationsAndEvents
           gameState={gameStateImpl}
           viewingPlayer={viewingPlayerImpl}

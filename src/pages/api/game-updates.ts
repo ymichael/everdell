@@ -32,22 +32,22 @@ export default async (
     return;
   }
 
+  if (String(game.getGameStateId()) === gameStateId) {
+    res.status(304).end("Not Modified");
+    return;
+  }
+
   let player: Player | null = null;
   try {
     player = playerId ? game.getPlayer(playerId as string) : null;
   } catch (e) {
     // Ignore
   }
-  if (!player || player.playerSecretUNSAFE !== playerSecret) {
+  if (player && player.playerSecretUNSAFE !== playerSecret) {
     res.status(404).json({
       success: false,
       error: "Player not found",
     });
-    return;
-  }
-
-  if (String(game.getGameStateId()) === gameStateId) {
-    res.status(304).end("Not Modified");
     return;
   }
 

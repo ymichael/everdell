@@ -29,7 +29,7 @@ const ResourceTypeValueInput: React.FC<{
           } catch (e) {
             val = 0;
           }
-          helpers.setValue(val);
+          helpers.setValue(val || 0);
         }}
         onChange={(e) => {
           helpers.setValue(e.target.value);

@@ -1,5 +1,6 @@
 import { Card } from "./card";
 import {
+  GameOptions,
   CardName,
   ExpansionType,
   ResourceType,
@@ -1048,10 +1049,23 @@ const baseGameForestLocations: LocationName[] = [
   LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS,
 ];
 
+const pearlbrookForestLocations: LocationName[] = [
+  LocationName.FOREST_TWO_PEBBLE_ONE_CARD,
+  LocationName.FOREST_RESIN_PEBBLE_OR_FOUR_CARDS,
+  LocationName.FOREST_ACTIVATE_2_PRODUCTION,
+  LocationName.FOREST_BERRY_PEBBLE_CARD,
+  LocationName.FOREST_DISCARD_2_MEADOW_DRAW_2_MEADOW_GAIN_ANY,
+];
+
 export const initialLocationsMap = (
-  numPlayers: number
+  numPlayers: number,
+  { pearlbrook }: Pick<GameOptions, "pearlbrook">
 ): LocationNameToPlayerIds => {
-  const forestLocationsToPlay = shuffle(baseGameForestLocations).slice(
+  const forestLocationsToChooseFrom = [...baseGameForestLocations];
+  if (pearlbrook) {
+    forestLocationsToChooseFrom.push(...pearlbrookForestLocations);
+  }
+  const forestLocationsToPlay = shuffle(forestLocationsToChooseFrom).slice(
     0,
     numPlayers == 2 ? 3 : 4
   );

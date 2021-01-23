@@ -1,4 +1,5 @@
 import {
+  GameOptions,
   ExpansionType,
   CardName,
   CardType,
@@ -1599,14 +1600,35 @@ const baseGameSpecialEvents: EventName[] = [
   EventName.SPECIAL_THE_EVERDELL_GAMES,
 ];
 
-export const initialEventMap = (): EventNameToPlayerId => {
+const pearlbrookSpecialEvents: EventName[] = [
+  EventName.SPECIAL_ROMANTIC_CRUISE,
+  EventName.SPECIAL_X_MARKS_THE_SPOT,
+  EventName.SPECIAL_RIVERSIDE_RESORT,
+  EventName.SPECIAL_MASQUERADE_INVITATIONS,
+  EventName.SPECIAL_SUNKEN_TREASURE_DISCOVERED,
+  EventName.SPECIAL_RIVER_RACE,
+];
+
+export const initialEventMap = ({
+  pearlbrook,
+}: Pick<GameOptions, "pearlbrook">): EventNameToPlayerId => {
   const ret: EventNameToPlayerId = {};
   [...Event.byType(EventType.BASIC)].forEach((ty) => {
     ret[ty] = null;
   });
 
-  shuffle(baseGameSpecialEvents)
-    .slice(0, 4)
+  let toSelect = 4;
+  const specialEvents = [...baseGameSpecialEvents];
+  if (pearlbrook) {
+    // Use at least 1 pearlbrook special event.
+    const [chosen, ...rest] = shuffle(pearlbrookSpecialEvents);
+    ret[chosen] = null;
+    toSelect -= 1;
+    specialEvents.push(...rest);
+  }
+
+  shuffle(specialEvents)
+    .slice(0, toSelect)
     .forEach((ty) => {
       ret[ty] = null;
     });

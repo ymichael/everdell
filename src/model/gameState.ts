@@ -88,6 +88,14 @@ export const gameTextToDebugStr = (gameText: GameText): string => {
     .join("");
 };
 
+const defaultGameOptions = (gameOptions: Partial<GameOptions>): GameOptions => {
+  return {
+    realtimePoints: false,
+    pearlbrook: false,
+    ...gameOptions,
+  };
+};
+
 export class GameState {
   readonly gameStateId: number;
   readonly gameOptions: GameOptions;
@@ -136,11 +144,7 @@ export class GameState {
     this._activePlayerId = activePlayerId || players[0].playerId;
     this.pendingGameInputs = pendingGameInputs;
     this.gameLog = gameLog;
-    this.gameOptions = {
-      realtimePoints: false,
-      pearlbrook: false,
-      ...gameOptions,
-    };
+    this.gameOptions = defaultGameOptions(gameOptions);
   }
 
   get activePlayerId(): string {
@@ -799,15 +803,20 @@ export class GameState {
       throw new Error(`Unable to create a game with ${players.length} players`);
     }
 
+    const gameOptionsWithDefaults = defaultGameOptions(gameOptions);
+
     const gameState = new GameState({
       gameStateId: 1,
       players,
       meadowCards: [],
-      deck: initialDeck(),
+      deck: initialDeck(gameOptionsWithDefaults),
       discardPile: discardPile(),
-      locationsMap: initialLocationsMap(players.length),
-      eventsMap: initialEventMap(),
-      gameOptions,
+      locationsMap: initialLocationsMap(
+        players.length,
+        gameOptionsWithDefaults
+      ),
+      eventsMap: initialEventMap(gameOptionsWithDefaults),
+      gameOptions: gameOptionsWithDefaults,
       gameLog: [],
       pendingGameInputs: [],
     });

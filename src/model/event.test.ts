@@ -1,9 +1,10 @@
 import expect from "expect.js";
-import { Event } from "./event";
+import { Event, initialEventMap } from "./event";
 import { Player } from "./player";
 import { GameState } from "./gameState";
 import { testInitialGameState, multiStepGameInputTest } from "./testHelpers";
 import {
+  ExpansionType,
   EventName,
   GameInputType,
   GameInputClaimEvent,
@@ -35,6 +36,32 @@ describe("Event", () => {
       Object.values(EventName).forEach((evt) => {
         expect(Event.fromName(evt as EventName).name).to.be(evt);
       });
+    });
+  });
+
+  describe("initialEventMap", () => {
+    it("should not include pearlbrook events if not playing with pearlbrook", () => {
+      const eventsMap = initialEventMap({ pearlbrook: false });
+      expect(
+        Object.keys(eventsMap).filter((eventName) => {
+          return (
+            Event.fromName(eventName as EventName).expansion ===
+            ExpansionType.PEARLBROOK
+          );
+        })
+      ).to.eql([]);
+    });
+
+    it("should include at least 1 pearlbrook event if playing with pearlbrook", () => {
+      const eventsMap = initialEventMap({ pearlbrook: true });
+      expect(
+        Object.keys(eventsMap).filter((eventName) => {
+          return (
+            Event.fromName(eventName as EventName).expansion ===
+            ExpansionType.PEARLBROOK
+          );
+        }).length >= 1
+      ).to.be(true);
     });
   });
 

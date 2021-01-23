@@ -1,66 +1,67 @@
 import { CardName } from "./types";
+import { Card } from "./card";
 import { CardStack } from "./cardStack";
 
-const baseCardsToCount: Partial<Record<CardName, number>> = {
-  [CardName.ARCHITECT]: 2,
-  [CardName.BARD]: 2,
-  [CardName.BARGE_TOAD]: 3,
-  [CardName.CASTLE]: 2,
-  [CardName.CEMETARY]: 2,
-  [CardName.CHAPEL]: 2,
-  [CardName.CHIP_SWEEP]: 3,
-  [CardName.CLOCK_TOWER]: 3,
-  [CardName.COURTHOUSE]: 2,
-  [CardName.CRANE]: 3,
-  [CardName.DOCTOR]: 2,
-  [CardName.DUNGEON]: 2,
-  [CardName.EVERTREE]: 2,
-  [CardName.FAIRGROUNDS]: 3,
-  [CardName.FARM]: 8,
-  [CardName.FOOL]: 2,
-  [CardName.GENERAL_STORE]: 3,
-  [CardName.HISTORIAN]: 3,
-  [CardName.HUSBAND]: 4,
-  [CardName.INN]: 3,
-  [CardName.INNKEEPER]: 3,
-  [CardName.JUDGE]: 2,
-  [CardName.KING]: 2,
-  [CardName.LOOKOUT]: 2,
-  [CardName.MINE]: 3,
-  [CardName.MINER_MOLE]: 3,
-  [CardName.MONASTERY]: 2,
-  [CardName.MONK]: 2,
-  [CardName.PALACE]: 2,
-  [CardName.PEDDLER]: 3,
-  [CardName.POST_OFFICE]: 3,
-  [CardName.POSTAL_PIGEON]: 3,
-  [CardName.QUEEN]: 2,
-  [CardName.RANGER]: 2,
-  [CardName.RESIN_REFINERY]: 3,
-  [CardName.RUINS]: 3,
-  [CardName.SCHOOL]: 2,
-  [CardName.SHEPHERD]: 2,
-  [CardName.SHOPKEEPER]: 3,
-  [CardName.STOREHOUSE]: 3,
-  [CardName.TEACHER]: 3,
-  [CardName.THEATRE]: 2,
-  [CardName.TWIG_BARGE]: 3,
-  [CardName.UNDERTAKER]: 2,
-  [CardName.UNIVERSITY]: 2,
-  [CardName.WANDERER]: 3,
-  [CardName.WIFE]: 4,
-  [CardName.WOODCARVER]: 3,
-};
+const baseGameCards: CardName[] = [
+  CardName.ARCHITECT,
+  CardName.BARD,
+  CardName.BARGE_TOAD,
+  CardName.CASTLE,
+  CardName.CEMETARY,
+  CardName.CHAPEL,
+  CardName.CHIP_SWEEP,
+  CardName.CLOCK_TOWER,
+  CardName.COURTHOUSE,
+  CardName.CRANE,
+  CardName.DOCTOR,
+  CardName.DUNGEON,
+  CardName.EVERTREE,
+  CardName.FAIRGROUNDS,
+  CardName.FARM,
+  CardName.FOOL,
+  CardName.GENERAL_STORE,
+  CardName.HISTORIAN,
+  CardName.HUSBAND,
+  CardName.INN,
+  CardName.INNKEEPER,
+  CardName.JUDGE,
+  CardName.KING,
+  CardName.LOOKOUT,
+  CardName.MINE,
+  CardName.MINER_MOLE,
+  CardName.MONASTERY,
+  CardName.MONK,
+  CardName.PALACE,
+  CardName.PEDDLER,
+  CardName.POST_OFFICE,
+  CardName.POSTAL_PIGEON,
+  CardName.QUEEN,
+  CardName.RANGER,
+  CardName.RESIN_REFINERY,
+  CardName.RUINS,
+  CardName.SCHOOL,
+  CardName.SHEPHERD,
+  CardName.SHOPKEEPER,
+  CardName.STOREHOUSE,
+  CardName.TEACHER,
+  CardName.THEATRE,
+  CardName.TWIG_BARGE,
+  CardName.UNDERTAKER,
+  CardName.UNIVERSITY,
+  CardName.WANDERER,
+  CardName.WIFE,
+  CardName.WOODCARVER,
+];
 
 export const initialDeck = (): CardStack => {
   const cardStack = new CardStack({ name: "Deck", cards: [] });
-  ((Object.entries(baseCardsToCount) as unknown) as [
-    CardName,
-    number
-  ][]).forEach(([cardName, count]) => {
-    for (let i = 0; i < count; i++) {
+
+  baseGameCards.forEach((cardName) => {
+    const card = Card.fromName(cardName);
+    for (let i = 0; i < card.numInDeck; i++) {
       cardStack.addToStack(cardName);
     }
   });
+
   return cardStack;
 };

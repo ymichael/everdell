@@ -558,8 +558,6 @@ export type GameOptions = {
   pearlbrook: boolean;
 };
 
-export enum AdornmentName {}
-
 export enum MonumentName {}
 
 export enum RiverDestinationType {
@@ -586,4 +584,19 @@ export enum RiverDestinationName {
 
 export enum ExpansionType {
   PEARLBROOK = "PEARLBROOK",
+}
+
+export enum AdornmentName {
+  SPYGLASS = "Spyglass",
+  SCALES = "Scales",
+  MIRROR = "Mirror",
+  KEY_TO_THE_CITY = "Key to the City",
+  SUNDIAL = "Sundial",
+  GILDED_BOOK = "Gilded Book",
+  SEAGLASS_AMULET = "Seaglass Amulet",
+  MASQUE = "Masque",
+  BELL = "Bell",
+  HOURGLASS = "Hourglass",
+  COMPASS = "Compass",
+  TIARA = "Tiara",
 }

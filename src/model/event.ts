@@ -37,6 +37,7 @@ export class Event implements GameStatePlayable, IGameTextEntity {
 
   readonly name: EventName;
   readonly shortName: GameText | undefined;
+  readonly isPearlbrook: boolean;
   readonly type: EventType;
   readonly baseVP: number;
   readonly requiredCards: CardName[] | undefined;
@@ -50,6 +51,7 @@ export class Event implements GameStatePlayable, IGameTextEntity {
     name,
     type,
     baseVP,
+    isPearlbrook = false,
     shortName,
     requiredCards,
     eventDescription,
@@ -62,6 +64,7 @@ export class Event implements GameStatePlayable, IGameTextEntity {
     name: EventName;
     type: EventType;
     baseVP: number;
+    isPearlbrook?: boolean;
     shortName?: GameText | undefined;
     requiredCards?: CardName[];
     eventDescription?: GameText;
@@ -73,6 +76,7 @@ export class Event implements GameStatePlayable, IGameTextEntity {
   }) {
     this.name = name;
     this.type = type;
+    this.isPearlbrook = isPearlbrook;
     this.baseVP = baseVP;
     this.requiredCards = requiredCards;
     this.eventDescription = eventDescription;
@@ -1465,6 +1469,112 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         (resources[ResourceType.RESIN] || 0) * 2 +
         (resources[ResourceType.PEBBLE] || 0) * 2
       );
+    },
+  }),
+
+  // Pearlbrook events
+  [EventName.SPECIAL_ROMANTIC_CRUISE]: new Event({
+    name: EventName.SPECIAL_ROMANTIC_CRUISE,
+    baseVP: 0,
+    requiredCards: [CardName.FERRY, CardName.HUSBAND],
+    type: EventType.SPECIAL,
+    eventDescription: toGameText([
+      "When achieved, you may search through the deck for a ",
+      { type: "entity", entityType: "card", card: CardName.WIFE },
+      " CARD and play it for free.",
+      { type: "BR" },
+      "Or you may gain 5 VP.",
+    ]),
+    isPearlbrook: true,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
+    },
+  }),
+  [EventName.SPECIAL_X_MARKS_THE_SPOT]: new Event({
+    name: EventName.SPECIAL_X_MARKS_THE_SPOT,
+    baseVP: 0,
+    requiredCards: [CardName.PIRATE_SHIP, CardName.STOREHOUSE],
+    type: EventType.SPECIAL,
+    eventDescription: toGameText([
+      "When achieved, place 1 VP on your ",
+      { type: "entity", entityType: "card", card: CardName.STOREHOUSE },
+      " for each resource there, up to 6.",
+    ]),
+    isPearlbrook: true,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
+    },
+  }),
+  [EventName.SPECIAL_RIVERSIDE_RESORT]: new Event({
+    name: EventName.SPECIAL_RIVERSIDE_RESORT,
+    baseVP: 0,
+    requiredCards: [CardName.HARBOR, CardName.INNKEEPER],
+    type: EventType.SPECIAL,
+    eventDescription: toGameText([
+      "When achieved, you may place up to 3 ",
+      { type: "em", text: "Critters" },
+      " from the Meadow facedown beneath this Event.",
+      { type: "HR" },
+      "Worth 2 VP for each ",
+      { type: "em", text: "Critters" },
+      " beneath this Event.",
+    ]),
+    isPearlbrook: true,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
+    },
+  }),
+  [EventName.SPECIAL_MASQUERADE_INVITATIONS]: new Event({
+    name: EventName.SPECIAL_MASQUERADE_INVITATIONS,
+    baseVP: 0,
+    requiredCards: [CardName.MESSENGER, CardName.FAIRGROUNDS],
+    type: EventType.SPECIAL,
+    eventDescription: toGameText([
+      "When achieved, you may give up to 6 CARD to opponents. ",
+      { type: "BR" },
+      "Gain 1 VP for each CARD given this way.",
+    ]),
+    isPearlbrook: true,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
+    },
+  }),
+  [EventName.SPECIAL_SUNKEN_TREASURE_DISCOVERED]: new Event({
+    name: EventName.SPECIAL_SUNKEN_TREASURE_DISCOVERED,
+    baseVP: 0,
+    requiredCards: [CardName.PIRATE, CardName.CRANE],
+    type: EventType.SPECIAL,
+    eventDescription: toGameText([
+      "When achieved, you may play 1 CARD from the Meadow worth up to 3 VP for free.",
+    ]),
+    isPearlbrook: true,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
+    },
+  }),
+  [EventName.SPECIAL_RIVER_RACE]: new Event({
+    name: EventName.SPECIAL_RIVER_RACE,
+    baseVP: 4,
+    requiredCards: [CardName.FERRY_FERRET, CardName.TWIG_BARGE],
+    type: EventType.SPECIAL,
+    eventDescription: toGameText([
+      "When achived, place either your ",
+      { type: "entity", entityType: "card", card: CardName.FERRY_FERRET },
+      " or ",
+      { type: "entity", entityType: "card", card: CardName.TWIG_BARGE },
+      "facedown beneath this event.",
+      { type: "HR" },
+      "If ",
+      { type: "entity", entityType: "card", card: CardName.FERRY_FERRET },
+      ", gain 2 VP.",
+      { type: "BR" },
+      "If ",
+      { type: "entity", entityType: "card", card: CardName.TWIG_BARGE },
+      ", gain 2 ANY",
+    ]),
+    isPearlbrook: true,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
     },
   }),
 };

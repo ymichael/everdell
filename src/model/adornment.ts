@@ -241,8 +241,42 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
       return player.getNumCardType(CardType.GOVERNANCE);
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+
       if (gameInput.inputType === GameInputType.PLAY_ADORNMENT) {
-        throw new Error("Not Implemented");
+        // get all the governance cards in player's city
+        const playedGovCards = player.getPlayedCardNamesByType(
+          CardType.GOVERNANCE
+        );
+
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: GameInputType.PLAY_ADORNMENT,
+          label: ["Select a GOVERNANCE to gain resources equal to its cost."],
+          adornmentContext: AdornmentName.GILDED_BOOK,
+          cardOptions: playedGovCards,
+          maxToSelect: 1,
+          minToSelect: 1,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_CARDS) {
+        const selectedCard = gameInput.clientOptions.selectedCards;
+
+        if (selectedCard.length !== 1) {
+          throw new Error(`Must select exactly 1 card`);
+        }
+
+        const card = Card.fromName(selectedCard[0]);
+
+        if (card.cardType !== CardType.GOVERNANCE) {
+          throw new Error(`Must select GOVERNANCE card`);
+        }
+
+        player.gainResources(card.baseCost);
+      } else {
+        throw new Error(`Unexpected GameInputType ${gameInput.inputType}`);
       }
     },
   }),
@@ -336,8 +370,23 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
       return Math.floor(numPlayedCritters / 2);
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      const helper = new GainMoreThan1AnyResource({
+        adornmentContext: AdornmentName.KEY_TO_THE_CITY,
+        skipGameLog: false,
+      });
       if (gameInput.inputType === GameInputType.PLAY_ADORNMENT) {
-        throw new Error("Not Implemented");
+        gameState.pendingGameInputs.push(
+          helper.getGameInput(2, {
+            prevInputType: gameInput.inputType,
+          })
+        );
+      } else if (helper.matchesGameInput(gameInput)) {
+        helper.play(gameState, gameInput);
+        const numConstructions = player.getNumPlayedConstructions();
+        player.drawCards(gameState, numConstructions);
+      } else {
+        throw new Error(`Unexpected GameInputType ${gameInput.inputType}`);
       }
     },
   }),
@@ -581,8 +630,25 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
     ]),
     baseVP: 3,
     playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      const helper = new GainMoreThan1AnyResource({
+        adornmentContext: AdornmentName.SEAGLASS_AMULET,
+        skipGameLog: false,
+      });
       if (gameInput.inputType === GameInputType.PLAY_ADORNMENT) {
-        throw new Error("Not Implemented");
+        gameState.pendingGameInputs.push(
+          helper.getGameInput(3, {
+            prevInputType: gameInput.inputType,
+          })
+        );
+      } else if (helper.matchesGameInput(gameInput)) {
+        helper.play(gameState, gameInput);
+        player.drawCards(gameState, 2);
+        player.gainResources({ [ResourceType.VP]: 1 });
+        gameState.addGameLogFromAdornment(AdornmentName.SEAGLASS_AMULET, [
+          player,
+          ` gained 2 1 CARD and 1 VP.`,
+        ]);
       }
     },
   }),

@@ -150,6 +150,8 @@ describe("Adornment", () => {
         CardName.QUEEN,
       ]);
       expect(player.getPoints(gameState)).to.be(3);
+      expect(player.adornmentsInHand).to.eql([]);
+      expect(player.playedAdornments).to.eql([name]);
     });
 
     it("should not gain resources if didn't discard cards", () => {
@@ -202,6 +204,8 @@ describe("Adornment", () => {
         CardName.QUEEN,
       ]);
       expect(player.getPoints(gameState)).to.be(5);
+      expect(player.adornmentsInHand).to.eql([]);
+      expect(player.playedAdornments).to.eql([name]);
     });
 
     it("should calculate points correctly", () => {
@@ -310,12 +314,58 @@ describe("Adornment", () => {
       player.adornmentsInHand.push(name);
     });
 
-    xit("should have tests", () => {
+    it("should be able to play", () => {
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+      player.addToCity(CardName.FARM);
+      player.addToCity(CardName.POST_OFFICE);
+
+      const selectResourcesInput = {
+        inputType: GameInputType.SELECT_RESOURCES as const,
+        prevInputType: GameInputType.PLAY_ADORNMENT,
+        adornmentContext: name,
+        toSpend: false,
+        maxResources: 2,
+        minResources: 2,
+        clientOptions: {
+          resources: { [ResourceType.BERRY]: 1, [ResourceType.TWIG]: 1 },
+        },
+      };
+
       [player, gameState] = multiStepGameInputTest(gameState, [
         playAdornmentInput(name),
+        selectResourcesInput,
       ]);
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
+      expect(player.cardsInHand.length).to.be(2);
+      expect(player.getPointsFromAdornments(gameState)).to.be(1);
+    });
+
+    it("should calculate points correctly", () => {
+      player.playedAdornments.push(name);
+
+      // worth 0 because no constructions
+      expect(player.getPointsFromAdornments(gameState)).to.be(0);
+
+      player.addToCity(CardName.FARM);
+
+      // still 0 because only 1 construction
+      expect(player.getPointsFromAdornments(gameState)).to.be(0);
+
+      player.addToCity(CardName.MONASTERY);
+      expect(player.getPointsFromAdornments(gameState)).to.be(1);
+
+      player.addToCity(CardName.HUSBAND);
+      expect(player.getPointsFromAdornments(gameState)).to.be(1);
+
+      player.addToCity(CardName.INN);
+      expect(player.getPointsFromAdornments(gameState)).to.be(1);
+
+      player.addToCity(CardName.CASTLE);
+      expect(player.getPointsFromAdornments(gameState)).to.be(2);
     });
   });
 
@@ -475,12 +525,68 @@ describe("Adornment", () => {
       player.adornmentsInHand.push(name);
     });
 
-    xit("should have tests", () => {
+    it("should be able to play", () => {
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
+      player.addToCityMulti([
+        CardName.FARM,
+        CardName.DUNGEON,
+        CardName.CLOCK_TOWER,
+        CardName.INNKEEPER,
+      ]);
+
+      const selectCardInput = {
+        inputType: GameInputType.SELECT_CARDS as const,
+        prevInputType: GameInputType.PLAY_ADORNMENT,
+        adornmentContext: name,
+        // FARM not included because not a Governance
+        cardOptions: [
+          CardName.DUNGEON,
+          CardName.CLOCK_TOWER,
+          CardName.INNKEEPER,
+        ],
+        maxToSelect: 1,
+        minToSelect: 1,
+        clientOptions: {
+          selectedCards: [CardName.DUNGEON],
+        },
+      };
+
       [player, gameState] = multiStepGameInputTest(gameState, [
         playAdornmentInput(name),
+        selectCardInput,
       ]);
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(2);
+      expect(player.getPointsFromAdornments(gameState)).to.be(3);
+      expect(player.adornmentsInHand).to.eql([]);
+      expect(player.playedAdornments).to.eql([name]);
+    });
+
+    it("should calculate points correctly", () => {
+      player.playedAdornments.push(name);
+      expect(player.getPointsFromAdornments(gameState)).to.be(0);
+
+      player.addToCity(CardName.FARM);
+      expect(player.getPointsFromAdornments(gameState)).to.be(0);
+
+      player.addToCity(CardName.DUNGEON);
+      expect(player.getPointsFromAdornments(gameState)).to.be(1);
+
+      player.addToCity(CardName.HUSBAND);
+      expect(player.getPointsFromAdornments(gameState)).to.be(1);
+
+      player.addToCity(CardName.INNKEEPER);
+      expect(player.getPointsFromAdornments(gameState)).to.be(2);
+
+      player.addToCity(CardName.CLOCK_TOWER);
+      expect(player.getPointsFromAdornments(gameState)).to.be(3);
+
+      player.addToCity(CardName.POSTAL_PIGEON);
+      expect(player.getPointsFromAdornments(gameState)).to.be(3);
+
+      player.addToCity(CardName.HISTORIAN);
+      expect(player.getPointsFromAdornments(gameState)).to.be(4);
     });
   });
 
@@ -491,12 +597,44 @@ describe("Adornment", () => {
       player.adornmentsInHand.push(name);
     });
 
-    xit("should have tests", () => {
+    it("should be able to play", () => {
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
+
+      expect(player.cardsInHand.length).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+
+      const selectAnyInput = {
+        inputType: GameInputType.SELECT_RESOURCES as const,
+        prevInputType: GameInputType.PLAY_ADORNMENT,
+        adornmentContext: name,
+        toSpend: false,
+        maxResources: 3,
+        minResources: 3,
+        clientOptions: {
+          resources: {
+            [ResourceType.PEBBLE]: 1,
+            [ResourceType.RESIN]: 1,
+            [ResourceType.TWIG]: 1,
+          },
+        },
+      };
+
       [player, gameState] = multiStepGameInputTest(gameState, [
         playAdornmentInput(name),
+        selectAnyInput,
       ]);
+
+      expect(player.adornmentsInHand).to.eql([]);
+      expect(player.playedAdornments).to.eql([name]);
+      expect(player.cardsInHand.length).to.be(2);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(1);
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+
+      // always worth 3 points
+      expect(player.getPointsFromAdornments(gameState)).to.be(3);
     });
   });
 

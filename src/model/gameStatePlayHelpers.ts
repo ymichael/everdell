@@ -4,6 +4,9 @@ import {
   ResourceMap,
   GameInput,
   GameInputType,
+  GameInputMultiStep,
+  GameInputMultiStepContext,
+  GameInputSelectOptionGeneric,
 } from "./types";
 import {
   GameState,
@@ -11,6 +14,10 @@ import {
   GameStateCountPointsFn,
 } from "./gameState";
 import { Card } from "./card";
+import { assertUnreachable } from "../utils";
+
+import pickBy from "lodash/pickBy";
+import isEqual from "lodash/isEqual";
 
 export function playSpendResourceToGetVPFactory({
   card,
@@ -101,5 +108,56 @@ export function getPointsPerRarityLabel({
       }
     });
     return numCardsToCount;
+  };
+}
+
+export function gainAnyResourceHelper(contextObj: {
+  cardContext: CardName;
+}): {
+  getInput: (prevGameInputType: GameInputType) => GameInputMultiStep;
+  matches: (gameInput: GameInput) => gameInput is GameInputSelectOptionGeneric;
+  play: (gameState: GameState, gameInput: GameInputSelectOptionGeneric) => void;
+} {
+  return {
+    getInput: (prevGameInputType: GameInputType) => ({
+      inputType: GameInputType.SELECT_OPTION_GENERIC,
+      prevInputType: prevGameInputType,
+      label: "Gain 1 ANY",
+      options: [
+        ResourceType.BERRY,
+        ResourceType.TWIG,
+        ResourceType.RESIN,
+        ResourceType.PEBBLE,
+      ],
+      clientOptions: {
+        selectedOption: null,
+      },
+      ...contextObj,
+    }),
+    play: (gameState: GameState, gameInput: GameInputSelectOptionGeneric) => {
+      const player = gameState.getActivePlayer();
+      const selectedOption = gameInput.clientOptions.selectedOption;
+      if (!selectedOption || gameInput.options.indexOf(selectedOption) === -1) {
+        throw new Error(`Please select an option`);
+      }
+      player.gainResources({ [selectedOption]: 1 });
+      const logText = [player, ` gained ${selectedOption}.`];
+      if ("cardContext" in contextObj) {
+        gameState.addGameLogFromCard(contextObj.cardContext, logText);
+      } else {
+        assertUnreachable(contextObj, contextObj);
+      }
+    },
+    matches: (
+      gameInput: GameInput
+    ): gameInput is GameInputSelectOptionGeneric => {
+      return (
+        gameInput.inputType === GameInputType.SELECT_OPTION_GENERIC &&
+        isEqual(
+          contextObj,
+          pickBy(gameInput, (_v, k) => k in contextObj)
+        )
+      );
+    },
   };
 }

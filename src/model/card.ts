@@ -30,6 +30,7 @@ import {
   gainProductionSpendResourceToGetVPFactory,
   sumResources,
   getPointsPerRarityLabel,
+  gainAnyResourceHelper,
 } from "./gameStatePlayHelpers";
 import cloneDeep from "lodash/cloneDeep";
 import {
@@ -1163,25 +1164,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     resourcesToGain: {},
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
-      if (
-        gameInput.inputType === GameInputType.SELECT_RESOURCES &&
-        gameInput.cardContext === CardName.HUSBAND
-      ) {
-        const resources = gameInput.clientOptions?.resources;
-        if (!resources || (resources as any)[ResourceType.VP]) {
-          throw new Error("Invalid input");
-        }
-        const numToGain = sumResources(resources);
-        if (numToGain !== 1) {
-          throw new Error(`Invalid resources: ${JSON.stringify(resources)}`);
-        }
-        player.gainResources(resources);
-        gameState.addGameLogFromCard(CardName.HUSBAND, [
-          player,
-          " gained ",
-          ...resourceMapToGameText(resources),
-          ".",
-        ]);
+      const helper = gainAnyResourceHelper({ cardContext: CardName.HUSBAND });
+      if (helper.matches(gameInput)) {
+        helper.play(gameState, gameInput);
       }
     },
     productionInner: (
@@ -1195,17 +1180,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         cardOwner.hasCardInCity(CardName.FARM) &&
         playedHusbands.length <= playedWifes.length
       ) {
-        gameState.pendingGameInputs.push({
-          inputType: GameInputType.SELECT_RESOURCES,
-          toSpend: false,
-          prevInputType: gameInput.inputType,
-          cardContext: CardName.HUSBAND,
-          maxResources: 1,
-          minResources: 1,
-          clientOptions: {
-            resources: {},
-          },
-        });
+        gameState.pendingGameInputs.push(
+          gainAnyResourceHelper({
+            cardContext: CardName.HUSBAND,
+          }).getInput(gameInput.inputType)
+        );
       }
     },
   }),

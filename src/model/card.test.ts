@@ -823,16 +823,17 @@ describe("Card", () => {
         };
 
         const husbandInput = {
-          inputType: GameInputType.SELECT_RESOURCES as const,
-          toSpend: false,
+          inputType: GameInputType.SELECT_OPTION_GENERIC as const,
           prevInputType: GameInputType.SELECT_WORKER_PLACEMENT,
           cardContext: CardName.HUSBAND,
-          maxResources: 1,
-          minResources: 1,
+          options: [
+            ResourceType.BERRY,
+            ResourceType.TWIG,
+            ResourceType.RESIN,
+            ResourceType.PEBBLE,
+          ],
           clientOptions: {
-            resources: {
-              [ResourceType.BERRY]: 1,
-            },
+            selectedOption: ResourceType.BERRY,
           },
         };
 
@@ -1433,16 +1434,17 @@ describe("Card", () => {
         [player, gameState] = multiStepGameInputTest(gameState, [
           playCardInput(card.name),
           {
-            inputType: GameInputType.SELECT_RESOURCES,
-            toSpend: false,
+            inputType: GameInputType.SELECT_OPTION_GENERIC,
             prevInputType: GameInputType.PLAY_CARD,
             cardContext: CardName.HUSBAND,
-            maxResources: 1,
-            minResources: 1,
+            options: [
+              ResourceType.BERRY,
+              ResourceType.TWIG,
+              ResourceType.RESIN,
+              ResourceType.PEBBLE,
+            ],
             clientOptions: {
-              resources: {
-                [ResourceType.BERRY]: 1,
-              },
+              selectedOption: ResourceType.BERRY,
             },
           },
         ]);
@@ -2304,16 +2306,17 @@ describe("Card", () => {
             },
           },
           {
-            inputType: GameInputType.SELECT_RESOURCES,
-            toSpend: false,
+            inputType: GameInputType.SELECT_OPTION_GENERIC,
             prevInputType: GameInputType.SELECT_PLAYED_CARDS,
             cardContext: CardName.HUSBAND,
-            maxResources: 1,
-            minResources: 1,
+            options: [
+              ResourceType.BERRY,
+              ResourceType.TWIG,
+              ResourceType.RESIN,
+              ResourceType.PEBBLE,
+            ],
             clientOptions: {
-              resources: {
-                [ResourceType.BERRY]: 1,
-              },
+              selectedOption: ResourceType.BERRY,
             },
           },
         ]);

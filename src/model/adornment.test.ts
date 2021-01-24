@@ -75,7 +75,7 @@ describe("Adornment", () => {
       expect(adornment.canPlay(gameState, gameInput)).to.be(true);
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
 
-      gameState = gameState.next(gameInput);
+      [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
 
       expect(adornment.canPlay(gameState, gameInput)).to.be(false);
 
@@ -84,6 +84,22 @@ describe("Adornment", () => {
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(3);
       expect(player.getPointsFromAdornments(gameState)).to.be(2);
       expect(player.getPoints(gameState)).to.be(9);
+    });
+  });
+
+  xdescribe(AdornmentName.SPYGLASS, () => {
+    beforeEach(() => {
+      player.gainResources({ [ResourceType.PEARL]: 1 });
+      player.adornmentsInHand.push(AdornmentName.SPYGLASS);
+    });
+
+    it("should gain 1 ANY, CARD and PEARL", () => {
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        playAdornmentInput(AdornmentName.SPYGLASS),
+      ]);
+
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
     });
   });
 });

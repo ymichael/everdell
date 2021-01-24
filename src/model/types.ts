@@ -204,6 +204,15 @@ export type GameInputSelectPaymentForCard = {
   };
 };
 
+export type GameInputMultiStepContext = {
+  eventContext?: EventName;
+  cardContext?: CardName;
+  locationContext?: LocationName;
+  adornmentContext?: AdornmentName;
+  riverDestinationContext?: RiverDestinationName;
+  wonderContext?: WonderName;
+};
+
 export type GameInputMultiStep = (
   | GameInputSelectCards
   | GameInputSelectPlayedCards
@@ -214,16 +223,11 @@ export type GameInputMultiStep = (
   | GameInputSelectPaymentForCard
   | GameInputSelectWorkerPlacement
   | GameInputSelectOptionGeneric
-) & {
-  eventContext?: EventName;
-  cardContext?: CardName;
-  locationContext?: LocationName;
-  adornmentContext?: AdornmentName;
-  riverDestinationContext?: RiverDestinationName;
-  wonderContext?: WonderName;
-  prevInput?: GameInput;
-  label?: string | (string | TextPart)[] | GameText;
-};
+) &
+  GameInputMultiStepContext & {
+    prevInput?: GameInput;
+    label?: string | (string | TextPart)[] | GameText;
+  };
 
 export type GameInput = GameInputSimple | GameInputMultiStep;
 

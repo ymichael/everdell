@@ -19,6 +19,7 @@ export enum GameInputType {
   // Pearlbrook specific
   PLAY_ADORNMENT = "PLAY_ADORNMENT",
   VISIT_RIVER_DESTINATION = "VISIT_RIVER_DESTINATION",
+  SELECT_PLAYED_ADORNMENT = "SELECT_PLAYED_ADORNMENT",
 }
 
 export type GameInputPlaceWorker = {
@@ -103,6 +104,18 @@ export type GameInputDiscardCards = {
   isAutoAdvancedInput?: boolean;
   clientOptions: {
     cardsToDiscard: CardName[];
+  };
+};
+
+export type GameInputSelectPlayedAdornment = {
+  inputType: GameInputType.SELECT_PLAYED_ADORNMENT;
+  prevInputType: GameInputType;
+  adornmentOptions: AdornmentName[];
+  maxToSelect: number;
+  minToSelect: number;
+  mustSelectFromOpponents: boolean;
+  clientOptions: {
+    adornment: AdornmentName[];
   };
 };
 
@@ -221,6 +234,7 @@ export type GameInputMultiStep = (
   | GameInputSelectPaymentForCard
   | GameInputSelectWorkerPlacement
   | GameInputSelectOptionGeneric
+  | GameInputSelectPlayedAdornment
 ) &
   GameInputMultiStepContext & {
     prevInput?: GameInput;

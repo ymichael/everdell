@@ -200,6 +200,15 @@ const renderMultiStepGameInputLabel = (
           ]}
         />
       );
+    case GameInputType.SELECT_PLAYED_ADORNMENT:
+      return (
+        <Description
+          textParts={[
+            ...inputContextPrefix(gameInput),
+            { type: "text", text: `Select Adornment` },
+          ]}
+        />
+      );
     default:
       assertUnreachable(gameInput, gameInput);
   }
@@ -223,7 +232,7 @@ export const renderGameInputLabel = (
     case GameInputType.GAME_END:
       return <span>{"End Game"}</span>;
     case GameInputType.PLAY_ADORNMENT:
-      return <span>{"Claim Adornment"}</span>;
+      return <span>{"Play Adornment"}</span>;
     case GameInputType.VISIT_RIVER_DESTINATION:
       return <span>{"Visit River Destination"}</span>;
     default:

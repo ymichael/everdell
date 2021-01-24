@@ -16,7 +16,11 @@
   --text-color-inv: #ffffff;
   --text-color-light: #bbb;
 
+  --river-col: #1891a2;
   --adornment-col: #f5ccd5;
+  --adornment-border-col: #b22243;
+  --border-color-river: #09343b;
+
   --color-vp: #e3b117;
   --color-vp-text: #3c1346;
   --color-dest: #943032;
@@ -55,6 +59,10 @@
   --color-loc-forest: var(--border-color);
   --color-loc-haven: var(--border-color);
   --color-loc-journey: var(--border-color);
+
+  --adornment-col: #e26983;
+  --adornment-border-col: #bf2547;
+  --border-color-river: #1891a2;
 }
 
 html,

@@ -3,7 +3,7 @@
   width: 160px;
   border-radius: 5px;
   position: relative;
-  border: 1px solid #b22243;
+  border: 1px solid var(--adornment-border-col);
   background-color: var(--bg-color-item);
   overflow: hidden;
   display: flex;

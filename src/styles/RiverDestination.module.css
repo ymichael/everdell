@@ -25,7 +25,7 @@
   width: 240px;
   border-radius: 5px;
   position: relative;
-  border: 1px solid #09343b;
+  border: 1px solid var(--border-color-river);
   background-color: var(--bg-color-item);
   overflow: hidden;
   display: flex;
@@ -36,7 +36,7 @@
 
 .header {
   font-weight: var(--font-bold);
-  background-color: #1891a2;
+  background-color: var(--river-col);
   color: var(--text-color-inv);
   height: 35px;
   font-size: 12px;

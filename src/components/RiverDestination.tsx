@@ -68,7 +68,6 @@ export const RiverDestinationSpot = ({
     name == TRiverDestinationSpot.SHOAL
       ? RiverDestinationName.SHOAL
       : destination;
-  console.log({ name, destination });
   return (
     <ItemWrapper
       footerChildren={

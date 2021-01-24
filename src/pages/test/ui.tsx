@@ -124,8 +124,8 @@ export default function TestPage() {
           })
           .map((card) => {
             return (
-              <ItemWrapper>
-                <Card key={card} name={card} />
+              <ItemWrapper key={card}>
+                <Card name={card} />
               </ItemWrapper>
             );
           })}

@@ -67,14 +67,14 @@ export type GameInputPrepareForSeason = {
 export type GameInputWorkerPlacementTypes =
   | GameInputClaimEvent
   | GameInputPlaceWorker
-  | GameInputVisitDestinationCard
-  | GameInputPlayAdornment;
+  | GameInputVisitDestinationCard;
 
 export type GameInputSimple =
   | GameInputWorkerPlacementTypes
   | GameInputPlayCard
   | GameInputGameEnd
-  | GameInputPrepareForSeason;
+  | GameInputPrepareForSeason
+  | GameInputPlayAdornment;
 
 export type GameInputDiscardCards = {
   inputType: GameInputType.DISCARD_CARDS;

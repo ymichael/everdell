@@ -22,6 +22,7 @@ import {
 } from "./types";
 import { PlayerJSON } from "./jsonTypes";
 import { GameState } from "./gameState";
+import { Adornment } from "./adornment";
 import { Card } from "./card";
 import { Event } from "./event";
 import { Location } from "./location";
@@ -318,12 +319,22 @@ export class Player implements IGameTextEntity {
     return points;
   }
 
+  getPointsFromAdornments(gameState: GameState): number {
+    let points = 0;
+    this.playedAdornments.forEach((adornmentName) => {
+      const adornment = Adornment.fromName(adornmentName as AdornmentName);
+      points += adornment.getPoints(gameState, this.playerId);
+    });
+    return points;
+  }
+
   getPoints(gameState: GameState): number {
     let points = 0;
     points += this.getPointsFromCards(gameState);
     points += this.getPointsFromEvents(gameState);
     points += this.getPointsFromJourney(gameState);
     points += this.getNumResourcesByType(ResourceType.VP);
+    points += this.getNumResourcesByType(ResourceType.PEARL) * 2;
     return points;
   }
 
@@ -1062,12 +1073,14 @@ export class Player implements IGameTextEntity {
     BERRY = 0,
     PEBBLE = 0,
     RESIN = 0,
+    PEARL = 0,
   }: {
     [ResourceType.VP]?: number;
     [ResourceType.TWIG]?: number;
     [ResourceType.BERRY]?: number;
     [ResourceType.PEBBLE]?: number;
     [ResourceType.RESIN]?: number;
+    [ResourceType.PEARL]?: number;
   }): void {
     if (VP) {
       if (this.resources[ResourceType.VP] < VP) {
@@ -1119,6 +1132,16 @@ export class Player implements IGameTextEntity {
       }
       this.resources[ResourceType.RESIN] -= RESIN;
     }
+    if (PEARL) {
+      if (this.resources[ResourceType.PEARL] < PEARL) {
+        throw new Error(
+          `Insufficient ${ResourceType.PEARL}. Need ${PEARL}, but only have ${
+            this.resources[ResourceType.PEARL]
+          } PEARL`
+        );
+      }
+      this.resources[ResourceType.PEARL] -= PEARL;
+    }
   }
 
   gainResources({
@@ -1127,12 +1150,14 @@ export class Player implements IGameTextEntity {
     BERRY = 0,
     PEBBLE = 0,
     RESIN = 0,
+    PEARL = 0,
   }: {
     [ResourceType.VP]?: number;
     [ResourceType.TWIG]?: number;
     [ResourceType.BERRY]?: number;
     [ResourceType.PEBBLE]?: number;
     [ResourceType.RESIN]?: number;
+    [ResourceType.PEARL]?: number;
   }): void {
     if (VP) {
       this.resources[ResourceType.VP] += VP;
@@ -1148,6 +1173,9 @@ export class Player implements IGameTextEntity {
     }
     if (RESIN) {
       this.resources[ResourceType.RESIN] += RESIN;
+    }
+    if (PEARL) {
+      this.resources[ResourceType.PEARL] += PEARL;
     }
   }
 

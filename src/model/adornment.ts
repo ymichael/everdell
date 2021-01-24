@@ -24,7 +24,7 @@ import {
 export class Adornment implements GameStatePlayable, IGameTextEntity {
   readonly name: AdornmentName;
   readonly description: GameText;
-  readonly baseVP?: number;
+  readonly baseVP: number;
   readonly playInner: GameStatePlayFn;
   readonly pointsInner: GameStateCountPointsFn | undefined;
 
@@ -57,42 +57,40 @@ export class Adornment implements GameStatePlayable, IGameTextEntity {
   }
 
   canPlay(gameState: GameState, gameInput: GameInput): boolean {
-    // player needs to have 1 pearl if they're playing an adornment
+    return !this.canPlayCheck(gameState, gameInput);
+  }
+
+  canPlayCheck(gameState: GameState, gameInput: GameInput): string | null {
     const player = gameState.getActivePlayer();
 
     if (gameInput.inputType === GameInputType.PLAY_ADORNMENT) {
       const adornment = gameInput.clientOptions.adornment;
 
       if (!adornment) {
-        throw new Error("Invalid adornment selected");
+        return "Invalid adornment selected";
       }
 
       const adornmentsInHand = player.adornmentsInHand;
       let idx = adornmentsInHand.indexOf(adornment);
       if (idx === -1) {
-        throw new Error("May only play adornments that are in your hand");
+        return "May only play adornments that are in your hand";
       }
 
       const playedAdornments = player.playedAdornments;
       idx = playedAdornments.indexOf(adornment);
       if (idx !== -1) {
-        throw new Error("Cannot play an adornment that's already been played");
+        return "Cannot play an adornment that's already been played";
       }
 
       const numPearls = player.getNumResourcesByType(ResourceType.PEARL);
       if (numPearls < 1) {
-        throw new Error("Must be able to pay 1 PEARL to play an adornment");
+        return "Must be able to pay 1 PEARL to play an adornment";
       }
 
-      return true;
+      return null;
     }
 
-    return !this.canPlayCheck(gameState, gameInput);
-  }
-
-  // Adornments don't need this
-  canPlayCheck(gameState: GameState, gameInput: GameInput): string | null {
-    return "Not Implemented";
+    return "Not playable";
   }
 
   play(gameState: GameState, gameInput: GameInput): void {
@@ -126,7 +124,10 @@ export class Adornment implements GameStatePlayable, IGameTextEntity {
   }
 
   getPoints(gameState: GameState, playerId: string): number {
-    return 0;
+    return (
+      this.baseVP +
+      (this.pointsInner ? this.pointsInner(gameState, playerId) : 0)
+    );
   }
 
   static fromName(name: AdornmentName): Adornment {
@@ -143,7 +144,7 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
       "1 VP for every 2 Critters in your city.",
     ]),
     pointsInner: (gameState: GameState, playerId: string) => {
-      const player = gameState.getActivePlayer();
+      const player = gameState.getPlayer(playerId);
       const numPlayedCritters = player.getNumPlayedCritters();
       return numPlayedCritters / 2;
     },

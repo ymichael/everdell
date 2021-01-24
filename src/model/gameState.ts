@@ -516,6 +516,7 @@ export class GameState {
     this.addGameLog([player, " played ", adornment, "."]);
 
     adornment.play(this, gameInput);
+    player.spendResources({ [ResourceType.PEARL]: 1 });
   }
 
   handleWorkerPlacementGameInput(
@@ -530,9 +531,6 @@ export class GameState {
         break;
       case GameInputType.VISIT_DESTINATION_CARD:
         this.handleVisitDestinationCardGameInput(gameInput);
-        break;
-      case GameInputType.PLAY_ADORNMENT:
-        this.handlePlayAdornmentGameInput(gameInput);
         break;
       default:
         assertUnreachable(
@@ -641,8 +639,10 @@ export class GameState {
       case GameInputType.PLACE_WORKER:
       case GameInputType.VISIT_DESTINATION_CARD:
       case GameInputType.CLAIM_EVENT:
-      case GameInputType.PLAY_ADORNMENT:
         this.handleWorkerPlacementGameInput(gameInput);
+        break;
+      case GameInputType.PLAY_ADORNMENT:
+        this.handlePlayAdornmentGameInput(gameInput);
         break;
       case GameInputType.PREPARE_FOR_SEASON:
         this.handlePrepareForSeason(gameInput);

@@ -939,6 +939,17 @@ export class GameState {
     }
 
     if (
+      pendingInput.inputType === GameInputType.SELECT_WORKER_PLACEMENT &&
+      pendingInput.mustSelectOne &&
+      pendingInput.options.length === 1
+    ) {
+      return {
+        ...pendingInput,
+        clientOptions: { selectedOption: pendingInput.options[0] },
+      };
+    }
+
+    if (
       pendingInput.inputType === GameInputType.SELECT_OPTION_GENERIC &&
       pendingInput.options.length === 1
     ) {

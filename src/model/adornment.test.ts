@@ -1118,6 +1118,72 @@ describe("Adornment", () => {
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
     });
 
+    it("should work for RANGER", () => {
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
+      player.addToCity(CardName.RANGER);
+
+      gameState.locationsMap[LocationName.BASIC_ONE_STONE]!.push(
+        player.playerId
+      );
+      player.placeWorkerOnLocation(LocationName.BASIC_ONE_STONE);
+
+      [player, gameState] = multiStepGameInputTest(
+        gameState,
+        [
+          playAdornmentInput(name),
+          {
+            inputType: GameInputType.SELECT_PLAYED_CARDS,
+            prevInputType: GameInputType.PLAY_ADORNMENT,
+            cardOptions: player.getPlayedCardInfos(CardName.RANGER),
+            adornmentContext: name,
+            maxToSelect: 2,
+            minToSelect: 0,
+            clientOptions: {
+              selectedCards: player.getPlayedCardInfos(CardName.RANGER),
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_WORKER_PLACEMENT,
+            prevInput: {
+              inputType: GameInputType.SELECT_WORKER_PLACEMENT as const,
+              label: "Select a deployed worker to move",
+              prevInputType: GameInputType.PLAY_CARD,
+              cardContext: CardName.RANGER,
+              mustSelectOne: true,
+              clientOptions: {
+                selectedOption: {
+                  location: LocationName.BASIC_ONE_STONE,
+                },
+              },
+              options: [{ location: LocationName.BASIC_ONE_STONE }],
+            },
+            prevInputType: GameInputType.SELECT_WORKER_PLACEMENT,
+            cardContext: CardName.RANGER,
+            mustSelectOne: true,
+            options: [
+              { location: LocationName.BASIC_ONE_BERRY },
+              { location: LocationName.BASIC_ONE_BERRY_AND_ONE_CARD },
+              { location: LocationName.BASIC_ONE_RESIN_AND_ONE_CARD },
+              { location: LocationName.BASIC_THREE_TWIGS },
+              { location: LocationName.BASIC_TWO_CARDS_AND_ONE_VP },
+              { location: LocationName.BASIC_TWO_RESIN },
+              { location: LocationName.BASIC_TWO_TWIGS_AND_ONE_CARD },
+              { location: LocationName.HAVEN },
+            ],
+            clientOptions: {
+              selectedOption: {
+                location: LocationName.BASIC_TWO_TWIGS_AND_ONE_CARD,
+              },
+            },
+          },
+        ],
+        { autoAdvance: true }
+      );
+
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(2);
+    });
+
     it("should only prompt for reactivatable cards", () => {
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
       player.addToCity(CardName.FOOL);

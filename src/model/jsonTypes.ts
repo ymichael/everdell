@@ -14,8 +14,6 @@ import {
   EventNameToPlayerId,
   GameLogEntry,
   LocationNameToPlayerIds,
-  WonderName,
-  WonderNameToPlayerId,
 } from "./types";
 
 export type GameJSON = {
@@ -34,7 +32,6 @@ export type GameStateJSON = {
   deck: CardStackJSON;
   locationsMap: LocationNameToPlayerIds;
   eventsMap: EventNameToPlayerId;
-  wondersMap: WonderNameToPlayerId;
   pendingGameInputs: GameInputMultiStep[];
   gameLog: GameLogEntry[];
   riverDestinationMap: RiverDestinationMapJSON | null;
@@ -61,7 +58,6 @@ export type PlayerJSON = {
   playerStatus: PlayerStatus;
   adornmentsInHand: AdornmentName[];
   playedAdornments: AdornmentName[];
-  claimedWonders: WonderName[];
   numAmbassadors: number;
 };
 

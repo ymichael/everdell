@@ -2410,13 +2410,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
                 playedCard: selectedOption.playedCard,
               },
             });
-          } else if (selectedOption.wonder) {
-            gameState.handleWorkerPlacementGameInput({
-              inputType: GameInputType.CLAIM_WONDER,
-              clientOptions: {
-                wonder: selectedOption.wonder,
-              },
-            });
           } else {
             assertUnreachable(
               selectedOption,

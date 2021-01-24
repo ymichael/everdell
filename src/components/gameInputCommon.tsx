@@ -223,11 +223,9 @@ export const renderGameInputLabel = (
     case GameInputType.GAME_END:
       return <span>{"End Game"}</span>;
     case GameInputType.PLAY_ADORNMENT:
-      return <span>{"Play Adornment"}</span>;
+      return <span>{"Claim Adornment"}</span>;
     case GameInputType.VISIT_RIVER_DESTINATION:
       return <span>{"Visit River Destination"}</span>;
-    case GameInputType.CLAIM_WONDER:
-      return <span>{"Claim Wonder"}</span>;
     default:
       return renderMultiStepGameInputLabel(gameInput);
   }

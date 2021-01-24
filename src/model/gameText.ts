@@ -163,14 +163,6 @@ export function workerPlacementToGameText(
         card: workerPlacementInfo.playedCard.cardName,
       },
     ];
-  } else if (workerPlacementInfo.wonder) {
-    return [
-      {
-        type: "entity" as const,
-        entityType: "wonder" as const,
-        wonder: workerPlacementInfo.wonder,
-      },
-    ];
   } else {
     assertUnreachable(workerPlacementInfo, JSON.stringify(workerPlacementInfo));
   }

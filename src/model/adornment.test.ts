@@ -150,6 +150,8 @@ describe("Adornment", () => {
         CardName.QUEEN,
       ]);
       expect(player.getPoints(gameState)).to.be(3);
+      expect(player.adornmentsInHand).to.eql([]);
+      expect(player.playedAdornments).to.eql([name]);
     });
 
     it("should not gain resources if didn't discard cards", () => {
@@ -537,12 +539,44 @@ describe("Adornment", () => {
       player.adornmentsInHand.push(name);
     });
 
-    xit("should have tests", () => {
+    it("should be able to play", () => {
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
+
+      expect(player.cardsInHand.length).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+
+      const selectAnyInput = {
+        inputType: GameInputType.SELECT_RESOURCES as const,
+        prevInputType: GameInputType.PLAY_ADORNMENT,
+        adornmentContext: name,
+        toSpend: false,
+        maxResources: 3,
+        minResources: 3,
+        clientOptions: {
+          resources: {
+            [ResourceType.PEBBLE]: 1,
+            [ResourceType.RESIN]: 1,
+            [ResourceType.TWIG]: 1,
+          },
+        },
+      };
+
       [player, gameState] = multiStepGameInputTest(gameState, [
         playAdornmentInput(name),
+        selectAnyInput,
       ]);
+
+      expect(player.adornmentsInHand).to.eql([]);
+      expect(player.playedAdornments).to.eql([name]);
+      expect(player.cardsInHand.length).to.be(2);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(1);
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+
+      // always worth 3 points
+      expect(player.getPointsFromAdornments(gameState)).to.be(3);
     });
   });
 

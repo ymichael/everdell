@@ -550,8 +550,25 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
     ]),
     baseVP: 3,
     playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      const helper = new GainMoreThan1AnyResource({
+        adornmentContext: AdornmentName.SEAGLASS_AMULET,
+        skipGameLog: false,
+      });
       if (gameInput.inputType === GameInputType.PLAY_ADORNMENT) {
-        throw new Error("Not Implemented");
+        gameState.pendingGameInputs.push(
+          helper.getGameInput(3, {
+            prevInputType: gameInput.inputType,
+          })
+        );
+      } else if (helper.matchesGameInput(gameInput)) {
+        helper.play(gameState, gameInput);
+        player.drawCards(gameState, 2);
+        player.gainResources({ [ResourceType.VP]: 1 });
+        gameState.addGameLogFromAdornment(AdornmentName.SEAGLASS_AMULET, [
+          player,
+          ` gained 2 1 CARD and 1 VP.`,
+        ]);
       }
     },
   }),

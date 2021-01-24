@@ -37,7 +37,7 @@
 .header {
   font-weight: var(--font-bold);
   background-color: #1891a2;
-  color: #020d0e;
+  color: var(--text-color-inv);
   height: 35px;
   font-size: 12px;
   padding: 8px;

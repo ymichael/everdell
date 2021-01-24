@@ -10,6 +10,7 @@ import {
   GameInputType,
   GameInputPlayAdornment,
   CardName,
+  CardType,
   ResourceType,
 } from "./types";
 
@@ -325,12 +326,145 @@ describe("Adornment", () => {
       player.adornmentsInHand.push(name);
     });
 
-    xit("should have tests", () => {
+    it("should do nothing if player has no production cards", () => {
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
       [player, gameState] = multiStepGameInputTest(gameState, [
         playAdornmentInput(name),
       ]);
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+    });
+
+    it("should not ask to choose if player has less than 3 production cards", () => {
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+
+      player.addToCity(CardName.MINE);
+      player.addToCity(CardName.FARM);
+      player.addToCity(CardName.FARM);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        playAdornmentInput(name),
+      ]);
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(1);
+    });
+
+    it("should ask to choose if player has more than 3 production cards", () => {
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+
+      player.addToCity(CardName.MINE);
+      player.addToCity(CardName.FARM);
+      player.addToCity(CardName.FARM);
+      player.addToCity(CardName.FARM);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        playAdornmentInput(name),
+        {
+          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          prevInputType: GameInputType.PLAY_ADORNMENT,
+          adornmentContext: AdornmentName.SUNDIAL,
+          cardOptions: player.getAllPlayedCardsByType(CardType.PRODUCTION),
+          maxToSelect: 3,
+          minToSelect: 3,
+          clientOptions: {
+            selectedCards: [
+              player.getFirstPlayedCard(CardName.MINE),
+              ...player.getPlayedCardInfos(CardName.FARM).slice(0, 2),
+            ],
+          },
+        },
+      ]);
+
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(1);
+    });
+
+    it("should ask to choose if player has more than 3 production cards (all farms)", () => {
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+
+      player.addToCity(CardName.MINE);
+      player.addToCity(CardName.FARM);
+      player.addToCity(CardName.FARM);
+      player.addToCity(CardName.FARM);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        playAdornmentInput(name),
+        {
+          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          prevInputType: GameInputType.PLAY_ADORNMENT,
+          adornmentContext: AdornmentName.SUNDIAL,
+          cardOptions: player.getAllPlayedCardsByType(CardType.PRODUCTION),
+          maxToSelect: 3,
+          minToSelect: 3,
+          clientOptions: {
+            selectedCards: [...player.getPlayedCardInfos(CardName.FARM)],
+          },
+        },
+      ]);
+
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(3);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+    });
+
+    it("should work with MINER_MOLE and CHIP_SWEEP", () => {
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+
+      player.addToCity(CardName.MINE);
+      player.addToCity(CardName.CHIP_SWEEP);
+      player.addToCity(CardName.FARM);
+      player.addToCity(CardName.MINER_MOLE);
+
+      gameState.players[1].addToCity(CardName.FARM);
+
+      [player, gameState] = multiStepGameInputTest(
+        gameState,
+        [
+          playAdornmentInput(name),
+          {
+            inputType: GameInputType.SELECT_PLAYED_CARDS,
+            prevInputType: GameInputType.PLAY_ADORNMENT,
+            adornmentContext: AdornmentName.SUNDIAL,
+            cardOptions: player.getAllPlayedCardsByType(CardType.PRODUCTION),
+            maxToSelect: 3,
+            minToSelect: 3,
+            clientOptions: {
+              selectedCards: [
+                player.getFirstPlayedCard(CardName.MINE),
+                player.getFirstPlayedCard(CardName.MINER_MOLE),
+                player.getFirstPlayedCard(CardName.CHIP_SWEEP),
+              ],
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_PLAYED_CARDS,
+            prevInputType: GameInputType.SELECT_PLAYED_CARDS,
+            cardContext: CardName.CHIP_SWEEP,
+            cardOptions: player
+              .getAllPlayedCardsByType(CardType.PRODUCTION)
+              .filter(({ cardName }) => cardName !== CardName.CHIP_SWEEP),
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              selectedCards: [player.getFirstPlayedCard(CardName.MINE)],
+            },
+          },
+        ],
+        { skipMultiPendingInputCheck: true, autoAdvance: true }
+      );
+
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(2);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
     });
   });
 

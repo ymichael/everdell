@@ -1,3 +1,6 @@
+import findIndex from "lodash/findIndex";
+import isEqual from "lodash/isEqual";
+
 import {
   AdornmentName,
   CardType,
@@ -23,7 +26,8 @@ import {
 } from "./gameStatePlayHelpers";
 import { Event } from "./event";
 import { Location } from "./location";
-import { toGameText } from "./gameText";
+import { Card, onlyRelevantProductionCards } from "./card";
+import { toGameText, cardListToGameText } from "./gameText";
 
 // Pearlbrook Adornment
 export class Adornment implements GameStatePlayable, IGameTextEntity {
@@ -472,8 +476,75 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
       return player.getPlayedCardNamesByType(CardType.PRODUCTION).length / 2;
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.PLAY_ADORNMENT) {
-        throw new Error("Not Implemented");
+        const cardOptions = onlyRelevantProductionCards(
+          gameState,
+          player.getAllPlayedCardsByType(CardType.PRODUCTION)
+        );
+        if (cardOptions.length !== 0) {
+          if (cardOptions.length <= 3) {
+            gameState.addGameLogFromAdornment(AdornmentName.SUNDIAL, [
+              player,
+              " activated ",
+              ...cardListToGameText(
+                cardOptions.map(({ cardName }) => cardName)
+              ),
+              ".",
+            ]);
+            cardOptions.forEach((selectedCard) => {
+              const targetCard = Card.fromName(selectedCard.cardName);
+              targetCard.gainProduction(
+                gameState,
+                gameInput,
+                player,
+                selectedCard
+              );
+            });
+          } else {
+            // Ask player to select up to 3
+            gameState.pendingGameInputs.push({
+              inputType: GameInputType.SELECT_PLAYED_CARDS,
+              prevInputType: gameInput.inputType,
+              label: "Select 3 PRODUCTION to activate",
+              cardOptions,
+              adornmentContext: AdornmentName.SUNDIAL,
+              maxToSelect: 3,
+              minToSelect: 3,
+              clientOptions: {
+                selectedCards: [],
+              },
+            });
+          }
+        }
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS &&
+        gameInput.prevInputType === GameInputType.PLAY_ADORNMENT &&
+        gameInput.adornmentContext === AdornmentName.SUNDIAL
+      ) {
+        const selectedCards = gameInput.clientOptions.selectedCards;
+        if (!selectedCards || selectedCards.length !== gameInput.minToSelect) {
+          throw new Error("Please select 3 PRODUCTION cards");
+        }
+        selectedCards.forEach((selectedCard) => {
+          if (
+            findIndex(gameInput.cardOptions, (x) =>
+              isEqual(selectedCard, x)
+            ) === -1
+          ) {
+            throw new Error("Couldn't find selected card");
+          }
+        });
+        gameState.addGameLogFromAdornment(AdornmentName.SUNDIAL, [
+          player,
+          " activated ",
+          ...cardListToGameText(selectedCards.map(({ cardName }) => cardName)),
+          ".",
+        ]);
+        selectedCards.forEach((selectedCard) => {
+          const targetCard = Card.fromName(selectedCard.cardName);
+          targetCard.gainProduction(gameState, gameInput, player, selectedCard);
+        });
       }
     },
   }),

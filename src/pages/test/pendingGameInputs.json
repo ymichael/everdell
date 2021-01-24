@@ -15,6 +15,148 @@
     "prevInputType": "PLAY_ADORNMENT"
   },
   {
+    "inputType": "SELECT_PLAYED_CARDS",
+    "prevInputType": "PLAY_ADORNMENT",
+    "label": "Select 3 PRODUCTION to activate",
+    "cardOptions": [
+      {
+        "cardOwnerId": "aQXLoh7sMy2uu95UWZDG9P",
+        "cardName": "Mine",
+        "usedForCritter": false
+      },
+      {
+        "cardOwnerId": "aQXLoh7sMy2uu95UWZDG9P",
+        "cardName": "Farm",
+        "usedForCritter": false
+      },
+      {
+        "cardOwnerId": "aQXLoh7sMy2uu95UWZDG9P",
+        "cardName": "Farm",
+        "usedForCritter": false
+      },
+      {
+        "cardOwnerId": "aQXLoh7sMy2uu95UWZDG9P",
+        "cardName": "Farm",
+        "usedForCritter": false
+      }
+    ],
+    "adornmentContext": "Sundial",
+    "maxToSelect": 3,
+    "minToSelect": 3,
+    "clientOptions": {
+      "selectedCards": []
+    }
+  },
+  {
+    "inputType": "SELECT_PLAYED_CARDS",
+    "prevInputType": "PLAY_ADORNMENT",
+    "label": "Select 3 PRODUCTION to activate",
+    "cardOptions": [
+      {
+        "cardOwnerId": "cwDjeXLBtFEjQuQfHu11ok",
+        "cardName": "Mine",
+        "usedForCritter": false
+      },
+      {
+        "cardOwnerId": "cwDjeXLBtFEjQuQfHu11ok",
+        "cardName": "Farm",
+        "usedForCritter": false
+      },
+      {
+        "cardOwnerId": "cwDjeXLBtFEjQuQfHu11ok",
+        "cardName": "Farm",
+        "usedForCritter": false
+      },
+      {
+        "cardOwnerId": "cwDjeXLBtFEjQuQfHu11ok",
+        "cardName": "Farm",
+        "usedForCritter": false
+      }
+    ],
+    "adornmentContext": "Sundial",
+    "maxToSelect": 3,
+    "minToSelect": 3,
+    "clientOptions": {
+      "selectedCards": []
+    }
+  },
+  {
+    "inputType": "SELECT_PLAYED_CARDS",
+    "prevInputType": "PLAY_ADORNMENT",
+    "label": "Select 3 PRODUCTION to activate",
+    "cardOptions": [
+      {
+        "cardOwnerId": "uvXSfbVdy3Kk4msKUXvLAH",
+        "cardName": "Mine",
+        "usedForCritter": false
+      },
+      {
+        "cardOwnerId": "uvXSfbVdy3Kk4msKUXvLAH",
+        "cardName": "Chip Sweep"
+      },
+      {
+        "cardOwnerId": "uvXSfbVdy3Kk4msKUXvLAH",
+        "cardName": "Farm",
+        "usedForCritter": false
+      },
+      {
+        "cardOwnerId": "uvXSfbVdy3Kk4msKUXvLAH",
+        "cardName": "Miner Mole"
+      }
+    ],
+    "adornmentContext": "Sundial",
+    "maxToSelect": 3,
+    "minToSelect": 3,
+    "clientOptions": {
+      "selectedCards": []
+    }
+  },
+  {
+    "inputType": "SELECT_PLAYED_CARDS",
+    "prevInputType": "SELECT_PLAYED_CARDS",
+    "cardContext": "Miner Mole",
+    "label": "Select 1 PRODUCTION to activate",
+    "cardOptions": [
+      {
+        "cardOwnerId": "3VABvJU5x1Qkf1iZyjsuGV",
+        "cardName": "Farm",
+        "usedForCritter": false
+      }
+    ],
+    "maxToSelect": 1,
+    "minToSelect": 1,
+    "clientOptions": {
+      "selectedCards": []
+    }
+  },
+  {
+    "inputType": "SELECT_PLAYED_CARDS",
+    "prevInputType": "SELECT_PLAYED_CARDS",
+    "label": "Select 1 PRODUCTION to activate",
+    "cardOptions": [
+      {
+        "cardOwnerId": "uvXSfbVdy3Kk4msKUXvLAH",
+        "cardName": "Mine",
+        "usedForCritter": false
+      },
+      {
+        "cardOwnerId": "uvXSfbVdy3Kk4msKUXvLAH",
+        "cardName": "Farm",
+        "usedForCritter": false
+      },
+      {
+        "cardOwnerId": "uvXSfbVdy3Kk4msKUXvLAH",
+        "cardName": "Miner Mole"
+      }
+    ],
+    "cardContext": "Chip Sweep",
+    "maxToSelect": 1,
+    "minToSelect": 1,
+    "clientOptions": {
+      "selectedCards": []
+    }
+  },
+  {
     "inputType": "SELECT_LOCATION",
     "prevInputType": "PLAY_ADORNMENT",
     "label": "Select forest location to copy",
@@ -202,12 +344,12 @@
     "label": "Select 1 PRODUCTION to activate",
     "cardOptions": [
       {
-        "cardOwnerId": "mFHcncMTqsMQEFFAAAEfko",
+        "cardOwnerId": "oP58eBa5yQiJ3XpyV1fDWQ",
         "cardName": "Mine",
         "usedForCritter": false
       },
       {
-        "cardOwnerId": "mFHcncMTqsMQEFFAAAEfko",
+        "cardOwnerId": "oP58eBa5yQiJ3XpyV1fDWQ",
         "cardName": "Farm",
         "usedForCritter": false
       }
@@ -225,7 +367,7 @@
     "label": "Select 1 PRODUCTION to activate",
     "cardOptions": [
       {
-        "cardOwnerId": "vYg7AgdUggtau2VBpEwDqQ",
+        "cardOwnerId": "7QHuXL7Lk1MMz6NgTxq8t4",
         "cardName": "Farm",
         "usedForCritter": false
       }
@@ -324,16 +466,16 @@
     "label": "Select 1 PRODUCTION to activate",
     "cardOptions": [
       {
-        "cardOwnerId": "1QuWx2P4aVfsZxDDyRy8j6",
+        "cardOwnerId": "5stskbyVDmdbWaL1dU5Xjj",
         "cardName": "Teacher"
       },
       {
-        "cardOwnerId": "1QuWx2P4aVfsZxDDyRy8j6",
+        "cardOwnerId": "5stskbyVDmdbWaL1dU5Xjj",
         "cardName": "Farm",
         "usedForCritter": false
       },
       {
-        "cardOwnerId": "1QuWx2P4aVfsZxDDyRy8j6",
+        "cardOwnerId": "5stskbyVDmdbWaL1dU5Xjj",
         "cardName": "Husband"
       }
     ],
@@ -380,16 +522,16 @@
     "label": "Select 1 PRODUCTION to activate",
     "cardOptions": [
       {
-        "cardOwnerId": "1QuWx2P4aVfsZxDDyRy8j6",
+        "cardOwnerId": "5stskbyVDmdbWaL1dU5Xjj",
         "cardName": "Teacher"
       },
       {
-        "cardOwnerId": "1QuWx2P4aVfsZxDDyRy8j6",
+        "cardOwnerId": "5stskbyVDmdbWaL1dU5Xjj",
         "cardName": "Farm",
         "usedForCritter": false
       },
       {
-        "cardOwnerId": "1QuWx2P4aVfsZxDDyRy8j6",
+        "cardOwnerId": "5stskbyVDmdbWaL1dU5Xjj",
         "cardName": "Husband"
       }
     ],
@@ -436,7 +578,7 @@
       }
     },
     "playerOptions": [
-      "3F5Fdtxqapo3EKhx8gdSWL"
+      "gAcGeXDpBFwXmkxq46Mx5p"
     ],
     "mustSelectOne": true,
     "cardContext": "Teacher",
@@ -484,7 +626,7 @@
     ],
     "cardContext": "Fool",
     "playerOptions": [
-      "kR4tuAvo1QytpU71d1sZhC"
+      "hVrYhypk8MNC7XSq65ooBa"
     ],
     "mustSelectOne": true,
     "clientOptions": {
@@ -504,7 +646,7 @@
     ],
     "cardContext": "Fool",
     "playerOptions": [
-      "53T8xv9BtRDeDb9UZyVxg3"
+      "1qCFu6uRrvjSmVpzTLJcKg"
     ],
     "mustSelectOne": true,
     "clientOptions": {
@@ -524,7 +666,7 @@
     ],
     "cardContext": "Fool",
     "playerOptions": [
-      "aMsee5XKLsmGreR1RUXdg4"
+      "haHEagfjJNVX19GnkKiiSL"
     ],
     "mustSelectOne": true,
     "clientOptions": {
@@ -785,12 +927,12 @@
     "label": "Select 1 PRODUCTION to activate",
     "cardOptions": [
       {
-        "cardOwnerId": "sicVnWSdEpswbYVUnvD8Tz",
+        "cardOwnerId": "suGNq5kD7eJmpH6J5rESu1",
         "cardName": "General Store",
         "usedForCritter": false
       },
       {
-        "cardOwnerId": "sicVnWSdEpswbYVUnvD8Tz",
+        "cardOwnerId": "suGNq5kD7eJmpH6J5rESu1",
         "cardName": "Farm",
         "usedForCritter": false
       }
@@ -808,11 +950,11 @@
     "label": "Select 1 PRODUCTION to activate",
     "cardOptions": [
       {
-        "cardOwnerId": "3TDu1hs2T2edfreA4gmXRc",
+        "cardOwnerId": "ptNGN9n18iPTUAxpTozyKc",
         "cardName": "Husband"
       },
       {
-        "cardOwnerId": "3TDu1hs2T2edfreA4gmXRc",
+        "cardOwnerId": "ptNGN9n18iPTUAxpTozyKc",
         "cardName": "Farm",
         "usedForCritter": false
       }
@@ -845,7 +987,7 @@
     "label": "Select 1 PRODUCTION to activate",
     "cardOptions": [
       {
-        "cardOwnerId": "eZZCEfr9PvNWjPRZwAw21z",
+        "cardOwnerId": "4nvhTE4b5vRmAyxSr6gcsm",
         "cardName": "Farm",
         "usedForCritter": false
       }
@@ -863,17 +1005,17 @@
     "label": "Select 1 PRODUCTION to activate",
     "cardOptions": [
       {
-        "cardOwnerId": "mYzfVthf7jViZ6cV24PYaH",
+        "cardOwnerId": "1fk9r8r5rYgqHCxnTASsv4",
         "cardName": "Farm",
         "usedForCritter": false
       },
       {
-        "cardOwnerId": "mYzfVthf7jViZ6cV24PYaH",
+        "cardOwnerId": "1fk9r8r5rYgqHCxnTASsv4",
         "cardName": "General Store",
         "usedForCritter": false
       },
       {
-        "cardOwnerId": "2PgRKiNdwXryo7xGJmerBk",
+        "cardOwnerId": "j3uKQighevCcJaBrBKpj5k",
         "cardName": "General Store",
         "usedForCritter": false
       }
@@ -925,7 +1067,7 @@
     },
     "cardContext": "Monastery",
     "playerOptions": [
-      "dYruQZReqqGfAWK9KA3D4M"
+      "knrru8x5UX1D5eDFkQdx1C"
     ],
     "mustSelectOne": true,
     "clientOptions": {
@@ -965,7 +1107,7 @@
     },
     "cardContext": "Monk",
     "playerOptions": [
-      "fLTJrt4wH68bF81uhBPXBF"
+      "a7rggpdwwPCe9CCaqCzWtz"
     ],
     "mustSelectOne": true,
     "clientOptions": {
@@ -1031,7 +1173,7 @@
     },
     "cardContext": "Monk",
     "playerOptions": [
-      "cY4tK54VHLtqhTQKQeCeeq"
+      "tGxpyDYAiPZVzEE3AuqcJf"
     ],
     "mustSelectOne": true,
     "clientOptions": {
@@ -1198,7 +1340,7 @@
     "prevInputType": "VISIT_DESTINATION_CARD",
     "cardContext": "Post Office",
     "playerOptions": [
-      "xadyDTXwhamP8S6tohvcne"
+      "owRuNNkqPt7CRCdsZ2egLR"
     ],
     "mustSelectOne": true,
     "clientOptions": {
@@ -1212,7 +1354,7 @@
       "Select 2 CARD to give to ",
       {
         "type": "player",
-        "playerId": "xadyDTXwhamP8S6tohvcne",
+        "playerId": "owRuNNkqPt7CRCdsZ2egLR",
         "name": "Player #1"
       }
     ],
@@ -1221,11 +1363,11 @@
       "prevInputType": "VISIT_DESTINATION_CARD",
       "cardContext": "Post Office",
       "playerOptions": [
-        "xadyDTXwhamP8S6tohvcne"
+        "owRuNNkqPt7CRCdsZ2egLR"
       ],
       "mustSelectOne": true,
       "clientOptions": {
-        "selectedPlayer": "xadyDTXwhamP8S6tohvcne"
+        "selectedPlayer": "owRuNNkqPt7CRCdsZ2egLR"
       }
     },
     "cardContext": "Post Office",
@@ -1451,72 +1593,72 @@
     "label": "Select 1 Construction to discard from your city",
     "cardOptions": [
       {
-        "cardOwnerId": "uLGVwnDBha91yUgcEqGQao",
+        "cardOwnerId": "mSc6TybyfM1NPkR7rjqix1",
         "cardName": "Farm",
         "usedForCritter": false
       },
       {
-        "cardOwnerId": "uLGVwnDBha91yUgcEqGQao",
+        "cardOwnerId": "mSc6TybyfM1NPkR7rjqix1",
         "cardName": "Farm",
         "usedForCritter": false
       },
       {
-        "cardOwnerId": "uLGVwnDBha91yUgcEqGQao",
+        "cardOwnerId": "mSc6TybyfM1NPkR7rjqix1",
         "cardName": "Farm",
         "usedForCritter": false
       },
       {
-        "cardOwnerId": "uLGVwnDBha91yUgcEqGQao",
+        "cardOwnerId": "mSc6TybyfM1NPkR7rjqix1",
         "cardName": "Farm",
         "usedForCritter": false
       },
       {
-        "cardOwnerId": "uLGVwnDBha91yUgcEqGQao",
+        "cardOwnerId": "mSc6TybyfM1NPkR7rjqix1",
         "cardName": "Farm",
         "usedForCritter": false
       },
       {
-        "cardOwnerId": "uLGVwnDBha91yUgcEqGQao",
+        "cardOwnerId": "mSc6TybyfM1NPkR7rjqix1",
         "cardName": "Farm",
         "usedForCritter": false
       },
       {
-        "cardOwnerId": "uLGVwnDBha91yUgcEqGQao",
+        "cardOwnerId": "mSc6TybyfM1NPkR7rjqix1",
         "cardName": "Farm",
         "usedForCritter": false
       },
       {
-        "cardOwnerId": "uLGVwnDBha91yUgcEqGQao",
+        "cardOwnerId": "mSc6TybyfM1NPkR7rjqix1",
         "cardName": "Farm",
         "usedForCritter": false
       },
       {
-        "cardOwnerId": "uLGVwnDBha91yUgcEqGQao",
+        "cardOwnerId": "mSc6TybyfM1NPkR7rjqix1",
         "cardName": "Farm",
         "usedForCritter": false
       },
       {
-        "cardOwnerId": "uLGVwnDBha91yUgcEqGQao",
+        "cardOwnerId": "mSc6TybyfM1NPkR7rjqix1",
         "cardName": "Farm",
         "usedForCritter": false
       },
       {
-        "cardOwnerId": "uLGVwnDBha91yUgcEqGQao",
+        "cardOwnerId": "mSc6TybyfM1NPkR7rjqix1",
         "cardName": "Farm",
         "usedForCritter": false
       },
       {
-        "cardOwnerId": "uLGVwnDBha91yUgcEqGQao",
+        "cardOwnerId": "mSc6TybyfM1NPkR7rjqix1",
         "cardName": "Farm",
         "usedForCritter": false
       },
       {
-        "cardOwnerId": "uLGVwnDBha91yUgcEqGQao",
+        "cardOwnerId": "mSc6TybyfM1NPkR7rjqix1",
         "cardName": "Farm",
         "usedForCritter": false
       },
       {
-        "cardOwnerId": "uLGVwnDBha91yUgcEqGQao",
+        "cardOwnerId": "mSc6TybyfM1NPkR7rjqix1",
         "cardName": "Farm",
         "usedForCritter": false
       }
@@ -1674,7 +1816,7 @@
     "label": "Select 1 Construction to discard from your city",
     "cardOptions": [
       {
-        "cardOwnerId": "xaymrWtChqMPVU3vUr847d",
+        "cardOwnerId": "woqHnepxkHVno6bbtwbpsp",
         "cardName": "Farm",
         "usedForCritter": false
       }
@@ -1692,7 +1834,7 @@
     "label": "Select 1 Construction to discard from your city",
     "cardOptions": [
       {
-        "cardOwnerId": "b2YSXEai3i7R67kGoUF5s3",
+        "cardOwnerId": "sLnTzbLCwuu33mscfsPMX5",
         "cardName": "Farm",
         "usedForCritter": false
       }
@@ -1732,7 +1874,7 @@
       }
     },
     "playerOptions": [
-      "nASkJ5f2tnniUVKCDpQoMA"
+      "ndAQf3jHJFkS8RZhPzNDFm"
     ],
     "mustSelectOne": true,
     "cardContext": "Shepherd",
@@ -1781,7 +1923,7 @@
       }
     },
     "playerOptions": [
-      "tohSne3ty8oG8ao4RczpXP"
+      "cv7rsZwxUFs5AvAGkhAxMR"
     ],
     "mustSelectOne": true,
     "cardContext": "Shepherd",
@@ -1808,7 +1950,7 @@
     "prevInputType": "PLAY_CARD",
     "cardContext": "Storehouse",
     "playedCardContext": {
-      "cardOwnerId": "6R4qCy6c9CavRAY1uoeBhN",
+      "cardOwnerId": "netUkusJYtm4VTtfvMfscj",
       "cardName": "Storehouse",
       "usedForCritter": false,
       "workers": [],
@@ -1835,7 +1977,7 @@
     "prevInputType": "PLAY_CARD",
     "cardContext": "Storehouse",
     "playedCardContext": {
-      "cardOwnerId": "fLZ8KXL54rsybHru5tC6k1",
+      "cardOwnerId": "pBFA3CoFLU9n13YmpQf4Su",
       "cardName": "Storehouse",
       "usedForCritter": false,
       "workers": [],
@@ -1863,7 +2005,7 @@
     "label": "Select 1 PRODUCTION to activate",
     "cardOptions": [
       {
-        "cardOwnerId": "c8ToSUu2RxwhbaCZxqL7CP",
+        "cardOwnerId": "dSabKqscEMSGMXP35vrj8A",
         "cardName": "Storehouse",
         "usedForCritter": false,
         "workers": [],
@@ -1888,7 +2030,7 @@
     "label": "Select 1 PRODUCTION to activate",
     "cardOptions": [
       {
-        "cardOwnerId": "c8ToSUu2RxwhbaCZxqL7CP",
+        "cardOwnerId": "dSabKqscEMSGMXP35vrj8A",
         "cardName": "Storehouse",
         "usedForCritter": false,
         "workers": [],
@@ -1912,7 +2054,7 @@
     "prevInputType": "PREPARE_FOR_SEASON",
     "cardContext": "Storehouse",
     "playedCardContext": {
-      "cardOwnerId": "c8ToSUu2RxwhbaCZxqL7CP",
+      "cardOwnerId": "dSabKqscEMSGMXP35vrj8A",
       "cardName": "Storehouse",
       "usedForCritter": false,
       "workers": [],
@@ -1940,7 +2082,7 @@
     "label": "Select 1 PRODUCTION to activate",
     "cardOptions": [
       {
-        "cardOwnerId": "c8ToSUu2RxwhbaCZxqL7CP",
+        "cardOwnerId": "dSabKqscEMSGMXP35vrj8A",
         "cardName": "Storehouse",
         "usedForCritter": false,
         "workers": [],
@@ -1964,7 +2106,7 @@
     "prevInputType": "PREPARE_FOR_SEASON",
     "cardContext": "Storehouse",
     "playedCardContext": {
-      "cardOwnerId": "c8ToSUu2RxwhbaCZxqL7CP",
+      "cardOwnerId": "dSabKqscEMSGMXP35vrj8A",
       "cardName": "Storehouse",
       "usedForCritter": false,
       "workers": [],
@@ -1991,7 +2133,7 @@
     "prevInputType": "SELECT_PLAYED_CARDS",
     "cardContext": "Storehouse",
     "playedCardContext": {
-      "cardOwnerId": "c8ToSUu2RxwhbaCZxqL7CP",
+      "cardOwnerId": "dSabKqscEMSGMXP35vrj8A",
       "cardName": "Storehouse",
       "usedForCritter": false,
       "workers": [],
@@ -2019,7 +2161,7 @@
     "label": "Select 1 PRODUCTION to activate",
     "cardOptions": [
       {
-        "cardOwnerId": "c8ToSUu2RxwhbaCZxqL7CP",
+        "cardOwnerId": "dSabKqscEMSGMXP35vrj8A",
         "cardName": "Storehouse",
         "usedForCritter": false,
         "workers": [],
@@ -2043,7 +2185,7 @@
     "prevInputType": "SELECT_PLAYED_CARDS",
     "cardContext": "Storehouse",
     "playedCardContext": {
-      "cardOwnerId": "c8ToSUu2RxwhbaCZxqL7CP",
+      "cardOwnerId": "dSabKqscEMSGMXP35vrj8A",
       "cardName": "Storehouse",
       "usedForCritter": false,
       "workers": [],
@@ -2070,7 +2212,7 @@
     "prevInputType": "SELECT_PLAYED_CARDS",
     "cardContext": "Storehouse",
     "playedCardContext": {
-      "cardOwnerId": "c8ToSUu2RxwhbaCZxqL7CP",
+      "cardOwnerId": "dSabKqscEMSGMXP35vrj8A",
       "cardName": "Storehouse",
       "usedForCritter": false,
       "workers": [],
@@ -2097,7 +2239,7 @@
     "prevInputType": "SELECT_PLAYED_CARDS",
     "cardContext": "Storehouse",
     "playedCardContext": {
-      "cardOwnerId": "c8ToSUu2RxwhbaCZxqL7CP",
+      "cardOwnerId": "dSabKqscEMSGMXP35vrj8A",
       "cardName": "Storehouse",
       "usedForCritter": false,
       "workers": [],
@@ -2124,7 +2266,7 @@
     "prevInputType": "SELECT_PLAYED_CARDS",
     "cardContext": "Storehouse",
     "playedCardContext": {
-      "cardOwnerId": "c8ToSUu2RxwhbaCZxqL7CP",
+      "cardOwnerId": "dSabKqscEMSGMXP35vrj8A",
       "cardName": "Storehouse",
       "usedForCritter": false,
       "workers": [],
@@ -2182,7 +2324,7 @@
       }
     },
     "playerOptions": [
-      "x81WhgGyQhYmYWobRBYapw"
+      "i7sLcup3DYe79qGMuczbWC"
     ],
     "mustSelectOne": true,
     "cardContext": "Teacher",
@@ -2238,12 +2380,12 @@
     "prevInputType": "VISIT_DESTINATION_CARD",
     "cardOptions": [
       {
-        "cardOwnerId": "9xTX6zxfGW4SBWwnDq7VBX",
+        "cardOwnerId": "j5ToDAcruSpwa1F5eSk3K2",
         "cardName": "Farm",
         "usedForCritter": false
       },
       {
-        "cardOwnerId": "9xTX6zxfGW4SBWwnDq7VBX",
+        "cardOwnerId": "j5ToDAcruSpwa1F5eSk3K2",
         "cardName": "Chapel",
         "usedForCritter": false,
         "workers": [],
@@ -2252,7 +2394,7 @@
         }
       },
       {
-        "cardOwnerId": "9xTX6zxfGW4SBWwnDq7VBX",
+        "cardOwnerId": "j5ToDAcruSpwa1F5eSk3K2",
         "cardName": "Monk"
       }
     ],
@@ -2283,12 +2425,12 @@
       "cardContext": "University",
       "cardOptions": [
         {
-          "cardOwnerId": "9xTX6zxfGW4SBWwnDq7VBX",
+          "cardOwnerId": "j5ToDAcruSpwa1F5eSk3K2",
           "cardName": "Farm",
           "usedForCritter": false
         },
         {
-          "cardOwnerId": "9xTX6zxfGW4SBWwnDq7VBX",
+          "cardOwnerId": "j5ToDAcruSpwa1F5eSk3K2",
           "cardName": "Chapel",
           "usedForCritter": false,
           "workers": [],
@@ -2297,7 +2439,7 @@
           }
         },
         {
-          "cardOwnerId": "9xTX6zxfGW4SBWwnDq7VBX",
+          "cardOwnerId": "j5ToDAcruSpwa1F5eSk3K2",
           "cardName": "Monk"
         }
       ],
@@ -2306,7 +2448,7 @@
       "clientOptions": {
         "selectedCards": [
           {
-            "cardOwnerId": "9xTX6zxfGW4SBWwnDq7VBX",
+            "cardOwnerId": "j5ToDAcruSpwa1F5eSk3K2",
             "cardName": "Farm",
             "usedForCritter": false
           }
@@ -2320,11 +2462,11 @@
     "prevInputType": "VISIT_DESTINATION_CARD",
     "cardOptions": [
       {
-        "cardOwnerId": "mRbigKFmhHHfDoDqP7fvS1",
+        "cardOwnerId": "oLnKa4g3dMmeN1oAiwbUM2",
         "cardName": "Lookout",
         "usedForCritter": false,
         "workers": [
-          "mRbigKFmhHHfDoDqP7fvS1"
+          "oLnKa4g3dMmeN1oAiwbUM2"
         ]
       }
     ],
@@ -2355,11 +2497,11 @@
       "cardContext": "University",
       "cardOptions": [
         {
-          "cardOwnerId": "mRbigKFmhHHfDoDqP7fvS1",
+          "cardOwnerId": "oLnKa4g3dMmeN1oAiwbUM2",
           "cardName": "Lookout",
           "usedForCritter": false,
           "workers": [
-            "mRbigKFmhHHfDoDqP7fvS1"
+            "oLnKa4g3dMmeN1oAiwbUM2"
           ]
         }
       ],
@@ -2368,11 +2510,11 @@
       "clientOptions": {
         "selectedCards": [
           {
-            "cardOwnerId": "mRbigKFmhHHfDoDqP7fvS1",
+            "cardOwnerId": "oLnKa4g3dMmeN1oAiwbUM2",
             "cardName": "Lookout",
             "usedForCritter": false,
             "workers": [
-              "mRbigKFmhHHfDoDqP7fvS1"
+              "oLnKa4g3dMmeN1oAiwbUM2"
             ]
           }
         ]
@@ -2385,11 +2527,11 @@
     "prevInputType": "VISIT_DESTINATION_CARD",
     "cardOptions": [
       {
-        "cardOwnerId": "eoC9vk6eUx5T2RSrZqGfVq",
+        "cardOwnerId": "gpNap9TkxPNtq3211PJxyx",
         "cardName": "Inn",
         "usedForCritter": false,
         "workers": [
-          "hbG4P4cfG7mjaGEeNqJ6pE"
+          "wHPuBE4c55Y22F8Az3hZ47"
         ]
       }
     ],
@@ -2420,11 +2562,11 @@
       "cardContext": "University",
       "cardOptions": [
         {
-          "cardOwnerId": "eoC9vk6eUx5T2RSrZqGfVq",
+          "cardOwnerId": "gpNap9TkxPNtq3211PJxyx",
           "cardName": "Inn",
           "usedForCritter": false,
           "workers": [
-            "hbG4P4cfG7mjaGEeNqJ6pE"
+            "wHPuBE4c55Y22F8Az3hZ47"
           ]
         }
       ],
@@ -2433,11 +2575,11 @@
       "clientOptions": {
         "selectedCards": [
           {
-            "cardOwnerId": "eoC9vk6eUx5T2RSrZqGfVq",
+            "cardOwnerId": "gpNap9TkxPNtq3211PJxyx",
             "cardName": "Inn",
             "usedForCritter": false,
             "workers": [
-              "hbG4P4cfG7mjaGEeNqJ6pE"
+              "wHPuBE4c55Y22F8Az3hZ47"
             ]
           }
         ]
@@ -2450,11 +2592,11 @@
     "prevInputType": "VISIT_DESTINATION_CARD",
     "cardOptions": [
       {
-        "cardOwnerId": "oWEzBGxeGnfSL9EWJHTZ9c",
+        "cardOwnerId": "sJhZnwwbbkJRLXox5yZkaV",
         "cardName": "Monastery",
         "usedForCritter": false,
         "workers": [
-          "oWEzBGxeGnfSL9EWJHTZ9c"
+          "sJhZnwwbbkJRLXox5yZkaV"
         ]
       }
     ],
@@ -2485,11 +2627,11 @@
       "cardContext": "University",
       "cardOptions": [
         {
-          "cardOwnerId": "oWEzBGxeGnfSL9EWJHTZ9c",
+          "cardOwnerId": "sJhZnwwbbkJRLXox5yZkaV",
           "cardName": "Monastery",
           "usedForCritter": false,
           "workers": [
-            "oWEzBGxeGnfSL9EWJHTZ9c"
+            "sJhZnwwbbkJRLXox5yZkaV"
           ]
         }
       ],
@@ -2498,11 +2640,11 @@
       "clientOptions": {
         "selectedCards": [
           {
-            "cardOwnerId": "oWEzBGxeGnfSL9EWJHTZ9c",
+            "cardOwnerId": "sJhZnwwbbkJRLXox5yZkaV",
             "cardName": "Monastery",
             "usedForCritter": false,
             "workers": [
-              "oWEzBGxeGnfSL9EWJHTZ9c"
+              "sJhZnwwbbkJRLXox5yZkaV"
             ]
           }
         ]
@@ -2553,20 +2695,20 @@
     "eventContext": "Croak Wart Cure",
     "cardOptions": [
       {
-        "cardOwnerId": "xz2AE3oqmUyUngAQZVYVwv",
+        "cardOwnerId": "r9JEFHeub99PhgxztxPX7f",
         "cardName": "Undertaker"
       },
       {
-        "cardOwnerId": "xz2AE3oqmUyUngAQZVYVwv",
+        "cardOwnerId": "r9JEFHeub99PhgxztxPX7f",
         "cardName": "Barge Toad"
       },
       {
-        "cardOwnerId": "xz2AE3oqmUyUngAQZVYVwv",
+        "cardOwnerId": "r9JEFHeub99PhgxztxPX7f",
         "cardName": "Farm",
         "usedForCritter": false
       },
       {
-        "cardOwnerId": "xz2AE3oqmUyUngAQZVYVwv",
+        "cardOwnerId": "r9JEFHeub99PhgxztxPX7f",
         "cardName": "Castle",
         "usedForCritter": false
       }
@@ -2591,19 +2733,19 @@
     "eventContext": "Capture of the Acorn Thieves",
     "cardOptions": [
       {
-        "cardOwnerId": "hETgFWhgDcRcvdG7NWxekq",
+        "cardOwnerId": "1jApiKV1GrCiYaYveadv48",
         "cardName": "Ranger"
       },
       {
-        "cardOwnerId": "hETgFWhgDcRcvdG7NWxekq",
+        "cardOwnerId": "1jApiKV1GrCiYaYveadv48",
         "cardName": "Postal Pigeon"
       },
       {
-        "cardOwnerId": "hETgFWhgDcRcvdG7NWxekq",
+        "cardOwnerId": "1jApiKV1GrCiYaYveadv48",
         "cardName": "Wife"
       },
       {
-        "cardOwnerId": "hETgFWhgDcRcvdG7NWxekq",
+        "cardOwnerId": "1jApiKV1GrCiYaYveadv48",
         "cardName": "Queen",
         "workers": []
       }
@@ -2830,7 +2972,7 @@
     "label": "You may select a player to give resources to (worth 2 VP each)",
     "prevInputType": "CLAIM_EVENT",
     "playerOptions": [
-      "mHKFixhkkC5mNX3VBNARNh"
+      "dNNe5DwknU5cPdZbMG58dN"
     ],
     "mustSelectOne": false,
     "eventContext": "A Brilliant Marketing Plan",
@@ -2844,7 +2986,7 @@
       "Give up to 3 ANY to ",
       {
         "type": "player",
-        "playerId": "mHKFixhkkC5mNX3VBNARNh",
+        "playerId": "dNNe5DwknU5cPdZbMG58dN",
         "name": "Player #1"
       }
     ],
@@ -2860,12 +3002,12 @@
       },
       "prevInputType": "CLAIM_EVENT",
       "playerOptions": [
-        "mHKFixhkkC5mNX3VBNARNh"
+        "dNNe5DwknU5cPdZbMG58dN"
       ],
       "mustSelectOne": false,
       "eventContext": "A Brilliant Marketing Plan",
       "clientOptions": {
-        "selectedPlayer": "mHKFixhkkC5mNX3VBNARNh"
+        "selectedPlayer": "dNNe5DwknU5cPdZbMG58dN"
       }
     },
     "maxResources": 3,
@@ -2886,9 +3028,9 @@
     "label": "You may select a player to give resources to (worth 2 VP each)",
     "prevInputType": "CLAIM_EVENT",
     "playerOptions": [
-      "7wYGhDDQezjPcUMhCwU7q7",
-      "cVpPntVXi1tbKihV3wMi3S",
-      "vhCLqzmjzynzKrDh3cKMLL"
+      "iscRK2tdCJtbYFcnA8nR3p",
+      "gpMbCpV2Y3UNVj1fWp9YPs",
+      "qHdKnVss7DqUw5upsW82RQ"
     ],
     "mustSelectOne": false,
     "eventContext": "A Brilliant Marketing Plan",
@@ -2902,7 +3044,7 @@
       "Give up to 3 ANY to ",
       {
         "type": "player",
-        "playerId": "7wYGhDDQezjPcUMhCwU7q7",
+        "playerId": "iscRK2tdCJtbYFcnA8nR3p",
         "name": "Player #1"
       }
     ],
@@ -2918,14 +3060,14 @@
       },
       "prevInputType": "CLAIM_EVENT",
       "playerOptions": [
-        "7wYGhDDQezjPcUMhCwU7q7",
-        "cVpPntVXi1tbKihV3wMi3S",
-        "vhCLqzmjzynzKrDh3cKMLL"
+        "iscRK2tdCJtbYFcnA8nR3p",
+        "gpMbCpV2Y3UNVj1fWp9YPs",
+        "qHdKnVss7DqUw5upsW82RQ"
       ],
       "mustSelectOne": false,
       "eventContext": "A Brilliant Marketing Plan",
       "clientOptions": {
-        "selectedPlayer": "7wYGhDDQezjPcUMhCwU7q7"
+        "selectedPlayer": "iscRK2tdCJtbYFcnA8nR3p"
       }
     },
     "maxResources": 3,
@@ -2951,14 +3093,14 @@
         },
         "prevInputType": "CLAIM_EVENT",
         "playerOptions": [
-          "7wYGhDDQezjPcUMhCwU7q7",
-          "cVpPntVXi1tbKihV3wMi3S",
-          "vhCLqzmjzynzKrDh3cKMLL"
+          "iscRK2tdCJtbYFcnA8nR3p",
+          "gpMbCpV2Y3UNVj1fWp9YPs",
+          "qHdKnVss7DqUw5upsW82RQ"
         ],
         "mustSelectOne": false,
         "eventContext": "A Brilliant Marketing Plan",
         "clientOptions": {
-          "selectedPlayer": "7wYGhDDQezjPcUMhCwU7q7"
+          "selectedPlayer": "iscRK2tdCJtbYFcnA8nR3p"
         }
       },
       "maxResources": 3,
@@ -2973,9 +3115,9 @@
     "label": "You may select a player to give resources to (worth 2 VP each)",
     "prevInputType": "SELECT_RESOURCES",
     "playerOptions": [
-      "7wYGhDDQezjPcUMhCwU7q7",
-      "cVpPntVXi1tbKihV3wMi3S",
-      "vhCLqzmjzynzKrDh3cKMLL"
+      "iscRK2tdCJtbYFcnA8nR3p",
+      "gpMbCpV2Y3UNVj1fWp9YPs",
+      "qHdKnVss7DqUw5upsW82RQ"
     ],
     "mustSelectOne": false,
     "eventContext": "A Brilliant Marketing Plan",
@@ -2989,7 +3131,7 @@
       "Give up to 2 ANY to ",
       {
         "type": "player",
-        "playerId": "vhCLqzmjzynzKrDh3cKMLL",
+        "playerId": "qHdKnVss7DqUw5upsW82RQ",
         "name": "Player #3"
       }
     ],
@@ -3012,14 +3154,14 @@
           },
           "prevInputType": "CLAIM_EVENT",
           "playerOptions": [
-            "7wYGhDDQezjPcUMhCwU7q7",
-            "cVpPntVXi1tbKihV3wMi3S",
-            "vhCLqzmjzynzKrDh3cKMLL"
+            "iscRK2tdCJtbYFcnA8nR3p",
+            "gpMbCpV2Y3UNVj1fWp9YPs",
+            "qHdKnVss7DqUw5upsW82RQ"
           ],
           "mustSelectOne": false,
           "eventContext": "A Brilliant Marketing Plan",
           "clientOptions": {
-            "selectedPlayer": "7wYGhDDQezjPcUMhCwU7q7"
+            "selectedPlayer": "iscRK2tdCJtbYFcnA8nR3p"
           }
         },
         "maxResources": 3,
@@ -3032,14 +3174,14 @@
         }
       },
       "playerOptions": [
-        "7wYGhDDQezjPcUMhCwU7q7",
-        "cVpPntVXi1tbKihV3wMi3S",
-        "vhCLqzmjzynzKrDh3cKMLL"
+        "iscRK2tdCJtbYFcnA8nR3p",
+        "gpMbCpV2Y3UNVj1fWp9YPs",
+        "qHdKnVss7DqUw5upsW82RQ"
       ],
       "mustSelectOne": false,
       "eventContext": "A Brilliant Marketing Plan",
       "clientOptions": {
-        "selectedPlayer": "vhCLqzmjzynzKrDh3cKMLL"
+        "selectedPlayer": "qHdKnVss7DqUw5upsW82RQ"
       }
     },
     "maxResources": 2,
@@ -3072,14 +3214,14 @@
             },
             "prevInputType": "CLAIM_EVENT",
             "playerOptions": [
-              "7wYGhDDQezjPcUMhCwU7q7",
-              "cVpPntVXi1tbKihV3wMi3S",
-              "vhCLqzmjzynzKrDh3cKMLL"
+              "iscRK2tdCJtbYFcnA8nR3p",
+              "gpMbCpV2Y3UNVj1fWp9YPs",
+              "qHdKnVss7DqUw5upsW82RQ"
             ],
             "mustSelectOne": false,
             "eventContext": "A Brilliant Marketing Plan",
             "clientOptions": {
-              "selectedPlayer": "7wYGhDDQezjPcUMhCwU7q7"
+              "selectedPlayer": "iscRK2tdCJtbYFcnA8nR3p"
             }
           },
           "maxResources": 3,
@@ -3092,14 +3234,14 @@
           }
         },
         "playerOptions": [
-          "7wYGhDDQezjPcUMhCwU7q7",
-          "cVpPntVXi1tbKihV3wMi3S",
-          "vhCLqzmjzynzKrDh3cKMLL"
+          "iscRK2tdCJtbYFcnA8nR3p",
+          "gpMbCpV2Y3UNVj1fWp9YPs",
+          "qHdKnVss7DqUw5upsW82RQ"
         ],
         "mustSelectOne": false,
         "eventContext": "A Brilliant Marketing Plan",
         "clientOptions": {
-          "selectedPlayer": "vhCLqzmjzynzKrDh3cKMLL"
+          "selectedPlayer": "qHdKnVss7DqUw5upsW82RQ"
         }
       },
       "maxResources": 2,
@@ -3114,9 +3256,9 @@
     "label": "You may select a player to give resources to (worth 2 VP each)",
     "prevInputType": "SELECT_RESOURCES",
     "playerOptions": [
-      "7wYGhDDQezjPcUMhCwU7q7",
-      "cVpPntVXi1tbKihV3wMi3S",
-      "vhCLqzmjzynzKrDh3cKMLL"
+      "iscRK2tdCJtbYFcnA8nR3p",
+      "gpMbCpV2Y3UNVj1fWp9YPs",
+      "qHdKnVss7DqUw5upsW82RQ"
     ],
     "mustSelectOne": false,
     "eventContext": "A Brilliant Marketing Plan",
@@ -3130,7 +3272,7 @@
       "Give up to 1 ANY to ",
       {
         "type": "player",
-        "playerId": "cVpPntVXi1tbKihV3wMi3S",
+        "playerId": "gpMbCpV2Y3UNVj1fWp9YPs",
         "name": "Player #2"
       }
     ],
@@ -3160,14 +3302,14 @@
               },
               "prevInputType": "CLAIM_EVENT",
               "playerOptions": [
-                "7wYGhDDQezjPcUMhCwU7q7",
-                "cVpPntVXi1tbKihV3wMi3S",
-                "vhCLqzmjzynzKrDh3cKMLL"
+                "iscRK2tdCJtbYFcnA8nR3p",
+                "gpMbCpV2Y3UNVj1fWp9YPs",
+                "qHdKnVss7DqUw5upsW82RQ"
               ],
               "mustSelectOne": false,
               "eventContext": "A Brilliant Marketing Plan",
               "clientOptions": {
-                "selectedPlayer": "7wYGhDDQezjPcUMhCwU7q7"
+                "selectedPlayer": "iscRK2tdCJtbYFcnA8nR3p"
               }
             },
             "maxResources": 3,
@@ -3180,14 +3322,14 @@
             }
           },
           "playerOptions": [
-            "7wYGhDDQezjPcUMhCwU7q7",
-            "cVpPntVXi1tbKihV3wMi3S",
-            "vhCLqzmjzynzKrDh3cKMLL"
+            "iscRK2tdCJtbYFcnA8nR3p",
+            "gpMbCpV2Y3UNVj1fWp9YPs",
+            "qHdKnVss7DqUw5upsW82RQ"
           ],
           "mustSelectOne": false,
           "eventContext": "A Brilliant Marketing Plan",
           "clientOptions": {
-            "selectedPlayer": "vhCLqzmjzynzKrDh3cKMLL"
+            "selectedPlayer": "qHdKnVss7DqUw5upsW82RQ"
           }
         },
         "maxResources": 2,
@@ -3200,14 +3342,14 @@
         }
       },
       "playerOptions": [
-        "7wYGhDDQezjPcUMhCwU7q7",
-        "cVpPntVXi1tbKihV3wMi3S",
-        "vhCLqzmjzynzKrDh3cKMLL"
+        "iscRK2tdCJtbYFcnA8nR3p",
+        "gpMbCpV2Y3UNVj1fWp9YPs",
+        "qHdKnVss7DqUw5upsW82RQ"
       ],
       "mustSelectOne": false,
       "eventContext": "A Brilliant Marketing Plan",
       "clientOptions": {
-        "selectedPlayer": "cVpPntVXi1tbKihV3wMi3S"
+        "selectedPlayer": "gpMbCpV2Y3UNVj1fWp9YPs"
       }
     },
     "maxResources": 1,
@@ -3228,9 +3370,9 @@
     "label": "You may select a player to give resources to (worth 2 VP each)",
     "prevInputType": "CLAIM_EVENT",
     "playerOptions": [
-      "vgefYHPDTxVZxVN7WnhCRU",
-      "paKhfhWAHyQtW6r2wMWBA2",
-      "koa8FetM7q3WTozwrJ6eQ6"
+      "nE5FGbpdiucSq2m2cK1pwq",
+      "edyxBos9RkbY6zKkEYn2sm",
+      "a8uqdsUfUcR3EooEZ7kdeG"
     ],
     "mustSelectOne": false,
     "eventContext": "A Brilliant Marketing Plan",
@@ -3244,7 +3386,7 @@
       "Give up to 3 ANY to ",
       {
         "type": "player",
-        "playerId": "vgefYHPDTxVZxVN7WnhCRU",
+        "playerId": "nE5FGbpdiucSq2m2cK1pwq",
         "name": "Player #1"
       }
     ],
@@ -3260,14 +3402,14 @@
       },
       "prevInputType": "CLAIM_EVENT",
       "playerOptions": [
-        "vgefYHPDTxVZxVN7WnhCRU",
-        "paKhfhWAHyQtW6r2wMWBA2",
-        "koa8FetM7q3WTozwrJ6eQ6"
+        "nE5FGbpdiucSq2m2cK1pwq",
+        "edyxBos9RkbY6zKkEYn2sm",
+        "a8uqdsUfUcR3EooEZ7kdeG"
       ],
       "mustSelectOne": false,
       "eventContext": "A Brilliant Marketing Plan",
       "clientOptions": {
-        "selectedPlayer": "vgefYHPDTxVZxVN7WnhCRU"
+        "selectedPlayer": "nE5FGbpdiucSq2m2cK1pwq"
       }
     },
     "maxResources": 3,
@@ -3293,14 +3435,14 @@
         },
         "prevInputType": "CLAIM_EVENT",
         "playerOptions": [
-          "vgefYHPDTxVZxVN7WnhCRU",
-          "paKhfhWAHyQtW6r2wMWBA2",
-          "koa8FetM7q3WTozwrJ6eQ6"
+          "nE5FGbpdiucSq2m2cK1pwq",
+          "edyxBos9RkbY6zKkEYn2sm",
+          "a8uqdsUfUcR3EooEZ7kdeG"
         ],
         "mustSelectOne": false,
         "eventContext": "A Brilliant Marketing Plan",
         "clientOptions": {
-          "selectedPlayer": "vgefYHPDTxVZxVN7WnhCRU"
+          "selectedPlayer": "nE5FGbpdiucSq2m2cK1pwq"
         }
       },
       "maxResources": 3,
@@ -3315,9 +3457,9 @@
     "label": "You may select a player to give resources to (worth 2 VP each)",
     "prevInputType": "SELECT_RESOURCES",
     "playerOptions": [
-      "vgefYHPDTxVZxVN7WnhCRU",
-      "paKhfhWAHyQtW6r2wMWBA2",
-      "koa8FetM7q3WTozwrJ6eQ6"
+      "nE5FGbpdiucSq2m2cK1pwq",
+      "edyxBos9RkbY6zKkEYn2sm",
+      "a8uqdsUfUcR3EooEZ7kdeG"
     ],
     "mustSelectOne": false,
     "eventContext": "A Brilliant Marketing Plan",
@@ -3331,7 +3473,7 @@
       "Give up to 2 ANY to ",
       {
         "type": "player",
-        "playerId": "koa8FetM7q3WTozwrJ6eQ6",
+        "playerId": "a8uqdsUfUcR3EooEZ7kdeG",
         "name": "Player #3"
       }
     ],
@@ -3354,14 +3496,14 @@
           },
           "prevInputType": "CLAIM_EVENT",
           "playerOptions": [
-            "vgefYHPDTxVZxVN7WnhCRU",
-            "paKhfhWAHyQtW6r2wMWBA2",
-            "koa8FetM7q3WTozwrJ6eQ6"
+            "nE5FGbpdiucSq2m2cK1pwq",
+            "edyxBos9RkbY6zKkEYn2sm",
+            "a8uqdsUfUcR3EooEZ7kdeG"
           ],
           "mustSelectOne": false,
           "eventContext": "A Brilliant Marketing Plan",
           "clientOptions": {
-            "selectedPlayer": "vgefYHPDTxVZxVN7WnhCRU"
+            "selectedPlayer": "nE5FGbpdiucSq2m2cK1pwq"
           }
         },
         "maxResources": 3,
@@ -3374,14 +3516,14 @@
         }
       },
       "playerOptions": [
-        "vgefYHPDTxVZxVN7WnhCRU",
-        "paKhfhWAHyQtW6r2wMWBA2",
-        "koa8FetM7q3WTozwrJ6eQ6"
+        "nE5FGbpdiucSq2m2cK1pwq",
+        "edyxBos9RkbY6zKkEYn2sm",
+        "a8uqdsUfUcR3EooEZ7kdeG"
       ],
       "mustSelectOne": false,
       "eventContext": "A Brilliant Marketing Plan",
       "clientOptions": {
-        "selectedPlayer": "koa8FetM7q3WTozwrJ6eQ6"
+        "selectedPlayer": "a8uqdsUfUcR3EooEZ7kdeG"
       }
     },
     "maxResources": 2,
@@ -3414,14 +3556,14 @@
             },
             "prevInputType": "CLAIM_EVENT",
             "playerOptions": [
-              "vgefYHPDTxVZxVN7WnhCRU",
-              "paKhfhWAHyQtW6r2wMWBA2",
-              "koa8FetM7q3WTozwrJ6eQ6"
+              "nE5FGbpdiucSq2m2cK1pwq",
+              "edyxBos9RkbY6zKkEYn2sm",
+              "a8uqdsUfUcR3EooEZ7kdeG"
             ],
             "mustSelectOne": false,
             "eventContext": "A Brilliant Marketing Plan",
             "clientOptions": {
-              "selectedPlayer": "vgefYHPDTxVZxVN7WnhCRU"
+              "selectedPlayer": "nE5FGbpdiucSq2m2cK1pwq"
             }
           },
           "maxResources": 3,
@@ -3434,14 +3576,14 @@
           }
         },
         "playerOptions": [
-          "vgefYHPDTxVZxVN7WnhCRU",
-          "paKhfhWAHyQtW6r2wMWBA2",
-          "koa8FetM7q3WTozwrJ6eQ6"
+          "nE5FGbpdiucSq2m2cK1pwq",
+          "edyxBos9RkbY6zKkEYn2sm",
+          "a8uqdsUfUcR3EooEZ7kdeG"
         ],
         "mustSelectOne": false,
         "eventContext": "A Brilliant Marketing Plan",
         "clientOptions": {
-          "selectedPlayer": "koa8FetM7q3WTozwrJ6eQ6"
+          "selectedPlayer": "a8uqdsUfUcR3EooEZ7kdeG"
         }
       },
       "maxResources": 2,
@@ -3456,9 +3598,9 @@
     "label": "You may select a player to give resources to (worth 2 VP each)",
     "prevInputType": "SELECT_RESOURCES",
     "playerOptions": [
-      "vgefYHPDTxVZxVN7WnhCRU",
-      "paKhfhWAHyQtW6r2wMWBA2",
-      "koa8FetM7q3WTozwrJ6eQ6"
+      "nE5FGbpdiucSq2m2cK1pwq",
+      "edyxBos9RkbY6zKkEYn2sm",
+      "a8uqdsUfUcR3EooEZ7kdeG"
     ],
     "mustSelectOne": false,
     "eventContext": "A Brilliant Marketing Plan",
@@ -3477,9 +3619,9 @@
     "label": "You may select a player to give resources to (worth 2 VP each)",
     "prevInputType": "CLAIM_EVENT",
     "playerOptions": [
-      "2inCqJ1dqqLBk9VWMLK5cL",
-      "gP4XXsh42HY3wUfj8gpZZ6",
-      "iKpPp7YDB6mptWC2tSadM8"
+      "arh1x1DTWBCiare7H3JsRY",
+      "jW1rMc32bTh57c5uo6c5di",
+      "4rpeXMLK1AQi18HYZqbnFj"
     ],
     "mustSelectOne": false,
     "eventContext": "A Brilliant Marketing Plan",
@@ -3493,7 +3635,7 @@
       "Give up to 3 ANY to ",
       {
         "type": "player",
-        "playerId": "2inCqJ1dqqLBk9VWMLK5cL",
+        "playerId": "arh1x1DTWBCiare7H3JsRY",
         "name": "Player #1"
       }
     ],
@@ -3509,14 +3651,14 @@
       },
       "prevInputType": "CLAIM_EVENT",
       "playerOptions": [
-        "2inCqJ1dqqLBk9VWMLK5cL",
-        "gP4XXsh42HY3wUfj8gpZZ6",
-        "iKpPp7YDB6mptWC2tSadM8"
+        "arh1x1DTWBCiare7H3JsRY",
+        "jW1rMc32bTh57c5uo6c5di",
+        "4rpeXMLK1AQi18HYZqbnFj"
       ],
       "mustSelectOne": false,
       "eventContext": "A Brilliant Marketing Plan",
       "clientOptions": {
-        "selectedPlayer": "2inCqJ1dqqLBk9VWMLK5cL"
+        "selectedPlayer": "arh1x1DTWBCiare7H3JsRY"
       }
     },
     "maxResources": 3,
@@ -3537,9 +3679,9 @@
     "label": "You may select a player to give resources to (worth 2 VP each)",
     "prevInputType": "CLAIM_EVENT",
     "playerOptions": [
-      "2NEs5dJ5vJb1XGWEnxodQc",
-      "c4p9MMM4f34LhihWe2r5Ah",
-      "fp2WcLK55P9eWQfcWukuZS"
+      "9sZFWeNNcn9v9Fsxexjg5J",
+      "2KkaRNvQHko1mAeE6Q7jSs",
+      "eASYby1mM7nGGQkQ6pmkdB"
     ],
     "mustSelectOne": false,
     "eventContext": "A Brilliant Marketing Plan",
@@ -3553,7 +3695,7 @@
       "Give up to 3 ANY to ",
       {
         "type": "player",
-        "playerId": "2NEs5dJ5vJb1XGWEnxodQc",
+        "playerId": "9sZFWeNNcn9v9Fsxexjg5J",
         "name": "Player #1"
       }
     ],
@@ -3569,14 +3711,14 @@
       },
       "prevInputType": "CLAIM_EVENT",
       "playerOptions": [
-        "2NEs5dJ5vJb1XGWEnxodQc",
-        "c4p9MMM4f34LhihWe2r5Ah",
-        "fp2WcLK55P9eWQfcWukuZS"
+        "9sZFWeNNcn9v9Fsxexjg5J",
+        "2KkaRNvQHko1mAeE6Q7jSs",
+        "eASYby1mM7nGGQkQ6pmkdB"
       ],
       "mustSelectOne": false,
       "eventContext": "A Brilliant Marketing Plan",
       "clientOptions": {
-        "selectedPlayer": "2NEs5dJ5vJb1XGWEnxodQc"
+        "selectedPlayer": "9sZFWeNNcn9v9Fsxexjg5J"
       }
     },
     "maxResources": 3,
@@ -3602,14 +3744,14 @@
         },
         "prevInputType": "CLAIM_EVENT",
         "playerOptions": [
-          "2NEs5dJ5vJb1XGWEnxodQc",
-          "c4p9MMM4f34LhihWe2r5Ah",
-          "fp2WcLK55P9eWQfcWukuZS"
+          "9sZFWeNNcn9v9Fsxexjg5J",
+          "2KkaRNvQHko1mAeE6Q7jSs",
+          "eASYby1mM7nGGQkQ6pmkdB"
         ],
         "mustSelectOne": false,
         "eventContext": "A Brilliant Marketing Plan",
         "clientOptions": {
-          "selectedPlayer": "2NEs5dJ5vJb1XGWEnxodQc"
+          "selectedPlayer": "9sZFWeNNcn9v9Fsxexjg5J"
         }
       },
       "maxResources": 3,
@@ -3624,9 +3766,9 @@
     "label": "You may select a player to give resources to (worth 2 VP each)",
     "prevInputType": "SELECT_RESOURCES",
     "playerOptions": [
-      "2NEs5dJ5vJb1XGWEnxodQc",
-      "c4p9MMM4f34LhihWe2r5Ah",
-      "fp2WcLK55P9eWQfcWukuZS"
+      "9sZFWeNNcn9v9Fsxexjg5J",
+      "2KkaRNvQHko1mAeE6Q7jSs",
+      "eASYby1mM7nGGQkQ6pmkdB"
     ],
     "mustSelectOne": false,
     "eventContext": "A Brilliant Marketing Plan",
@@ -3640,7 +3782,7 @@
       "Give up to 2 ANY to ",
       {
         "type": "player",
-        "playerId": "fp2WcLK55P9eWQfcWukuZS",
+        "playerId": "eASYby1mM7nGGQkQ6pmkdB",
         "name": "Player #3"
       }
     ],
@@ -3663,14 +3805,14 @@
           },
           "prevInputType": "CLAIM_EVENT",
           "playerOptions": [
-            "2NEs5dJ5vJb1XGWEnxodQc",
-            "c4p9MMM4f34LhihWe2r5Ah",
-            "fp2WcLK55P9eWQfcWukuZS"
+            "9sZFWeNNcn9v9Fsxexjg5J",
+            "2KkaRNvQHko1mAeE6Q7jSs",
+            "eASYby1mM7nGGQkQ6pmkdB"
           ],
           "mustSelectOne": false,
           "eventContext": "A Brilliant Marketing Plan",
           "clientOptions": {
-            "selectedPlayer": "2NEs5dJ5vJb1XGWEnxodQc"
+            "selectedPlayer": "9sZFWeNNcn9v9Fsxexjg5J"
           }
         },
         "maxResources": 3,
@@ -3683,14 +3825,14 @@
         }
       },
       "playerOptions": [
-        "2NEs5dJ5vJb1XGWEnxodQc",
-        "c4p9MMM4f34LhihWe2r5Ah",
-        "fp2WcLK55P9eWQfcWukuZS"
+        "9sZFWeNNcn9v9Fsxexjg5J",
+        "2KkaRNvQHko1mAeE6Q7jSs",
+        "eASYby1mM7nGGQkQ6pmkdB"
       ],
       "mustSelectOne": false,
       "eventContext": "A Brilliant Marketing Plan",
       "clientOptions": {
-        "selectedPlayer": "fp2WcLK55P9eWQfcWukuZS"
+        "selectedPlayer": "eASYby1mM7nGGQkQ6pmkdB"
       }
     },
     "maxResources": 2,
@@ -3774,77 +3916,77 @@
     "label": "Select 1 Construction to discard from your city",
     "cardOptions": [
       {
-        "cardOwnerId": "iagjUsthouedtb8poPmQk4",
+        "cardOwnerId": "fvhdHaqExsU2bhNvqaEkYL",
         "cardName": "Farm",
         "usedForCritter": false
       },
       {
-        "cardOwnerId": "iagjUsthouedtb8poPmQk4",
+        "cardOwnerId": "fvhdHaqExsU2bhNvqaEkYL",
         "cardName": "Farm",
         "usedForCritter": false
       },
       {
-        "cardOwnerId": "iagjUsthouedtb8poPmQk4",
+        "cardOwnerId": "fvhdHaqExsU2bhNvqaEkYL",
         "cardName": "Farm",
         "usedForCritter": false
       },
       {
-        "cardOwnerId": "iagjUsthouedtb8poPmQk4",
+        "cardOwnerId": "fvhdHaqExsU2bhNvqaEkYL",
         "cardName": "Farm",
         "usedForCritter": false
       },
       {
-        "cardOwnerId": "iagjUsthouedtb8poPmQk4",
+        "cardOwnerId": "fvhdHaqExsU2bhNvqaEkYL",
         "cardName": "Farm",
         "usedForCritter": false
       },
       {
-        "cardOwnerId": "iagjUsthouedtb8poPmQk4",
+        "cardOwnerId": "fvhdHaqExsU2bhNvqaEkYL",
         "cardName": "Farm",
         "usedForCritter": false
       },
       {
-        "cardOwnerId": "iagjUsthouedtb8poPmQk4",
+        "cardOwnerId": "fvhdHaqExsU2bhNvqaEkYL",
         "cardName": "Farm",
         "usedForCritter": false
       },
       {
-        "cardOwnerId": "iagjUsthouedtb8poPmQk4",
+        "cardOwnerId": "fvhdHaqExsU2bhNvqaEkYL",
         "cardName": "Farm",
         "usedForCritter": false
       },
       {
-        "cardOwnerId": "iagjUsthouedtb8poPmQk4",
+        "cardOwnerId": "fvhdHaqExsU2bhNvqaEkYL",
         "cardName": "Farm",
         "usedForCritter": false
       },
       {
-        "cardOwnerId": "iagjUsthouedtb8poPmQk4",
+        "cardOwnerId": "fvhdHaqExsU2bhNvqaEkYL",
         "cardName": "Farm",
         "usedForCritter": false
       },
       {
-        "cardOwnerId": "iagjUsthouedtb8poPmQk4",
+        "cardOwnerId": "fvhdHaqExsU2bhNvqaEkYL",
         "cardName": "Farm",
         "usedForCritter": false
       },
       {
-        "cardOwnerId": "iagjUsthouedtb8poPmQk4",
+        "cardOwnerId": "fvhdHaqExsU2bhNvqaEkYL",
         "cardName": "Farm",
         "usedForCritter": false
       },
       {
-        "cardOwnerId": "iagjUsthouedtb8poPmQk4",
+        "cardOwnerId": "fvhdHaqExsU2bhNvqaEkYL",
         "cardName": "Farm",
         "usedForCritter": false
       },
       {
-        "cardOwnerId": "iagjUsthouedtb8poPmQk4",
+        "cardOwnerId": "fvhdHaqExsU2bhNvqaEkYL",
         "cardName": "Farm",
         "usedForCritter": false
       },
       {
-        "cardOwnerId": "iagjUsthouedtb8poPmQk4",
+        "cardOwnerId": "fvhdHaqExsU2bhNvqaEkYL",
         "cardName": "Farm",
         "usedForCritter": false
       }

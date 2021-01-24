@@ -917,6 +917,17 @@ export class GameState {
     }
 
     if (
+      pendingInput.inputType === GameInputType.SELECT_PLAYED_CARDS &&
+      pendingInput.minToSelect === pendingInput.maxToSelect &&
+      pendingInput.cardOptions.length === pendingInput.minToSelect
+    ) {
+      return {
+        ...pendingInput,
+        clientOptions: { selectedCards: pendingInput.cardOptions },
+      };
+    }
+
+    if (
       pendingInput.inputType === GameInputType.SELECT_CARDS &&
       pendingInput.minToSelect === pendingInput.maxToSelect &&
       pendingInput.cardOptions.length === pendingInput.minToSelect

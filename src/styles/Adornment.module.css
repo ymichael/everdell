@@ -1,0 +1,43 @@
+.adornment {
+  min-height: 180px;
+  width: 160px;
+  border-radius: 5px;
+  position: relative;
+  border: 1px solid #b22243;
+  background-color: var(--bg-color-item);
+  overflow: hidden;
+  display: flex;
+  align-self: flex-start;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.adornment_header {
+  font-weight: var(--font-bold);
+  background-color: var(--adornment-col);
+  font-size: 12px;
+  padding: 8px;
+  text-align: center;
+  text-transform: uppercase;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.adornment_cost_row {
+  font-size: 12px;
+  padding: 5px;
+  padding-bottom: 10px;
+}
+
+.adornment_description {
+  text-align: center;
+  padding: 10px 5px 5px 5px;
+  font-size: 12px;
+  line-height: 1.5em;
+}
+
+.base_vp {
+  padding: 3px 0;
+  text-align: left;
+}

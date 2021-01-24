@@ -270,24 +270,7 @@ export class Card<TCardType extends CardType = CardType>
       playedCard = player.addToCity(this.name);
     }
 
-    let playCardGameInput: GameInput;
-    if (gameInput.inputType === GameInputType.PLAY_CARD) {
-      if (playedCard) {
-        gameInput.playedCardContext = playedCard;
-      }
-      playCardGameInput = gameInput;
-    } else {
-      playCardGameInput = {
-        inputType: GameInputType.PLAY_CARD as const,
-        prevInputType: gameInput.inputType,
-        playedCardContext: playedCard,
-        clientOptions: {
-          card: this.name,
-          fromMeadow: false,
-          paymentOptions: { resources: {} },
-        },
-      };
-    }
+    const playCardGameInput = this.getPlayCardInput(gameInput, playedCard);
 
     // Do this first so that logs are ordered properly:
     // 1. play card
@@ -315,6 +298,27 @@ export class Card<TCardType extends CardType = CardType>
     }
   }
 
+  canReactivateCard(gameState: GameState): boolean {
+    if (
+      !(
+        this.cardType === CardType.PRODUCTION ||
+        this.cardType === CardType.TRAVELER
+      )
+    ) {
+      return false;
+    }
+    if (this.canPlayCheckInner) {
+      const errorMsg = this.canPlayCheckInner(
+        gameState,
+        this.getPlayCardInput()
+      );
+      if (errorMsg) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   reactivateCard(
     gameState: GameState,
     gameInput: GameInput,
@@ -327,6 +331,31 @@ export class Card<TCardType extends CardType = CardType>
     ) {
       this.activateCard(gameState, gameInput, cardOwner, playedCard);
     }
+  }
+
+  private getPlayCardInput(
+    gameInput: GameInput | null = null,
+    playedCard: PlayedCardInfo | undefined = undefined
+  ): GameInput {
+    let playCardGameInput: GameInput;
+    if (gameInput && gameInput.inputType === GameInputType.PLAY_CARD) {
+      if (playedCard) {
+        gameInput.playedCardContext = playedCard;
+      }
+      playCardGameInput = gameInput;
+    } else {
+      playCardGameInput = {
+        inputType: GameInputType.PLAY_CARD as const,
+        prevInputType: gameInput?.inputType,
+        playedCardContext: playedCard,
+        clientOptions: {
+          card: this.name,
+          fromMeadow: false,
+          paymentOptions: { resources: {} },
+        },
+      };
+    }
+    return playCardGameInput;
   }
 
   activateCard(
@@ -359,24 +388,7 @@ export class Card<TCardType extends CardType = CardType>
       this.productionInner(gameState, gameInput, cardOwner, playedCard);
     }
     if (this.playInner) {
-      let playCardGameInput: GameInput;
-      if (gameInput.inputType === GameInputType.PLAY_CARD) {
-        if (playedCard) {
-          gameInput.playedCardContext = playedCard;
-        }
-        playCardGameInput = gameInput;
-      } else {
-        playCardGameInput = {
-          inputType: GameInputType.PLAY_CARD as const,
-          prevInputType: gameInput.inputType,
-          playedCardContext: playedCard,
-          clientOptions: {
-            card: this.name,
-            fromMeadow: false,
-            paymentOptions: { resources: {} },
-          },
-        };
-      }
+      const playCardGameInput = this.getPlayCardInput(gameInput, playedCard);
       this.playInner(gameState, playCardGameInput);
     }
   }
@@ -1064,6 +1076,22 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.PLAY_CARD) {
+        if (
+          gameInput.playedCardContext &&
+          player.findPlayedCard(gameInput.playedCardContext)
+        ) {
+          player.removeCardFromCity(
+            gameState,
+            gameInput.playedCardContext,
+            false /* don't add to discard */
+          );
+          gameState.addGameLogFromCard(CardName.FOOL, [
+            player,
+            " removed the ",
+            Card.fromName(CardName.FOOL),
+            " from their city.",
+          ]);
+        }
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_PLAYER,
           prevInputType: gameInput.inputType,

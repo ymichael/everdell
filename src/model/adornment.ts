@@ -174,7 +174,11 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.PLAY_ADORNMENT) {
-        const cardOptions = player.getAllPlayedCardsByType(CardType.TRAVELER);
+        const cardOptions = player
+          .getAllPlayedCardsByType(CardType.TRAVELER)
+          .filter(({ cardName }) => {
+            return Card.fromName(cardName).canReactivateCard(gameState);
+          });
         if (cardOptions.length === 0) {
           return;
         }

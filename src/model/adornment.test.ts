@@ -1083,6 +1083,60 @@ describe("Adornment", () => {
       expect(player.getPlayedCardInfos(CardName.RUINS).length).to.be(1);
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
     });
+
+    it("should work for FOOL", () => {
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
+      player.addToCity(CardName.FOOL);
+
+      let targetPlayer = gameState.players[1];
+      expect(player.hasCardInCity(CardName.FOOL)).to.be(true);
+      expect(targetPlayer.hasCardInCity(CardName.FOOL)).to.be(false);
+
+      [player, gameState] = multiStepGameInputTest(
+        gameState,
+        [
+          playAdornmentInput(name),
+          {
+            inputType: GameInputType.SELECT_PLAYED_CARDS,
+            prevInputType: GameInputType.PLAY_ADORNMENT,
+            cardOptions: player.getPlayedCardInfos(CardName.FOOL),
+            adornmentContext: name,
+            maxToSelect: 2,
+            minToSelect: 0,
+            clientOptions: {
+              selectedCards: player.getPlayedCardInfos(CardName.FOOL),
+            },
+          },
+        ],
+        { autoAdvance: true }
+      );
+
+      targetPlayer = gameState.players[1];
+      expect(gameState.discardPile.length).to.be(0);
+      expect(player.hasCardInCity(CardName.FOOL)).to.be(false);
+      expect(targetPlayer.hasCardInCity(CardName.FOOL)).to.be(true);
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+    });
+
+    it("should only prompt for reactivatable cards", () => {
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
+      player.addToCity(CardName.FOOL);
+
+      // Both players already have FOOL in their city.
+      const targetPlayer = gameState.players[1];
+      targetPlayer.addToCity(CardName.FOOL);
+
+      expect(player.hasCardInCity(CardName.FOOL)).to.be(true);
+      expect(targetPlayer.hasCardInCity(CardName.FOOL)).to.be(true);
+
+      [player, gameState] = multiStepGameInputTest(
+        gameState,
+        [playAdornmentInput(name)],
+        { autoAdvance: true }
+      );
+
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+    });
   });
 
   describe(AdornmentName.TIARA, () => {

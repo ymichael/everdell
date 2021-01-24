@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
 
+import { GetServerSideProps } from "next";
 import Head from "next/head";
 import styles from "../../styles/test.module.css";
 
@@ -40,7 +41,7 @@ const ItemsList: React.FC<{ title: string; visible: boolean }> = ({
   );
 };
 
-export const getServerSideProps = (context) => {
+export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
     props: {},
   };

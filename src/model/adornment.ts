@@ -154,7 +154,6 @@ export class Adornment implements GameStatePlayable, IGameTextEntity {
       },
     }
   ): void {
-    const player = gameState.getActivePlayer();
     if (gameInput.inputType === GameInputType.PLAY_ADORNMENT) {
       this.playInner(gameState, gameInput);
     } else if (
@@ -606,11 +605,11 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.PLAY_ADORNMENT) {
-        let players = gameState.players.filter(
+        const players = gameState.players.filter(
           (p) => p.playerId !== player.playerId
         );
 
-        let adornmentOptions: AdornmentName[] = [];
+        const adornmentOptions: AdornmentName[] = [];
 
         players.forEach((player) => {
           const playedAdornments = player.playedAdornments;

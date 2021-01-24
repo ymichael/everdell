@@ -1,6 +1,7 @@
 import pickBy from "lodash/pickBy";
 
 import {
+  AdornmentName,
   CardName,
   LocationName,
   EventName,
@@ -12,11 +13,7 @@ import {
   GameInputSelectResources,
   GameInputSelectOptionGeneric,
 } from "./types";
-import {
-  GameState,
-  GameStatePlayFn,
-  GameStateCountPointsFn,
-} from "./gameState";
+import type { GameState, GameStatePlayFn } from "./gameState";
 import { toGameText, resourceMapToGameText } from "./gameText";
 import { Card } from "./card";
 
@@ -92,43 +89,27 @@ export function sumResources(resourceMap: ResourceMap): number {
   return (Object.values(resourceMap) as number[]).reduce((a, b) => a + b, 0);
 }
 
-export function getPointsPerRarityLabel({
-  isCritter,
-  isUnique,
-}: {
-  isCritter: boolean;
-  isUnique: boolean;
-}): GameStateCountPointsFn {
-  return (gameState: GameState, playerId: string) => {
-    const player = gameState.getPlayer(playerId);
-    let numCardsToCount = 0;
-    player.forEachPlayedCard(({ cardName }) => {
-      const card = Card.fromName(cardName as CardName);
-      if (card.isCritter === isCritter && card.isUnique === isUnique) {
-        numCardsToCount++;
-      }
-    });
-    return numCardsToCount;
-  };
-}
-
 class GameInputMultiStepHelperBase {
   protected cardContext: CardName | undefined;
+  protected adornmentContext: AdornmentName | undefined;
   protected locationContext: LocationName | undefined;
   protected eventContext: EventName | undefined;
   protected skipGameLog: boolean;
 
   constructor({
+    adornmentContext = undefined,
     eventContext = undefined,
     cardContext = undefined,
     locationContext = undefined,
     skipGameLog = false,
   }: {
+    adornmentContext?: AdornmentName | undefined;
     eventContext?: EventName | undefined;
     cardContext?: CardName | undefined;
     locationContext?: LocationName | undefined;
     skipGameLog?: boolean;
   }) {
+    this.adornmentContext = adornmentContext;
     this.cardContext = cardContext;
     this.eventContext = eventContext;
     this.locationContext = locationContext;
@@ -143,6 +124,9 @@ class GameInputMultiStepHelperBase {
       return false;
     }
     if (this.eventContext !== gameInput.eventContext) {
+      return false;
+    }
+    if (this.adornmentContext !== gameInput.adornmentContext) {
       return false;
     }
     return true;
@@ -161,6 +145,8 @@ class GameInputMultiStepHelperBase {
       gameState.addGameLogFromLocation(this.locationContext, arg);
     } else if (this.eventContext) {
       gameState.addGameLogFromEvent(this.eventContext, arg);
+    } else if (this.adornmentContext) {
+      gameState.addGameLogFromAdornment(this.adornmentContext, arg);
     } else {
       throw new Error("Unexpected game input");
     }
@@ -172,6 +158,7 @@ class GameInputMultiStepHelperBase {
         cardContext: this.cardContext,
         locationContext: this.locationContext,
         eventContext: this.eventContext,
+        adornmentContext: this.adornmentContext,
       },
       (v) => !!v
     );

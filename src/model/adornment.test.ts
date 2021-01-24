@@ -87,7 +87,7 @@ describe("Adornment", () => {
     });
   });
 
-  xdescribe(AdornmentName.SPYGLASS, () => {
+  describe(AdornmentName.SPYGLASS, () => {
     beforeEach(() => {
       player.gainResources({ [ResourceType.PEARL]: 1 });
       player.adornmentsInHand.push(AdornmentName.SPYGLASS);
@@ -95,11 +95,33 @@ describe("Adornment", () => {
 
     it("should gain 1 ANY, CARD and PEARL", () => {
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
+
+      expect(player.cardsInHand.length).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+
       [player, gameState] = multiStepGameInputTest(gameState, [
         playAdornmentInput(AdornmentName.SPYGLASS),
+        {
+          inputType: GameInputType.SELECT_OPTION_GENERIC,
+          prevInputType: GameInputType.PLAY_ADORNMENT,
+          adornmentContext: AdornmentName.SPYGLASS,
+          options: [
+            ResourceType.BERRY,
+            ResourceType.TWIG,
+            ResourceType.RESIN,
+            ResourceType.PEBBLE,
+          ],
+          clientOptions: {
+            selectedOption: ResourceType.PEBBLE,
+          },
+        },
       ]);
 
-      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+      expect(player.adornmentsInHand).to.eql([]);
+      expect(player.playedAdornments).to.eql([AdornmentName.SPYGLASS]);
+      expect(player.cardsInHand.length).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
     });
   });
 });

@@ -13,6 +13,7 @@ import {
   GameStatePlayFn,
   GameStatePlayable,
 } from "./gameState";
+import { GainAnyResource } from "./gameStatePlayHelpers";
 import { toGameText } from "./gameText";
 
 // Pearlbrook Adornment
@@ -60,32 +61,27 @@ export class Adornment implements GameStatePlayable, IGameTextEntity {
 
     if (gameInput.inputType === GameInputType.PLAY_ADORNMENT) {
       const adornment = gameInput.clientOptions.adornment;
-
       if (!adornment) {
-        return "Invalid adornment selected";
+        return "Please select an Adornment to play";
       }
-
       const adornmentsInHand = player.adornmentsInHand;
       let idx = adornmentsInHand.indexOf(adornment);
       if (idx === -1) {
         return "May only play adornments that are in your hand";
       }
-
       const playedAdornments = player.playedAdornments;
       idx = playedAdornments.indexOf(adornment);
       if (idx !== -1) {
         return "Cannot play an adornment that's already been played";
       }
-
       const numPearls = player.getNumResourcesByType(ResourceType.PEARL);
       if (numPearls < 1) {
         return "Must be able to pay 1 PEARL to play an adornment";
       }
-
       return null;
     }
 
-    return "Not playable";
+    return null;
   }
 
   play(gameState: GameState, gameInput: GameInput): void {
@@ -271,7 +267,26 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
       throw new Error("not implemented");
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("not implemented");
+      const player = gameState.getActivePlayer();
+      const helper = new GainAnyResource({
+        adornmentContext: AdornmentName.SPYGLASS,
+        skipGameLog: true,
+      });
+      if (gameInput.inputType === GameInputType.PLAY_ADORNMENT) {
+        gameState.pendingGameInputs.push(
+          helper.getGameInput({
+            prevInputType: gameInput.inputType,
+          })
+        );
+      } else if (helper.matchesGameInput(gameInput)) {
+        helper.play(gameState, gameInput);
+        player.drawCards(gameState, 1);
+        player.gainResources({ [ResourceType.PEARL]: 1 });
+        gameState.addGameLogFromAdornment(AdornmentName.SPYGLASS, [
+          player,
+          ` gained 1 ${gameInput.clientOptions.selectedOption}, 1 CARD and 1 PEARL.`,
+        ]);
+      }
     },
   }),
   [AdornmentName.SUNDIAL]: new Adornment({

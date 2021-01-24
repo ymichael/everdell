@@ -29,7 +29,6 @@ import {
   playSpendResourceToGetVPFactory,
   gainProductionSpendResourceToGetVPFactory,
   sumResources,
-  getPointsPerRarityLabel,
   GainAnyResource,
   GainMoreThan1AnyResource,
 } from "./gameStatePlayHelpers";
@@ -3357,3 +3356,23 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     },
   }),
 };
+
+function getPointsPerRarityLabel({
+  isCritter,
+  isUnique,
+}: {
+  isCritter: boolean;
+  isUnique: boolean;
+}): GameStateCountPointsFn {
+  return (gameState: GameState, playerId: string) => {
+    const player = gameState.getPlayer(playerId);
+    let numCardsToCount = 0;
+    player.forEachPlayedCard(({ cardName }) => {
+      const card = Card.fromName(cardName as CardName);
+      if (card.isCritter === isCritter && card.isUnique === isUnique) {
+        numCardsToCount++;
+      }
+    });
+    return numCardsToCount;
+  };
+}

@@ -1,4 +1,5 @@
 import {
+  AdornmentName,
   CardName,
   EventName,
   EventNameToPlayerId,
@@ -178,6 +179,17 @@ export class GameState {
       this.addGameLog([RiverDestination.fromName(name), ": ", args]);
     } else {
       this.addGameLog([RiverDestination.fromName(name), ": ", ...args]);
+    }
+  }
+
+  addGameLogFromAdornment(
+    adornment: AdornmentName,
+    args: Parameters<typeof toGameText>[0]
+  ): void {
+    if (typeof args === "string") {
+      this.addGameLog([Adornment.fromName(adornment), ": ", args]);
+    } else {
+      this.addGameLog([Adornment.fromName(adornment), ": ", ...args]);
     }
   }
 
@@ -430,6 +442,16 @@ export class GameState {
         throw new Error(canPlayEventErr);
       }
       event.play(this, gameInput);
+      return;
+    }
+
+    if (gameInput.adornmentContext) {
+      const adornment = Adornment.fromName(gameInput.adornmentContext);
+      const canPlayAdornmentErr = adornment.canPlayCheck(this, gameInput);
+      if (canPlayAdornmentErr) {
+        throw new Error(canPlayAdornmentErr);
+      }
+      adornment.play(this, gameInput);
       return;
     }
 

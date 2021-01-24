@@ -385,6 +385,7 @@ describe("Event", () => {
           toSpend: true,
           prevInputType: GameInputType.CLAIM_EVENT,
           eventContext: EventName.SPECIAL_AN_EVENING_OF_FIREWORKS,
+          specificResource: ResourceType.TWIG,
           maxResources: 3,
           minResources: 0,
           clientOptions: {
@@ -540,6 +541,7 @@ describe("Event", () => {
           toSpend: true,
           prevInputType: GameInputType.CLAIM_EVENT,
           eventContext: EventName.SPECIAL_PERFORMER_IN_RESIDENCE,
+          specificResource: ResourceType.BERRY,
           maxResources: 3,
           minResources: 0,
           clientOptions: {

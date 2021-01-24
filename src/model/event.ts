@@ -525,6 +525,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           eventContext: EventName.SPECIAL_AN_EVENING_OF_FIREWORKS,
           maxResources: 3,
           minResources: 0,
+          specificResource: ResourceType.TWIG,
           clientOptions: {
             resources: {},
           },
@@ -1111,6 +1112,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           label: "Place up to 3 BERRY here (worth 2 VP each)",
           prevInputType: GameInputType.CLAIM_EVENT,
           eventContext: EventName.SPECIAL_PERFORMER_IN_RESIDENCE,
+          specificResource: ResourceType.BERRY,
           maxResources: 3,
           minResources: 0,
           clientOptions: {
@@ -1120,19 +1122,15 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       } else if (gameInput.inputType === GameInputType.SELECT_RESOURCES) {
         const resources = gameInput.clientOptions.resources;
         if (!resources) {
-          throw new Error("invalid input");
+          throw new Error("Invalid input");
         }
-
         const numBerries = resources[ResourceType.BERRY];
-
         if (!numBerries) {
-          throw new Error("must provide number of berries");
+          throw new Error("Must provide number of berries");
         }
-
         if (numBerries > 3) {
-          throw new Error("too many berries");
+          throw new Error("Select up to 3 berries");
         }
-
         const eventInfo =
           player.claimedEvents[EventName.SPECIAL_PERFORMER_IN_RESIDENCE];
 

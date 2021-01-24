@@ -13,6 +13,7 @@ import {
   GameText,
   TextPartEntity,
   IGameTextEntity,
+  WonderCost,
 } from "./types";
 import { Card } from "./card";
 import {
@@ -49,6 +50,8 @@ export class Event implements GameStatePlayable, IGameTextEntity {
   // but not all events result in an action when played
   readonly canPlayCheckInner: GameStateCanPlayCheckFn | undefined;
 
+  readonly wonderCost: WonderCost | undefined; // used for Pearlbrook's wonders
+
   constructor({
     name,
     type,
@@ -62,6 +65,15 @@ export class Event implements GameStatePlayable, IGameTextEntity {
     playedEventInfoInner, // used for cards that accumulate other cards or resources
     pointsInner, // computed if specified + added to base points
     expansion = null,
+    wonderCost = {
+      resources: {
+        [ResourceType.TWIG]: 0,
+        [ResourceType.RESIN]: 0,
+        [ResourceType.PEBBLE]: 0,
+        [ResourceType.PEARL]: 0,
+      },
+      numCardsToDiscard: 0,
+    },
   }: {
     name: EventName;
     type: EventType;
@@ -75,6 +87,7 @@ export class Event implements GameStatePlayable, IGameTextEntity {
     playInner?: GameStatePlayFn;
     playedEventInfoInner?: () => PlayedEventInfo;
     pointsInner?: (gameState: GameState, playerId: string) => number;
+    wonderCost?: WonderCost;
   }) {
     this.name = name;
     this.type = type;
@@ -88,6 +101,7 @@ export class Event implements GameStatePlayable, IGameTextEntity {
     this.playedEventInfoInner = playedEventInfoInner;
     this.pointsInner = pointsInner;
     this.shortName = shortName;
+    this.wonderCost = wonderCost;
   }
 
   getGameTextPart(): TextPartEntity {
@@ -147,12 +161,37 @@ export class Event implements GameStatePlayable, IGameTextEntity {
       if (player.numAvailableWorkers <= 0) {
         return `Active player (${player.playerId}) doesn't have any workers to place.`;
       }
+
       // Check whether player has required cards, if any
       if (this.requiredCards) {
         for (let i = 0; i < this.requiredCards.length; i++) {
           if (!player.hasCardInCity(this.requiredCards[i])) {
             return `Need to have played ${this.requiredCards[i]} to claim event {$this.name}`;
           }
+        }
+      }
+
+      // For wonders, check whether player can pay wonder cost
+      if (this.wonderCost) {
+        const resourcesNeeded = this.wonderCost.resources;
+        const cardsNeeded = this.wonderCost.numCardsToDiscard;
+        const playerResources = player.getResources();
+
+        if (
+          playerResources[ResourceType.TWIG] <
+            resourcesNeeded[ResourceType.TWIG] ||
+          playerResources[ResourceType.RESIN] <
+            resourcesNeeded[ResourceType.RESIN] ||
+          playerResources[ResourceType.PEBBLE] <
+            resourcesNeeded[ResourceType.PEBBLE] ||
+          playerResources[ResourceType.PEARL] <
+            resourcesNeeded[ResourceType.PEARL]
+        ) {
+          return `Player doesn't have enough resources to pay for Wonder`;
+        }
+
+        if (player.cardsInHand.length < cardsNeeded) {
+          return `Player doesn't have enough cards to discard for Wonder`;
         }
       }
     }
@@ -1579,6 +1618,244 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       throw new Error("Not Implemented");
     },
   }),
+
+  // Pearlbrook Wonders
+  [EventName.WONDER_HOPEWATCH_GATE]: new Event({
+    name: EventName.WONDER_HOPEWATCH_GATE,
+    eventDescription: toGameText([
+      "Pay 1 TWIG, 1 RESIN, 1 PEBBLE, 2 PEARL, and discard 2 CARD.",
+    ]),
+    type: EventType.WONDER,
+    baseVP: 10,
+    wonderCost: {
+      resources: {
+        [ResourceType.TWIG]: 1,
+        [ResourceType.RESIN]: 1,
+        [ResourceType.PEBBLE]: 1,
+        [ResourceType.PEARL]: 2,
+      },
+      numCardsToDiscard: 2,
+    },
+    expansion: ExpansionType.PEARLBROOK,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+
+      if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          label: `Select 3 CARD to discard`,
+          eventContext: EventName.WONDER_HOPEWATCH_GATE,
+          maxToSelect: 2,
+          minToSelect: 2,
+          cardOptions: player.cardsInHand,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_CARDS) {
+        // make sure you chose the right number
+        const selectedCards = gameInput.clientOptions.selectedCards;
+
+        if (selectedCards.length < 2) {
+          throw new Error("Too few cards discarded");
+        }
+
+        // player spends resources
+        player.spendResources({
+          [ResourceType.TWIG]: 1,
+          [ResourceType.RESIN]: 1,
+          [ResourceType.PEBBLE]: 1,
+          [ResourceType.PEARL]: 2,
+        });
+
+        // remove the cards from player's hand
+        selectedCards.forEach((cardName) => {
+          player.removeCardFromHand(cardName as CardName);
+          gameState.discardPile.addToStack(cardName);
+        });
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
+      }
+    },
+  }),
+  [EventName.WONDER_MISTRISE_FOUNTAIN]: new Event({
+    name: EventName.WONDER_MISTRISE_FOUNTAIN,
+    eventDescription: toGameText([
+      "Pay 2 TWIG, 2 RESIN, 2 PEBBLE, 2 PEARL, and discard 2 CARD.",
+    ]),
+    type: EventType.WONDER,
+    baseVP: 15,
+    wonderCost: {
+      resources: {
+        [ResourceType.TWIG]: 2,
+        [ResourceType.RESIN]: 2,
+        [ResourceType.PEBBLE]: 2,
+        [ResourceType.PEARL]: 2,
+      },
+      numCardsToDiscard: 2,
+    },
+    expansion: ExpansionType.PEARLBROOK,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+
+      if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          label: `Select 3 CARD to discard`,
+          eventContext: EventName.WONDER_MISTRISE_FOUNTAIN,
+          maxToSelect: 2,
+          minToSelect: 2,
+          cardOptions: player.cardsInHand,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_CARDS) {
+        // make sure you chose the right number
+        const selectedCards = gameInput.clientOptions.selectedCards;
+
+        if (selectedCards.length < 2) {
+          throw new Error("Too few cards discarded");
+        }
+
+        // player spends resources
+        player.spendResources({
+          [ResourceType.TWIG]: 2,
+          [ResourceType.RESIN]: 2,
+          [ResourceType.PEBBLE]: 2,
+          [ResourceType.PEARL]: 2,
+        });
+
+        // remove the cards from player's hand
+        selectedCards.forEach((cardName) => {
+          player.removeCardFromHand(cardName as CardName);
+          gameState.discardPile.addToStack(cardName);
+        });
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
+      }
+    },
+  }),
+  [EventName.WONDER_SUNBLAZE_BRIDGE]: new Event({
+    name: EventName.WONDER_SUNBLAZE_BRIDGE,
+    eventDescription: toGameText([
+      "Pay 2 TWIG, 2 RESIN, 2 PEBBLE, 3 PEARL, and discard 3 CARD.",
+    ]),
+    type: EventType.WONDER,
+    baseVP: 20,
+    wonderCost: {
+      resources: {
+        [ResourceType.TWIG]: 2,
+        [ResourceType.RESIN]: 2,
+        [ResourceType.PEBBLE]: 2,
+        [ResourceType.PEARL]: 3,
+      },
+      numCardsToDiscard: 3,
+    },
+    expansion: ExpansionType.PEARLBROOK,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+
+      if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          label: `Select 3 CARD to discard`,
+          eventContext: EventName.WONDER_SUNBLAZE_BRIDGE,
+          maxToSelect: 3,
+          minToSelect: 3,
+          cardOptions: player.cardsInHand,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_CARDS) {
+        // make sure you chose the right number
+        const selectedCards = gameInput.clientOptions.selectedCards;
+
+        if (selectedCards.length < 3) {
+          throw new Error("Too few cards discarded");
+        }
+
+        // player spends resources
+        player.spendResources({
+          [ResourceType.TWIG]: 2,
+          [ResourceType.RESIN]: 2,
+          [ResourceType.PEBBLE]: 2,
+          [ResourceType.PEARL]: 3,
+        });
+
+        // remove the cards from player's hand
+        selectedCards.forEach((cardName) => {
+          player.removeCardFromHand(cardName as CardName);
+          gameState.discardPile.addToStack(cardName);
+        });
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
+      }
+    },
+  }),
+  [EventName.WONDER_STARFALLS_FLAME]: new Event({
+    name: EventName.WONDER_STARFALLS_FLAME,
+    eventDescription: toGameText([
+      "Pay 3 TWIG, 3 RESIN, 3 PEBBLE, 3 PEARL, and discard 3 CARD.",
+    ]),
+    type: EventType.WONDER,
+    baseVP: 25,
+    wonderCost: {
+      resources: {
+        [ResourceType.TWIG]: 3,
+        [ResourceType.RESIN]: 3,
+        [ResourceType.PEBBLE]: 3,
+        [ResourceType.PEARL]: 3,
+      },
+      numCardsToDiscard: 3,
+    },
+    expansion: ExpansionType.PEARLBROOK,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+
+      if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          label: `Select 3 CARD to discard`,
+          eventContext: EventName.WONDER_STARFALLS_FLAME,
+          maxToSelect: 3,
+          minToSelect: 3,
+          cardOptions: player.cardsInHand,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_CARDS) {
+        // make sure you chose the right number
+        const selectedCards = gameInput.clientOptions.selectedCards;
+
+        if (selectedCards.length < 3) {
+          throw new Error("Too few cards discarded");
+        }
+
+        // player spends resources
+        player.spendResources({
+          [ResourceType.TWIG]: 3,
+          [ResourceType.RESIN]: 3,
+          [ResourceType.PEBBLE]: 3,
+          [ResourceType.PEARL]: 3,
+        });
+
+        // remove the cards from player's hand
+        selectedCards.forEach((cardName) => {
+          player.removeCardFromHand(cardName as CardName);
+          gameState.discardPile.addToStack(cardName);
+        });
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
+      }
+    },
+  }),
 };
 
 const baseGameSpecialEvents: EventName[] = [
@@ -1613,9 +1890,17 @@ export const initialEventMap = ({
   pearlbrook,
 }: Pick<GameOptions, "pearlbrook">): EventNameToPlayerId => {
   const ret: EventNameToPlayerId = {};
-  [...Event.byType(EventType.BASIC)].forEach((ty) => {
-    ret[ty] = null;
-  });
+
+  // if pearlbrook, use the wonders instead of basic events
+  if (pearlbrook) {
+    [...Event.byType(EventType.WONDER)].forEach((ty) => {
+      ret[ty] = null;
+    });
+  } else {
+    [...Event.byType(EventType.BASIC)].forEach((ty) => {
+      ret[ty] = null;
+    });
+  }
 
   let toSelect = 4;
   const specialEvents = [...baseGameSpecialEvents];

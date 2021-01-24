@@ -94,28 +94,38 @@ describe("RiverDestinationMap", () => {
     });
   });
 
-  xit("should recieve a PEARL for revealing a river destination", () => {
+  it("should recieve a PEARL for revealing a river destination", () => {
     player.addToCity(CardName.JUDGE);
     player.addToCity(CardName.SHOPKEEPER);
 
+    const spot = RiverDestinationSpot.TWO_GOVERNANCE;
+    gameState.riverDestinationMap!.spots[spot]!.name =
+      RiverDestinationName.GUS_THE_GARDENER;
+    expect(gameState.riverDestinationMap!.spots[spot]!.revealed).to.be(false);
+
+    expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
     [player, gameState] = multiStepGameInputTest(gameState, [
       {
         inputType: GameInputType.VISIT_RIVER_DESTINATION,
         clientOptions: {
-          riverDestinationSpot: RiverDestinationSpot.TWO_GOVERNANCE,
+          riverDestinationSpot: spot,
         },
       },
     ]);
+
+    expect(
+      gameState.riverDestinationMap!.spots[RiverDestinationSpot.TWO_GOVERNANCE]!
+        .revealed
+    ).to.be(true);
+    expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
   });
 
   describe(RiverDestinationName.GUS_THE_GARDENER, () => {
     beforeEach(() => {
-      gameState.riverDestinationMap!.spots[
-        RiverDestinationSpot.TWO_TRAVELER
-      ]!.name = RiverDestinationName.GUS_THE_GARDENER;
-      gameState.riverDestinationMap!.spots[
-        RiverDestinationSpot.TWO_TRAVELER
-      ]!.revealed = true;
+      const spot = RiverDestinationSpot.TWO_TRAVELER;
+      gameState.riverDestinationMap!.spots[spot]!.name =
+        RiverDestinationName.GUS_THE_GARDENER;
+      gameState.riverDestinationMap!.spots[spot]!.revealed = true;
       player.addToCity(CardName.WANDERER);
       player.addToCity(CardName.RANGER);
     });
@@ -131,6 +141,50 @@ describe("RiverDestinationMap", () => {
         },
       ]);
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+    });
+
+    it("should allow player to NOT discard 3 PRODUCTION cards", () => {
+      player.cardsInHand.push(CardName.FARM);
+      player.cardsInHand.push(CardName.FARM);
+      player.cardsInHand.push(CardName.QUEEN);
+      player.cardsInHand.push(CardName.JUDGE);
+      player.cardsInHand.push(CardName.MINE);
+
+      expect(player.hasUnusedAmbassador()).to.be(true);
+      expect(player.cardsInHand).to.not.eql([]);
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        {
+          inputType: GameInputType.VISIT_RIVER_DESTINATION,
+          clientOptions: {
+            riverDestinationSpot: RiverDestinationSpot.TWO_TRAVELER,
+          },
+        },
+        {
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: GameInputType.VISIT_RIVER_DESTINATION,
+          cardOptions: [CardName.FARM, CardName.FARM, CardName.MINE],
+          maxToSelect: 3,
+          minToSelect: 0,
+          riverDestinationContext: RiverDestinationName.GUS_THE_GARDENER,
+          clientOptions: {
+            selectedCards: [],
+          },
+        },
+      ]);
+
+      expect(player.hasUnusedAmbassador()).to.be(false);
+      expect(player.cardsInHand).to.eql([
+        CardName.FARM,
+        CardName.FARM,
+        CardName.QUEEN,
+        CardName.JUDGE,
+        CardName.MINE,
+      ]);
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
     });
 
     it("should allow player to discard 3 PRODUCTION cards", () => {
@@ -157,7 +211,7 @@ describe("RiverDestinationMap", () => {
           prevInputType: GameInputType.VISIT_RIVER_DESTINATION,
           cardOptions: [CardName.FARM, CardName.FARM, CardName.MINE],
           maxToSelect: 3,
-          minToSelect: 3,
+          minToSelect: 0,
           riverDestinationContext: RiverDestinationName.GUS_THE_GARDENER,
           clientOptions: {
             selectedCards: [CardName.FARM, CardName.FARM, CardName.MINE],

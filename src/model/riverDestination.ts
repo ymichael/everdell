@@ -259,9 +259,11 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_CARDS,
           prevInputType: gameInput.inputType,
+          label:
+            "Select 3 PROSPERITY CARD to discard to gain 1 VP and 1 PEARL (or none to skip action)",
           cardOptions,
           maxToSelect: 3,
-          minToSelect: 3,
+          minToSelect: 0,
           riverDestinationContext: RiverDestinationName.GUS_THE_GARDENER,
           clientOptions: {
             selectedCards: [],
@@ -274,6 +276,13 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
           RiverDestinationName.GUS_THE_GARDENER
       ) {
         const selectedCards = gameInput.clientOptions.selectedCards;
+        if (selectedCards.length === 0) {
+          gameState.addGameLogFromRiverDestination(
+            RiverDestinationName.GUS_THE_GARDENER,
+            [player, " declined to discard any CARD."]
+          );
+          return;
+        }
         if (
           selectedCards.length !== 3 ||
           selectedCards.filter((cardName) => {

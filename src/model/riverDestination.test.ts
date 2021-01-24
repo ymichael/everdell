@@ -225,4 +225,101 @@ describe("RiverDestinationMap", () => {
       expect(player.getNumResourcesByType(ResourceType.VP)).to.be(1);
     });
   });
+
+  describe(RiverDestinationName.BALLROOM, () => {
+    beforeEach(() => {
+      const spot = RiverDestinationSpot.TWO_TRAVELER;
+      gameState.riverDestinationMap!.spots[spot]!.name =
+        RiverDestinationName.BALLROOM;
+      gameState.riverDestinationMap!.spots[spot]!.revealed = true;
+      player.addToCity(CardName.WANDERER);
+      player.addToCity(CardName.RANGER);
+    });
+
+    it("should do nothing if player doesn't have VP", () => {
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+      player.gainResources({ [ResourceType.RESIN]: 1 });
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        {
+          inputType: GameInputType.VISIT_RIVER_DESTINATION,
+          clientOptions: {
+            riverDestinationSpot: RiverDestinationSpot.TWO_TRAVELER,
+          },
+        },
+      ]);
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+    });
+
+    it("should do nothing if player doesn't have RESIN", () => {
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
+      player.gainResources({ [ResourceType.VP]: 1 });
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        {
+          inputType: GameInputType.VISIT_RIVER_DESTINATION,
+          clientOptions: {
+            riverDestinationSpot: RiverDestinationSpot.TWO_TRAVELER,
+          },
+        },
+      ]);
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+    });
+
+    it("should ask the player to choose spend RESIN & VP", () => {
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+      player.gainResources({ [ResourceType.VP]: 1, [ResourceType.RESIN]: 1 });
+      expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(1);
+      expect(player.cardsInHand.length).to.be(0);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        {
+          inputType: GameInputType.VISIT_RIVER_DESTINATION,
+          clientOptions: {
+            riverDestinationSpot: RiverDestinationSpot.TWO_TRAVELER,
+          },
+        },
+        {
+          inputType: GameInputType.SELECT_OPTION_GENERIC,
+          prevInputType: GameInputType.VISIT_RIVER_DESTINATION,
+          riverDestinationContext: RiverDestinationName.BALLROOM,
+          options: ["Ok", "Decline"],
+          clientOptions: { selectedOption: "Ok" },
+        },
+      ]);
+      expect(player.cardsInHand.length).to.be(3);
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+    });
+
+    it("allow the player to choose NOT to spend RESIN & VP", () => {
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+      player.gainResources({ [ResourceType.VP]: 1, [ResourceType.RESIN]: 1 });
+      expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(1);
+      expect(player.cardsInHand.length).to.be(0);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        {
+          inputType: GameInputType.VISIT_RIVER_DESTINATION,
+          clientOptions: {
+            riverDestinationSpot: RiverDestinationSpot.TWO_TRAVELER,
+          },
+        },
+        {
+          inputType: GameInputType.SELECT_OPTION_GENERIC,
+          prevInputType: GameInputType.VISIT_RIVER_DESTINATION,
+          riverDestinationContext: RiverDestinationName.BALLROOM,
+          options: ["Ok", "Decline"],
+          clientOptions: { selectedOption: "Decline" },
+        },
+      ]);
+      expect(player.cardsInHand.length).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(1);
+    });
+  });
 });

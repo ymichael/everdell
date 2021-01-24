@@ -322,6 +322,11 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
     description: toGameText(
       "Pay 1 VP and 1 RESIN to draw 3 CARD and gain 1 PEARL."
     ),
+    playInner: payVPResourceToDrawCardAndPearl({
+      name: RiverDestinationName.BALLROOM,
+      resourceType: ResourceType.RESIN,
+      numCardsToDraw: 3,
+    }),
   }),
   [RiverDestinationName.WATERMILL]: new RiverDestination({
     name: RiverDestinationName.WATERMILL,
@@ -330,6 +335,11 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
     description: toGameText(
       "Pay 1 VP and 1 TWIG to draw 2 CARD and gain 1 PEARL."
     ),
+    playInner: payVPResourceToDrawCardAndPearl({
+      name: RiverDestinationName.WATERMILL,
+      resourceType: ResourceType.TWIG,
+      numCardsToDraw: 2,
+    }),
   }),
   [RiverDestinationName.OBSERVATORY]: new RiverDestination({
     name: RiverDestinationName.OBSERVATORY,
@@ -354,6 +364,11 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
     description: toGameText(
       "Pay 1 VP and 1 PEBBLE to draw 4 CARD and gain 1 PEARL."
     ),
+    playInner: payVPResourceToDrawCardAndPearl({
+      name: RiverDestinationName.MARKET,
+      resourceType: ResourceType.PEBBLE,
+      numCardsToDraw: 4,
+    }),
   }),
   [RiverDestinationName.GARDENS]: new RiverDestination({
     name: RiverDestinationName.GARDENS,
@@ -362,8 +377,71 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
     description: toGameText(
       "Pay 1 VP and 1 BERRY to draw 3 CARD and gain 1 PEARL."
     ),
+    playInner: payVPResourceToDrawCardAndPearl({
+      name: RiverDestinationName.GARDENS,
+      resourceType: ResourceType.BERRY,
+      numCardsToDraw: 3,
+    }),
   }),
 };
+
+function payVPResourceToDrawCardAndPearl({
+  name,
+  resourceType,
+  numCardsToDraw,
+}: {
+  name: RiverDestinationName;
+  resourceType: ResourceType;
+  numCardsToDraw: number;
+}): GameStatePlayFn {
+  return (gameState: GameState, gameInput: GameInput) => {
+    const player = gameState.getActivePlayer();
+    if (gameInput.inputType === GameInputType.VISIT_RIVER_DESTINATION) {
+      if (
+        player.getNumResourcesByType(resourceType) < 1 ||
+        player.getNumResourcesByType(ResourceType.VP) < 1
+      ) {
+        return;
+      }
+
+      gameState.pendingGameInputs.push({
+        inputType: GameInputType.SELECT_OPTION_GENERIC,
+        prevInputType: gameInput.inputType,
+        riverDestinationContext: name,
+        label: `Spend 1 ${resourceType} and 1 VP to draw ${numCardsToDraw} CARD and gain 1 PEARL`,
+        options: [`Ok`, `Decline`],
+        clientOptions: {
+          selectedOption: null,
+        },
+      });
+    } else if (
+      gameInput.inputType === GameInputType.SELECT_OPTION_GENERIC &&
+      gameInput.prevInputType === GameInputType.VISIT_RIVER_DESTINATION &&
+      gameInput.riverDestinationContext === name
+    ) {
+      const selectedOption = gameInput.clientOptions.selectedOption;
+      if (!selectedOption || gameInput.options.indexOf(selectedOption) === -1) {
+        throw new Error("Please select an option");
+      }
+      if (selectedOption === "Ok") {
+        gameState.addGameLogFromRiverDestination(name, [
+          player,
+          ` spent ${resourceType} and VP `,
+          `to draw ${numCardsToDraw} CARD and gain 1 PEARL`,
+        ]);
+        player.spendResources({ [ResourceType.VP]: 1, [resourceType]: 1 });
+        player.gainResources({ [ResourceType.PEARL]: 1 });
+        player.drawCards(gameState, numCardsToDraw);
+      } else {
+        gameState.addGameLogFromRiverDestination(name, [
+          player,
+          " declined to spend ${resourceType} and VP.",
+        ]);
+        return;
+      }
+    }
+  };
+}
 
 function discardCardTypeToGainVPAndPearl({
   name,

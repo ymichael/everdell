@@ -88,12 +88,202 @@ describe("Adornment", () => {
       player.adornmentsInHand.push(name);
     });
 
-    xit("should have tests", () => {
-      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
+    it("should be able to play and gain resources", () => {
+      const adornment = Adornment.fromName(name);
+      const gameInput = playAdornmentInput(name);
+
+      expect(adornment.canPlay(gameState, gameInput)).to.be(true);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+      player.cardsInHand.push(CardName.WIFE);
+      player.cardsInHand.push(CardName.FARM);
+      player.cardsInHand.push(CardName.HUSBAND);
+      player.cardsInHand.push(CardName.POSTAL_PIGEON);
+      player.cardsInHand.push(CardName.INN);
+      player.cardsInHand.push(CardName.INNKEEPER);
+      player.cardsInHand.push(CardName.QUEEN);
+
+      const selectCardsInput = {
+        inputType: GameInputType.SELECT_CARDS as const,
+        prevInputType: GameInputType.PLAY_ADORNMENT,
+        adornmentContext: name,
+        cardOptions: player.cardsInHand,
+        maxToSelect: 4,
+        minToSelect: 0,
+        clientOptions: {
+          selectedCards: [
+            CardName.INN,
+            CardName.POSTAL_PIGEON,
+            CardName.FARM,
+            CardName.WIFE,
+          ],
+        },
+      };
+
+      const selectAnyInput = {
+        inputType: GameInputType.SELECT_RESOURCES as const,
+        prevInputType: GameInputType.SELECT_CARDS,
+        adornmentContext: name,
+        toSpend: false,
+        maxResources: 4,
+        minResources: 4,
+        clientOptions: {
+          resources: { [ResourceType.BERRY]: 3, [ResourceType.TWIG]: 1 },
+        },
+      };
+
       [player, gameState] = multiStepGameInputTest(gameState, [
-        playAdornmentInput(name),
+        gameInput,
+        selectCardsInput,
+        selectAnyInput,
       ]);
+
+      expect(adornment.canPlay(gameState, gameInput)).to.be(false);
+
+      player = gameState.getPlayer(player.playerId);
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(3);
+      expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(1);
+      expect(player.cardsInHand).to.eql([
+        CardName.HUSBAND,
+        CardName.INNKEEPER,
+        CardName.QUEEN,
+      ]);
+      expect(player.getPoints(gameState)).to.be(3);
+    });
+
+    it("should not gain resources if didn't discard cards", () => {
+      const adornment = Adornment.fromName(name);
+      const gameInput = playAdornmentInput(name);
+
+      expect(adornment.canPlay(gameState, gameInput)).to.be(true);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+      player.cardsInHand.push(CardName.WIFE);
+      player.cardsInHand.push(CardName.FARM);
+      player.cardsInHand.push(CardName.HUSBAND);
+      player.cardsInHand.push(CardName.POSTAL_PIGEON);
+      player.cardsInHand.push(CardName.INN);
+      player.cardsInHand.push(CardName.INNKEEPER);
+      player.cardsInHand.push(CardName.QUEEN);
+
+      const selectCardsInput = {
+        inputType: GameInputType.SELECT_CARDS as const,
+        prevInputType: GameInputType.PLAY_ADORNMENT,
+        adornmentContext: name,
+        cardOptions: player.cardsInHand,
+        maxToSelect: 4,
+        minToSelect: 0,
+        clientOptions: {
+          selectedCards: [],
+        },
+      };
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        gameInput,
+        selectCardsInput,
+      ]);
+
+      expect(adornment.canPlay(gameState, gameInput)).to.be(false);
+
+      player = gameState.getPlayer(player.playerId);
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+      expect(player.cardsInHand).to.eql([
+        CardName.WIFE,
+        CardName.FARM,
+        CardName.HUSBAND,
+        CardName.POSTAL_PIGEON,
+        CardName.INN,
+        CardName.INNKEEPER,
+        CardName.QUEEN,
+      ]);
+      expect(player.getPoints(gameState)).to.be(5);
+    });
+
+    it("should calculate points correctly", () => {
+      player.playedAdornments.push(name);
+
+      let testHand = [CardName.WIFE];
+      player.cardsInHand.push(...testHand);
+      expect(player.getPointsFromAdornments(gameState)).to.be(1);
+
+      player.cardsInHand = [];
+      testHand = [CardName.WIFE, CardName.FARM];
+      player.cardsInHand.push(...testHand);
+      expect(player.getPointsFromAdornments(gameState)).to.be(2);
+
+      player.cardsInHand = [];
+      testHand = [CardName.WIFE, CardName.FARM, CardName.HUSBAND];
+      player.cardsInHand.push(...testHand);
+      expect(player.getPointsFromAdornments(gameState)).to.be(3);
+
+      player.cardsInHand = [];
+      testHand = [
+        CardName.WIFE,
+        CardName.FARM,
+        CardName.HUSBAND,
+        CardName.MONK,
+      ];
+      player.cardsInHand.push(...testHand);
+      expect(player.getPointsFromAdornments(gameState)).to.be(4);
+
+      player.cardsInHand = [];
+      testHand = [
+        CardName.WIFE,
+        CardName.FARM,
+        CardName.HUSBAND,
+        CardName.MONK,
+        CardName.QUEEN,
+      ];
+      player.cardsInHand.push(...testHand);
+      // max 5 points from adornment
+      expect(player.getPointsFromAdornments(gameState)).to.be(5);
+
+      player.cardsInHand = [];
+      testHand = [
+        CardName.WIFE,
+        CardName.FARM,
+        CardName.HUSBAND,
+        CardName.MONK,
+        CardName.QUEEN,
+        CardName.KING,
+      ];
+      player.cardsInHand.push(...testHand);
+      // max 5 points from adornment
+      expect(player.getPointsFromAdornments(gameState)).to.be(5);
+
+      player.cardsInHand = [];
+      testHand = [
+        CardName.WIFE,
+        CardName.FARM,
+        CardName.HUSBAND,
+        CardName.MONK,
+        CardName.QUEEN,
+        CardName.KING,
+        CardName.POSTAL_PIGEON,
+      ];
+      player.cardsInHand.push(...testHand);
+      // max 5 points from adornment
+      expect(player.getPointsFromAdornments(gameState)).to.be(5);
+
+      testHand = [
+        CardName.WIFE,
+        CardName.FARM,
+        CardName.HUSBAND,
+        CardName.MONK,
+        CardName.QUEEN,
+        CardName.KING,
+        CardName.POSTAL_PIGEON,
+        CardName.INN,
+      ];
+      player.cardsInHand.push(...testHand);
+
+      // max 5 points from adornment
+      expect(player.getPointsFromAdornments(gameState)).to.be(5);
     });
   });
 
@@ -578,7 +768,16 @@ describe("Adornment", () => {
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(3);
       expect(player.getPointsFromAdornments(gameState)).to.be(2);
-      expect(player.getPoints(gameState)).to.be(9);
+      expect(player.getPoints(gameState)).to.be(11);
+    });
+
+    it("odd number of critters in city", () => {
+      player.addToCity(CardName.WIFE);
+      player.addToCity(CardName.POSTAL_PIGEON);
+      player.addToCity(CardName.HUSBAND);
+      player.playedAdornments.push(name);
+
+      expect(player.getPointsFromAdornments(gameState)).to.be(1);
     });
   });
 

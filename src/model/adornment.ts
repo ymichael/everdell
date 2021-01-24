@@ -150,7 +150,7 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
       const numPlayedCritters = player.getNumPlayedCritters();
-      return numPlayedCritters / 2;
+      return Math.floor(numPlayedCritters / 2);
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
@@ -280,7 +280,7 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
       const numPlayedCritters = player.getNumPlayedConstructions();
-      return numPlayedCritters / 2;
+      return Math.floor(numPlayedCritters / 2);
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       if (gameInput.inputType === GameInputType.PLAY_ADORNMENT) {
@@ -297,7 +297,7 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
     ]),
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
-      return player.getNumResourcesByType(ResourceType.VP) / 3;
+      return Math.floor(player.getNumResourcesByType(ResourceType.VP) / 3);
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       if (gameInput.inputType === GameInputType.PLAY_ADORNMENT) {
@@ -424,7 +424,9 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
     ]),
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
-      return player.getPlayedCardNamesByType(CardType.PRODUCTION).length / 2;
+      return Math.floor(
+        player.getPlayedCardNamesByType(CardType.PRODUCTION).length / 2
+      );
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();

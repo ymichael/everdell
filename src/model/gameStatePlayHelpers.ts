@@ -13,10 +13,6 @@ import {
   GameStateCountPointsFn,
 } from "./gameState";
 import { Card } from "./card";
-import { assertUnreachable } from "../utils";
-
-import pickBy from "lodash/pickBy";
-import isEqual from "lodash/isEqual";
 
 export function playSpendResourceToGetVPFactory({
   card,
@@ -110,25 +106,52 @@ export function getPointsPerRarityLabel({
   };
 }
 
-export function gainAnyResourceHelper(contextObj: {
-  cardContext: CardName;
-}): {
-  getInput: (overrides: {
+export class GainAnyResource {
+  private cardContext: CardName;
+  private skipGameLog: boolean;
+
+  constructor({
+    cardContext,
+    skipGameLog = false,
+  }: {
+    cardContext: CardName;
+    skipGameLog?: boolean;
+  }) {
+    this.cardContext = cardContext;
+    this.skipGameLog = skipGameLog;
+  }
+
+  matchesGameInput = (
+    gameInput: GameInput
+  ): gameInput is GameInputSelectOptionGeneric => {
+    return (
+      gameInput.inputType === GameInputType.SELECT_OPTION_GENERIC &&
+      this.cardContext === gameInput.cardContext
+    );
+  };
+
+  play = (
+    gameState: GameState,
+    gameInput: GameInputSelectOptionGeneric
+  ): void => {
+    const player = gameState.getActivePlayer();
+    const selectedOption = gameInput.clientOptions.selectedOption;
+    if (!selectedOption || gameInput.options.indexOf(selectedOption) === -1) {
+      throw new Error(`Please select an option`);
+    }
+    player.gainResources({ [selectedOption]: 1 });
+
+    if (!this.skipGameLog) {
+      const logText = [player, ` gained ${selectedOption}.`];
+      gameState.addGameLogFromCard(this.cardContext, logText);
+    }
+  };
+
+  getGameInput = (overrides: {
     prevInputType: GameInputType;
     prevInput?: GameInput;
-  }) => GameInputMultiStep;
-  matches: (gameInput: GameInput) => gameInput is GameInputSelectOptionGeneric;
-  play: (
-    gameState: GameState,
-    gameInput: GameInputSelectOptionGeneric,
-    opts?: { skipLog: boolean }
-  ) => void;
-} {
-  return {
-    getInput: (overrides: {
-      prevInputType: GameInputType;
-      prevInput?: GameInput;
-    }) => ({
+  }): GameInputMultiStep => {
+    return {
       inputType: GameInputType.SELECT_OPTION_GENERIC,
       label: "Gain 1 ANY",
       options: [
@@ -140,39 +163,8 @@ export function gainAnyResourceHelper(contextObj: {
       clientOptions: {
         selectedOption: null,
       },
-      ...contextObj,
+      cardContext: this.cardContext,
       ...overrides,
-    }),
-    play: (
-      gameState: GameState,
-      gameInput: GameInputSelectOptionGeneric,
-      opts?: { skipLog: boolean }
-    ) => {
-      const player = gameState.getActivePlayer();
-      const selectedOption = gameInput.clientOptions.selectedOption;
-      if (!selectedOption || gameInput.options.indexOf(selectedOption) === -1) {
-        throw new Error(`Please select an option`);
-      }
-      player.gainResources({ [selectedOption]: 1 });
-      if (!opts?.skipLog) {
-        const logText = [player, ` gained ${selectedOption}.`];
-        if ("cardContext" in contextObj) {
-          gameState.addGameLogFromCard(contextObj.cardContext, logText);
-        } else {
-          assertUnreachable(contextObj, contextObj);
-        }
-      }
-    },
-    matches: (
-      gameInput: GameInput
-    ): gameInput is GameInputSelectOptionGeneric => {
-      return (
-        gameInput.inputType === GameInputType.SELECT_OPTION_GENERIC &&
-        isEqual(
-          contextObj,
-          pickBy(gameInput, (_v, k) => k in contextObj)
-        )
-      );
-    },
+    };
   };
 }

@@ -30,7 +30,7 @@ import {
   gainProductionSpendResourceToGetVPFactory,
   sumResources,
   getPointsPerRarityLabel,
-  gainAnyResourceHelper,
+  GainAnyResource,
 } from "./gameStatePlayHelpers";
 import cloneDeep from "lodash/cloneDeep";
 import {
@@ -1163,8 +1163,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     ]),
     resourcesToGain: {},
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      const helper = gainAnyResourceHelper({ cardContext: CardName.HUSBAND });
-      if (helper.matches(gameInput)) {
+      const helper = new GainAnyResource({ cardContext: CardName.HUSBAND });
+      if (helper.matchesGameInput(gameInput)) {
         helper.play(gameState, gameInput);
       }
     },
@@ -1179,10 +1179,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         cardOwner.hasCardInCity(CardName.FARM) &&
         playedHusbands.length <= playedWifes.length
       ) {
+        const helper = new GainAnyResource({ cardContext: CardName.HUSBAND });
         gameState.pendingGameInputs.push(
-          gainAnyResourceHelper({
-            cardContext: CardName.HUSBAND,
-          }).getInput({ prevInputType: gameInput.inputType })
+          helper.getGameInput({ prevInputType: gameInput.inputType })
         );
       }
     },
@@ -3068,8 +3067,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
-      const gainAnyHelper = gainAnyResourceHelper({
+      const helper = new GainAnyResource({
         cardContext: CardName.UNIVERSITY,
+        skipGameLog: true,
       });
 
       if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
@@ -3097,13 +3097,13 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           throw new Error("may only choose one card to remove from city");
         }
         gameState.pendingGameInputs.push(
-          gainAnyHelper.getInput({
+          helper.getGameInput({
             prevInputType: gameInput.inputType,
             prevInput: gameInput,
           })
         );
       } else if (
-        gainAnyHelper.matches(gameInput) &&
+        helper.matchesGameInput(gameInput) &&
         gameInput.prevInputType === GameInputType.SELECT_PLAYED_CARDS &&
         !!gameInput.prevInput &&
         gameInput.prevInput.inputType === GameInputType.SELECT_PLAYED_CARDS
@@ -3118,7 +3118,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         player.gainResources(removedCard.baseCost);
         player.gainResources({ [ResourceType.VP]: 1 });
 
-        gainAnyHelper.play(gameState, gameInput, { skipLog: true });
+        helper.play(gameState, gameInput);
         gameState.addGameLogFromCard(CardName.UNIVERSITY, [
           player,
           " discarded ",

@@ -75,7 +75,7 @@ function splitOnSpaceOrPunc(str: string): string[] {
   const ret: string[] = [];
   let textBuffer: string[] = [];
   str.split("").forEach((x) => {
-    if (x === " " || x === "," || x === "." || x === "/") {
+    if (x === " " || x === "," || x === "." || x === "/" || x === ")") {
       ret.push(textBuffer.join(""));
       ret.push(x);
       textBuffer = [];
@@ -196,6 +196,26 @@ export function inputContextPrefix(gameInput: GameInputMultiStep): GameText {
   if (gameInput.eventContext) {
     return [
       { type: "entity", entityType: "event", event: gameInput.eventContext },
+      { type: "text", text: ": " },
+    ];
+  }
+  if (gameInput.riverDestinationContext) {
+    return [
+      {
+        type: "entity",
+        entityType: "riverDestination",
+        riverDestination: gameInput.riverDestinationContext,
+      },
+      { type: "text", text: ": " },
+    ];
+  }
+  if (gameInput.adornmentContext) {
+    return [
+      {
+        type: "entity",
+        entityType: "adornment",
+        adornment: gameInput.adornmentContext,
+      },
       { type: "text", text: ": " },
     ];
   }

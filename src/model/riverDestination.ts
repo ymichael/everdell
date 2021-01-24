@@ -174,6 +174,24 @@ export class RiverDestinationMap {
     return null;
   }
 
+  static getSpotGameText(spot: RiverDestinationSpot): GameText {
+    switch (spot) {
+      case RiverDestinationSpot.SHOAL:
+        return toGameText("Shoal");
+      case RiverDestinationSpot.TWO_TRAVELER:
+        return toGameText("2 TRAVELER");
+      case RiverDestinationSpot.TWO_GOVERNANCE:
+        return toGameText("2 GOVERNANCE");
+      case RiverDestinationSpot.THREE_PRODUCTION:
+        return toGameText("2 PRODUCTION");
+      case RiverDestinationSpot.TWO_DESTINATION:
+        return toGameText("2 DESTINATION");
+      default:
+        assertUnreachable(spot, spot);
+    }
+    return [];
+  }
+
   static fromJSON(json: RiverDestinationMapJSON): RiverDestinationMap {
     return new RiverDestinationMap(json);
   }
@@ -757,7 +775,7 @@ function payVPResourceToDrawCardAndPearl({
       } else {
         gameState.addGameLogFromRiverDestination(name, [
           player,
-          " declined to spend ${resourceType} and VP.",
+          ` declined to spend ${resourceType} and VP.`,
         ]);
         return;
       }
@@ -786,7 +804,7 @@ function discardCardTypeToGainVPAndPearl({
       gameState.pendingGameInputs.push({
         inputType: GameInputType.SELECT_CARDS,
         prevInputType: gameInput.inputType,
-        label: `Select 3 ${CardType} CARD to discard to gain 1 VP and 1 PEARL (or none to skip action)`,
+        label: `Select 3 ${cardType} CARD to discard to gain 1 VP and 1 PEARL (or none to skip action)`,
         cardOptions,
         maxToSelect: numToDiscard,
         minToSelect: 0,

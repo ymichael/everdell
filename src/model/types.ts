@@ -562,6 +562,11 @@ export type TextPartEntity =
     }
   | {
       type: "entity";
+      entityType: "riverDestinationSpot";
+      spot: RiverDestinationSpot;
+    }
+  | {
+      type: "entity";
       entityType: "wonder";
       wonder: WonderName;
     };

@@ -31,6 +31,7 @@ import {
   sumResources,
   getPointsPerRarityLabel,
   GainAnyResource,
+  GainMoreThan1AnyResource,
 } from "./gameStatePlayHelpers";
 import cloneDeep from "lodash/cloneDeep";
 import {
@@ -1867,6 +1868,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     ),
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
+      const helper = new GainMoreThan1AnyResource({
+        cardContext: CardName.PEDDLER,
+      });
       if (
         gameInput.inputType === GameInputType.SELECT_RESOURCES &&
         gameInput.cardContext === CardName.PEDDLER
@@ -1879,18 +1883,12 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             throw new Error("Too many resources");
           }
           if (numResources !== 0) {
-            gameState.pendingGameInputs.push({
-              inputType: GameInputType.SELECT_RESOURCES,
-              toSpend: false,
-              label: `Choose ${numResources} ANY to gain`,
-              prevInputType: gameInput.inputType,
-              cardContext: CardName.PEDDLER,
-              maxResources: numResources,
-              minResources: numResources,
-              clientOptions: {
-                resources: {},
-              },
-            });
+            gameState.pendingGameInputs.push(
+              helper.getGameInput(numResources, {
+                prevInputType: gameInput.inputType,
+              })
+            );
+
             player.spendResources(gameInput.clientOptions.resources);
             gameState.addGameLogFromCard(CardName.PEDDLER, [
               player,
@@ -1900,19 +1898,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             ]);
           }
         } else {
-          const numResources = sumResources(gameInput.clientOptions.resources);
-          if (numResources < gameInput.minResources) {
-            throw new Error("Too few resources");
-          } else if (numResources > gameInput.maxResources) {
-            throw new Error("Too many resources");
-          }
-          player.gainResources(gameInput.clientOptions.resources);
-          gameState.addGameLogFromCard(CardName.PEDDLER, [
-            player,
-            " gained ",
-            ...resourceMapToGameText(gameInput.clientOptions.resources),
-            ".",
-          ]);
+          helper.play(gameState, gameInput);
         }
       }
     },

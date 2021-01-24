@@ -19,7 +19,6 @@ import {
   LocationType,
   PlayerStatus,
   IGameTextEntity,
-  WonderName,
 } from "./types";
 import { PlayerJSON } from "./jsonTypes";
 import { GameState } from "./gameState";
@@ -27,7 +26,6 @@ import { Adornment } from "./adornment";
 import { Card } from "./card";
 import { Event } from "./event";
 import { Location } from "./location";
-import { Wonder } from "./wonder";
 import { generate as uuid } from "short-uuid";
 import { sumResources } from "./gameStatePlayHelpers";
 import { assertUnreachable } from "../utils";
@@ -57,7 +55,6 @@ export class Player implements IGameTextEntity {
 
   public adornmentsInHand: AdornmentName[];
   public playedAdornments: AdornmentName[];
-  public claimedWonders: WonderName[];
 
   constructor({
     name,
@@ -81,7 +78,6 @@ export class Player implements IGameTextEntity {
     playerStatus = PlayerStatus.DURING_SEASON,
     adornmentsInHand = [],
     playedAdornments = [],
-    claimedWonders = [],
   }: {
     name: string;
     playerSecret?: string;
@@ -97,7 +93,6 @@ export class Player implements IGameTextEntity {
     playerStatus?: PlayerStatus;
     adornmentsInHand?: AdornmentName[];
     playedAdornments?: AdornmentName[];
-    claimedWonders?: WonderName[];
   }) {
     this.playerId = playerId;
     this.playerSecret = playerSecret;
@@ -115,7 +110,6 @@ export class Player implements IGameTextEntity {
     this.numAmbassadors = numAmbassadors;
     this.adornmentsInHand = adornmentsInHand;
     this.playedAdornments = playedAdornments;
-    this.claimedWonders = claimedWonders;
   }
 
   get playerSecretUNSAFE(): string {
@@ -339,15 +333,6 @@ export class Player implements IGameTextEntity {
     return points;
   }
 
-  getPointsFromWonders(gameState: GameState): number {
-    let points = 0;
-    this.claimedWonders.forEach((wonderName) => {
-      const wonder = Wonder.fromName(wonderName as WonderName);
-      points += wonder.getPoints(gameState, this.playerId);
-    });
-    return points;
-  }
-
   getPoints(gameState: GameState): number {
     let points = 0;
     points += this.getPointsFromCards(gameState);
@@ -355,7 +340,6 @@ export class Player implements IGameTextEntity {
     points += this.getPointsFromJourney(gameState);
     points += this.getNumResourcesByType(ResourceType.VP);
     points += this.getNumResourcesByType(ResourceType.PEARL) * 2;
-    points += this.getPointsFromWonders(gameState);
     return points;
   }
 
@@ -670,12 +654,6 @@ export class Player implements IGameTextEntity {
 
     const event = Event.fromName(eventName);
     this.claimedEvents[eventName] = event.getPlayedEventInfo();
-  }
-
-  placeWorkerOnWonder(wonderName: WonderName): void {
-    this.placeWorkerCommon({ wonder: wonderName });
-
-    this.claimedWonders.push(wonderName);
   }
 
   placeWorkerOnCard(gameState: GameState, playedCard: PlayedCardInfo): void {
@@ -1375,7 +1353,6 @@ export class Player implements IGameTextEntity {
         : {}),
       adornmentsInHand: this.adornmentsInHand,
       playedAdornments: this.playedAdornments,
-      claimedWonders: this.claimedWonders,
     });
   }
 

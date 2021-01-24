@@ -72,7 +72,6 @@ export class Adornment implements GameStatePlayable, IGameTextEntity {
 
   canPlayCheck(gameState: GameState, gameInput: GameInput): string | null {
     const player = gameState.getActivePlayer();
-
     if (gameInput.inputType === GameInputType.PLAY_ADORNMENT) {
       const adornment = gameInput.clientOptions.adornment;
       if (!adornment) {
@@ -93,27 +92,72 @@ export class Adornment implements GameStatePlayable, IGameTextEntity {
         return "Must be able to pay 1 PEARL to play an adornment";
       }
       return null;
+    } else if (gameInput.inputType === GameInputType.SELECT_PLAYED_ADORNMENT) {
+      // check to see if adornment has been played
+      const adornment = gameInput.clientOptions.adornment;
+
+      if (adornment.length < gameInput.minToSelect) {
+        return `Did not select enough adornments`;
+      }
+
+      // currently don't have a card that allows you to select multiple
+      // adornments, though technically this game input supports it
+      if (adornment.length > 1) {
+        return `May only select up to 1 adornment`;
+      }
+
+      // MIRROR allows you to select up to 1 to copy, but you can choose 0
+      if (adornment.length === 1) {
+        let players = gameState.players;
+
+        if (gameInput.mustSelectFromOpponents) {
+          players = gameState.players.filter(
+            (p) => p.playerId !== player.playerId
+          );
+        }
+
+        let hasBeenPlayed = false;
+
+        players.forEach((player) => {
+          const playedAdornments = player.playedAdornments;
+          if (playedAdornments.indexOf(adornment[0]) !== -1) {
+            hasBeenPlayed = true;
+          }
+        });
+
+        if (!hasBeenPlayed) {
+          console.log(gameInput);
+          return `Must select an adornment that has been played by an opponent`;
+        }
+      }
     }
 
     return null;
   }
 
   play(gameState: GameState, gameInput: GameInput): void {
+    const canPlayError = this.canPlayCheck(gameState, gameInput);
+
+    if (canPlayError) {
+      throw new Error(canPlayError);
+    }
+
+    this.triggerAdornment(gameState, gameInput);
+  }
+
+  triggerAdornment(
+    gameState: GameState,
+    gameInput: GameInput = {
+      inputType: GameInputType.PLAY_ADORNMENT,
+      clientOptions: {
+        adornment: this.name,
+      },
+    }
+  ): void {
     const player = gameState.getActivePlayer();
     if (gameInput.inputType === GameInputType.PLAY_ADORNMENT) {
       this.playInner(gameState, gameInput);
-
-      // mark as claimed
-      const idx = player.adornmentsInHand.indexOf(this.name);
-      if (idx === -1) {
-        throw new Error(`${this.name} isn't in player's hand`);
-      } else {
-        player.adornmentsInHand.splice(idx, 1);
-      }
-
-      player.playedAdornments.push(this.name);
     } else if (
-      // TODO: add other input types
       gameInput.inputType === GameInputType.SELECT_CARDS ||
       gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS ||
       gameInput.inputType === GameInputType.SELECT_RESOURCES
@@ -123,6 +167,12 @@ export class Adornment implements GameStatePlayable, IGameTextEntity {
       } else {
         throw new Error("Unexpected adornmentContext");
       }
+    } else if (
+      gameInput.inputType === GameInputType.SELECT_PLAYED_ADORNMENT &&
+      gameInput.prevInputType === GameInputType.PLAY_ADORNMENT &&
+      gameInput.adornmentContext === AdornmentName.MIRROR
+    ) {
+      this.playInner(gameState, gameInput);
     } else {
       this.playInner(gameState, gameInput);
     }
@@ -341,7 +391,7 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
   [AdornmentName.MASQUE]: new Adornment({
     name: AdornmentName.MASQUE,
     description: toGameText([
-      "You may place 1 CARD worth up to 3 VP for free.",
+      "You may play 1 CARD worth up to 3 VP for free.",
       { type: "HR" },
       "Worth 1 for every 3 VP tokens you have.",
     ]),
@@ -504,8 +554,42 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
       );
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.PLAY_ADORNMENT) {
-        throw new Error("Not Implemented");
+        let players = gameState.players.filter(
+          (p) => p.playerId !== player.playerId
+        );
+
+        let adornmentOptions: AdornmentName[] = [];
+
+        players.forEach((player) => {
+          const playedAdornments = player.playedAdornments;
+          adornmentOptions.push(...playedAdornments);
+        });
+
+        if (adornmentOptions.length > 0) {
+          gameState.pendingGameInputs.push({
+            inputType: GameInputType.SELECT_PLAYED_ADORNMENT,
+            prevInputType: GameInputType.PLAY_ADORNMENT,
+            adornmentContext: AdornmentName.MIRROR,
+            adornmentOptions: adornmentOptions,
+            maxToSelect: 1,
+            minToSelect: 0,
+            mustSelectFromOpponents: true,
+            clientOptions: {
+              adornment: [],
+            },
+          });
+        }
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_PLAYED_ADORNMENT
+      ) {
+        const adt = gameInput.clientOptions.adornment;
+
+        if (adt.length === 1) {
+          const adornment = Adornment.fromName(adt[0]);
+          adornment.triggerAdornment(gameState);
+        }
       }
     },
   }),

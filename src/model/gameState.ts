@@ -585,16 +585,25 @@ export class GameState {
     }
 
     const adornment = Adornment.fromName(gameInput.clientOptions.adornment);
+
+    const player = this.getActivePlayer();
+
     const canPlayErr = adornment.canPlayCheck(this, gameInput);
     if (canPlayErr) {
       throw new Error(canPlayErr);
     }
 
-    const player = this.getActivePlayer();
     this.addGameLog([player, " played ", adornment, "."]);
 
     adornment.play(this, gameInput);
     player.spendResources({ [ResourceType.PEARL]: 1 });
+    player.playedAdornments.push(adornment.name);
+    const idx = player.adornmentsInHand.indexOf(adornment.name);
+    if (idx === -1) {
+      throw new Error(`${adornment.name} isn't in player's hand`);
+    } else {
+      player.adornmentsInHand.splice(idx, 1);
+    }
   }
 
   private handleVisitRiverDestination(
@@ -815,6 +824,7 @@ export class GameState {
       case GameInputType.SELECT_RESOURCES:
       case GameInputType.DISCARD_CARDS:
       case GameInputType.SELECT_OPTION_GENERIC:
+      case GameInputType.SELECT_PLAYED_ADORNMENT:
         this.handleMultiStepGameInput(gameInput);
         break;
       case GameInputType.PLAY_CARD:

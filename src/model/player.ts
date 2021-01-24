@@ -557,6 +557,7 @@ export class Player implements IGameTextEntity {
         case GameInputType.DISCARD_CARDS:
         case GameInputType.SELECT_PLAYER:
         case GameInputType.SELECT_WORKER_PLACEMENT:
+        case GameInputType.SELECT_PLAYED_ADORNMENT:
           return gameInput;
 
         case GameInputType.SELECT_OPTION_GENERIC:

@@ -298,12 +298,186 @@ describe("Adornment", () => {
       player.adornmentsInHand.push(name);
     });
 
-    xit("should have tests", () => {
+    it("should play MIRROR and copy BELL", () => {
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
+      const player2 = gameState.players[1];
+      player.addToCity(CardName.WIFE);
+
+      player2.playedAdornments.push(AdornmentName.BELL);
+      player2.playedAdornments.push(AdornmentName.GILDED_BOOK);
+
+      const selectAdornmentInput = {
+        inputType: GameInputType.SELECT_PLAYED_ADORNMENT as const,
+        prevInputType: GameInputType.PLAY_ADORNMENT,
+        adornmentContext: name,
+        adornmentOptions: [AdornmentName.BELL, AdornmentName.GILDED_BOOK],
+        maxToSelect: 1,
+        minToSelect: 0,
+        mustSelectFromOpponents: true,
+        clientOptions: {
+          // let's do bell because it's easy
+          adornment: [AdornmentName.BELL],
+        },
+      };
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        playAdornmentInput(name),
+        selectAdornmentInput,
+      ]);
+
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(3);
+      expect(player.cardsInHand.length).to.be(1);
+      expect(player.getPointsFromAdornments(gameState)).to.be(1);
+      expect(player.adornmentsInHand).to.eql([]);
+      expect(player.playedAdornments).to.eql([name]);
+    });
+
+    it("should play MIRROR and copy HOURGLASS", () => {
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
+      gameState.locationsMap[LocationName.FOREST_TWO_BERRY_ONE_CARD] = [];
+      gameState.locationsMap[LocationName.FOREST_THREE_BERRY] = [];
+      const player2 = gameState.players[1];
+      player.addToCity(CardName.WIFE);
+      player.addToCity(CardName.INN);
+
+      player2.playedAdornments.push(AdornmentName.BELL);
+      player2.playedAdornments.push(AdornmentName.HOURGLASS);
+
+      const selectAdornmentInput = {
+        inputType: GameInputType.SELECT_PLAYED_ADORNMENT as const,
+        prevInputType: GameInputType.PLAY_ADORNMENT,
+        adornmentContext: name,
+        adornmentOptions: [AdornmentName.BELL, AdornmentName.HOURGLASS],
+        maxToSelect: 1,
+        minToSelect: 0,
+        mustSelectFromOpponents: true,
+        clientOptions: {
+          adornment: [AdornmentName.HOURGLASS],
+        },
+      };
+
+      [player, gameState] = multiStepGameInputTest(
+        gameState,
+        [
+          playAdornmentInput(name),
+          selectAdornmentInput,
+          {
+            inputType: GameInputType.SELECT_LOCATION,
+            prevInputType: GameInputType.PLAY_ADORNMENT,
+            adornmentContext: AdornmentName.HOURGLASS,
+            locationOptions: [
+              LocationName.FOREST_TWO_BERRY_ONE_CARD,
+              LocationName.FOREST_THREE_BERRY,
+            ],
+            clientOptions: {
+              selectedLocation: LocationName.FOREST_THREE_BERRY,
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_OPTION_GENERIC,
+            prevInputType: GameInputType.PLAY_ADORNMENT,
+            adornmentContext: AdornmentName.HOURGLASS,
+            options: [
+              ResourceType.BERRY,
+              ResourceType.TWIG,
+              ResourceType.RESIN,
+              ResourceType.PEBBLE,
+            ],
+            clientOptions: {
+              selectedOption: ResourceType.PEBBLE,
+            },
+          },
+        ],
+        { skipMultiPendingInputCheck: true }
+      );
+
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(3);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(1);
+      expect(player.getPointsFromAdornments(gameState)).to.be(2);
+      expect(player.adornmentsInHand).to.eql([]);
+      expect(player.playedAdornments).to.eql([name]);
+    });
+
+    it("MIRROR is still playable even if no adornments to copy", () => {
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
+      const player2 = gameState.players[1];
+      player.addToCity(CardName.WIFE);
+
       [player, gameState] = multiStepGameInputTest(gameState, [
         playAdornmentInput(name),
       ]);
+
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+      expect(player.getPointsFromAdornments(gameState)).to.be(1);
+      expect(player.adornmentsInHand).to.eql([]);
+      expect(player.playedAdornments).to.eql([name]);
+    });
+
+    it("Allow player to play MIRROR without selecting a played adornment", () => {
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
+      const player2 = gameState.players[1];
+      player.addToCity(CardName.WIFE);
+
+      player2.playedAdornments.push(AdornmentName.BELL);
+      player2.playedAdornments.push(AdornmentName.GILDED_BOOK);
+
+      const selectAdornmentInput = {
+        inputType: GameInputType.SELECT_PLAYED_ADORNMENT as const,
+        prevInputType: GameInputType.PLAY_ADORNMENT,
+        adornmentContext: name,
+        adornmentOptions: [AdornmentName.BELL, AdornmentName.GILDED_BOOK],
+        maxToSelect: 1,
+        minToSelect: 0,
+        mustSelectFromOpponents: true,
+        clientOptions: {
+          adornment: [],
+        },
+      };
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        playAdornmentInput(name),
+        selectAdornmentInput,
+      ]);
+
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+      expect(player.getPointsFromAdornments(gameState)).to.be(1);
+      expect(player.adornmentsInHand).to.eql([]);
+      expect(player.playedAdornments).to.eql([name]);
+    });
+
+    it("Should calculate points correctly", () => {
+      player.playedAdornments.push(name);
+      expect(player.getPointsFromAdornments(gameState)).to.be(0);
+
+      player.addToCity(CardName.FARM);
+      expect(player.getPointsFromAdornments(gameState)).to.be(1);
+
+      player.addToCity(CardName.FARM);
+      // still 1, because didn't add another unique color
+      expect(player.getPointsFromAdornments(gameState)).to.be(1);
+
+      player.addToCity(CardName.INN);
+      expect(player.getPointsFromAdornments(gameState)).to.be(2);
+
+      player.addToCity(CardName.HUSBAND);
+      expect(player.getPointsFromAdornments(gameState)).to.be(2);
+
+      player.addToCity(CardName.WIFE);
+      expect(player.getPointsFromAdornments(gameState)).to.be(3);
+
+      player.addToCity(CardName.UNDERTAKER);
+      expect(player.getPointsFromAdornments(gameState)).to.be(4);
+
+      player.addToCity(CardName.EVERTREE);
+      expect(player.getPointsFromAdornments(gameState)).to.be(4);
+
+      player.addToCity(CardName.INNKEEPER);
+      expect(player.getPointsFromAdornments(gameState)).to.be(5);
+
+      player.addToCity(CardName.HISTORIAN);
+      expect(player.getPointsFromAdornments(gameState)).to.be(5);
     });
   });
 
@@ -342,6 +516,8 @@ describe("Adornment", () => {
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
       expect(player.cardsInHand.length).to.be(2);
       expect(player.getPointsFromAdornments(gameState)).to.be(1);
+      expect(player.adornmentsInHand).to.eql([]);
+      expect(player.playedAdornments).to.eql([name]);
     });
 
     it("should calculate points correctly", () => {

@@ -147,6 +147,8 @@ const GameInputBoxInner = ({
         <>TODO</>
       ) : gameInput.inputType === GameInputType.PLAY_ADORNMENT ? (
         <>TODO</>
+      ) : gameInput.inputType === GameInputType.SELECT_PLAYED_ADORNMENT ? (
+        <>TODO</>
       ) : (
         <>
           {assertUnreachable(

@@ -204,6 +204,8 @@ describe("Adornment", () => {
         CardName.QUEEN,
       ]);
       expect(player.getPoints(gameState)).to.be(5);
+      expect(player.adornmentsInHand).to.eql([]);
+      expect(player.playedAdornments).to.eql([name]);
     });
 
     it("should calculate points correctly", () => {
@@ -523,12 +525,68 @@ describe("Adornment", () => {
       player.adornmentsInHand.push(name);
     });
 
-    xit("should have tests", () => {
+    it("should be able to play", () => {
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
+      player.addToCityMulti([
+        CardName.FARM,
+        CardName.DUNGEON,
+        CardName.CLOCK_TOWER,
+        CardName.INNKEEPER,
+      ]);
+
+      const selectCardInput = {
+        inputType: GameInputType.SELECT_CARDS as const,
+        prevInputType: GameInputType.PLAY_ADORNMENT,
+        adornmentContext: name,
+        // FARM not included because not a Governance
+        cardOptions: [
+          CardName.DUNGEON,
+          CardName.CLOCK_TOWER,
+          CardName.INNKEEPER,
+        ],
+        maxToSelect: 1,
+        minToSelect: 1,
+        clientOptions: {
+          selectedCards: [CardName.DUNGEON],
+        },
+      };
+
       [player, gameState] = multiStepGameInputTest(gameState, [
         playAdornmentInput(name),
+        selectCardInput,
       ]);
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(2);
+      expect(player.getPointsFromAdornments(gameState)).to.be(3);
+      expect(player.adornmentsInHand).to.eql([]);
+      expect(player.playedAdornments).to.eql([name]);
+    });
+
+    it("should calculate points correctly", () => {
+      player.playedAdornments.push(name);
+      expect(player.getPointsFromAdornments(gameState)).to.be(0);
+
+      player.addToCity(CardName.FARM);
+      expect(player.getPointsFromAdornments(gameState)).to.be(0);
+
+      player.addToCity(CardName.DUNGEON);
+      expect(player.getPointsFromAdornments(gameState)).to.be(1);
+
+      player.addToCity(CardName.HUSBAND);
+      expect(player.getPointsFromAdornments(gameState)).to.be(1);
+
+      player.addToCity(CardName.INNKEEPER);
+      expect(player.getPointsFromAdornments(gameState)).to.be(2);
+
+      player.addToCity(CardName.CLOCK_TOWER);
+      expect(player.getPointsFromAdornments(gameState)).to.be(3);
+
+      player.addToCity(CardName.POSTAL_PIGEON);
+      expect(player.getPointsFromAdornments(gameState)).to.be(3);
+
+      player.addToCity(CardName.HISTORIAN);
+      expect(player.getPointsFromAdornments(gameState)).to.be(4);
     });
   });
 

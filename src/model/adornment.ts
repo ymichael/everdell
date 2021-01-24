@@ -189,8 +189,42 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
       return player.getPlayedCardNamesByType(CardType.GOVERNANCE).length;
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+
       if (gameInput.inputType === GameInputType.PLAY_ADORNMENT) {
-        throw new Error("Not Implemented");
+        // get all the governance cards in player's city
+        const playedGovCards = player.getPlayedCardNamesByType(
+          CardType.GOVERNANCE
+        );
+
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: GameInputType.PLAY_ADORNMENT,
+          label: ["Select a GOVERNANCE to gain resources equal to its cost."],
+          adornmentContext: AdornmentName.GILDED_BOOK,
+          cardOptions: playedGovCards,
+          maxToSelect: 1,
+          minToSelect: 1,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_CARDS) {
+        const selectedCard = gameInput.clientOptions.selectedCards;
+
+        if (selectedCard.length !== 1) {
+          throw new Error(`Must select exactly 1 card`);
+        }
+
+        const card = Card.fromName(selectedCard[0]);
+
+        if (card.cardType !== CardType.GOVERNANCE) {
+          throw new Error(`Must select GOVERNANCE card`);
+        }
+
+        player.gainResources(card.baseCost);
+      } else {
+        throw new Error(`Unexpected GameInputType ${gameInput.inputType}`);
       }
     },
   }),

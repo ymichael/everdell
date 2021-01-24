@@ -5,7 +5,6 @@ import {
   GameInput,
   GameInputType,
   GameInputMultiStep,
-  GameInputMultiStepContext,
   GameInputSelectOptionGeneric,
 } from "./types";
 import {
@@ -114,14 +113,23 @@ export function getPointsPerRarityLabel({
 export function gainAnyResourceHelper(contextObj: {
   cardContext: CardName;
 }): {
-  getInput: (prevGameInputType: GameInputType) => GameInputMultiStep;
+  getInput: (overrides: {
+    prevInputType: GameInputType;
+    prevInput?: GameInput;
+  }) => GameInputMultiStep;
   matches: (gameInput: GameInput) => gameInput is GameInputSelectOptionGeneric;
-  play: (gameState: GameState, gameInput: GameInputSelectOptionGeneric) => void;
+  play: (
+    gameState: GameState,
+    gameInput: GameInputSelectOptionGeneric,
+    opts?: { skipLog: boolean }
+  ) => void;
 } {
   return {
-    getInput: (prevGameInputType: GameInputType) => ({
+    getInput: (overrides: {
+      prevInputType: GameInputType;
+      prevInput?: GameInput;
+    }) => ({
       inputType: GameInputType.SELECT_OPTION_GENERIC,
-      prevInputType: prevGameInputType,
       label: "Gain 1 ANY",
       options: [
         ResourceType.BERRY,
@@ -133,19 +141,26 @@ export function gainAnyResourceHelper(contextObj: {
         selectedOption: null,
       },
       ...contextObj,
+      ...overrides,
     }),
-    play: (gameState: GameState, gameInput: GameInputSelectOptionGeneric) => {
+    play: (
+      gameState: GameState,
+      gameInput: GameInputSelectOptionGeneric,
+      opts?: { skipLog: boolean }
+    ) => {
       const player = gameState.getActivePlayer();
       const selectedOption = gameInput.clientOptions.selectedOption;
       if (!selectedOption || gameInput.options.indexOf(selectedOption) === -1) {
         throw new Error(`Please select an option`);
       }
       player.gainResources({ [selectedOption]: 1 });
-      const logText = [player, ` gained ${selectedOption}.`];
-      if ("cardContext" in contextObj) {
-        gameState.addGameLogFromCard(contextObj.cardContext, logText);
-      } else {
-        assertUnreachable(contextObj, contextObj);
+      if (!opts?.skipLog) {
+        const logText = [player, ` gained ${selectedOption}.`];
+        if ("cardContext" in contextObj) {
+          gameState.addGameLogFromCard(contextObj.cardContext, logText);
+        } else {
+          assertUnreachable(contextObj, contextObj);
+        }
       }
     },
     matches: (

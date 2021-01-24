@@ -1163,7 +1163,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     ]),
     resourcesToGain: {},
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      const player = gameState.getActivePlayer();
       const helper = gainAnyResourceHelper({ cardContext: CardName.HUSBAND });
       if (helper.matches(gameInput)) {
         helper.play(gameState, gameInput);
@@ -1183,7 +1182,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         gameState.pendingGameInputs.push(
           gainAnyResourceHelper({
             cardContext: CardName.HUSBAND,
-          }).getInput(gameInput.inputType)
+          }).getInput({ prevInputType: gameInput.inputType })
         );
       }
     },
@@ -3069,6 +3068,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
+      const gainAnyHelper = gainAnyResourceHelper({
+        cardContext: CardName.UNIVERSITY,
+      });
 
       if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
         // choose a card to destroy
@@ -3094,32 +3096,18 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         if (gameInput.clientOptions.selectedCards.length !== 1) {
           throw new Error("may only choose one card to remove from city");
         }
-
-        gameState.pendingGameInputs.push({
-          inputType: GameInputType.SELECT_RESOURCES,
-          cardContext: CardName.UNIVERSITY,
-          prevInputType: gameInput.inputType,
-          toSpend: false,
-          prevInput: gameInput,
-          maxResources: 1,
-          minResources: 1,
-          clientOptions: {
-            resources: {},
-          },
-        });
-        // ask player what random resources they want to receive
+        gameState.pendingGameInputs.push(
+          gainAnyHelper.getInput({
+            prevInputType: gameInput.inputType,
+            prevInput: gameInput,
+          })
+        );
       } else if (
-        gameInput.inputType === GameInputType.SELECT_RESOURCES &&
+        gainAnyHelper.matches(gameInput) &&
         gameInput.prevInputType === GameInputType.SELECT_PLAYED_CARDS &&
-        gameInput.cardContext === CardName.UNIVERSITY &&
         !!gameInput.prevInput &&
         gameInput.prevInput.inputType === GameInputType.SELECT_PLAYED_CARDS
       ) {
-        const resourceToGain = gameInput.clientOptions.resources;
-        if (sumResources(resourceToGain) !== 1) {
-          throw new Error("may only gain 1 resource");
-        }
-
         // remove card from city + put in discard pile
         const prevInput = gameInput.prevInput;
         const cardToRemove = prevInput.clientOptions.selectedCards[0];
@@ -3128,16 +3116,14 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         // give player resources from base cost + the resource they chose
         const removedCard = Card.fromName(cardToRemove.cardName);
         player.gainResources(removedCard.baseCost);
-        player.gainResources(resourceToGain);
         player.gainResources({ [ResourceType.VP]: 1 });
 
+        gainAnyHelper.play(gameState, gameInput, { skipLog: true });
         gameState.addGameLogFromCard(CardName.UNIVERSITY, [
           player,
           " discarded ",
           removedCard,
-          " from their city and gained ",
-          ...resourceMapToGameText(resourceToGain),
-          " and 1 VP.",
+          ` from their city and gained ${gameInput.clientOptions.selectedOption} and 1 VP.`,
         ]);
       }
     },

@@ -4461,6 +4461,20 @@ describe("Card", () => {
         expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
         expect(player.hasCardInCity(CardName.FARM)).to.be(true);
 
+        const selectPlayedCardInput = {
+          inputType: GameInputType.SELECT_PLAYED_CARDS as const,
+          prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+          cardContext: CardName.UNIVERSITY,
+          cardOptions: player
+            .getAllPlayedCards()
+            .filter(({ cardName }) => cardName !== CardName.UNIVERSITY),
+          maxToSelect: 1,
+          minToSelect: 1,
+          clientOptions: {
+            selectedCards: [player.getFirstPlayedCard(CardName.FARM)],
+          },
+        };
+
         [player, gameState] = multiStepGameInputTest(gameState, [
           {
             inputType: GameInputType.VISIT_DESTINATION_CARD,
@@ -4468,87 +4482,20 @@ describe("Card", () => {
               playedCard: player.getFirstPlayedCard(CardName.UNIVERSITY),
             },
           },
+          selectPlayedCardInput,
           {
-            inputType: GameInputType.SELECT_PLAYED_CARDS,
-            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
-            cardContext: CardName.UNIVERSITY,
-            cardOptions: [
-              {
-                cardOwnerId: player.playerId,
-                cardName: CardName.FARM,
-                usedForCritter: false,
-              },
-              {
-                cardOwnerId: player.playerId,
-                cardName: CardName.CHAPEL,
-                usedForCritter: false,
-                workers: [],
-                resources: {
-                  [ResourceType.VP]: 0,
-                },
-              },
-              {
-                cardOwnerId: player.playerId,
-                cardName: CardName.MONK,
-              },
-            ],
-            maxToSelect: 1,
-            minToSelect: 1,
-            clientOptions: {
-              selectedCards: [
-                {
-                  cardOwnerId: player.playerId,
-                  cardName: CardName.FARM,
-                  usedForCritter: false,
-                },
-              ],
-            },
-          },
-          {
-            inputType: GameInputType.SELECT_RESOURCES,
-            cardContext: CardName.UNIVERSITY,
+            inputType: GameInputType.SELECT_OPTION_GENERIC,
             prevInputType: GameInputType.SELECT_PLAYED_CARDS,
-            toSpend: false,
-            prevInput: {
-              inputType: GameInputType.SELECT_PLAYED_CARDS,
-              prevInputType: GameInputType.VISIT_DESTINATION_CARD,
-              cardContext: CardName.UNIVERSITY,
-              cardOptions: [
-                {
-                  cardOwnerId: player.playerId,
-                  cardName: CardName.FARM,
-                  usedForCritter: false,
-                },
-                {
-                  cardOwnerId: player.playerId,
-                  cardName: CardName.CHAPEL,
-                  usedForCritter: false,
-                  workers: [],
-                  resources: {
-                    [ResourceType.VP]: 0,
-                  },
-                },
-                {
-                  cardOwnerId: player.playerId,
-                  cardName: CardName.MONK,
-                },
-              ],
-              maxToSelect: 1,
-              minToSelect: 1,
-              clientOptions: {
-                selectedCards: [
-                  {
-                    cardOwnerId: player.playerId,
-                    cardName: CardName.FARM,
-                    usedForCritter: false,
-                  },
-                ],
-              },
-            },
-            maxResources: 1,
-            minResources: 1,
+            prevInput: selectPlayedCardInput,
+            cardContext: CardName.UNIVERSITY,
+            options: [
+              ResourceType.BERRY,
+              ResourceType.TWIG,
+              ResourceType.RESIN,
+              ResourceType.PEBBLE,
+            ],
             clientOptions: {
-              resources: { [ResourceType.BERRY]: 1 },
+              selectedOption: ResourceType.BERRY,
             },
           },
         ]);
@@ -4573,6 +4520,25 @@ describe("Card", () => {
         );
         expect(player.numAvailableWorkers).to.be(1);
 
+        const selectPlayedCardInput = {
+          inputType: GameInputType.SELECT_PLAYED_CARDS as const,
+          prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+          cardContext: CardName.UNIVERSITY,
+          cardOptions: player
+            .getAllPlayedCards()
+            .filter(({ cardName }) => cardName !== CardName.UNIVERSITY),
+          maxToSelect: 1,
+          minToSelect: 1,
+          clientOptions: {
+            // these are the cards the player wants to remove
+            // from their city
+            selectedCards: [...player.getPlayedCardInfos(CardName.LOOKOUT)],
+          },
+        };
+
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+
         [player, gameState] = multiStepGameInputTest(gameState, [
           {
             inputType: GameInputType.VISIT_DESTINATION_CARD,
@@ -4580,50 +4546,31 @@ describe("Card", () => {
               playedCard: player.getFirstPlayedCard(CardName.UNIVERSITY),
             },
           },
+          selectPlayedCardInput,
           {
-            inputType: GameInputType.SELECT_PLAYED_CARDS,
-            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
-            cardContext: CardName.UNIVERSITY,
-            cardOptions: player
-              .getAllPlayedCards()
-              .filter(({ cardName }) => cardName !== CardName.UNIVERSITY),
-            maxToSelect: 1,
-            minToSelect: 1,
-            clientOptions: {
-              // these are the cards the player wants to remove
-              // from their city
-              selectedCards: [...player.getPlayedCardInfos(CardName.LOOKOUT)],
-            },
-          },
-          {
-            inputType: GameInputType.SELECT_RESOURCES,
-            cardContext: CardName.UNIVERSITY,
+            inputType: GameInputType.SELECT_OPTION_GENERIC,
             prevInputType: GameInputType.SELECT_PLAYED_CARDS,
-            toSpend: false,
-            prevInput: {
-              inputType: GameInputType.SELECT_PLAYED_CARDS,
-              prevInputType: GameInputType.VISIT_DESTINATION_CARD,
-              cardContext: CardName.UNIVERSITY,
-              cardOptions: player
-                .getAllPlayedCards()
-                .filter(({ cardName }) => cardName !== CardName.UNIVERSITY),
-              maxToSelect: 1,
-              minToSelect: 1,
-              clientOptions: {
-                // these are the cards the player wants to remove
-                // from their city
-                selectedCards: [...player.getPlayedCardInfos(CardName.LOOKOUT)],
-              },
-            },
-            maxResources: 1,
-            minResources: 1,
+            prevInput: selectPlayedCardInput,
+            cardContext: CardName.UNIVERSITY,
+            options: [
+              ResourceType.BERRY,
+              ResourceType.TWIG,
+              ResourceType.RESIN,
+              ResourceType.PEBBLE,
+            ],
             clientOptions: {
-              resources: { [ResourceType.TWIG]: 1 },
+              selectedOption: ResourceType.BERRY,
             },
           },
         ]);
 
         expect(player.numAvailableWorkers).to.be(0);
+        expect(player.hasCardInCity(CardName.LOOKOUT)).to.be(false);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
+        expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(1);
+        expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(1);
+        expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(1);
         player.recallWorkers(gameState);
         expect(player.numAvailableWorkers).to.be(2);
       });
@@ -4649,6 +4596,20 @@ describe("Card", () => {
         );
         expect(player2.numAvailableWorkers).to.be(0);
 
+        const selectPlayedCardInput = {
+          inputType: GameInputType.SELECT_PLAYED_CARDS as const,
+          prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+          cardContext: CardName.UNIVERSITY,
+          cardOptions: player1
+            .getAllPlayedCards()
+            .filter(({ cardName }) => cardName !== CardName.UNIVERSITY),
+          maxToSelect: 1,
+          minToSelect: 1,
+          clientOptions: {
+            selectedCards: [...player1.getPlayedCardInfos(CardName.INN)],
+          },
+        };
+
         [player, gameState] = multiStepGameInputTest(gameState, [
           {
             inputType: GameInputType.VISIT_DESTINATION_CARD,
@@ -4656,41 +4617,20 @@ describe("Card", () => {
               playedCard: player1.getFirstPlayedCard(CardName.UNIVERSITY),
             },
           },
+          selectPlayedCardInput,
           {
-            inputType: GameInputType.SELECT_PLAYED_CARDS,
-            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
-            cardContext: CardName.UNIVERSITY,
-            cardOptions: player1
-              .getAllPlayedCards()
-              .filter(({ cardName }) => cardName !== CardName.UNIVERSITY),
-            maxToSelect: 1,
-            minToSelect: 1,
-            clientOptions: {
-              selectedCards: [...player1.getPlayedCardInfos(CardName.INN)],
-            },
-          },
-          {
-            inputType: GameInputType.SELECT_RESOURCES,
-            cardContext: CardName.UNIVERSITY,
+            inputType: GameInputType.SELECT_OPTION_GENERIC,
             prevInputType: GameInputType.SELECT_PLAYED_CARDS,
-            toSpend: false,
-            prevInput: {
-              inputType: GameInputType.SELECT_PLAYED_CARDS,
-              prevInputType: GameInputType.VISIT_DESTINATION_CARD,
-              cardContext: CardName.UNIVERSITY,
-              cardOptions: player1
-                .getAllPlayedCards()
-                .filter(({ cardName }) => cardName !== CardName.UNIVERSITY),
-              maxToSelect: 1,
-              minToSelect: 1,
-              clientOptions: {
-                selectedCards: [...player1.getPlayedCardInfos(CardName.INN)],
-              },
-            },
-            maxResources: 1,
-            minResources: 1,
+            prevInput: selectPlayedCardInput,
+            cardContext: CardName.UNIVERSITY,
+            options: [
+              ResourceType.BERRY,
+              ResourceType.TWIG,
+              ResourceType.RESIN,
+              ResourceType.PEBBLE,
+            ],
             clientOptions: {
-              resources: { [ResourceType.TWIG]: 1 },
+              selectedOption: ResourceType.TWIG,
             },
           },
         ]);
@@ -4713,6 +4653,22 @@ describe("Card", () => {
         );
         expect(player.numAvailableWorkers).to.be(1);
 
+        const selectPlayedCardInput = {
+          inputType: GameInputType.SELECT_PLAYED_CARDS as const,
+          prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+          cardContext: CardName.UNIVERSITY,
+          cardOptions: player
+            .getAllPlayedCards()
+            .filter(({ cardName }) => cardName !== CardName.UNIVERSITY),
+          maxToSelect: 1,
+          minToSelect: 1,
+          clientOptions: {
+            // these are the cards the player wants to remove
+            // from their city
+            selectedCards: [...player.getPlayedCardInfos(CardName.MONASTERY)],
+          },
+        };
+
         [player, gameState] = multiStepGameInputTest(gameState, [
           {
             inputType: GameInputType.VISIT_DESTINATION_CARD,
@@ -4720,47 +4676,20 @@ describe("Card", () => {
               playedCard: player.getFirstPlayedCard(CardName.UNIVERSITY),
             },
           },
+          selectPlayedCardInput,
           {
-            inputType: GameInputType.SELECT_PLAYED_CARDS,
-            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
-            cardContext: CardName.UNIVERSITY,
-            cardOptions: player
-              .getAllPlayedCards()
-              .filter(({ cardName }) => cardName !== CardName.UNIVERSITY),
-            maxToSelect: 1,
-            minToSelect: 1,
-            clientOptions: {
-              // these are the cards the player wants to remove
-              // from their city
-              selectedCards: [...player.getPlayedCardInfos(CardName.MONASTERY)],
-            },
-          },
-          {
-            inputType: GameInputType.SELECT_RESOURCES,
+            inputType: GameInputType.SELECT_OPTION_GENERIC,
             prevInputType: GameInputType.SELECT_PLAYED_CARDS,
+            prevInput: selectPlayedCardInput,
             cardContext: CardName.UNIVERSITY,
-            toSpend: false,
-            prevInput: {
-              inputType: GameInputType.SELECT_PLAYED_CARDS,
-              prevInputType: GameInputType.VISIT_DESTINATION_CARD,
-              cardContext: CardName.UNIVERSITY,
-              cardOptions: player
-                .getAllPlayedCards()
-                .filter(({ cardName }) => cardName !== CardName.UNIVERSITY),
-              maxToSelect: 1,
-              minToSelect: 1,
-              clientOptions: {
-                // these are the cards the player wants to remove
-                // from their city
-                selectedCards: [
-                  ...player.getPlayedCardInfos(CardName.MONASTERY),
-                ],
-              },
-            },
-            maxResources: 1,
-            minResources: 1,
+            options: [
+              ResourceType.BERRY,
+              ResourceType.TWIG,
+              ResourceType.RESIN,
+              ResourceType.PEBBLE,
+            ],
             clientOptions: {
-              resources: { [ResourceType.TWIG]: 1 },
+              selectedOption: ResourceType.TWIG,
             },
           },
         ]);

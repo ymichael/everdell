@@ -846,11 +846,61 @@ describe("Adornment", () => {
       player.adornmentsInHand.push(name);
     });
 
-    xit("should have tests", () => {
+    it("should do nothing if no traveller cards", () => {
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
       [player, gameState] = multiStepGameInputTest(gameState, [
         playAdornmentInput(name),
       ]);
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+    });
+
+    it("should ask to reactivate traveller cards and allow none to be selected", () => {
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
+      player.addToCity(CardName.WANDERER);
+      player.addToCity(CardName.WANDERER);
+
+      expect(player.cardsInHand.length).to.be(0);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        playAdornmentInput(name),
+        {
+          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          prevInputType: GameInputType.PLAY_ADORNMENT,
+          cardOptions: player.getPlayedCardInfos(CardName.WANDERER),
+          adornmentContext: name,
+          maxToSelect: 2,
+          minToSelect: 0,
+          clientOptions: { selectedCards: [] },
+        },
+      ]);
+
+      expect(player.cardsInHand.length).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+    });
+
+    it("should ask to reactivate traveller cards and activate selected cards", () => {
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
+      player.addToCity(CardName.WANDERER);
+      player.addToCity(CardName.WANDERER);
+
+      expect(player.cardsInHand.length).to.be(0);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        playAdornmentInput(name),
+        {
+          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          prevInputType: GameInputType.PLAY_ADORNMENT,
+          cardOptions: player.getPlayedCardInfos(CardName.WANDERER),
+          adornmentContext: name,
+          maxToSelect: 2,
+          minToSelect: 0,
+          clientOptions: {
+            selectedCards: player.getPlayedCardInfos(CardName.WANDERER),
+          },
+        },
+      ]);
+
+      expect(player.cardsInHand.length).to.be(6);
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
     });
   });

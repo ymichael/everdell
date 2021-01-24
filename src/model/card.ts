@@ -259,37 +259,6 @@ export class Card<TCardType extends CardType = CardType>
     }
   }
 
-  gainProduction(
-    gameState: GameState,
-    gameInput: GameInput,
-    cardOwner: Player,
-    playedCard: PlayedCardInfo
-  ): void {
-    const player = gameState.getActivePlayer();
-    if (this.resourcesToGain && sumResources(this.resourcesToGain)) {
-      player.gainResources(this.resourcesToGain);
-      if (this.resourcesToGain.CARD) {
-        player.drawCards(gameState, this.resourcesToGain.CARD);
-      }
-      if (sumResources(this.resourcesToGain) === this.resourcesToGain.CARD) {
-        gameState.addGameLogFromCard(this.name, [
-          player,
-          ` drew ${this.resourcesToGain.CARD} CARD.`,
-        ]);
-      } else {
-        gameState.addGameLogFromCard(this.name, [
-          player,
-          " gained ",
-          ...resourceMapToGameText(this.resourcesToGain),
-          ".",
-        ]);
-      }
-    }
-    if (this.productionInner) {
-      this.productionInner(gameState, gameInput, cardOwner, playedCard);
-    }
-  }
-
   addToCityAndPlay(gameState: GameState, gameInput: GameInput): void {
     const player = gameState.getActivePlayer();
 
@@ -319,9 +288,10 @@ export class Card<TCardType extends CardType = CardType>
       (cardName) => {
         if (player.hasCardInCity(cardName)) {
           const card = Card.fromName(cardName);
-          card.playCardInner(
+          card.activateCard(
             gameState,
             playCardGameInput,
+            player,
             player.getFirstPlayedCard(cardName) as PlayedCardInfo
           );
         }
@@ -332,19 +302,67 @@ export class Card<TCardType extends CardType = CardType>
       this.cardType === CardType.PRODUCTION ||
       this.cardType === CardType.TRAVELER
     ) {
-      this.playCardInner(gameState, playCardGameInput, playedCard!);
+      this.activateCard(gameState, playCardGameInput, player, playedCard!);
     }
   }
 
-  playCardInner(
+  reactivateCard(
     gameState: GameState,
     gameInput: GameInput,
+    cardOwner: Player,
+    playedCard: PlayedCardInfo
+  ): void {
+    if (
+      this.cardType === CardType.PRODUCTION ||
+      this.cardType === CardType.TRAVELER
+    ) {
+      this.activateCard(gameState, gameInput, cardOwner, playedCard);
+    }
+  }
+
+  activateCard(
+    gameState: GameState,
+    gameInput: GameInput,
+    cardOwner: Player,
     playedCard: PlayedCardInfo
   ): void {
     const player = gameState.getActivePlayer();
-    this.gainProduction(gameState, gameInput, player, playedCard);
+    if (this.resourcesToGain && sumResources(this.resourcesToGain)) {
+      player.gainResources(this.resourcesToGain);
+      if (this.resourcesToGain.CARD) {
+        player.drawCards(gameState, this.resourcesToGain.CARD);
+      }
+      if (sumResources(this.resourcesToGain) === this.resourcesToGain.CARD) {
+        gameState.addGameLogFromCard(this.name, [
+          player,
+          ` drew ${this.resourcesToGain.CARD} CARD.`,
+        ]);
+      } else {
+        gameState.addGameLogFromCard(this.name, [
+          player,
+          " gained ",
+          ...resourceMapToGameText(this.resourcesToGain),
+          ".",
+        ]);
+      }
+    }
+    if (this.productionInner) {
+      this.productionInner(gameState, gameInput, cardOwner, playedCard);
+    }
     if (this.playInner) {
-      this.playInner(gameState, gameInput);
+      const playCardGameInput =
+        gameInput.inputType === GameInputType.PLAY_CARD
+          ? gameInput
+          : {
+              inputType: GameInputType.PLAY_CARD as const,
+              prevInputType: gameInput.inputType,
+              clientOptions: {
+                card: this.name,
+                fromMeadow: false,
+                paymentOptions: { resources: {} },
+              },
+            };
+      this.playInner(gameState, playCardGameInput);
     }
   }
 
@@ -709,7 +727,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           targetCard,
           ".",
         ]);
-        targetCard.gainProduction(
+        targetCard.reactivateCard(
           gameState,
           gameInput,
           player,
@@ -917,7 +935,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     associatedCard: CardName.UNIVERSITY,
     resourcesToGain: {},
     cardDescription: toGameText("You may pay up to 3 BERRY to gain 1 VP each."),
-    productionInner: gainProductionSpendResourceToGetVPFactory({
+    productionInner: activateCardSpendResourceToGetVPFactory({
       card: CardName.DOCTOR,
       resourceType: ResourceType.BERRY,
       maxToSpend: 3,
@@ -1537,7 +1555,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           cardOwner,
           "'s city.",
         ]);
-        targetCard.gainProduction(
+        targetCard.reactivateCard(
           gameState,
           gameInput,
           cardOwner,
@@ -3143,7 +3161,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     associatedCard: CardName.STOREHOUSE,
     resourcesToGain: {},
     cardDescription: toGameText("You may pay up to 3 TWIG to gain 1 VP each"),
-    productionInner: gainProductionSpendResourceToGetVPFactory({
+    productionInner: activateCardSpendResourceToGetVPFactory({
       card: CardName.WOODCARVER,
       resourceType: ResourceType.TWIG,
       maxToSpend: 3,
@@ -3398,7 +3416,7 @@ function playSpendResourceToGetVPFactory({
   };
 }
 
-function gainProductionSpendResourceToGetVPFactory({
+function activateCardSpendResourceToGetVPFactory({
   card,
   resourceType,
   maxToSpend,

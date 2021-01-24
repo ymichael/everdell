@@ -317,6 +317,30 @@ describe("Adornment", () => {
       player.adornmentsInHand.push(name);
     });
 
+    it("should be worth 1 point for every 3 VP you have", () => {
+      const adornment = Adornment.fromName(name);
+      const playerId = player.playerId;
+      expect(adornment.getPoints(gameState, playerId)).to.be(0);
+
+      player.gainResources({ [ResourceType.VP]: 1 });
+      expect(adornment.getPoints(gameState, playerId)).to.be(0);
+
+      player.gainResources({ [ResourceType.VP]: 1 });
+      expect(adornment.getPoints(gameState, playerId)).to.be(0);
+
+      player.gainResources({ [ResourceType.VP]: 1 });
+      expect(adornment.getPoints(gameState, playerId)).to.be(1);
+
+      player.gainResources({ [ResourceType.VP]: 7 });
+      expect(adornment.getPoints(gameState, playerId)).to.be(1 + 2);
+
+      player.gainResources({ [ResourceType.VP]: 7 });
+      expect(adornment.getPoints(gameState, playerId)).to.be(1 + 4);
+
+      player.gainResources({ [ResourceType.VP]: 7 });
+      expect(adornment.getPoints(gameState, playerId)).to.be(1 + 7);
+    });
+
     it("should allow player to choose to play card from meadow OR hand", () => {
       gameState.meadowCards.push(CardName.FARM);
       player.cardsInHand.push(CardName.FARM);

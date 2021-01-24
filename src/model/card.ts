@@ -26,8 +26,6 @@ import { Location } from "./location";
 import { Event } from "./event";
 import { Player } from "./player";
 import {
-  playSpendResourceToGetVPFactory,
-  gainProductionSpendResourceToGetVPFactory,
   sumResources,
   GainAnyResource,
   GainMoreThan1AnyResource,
@@ -3374,5 +3372,69 @@ function getPointsPerRarityLabel({
       }
     });
     return numCardsToCount;
+  };
+}
+
+function playSpendResourceToGetVPFactory({
+  card,
+  resourceType,
+  maxToSpend,
+}: {
+  card: CardName;
+  resourceType: ResourceType.BERRY | ResourceType.TWIG;
+  maxToSpend: number;
+}): GameStatePlayFn {
+  return (gameState: GameState, gameInput: GameInput) => {
+    const player = gameState.getActivePlayer();
+    if (gameInput.inputType === GameInputType.SELECT_RESOURCES) {
+      const numToSpend = gameInput.clientOptions.resources[resourceType] || 0;
+      if (numToSpend > maxToSpend) {
+        throw new Error(
+          `Too many resources, max: ${maxToSpend}, got: ${numToSpend}`
+        );
+      }
+      if (numToSpend === 0) {
+        // Only log if its not an auto advanced input.
+        if (!gameInput.isAutoAdvancedInput) {
+          gameState.addGameLogFromCard(card, [
+            player,
+            ` decline to spend any ${resourceType}.`,
+          ]);
+        }
+      } else {
+        gameState.addGameLogFromCard(card, [
+          player,
+          ` spent ${numToSpend} ${resourceType} to gain ${numToSpend} VP.`,
+        ]);
+      }
+      player.spendResources({ [resourceType]: numToSpend });
+      player.gainResources({ [ResourceType.VP]: numToSpend });
+    }
+  };
+}
+
+function gainProductionSpendResourceToGetVPFactory({
+  card,
+  resourceType,
+  maxToSpend,
+}: {
+  card: CardName;
+  resourceType: ResourceType.BERRY | ResourceType.TWIG;
+  maxToSpend: number;
+}): GameStatePlayFn {
+  return (gameState: GameState, gameInput: GameInput) => {
+    gameState.pendingGameInputs.push({
+      inputType: GameInputType.SELECT_RESOURCES,
+      toSpend: true,
+      prevInputType: gameInput.inputType,
+      label: `Pay up to ${maxToSpend} ${resourceType} to gain 1 VP each`,
+      cardContext: card,
+      maxResources: maxToSpend,
+      minResources: 0,
+      specificResource: resourceType,
+      clientOptions: {
+        resources: {},
+      },
+    });
   };
 }

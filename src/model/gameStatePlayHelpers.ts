@@ -3,6 +3,7 @@ import pickBy from "lodash/pickBy";
 import {
   CardName,
   LocationName,
+  EventName,
   ResourceType,
   ResourceMap,
   GameInput,
@@ -16,7 +17,7 @@ import {
   GameStatePlayFn,
   GameStateCountPointsFn,
 } from "./gameState";
-import { resourceMapToGameText } from "./gameText";
+import { toGameText, resourceMapToGameText } from "./gameText";
 import { Card } from "./card";
 
 export function playSpendResourceToGetVPFactory({
@@ -111,38 +112,80 @@ export function getPointsPerRarityLabel({
   };
 }
 
-export class GainAnyResource {
-  private cardContext: CardName | undefined;
-  private locationContext: LocationName | undefined;
-  private skipGameLog: boolean;
+class GameInputMultiStepHelperBase {
+  protected cardContext: CardName | undefined;
+  protected locationContext: LocationName | undefined;
+  protected eventContext: EventName | undefined;
+  protected skipGameLog: boolean;
 
   constructor({
+    eventContext = undefined,
     cardContext = undefined,
     locationContext = undefined,
     skipGameLog = false,
   }: {
+    eventContext?: EventName | undefined;
     cardContext?: CardName | undefined;
     locationContext?: LocationName | undefined;
     skipGameLog?: boolean;
   }) {
     this.cardContext = cardContext;
+    this.eventContext = eventContext;
     this.locationContext = locationContext;
     this.skipGameLog = skipGameLog;
   }
 
-  matchesGameInput = (
-    gameInput: GameInput
-  ): gameInput is GameInputSelectOptionGeneric => {
-    if (gameInput.inputType !== GameInputType.SELECT_OPTION_GENERIC) {
-      return false;
-    }
+  matchesGameInputInner = (gameInput: GameInputMultiStep): boolean => {
     if (this.cardContext !== gameInput.cardContext) {
       return false;
     }
     if (this.locationContext !== gameInput.locationContext) {
       return false;
     }
+    if (this.eventContext !== gameInput.eventContext) {
+      return false;
+    }
     return true;
+  };
+
+  maybeAddToGameLog = (
+    gameState: GameState,
+    arg: Parameters<typeof toGameText>[0]
+  ): void => {
+    if (this.skipGameLog) {
+      return;
+    }
+    if (this.cardContext) {
+      gameState.addGameLogFromCard(this.cardContext, arg);
+    } else if (this.locationContext) {
+      gameState.addGameLogFromLocation(this.locationContext, arg);
+    } else if (this.eventContext) {
+      gameState.addGameLogFromEvent(this.eventContext, arg);
+    } else {
+      throw new Error("Unexpected game input");
+    }
+  };
+
+  getContextObj = () => {
+    return pickBy(
+      {
+        cardContext: this.cardContext,
+        locationContext: this.locationContext,
+        eventContext: this.eventContext,
+      },
+      (v) => !!v
+    );
+  };
+}
+
+export class GainAnyResource extends GameInputMultiStepHelperBase {
+  matchesGameInput = (
+    gameInput: GameInput
+  ): gameInput is GameInputSelectOptionGeneric => {
+    if (gameInput.inputType !== GameInputType.SELECT_OPTION_GENERIC) {
+      return false;
+    }
+    return this.matchesGameInputInner(gameInput);
   };
 
   play = (
@@ -155,32 +198,13 @@ export class GainAnyResource {
       throw new Error(`Please select an option`);
     }
     player.gainResources({ [selectedOption]: 1 });
-
-    if (!this.skipGameLog) {
-      const logText = [player, ` gained ${selectedOption}.`];
-
-      if (this.cardContext) {
-        gameState.addGameLogFromCard(this.cardContext, logText);
-      } else if (this.locationContext) {
-        gameState.addGameLogFromLocation(this.locationContext, logText);
-      } else {
-        throw new Error("Unexpected game input");
-      }
-    }
+    this.maybeAddToGameLog(gameState, [player, ` gained ${selectedOption}.`]);
   };
 
   getGameInput = (overrides: {
     prevInputType: GameInputType;
     prevInput?: GameInput;
   }): GameInputMultiStep => {
-    const contextObj = pickBy(
-      {
-        cardContext: this.cardContext,
-        locationContext: this.locationContext,
-      },
-      (v) => !!v
-    );
-
     return {
       inputType: GameInputType.SELECT_OPTION_GENERIC,
       label: "Gain 1 ANY",
@@ -193,44 +217,20 @@ export class GainAnyResource {
       clientOptions: {
         selectedOption: null,
       },
-      ...contextObj,
+      ...this.getContextObj(),
       ...overrides,
     };
   };
 }
 
-export class GainMoreThan1AnyResource {
-  private cardContext: CardName | undefined;
-  private locationContext: LocationName | undefined;
-  private skipGameLog: boolean;
-
-  constructor({
-    cardContext = undefined,
-    locationContext = undefined,
-    skipGameLog = false,
-  }: {
-    cardContext?: CardName | undefined;
-    locationContext?: LocationName | undefined;
-    skipGameLog?: boolean;
-  }) {
-    this.cardContext = cardContext;
-    this.locationContext = locationContext;
-    this.skipGameLog = skipGameLog;
-  }
-
+export class GainMoreThan1AnyResource extends GameInputMultiStepHelperBase {
   matchesGameInput = (
     gameInput: GameInput
   ): gameInput is GameInputSelectResources => {
     if (gameInput.inputType !== GameInputType.SELECT_RESOURCES) {
       return false;
     }
-    if (this.cardContext !== gameInput.cardContext) {
-      return false;
-    }
-    if (this.locationContext !== gameInput.locationContext) {
-      return false;
-    }
-    return true;
+    return this.matchesGameInputInner(gameInput);
   };
 
   play = (gameState: GameState, gameInput: GameInputSelectResources): void => {
@@ -256,23 +256,12 @@ export class GainMoreThan1AnyResource {
     }
 
     player.gainResources(resources);
-
-    if (!this.skipGameLog) {
-      const logText = [
-        player,
-        " gained ",
-        ...resourceMapToGameText(resources),
-        ".",
-      ];
-
-      if (this.cardContext) {
-        gameState.addGameLogFromCard(this.cardContext, logText);
-      } else if (this.locationContext) {
-        gameState.addGameLogFromLocation(this.locationContext, logText);
-      } else {
-        throw new Error("Unexpected game input");
-      }
-    }
+    this.maybeAddToGameLog(gameState, [
+      player,
+      " gained ",
+      ...resourceMapToGameText(resources),
+      ".",
+    ]);
   };
 
   getGameInput = (
@@ -282,14 +271,6 @@ export class GainMoreThan1AnyResource {
       prevInput?: GameInput;
     }
   ): GameInputMultiStep => {
-    const contextObj = pickBy(
-      {
-        cardContext: this.cardContext,
-        locationContext: this.locationContext,
-      },
-      (v) => !!v
-    );
-
     return {
       inputType: GameInputType.SELECT_RESOURCES,
       label: `Gain ${numResources} ANY`,
@@ -299,7 +280,7 @@ export class GainMoreThan1AnyResource {
       clientOptions: {
         resources: {},
       },
-      ...contextObj,
+      ...this.getContextObj(),
       ...overrides,
     };
   };

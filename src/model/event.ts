@@ -22,7 +22,7 @@ import {
   GameStatePlayFn,
   GameStateCanPlayCheckFn,
 } from "./gameState";
-import { sumResources } from "./gameStatePlayHelpers";
+import { sumResources, GainMoreThan1AnyResource } from "./gameStatePlayHelpers";
 import shuffle from "lodash/shuffle";
 import {
   toGameText,
@@ -1194,74 +1194,32 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     // draw 1 card and receive 1 resource for each VP on your chapel
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
-      // get number of VP on chapel
-      const playedCards = player.playedCards;
-      if (!playedCards) {
-        throw new Error("no cards in city");
-      }
+      const playedChapel = player.getFirstPlayedCard(CardName.CHAPEL);
+      const helper = new GainMoreThan1AnyResource({
+        eventContext: EventName.SPECIAL_PRISTINE_CHAPEL_CEILING,
+      });
 
-      const chapel = playedCards[CardName.CHAPEL];
-      if (!chapel) {
-        throw new Error("No chapel in city");
-      }
-
-      if (chapel.length > 1) {
-        throw new Error("Cannot have more than one chapel");
-      }
-      const chapelResources = chapel[0].resources;
-
+      const chapelResources = playedChapel.resources;
       if (!chapelResources) {
-        throw new Error("Invalid resources");
+        throw new Error("Invalid resources on chapel");
       }
-
       const numVP = chapelResources[ResourceType.VP] || 0;
-
       if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
         player.drawCards(gameState, numVP);
-
         gameState.addGameLogFromEvent(
           EventName.SPECIAL_PRISTINE_CHAPEL_CEILING,
           [player, ` drew ${numVP} CARD.`]
         );
 
         if (numVP !== 0) {
-          gameState.pendingGameInputs.push({
-            inputType: GameInputType.SELECT_RESOURCES,
-            toSpend: false,
-            label: `Gain ${numVP} ANY`,
-            prevInputType: GameInputType.CLAIM_EVENT,
-            eventContext: EventName.SPECIAL_PRISTINE_CHAPEL_CEILING,
-            maxResources: numVP,
-            minResources: numVP,
-            clientOptions: {
-              resources: {},
-            },
-          });
+          gameState.pendingGameInputs.push(
+            helper.getGameInput(numVP, {
+              prevInputType: gameInput.inputType,
+            })
+          );
         }
-      } else if (gameInput.inputType === GameInputType.SELECT_RESOURCES) {
-        const resources = gameInput.clientOptions.resources;
-        if (!resources) {
-          throw new Error("invalid input");
-        }
-        // count total number of resources
-
-        const numResources =
-          (resources[ResourceType.BERRY] || 0) +
-          (resources[ResourceType.TWIG] || 0) +
-          (resources[ResourceType.RESIN] || 0) +
-          (resources[ResourceType.PEBBLE] || 0);
-
-        if (numResources > numVP) {
-          throw new Error("Can't gain more resources than VP on the Chapel");
-        }
-
-        // gain requested resources
-        player.gainResources(resources);
-
-        gameState.addGameLogFromEvent(
-          EventName.SPECIAL_PRISTINE_CHAPEL_CEILING,
-          [player, " gained ", ...resourceMapToGameText(resources), "."]
-        );
+      } else if (helper.matchesGameInput(gameInput)) {
+        helper.play(gameState, gameInput);
       } else {
         throw new Error(`Invalid input type ${gameInput.inputType}`);
       }

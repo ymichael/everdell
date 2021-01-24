@@ -446,6 +446,7 @@ export class GameState {
         gameInput.riverDestinationContext
       );
       riverDestination.play(this, gameInput);
+      return;
     }
 
     if (gameInput.wonderContext) {

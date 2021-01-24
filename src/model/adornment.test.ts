@@ -1041,6 +1041,48 @@ describe("Adornment", () => {
       expect(player.cardsInHand.length).to.be(6);
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
     });
+
+    it("should work for RUINS", () => {
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
+      player.addToCity(CardName.RUINS);
+      player.addToCity(CardName.FARM);
+
+      expect(player.hasCardInCity(CardName.FARM)).to.be(true);
+      expect(player.getPlayedCardInfos(CardName.RUINS).length).to.be(1);
+      expect(player.cardsInHand.length).to.be(0);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        playAdornmentInput(name),
+        {
+          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          prevInputType: GameInputType.PLAY_ADORNMENT,
+          cardOptions: player.getPlayedCardInfos(CardName.RUINS),
+          adornmentContext: name,
+          maxToSelect: 2,
+          minToSelect: 0,
+          clientOptions: {
+            selectedCards: player.getPlayedCardInfos(CardName.RUINS),
+          },
+        },
+        {
+          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          prevInputType: GameInputType.PLAY_CARD,
+          cardOptions: player.getPlayedCardInfos(CardName.FARM),
+          playedCardContext: player.getFirstPlayedCard(CardName.RUINS),
+          cardContext: CardName.RUINS,
+          maxToSelect: 1,
+          minToSelect: 1,
+          clientOptions: {
+            selectedCards: player.getPlayedCardInfos(CardName.FARM),
+          },
+        },
+      ]);
+
+      expect(player.hasCardInCity(CardName.FARM)).to.be(false);
+      expect(player.cardsInHand.length).to.be(2);
+      expect(player.getPlayedCardInfos(CardName.RUINS).length).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+    });
   });
 
   describe(AdornmentName.TIARA, () => {

@@ -1,3 +1,7 @@
+import cloneDeep from "lodash/cloneDeep";
+import isEqual from "lodash/isEqual";
+import omit from "lodash/omit";
+
 import {
   ExpansionType,
   ResourceType,
@@ -30,7 +34,6 @@ import {
   GainAnyResource,
   GainMoreThan1AnyResource,
 } from "./gameStatePlayHelpers";
-import cloneDeep from "lodash/cloneDeep";
 import {
   toGameText,
   cardListToGameText,
@@ -262,23 +265,29 @@ export class Card<TCardType extends CardType = CardType>
   addToCityAndPlay(gameState: GameState, gameInput: GameInput): void {
     const player = gameState.getActivePlayer();
 
-    let playedCard: PlayedCardInfo | null = null;
+    let playedCard: PlayedCardInfo | undefined = undefined;
     if (this.name !== CardName.FOOL && this.name !== CardName.RUINS) {
       playedCard = player.addToCity(this.name);
     }
 
-    const playCardGameInput =
-      gameInput.inputType === GameInputType.PLAY_CARD
-        ? gameInput
-        : {
-            inputType: GameInputType.PLAY_CARD as const,
-            prevInputType: gameInput.inputType,
-            clientOptions: {
-              card: this.name,
-              fromMeadow: false,
-              paymentOptions: { resources: {} },
-            },
-          };
+    let playCardGameInput: GameInput;
+    if (gameInput.inputType === GameInputType.PLAY_CARD) {
+      if (playedCard) {
+        gameInput.playedCardContext = playedCard;
+      }
+      playCardGameInput = gameInput;
+    } else {
+      playCardGameInput = {
+        inputType: GameInputType.PLAY_CARD as const,
+        prevInputType: gameInput.inputType,
+        playedCardContext: playedCard,
+        clientOptions: {
+          card: this.name,
+          fromMeadow: false,
+          paymentOptions: { resources: {} },
+        },
+      };
+    }
 
     // Do this first so that logs are ordered properly:
     // 1. play card
@@ -350,18 +359,24 @@ export class Card<TCardType extends CardType = CardType>
       this.productionInner(gameState, gameInput, cardOwner, playedCard);
     }
     if (this.playInner) {
-      const playCardGameInput =
-        gameInput.inputType === GameInputType.PLAY_CARD
-          ? gameInput
-          : {
-              inputType: GameInputType.PLAY_CARD as const,
-              prevInputType: gameInput.inputType,
-              clientOptions: {
-                card: this.name,
-                fromMeadow: false,
-                paymentOptions: { resources: {} },
-              },
-            };
+      let playCardGameInput: GameInput;
+      if (gameInput.inputType === GameInputType.PLAY_CARD) {
+        if (playedCard) {
+          gameInput.playedCardContext = playedCard;
+        }
+        playCardGameInput = gameInput;
+      } else {
+        playCardGameInput = {
+          inputType: GameInputType.PLAY_CARD as const,
+          prevInputType: gameInput.inputType,
+          playedCardContext: playedCard,
+          clientOptions: {
+            card: this.name,
+            fromMeadow: false,
+            paymentOptions: { resources: {} },
+          },
+        };
+      }
       this.playInner(gameState, playCardGameInput);
     }
   }
@@ -2456,6 +2471,12 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         const cardOptions: PlayedCardInfo[] = [];
         player.forEachPlayedCard((playedCardInfo) => {
           const card = Card.fromName(playedCardInfo.cardName);
+          if (
+            gameInput.playedCardContext &&
+            isEqual(gameInput.playedCardContext, playedCardInfo)
+          ) {
+            return;
+          }
           if (card.isConstruction) {
             cardOptions.push(playedCardInfo);
           }
@@ -2465,6 +2486,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             inputType: GameInputType.SELECT_PLAYED_CARDS,
             prevInputType: gameInput.inputType,
             label: "Select 1 Construction to discard from your city",
+            playedCardContext: gameInput.playedCardContext,
             cardOptions,
             cardContext: CardName.RUINS,
             maxToSelect: 1,
@@ -2493,7 +2515,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         }
         player.removeCardFromCity(gameState, selectedCards[0]);
         player.gainResources(targetCard.baseCost);
-        player.addToCity(CardName.RUINS);
+        // This doesn't if we're reactiving a played RUINS
+        if (!gameInput.playedCardContext) {
+          player.addToCity(CardName.RUINS);
+        }
         player.drawCards(gameState, 2);
         gameState.addGameLogFromCard(CardName.RUINS, [
           player,
@@ -2556,7 +2581,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
               " to",
             ],
             prevInputType: gameInput.inputType,
-            prevInput: gameInput,
+            // Leave out the playedCardContext here otherwise tests get really
+            // complicated without much gain.
+            prevInput: omit(gameInput, ["playedCardContext"]),
             playerOptions: gameState.players
               .filter((p) => p.playerId !== player.playerId)
               .map((p) => p.playerId),

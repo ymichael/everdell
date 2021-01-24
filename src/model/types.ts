@@ -38,6 +38,13 @@ export type GameInputVisitDestinationCard = {
 
 export type GameInputPlayCard = {
   inputType: GameInputType.PLAY_CARD;
+
+  // We overload this input when re-activating cards/playing cards via other means
+  // eg. using other cards/locations. These are used to identify the played card and
+  // provide more context to the action..
+  playedCardContext?: PlayedCardInfo;
+  prevInputType?: GameInputType;
+
   clientOptions: {
     card: CardName | null;
     fromMeadow: boolean;
@@ -211,6 +218,7 @@ export type GameInputSelectPaymentForCard = {
 export type GameInputMultiStepContext = {
   eventContext?: EventName;
   cardContext?: CardName;
+  playedCardContext?: PlayedCardInfo;
   locationContext?: LocationName;
   adornmentContext?: AdornmentName;
   riverDestinationContext?: RiverDestinationName;

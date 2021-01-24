@@ -460,14 +460,7 @@ export class Player implements IGameTextEntity {
   }
 
   getNumCardType(cardType: CardType): number {
-    let numCards = 0;
-    this.forEachPlayedCard(({ cardName }) => {
-      const card = Card.fromName(cardName);
-      if (card.cardType === cardType) {
-        numCards += 1;
-      }
-    });
-    return numCards;
+    return this.getPlayedCardNamesByType(cardType).length;
   }
 
   // Returns all played destination cards that a player has played that have
@@ -641,7 +634,7 @@ export class Player implements IGameTextEntity {
   activateProduction(gameState: GameState, gameInput: GameInput): void {
     this.getAllPlayedCardsByType(CardType.PRODUCTION).forEach((playedCard) => {
       const card = Card.fromName(playedCard.cardName);
-      card.gainProduction(gameState, gameInput, this, playedCard);
+      card.activateCard(gameState, gameInput, this, playedCard);
     });
   }
 

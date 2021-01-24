@@ -11,6 +11,7 @@ import {
   GameInputPlayAdornment,
   CardName,
   CardType,
+  EventName,
   ResourceType,
 } from "./types";
 
@@ -47,6 +48,25 @@ describe("Adornment", () => {
     beforeEach(() => {
       player.gainResources({ [ResourceType.PEARL]: 1 });
       player.adornmentsInHand.push(name);
+    });
+
+    it("should be worth 3 points for each wonder", () => {
+      player.playedAdornments.push(name);
+      player.nextSeason();
+      player.nextSeason();
+      player.nextSeason();
+
+      // worth 0 because no wonders built
+      expect(player.getPointsFromAdornments(gameState)).to.be(0);
+
+      player.placeWorkerOnEvent(EventName.SPECIAL_GRADUATION_OF_SCHOLARS);
+      expect(player.getPointsFromAdornments(gameState)).to.be(0);
+
+      player.placeWorkerOnEvent(EventName.WONDER_SUNBLAZE_BRIDGE);
+      expect(player.getPointsFromAdornments(gameState)).to.be(3);
+
+      player.placeWorkerOnEvent(EventName.WONDER_STARFALLS_FLAME);
+      expect(player.getPointsFromAdornments(gameState)).to.be(6);
     });
 
     it("should gain 1 ANY, CARD and PEARL", () => {
@@ -552,6 +572,30 @@ describe("Adornment", () => {
       player.adornmentsInHand.push(name);
     });
 
+    it("should be worth 2 point for every 2 PRODUCTION", () => {
+      const adornment = Adornment.fromName(name);
+      const playerId = player.playerId;
+      expect(adornment.getPoints(gameState, playerId)).to.be(0);
+
+      player.addToCity(CardName.FARM);
+      expect(adornment.getPoints(gameState, playerId)).to.be(0);
+
+      player.addToCity(CardName.FARM);
+      expect(adornment.getPoints(gameState, playerId)).to.be(1);
+
+      player.addToCity(CardName.QUEEN);
+      expect(adornment.getPoints(gameState, playerId)).to.be(1);
+
+      player.addToCity(CardName.KING);
+      expect(adornment.getPoints(gameState, playerId)).to.be(1);
+
+      player.addToCity(CardName.MINE);
+      expect(adornment.getPoints(gameState, playerId)).to.be(1);
+
+      player.addToCity(CardName.MINER_MOLE);
+      expect(adornment.getPoints(gameState, playerId)).to.be(2);
+    });
+
     it("should do nothing if player has no production cards", () => {
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
       [player, gameState] = multiStepGameInputTest(gameState, [
@@ -701,7 +745,7 @@ describe("Adornment", () => {
       player.adornmentsInHand.push(name);
     });
 
-    it("should be able to play", () => {
+    it("should allow the player to gain resources equal to the cost of one GOVERNANCE", () => {
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
       player.addToCityMulti([
         CardName.FARM,
@@ -739,7 +783,7 @@ describe("Adornment", () => {
       expect(player.playedAdornments).to.eql([name]);
     });
 
-    it("should calculate points correctly", () => {
+    it("should be worth 1 point for every 2 GOVERNANCE", () => {
       player.playedAdornments.push(name);
       expect(player.getPointsFromAdornments(gameState)).to.be(0);
 
@@ -1105,6 +1149,27 @@ describe("Adornment", () => {
       gameState.locationsMap[LocationName.FOREST_THREE_BERRY] = [];
     });
 
+    it("should be worth 1 point for every 1 DESTINATION", () => {
+      const adornment = Adornment.fromName(name);
+      const playerId = player.playerId;
+      expect(adornment.getPoints(gameState, playerId)).to.be(0);
+
+      player.addToCity(CardName.FARM);
+      expect(adornment.getPoints(gameState, playerId)).to.be(0);
+
+      player.addToCity(CardName.QUEEN);
+      expect(adornment.getPoints(gameState, playerId)).to.be(1);
+
+      player.addToCity(CardName.KING);
+      expect(adornment.getPoints(gameState, playerId)).to.be(1);
+
+      player.addToCity(CardName.UNIVERSITY);
+      expect(adornment.getPoints(gameState, playerId)).to.be(2);
+
+      player.addToCity(CardName.CASTLE);
+      expect(adornment.getPoints(gameState, playerId)).to.be(2);
+    });
+
     it("should allow the player to copy a forest location and gain 1 ANY", () => {
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
 
@@ -1160,11 +1225,223 @@ describe("Adornment", () => {
       player.adornmentsInHand.push(name);
     });
 
-    xit("should have tests", () => {
+    it("should do nothing if no traveller cards", () => {
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
       [player, gameState] = multiStepGameInputTest(gameState, [
         playAdornmentInput(name),
       ]);
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+    });
+
+    it("should ask to reactivate traveller cards and allow none to be selected", () => {
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
+      player.addToCity(CardName.WANDERER);
+      player.addToCity(CardName.WANDERER);
+
+      expect(player.cardsInHand.length).to.be(0);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        playAdornmentInput(name),
+        {
+          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          prevInputType: GameInputType.PLAY_ADORNMENT,
+          cardOptions: player.getPlayedCardInfos(CardName.WANDERER),
+          adornmentContext: name,
+          maxToSelect: 2,
+          minToSelect: 0,
+          clientOptions: { selectedCards: [] },
+        },
+      ]);
+
+      expect(player.cardsInHand.length).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+    });
+
+    it("should ask to reactivate traveller cards and activate selected cards", () => {
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
+      player.addToCity(CardName.WANDERER);
+      player.addToCity(CardName.WANDERER);
+
+      expect(player.cardsInHand.length).to.be(0);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        playAdornmentInput(name),
+        {
+          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          prevInputType: GameInputType.PLAY_ADORNMENT,
+          cardOptions: player.getPlayedCardInfos(CardName.WANDERER),
+          adornmentContext: name,
+          maxToSelect: 2,
+          minToSelect: 0,
+          clientOptions: {
+            selectedCards: player.getPlayedCardInfos(CardName.WANDERER),
+          },
+        },
+      ]);
+
+      expect(player.cardsInHand.length).to.be(6);
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+    });
+
+    it("should work for RUINS", () => {
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
+      player.addToCity(CardName.RUINS);
+      player.addToCity(CardName.FARM);
+
+      expect(player.hasCardInCity(CardName.FARM)).to.be(true);
+      expect(player.getPlayedCardInfos(CardName.RUINS).length).to.be(1);
+      expect(player.cardsInHand.length).to.be(0);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        playAdornmentInput(name),
+        {
+          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          prevInputType: GameInputType.PLAY_ADORNMENT,
+          cardOptions: player.getPlayedCardInfos(CardName.RUINS),
+          adornmentContext: name,
+          maxToSelect: 2,
+          minToSelect: 0,
+          clientOptions: {
+            selectedCards: player.getPlayedCardInfos(CardName.RUINS),
+          },
+        },
+        {
+          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          prevInputType: GameInputType.PLAY_CARD,
+          cardOptions: player.getPlayedCardInfos(CardName.FARM),
+          playedCardContext: player.getFirstPlayedCard(CardName.RUINS),
+          cardContext: CardName.RUINS,
+          maxToSelect: 1,
+          minToSelect: 1,
+          clientOptions: {
+            selectedCards: player.getPlayedCardInfos(CardName.FARM),
+          },
+        },
+      ]);
+
+      expect(player.hasCardInCity(CardName.FARM)).to.be(false);
+      expect(player.cardsInHand.length).to.be(2);
+      expect(player.getPlayedCardInfos(CardName.RUINS).length).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+    });
+
+    it("should work for FOOL", () => {
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
+      player.addToCity(CardName.FOOL);
+
+      let targetPlayer = gameState.players[1];
+      expect(player.hasCardInCity(CardName.FOOL)).to.be(true);
+      expect(targetPlayer.hasCardInCity(CardName.FOOL)).to.be(false);
+
+      [player, gameState] = multiStepGameInputTest(
+        gameState,
+        [
+          playAdornmentInput(name),
+          {
+            inputType: GameInputType.SELECT_PLAYED_CARDS,
+            prevInputType: GameInputType.PLAY_ADORNMENT,
+            cardOptions: player.getPlayedCardInfos(CardName.FOOL),
+            adornmentContext: name,
+            maxToSelect: 2,
+            minToSelect: 0,
+            clientOptions: {
+              selectedCards: player.getPlayedCardInfos(CardName.FOOL),
+            },
+          },
+        ],
+        { autoAdvance: true }
+      );
+
+      targetPlayer = gameState.players[1];
+      expect(gameState.discardPile.length).to.be(0);
+      expect(player.hasCardInCity(CardName.FOOL)).to.be(false);
+      expect(targetPlayer.hasCardInCity(CardName.FOOL)).to.be(true);
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+    });
+
+    it("should work for RANGER", () => {
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
+      player.addToCity(CardName.RANGER);
+
+      gameState.locationsMap[LocationName.BASIC_ONE_STONE]!.push(
+        player.playerId
+      );
+      player.placeWorkerOnLocation(LocationName.BASIC_ONE_STONE);
+
+      [player, gameState] = multiStepGameInputTest(
+        gameState,
+        [
+          playAdornmentInput(name),
+          {
+            inputType: GameInputType.SELECT_PLAYED_CARDS,
+            prevInputType: GameInputType.PLAY_ADORNMENT,
+            cardOptions: player.getPlayedCardInfos(CardName.RANGER),
+            adornmentContext: name,
+            maxToSelect: 2,
+            minToSelect: 0,
+            clientOptions: {
+              selectedCards: player.getPlayedCardInfos(CardName.RANGER),
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_WORKER_PLACEMENT,
+            prevInput: {
+              inputType: GameInputType.SELECT_WORKER_PLACEMENT as const,
+              label: "Select a deployed worker to move",
+              prevInputType: GameInputType.PLAY_CARD,
+              cardContext: CardName.RANGER,
+              mustSelectOne: true,
+              clientOptions: {
+                selectedOption: {
+                  location: LocationName.BASIC_ONE_STONE,
+                },
+              },
+              options: [{ location: LocationName.BASIC_ONE_STONE }],
+            },
+            prevInputType: GameInputType.SELECT_WORKER_PLACEMENT,
+            cardContext: CardName.RANGER,
+            mustSelectOne: true,
+            options: [
+              { location: LocationName.BASIC_ONE_BERRY },
+              { location: LocationName.BASIC_ONE_BERRY_AND_ONE_CARD },
+              { location: LocationName.BASIC_ONE_RESIN_AND_ONE_CARD },
+              { location: LocationName.BASIC_THREE_TWIGS },
+              { location: LocationName.BASIC_TWO_CARDS_AND_ONE_VP },
+              { location: LocationName.BASIC_TWO_RESIN },
+              { location: LocationName.BASIC_TWO_TWIGS_AND_ONE_CARD },
+              { location: LocationName.HAVEN },
+            ],
+            clientOptions: {
+              selectedOption: {
+                location: LocationName.BASIC_TWO_TWIGS_AND_ONE_CARD,
+              },
+            },
+          },
+        ],
+        { autoAdvance: true }
+      );
+
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(2);
+    });
+
+    it("should only prompt for reactivatable cards", () => {
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
+      player.addToCity(CardName.FOOL);
+
+      // Both players already have FOOL in their city.
+      const targetPlayer = gameState.players[1];
+      targetPlayer.addToCity(CardName.FOOL);
+
+      expect(player.hasCardInCity(CardName.FOOL)).to.be(true);
+      expect(targetPlayer.hasCardInCity(CardName.FOOL)).to.be(true);
+
+      [player, gameState] = multiStepGameInputTest(
+        gameState,
+        [playAdornmentInput(name)],
+        { autoAdvance: true }
+      );
+
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
     });
   });
@@ -1174,6 +1451,27 @@ describe("Adornment", () => {
     beforeEach(() => {
       player.gainResources({ [ResourceType.PEARL]: 1 });
       player.adornmentsInHand.push(name);
+    });
+
+    it("should be worth 1 point for every 1 PROSPERITY", () => {
+      const adornment = Adornment.fromName(name);
+      const playerId = player.playerId;
+      expect(adornment.getPoints(gameState, playerId)).to.be(0);
+
+      player.addToCity(CardName.FARM);
+      expect(adornment.getPoints(gameState, playerId)).to.be(0);
+
+      player.addToCity(CardName.QUEEN);
+      expect(adornment.getPoints(gameState, playerId)).to.be(0);
+
+      player.addToCity(CardName.KING);
+      expect(adornment.getPoints(gameState, playerId)).to.be(1);
+
+      player.addToCity(CardName.MINE);
+      expect(adornment.getPoints(gameState, playerId)).to.be(1);
+
+      player.addToCity(CardName.CASTLE);
+      expect(adornment.getPoints(gameState, playerId)).to.be(2);
     });
 
     it("should do nothing if no PROSPERITY", () => {

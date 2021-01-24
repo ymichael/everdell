@@ -1,3 +1,7 @@
+import cloneDeep from "lodash/cloneDeep";
+import isEqual from "lodash/isEqual";
+import omit from "lodash/omit";
+
 import {
   ExpansionType,
   ResourceType,
@@ -30,7 +34,6 @@ import {
   GainAnyResource,
   GainMoreThan1AnyResource,
 } from "./gameStatePlayHelpers";
-import cloneDeep from "lodash/cloneDeep";
 import {
   toGameText,
   cardListToGameText,
@@ -259,7 +262,103 @@ export class Card<TCardType extends CardType = CardType>
     }
   }
 
-  gainProduction(
+  addToCityAndPlay(gameState: GameState, gameInput: GameInput): void {
+    const player = gameState.getActivePlayer();
+
+    let playedCard: PlayedCardInfo | undefined = undefined;
+    if (this.name !== CardName.FOOL && this.name !== CardName.RUINS) {
+      playedCard = player.addToCity(this.name);
+    }
+
+    const playCardGameInput = this.getPlayCardInput(gameInput, playedCard);
+
+    // Do this first so that logs are ordered properly:
+    // 1. play card
+    // 2. historian/shopkeeper etc
+    // 3+. card related actions..
+    [CardName.HISTORIAN, CardName.SHOPKEEPER, CardName.COURTHOUSE].forEach(
+      (cardName) => {
+        if (player.hasCardInCity(cardName)) {
+          const card = Card.fromName(cardName);
+          card.activateCard(
+            gameState,
+            playCardGameInput,
+            player,
+            player.getFirstPlayedCard(cardName) as PlayedCardInfo
+          );
+        }
+      }
+    );
+
+    if (
+      this.cardType === CardType.PRODUCTION ||
+      this.cardType === CardType.TRAVELER
+    ) {
+      this.activateCard(gameState, playCardGameInput, player, playedCard!);
+    }
+  }
+
+  canReactivateCard(gameState: GameState): boolean {
+    if (
+      !(
+        this.cardType === CardType.PRODUCTION ||
+        this.cardType === CardType.TRAVELER
+      )
+    ) {
+      return false;
+    }
+    if (this.canPlayCheckInner) {
+      const errorMsg = this.canPlayCheckInner(
+        gameState,
+        this.getPlayCardInput()
+      );
+      if (errorMsg) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  reactivateCard(
+    gameState: GameState,
+    gameInput: GameInput,
+    cardOwner: Player,
+    playedCard: PlayedCardInfo
+  ): void {
+    if (
+      this.cardType === CardType.PRODUCTION ||
+      this.cardType === CardType.TRAVELER
+    ) {
+      this.activateCard(gameState, gameInput, cardOwner, playedCard);
+    }
+  }
+
+  private getPlayCardInput(
+    gameInput: GameInput | null = null,
+    playedCard: PlayedCardInfo | undefined = undefined
+  ): GameInput {
+    let playCardGameInput: GameInput;
+    if (gameInput && gameInput.inputType === GameInputType.PLAY_CARD) {
+      if (playedCard) {
+        gameInput.playedCardContext = playedCard;
+      }
+      playCardGameInput = gameInput;
+    } else {
+      playCardGameInput = {
+        inputType: GameInputType.PLAY_CARD as const,
+        prevInputType: gameInput?.inputType,
+        playedCardContext: playedCard,
+        clientOptions: {
+          card: this.name,
+          fromMeadow: false,
+          paymentOptions: { resources: {} },
+        },
+      };
+    }
+    return playCardGameInput;
+  }
+
+  activateCard(
     gameState: GameState,
     gameInput: GameInput,
     cardOwner: Player,
@@ -288,63 +387,9 @@ export class Card<TCardType extends CardType = CardType>
     if (this.productionInner) {
       this.productionInner(gameState, gameInput, cardOwner, playedCard);
     }
-  }
-
-  addToCityAndPlay(gameState: GameState, gameInput: GameInput): void {
-    const player = gameState.getActivePlayer();
-
-    let playedCard: PlayedCardInfo | null = null;
-    if (this.name !== CardName.FOOL && this.name !== CardName.RUINS) {
-      playedCard = player.addToCity(this.name);
-    }
-
-    const playCardGameInput =
-      gameInput.inputType === GameInputType.PLAY_CARD
-        ? gameInput
-        : {
-            inputType: GameInputType.PLAY_CARD as const,
-            prevInputType: gameInput.inputType,
-            clientOptions: {
-              card: this.name,
-              fromMeadow: false,
-              paymentOptions: { resources: {} },
-            },
-          };
-
-    // Do this first so that logs are ordered properly:
-    // 1. play card
-    // 2. historian/shopkeeper etc
-    // 3+. card related actions..
-    [CardName.HISTORIAN, CardName.SHOPKEEPER, CardName.COURTHOUSE].forEach(
-      (cardName) => {
-        if (player.hasCardInCity(cardName)) {
-          const card = Card.fromName(cardName);
-          card.playCardInner(
-            gameState,
-            playCardGameInput,
-            player.getFirstPlayedCard(cardName) as PlayedCardInfo
-          );
-        }
-      }
-    );
-
-    if (
-      this.cardType === CardType.PRODUCTION ||
-      this.cardType === CardType.TRAVELER
-    ) {
-      this.playCardInner(gameState, playCardGameInput, playedCard!);
-    }
-  }
-
-  playCardInner(
-    gameState: GameState,
-    gameInput: GameInput,
-    playedCard: PlayedCardInfo
-  ): void {
-    const player = gameState.getActivePlayer();
-    this.gainProduction(gameState, gameInput, player, playedCard);
     if (this.playInner) {
-      this.playInner(gameState, gameInput);
+      const playCardGameInput = this.getPlayCardInput(gameInput, playedCard);
+      this.playInner(gameState, playCardGameInput);
     }
   }
 
@@ -709,7 +754,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           targetCard,
           ".",
         ]);
-        targetCard.gainProduction(
+        targetCard.reactivateCard(
           gameState,
           gameInput,
           player,
@@ -917,7 +962,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     associatedCard: CardName.UNIVERSITY,
     resourcesToGain: {},
     cardDescription: toGameText("You may pay up to 3 BERRY to gain 1 VP each."),
-    productionInner: gainProductionSpendResourceToGetVPFactory({
+    productionInner: activateCardSpendResourceToGetVPFactory({
       card: CardName.DOCTOR,
       resourceType: ResourceType.BERRY,
       maxToSpend: 3,
@@ -1031,6 +1076,22 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.PLAY_CARD) {
+        if (
+          gameInput.playedCardContext &&
+          player.findPlayedCard(gameInput.playedCardContext)
+        ) {
+          player.removeCardFromCity(
+            gameState,
+            gameInput.playedCardContext,
+            false /* don't add to discard */
+          );
+          gameState.addGameLogFromCard(CardName.FOOL, [
+            player,
+            " removed the ",
+            Card.fromName(CardName.FOOL),
+            " from their city.",
+          ]);
+        }
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_PLAYER,
           prevInputType: gameInput.inputType,
@@ -1537,7 +1598,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           cardOwner,
           "'s city.",
         ]);
-        targetCard.gainProduction(
+        targetCard.reactivateCard(
           gameState,
           gameInput,
           cardOwner,
@@ -2438,6 +2499,12 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         const cardOptions: PlayedCardInfo[] = [];
         player.forEachPlayedCard((playedCardInfo) => {
           const card = Card.fromName(playedCardInfo.cardName);
+          if (
+            gameInput.playedCardContext &&
+            isEqual(gameInput.playedCardContext, playedCardInfo)
+          ) {
+            return;
+          }
           if (card.isConstruction) {
             cardOptions.push(playedCardInfo);
           }
@@ -2447,6 +2514,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             inputType: GameInputType.SELECT_PLAYED_CARDS,
             prevInputType: gameInput.inputType,
             label: "Select 1 Construction to discard from your city",
+            playedCardContext: gameInput.playedCardContext,
             cardOptions,
             cardContext: CardName.RUINS,
             maxToSelect: 1,
@@ -2475,7 +2543,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         }
         player.removeCardFromCity(gameState, selectedCards[0]);
         player.gainResources(targetCard.baseCost);
-        player.addToCity(CardName.RUINS);
+        // This doesn't if we're reactiving a played RUINS
+        if (!gameInput.playedCardContext) {
+          player.addToCity(CardName.RUINS);
+        }
         player.drawCards(gameState, 2);
         gameState.addGameLogFromCard(CardName.RUINS, [
           player,
@@ -2538,7 +2609,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
               " to",
             ],
             prevInputType: gameInput.inputType,
-            prevInput: gameInput,
+            // Leave out the playedCardContext here otherwise tests get really
+            // complicated without much gain.
+            prevInput: omit(gameInput, ["playedCardContext"]),
             playerOptions: gameState.players
               .filter((p) => p.playerId !== player.playerId)
               .map((p) => p.playerId),
@@ -3143,7 +3216,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     associatedCard: CardName.STOREHOUSE,
     resourcesToGain: {},
     cardDescription: toGameText("You may pay up to 3 TWIG to gain 1 VP each"),
-    productionInner: gainProductionSpendResourceToGetVPFactory({
+    productionInner: activateCardSpendResourceToGetVPFactory({
       card: CardName.WOODCARVER,
       resourceType: ResourceType.TWIG,
       maxToSpend: 3,
@@ -3398,7 +3471,7 @@ function playSpendResourceToGetVPFactory({
   };
 }
 
-function gainProductionSpendResourceToGetVPFactory({
+function activateCardSpendResourceToGetVPFactory({
   card,
   resourceType,
   maxToSpend,

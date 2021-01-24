@@ -3506,6 +3506,7 @@ describe("Card", () => {
             prevInputType: GameInputType.PLAY_CARD,
             cardOptions: player.getPlayedCardInfos(CardName.FARM),
             cardContext: CardName.RUINS,
+            playedCardContext: undefined,
             maxToSelect: 1,
             minToSelect: 1,
             clientOptions: {
@@ -3702,6 +3703,7 @@ describe("Card", () => {
             prevInputType: GameInputType.PLAY_CARD,
             cardOptions: player.getPlayedCardInfos(CardName.FARM),
             cardContext: CardName.RUINS,
+            playedCardContext: undefined,
             maxToSelect: 1,
             minToSelect: 1,
             clientOptions: {
@@ -3727,6 +3729,7 @@ describe("Card", () => {
             prevInputType: GameInputType.PLAY_CARD,
             cardOptions: player.getPlayedCardInfos(CardName.FARM),
             cardContext: CardName.RUINS,
+            playedCardContext: undefined,
             maxToSelect: 1,
             minToSelect: 1,
             clientOptions: {

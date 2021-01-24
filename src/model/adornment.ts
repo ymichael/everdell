@@ -219,11 +219,67 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
     ]),
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
-      return player.getPlayedCardNamesByType(CardType.TRAVELER).length;
+      return player.getNumCardType(CardType.TRAVELER);
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.PLAY_ADORNMENT) {
-        throw new Error("Not Implemented");
+        const cardOptions = player
+          .getAllPlayedCardsByType(CardType.TRAVELER)
+          .filter(({ cardName }) => {
+            return Card.fromName(cardName).canReactivateCard(gameState);
+          });
+        if (cardOptions.length === 0) {
+          return;
+        }
+        // Ask player to select up to 3
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          prevInputType: gameInput.inputType,
+          label: "Select up to TRAVELER to reactivate",
+          cardOptions,
+          adornmentContext: AdornmentName.COMPASS,
+          maxToSelect: 2,
+          minToSelect: 0,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS &&
+        gameInput.prevInputType === GameInputType.PLAY_ADORNMENT &&
+        gameInput.adornmentContext === AdornmentName.COMPASS
+      ) {
+        const selectedCards = gameInput.clientOptions.selectedCards;
+        if (selectedCards.length === 0) {
+          gameState.addGameLogFromAdornment(AdornmentName.COMPASS, [
+            player,
+            " declined to reactivate any TRAVELER.",
+          ]);
+          return;
+        }
+        if (selectedCards.length > gameInput.maxToSelect) {
+          throw new Error(`Please select up to ${gameInput.maxToSelect} cards`);
+        }
+        selectedCards.forEach((selectedCard) => {
+          if (
+            findIndex(gameInput.cardOptions, (x) =>
+              isEqual(selectedCard, x)
+            ) === -1
+          ) {
+            throw new Error("Couldn't find selected card");
+          }
+        });
+        gameState.addGameLogFromAdornment(AdornmentName.COMPASS, [
+          player,
+          " activated ",
+          ...cardListToGameText(selectedCards.map(({ cardName }) => cardName)),
+          ".",
+        ]);
+        selectedCards.forEach((playedCard) => {
+          const targetCard = Card.fromName(playedCard.cardName);
+          targetCard.reactivateCard(gameState, gameInput, player, playedCard);
+        });
       }
     },
   }),
@@ -236,7 +292,7 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
     ]),
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
-      return player.getPlayedCardNamesByType(CardType.GOVERNANCE).length;
+      return player.getNumCardType(CardType.GOVERNANCE);
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
@@ -287,7 +343,7 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
     ]),
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
-      return player.getPlayedCardNamesByType(CardType.DESTINATION).length;
+      return player.getNumCardType(CardType.DESTINATION);
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
@@ -533,17 +589,11 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
     ]),
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
-      const numProduction = player.getPlayedCardNamesByType(CardType.PRODUCTION)
-        .length;
-      const numGovernance = player.getPlayedCardNamesByType(CardType.GOVERNANCE)
-        .length;
-      const numDestination = player.getPlayedCardNamesByType(
-        CardType.DESTINATION
-      ).length;
-      const numTraveler = player.getPlayedCardNamesByType(CardType.TRAVELER)
-        .length;
-      const numProsperity = player.getPlayedCardNamesByType(CardType.PROSPERITY)
-        .length;
+      const numProduction = player.getNumCardType(CardType.PRODUCTION);
+      const numGovernance = player.getNumCardType(CardType.GOVERNANCE);
+      const numDestination = player.getNumCardType(CardType.DESTINATION);
+      const numTraveler = player.getNumCardType(CardType.TRAVELER);
+      const numProsperity = player.getNumCardType(CardType.PROSPERITY);
 
       return (
         (numProduction > 0 ? 1 : 0) +
@@ -743,9 +793,7 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
     ]),
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
-      return Math.floor(
-        player.getPlayedCardNamesByType(CardType.PRODUCTION).length / 2
-      );
+      return Math.floor(player.getNumCardType(CardType.PRODUCTION) / 2);
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
@@ -766,7 +814,7 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
             ]);
             cardOptions.forEach((selectedCard) => {
               const targetCard = Card.fromName(selectedCard.cardName);
-              targetCard.gainProduction(
+              targetCard.reactivateCard(
                 gameState,
                 gameInput,
                 player,
@@ -815,7 +863,7 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
         ]);
         selectedCards.forEach((selectedCard) => {
           const targetCard = Card.fromName(selectedCard.cardName);
-          targetCard.gainProduction(gameState, gameInput, player, selectedCard);
+          targetCard.reactivateCard(gameState, gameInput, player, selectedCard);
         });
       }
     },
@@ -829,7 +877,7 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
     ]),
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
-      return player.getPlayedCardNamesByType(CardType.PROSPERITY).length;
+      return player.getNumCardType(CardType.PROSPERITY);
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const gainAnyHelper = new GainMoreThan1AnyResource({
@@ -837,9 +885,7 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
       });
       if (gameInput.inputType === GameInputType.PLAY_ADORNMENT) {
         const player = gameState.getActivePlayer();
-        const numProsperity = player.getPlayedCardNamesByType(
-          CardType.PROSPERITY
-        ).length;
+        const numProsperity = player.getNumCardType(CardType.PROSPERITY);
         if (numProsperity > 0) {
           gameState.pendingGameInputs.push(
             gainAnyHelper.getGameInput(numProsperity, {

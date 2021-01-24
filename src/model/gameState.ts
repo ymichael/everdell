@@ -633,6 +633,15 @@ export class GameState {
     player.useAmbassador();
 
     const riverDestination = RiverDestination.fromName(spot.name);
+
+    const canPlayRiverDestinationErr = riverDestination.canPlayCheck(
+      this,
+      gameInput
+    );
+    if (canPlayRiverDestinationErr) {
+      throw new Error(canPlayRiverDestinationErr);
+    }
+
     if (!spot.revealed) {
       // Reveal!
       spot.revealed = true;
@@ -885,6 +894,18 @@ export class GameState {
         isAutoAdvancedInput: true,
       };
     }
+
+    if (
+      pendingInput.inputType === GameInputType.SELECT_CARDS &&
+      pendingInput.minToSelect === pendingInput.maxToSelect &&
+      pendingInput.cardOptions.length === pendingInput.minToSelect
+    ) {
+      return {
+        ...pendingInput,
+        clientOptions: { selectedCards: pendingInput.cardOptions },
+      };
+    }
+
     if (
       pendingInput.inputType === GameInputType.SELECT_OPTION_GENERIC &&
       pendingInput.options.length === 1
@@ -912,6 +933,19 @@ export class GameState {
       } else if (player.getNumCardCostResources() == 0) {
         return {
           ...pendingInput,
+          isAutoAdvancedInput: true,
+        };
+      } else if (
+        !pendingInput.specificResource &&
+        !pendingInput.excludeResource &&
+        pendingInput.minResources === pendingInput.maxResources &&
+        player.getNumCardCostResources() === pendingInput.minResources
+      ) {
+        return {
+          ...pendingInput,
+          clientOptions: {
+            resources: player.getCardCostResources(),
+          },
           isAutoAdvancedInput: true,
         };
       }

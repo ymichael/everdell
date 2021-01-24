@@ -1,6 +1,7 @@
 import shuffle from "lodash/shuffle";
 import cloneDeep from "lodash/cloneDeep";
 import mapValues from "lodash/mapValues";
+import uniq from "lodash/uniq";
 
 import {
   CardType,
@@ -16,7 +17,12 @@ import {
   IGameTextEntity,
 } from "./types";
 import { RiverDestinationMapJSON } from "./jsonTypes";
-import { toGameText, cardListToGameText } from "./gameText";
+import { sumResources } from "./gameStatePlayHelpers";
+import {
+  toGameText,
+  cardListToGameText,
+  resourceMapToGameText,
+} from "./gameText";
 import { Card } from "./card";
 import {
   GameState,
@@ -33,7 +39,7 @@ export class RiverDestination implements GameStatePlayable, IGameTextEntity {
   readonly type: RiverDestinationType;
   readonly description: GameText;
   readonly shortName: GameText;
-  readonly playInner: GameStatePlayFn | undefined;
+  readonly playInner: GameStatePlayFn;
   readonly canPlayCheckInner: GameStateCanPlayCheckFn | undefined;
 
   constructor({
@@ -50,7 +56,7 @@ export class RiverDestination implements GameStatePlayable, IGameTextEntity {
     isExclusive?: boolean;
     type: RiverDestinationType;
     description: GameText;
-    playInner?: GameStatePlayFn;
+    playInner: GameStatePlayFn;
     canPlayCheckInner?: GameStateCanPlayCheckFn;
   }) {
     this.name = name;
@@ -82,9 +88,7 @@ export class RiverDestination implements GameStatePlayable, IGameTextEntity {
   }
 
   play(gameState: GameState, gameInput: GameInput): void {
-    if (this.playInner) {
-      this.playInner(gameState, gameInput);
-    }
+    this.playInner(gameState, gameInput);
   }
 
   getPoints(gameState: GameState, playerId: string): number {
@@ -239,6 +243,87 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
     isExclusive: false,
     shortName: [{ type: "em", text: "Shoal" }],
     description: toGameText("Pay 2 ANY and discard 2 CARD to gain 1 PEARL."),
+    canPlayCheckInner(gameState: GameState, gameInput: GameInput) {
+      if (gameInput.inputType === GameInputType.VISIT_RIVER_DESTINATION) {
+        const player = gameState.getActivePlayer();
+        if (player.getNumCardCostResources() < 2) {
+          return "Not enough resources to spend.";
+        }
+        if (player.cardsInHand.length < 2) {
+          return "Not enough cards to discard.";
+        }
+      }
+      return null;
+    },
+    playInner(gameState: GameState, gameInput: GameInput) {
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.VISIT_RIVER_DESTINATION) {
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_RESOURCES,
+          prevInputType: gameInput.inputType,
+          label: "Pay 2 ANY (and discard 2 CARD to gain 1 PEARL)",
+          riverDestinationContext: RiverDestinationName.SHOAL,
+          toSpend: true,
+          minResources: 2,
+          maxResources: 2,
+          clientOptions: {
+            resources: {},
+          },
+        });
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_RESOURCES &&
+        gameInput.prevInputType === GameInputType.VISIT_RIVER_DESTINATION &&
+        gameInput.riverDestinationContext === RiverDestinationName.SHOAL
+      ) {
+        const selectedResources = gameInput.clientOptions.resources;
+        if (sumResources(selectedResources) !== gameInput.minResources) {
+          throw new Error(
+            `Please select ${gameInput.minResources} resources to spend`
+          );
+        }
+        player.spendResources(selectedResources);
+        gameState.addGameLogFromRiverDestination(RiverDestinationName.SHOAL, [
+          player,
+          " paid ",
+          ...resourceMapToGameText(selectedResources),
+          ".",
+        ]);
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: gameInput.inputType,
+          label: "Discard 2 CARD (to gain 1 PEARL)",
+          riverDestinationContext: RiverDestinationName.SHOAL,
+          cardOptions: player.cardsInHand,
+          maxToSelect: 2,
+          minToSelect: 2,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_CARDS &&
+        gameInput.prevInputType === GameInputType.SELECT_RESOURCES &&
+        gameInput.riverDestinationContext === RiverDestinationName.SHOAL
+      ) {
+        const selectedCards = gameInput.clientOptions.selectedCards;
+        if (selectedCards.length !== gameInput.minToSelect) {
+          throw new Error(`Please select ${gameInput.minToSelect} to discard`);
+        }
+        selectedCards.forEach((cardName) => {
+          player.removeCardFromHand(cardName);
+          gameState.discardPile.addToStack(cardName);
+        });
+        gameState.addGameLogFromRiverDestination(RiverDestinationName.SHOAL, [
+          player,
+          ` discarded ${gameInput.minToSelect} CARD.`,
+        ]);
+        gameState.addGameLogFromRiverDestination(RiverDestinationName.SHOAL, [
+          player,
+          ` gained 1 PEARL.`,
+        ]);
+        player.gainResources({ [ResourceType.PEARL]: 1 });
+      }
+    },
   }),
   [RiverDestinationName.GUS_THE_GARDENER]: new RiverDestination({
     name: RiverDestinationName.GUS_THE_GARDENER,
@@ -262,6 +347,73 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
     description: toGameText(
       "Reveal and discard 3 different colored CARD from your hand to gain 1 VP and 1 PEARL."
     ),
+    playInner(gameState: GameState, gameInput: GameInput) {
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.VISIT_RIVER_DESTINATION) {
+        const numCardTypesInHand = uniq(
+          player.cardsInHand.map((cardName) => {
+            return Card.fromName(cardName).cardType;
+          })
+        ).length;
+        if (numCardTypesInHand < 3) {
+          return;
+        }
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: gameInput.inputType,
+          label: [
+            "Select 3 ",
+            { type: "em", text: "different colored" },
+            "  CARD to discard to gain 1 VP and 1 PEARL (or none to skip action)",
+          ],
+          cardOptions: player.cardsInHand,
+          maxToSelect: 3,
+          minToSelect: 0,
+          riverDestinationContext: RiverDestinationName.BOSLEY_THE_ARTIST,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_CARDS &&
+        gameInput.prevInputType === GameInputType.VISIT_RIVER_DESTINATION &&
+        gameInput.riverDestinationContext ===
+          RiverDestinationName.BOSLEY_THE_ARTIST
+      ) {
+        const selectedCards = gameInput.clientOptions.selectedCards;
+        if (selectedCards.length === 0) {
+          gameState.addGameLogFromRiverDestination(
+            RiverDestinationName.BOSLEY_THE_ARTIST,
+            [player, " declined to discard any CARD."]
+          );
+          return;
+        }
+        if (
+          selectedCards.length !== 3 ||
+          uniq(
+            selectedCards.map((cardName) => {
+              return Card.fromName(cardName).cardType;
+            })
+          ).length !== 3
+        ) {
+          throw new Error(`Please select 3 different colored cards to discard`);
+        }
+        gameState.addGameLogFromRiverDestination(
+          RiverDestinationName.BOSLEY_THE_ARTIST,
+          [
+            player,
+            ` discarded 3 differnt colored cards from their hand (`,
+            ...cardListToGameText(selectedCards),
+            ") to gain 1 VP and 1 PEARL.",
+          ]
+        );
+        selectedCards.forEach((cardName) => {
+          player.removeCardFromHand(cardName);
+          gameState.discardPile.addToStack(cardName);
+        });
+        player.gainResources({ [ResourceType.PEARL]: 1, [ResourceType.VP]: 1 });
+      }
+    },
   }),
   [RiverDestinationName.CRUSTINA_THE_CONSTABLE]: new RiverDestination({
     name: RiverDestinationName.CRUSTINA_THE_CONSTABLE,
@@ -348,6 +500,109 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
     description: toGameText(
       "Pay 1 VP and 1 ANY to draw 2 CARD from the Meadow and gain 1 PEARL."
     ),
+    playInner(gameState: GameState, gameInput: GameInput) {
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.VISIT_RIVER_DESTINATION) {
+        if (
+          player.getNumCardCostResources() < 1 ||
+          player.getNumResourcesByType(ResourceType.VP) < 1
+        ) {
+          return;
+        }
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_OPTION_GENERIC,
+          prevInputType: gameInput.inputType,
+          label:
+            "Pay 1 ANY and 1 VP to draw 2 CARD from the Meadow and gain 1 PEARL",
+          riverDestinationContext: RiverDestinationName.OBSERVATORY,
+          options: [
+            ...[
+              ResourceType.BERRY,
+              ResourceType.TWIG,
+              ResourceType.RESIN,
+              ResourceType.PEBBLE,
+            ].filter((resourceType) => {
+              return player.getNumResourcesByType(resourceType) > 0;
+            }),
+            "Decline",
+          ],
+          clientOptions: {
+            selectedOption: null,
+          },
+        });
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_OPTION_GENERIC &&
+        gameInput.prevInputType === GameInputType.VISIT_RIVER_DESTINATION &&
+        gameInput.riverDestinationContext === RiverDestinationName.OBSERVATORY
+      ) {
+        const selectedOption = gameInput.clientOptions.selectedOption;
+        if (
+          !selectedOption ||
+          gameInput.options.indexOf(selectedOption) === -1
+        ) {
+          throw new Error(`Please select an option`);
+        }
+        if (selectedOption === "Decline") {
+          gameState.addGameLogFromRiverDestination(
+            RiverDestinationName.OBSERVATORY,
+            [player, " declined to spend any resources."]
+          );
+          return;
+        }
+        player.spendResources({ [selectedOption]: 1, [ResourceType.VP]: 1 });
+        gameState.addGameLogFromRiverDestination(
+          RiverDestinationName.OBSERVATORY,
+          [
+            player,
+            " spent",
+            ...resourceMapToGameText({
+              [selectedOption]: 1,
+              [ResourceType.VP]: 1,
+            }),
+            ".",
+          ]
+        );
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: gameInput.inputType,
+          label: "Select 2 Meadow CARD",
+          riverDestinationContext: RiverDestinationName.OBSERVATORY,
+          cardOptions: gameState.meadowCards,
+          maxToSelect: 2,
+          minToSelect: 2,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_CARDS &&
+        gameInput.prevInputType === GameInputType.SELECT_RESOURCES &&
+        gameInput.riverDestinationContext === RiverDestinationName.OBSERVATORY
+      ) {
+        const selectedCards = gameInput.clientOptions.selectedCards;
+        if (selectedCards.length !== gameInput.minToSelect) {
+          throw new Error(`Please select ${gameInput.minToSelect} cards`);
+        }
+        selectedCards.forEach((cardName) => {
+          gameState.removeCardFromMeadow(cardName);
+          player.addCardToHand(gameState, cardName);
+        });
+        player.gainResources({ [ResourceType.PEARL]: 1 });
+        gameState.addGameLogFromRiverDestination(
+          RiverDestinationName.OBSERVATORY,
+          [
+            player,
+            ` drew `,
+            ...cardListToGameText(selectedCards),
+            ` from the Meadow.`,
+          ]
+        );
+        gameState.addGameLogFromRiverDestination(
+          RiverDestinationName.OBSERVATORY,
+          [player, ` gained 1 PEARL.`]
+        );
+      }
+    },
   }),
   [RiverDestinationName.MARKET]: new RiverDestination({
     name: RiverDestinationName.MARKET,
@@ -356,6 +611,73 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
     description: toGameText(
       "Pay 1 VP and 1 ANY to draw 3 CARD and gain 1 PEARL."
     ),
+    playInner(gameState: GameState, gameInput: GameInput) {
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.VISIT_RIVER_DESTINATION) {
+        if (
+          player.getNumCardCostResources() < 1 ||
+          player.getNumResourcesByType(ResourceType.VP) < 1
+        ) {
+          return;
+        }
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_OPTION_GENERIC,
+          prevInputType: gameInput.inputType,
+          label: "Pay 1 ANY and 1 VP to draw 3 CARD and gain 1 PEARL",
+          riverDestinationContext: RiverDestinationName.MARKET,
+          options: [
+            ...[
+              ResourceType.BERRY,
+              ResourceType.TWIG,
+              ResourceType.RESIN,
+              ResourceType.PEBBLE,
+            ].filter((resourceType) => {
+              return player.getNumResourcesByType(resourceType) > 0;
+            }),
+            "Decline",
+          ],
+          clientOptions: {
+            selectedOption: null,
+          },
+        });
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_OPTION_GENERIC &&
+        gameInput.prevInputType === GameInputType.VISIT_RIVER_DESTINATION &&
+        gameInput.riverDestinationContext === RiverDestinationName.MARKET
+      ) {
+        const selectedOption = gameInput.clientOptions.selectedOption;
+        if (
+          !selectedOption ||
+          gameInput.options.indexOf(selectedOption) === -1
+        ) {
+          throw new Error(`Please select an option`);
+        }
+        if (selectedOption === "Decline") {
+          gameState.addGameLogFromRiverDestination(
+            RiverDestinationName.MARKET,
+            [player, " declined to spend any resources."]
+          );
+          return;
+        }
+        player.spendResources({ [selectedOption]: 1, [ResourceType.VP]: 1 });
+        gameState.addGameLogFromRiverDestination(RiverDestinationName.MARKET, [
+          player,
+          " spent",
+          ...resourceMapToGameText({
+            [selectedOption]: 1,
+            [ResourceType.VP]: 1,
+          }),
+          ".",
+        ]);
+
+        player.drawCards(gameState, 3);
+        player.gainResources({ [ResourceType.PEARL]: 1 });
+        gameState.addGameLogFromRiverDestination(RiverDestinationName.MARKET, [
+          player,
+          ` drew 3 CARD and gained 1 PEARL.`,
+        ]);
+      }
+    },
   }),
   [RiverDestinationName.GREAT_HALL]: new RiverDestination({
     name: RiverDestinationName.GREAT_HALL,

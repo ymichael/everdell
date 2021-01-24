@@ -322,4 +322,91 @@ describe("RiverDestinationMap", () => {
       expect(player.getNumResourcesByType(ResourceType.VP)).to.be(1);
     });
   });
+
+  describe(RiverDestinationName.SHOAL, () => {
+    it("should not allow player to visit if insufficient resources / cards", () => {
+      expect(() => {
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_RIVER_DESTINATION,
+            clientOptions: {
+              riverDestinationSpot: RiverDestinationSpot.SHOAL,
+            },
+          },
+        ]);
+      }).to.throwException(/not enough resources/i);
+
+      player.gainResources({ [ResourceType.BERRY]: 2 });
+      expect(() => {
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_RIVER_DESTINATION,
+            clientOptions: {
+              riverDestinationSpot: RiverDestinationSpot.SHOAL,
+            },
+          },
+        ]);
+      }).to.throwException(/not enough cards/i);
+    });
+
+    it("should ask the player to spend resources and discard cards", () => {
+      player.gainResources({ [ResourceType.BERRY]: 2 });
+      player.cardsInHand.push(CardName.FARM);
+      player.cardsInHand.push(CardName.FARM);
+
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        {
+          inputType: GameInputType.VISIT_RIVER_DESTINATION,
+          clientOptions: {
+            riverDestinationSpot: RiverDestinationSpot.SHOAL,
+          },
+        },
+        {
+          inputType: GameInputType.SELECT_RESOURCES,
+          prevInputType: GameInputType.VISIT_RIVER_DESTINATION,
+          riverDestinationContext: RiverDestinationName.SHOAL,
+          toSpend: true,
+          minResources: 2,
+          maxResources: 2,
+          clientOptions: { resources: { [ResourceType.BERRY]: 2 } },
+        },
+        {
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: GameInputType.SELECT_RESOURCES,
+          riverDestinationContext: RiverDestinationName.SHOAL,
+          cardOptions: [CardName.FARM, CardName.FARM],
+          maxToSelect: 2,
+          minToSelect: 2,
+          clientOptions: { selectedCards: [CardName.FARM, CardName.FARM] },
+        },
+      ]);
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+      expect(player.cardsInHand.length).to.be(0);
+    });
+
+    it("should auto advance if possible", () => {
+      player.gainResources({ [ResourceType.BERRY]: 2 });
+      player.cardsInHand.push(CardName.FARM);
+      player.cardsInHand.push(CardName.FARM);
+
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+      [player, gameState] = multiStepGameInputTest(
+        gameState,
+        [
+          {
+            inputType: GameInputType.VISIT_RIVER_DESTINATION,
+            clientOptions: {
+              riverDestinationSpot: RiverDestinationSpot.SHOAL,
+            },
+          },
+        ],
+        { autoAdvance: true }
+      );
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+      expect(player.cardsInHand.length).to.be(0);
+    });
+  });
 });

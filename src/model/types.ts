@@ -17,6 +17,7 @@ export enum GameInputType {
   SELECT_OPTION_GENERIC = "SELECT_OPTION_GENERIC",
 
   PLAY_ADORNMENT = "PLAY_ADORNMENT",
+  CLAIM_WONDER = "CLAIM_WONDER",
 }
 
 export type GameInputPlaceWorker = {
@@ -49,6 +50,13 @@ export type GameInputClaimEvent = {
   };
 };
 
+export type GameInputClaimWonder = {
+  inputType: GameInputType.CLAIM_WONDER;
+  clientOptions: {
+    wonder: WonderName | null;
+  };
+};
+
 export type GameInputPlayAdornment = {
   inputType: GameInputType.PLAY_ADORNMENT;
   clientOptions: {
@@ -67,7 +75,8 @@ export type GameInputPrepareForSeason = {
 export type GameInputWorkerPlacementTypes =
   | GameInputClaimEvent
   | GameInputPlaceWorker
-  | GameInputVisitDestinationCard;
+  | GameInputVisitDestinationCard
+  | GameInputClaimWonder;
 
 export type GameInputSimple =
   | GameInputWorkerPlacementTypes
@@ -120,6 +129,7 @@ export type GameInputSelectCards = {
   locationContext?: LocationName;
   cardContext?: CardName;
   eventContext?: EventName;
+  wonderContext?: WonderName;
 
   clientOptions: {
     selectedCards: CardName[];
@@ -240,6 +250,7 @@ export type GameInputMultiStep = (
   cardContext?: CardName;
   locationContext?: LocationName;
   adornmentContext?: AdornmentName;
+  wonderContext?: WonderName;
   prevInput?: GameInput;
   label?: string | (string | TextPart)[] | GameText;
 };
@@ -354,6 +365,10 @@ export type EventNameToPlayerId = Partial<
   { [key in EventName]: string | null }
 >;
 
+export type WonderNameToPlayerId = Partial<
+  { [key in WonderName]: string | null }
+>;
+
 export type PlayedCardInfo = {
   cardOwnerId: string;
   cardName: CardName;
@@ -396,14 +411,23 @@ export type WorkerPlacementInfo =
       location: LocationName;
       playedCard?: undefined;
       event?: undefined;
+      wonder?: undefined;
     }
   | {
       playedCard: PlayedCardInfo;
       event?: undefined;
       location?: undefined;
+      wonder?: undefined;
     }
   | {
       event: EventName;
+      location?: undefined;
+      playedCard?: undefined;
+      wonder?: undefined;
+    }
+  | {
+      wonder: WonderName;
+      event?: undefined;
       location?: undefined;
       playedCard?: undefined;
     };
@@ -550,6 +574,11 @@ export type TextPartEntity =
       type: "entity";
       entityType: "adornment";
       adornment: AdornmentName;
+    }
+  | {
+      type: "entity";
+      entityType: "wonder";
+      wonder: WonderName;
     };
 export type TextPartPlayer = {
   type: "player";

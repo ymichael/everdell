@@ -145,6 +145,8 @@ const GameInputBoxInner = ({
         />
       ) : gameInput.inputType === GameInputType.PLAY_ADORNMENT ? (
         <></>
+      ) : gameInput.inputType === GameInputType.CLAIM_WONDER ? (
+        <></>
       ) : (
         <>
           {assertUnreachable(

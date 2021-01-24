@@ -340,6 +340,7 @@ export class Player implements IGameTextEntity {
     points += this.getPointsFromJourney(gameState);
     points += this.getNumResourcesByType(ResourceType.VP);
     points += this.getNumResourcesByType(ResourceType.PEARL) * 2;
+    points += this.getPointsFromAdornments(gameState);
     return points;
   }
 

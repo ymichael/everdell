@@ -146,7 +146,7 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
       const numPlayedCritters = player.getNumPlayedCritters();
-      return numPlayedCritters / 2;
+      return Math.floor(numPlayedCritters / 2);
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
@@ -350,7 +350,56 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
       return numCards > 5 ? 5 : numCards;
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("not implemented");
+      const player = gameState.getActivePlayer();
+      const helper = new GainMoreThan1AnyResource({
+        adornmentContext: AdornmentName.SCALES,
+        skipGameLog: false,
+      });
+      if (gameInput.inputType === GameInputType.PLAY_ADORNMENT) {
+        // ask player to discard cards
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: GameInputType.PLAY_ADORNMENT,
+          label: ["Select up to 4 CARD to discard to gain 1 ANY for each."],
+          adornmentContext: AdornmentName.SCALES,
+          cardOptions: player.cardsInHand,
+          maxToSelect: 4,
+          minToSelect: 0,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_CARDS) {
+        const cardsToDiscard = gameInput.clientOptions.selectedCards;
+
+        if (cardsToDiscard.length > 0) {
+          cardsToDiscard.forEach((cardName) => {
+            player.removeCardFromHand(cardName);
+            gameState.discardPile.addToStack(cardName);
+          });
+
+          gameState.addGameLogFromAdornment(AdornmentName.SCALES, [
+            player,
+            ` discarded ${cardsToDiscard.length} CARD.`,
+          ]);
+
+          // gain resources based on number of cards discarded
+          gameState.pendingGameInputs.push(
+            helper.getGameInput(cardsToDiscard.length, {
+              prevInputType: gameInput.inputType,
+            })
+          );
+        } else {
+          gameState.addGameLogFromAdornment(AdornmentName.SCALES, [
+            player,
+            ` did not discard any CARD.`,
+          ]);
+        }
+      } else if (helper.matchesGameInput(gameInput)) {
+        helper.play(gameState, gameInput);
+      } else {
+        throw new Error(`Unexpected GameInputType ${gameInput.inputType}`);
+      }
     },
   }),
   [AdornmentName.SEAGLASS_AMULET]: new Adornment({

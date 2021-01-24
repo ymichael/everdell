@@ -57,6 +57,7 @@ export type PlayerJSON = {
   playerStatus: PlayerStatus;
   adornmentsInHand: AdornmentName[];
   playedAdornments: AdornmentName[];
+  numAmbassadors: number;
 };
 
 export type RiverDestinationMapJSON = {

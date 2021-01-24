@@ -13,6 +13,7 @@ import {
   GameInputPrepareForSeason,
   GameInputType,
   GameInputVisitDestinationCard,
+  GameInputVisitRiverDestination,
   GameInputWorkerPlacementTypes,
   GameLogEntry,
   GameOptions,
@@ -536,6 +537,32 @@ export class GameState {
     player.spendResources({ [ResourceType.PEARL]: 1 });
   }
 
+  private handleVisitRiverDestination(
+    gameInput: GameInputVisitRiverDestination
+  ): void {
+    if (!this.gameOptions.pearlbrook) {
+      throw new Error(
+        "Unexpected action, not playing with the Pearlbook expansion."
+      );
+    }
+    const riverDestinationSpot = gameInput.clientOptions?.riverDestinationSpot;
+    if (!riverDestinationSpot) {
+      throw new Error("Please select an river destination to visit");
+    }
+    const riverDestinationMap = this.riverDestinationMap;
+    if (!riverDestinationMap) {
+      throw new Error("Could not find River Destination");
+    }
+    const canVisitErr = riverDestinationMap.canVisitSpotCheck(
+      this,
+      riverDestinationSpot
+    );
+    if (canVisitErr) {
+      throw new Error(canVisitErr);
+    }
+    throw new Error("Not Implemented");
+  }
+
   handleWorkerPlacementGameInput(
     gameInput: GameInputWorkerPlacementTypes
   ): void {
@@ -610,6 +637,18 @@ export class GameState {
       " recalled their workers.",
     ]);
 
+    if (this.gameOptions.pearlbrook) {
+      if (!player.hasUnusedAmbassador()) {
+        this.addGameLog([
+          { type: "em", text: "Prepare for season" },
+          ": ",
+          player,
+          " recalled their ambassador.",
+        ]);
+        player.recallAmbassador(this);
+      }
+    }
+
     player.nextSeason();
     this.addGameLog([
       { type: "em", text: "Prepare for season" },
@@ -660,6 +699,8 @@ export class GameState {
         break;
       case GameInputType.PLAY_ADORNMENT:
         this.handlePlayAdornmentGameInput(gameInput);
+      case GameInputType.VISIT_RIVER_DESTINATION:
+        this.handleVisitRiverDestination(gameInput);
         break;
       case GameInputType.PREPARE_FOR_SEASON:
         this.handlePrepareForSeason(gameInput);

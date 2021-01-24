@@ -3,6 +3,8 @@ import cloneDeep from "lodash/cloneDeep";
 import mapValues from "lodash/mapValues";
 
 import {
+  CardType,
+  RiverDestinationSpot,
   RiverDestinationMapSpots,
   RiverDestinationType,
   RiverDestinationName,
@@ -14,6 +16,7 @@ import {
 import { RiverDestinationMapJSON } from "./jsonTypes";
 import { toGameText } from "./gameText";
 import { GameState, GameStatePlayable } from "./gameState";
+import { assertUnreachable } from "../utils";
 
 // Pearlbrook River Destination
 export class RiverDestination implements GameStatePlayable, IGameTextEntity {
@@ -85,6 +88,49 @@ export class RiverDestinationMap {
 
   constructor({ spots }: { spots: RiverDestinationMapSpots }) {
     this.spots = spots;
+  }
+
+  canVisitSpotCheck(
+    gameState: GameState,
+    spot: RiverDestinationSpot
+  ): string | null {
+    const player = gameState.getActivePlayer();
+    if (!gameState.gameOptions.pearlbrook) {
+      return "Not playing with the Pearlbrook expansion";
+    }
+    if (!player.hasUnusedAmbassador()) {
+      return "Ambassador already placed somewhere else.";
+    }
+
+    // Check if player fulfills the criteria of the spot!
+    switch (spot) {
+      case RiverDestinationSpot.THREE_PRODUCTION:
+        if (player.getPlayedCardNamesByType(CardType.PRODUCTION).length < 3) {
+          return "Must have 3 PRODUCTION cards in your city";
+        }
+        break;
+      case RiverDestinationSpot.TWO_DESTINATION:
+        if (player.getPlayedCardNamesByType(CardType.DESTINATION).length < 2) {
+          return "Must have 2 DESTINATION cards in your city";
+        }
+        break;
+      case RiverDestinationSpot.TWO_GOVERNANCE:
+        if (player.getPlayedCardNamesByType(CardType.GOVERNANCE).length < 2) {
+          return "Must have 2 GOVERNANCE cards in your city";
+        }
+        break;
+      case RiverDestinationSpot.TWO_TRAVELER:
+        if (player.getPlayedCardNamesByType(CardType.TRAVELER).length < 2) {
+          return "Must have 2 TRAVELER cards in your city";
+        }
+        break;
+      case RiverDestinationSpot.SHOAL:
+        break;
+      default:
+        assertUnreachable(spot, spot);
+    }
+
+    return null;
   }
 
   static fromJSON(json: RiverDestinationMapJSON): RiverDestinationMap {

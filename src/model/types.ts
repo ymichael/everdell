@@ -16,7 +16,9 @@ export enum GameInputType {
   SELECT_PAYMENT_FOR_CARD = "SELECT_PAYMENT_FOR_CARD",
   SELECT_OPTION_GENERIC = "SELECT_OPTION_GENERIC",
 
+  // Pearlbrook specific
   PLAY_ADORNMENT = "PLAY_ADORNMENT",
+  VISIT_RIVER_DESTINATION = "VISIT_RIVER_DESTINATION",
 }
 
 export type GameInputPlaceWorker = {
@@ -56,6 +58,13 @@ export type GameInputPlayAdornment = {
   };
 };
 
+export type GameInputVisitRiverDestination = {
+  inputType: GameInputType.VISIT_RIVER_DESTINATION;
+  clientOptions: {
+    riverDestinationSpot: RiverDestinationSpot | null;
+  };
+};
+
 export type GameInputGameEnd = {
   inputType: GameInputType.GAME_END;
 };
@@ -74,7 +83,9 @@ export type GameInputSimple =
   | GameInputPlayCard
   | GameInputGameEnd
   | GameInputPrepareForSeason
-  | GameInputPlayAdornment;
+  | GameInputPlayAdornment
+  | GameInputVisitRiverDestination
+  | GameInputPrepareForSeason;
 
 export type GameInputDiscardCards = {
   inputType: GameInputType.DISCARD_CARDS;
@@ -629,16 +640,21 @@ export enum AdornmentName {
   TIARA = "Tiara",
 }
 
+export enum RiverDestinationSpot {
+  SHOAL = "SHOAL",
+  THREE_PRODUCTION = "THREE_PRODUCTION",
+  TWO_DESTINATION = "TWO_DESTINATION",
+  TWO_GOVERNANCE = "TWO_GOVERNANCE",
+  TWO_TRAVELER = "TWO_TRAVELER",
+}
+
 type RiverDestinationSpotInfo = {
   name: RiverDestinationName | null;
   ambassadors: string[];
   revealed: boolean;
 };
 
-export type RiverDestinationMapSpots = {
-  SHOAL: RiverDestinationSpotInfo;
-  THREE_PRODUCTION: RiverDestinationSpotInfo;
-  TWO_DESTINATION: RiverDestinationSpotInfo;
-  TWO_GOVERNANCE: RiverDestinationSpotInfo;
-  TWO_TRAVELER: RiverDestinationSpotInfo;
-};
+export type RiverDestinationMapSpots = Record<
+  RiverDestinationSpot,
+  RiverDestinationSpotInfo
+>;

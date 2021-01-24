@@ -49,6 +49,8 @@ export class Player implements IGameTextEntity {
   private numWorkers: number;
   private placedWorkers: WorkerPlacementInfo[];
 
+  private numAmbassadors: number;
+
   public playerStatus: PlayerStatus;
 
   public adornmentsInHand: AdornmentName[];
@@ -70,6 +72,7 @@ export class Player implements IGameTextEntity {
     },
     currentSeason = Season.WINTER,
     numWorkers = 2,
+    numAmbassadors = 0,
     claimedEvents = {},
     placedWorkers = [],
     playerStatus = PlayerStatus.DURING_SEASON,
@@ -84,6 +87,7 @@ export class Player implements IGameTextEntity {
     resources?: Record<ResourceType, number>;
     currentSeason?: Season;
     numWorkers?: number;
+    numAmbassadors?: number;
     claimedEvents?: Partial<Record<EventName, PlayedEventInfo>>;
     placedWorkers?: WorkerPlacementInfo[];
     playerStatus?: PlayerStatus;
@@ -103,6 +107,7 @@ export class Player implements IGameTextEntity {
     this.playerStatus = playerStatus;
 
     // pearlbrook only
+    this.numAmbassadors = numAmbassadors;
     this.adornmentsInHand = adornmentsInHand;
     this.playedAdornments = playedAdornments;
   }
@@ -1266,6 +1271,14 @@ export class Player implements IGameTextEntity {
     }
   }
 
+  hasUnusedAmbassador(): boolean {
+    return this.numAmbassadors === 1;
+  }
+
+  recallAmbassador(gameState: GameState): void {
+    throw new Error("Not Implemented");
+  }
+
   recallWorkers(gameState: GameState): void {
     if (this.numAvailableWorkers !== 0) {
       throw new Error("Still have available workers");
@@ -1311,6 +1324,7 @@ export class Player implements IGameTextEntity {
       numWorkers: this.numWorkers,
       currentSeason: this.currentSeason,
       claimedEvents: this.claimedEvents,
+      numAmbassadors: this.numAmbassadors,
       cardsInHand: [],
       placedWorkers: this.placedWorkers,
       playerStatus: this.playerStatus,

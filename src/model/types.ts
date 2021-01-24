@@ -628,3 +628,17 @@ export enum AdornmentName {
   COMPASS = "Compass",
   TIARA = "Tiara",
 }
+
+type RiverDestinationSpotInfo = {
+  name: RiverDestinationName | null;
+  ambassadors: string[];
+  revealed: boolean;
+};
+
+export type RiverDestinationMapSpots = {
+  SHOAL: RiverDestinationSpotInfo;
+  THREE_PRODUCTION: RiverDestinationSpotInfo;
+  TWO_DESTINATION: RiverDestinationSpotInfo;
+  TWO_GOVERNANCE: RiverDestinationSpotInfo;
+  TWO_TRAVELER: RiverDestinationSpotInfo;
+};

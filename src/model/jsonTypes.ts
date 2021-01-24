@@ -1,4 +1,5 @@
 import {
+  RiverDestinationMapSpots,
   AdornmentName,
   GameOptions,
   CardName,
@@ -56,4 +57,8 @@ export type PlayerJSON = {
   playerStatus: PlayerStatus;
   adornmentsInHand: AdornmentName[];
   playedAdornments: AdornmentName[];
+};
+
+export type RiverDestinationMapJSON = {
+  spots: RiverDestinationMapSpots;
 };

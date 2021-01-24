@@ -31,6 +31,10 @@ import { Adornment } from "./adornment";
 import { Card } from "./card";
 import { CardStack, discardPile } from "./cardStack";
 import { Location, initialLocationsMap } from "./location";
+import {
+  initialRiverDestinationMap,
+  RiverDestinationMap,
+} from "./riverDestination";
 import { Event, initialEventMap } from "./event";
 import { initialDeck } from "./deck";
 import { assertUnreachable } from "../utils";
@@ -102,15 +106,20 @@ const defaultGameOptions = (gameOptions: Partial<GameOptions>): GameOptions => {
 export class GameState {
   readonly gameStateId: number;
   readonly gameOptions: GameOptions;
+  readonly gameLog: GameLogEntry[];
+  readonly pendingGameInputs: GameInputMultiStep[];
+
+  // Player & Active Player
   private _activePlayerId: Player["playerId"];
-  public pendingGameInputs: GameInputMultiStep[];
   readonly players: Player[];
-  readonly meadowCards: CardName[];
+
   readonly discardPile: CardStack;
   readonly deck: CardStack;
+
+  readonly meadowCards: CardName[];
   readonly locationsMap: LocationNameToPlayerIds;
   readonly eventsMap: EventNameToPlayerId;
-  readonly gameLog: GameLogEntry[];
+  readonly riverDestinationMap: RiverDestinationMap | null;
 
   constructor({
     gameStateId,
@@ -121,6 +130,7 @@ export class GameState {
     deck,
     locationsMap,
     eventsMap,
+    riverDestinationMap = null,
     gameLog = [],
     gameOptions = {},
     pendingGameInputs = [],
@@ -133,6 +143,7 @@ export class GameState {
     deck: CardStack;
     locationsMap: LocationNameToPlayerIds;
     eventsMap: EventNameToPlayerId;
+    riverDestinationMap?: RiverDestinationMap | null;
     pendingGameInputs: GameInputMultiStep[];
     gameLog: GameLogEntry[];
     gameOptions?: Partial<GameOptions>;
@@ -147,6 +158,7 @@ export class GameState {
     this._activePlayerId = activePlayerId || players[0].playerId;
     this.pendingGameInputs = pendingGameInputs;
     this.gameLog = gameLog;
+    this.riverDestinationMap = riverDestinationMap;
     this.gameOptions = defaultGameOptions(gameOptions);
   }
 
@@ -220,6 +232,7 @@ export class GameState {
         discardPile: this.discardPile.toJSON(includePrivate),
         gameLog: this.gameLog,
         gameOptions: this.gameOptions,
+        riverDestinationMap: this.riverDestinationMap?.toJSON(includePrivate),
       },
       ...(includePrivate
         ? {
@@ -340,7 +353,11 @@ export class GameState {
   updatePendingGameInputs(
     mapFn: (gameInput: GameInputMultiStep) => GameInputMultiStep
   ): void {
-    this.pendingGameInputs = this.pendingGameInputs.map(mapFn);
+    const newPendingInputs = this.pendingGameInputs.map(mapFn);
+    while (this.pendingGameInputs.length !== 0) {
+      this.pendingGameInputs.pop();
+    }
+    this.pendingGameInputs.push(...newPendingInputs);
   }
 
   private removeMultiStepGameInput(gameInput: GameInputMultiStep): void {
@@ -841,6 +858,9 @@ export class GameState {
         players.length,
         gameOptionsWithDefaults
       ),
+      riverDestinationMap: gameOptionsWithDefaults.pearlbrook
+        ? initialRiverDestinationMap()
+        : null,
       eventsMap: initialEventMap(gameOptionsWithDefaults),
       gameOptions: gameOptionsWithDefaults,
       gameLog: [],
@@ -848,6 +868,10 @@ export class GameState {
     });
 
     gameState.addGameLog(`Game created with ${players.length} players.`);
+
+    if (gameOptionsWithDefaults.pearlbrook) {
+      gameState.addGameLog(`Playing with the Pearlbrook expansion.`);
+    }
 
     if (shuffleDeck) {
       gameState.deck.shuffle();

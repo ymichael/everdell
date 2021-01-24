@@ -14,6 +14,7 @@ import {
   GameInputPrepareForSeason,
   GameInputType,
   GameInputVisitDestinationCard,
+  GameInputVisitRiverDestination,
   GameInputWorkerPlacementTypes,
   GameLogEntry,
   GameOptions,
@@ -23,6 +24,7 @@ import {
   PlayedCardInfo,
   PlayerStatus,
   ResourceType,
+  RiverDestinationName,
   Season,
   TextPart,
   WonderNameToPlayerId,
@@ -36,6 +38,7 @@ import { Location, initialLocationsMap } from "./location";
 import {
   initialRiverDestinationMap,
   RiverDestinationMap,
+  RiverDestination,
 } from "./riverDestination";
 import { Event, initialEventMap } from "./event";
 import { Wonder, initialWondersMap } from "./wonder";
@@ -174,6 +177,17 @@ export class GameState {
     return this._activePlayerId;
   }
 
+  addGameLogFromRiverDestination(
+    name: RiverDestinationName,
+    args: Parameters<typeof toGameText>[0]
+  ): void {
+    if (typeof args === "string") {
+      this.addGameLog([RiverDestination.fromName(name), ": ", args]);
+    } else {
+      this.addGameLog([RiverDestination.fromName(name), ": ", ...args]);
+    }
+  }
+
   addGameLogFromCard(
     card: CardName,
     args: Parameters<typeof toGameText>[0]
@@ -240,7 +254,9 @@ export class GameState {
         discardPile: this.discardPile.toJSON(includePrivate),
         gameLog: this.gameLog,
         gameOptions: this.gameOptions,
-        riverDestinationMap: this.riverDestinationMap?.toJSON(includePrivate),
+        riverDestinationMap: this.riverDestinationMap
+          ? this.riverDestinationMap.toJSON(includePrivate)
+          : null,
         wondersMap: this.wondersMap,
       },
       ...(includePrivate
@@ -425,6 +441,14 @@ export class GameState {
       return;
     }
 
+    if (gameInput.riverDestinationContext) {
+      const riverDestination = RiverDestination.fromName(
+        gameInput.riverDestinationContext
+      );
+      riverDestination.play(this, gameInput);
+      return;
+    }
+
     if (gameInput.wonderContext) {
       const wonder = Wonder.fromName(gameInput.wonderContext);
       const canPlayWonderErr = wonder.canPlayCheck(this, gameInput);
@@ -574,6 +598,66 @@ export class GameState {
     player.spendResources({ [ResourceType.PEARL]: 1 });
   }
 
+  private handleVisitRiverDestination(
+    gameInput: GameInputVisitRiverDestination
+  ): void {
+    if (!this.gameOptions.pearlbrook) {
+      throw new Error(
+        "Unexpected action, not playing with the Pearlbook expansion."
+      );
+    }
+    const riverDestinationSpot = gameInput.clientOptions?.riverDestinationSpot;
+    if (!riverDestinationSpot) {
+      throw new Error("Please select an river destination to visit");
+    }
+    const riverDestinationMap = this.riverDestinationMap;
+    if (!riverDestinationMap) {
+      throw new Error("Could not find River Destination");
+    }
+    const canVisitErr = riverDestinationMap.canVisitSpotCheck(
+      this,
+      riverDestinationSpot
+    );
+    if (canVisitErr) {
+      throw new Error(canVisitErr);
+    }
+
+    const player = this.getActivePlayer();
+    const spot = riverDestinationMap.spots[riverDestinationSpot];
+    // Should not happen unless we're using the public gameState object.
+    if (!spot.name) {
+      throw new Error("Unable to reveal River Destination card.");
+    }
+
+    // TODO: This won't work for the FERRY card.
+    spot.ambassadors.push(player.playerId);
+    player.useAmbassador();
+
+    const riverDestination = RiverDestination.fromName(spot.name);
+    if (!spot.revealed) {
+      // Reveal!
+      spot.revealed = true;
+      this.addGameLog([
+        player,
+        ` visited ${riverDestinationSpot} and revealed `,
+        riverDestination,
+        ".",
+      ]);
+      this.addGameLog([player, " gained 1 PEARL."]);
+      player.gainResources({ [ResourceType.PEARL]: 1 });
+    } else {
+      this.addGameLog([
+        player,
+        " visited ",
+        riverDestination,
+        ` at ${riverDestinationSpot}.`,
+      ]);
+    }
+
+    // Play river destination!
+    riverDestination.play(this, gameInput);
+  }
+
   handleWorkerPlacementGameInput(
     gameInput: GameInputWorkerPlacementTypes
   ): void {
@@ -651,6 +735,18 @@ export class GameState {
       " recalled their workers.",
     ]);
 
+    if (this.gameOptions.pearlbrook) {
+      if (!player.hasUnusedAmbassador()) {
+        this.addGameLog([
+          { type: "em", text: "Prepare for season" },
+          ": ",
+          player,
+          " recalled their ambassador.",
+        ]);
+        player.recallAmbassador(this);
+      }
+    }
+
     player.nextSeason();
     this.addGameLog([
       { type: "em", text: "Prepare for season" },
@@ -702,6 +798,9 @@ export class GameState {
         break;
       case GameInputType.PLAY_ADORNMENT:
         this.handlePlayAdornmentGameInput(gameInput);
+        break;
+      case GameInputType.VISIT_RIVER_DESTINATION:
+        this.handleVisitRiverDestination(gameInput);
         break;
       case GameInputType.PREPARE_FOR_SEASON:
         this.handlePrepareForSeason(gameInput);
@@ -872,6 +971,9 @@ export class GameState {
       players: gameStateJSON.players.map((pJSON: any) =>
         Player.fromJSON(pJSON)
       ),
+      riverDestinationMap: gameStateJSON.riverDestinationMap
+        ? RiverDestinationMap.fromJSON(gameStateJSON.riverDestinationMap)
+        : null,
     });
   }
 
@@ -922,6 +1024,9 @@ export class GameState {
 
     // Players draw cards
     players.forEach((p, idx) => {
+      if (gameOptionsWithDefaults.pearlbrook) {
+        p.recallAmbassador(gameState);
+      }
       p.drawCards(gameState, STARTING_PLAYER_HAND_SIZE + idx);
     });
     gameState.addGameLog(`Dealing cards to each player.`);

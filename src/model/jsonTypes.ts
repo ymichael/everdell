@@ -37,6 +37,7 @@ export type GameStateJSON = {
   wondersMap: WonderNameToPlayerId;
   pendingGameInputs: GameInputMultiStep[];
   gameLog: GameLogEntry[];
+  riverDestinationMap: RiverDestinationMapJSON | null;
 };
 
 export type CardStackJSON = {
@@ -61,6 +62,7 @@ export type PlayerJSON = {
   adornmentsInHand: AdornmentName[];
   playedAdornments: AdornmentName[];
   claimedWonders: WonderName[];
+  numAmbassadors: number;
 };
 
 export type RiverDestinationMapJSON = {

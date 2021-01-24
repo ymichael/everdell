@@ -16,7 +16,9 @@ export enum GameInputType {
   SELECT_PAYMENT_FOR_CARD = "SELECT_PAYMENT_FOR_CARD",
   SELECT_OPTION_GENERIC = "SELECT_OPTION_GENERIC",
 
+  // Pearlbrook specific
   PLAY_ADORNMENT = "PLAY_ADORNMENT",
+  VISIT_RIVER_DESTINATION = "VISIT_RIVER_DESTINATION",
   CLAIM_WONDER = "CLAIM_WONDER",
 }
 
@@ -64,6 +66,13 @@ export type GameInputPlayAdornment = {
   };
 };
 
+export type GameInputVisitRiverDestination = {
+  inputType: GameInputType.VISIT_RIVER_DESTINATION;
+  clientOptions: {
+    riverDestinationSpot: RiverDestinationSpot | null;
+  };
+};
+
 export type GameInputGameEnd = {
   inputType: GameInputType.GAME_END;
 };
@@ -83,7 +92,9 @@ export type GameInputSimple =
   | GameInputPlayCard
   | GameInputGameEnd
   | GameInputPrepareForSeason
-  | GameInputPlayAdornment;
+  | GameInputPlayAdornment
+  | GameInputVisitRiverDestination
+  | GameInputPrepareForSeason;
 
 export type GameInputDiscardCards = {
   inputType: GameInputType.DISCARD_CARDS;
@@ -92,11 +103,6 @@ export type GameInputDiscardCards = {
   maxCards: number;
 
   isAutoAdvancedInput?: boolean;
-
-  locationContext?: LocationName;
-  cardContext?: CardName;
-  eventContext?: EventName;
-
   clientOptions: {
     cardsToDiscard: CardName[];
   };
@@ -107,11 +113,6 @@ export type GameInputSelectPlayer = {
   prevInputType: GameInputType;
   playerOptions: string[];
   mustSelectOne: boolean;
-
-  locationContext?: LocationName;
-  cardContext?: CardName;
-  eventContext?: EventName;
-
   clientOptions: {
     selectedPlayer: string | null;
   };
@@ -125,12 +126,6 @@ export type GameInputSelectCards = {
 
   maxToSelect: number;
   minToSelect: number;
-
-  locationContext?: LocationName;
-  cardContext?: CardName;
-  eventContext?: EventName;
-  wonderContext?: WonderName;
-
   clientOptions: {
     selectedCards: CardName[];
   };
@@ -142,11 +137,6 @@ export type GameInputSelectPlayedCards = {
   cardOptions: PlayedCardInfo[];
   maxToSelect: number;
   minToSelect: number;
-
-  eventContext?: EventName;
-  cardContext?: CardName;
-  locationContext?: LocationName;
-
   clientOptions: {
     selectedCards: PlayedCardInfo[];
   };
@@ -162,11 +152,6 @@ export type GameInputSelectResources = {
   toSpend: boolean;
   excludeResource?: ResourceType;
   specificResource?: ResourceType;
-
-  locationContext?: LocationName;
-  cardContext?: CardName;
-  eventContext?: EventName;
-
   clientOptions: {
     resources: CardCost;
   };
@@ -179,11 +164,6 @@ export type GameInputSelectWorkerPlacement = {
   options: WorkerPlacementInfo[];
 
   mustSelectOne: boolean;
-
-  locationContext?: LocationName;
-  cardContext?: CardName;
-  eventContext?: EventName;
-
   clientOptions: {
     selectedOption: WorkerPlacementInfo | null;
   };
@@ -192,13 +172,7 @@ export type GameInputSelectWorkerPlacement = {
 export type GameInputSelectLocation = {
   inputType: GameInputType.SELECT_LOCATION;
   prevInputType: GameInputType;
-
   locationOptions: LocationName[];
-
-  locationContext?: LocationName;
-  cardContext?: CardName;
-  eventContext?: EventName;
-
   clientOptions: {
     selectedLocation: LocationName | null;
   };
@@ -208,9 +182,6 @@ export type GameInputSelectOptionGeneric = {
   inputType: GameInputType.SELECT_OPTION_GENERIC;
   prevInputType: GameInputType;
   options: string[];
-  locationContext?: LocationName;
-  cardContext?: CardName;
-  eventContext?: EventName;
   playedCardContext?: PlayedCardInfo;
 
   clientOptions: {
@@ -222,10 +193,8 @@ export type GameInputSelectPaymentForCard = {
   inputType: GameInputType.SELECT_PAYMENT_FOR_CARD;
   prevInputType: GameInputType;
 
-  locationContext?: LocationName;
   // if cardContext is specified, must use that card
   cardContext?: CardName;
-
   card: CardName;
 
   // player specified number of resources
@@ -250,6 +219,7 @@ export type GameInputMultiStep = (
   cardContext?: CardName;
   locationContext?: LocationName;
   adornmentContext?: AdornmentName;
+  riverDestinationContext?: RiverDestinationName;
   wonderContext?: WonderName;
   prevInput?: GameInput;
   label?: string | (string | TextPart)[] | GameText;
@@ -577,14 +547,21 @@ export type TextPartEntity =
     }
   | {
       type: "entity";
+      entityType: "riverDestination";
+      riverDestination: RiverDestinationName;
+    }
+  | {
+      type: "entity";
       entityType: "wonder";
       wonder: WonderName;
     };
+
 export type TextPartPlayer = {
   type: "player";
   playerId: string;
   name: string;
 };
+
 export type TextPartIcon =
   | { type: "resource"; resourceType: ResourceType | "ANY" }
   | { type: "cardType"; cardType: CardType }
@@ -658,16 +635,21 @@ export enum AdornmentName {
   TIARA = "Tiara",
 }
 
+export enum RiverDestinationSpot {
+  SHOAL = "SHOAL",
+  THREE_PRODUCTION = "THREE_PRODUCTION",
+  TWO_DESTINATION = "TWO_DESTINATION",
+  TWO_GOVERNANCE = "TWO_GOVERNANCE",
+  TWO_TRAVELER = "TWO_TRAVELER",
+}
+
 type RiverDestinationSpotInfo = {
   name: RiverDestinationName | null;
   ambassadors: string[];
   revealed: boolean;
 };
 
-export type RiverDestinationMapSpots = {
-  SHOAL: RiverDestinationSpotInfo;
-  THREE_PRODUCTION: RiverDestinationSpotInfo;
-  TWO_DESTINATION: RiverDestinationSpotInfo;
-  TWO_GOVERNANCE: RiverDestinationSpotInfo;
-  TWO_TRAVELER: RiverDestinationSpotInfo;
-};
+export type RiverDestinationMapSpots = Record<
+  RiverDestinationSpot,
+  RiverDestinationSpotInfo
+>;

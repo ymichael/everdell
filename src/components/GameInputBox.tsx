@@ -143,10 +143,12 @@ const GameInputBoxInner = ({
           viewingPlayer={viewingPlayer}
           locations={gameInput.locationOptions}
         />
+      ) : gameInput.inputType === GameInputType.VISIT_RIVER_DESTINATION ? (
+        <>TODO</>
       ) : gameInput.inputType === GameInputType.PLAY_ADORNMENT ? (
-        <></>
+        <>TODO</>
       ) : gameInput.inputType === GameInputType.CLAIM_WONDER ? (
-        <></>
+        <>TODO</>
       ) : (
         <>
           {assertUnreachable(

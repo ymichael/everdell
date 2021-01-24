@@ -1,5 +1,4 @@
 import {
-  AdornmentName,
   CardName,
   EventName,
   EventNameToPlayerId,

@@ -194,10 +194,10 @@ export class RiverDestinationMap {
 
 export const initialRiverDestinationMap = (): RiverDestinationMap => {
   // Choose 2 random CITIZEN, 2 random LOCATION, shuffle, place them.
-  const [a, b, ...restCitizen] = shuffle(
+  const [a, b, ..._restCitizen] = shuffle(
     RiverDestination.byType(RiverDestinationType.CITIZEN)
   );
-  const [c, d, ...restLocation] = shuffle(
+  const [c, d, ..._restLocation] = shuffle(
     RiverDestination.byType(RiverDestinationType.LOCATION)
   );
   const chosenRiverDestinations = shuffle([a, b, c, d]);

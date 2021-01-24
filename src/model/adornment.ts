@@ -13,12 +13,7 @@ import {
   GameStatePlayFn,
   GameStatePlayable,
 } from "./gameState";
-import {
-  toGameText,
-  cardListToGameText,
-  resourceMapToGameText,
-  workerPlacementToGameText,
-} from "./gameText";
+import { toGameText } from "./gameText";
 
 // Pearlbrook Adornment
 export class Adornment implements GameStatePlayable, IGameTextEntity {

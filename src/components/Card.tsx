@@ -1,12 +1,7 @@
 import * as React from "react";
 import { Card as CardModel } from "../model/card";
 import styles from "../styles/card.module.css";
-import {
-  ExpansionType,
-  ResourceType,
-  CardName,
-  PlayedCardInfo,
-} from "../model/types";
+import { ResourceType, CardName, PlayedCardInfo } from "../model/types";
 import { Player } from "../model/player";
 import { resourceMapToGameText, toGameText } from "../model/gameText";
 import {

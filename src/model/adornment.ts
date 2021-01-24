@@ -284,8 +284,23 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
       return Math.floor(numPlayedCritters / 2);
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      const helper = new GainMoreThan1AnyResource({
+        adornmentContext: AdornmentName.KEY_TO_THE_CITY,
+        skipGameLog: false,
+      });
       if (gameInput.inputType === GameInputType.PLAY_ADORNMENT) {
-        throw new Error("Not Implemented");
+        gameState.pendingGameInputs.push(
+          helper.getGameInput(2, {
+            prevInputType: gameInput.inputType,
+          })
+        );
+      } else if (helper.matchesGameInput(gameInput)) {
+        helper.play(gameState, gameInput);
+        const numConstructions = player.getNumPlayedConstructions();
+        player.drawCards(gameState, numConstructions);
+      } else {
+        throw new Error(`Unexpected GameInputType ${gameInput.inputType}`);
       }
     },
   }),

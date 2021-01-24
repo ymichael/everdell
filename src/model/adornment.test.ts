@@ -310,12 +310,58 @@ describe("Adornment", () => {
       player.adornmentsInHand.push(name);
     });
 
-    xit("should have tests", () => {
+    it("should be able to play", () => {
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+      player.addToCity(CardName.FARM);
+      player.addToCity(CardName.POST_OFFICE);
+
+      const selectResourcesInput = {
+        inputType: GameInputType.SELECT_RESOURCES as const,
+        prevInputType: GameInputType.PLAY_ADORNMENT,
+        adornmentContext: name,
+        toSpend: false,
+        maxResources: 2,
+        minResources: 2,
+        clientOptions: {
+          resources: { [ResourceType.BERRY]: 1, [ResourceType.TWIG]: 1 },
+        },
+      };
+
       [player, gameState] = multiStepGameInputTest(gameState, [
         playAdornmentInput(name),
+        selectResourcesInput,
       ]);
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
+      expect(player.cardsInHand.length).to.be(2);
+      expect(player.getPointsFromAdornments(gameState)).to.be(1);
+    });
+
+    it("should calculate points correctly", () => {
+      player.playedAdornments.push(name);
+
+      // worth 0 because no constructions
+      expect(player.getPointsFromAdornments(gameState)).to.be(0);
+
+      player.addToCity(CardName.FARM);
+
+      // still 0 because only 1 construction
+      expect(player.getPointsFromAdornments(gameState)).to.be(0);
+
+      player.addToCity(CardName.MONASTERY);
+      expect(player.getPointsFromAdornments(gameState)).to.be(1);
+
+      player.addToCity(CardName.HUSBAND);
+      expect(player.getPointsFromAdornments(gameState)).to.be(1);
+
+      player.addToCity(CardName.INN);
+      expect(player.getPointsFromAdornments(gameState)).to.be(1);
+
+      player.addToCity(CardName.CASTLE);
+      expect(player.getPointsFromAdornments(gameState)).to.be(2);
     });
   });
 

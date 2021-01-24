@@ -703,37 +703,31 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           throw new Error("Invalid input");
         }
         const targetCard = Card.fromName(selectedCards[0].cardName);
-        targetCard.gainProduction(
-          gameState,
-          gameInput,
-          player,
-          selectedCards[0]
-        );
         gameState.addGameLogFromCard(CardName.CHIP_SWEEP, [
           player,
           " activated ",
           targetCard,
           ".",
         ]);
+        targetCard.gainProduction(
+          gameState,
+          gameInput,
+          player,
+          selectedCards[0]
+        );
       }
     },
     productionInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
-      const cardOptions = player
-        .getAllPlayedCardsByType(CardType.PRODUCTION)
-        .filter(({ cardName }) => {
-          // Filter out useless cards.
-          if (
-            cardName === CardName.HUSBAND &&
-            !(
-              player.hasCardInCity(CardName.WIFE) &&
-              player.hasCardInCity(CardName.FARM)
-            )
-          ) {
-            return false;
-          }
-          return cardName !== CardName.CHIP_SWEEP;
-        });
+      const cardOptions = onlyRelevantProductionCards(
+        gameState,
+        player
+          .getAllPlayedCardsByType(CardType.PRODUCTION)
+          .filter(({ cardName }) => {
+            // Don't let the CHIP_SWEEP copy CHIP_SWEEP
+            return cardName !== CardName.CHIP_SWEEP;
+          })
+      );
       if (cardOptions.length !== 0) {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_PLAYED_CARDS,
@@ -1572,29 +1566,16 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           );
         }
       });
-      const cardOptions = productionPlayedCards.filter((playedCardInfo) => {
-        // Filter out useless cards to copy
-        if (
-          playedCardInfo.cardName === CardName.STOREHOUSE &&
-          playedCardInfo.cardOwnerId !== player.playerId
-        ) {
-          return false;
-        }
-        const cardOwner = gameState.getPlayer(playedCardInfo.cardOwnerId);
-        if (
-          playedCardInfo.cardName === CardName.HUSBAND &&
-          !(
-            cardOwner.hasCardInCity(CardName.WIFE) &&
-            cardOwner.hasCardInCity(CardName.FARM)
-          )
-        ) {
-          return false;
-        }
-        return (
-          playedCardInfo.cardName !== CardName.MINER_MOLE &&
-          playedCardInfo.cardName !== CardName.CHIP_SWEEP
-        );
-      });
+      const cardOptions = onlyRelevantProductionCards(
+        gameState,
+        productionPlayedCards.filter((playedCardInfo) => {
+          // Don't MINER_MOLE MINER_MOLE OR CHIP_SWEEP
+          return (
+            playedCardInfo.cardName !== CardName.MINER_MOLE &&
+            playedCardInfo.cardName !== CardName.CHIP_SWEEP
+          );
+        })
+      );
       if (cardOptions.length !== 0) {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_PLAYED_CARDS,
@@ -3441,4 +3422,55 @@ function gainProductionSpendResourceToGetVPFactory({
       },
     });
   };
+}
+
+export function onlyRelevantProductionCards(
+  gameState: GameState,
+  playedCards: PlayedCardInfo[]
+): PlayedCardInfo[] {
+  const player = gameState.getActivePlayer();
+  return playedCards.filter(({ cardName, cardOwnerId }) => {
+    const cardOwner = gameState.getPlayer(cardOwnerId);
+    if (
+      cardName === CardName.HUSBAND &&
+      !(
+        cardOwner.hasCardInCity(CardName.WIFE) &&
+        cardOwner.hasCardInCity(CardName.FARM)
+      )
+    ) {
+      return false;
+    }
+    if (
+      cardName === CardName.CHIP_SWEEP &&
+      // Activating CHIP_SWEEP is useless if you only have it.
+      // TODO: What if you only have CHIP_SWEEP & MINER_MOLE
+      cardOwner
+        .getAllPlayedCardsByType(CardType.PRODUCTION)
+        .filter(({ cardName }) => cardName !== CardName.CHIP_SWEEP).length === 0
+    ) {
+      return false;
+    }
+    if (cardName === CardName.MINER_MOLE) {
+      let foundCardToCopy = false;
+      gameState.players.forEach((p) => {
+        if (!foundCardToCopy && p.playerId !== cardOwnerId) {
+          foundCardToCopy =
+            p
+              .getAllPlayedCardsByType(CardType.PRODUCTION)
+              .filter(
+                ({ cardName }) =>
+                  cardName !== CardName.CHIP_SWEEP &&
+                  cardName !== CardName.MINER_MOLE
+              ).length !== 0;
+        }
+      });
+      if (!foundCardToCopy) {
+        return false;
+      }
+    }
+    if (cardName === CardName.STOREHOUSE && cardOwnerId !== player.playerId) {
+      return false;
+    }
+    return true;
+  });
 }

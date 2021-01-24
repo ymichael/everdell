@@ -9,6 +9,7 @@ import Card from "../../components/Card";
 import Adornment from "../../components/Adornment";
 import Location from "../../components/Location";
 import Event from "../../components/Event";
+import RiverDestination from "../../components/RiverDestination";
 
 import { Card as CardModel } from "../../model/card";
 import { Location as LocationModel } from "../../model/location";
@@ -19,6 +20,7 @@ import {
   LocationName,
   EventName,
   AdornmentName,
+  RiverDestinationName,
 } from "../../model/types";
 
 const ItemsList: React.FC<{ title: string; visible: boolean }> = ({
@@ -36,6 +38,9 @@ const ItemsList: React.FC<{ title: string; visible: boolean }> = ({
 };
 
 export default function TestPage() {
+  const allRiverDestinations: RiverDestinationName[] = Object.values(
+    RiverDestinationName
+  ) as RiverDestinationName[];
   const allAdornments: AdornmentName[] = Object.values(
     AdornmentName
   ) as AdornmentName[];
@@ -48,6 +53,7 @@ export default function TestPage() {
   const [showPearlbrookOnly, setShowPearlbrookOnly] = useState(false);
   const [showCards, setShowCards] = useState(true);
   const [showAdornments, setShowAdornments] = useState(true);
+  const [showRiverDestinations, setShowRiverDestinations] = useState(true);
   const [showLocations, setShowLocations] = useState(true);
   const [showEvents, setShowEvents] = useState(true);
   const [filter, setFilter] = useState("");
@@ -58,12 +64,18 @@ export default function TestPage() {
     const locationsOnly = params.get("locations");
     const eventsOnly = params.get("events");
     const adornmentsOnly = params.get("adornments");
+    const riverDestinationsOnly = params.get("river");
     const showOneType =
-      cardsOnly || locationsOnly || eventsOnly || adornmentsOnly;
+      cardsOnly ||
+      locationsOnly ||
+      eventsOnly ||
+      adornmentsOnly ||
+      riverDestinationsOnly;
     setShowCards(!!(cardsOnly || !showOneType));
     setShowLocations(!!(locationsOnly || !showOneType));
     setShowEvents(!!(eventsOnly || !showOneType));
     setShowAdornments(!!(adornmentsOnly || !showOneType));
+    setShowRiverDestinations(!!(riverDestinationsOnly || !showOneType));
   }, []);
 
   return (
@@ -170,6 +182,20 @@ export default function TestPage() {
           })
           .map((name) => {
             return <Adornment key={name} name={name} />;
+          })}
+      </ItemsList>
+      <ItemsList title={"River Destinations"} visible={showRiverDestinations}>
+        {allRiverDestinations
+          .filter((x) => {
+            if (filter) {
+              if (x.toLowerCase().indexOf(filter) === -1) {
+                return false;
+              }
+            }
+            return true;
+          })
+          .map((name) => {
+            return <RiverDestination key={name} name={name} />;
           })}
       </ItemsList>
     </div>

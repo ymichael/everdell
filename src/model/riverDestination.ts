@@ -247,66 +247,11 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
     description: toGameText(
       "Reveal and discard 3 PRODUCTION from your hand to gain 1 VP and 1 PEARL."
     ),
-    playInner(gameState: GameState, gameInput: GameInput) {
-      const player = gameState.getActivePlayer();
-      if (gameInput.inputType === GameInputType.VISIT_RIVER_DESTINATION) {
-        const cardOptions = player.cardsInHand.filter((cardName) => {
-          return Card.fromName(cardName).cardType === CardType.PRODUCTION;
-        });
-        if (cardOptions.length < 3) {
-          return;
-        }
-        gameState.pendingGameInputs.push({
-          inputType: GameInputType.SELECT_CARDS,
-          prevInputType: gameInput.inputType,
-          label:
-            "Select 3 PROSPERITY CARD to discard to gain 1 VP and 1 PEARL (or none to skip action)",
-          cardOptions,
-          maxToSelect: 3,
-          minToSelect: 0,
-          riverDestinationContext: RiverDestinationName.GUS_THE_GARDENER,
-          clientOptions: {
-            selectedCards: [],
-          },
-        });
-      } else if (
-        gameInput.inputType === GameInputType.SELECT_CARDS &&
-        gameInput.prevInputType === GameInputType.VISIT_RIVER_DESTINATION &&
-        gameInput.riverDestinationContext ===
-          RiverDestinationName.GUS_THE_GARDENER
-      ) {
-        const selectedCards = gameInput.clientOptions.selectedCards;
-        if (selectedCards.length === 0) {
-          gameState.addGameLogFromRiverDestination(
-            RiverDestinationName.GUS_THE_GARDENER,
-            [player, " declined to discard any CARD."]
-          );
-          return;
-        }
-        if (
-          selectedCards.length !== 3 ||
-          selectedCards.filter((cardName) => {
-            return Card.fromName(cardName).cardType === CardType.PRODUCTION;
-          }).length !== 3
-        ) {
-          throw new Error("Please select 3 PRODUCTION cards to discard");
-        }
-        gameState.addGameLogFromRiverDestination(
-          RiverDestinationName.GUS_THE_GARDENER,
-          [
-            player,
-            " discarded 3 PRODUCTION cards from their hand (",
-            ...cardListToGameText(selectedCards),
-            ") to gain 1 VP and 1 PEARL.",
-          ]
-        );
-        selectedCards.forEach((cardName) => {
-          player.removeCardFromHand(cardName);
-          gameState.discardPile.addToStack(cardName);
-        });
-        player.gainResources({ [ResourceType.PEARL]: 1, [ResourceType.VP]: 1 });
-      }
-    },
+    playInner: discardCardTypeToGainVPAndPearl({
+      name: RiverDestinationName.GUS_THE_GARDENER,
+      cardType: CardType.PRODUCTION,
+      numToDiscard: 3,
+    }),
   }),
   [RiverDestinationName.BOSLEY_THE_ARTIST]: new RiverDestination({
     name: RiverDestinationName.BOSLEY_THE_ARTIST,
@@ -325,6 +270,11 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
     description: toGameText(
       "Reveal and discard 2 GOVERNANCE from your hand to gain 1 VP and 1 PEARL."
     ),
+    playInner: discardCardTypeToGainVPAndPearl({
+      name: RiverDestinationName.CRUSTINA_THE_CONSTABLE,
+      cardType: CardType.GOVERNANCE,
+      numToDiscard: 2,
+    }),
   }),
   [RiverDestinationName.ILUMINOR_THE_INVENTOR]: new RiverDestination({
     name: RiverDestinationName.ILUMINOR_THE_INVENTOR,
@@ -333,6 +283,11 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
     description: toGameText(
       "Reveal and discard 2 TRAVELER from your hand to gain 1 VP and 1 PEARL."
     ),
+    playInner: discardCardTypeToGainVPAndPearl({
+      name: RiverDestinationName.ILUMINOR_THE_INVENTOR,
+      cardType: CardType.TRAVELER,
+      numToDiscard: 2,
+    }),
   }),
   [RiverDestinationName.SNOUT_THE_EXPLORER]: new RiverDestination({
     name: RiverDestinationName.SNOUT_THE_EXPLORER,
@@ -341,6 +296,11 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
     description: toGameText(
       "Reveal and discard 2 DESTINATION from your hand to gain 1 VP and 1 PEARL."
     ),
+    playInner: discardCardTypeToGainVPAndPearl({
+      name: RiverDestinationName.SNOUT_THE_EXPLORER,
+      cardType: CardType.DESTINATION,
+      numToDiscard: 2,
+    }),
   }),
   [RiverDestinationName.OMICRON_THE_ELDER]: new RiverDestination({
     name: RiverDestinationName.OMICRON_THE_ELDER,
@@ -349,6 +309,11 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
     description: toGameText(
       "Reveal and discard 1 PROSPERITY from your hand to gain 1 VP and 1 PEARL."
     ),
+    playInner: discardCardTypeToGainVPAndPearl({
+      name: RiverDestinationName.OMICRON_THE_ELDER,
+      cardType: CardType.PROSPERITY,
+      numToDiscard: 1,
+    }),
   }),
   [RiverDestinationName.BALLROOM]: new RiverDestination({
     name: RiverDestinationName.BALLROOM,
@@ -399,3 +364,69 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
     ),
   }),
 };
+
+function discardCardTypeToGainVPAndPearl({
+  name,
+  cardType,
+  numToDiscard,
+}: {
+  name: RiverDestinationName;
+  cardType: CardType;
+  numToDiscard: number;
+}): GameStatePlayFn {
+  return (gameState: GameState, gameInput: GameInput) => {
+    const player = gameState.getActivePlayer();
+    if (gameInput.inputType === GameInputType.VISIT_RIVER_DESTINATION) {
+      const cardOptions = player.cardsInHand.filter((cardName) => {
+        return Card.fromName(cardName).cardType === cardType;
+      });
+      if (cardOptions.length < numToDiscard) {
+        return;
+      }
+      gameState.pendingGameInputs.push({
+        inputType: GameInputType.SELECT_CARDS,
+        prevInputType: gameInput.inputType,
+        label: `Select 3 ${CardType} CARD to discard to gain 1 VP and 1 PEARL (or none to skip action)`,
+        cardOptions,
+        maxToSelect: numToDiscard,
+        minToSelect: 0,
+        riverDestinationContext: name,
+        clientOptions: {
+          selectedCards: [],
+        },
+      });
+    } else if (
+      gameInput.inputType === GameInputType.SELECT_CARDS &&
+      gameInput.prevInputType === GameInputType.VISIT_RIVER_DESTINATION &&
+      gameInput.riverDestinationContext === name
+    ) {
+      const selectedCards = gameInput.clientOptions.selectedCards;
+      if (selectedCards.length === 0) {
+        gameState.addGameLogFromRiverDestination(name, [
+          player,
+          " declined to discard any CARD.",
+        ]);
+        return;
+      }
+      if (
+        selectedCards.length !== 3 ||
+        selectedCards.filter((cardName) => {
+          return Card.fromName(cardName).cardType === cardType;
+        }).length !== 3
+      ) {
+        throw new Error(`Please select 3 ${cardType} cards to discard`);
+      }
+      gameState.addGameLogFromRiverDestination(name, [
+        player,
+        ` discarded 3 ${cardType} cards from their hand (`,
+        ...cardListToGameText(selectedCards),
+        ") to gain 1 VP and 1 PEARL.",
+      ]);
+      selectedCards.forEach((cardName) => {
+        player.removeCardFromHand(cardName);
+        gameState.discardPile.addToStack(cardName);
+      });
+      player.gainResources({ [ResourceType.PEARL]: 1, [ResourceType.VP]: 1 });
+    }
+  };
+}

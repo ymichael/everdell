@@ -1845,4 +1845,378 @@ describe("Event", () => {
       }).to.throwException(/cannot give/i);
     });
   });
+
+  describe(EventName.WONDER_HOPEWATCH_GATE, () => {
+    it("should allow player to claim wonder", () => {
+      const event = Event.fromName(EventName.WONDER_HOPEWATCH_GATE);
+      gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
+      player = gameState.getActivePlayer();
+      const gameInput = claimEventInput(event.name);
+
+      player.gainResources({
+        [ResourceType.TWIG]: 1,
+        [ResourceType.RESIN]: 1,
+        [ResourceType.PEBBLE]: 1,
+        [ResourceType.PEARL]: 2,
+      });
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.INN);
+      player.addCardToHand(gameState, CardName.WIFE);
+      player.addCardToHand(gameState, CardName.POSTAL_PIGEON);
+
+      expect(event.canPlay(gameState, gameInput)).to.be(true);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        gameInput,
+        {
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          eventContext: EventName.WONDER_HOPEWATCH_GATE,
+          cardOptions: [
+            CardName.FARM,
+            CardName.INN,
+            CardName.WIFE,
+            CardName.POSTAL_PIGEON,
+          ],
+          maxToSelect: 2,
+          minToSelect: 2,
+          clientOptions: {
+            selectedCards: [CardName.FARM, CardName.INN],
+          },
+        },
+      ]);
+
+      expect(event.canPlay(gameState, gameInput)).to.be(false);
+      expect(player.getPoints(gameState)).to.be(10);
+      expect(player.cardsInHand.length).to.be(2);
+      expect(player.cardsInHand).to.eql([
+        CardName.WIFE,
+        CardName.POSTAL_PIGEON,
+      ]);
+    });
+
+    it("can't claim if you don't have enough resources", () => {
+      const event = Event.fromName(EventName.WONDER_HOPEWATCH_GATE);
+      gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
+      player = gameState.getActivePlayer();
+      const gameInput = claimEventInput(event.name);
+
+      player.gainResources({
+        [ResourceType.TWIG]: 1,
+        [ResourceType.RESIN]: 1,
+        [ResourceType.PEBBLE]: 1,
+        [ResourceType.PEARL]: 1,
+      });
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.INN);
+      player.addCardToHand(gameState, CardName.WIFE);
+      player.addCardToHand(gameState, CardName.POSTAL_PIGEON);
+
+      expect(event.canPlay(gameState, gameInput)).to.be(false);
+      expect(() => {
+        gameState.next(gameInput);
+      }).to.throwException(/enough resources/i);
+    });
+
+    it("can't claim if you don't have enough cards", () => {
+      const event = Event.fromName(EventName.WONDER_HOPEWATCH_GATE);
+      gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
+      player = gameState.getActivePlayer();
+      const gameInput = claimEventInput(event.name);
+
+      player.gainResources({
+        [ResourceType.TWIG]: 1,
+        [ResourceType.RESIN]: 1,
+        [ResourceType.PEBBLE]: 1,
+        [ResourceType.PEARL]: 2,
+      });
+      player.addCardToHand(gameState, CardName.FARM);
+
+      expect(event.canPlay(gameState, gameInput)).to.be(false);
+      expect(() => {
+        gameState.next(gameInput);
+      }).to.throwException(/enough cards/i);
+    });
+  });
+
+  describe(EventName.WONDER_MISTRISE_FOUNTAIN, () => {
+    it("should allow player to claim wonder", () => {
+      const event = Event.fromName(EventName.WONDER_MISTRISE_FOUNTAIN);
+      gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
+      player = gameState.getActivePlayer();
+      const gameInput = claimEventInput(event.name);
+
+      player.gainResources({
+        [ResourceType.TWIG]: 2,
+        [ResourceType.RESIN]: 2,
+        [ResourceType.PEBBLE]: 2,
+        [ResourceType.PEARL]: 2,
+      });
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.INN);
+      player.addCardToHand(gameState, CardName.WIFE);
+      player.addCardToHand(gameState, CardName.POSTAL_PIGEON);
+
+      expect(event.canPlay(gameState, gameInput)).to.be(true);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        gameInput,
+        {
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          eventContext: EventName.WONDER_MISTRISE_FOUNTAIN,
+          cardOptions: [
+            CardName.FARM,
+            CardName.INN,
+            CardName.WIFE,
+            CardName.POSTAL_PIGEON,
+          ],
+          maxToSelect: 2,
+          minToSelect: 2,
+          clientOptions: {
+            selectedCards: [CardName.FARM, CardName.INN],
+          },
+        },
+      ]);
+
+      expect(event.canPlay(gameState, gameInput)).to.be(false);
+      expect(player.getPoints(gameState)).to.be(15);
+      expect(player.cardsInHand.length).to.be(2);
+      expect(player.cardsInHand).to.eql([
+        CardName.WIFE,
+        CardName.POSTAL_PIGEON,
+      ]);
+    });
+
+    it("can't claim if you don't have enough resources", () => {
+      const event = Event.fromName(EventName.WONDER_MISTRISE_FOUNTAIN);
+      gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
+      player = gameState.getActivePlayer();
+      const gameInput = claimEventInput(event.name);
+
+      player.gainResources({
+        [ResourceType.TWIG]: 2,
+        [ResourceType.RESIN]: 1,
+        [ResourceType.PEBBLE]: 2,
+        [ResourceType.PEARL]: 2,
+      });
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.INN);
+      player.addCardToHand(gameState, CardName.WIFE);
+      player.addCardToHand(gameState, CardName.POSTAL_PIGEON);
+
+      expect(event.canPlay(gameState, gameInput)).to.be(false);
+      expect(() => {
+        gameState.next(gameInput);
+      }).to.throwException(/enough resources/i);
+    });
+
+    it("can't claim if you don't have enough cards", () => {
+      const event = Event.fromName(EventName.WONDER_MISTRISE_FOUNTAIN);
+      gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
+      player = gameState.getActivePlayer();
+      const gameInput = claimEventInput(event.name);
+
+      player.gainResources({
+        [ResourceType.TWIG]: 2,
+        [ResourceType.RESIN]: 2,
+        [ResourceType.PEBBLE]: 2,
+        [ResourceType.PEARL]: 2,
+      });
+      player.addCardToHand(gameState, CardName.FARM);
+
+      expect(event.canPlay(gameState, gameInput)).to.be(false);
+      expect(() => {
+        gameState.next(gameInput);
+      }).to.throwException(/enough cards/i);
+    });
+  });
+
+  describe(EventName.WONDER_SUNBLAZE_BRIDGE, () => {
+    it("should allow player to claim wonder", () => {
+      const event = Event.fromName(EventName.WONDER_SUNBLAZE_BRIDGE);
+      gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
+      player = gameState.getActivePlayer();
+      const gameInput = claimEventInput(event.name);
+
+      player.gainResources({
+        [ResourceType.TWIG]: 2,
+        [ResourceType.RESIN]: 2,
+        [ResourceType.PEBBLE]: 2,
+        [ResourceType.PEARL]: 3,
+      });
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.INN);
+      player.addCardToHand(gameState, CardName.WIFE);
+      player.addCardToHand(gameState, CardName.POSTAL_PIGEON);
+
+      expect(event.canPlay(gameState, gameInput)).to.be(true);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        gameInput,
+        {
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          eventContext: EventName.WONDER_SUNBLAZE_BRIDGE,
+          cardOptions: [
+            CardName.FARM,
+            CardName.INN,
+            CardName.WIFE,
+            CardName.POSTAL_PIGEON,
+          ],
+          maxToSelect: 3,
+          minToSelect: 3,
+          clientOptions: {
+            selectedCards: [
+              CardName.FARM,
+              CardName.INN,
+              CardName.POSTAL_PIGEON,
+            ],
+          },
+        },
+      ]);
+
+      expect(event.canPlay(gameState, gameInput)).to.be(false);
+      expect(player.getPoints(gameState)).to.be(20);
+      expect(player.cardsInHand.length).to.be(1);
+      expect(player.cardsInHand).to.eql([CardName.WIFE]);
+    });
+
+    it("can't claim if you don't have enough resources", () => {
+      const event = Event.fromName(EventName.WONDER_SUNBLAZE_BRIDGE);
+      gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
+      player = gameState.getActivePlayer();
+      const gameInput = claimEventInput(event.name);
+
+      player.gainResources({
+        [ResourceType.TWIG]: 2,
+        [ResourceType.RESIN]: 1,
+        [ResourceType.PEBBLE]: 2,
+        [ResourceType.PEARL]: 2,
+      });
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.INN);
+      player.addCardToHand(gameState, CardName.WIFE);
+      player.addCardToHand(gameState, CardName.POSTAL_PIGEON);
+
+      expect(event.canPlay(gameState, gameInput)).to.be(false);
+      expect(() => {
+        gameState.next(gameInput);
+      }).to.throwException(/enough resources/i);
+    });
+
+    it("can't claim if you don't have enough cards", () => {
+      const event = Event.fromName(EventName.WONDER_SUNBLAZE_BRIDGE);
+      gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
+      player = gameState.getActivePlayer();
+      const gameInput = claimEventInput(event.name);
+
+      player.gainResources({
+        [ResourceType.TWIG]: 2,
+        [ResourceType.RESIN]: 2,
+        [ResourceType.PEBBLE]: 2,
+        [ResourceType.PEARL]: 3,
+      });
+      player.addCardToHand(gameState, CardName.FARM);
+
+      expect(event.canPlay(gameState, gameInput)).to.be(false);
+      expect(() => {
+        gameState.next(gameInput);
+      }).to.throwException(/enough cards/i);
+    });
+  });
+
+  describe(EventName.WONDER_STARFALLS_FLAME, () => {
+    it("should allow player to claim wonder", () => {
+      const event = Event.fromName(EventName.WONDER_STARFALLS_FLAME);
+      gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
+      player = gameState.getActivePlayer();
+      const gameInput = claimEventInput(event.name);
+
+      player.gainResources({
+        [ResourceType.TWIG]: 3,
+        [ResourceType.RESIN]: 3,
+        [ResourceType.PEBBLE]: 3,
+        [ResourceType.PEARL]: 3,
+      });
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.INN);
+      player.addCardToHand(gameState, CardName.WIFE);
+      player.addCardToHand(gameState, CardName.POSTAL_PIGEON);
+
+      expect(event.canPlay(gameState, gameInput)).to.be(true);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        gameInput,
+        {
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          eventContext: EventName.WONDER_STARFALLS_FLAME,
+          cardOptions: [
+            CardName.FARM,
+            CardName.INN,
+            CardName.WIFE,
+            CardName.POSTAL_PIGEON,
+          ],
+          maxToSelect: 3,
+          minToSelect: 3,
+          clientOptions: {
+            selectedCards: [
+              CardName.FARM,
+              CardName.INN,
+              CardName.POSTAL_PIGEON,
+            ],
+          },
+        },
+      ]);
+
+      expect(event.canPlay(gameState, gameInput)).to.be(false);
+      expect(player.getPoints(gameState)).to.be(25);
+      expect(player.cardsInHand.length).to.be(1);
+      expect(player.cardsInHand).to.eql([CardName.WIFE]);
+    });
+
+    it("can't claim if you don't have enough resources", () => {
+      const event = Event.fromName(EventName.WONDER_STARFALLS_FLAME);
+      gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
+      player = gameState.getActivePlayer();
+      const gameInput = claimEventInput(event.name);
+
+      player.gainResources({
+        [ResourceType.TWIG]: 2,
+        [ResourceType.RESIN]: 1,
+        [ResourceType.PEBBLE]: 2,
+        [ResourceType.PEARL]: 2,
+      });
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.INN);
+      player.addCardToHand(gameState, CardName.WIFE);
+      player.addCardToHand(gameState, CardName.POSTAL_PIGEON);
+
+      expect(event.canPlay(gameState, gameInput)).to.be(false);
+      expect(() => {
+        gameState.next(gameInput);
+      }).to.throwException(/enough resources/i);
+    });
+
+    it("can't claim if you don't have enough cards", () => {
+      const event = Event.fromName(EventName.WONDER_STARFALLS_FLAME);
+      gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
+      player = gameState.getActivePlayer();
+      const gameInput = claimEventInput(event.name);
+
+      player.gainResources({
+        [ResourceType.TWIG]: 3,
+        [ResourceType.RESIN]: 3,
+        [ResourceType.PEBBLE]: 3,
+        [ResourceType.PEARL]: 3,
+      });
+      player.addCardToHand(gameState, CardName.FARM);
+
+      expect(event.canPlay(gameState, gameInput)).to.be(false);
+      expect(() => {
+        gameState.next(gameInput);
+      }).to.throwException(/enough cards/i);
+    });
+  });
 });

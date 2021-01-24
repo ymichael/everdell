@@ -258,6 +258,7 @@ export enum LocationType {
 export enum EventType {
   BASIC = "BASIC",
   SPECIAL = "SPECIAL",
+  WONDER = "WONDER",
 }
 
 export enum LocationName {
@@ -318,13 +319,19 @@ export enum EventName {
   SPECIAL_PRISTINE_CHAPEL_CEILING = "Pristine Chapel Ceiling",
   SPECIAL_THE_EVERDELL_GAMES = "The Everdell Games",
 
-  // Pearlbrook events.
+  // Pearlbrook events
   SPECIAL_ROMANTIC_CRUISE = "Romantic Cruise",
   SPECIAL_X_MARKS_THE_SPOT = "X Marks the Spot",
   SPECIAL_RIVERSIDE_RESORT = "Riverside Resort",
   SPECIAL_MASQUERADE_INVITATIONS = "Masquerade Invitations",
   SPECIAL_SUNKEN_TREASURE_DISCOVERED = "Sunken Treasure Discovered",
   SPECIAL_RIVER_RACE = "River Race",
+
+  // Pearlbrook Wonders
+  WONDER_SUNBLAZE_BRIDGE = "Sunblaze Bridge",
+  WONDER_STARFALLS_FLAME = "Starfalls flame",
+  WONDER_HOPEWATCH_GATE = "Hopewatch Gate",
+  WONDER_MISTRISE_FOUNTAIN = "Mistrise Fountain",
 }
 
 export type LocationNameToPlayerIds = Partial<
@@ -487,10 +494,13 @@ export type CardCost = {
 };
 
 export type WonderCost = {
-  [ResourceType.TWIG]: number;
-  [ResourceType.PEBBLE]: number;
-  [ResourceType.RESIN]: number;
-  [ResourceType.PEARL]: number;
+  resources: {
+    [ResourceType.TWIG]: number;
+    [ResourceType.PEBBLE]: number;
+    [ResourceType.RESIN]: number;
+    [ResourceType.PEARL]: number;
+  };
+  numCardsToDiscard: number;
 };
 
 export enum PlayerStatus {

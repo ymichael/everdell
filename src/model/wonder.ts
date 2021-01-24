@@ -70,13 +70,14 @@ export class Wonder implements GameStatePlayable, IGameTextEntity {
       // check resources
       const playerResources = player.getResources();
       let canAfford = true;
-      (Object.entries(this.baseCost) as [keyof WonderCost, number][]).forEach(
-        ([resourceType, needed]) => {
-          if (needed > playerResources[resourceType]) {
-            canAfford = false;
-          }
-        }
-      );
+      // (Object.entries(this.baseCost.resources) as [
+      //   keyof ResourceType,
+      //   number
+      // ][]).forEach(([resourceType, needed]) => {
+      //   if (needed > playerResources[resourceType]) {
+      //     canAfford = false;
+      //   }
+      // });
 
       if (!canAfford) {
         return `Cannot afford this wonder (not enough resources)`;
@@ -121,7 +122,7 @@ export class Wonder implements GameStatePlayable, IGameTextEntity {
       }
 
       // player spends resources
-      player.spendResources(this.baseCost);
+      player.spendResources(this.baseCost.resources);
 
       // remove the cards from player's hand
       selectedCards.forEach((cardName) => {
@@ -152,10 +153,13 @@ const WONDER_REGISTRY: Record<WonderName, Wonder> = {
     ]),
     baseVP: 20,
     baseCost: {
-      [ResourceType.TWIG]: 2,
-      [ResourceType.RESIN]: 2,
-      [ResourceType.PEBBLE]: 2,
-      [ResourceType.PEARL]: 3,
+      resources: {
+        [ResourceType.TWIG]: 2,
+        [ResourceType.RESIN]: 2,
+        [ResourceType.PEBBLE]: 2,
+        [ResourceType.PEARL]: 3,
+      },
+      numCardsToDiscard: 3,
     },
     numCardsToDiscard: 3,
   }),
@@ -166,10 +170,13 @@ const WONDER_REGISTRY: Record<WonderName, Wonder> = {
     ]),
     baseVP: 25,
     baseCost: {
-      [ResourceType.TWIG]: 3,
-      [ResourceType.RESIN]: 3,
-      [ResourceType.PEBBLE]: 3,
-      [ResourceType.PEARL]: 3,
+      resources: {
+        [ResourceType.TWIG]: 3,
+        [ResourceType.RESIN]: 3,
+        [ResourceType.PEBBLE]: 3,
+        [ResourceType.PEARL]: 3,
+      },
+      numCardsToDiscard: 3,
     },
     numCardsToDiscard: 3,
   }),
@@ -180,10 +187,13 @@ const WONDER_REGISTRY: Record<WonderName, Wonder> = {
     ]),
     baseVP: 10,
     baseCost: {
-      [ResourceType.TWIG]: 1,
-      [ResourceType.RESIN]: 1,
-      [ResourceType.PEBBLE]: 1,
-      [ResourceType.PEARL]: 2,
+      resources: {
+        [ResourceType.TWIG]: 1,
+        [ResourceType.RESIN]: 1,
+        [ResourceType.PEBBLE]: 1,
+        [ResourceType.PEARL]: 2,
+      },
+      numCardsToDiscard: 2,
     },
     numCardsToDiscard: 2,
   }),
@@ -194,10 +204,13 @@ const WONDER_REGISTRY: Record<WonderName, Wonder> = {
     ]),
     baseVP: 15,
     baseCost: {
-      [ResourceType.TWIG]: 2,
-      [ResourceType.RESIN]: 2,
-      [ResourceType.PEBBLE]: 2,
-      [ResourceType.PEARL]: 2,
+      resources: {
+        [ResourceType.TWIG]: 2,
+        [ResourceType.RESIN]: 2,
+        [ResourceType.PEBBLE]: 2,
+        [ResourceType.PEARL]: 2,
+      },
+      numCardsToDiscard: 2,
     },
     numCardsToDiscard: 2,
   }),

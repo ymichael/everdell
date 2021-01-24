@@ -74,13 +74,18 @@ export class Wonder implements GameStatePlayable, IGameTextEntity {
 
       // check resources
       const playerResources = player.getResources();
+      let canAfford = true;
       (Object.entries(this.baseCost) as [keyof WonderCost, number][]).forEach(
         ([resourceType, needed]) => {
           if (needed > playerResources[resourceType]) {
-            return `You need to spend at least ${needed} ${resourceType} to claim this wonder`;
+            canAfford = false;
           }
         }
       );
+
+      if (!canAfford) {
+        return `Cannot afford this wonder (not enough resources)`;
+      }
 
       // check cards
       if (player.cardsInHand.length < this.numCardsToDiscard) {
@@ -150,7 +155,7 @@ const WONDER_REGISTRY: Record<WonderName, Wonder> = {
     description: toGameText([
       "Pay 2 TWIG, 2 RESIN, 2 PEBBLE, 3 PEARL, and discard 3 CARD.",
     ]),
-    baseVP: 10,
+    baseVP: 20,
     baseCost: {
       [ResourceType.TWIG]: 2,
       [ResourceType.RESIN]: 2,
@@ -164,7 +169,7 @@ const WONDER_REGISTRY: Record<WonderName, Wonder> = {
     description: toGameText([
       "Pay 3 TWIG, 3 RESIN, 3 PEBBLE, 3 PEARL, and discard 3 CARD.",
     ]),
-    baseVP: 15,
+    baseVP: 25,
     baseCost: {
       [ResourceType.TWIG]: 3,
       [ResourceType.RESIN]: 3,
@@ -178,7 +183,7 @@ const WONDER_REGISTRY: Record<WonderName, Wonder> = {
     description: toGameText([
       "Pay 1 TWIG, 1 RESIN, 1 PEBBLE, 2 PEARL, and discard 2 CARD.",
     ]),
-    baseVP: 20,
+    baseVP: 10,
     baseCost: {
       [ResourceType.TWIG]: 1,
       [ResourceType.RESIN]: 1,
@@ -192,7 +197,7 @@ const WONDER_REGISTRY: Record<WonderName, Wonder> = {
     description: toGameText([
       "Pay 2 TWIG, 2 RESIN, 2 PEBBLE, 2 PEARL, and discard 2 CARD.",
     ]),
-    baseVP: 25,
+    baseVP: 15,
     baseCost: {
       [ResourceType.TWIG]: 2,
       [ResourceType.RESIN]: 2,

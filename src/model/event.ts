@@ -1555,7 +1555,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       { type: "HR" },
       "If ",
       { type: "entity", entityType: "card", card: CardName.FERRY_FERRET },
-      ", gain 2 VP.",
+      ", gain 2 VP",
       { type: "BR" },
       "If ",
       { type: "entity", entityType: "card", card: CardName.TWIG_BARGE },

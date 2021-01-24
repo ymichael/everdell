@@ -1,3 +1,25 @@
+.spot {
+  padding: 10px;
+}
+
+.spot_name {
+  align-items: center;
+  font-size: 12px;
+  line-height: 1.5em;
+  text-transform: uppercase;
+  font-weight: var(--font-bold);
+  text-align: center;
+}
+
+.hidden_item {
+  align-items: center;
+  font-size: 12px;
+  line-height: 1.5em;
+  padding: 20px;
+  text-align: center;
+}
+
+.hidden_item,
 .item {
   min-height: 140px;
   width: 240px;
@@ -16,8 +38,8 @@
   font-weight: var(--font-bold);
   background-color: #1891a2;
   color: #020d0e;
-  height: 40px;
-  font-size: 14px;
+  height: 35px;
+  font-size: 12px;
   padding: 8px;
   text-align: center;
   text-transform: uppercase;

@@ -79,18 +79,34 @@ export const gameTextToDebugStr = (gameText: GameText): string => {
           return part.name;
         case "entity":
           if (part.entityType === "event") {
-            return gameTextToDebugStr(
-              Event.fromName(part.event).getShortName()
-            );
+            return gameTextToDebugStr([
+              Event.fromName(part.event).getGameTextPart(),
+            ]);
           }
           if (part.entityType === "location") {
-            return gameTextToDebugStr(
-              Location.fromName(part.location).shortName
-            );
+            return gameTextToDebugStr([
+              Location.fromName(part.location).getGameTextPart(),
+            ]);
           }
           if (part.entityType === "card") {
             return part.card;
           }
+          if (part.entityType === "adornment") {
+            return part.adornment;
+          }
+          if (part.entityType === "riverDestination") {
+            return gameTextToDebugStr([
+              RiverDestination.fromName(
+                part.riverDestination
+              ).getGameTextPart(),
+            ]);
+          }
+          if (part.entityType === "riverDestinationSpot") {
+            return gameTextToDebugStr(
+              RiverDestinationMap.getSpotGameText(part.spot)
+            );
+          }
+          assertUnreachable(part, `Unexpected part: ${JSON.stringify(part)}`);
           break;
         default:
           assertUnreachable(part, `Unexpected part: ${JSON.stringify(part)}`);

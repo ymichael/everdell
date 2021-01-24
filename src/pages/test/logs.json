@@ -20,7 +20,7 @@
   [
     {
       "type": "player",
-      "playerId": "txwJwbFsEKVz1WCM21r96e",
+      "playerId": "n3BtYXe24v9omWvub8fF3E",
       "name": "Player #0"
     },
     {
@@ -30,7 +30,7 @@
     {
       "type": "entity",
       "entityType": "adornment",
-      "adornment": "Bell"
+      "adornment": "Spyglass"
     },
     {
       "type": "text",
@@ -49,7 +49,7 @@
     },
     {
       "type": "player",
-      "playerId": "m9ibUnTLPAgbuZRWMWnNTn",
+      "playerId": "n3BtYXe24v9omWvub8fF3E",
       "name": "Player #0"
     },
     {
@@ -83,6 +83,46 @@
   ],
   [
     {
+      "type": "player",
+      "playerId": "kFeMbz3ri6FSjMc2hudJ57",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Bell"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "6rBixeCpXn2JPo9NohQZwi",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Hourglass"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
       "type": "entity",
       "entityType": "adornment",
       "adornment": "Hourglass"
@@ -93,7 +133,7 @@
     },
     {
       "type": "player",
-      "playerId": "ovjxN3ZtuX4r2wHNRrxGGx",
+      "playerId": "6rBixeCpXn2JPo9NohQZwi",
       "name": "Player #0"
     },
     {
@@ -122,7 +162,7 @@
     },
     {
       "type": "player",
-      "playerId": "ovjxN3ZtuX4r2wHNRrxGGx",
+      "playerId": "6rBixeCpXn2JPo9NohQZwi",
       "name": "Player #0"
     },
     {
@@ -141,7 +181,59 @@
   [
     {
       "type": "player",
-      "playerId": "8BeMawFCLicuvSRwg2qeTn",
+      "playerId": "wnpSGxPAsudKuqGJeFFzLL",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Tiara"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Tiara"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "uZkwRc6TWrEvy48a1j3NHd",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gained "
+    },
+    {
+      "type": "text",
+      "text": "2 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "BERRY"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "1FXmYViMkdt4cm9Gg6AqRk",
       "name": "Player #0"
     },
     {
@@ -170,7 +262,7 @@
     },
     {
       "type": "player",
-      "playerId": "8BeMawFCLicuvSRwg2qeTn",
+      "playerId": "1FXmYViMkdt4cm9Gg6AqRk",
       "name": "Player #0"
     },
     {
@@ -198,7 +290,7 @@
     },
     {
       "type": "player",
-      "playerId": "9t4vmzwb1iN6jHNvzz8JJT",
+      "playerId": "j9tn3RcaZ7N5Qv4UXz2Rg1",
       "name": "Player #0"
     },
     {
@@ -234,7 +326,7 @@
     },
     {
       "type": "player",
-      "playerId": "rzYGBCP3AsUEGZX53aFzqs",
+      "playerId": "5X9CX1SHnRfT7A1iVikdqc",
       "name": "Player #0"
     },
     {
@@ -261,7 +353,7 @@
   [
     {
       "type": "player",
-      "playerId": "uuGnavKjw1vwH5GPCgR6cc",
+      "playerId": "uWozXfkSJd3uxnFJmLWhf7",
       "name": "Player #0"
     },
     {
@@ -281,7 +373,7 @@
   [
     {
       "type": "player",
-      "playerId": "dXzpxaKLb8BbwdvMof3jya",
+      "playerId": "5xFfuhh2LPGZX7AWzANhFA",
       "name": "Player #0"
     },
     {
@@ -310,7 +402,7 @@
     },
     {
       "type": "player",
-      "playerId": "dXzpxaKLb8BbwdvMof3jya",
+      "playerId": "5xFfuhh2LPGZX7AWzANhFA",
       "name": "Player #0"
     },
     {
@@ -366,7 +458,7 @@
     },
     {
       "type": "player",
-      "playerId": "dXzpxaKLb8BbwdvMof3jya",
+      "playerId": "5xFfuhh2LPGZX7AWzANhFA",
       "name": "Player #0"
     },
     {
@@ -395,7 +487,7 @@
     },
     {
       "type": "player",
-      "playerId": "3gmFr1BF6UyRqubsQA7Etr",
+      "playerId": "8tKFMKekJNaorBFi2rZLPn",
       "name": "Player #0"
     },
     {
@@ -442,7 +534,7 @@
   [
     {
       "type": "player",
-      "playerId": "k13g7M2bGnogZrZkWmpUgd",
+      "playerId": "dvMXNYHzrL6nhNFSbNXM1L",
       "name": "Player #0"
     },
     {
@@ -462,7 +554,7 @@
   [
     {
       "type": "player",
-      "playerId": "8VviTpG6TjVnHDq1cLKAzp",
+      "playerId": "mxKaszSyed1ZsLqiDr4DYb",
       "name": "Player #0"
     },
     {
@@ -491,7 +583,7 @@
     },
     {
       "type": "player",
-      "playerId": "9JL2ZuQYSWNNCsbxQXL5Jv",
+      "playerId": "mFHcncMTqsMQEFFAAAEfko",
       "name": "Player #0"
     },
     {
@@ -523,7 +615,7 @@
     },
     {
       "type": "player",
-      "playerId": "9JL2ZuQYSWNNCsbxQXL5Jv",
+      "playerId": "mFHcncMTqsMQEFFAAAEfko",
       "name": "Player #0"
     },
     {
@@ -552,7 +644,7 @@
     },
     {
       "type": "player",
-      "playerId": "9PmL7mx2Eq5nzeNfi7oQQZ",
+      "playerId": "vYg7AgdUggtau2VBpEwDqQ",
       "name": "Player #0"
     },
     {
@@ -584,7 +676,7 @@
     },
     {
       "type": "player",
-      "playerId": "9PmL7mx2Eq5nzeNfi7oQQZ",
+      "playerId": "vYg7AgdUggtau2VBpEwDqQ",
       "name": "Player #0"
     },
     {
@@ -604,7 +696,7 @@
   [
     {
       "type": "player",
-      "playerId": "deFCZ9iwbm1X82XshnSEhZ",
+      "playerId": "7ZvwwdJJeav88D7CQwGzJ3",
       "name": "Player #0"
     },
     {
@@ -623,7 +715,7 @@
     },
     {
       "type": "player",
-      "playerId": "deFCZ9iwbm1X82XshnSEhZ",
+      "playerId": "7ZvwwdJJeav88D7CQwGzJ3",
       "name": "Player #0"
     },
     {
@@ -650,7 +742,7 @@
     },
     {
       "type": "player",
-      "playerId": "deFCZ9iwbm1X82XshnSEhZ",
+      "playerId": "7ZvwwdJJeav88D7CQwGzJ3",
       "name": "Player #0"
     },
     {
@@ -669,7 +761,7 @@
     },
     {
       "type": "player",
-      "playerId": "deFCZ9iwbm1X82XshnSEhZ",
+      "playerId": "7ZvwwdJJeav88D7CQwGzJ3",
       "name": "Player #0"
     },
     {
@@ -697,7 +789,7 @@
     },
     {
       "type": "player",
-      "playerId": "re71BXigy7JpLUgUJTxCbR",
+      "playerId": "wrgpY5Zhqvbm466FeNmYxa",
       "name": "Player #0"
     },
     {
@@ -734,7 +826,7 @@
     },
     {
       "type": "player",
-      "playerId": "re71BXigy7JpLUgUJTxCbR",
+      "playerId": "wrgpY5Zhqvbm466FeNmYxa",
       "name": "Player #0"
     },
     {
@@ -766,7 +858,7 @@
     },
     {
       "type": "player",
-      "playerId": "ccAjcrU4tMLrvGw3cp1HF8",
+      "playerId": "1QuWx2P4aVfsZxDDyRy8j6",
       "name": "Player #0"
     },
     {
@@ -803,7 +895,7 @@
     },
     {
       "type": "player",
-      "playerId": "ccAjcrU4tMLrvGw3cp1HF8",
+      "playerId": "1QuWx2P4aVfsZxDDyRy8j6",
       "name": "Player #0"
     },
     {
@@ -831,7 +923,7 @@
     },
     {
       "type": "player",
-      "playerId": "ccAjcrU4tMLrvGw3cp1HF8",
+      "playerId": "1QuWx2P4aVfsZxDDyRy8j6",
       "name": "Player #0"
     },
     {
@@ -848,7 +940,7 @@
     },
     {
       "type": "player",
-      "playerId": "dqEyNYYpdEv1kVbJ1VrKN6",
+      "playerId": "3F5Fdtxqapo3EKhx8gdSWL",
       "name": "Player #1"
     },
     {
@@ -859,7 +951,7 @@
   [
     {
       "type": "player",
-      "playerId": "jfQ8BML8uP38FocAPTptjY",
+      "playerId": "craDE2Sa7yFa77gQiz61vL",
       "name": "Player #0"
     },
     {
@@ -879,7 +971,7 @@
   [
     {
       "type": "player",
-      "playerId": "tWudAjcKtwXZj4NapJWY22",
+      "playerId": "imGrwPknjAR3Z7ee5PRKg8",
       "name": "Player #0"
     },
     {
@@ -908,7 +1000,7 @@
     },
     {
       "type": "player",
-      "playerId": "tWudAjcKtwXZj4NapJWY22",
+      "playerId": "imGrwPknjAR3Z7ee5PRKg8",
       "name": "Player #0"
     },
     {
@@ -927,7 +1019,7 @@
   [
     {
       "type": "player",
-      "playerId": "8qMLWza1f73uWFhQRDXtMV",
+      "playerId": "1NXcWMezbexYa7E89HdGVW",
       "name": "Player #0"
     },
     {
@@ -956,7 +1048,7 @@
   [
     {
       "type": "player",
-      "playerId": "jo5RHhfkA5xgE8ATnGXbjs",
+      "playerId": "qGWX6jGStg3X3jCKYpFr1h",
       "name": "Player #0"
     },
     {
@@ -985,7 +1077,7 @@
     },
     {
       "type": "player",
-      "playerId": "2Bx6ocjJCLyRFzC1R3WDMf",
+      "playerId": "uK9fEs4XjTvKbZj2zXkTRt",
       "name": "Player #0"
     },
     {
@@ -1012,7 +1104,7 @@
   [
     {
       "type": "player",
-      "playerId": "22yvV1cvtvysUZ42Pzy5aC",
+      "playerId": "qUKEEJPHpDXK64tbcvwZY3",
       "name": "Player #0"
     },
     {
@@ -1050,7 +1142,7 @@
   [
     {
       "type": "player",
-      "playerId": "dqK5yo7q5hEaWoKtm2Bzc5",
+      "playerId": "k713samWviR4LVRwD9bZFK",
       "name": "Player #0"
     },
     {
@@ -1088,7 +1180,7 @@
   [
     {
       "type": "player",
-      "playerId": "qAr9CWnuBAxiktho6Mz9vt",
+      "playerId": "7tWqW7qHJ1Z6RjMWsP49mv",
       "name": "Player #0"
     },
     {
@@ -1117,7 +1209,7 @@
     },
     {
       "type": "player",
-      "playerId": "qAr9CWnuBAxiktho6Mz9vt",
+      "playerId": "7tWqW7qHJ1Z6RjMWsP49mv",
       "name": "Player #0"
     },
     {
@@ -1136,7 +1228,7 @@
   [
     {
       "type": "player",
-      "playerId": "isfZxMCo4DmfezEvgwhLki",
+      "playerId": "qzWXSRzvtnPZjy2M3mmPUm",
       "name": "Player #0"
     },
     {
@@ -1165,7 +1257,7 @@
     },
     {
       "type": "player",
-      "playerId": "isfZxMCo4DmfezEvgwhLki",
+      "playerId": "qzWXSRzvtnPZjy2M3mmPUm",
       "name": "Player #0"
     },
     {
@@ -1183,7 +1275,7 @@
     },
     {
       "type": "player",
-      "playerId": "3LznoSzx5JJbNBHvJdbbkR",
+      "playerId": "kR4tuAvo1QytpU71d1sZhC",
       "name": "Player #1"
     },
     {
@@ -1200,7 +1292,7 @@
   [
     {
       "type": "player",
-      "playerId": "q79LN7NhtL6bTaoFd45Aj9",
+      "playerId": "xnrF7bFf2mUz3CSySCNwVX",
       "name": "Player #0"
     },
     {
@@ -1229,7 +1321,7 @@
     },
     {
       "type": "player",
-      "playerId": "q79LN7NhtL6bTaoFd45Aj9",
+      "playerId": "xnrF7bFf2mUz3CSySCNwVX",
       "name": "Player #0"
     },
     {
@@ -1257,7 +1349,7 @@
     },
     {
       "type": "player",
-      "playerId": "utUprqLJX78ojTu2beEVre",
+      "playerId": "xnFnzEhoMBkDmHbWdbNR58",
       "name": "Player #0"
     },
     {
@@ -1276,7 +1368,7 @@
   [
     {
       "type": "player",
-      "playerId": "5QTf499BgVEL15E6NV1ioX",
+      "playerId": "vRD18kqvXAPFW8uATxa4Uw",
       "name": "Player #0"
     },
     {
@@ -1305,7 +1397,7 @@
     },
     {
       "type": "player",
-      "playerId": "5QTf499BgVEL15E6NV1ioX",
+      "playerId": "vRD18kqvXAPFW8uATxa4Uw",
       "name": "Player #0"
     },
     {
@@ -1324,7 +1416,7 @@
   [
     {
       "type": "player",
-      "playerId": "mkZN9GBj7g5jH8m5rPwaCp",
+      "playerId": "91gauo2RvvpcLWTHye3Xoz",
       "name": "Player #0"
     },
     {
@@ -1344,7 +1436,7 @@
   [
     {
       "type": "player",
-      "playerId": "qEMtgjqmkWeT6gcPL2Fk9z",
+      "playerId": "h8ZP8mYmvM9pqBdpGhHik6",
       "name": "Player #0"
     },
     {
@@ -1364,7 +1456,7 @@
   [
     {
       "type": "player",
-      "playerId": "khyjiDDmcDD2yuhmUqmGne",
+      "playerId": "hhFGLm3MkaNfZoXqyPcXMQ",
       "name": "Player #0"
     },
     {
@@ -1393,7 +1485,7 @@
     },
     {
       "type": "player",
-      "playerId": "khyjiDDmcDD2yuhmUqmGne",
+      "playerId": "hhFGLm3MkaNfZoXqyPcXMQ",
       "name": "Player #0"
     },
     {
@@ -1422,7 +1514,7 @@
     },
     {
       "type": "player",
-      "playerId": "khyjiDDmcDD2yuhmUqmGne",
+      "playerId": "hhFGLm3MkaNfZoXqyPcXMQ",
       "name": "Player #0"
     },
     {
@@ -1451,7 +1543,7 @@
     },
     {
       "type": "player",
-      "playerId": "3GZZJ6xCqZYrCEA7cqHahQ",
+      "playerId": "sJzJ8Eg5Rq98BvgiZNmAiS",
       "name": "Player #0"
     },
     {
@@ -1480,7 +1572,7 @@
     },
     {
       "type": "player",
-      "playerId": "3GZZJ6xCqZYrCEA7cqHahQ",
+      "playerId": "sJzJ8Eg5Rq98BvgiZNmAiS",
       "name": "Player #0"
     },
     {
@@ -1500,7 +1592,7 @@
   [
     {
       "type": "player",
-      "playerId": "bAWpgt4iigVK4R3tEP2p9y",
+      "playerId": "4svxZrf6mTKJs468EnnRn9",
       "name": "Player #1"
     },
     {
@@ -1517,7 +1609,7 @@
     },
     {
       "type": "player",
-      "playerId": "mtgC9vuge3p2cgke1uyngR",
+      "playerId": "tGaFPvSvVtaq8Bp7uwf2Ew",
       "name": "Player #0"
     },
     {
@@ -1546,7 +1638,7 @@
     },
     {
       "type": "player",
-      "playerId": "sQkPAEJDsmpTNqZ4oAoiyx",
+      "playerId": "hHXb7eo2zUsrcWM9uYRG7Q",
       "name": "Player #0"
     },
     {
@@ -1575,7 +1667,7 @@
     },
     {
       "type": "player",
-      "playerId": "sQkPAEJDsmpTNqZ4oAoiyx",
+      "playerId": "hHXb7eo2zUsrcWM9uYRG7Q",
       "name": "Player #0"
     },
     {
@@ -1595,7 +1687,7 @@
   [
     {
       "type": "player",
-      "playerId": "poHAE3xt8mevouDodKkYJp",
+      "playerId": "dxoLXhk8qx4XyLvf6R6wze",
       "name": "Player #0"
     },
     {
@@ -1624,7 +1716,7 @@
   [
     {
       "type": "player",
-      "playerId": "n3y9mWpEjpxGVfgBW1A7DU",
+      "playerId": "h35QmpkSUMX7qJnznFSnev",
       "name": "Player #0"
     },
     {
@@ -1653,7 +1745,7 @@
   [
     {
       "type": "player",
-      "playerId": "3npswqnaqAdu6h4rTg5jas",
+      "playerId": "tK4Kui8P5DntVmeRLseasn",
       "name": "Player #0"
     },
     {
@@ -1682,7 +1774,7 @@
     },
     {
       "type": "player",
-      "playerId": "3npswqnaqAdu6h4rTg5jas",
+      "playerId": "tK4Kui8P5DntVmeRLseasn",
       "name": "Player #0"
     },
     {
@@ -1711,7 +1803,7 @@
     },
     {
       "type": "player",
-      "playerId": "bEZr67DnCgiTx6AvNvZeBb",
+      "playerId": "7B4PuTmf2TtmUvqbj1YRAm",
       "name": "Player #0"
     },
     {
@@ -1740,7 +1832,7 @@
     },
     {
       "type": "player",
-      "playerId": "aQRB44RwsaWppFbn9a8aQT",
+      "playerId": "iTVrMyDfGELgo2SaV2BkJq",
       "name": "Player #0"
     },
     {
@@ -1769,7 +1861,7 @@
     },
     {
       "type": "player",
-      "playerId": "aQRB44RwsaWppFbn9a8aQT",
+      "playerId": "iTVrMyDfGELgo2SaV2BkJq",
       "name": "Player #0"
     },
     {
@@ -1796,7 +1888,7 @@
   [
     {
       "type": "player",
-      "playerId": "4xthNzECZBq3GoBRp8ac4H",
+      "playerId": "fdKETw1RoyKURrbG9VxsXQ",
       "name": "Player #0"
     },
     {
@@ -1825,7 +1917,7 @@
     },
     {
       "type": "player",
-      "playerId": "4xthNzECZBq3GoBRp8ac4H",
+      "playerId": "fdKETw1RoyKURrbG9VxsXQ",
       "name": "Player #0"
     },
     {
@@ -1843,7 +1935,7 @@
     },
     {
       "type": "player",
-      "playerId": "9siAq8Kw1ZUWyev91PM16S",
+      "playerId": "sicVnWSdEpswbYVUnvD8Tz",
       "name": "Player #1"
     },
     {
@@ -1863,7 +1955,7 @@
     },
     {
       "type": "player",
-      "playerId": "poPEf8ms37tJJDuWvsa5P4",
+      "playerId": "8YjAaBbHr83vJvWDwmgeZ7",
       "name": "Player #0"
     },
     {
@@ -1881,7 +1973,7 @@
     },
     {
       "type": "player",
-      "playerId": "quB7vC3jvujxoPo7eQ19rY",
+      "playerId": "3TDu1hs2T2edfreA4gmXRc",
       "name": "Player #1"
     },
     {
@@ -1901,7 +1993,7 @@
     },
     {
       "type": "player",
-      "playerId": "jJkNwPGjE6bMHTPcQF5suH",
+      "playerId": "oHNzyqDmQpVPqLSSoErq7B",
       "name": "Player #0"
     },
     {
@@ -1919,7 +2011,7 @@
     },
     {
       "type": "player",
-      "playerId": "pza41poNo6NV1VySphijVb",
+      "playerId": "eZZCEfr9PvNWjPRZwAw21z",
       "name": "Player #1"
     },
     {
@@ -1939,7 +2031,7 @@
     },
     {
       "type": "player",
-      "playerId": "pfSeP58WqW5bAgpzAqLk3w",
+      "playerId": "mYzfVthf7jViZ6cV24PYaH",
       "name": "Player #0"
     },
     {
@@ -1957,7 +2049,7 @@
     },
     {
       "type": "player",
-      "playerId": "pfSeP58WqW5bAgpzAqLk3w",
+      "playerId": "mYzfVthf7jViZ6cV24PYaH",
       "name": "Player #0"
     },
     {
@@ -1968,7 +2060,7 @@
   [
     {
       "type": "player",
-      "playerId": "uVzjLDTK6FuH9FHt7tYeJ9",
+      "playerId": "gVXGzRX1n7FiFv3oUM2FJM",
       "name": "Player #0"
     },
     {
@@ -1997,7 +2089,7 @@
     },
     {
       "type": "player",
-      "playerId": "uVzjLDTK6FuH9FHt7tYeJ9",
+      "playerId": "gVXGzRX1n7FiFv3oUM2FJM",
       "name": "Player #0"
     },
     {
@@ -2018,7 +2110,7 @@
     },
     {
       "type": "player",
-      "playerId": "eXesUV6EwkMURBQi7CSNpr",
+      "playerId": "dYruQZReqqGfAWK9KA3D4M",
       "name": "Player #1"
     },
     {
@@ -2037,7 +2129,7 @@
   [
     {
       "type": "player",
-      "playerId": "72eaT5kjGKESAqf7iP2H83",
+      "playerId": "8QkRD4AC9QAYe8fFcXJLVa",
       "name": "Player #0"
     },
     {
@@ -2066,7 +2158,7 @@
     },
     {
       "type": "player",
-      "playerId": "k9ixFm1YUPkkjqwVxKpF3J",
+      "playerId": "usTy4rdsKQ6JEgpGPuTVjY",
       "name": "Player #0"
     },
     {
@@ -2083,7 +2175,7 @@
     },
     {
       "type": "player",
-      "playerId": "4UeRH7SPsvqecaYv9gwBaH",
+      "playerId": "fLTJrt4wH68bF81uhBPXBF",
       "name": "Player #1"
     },
     {
@@ -2102,7 +2194,7 @@
   [
     {
       "type": "player",
-      "playerId": "fFWvE7keub5pCYg9S21hT6",
+      "playerId": "cuFPcgyQZ73GYRMJsrbqA2",
       "name": "Player #0"
     },
     {
@@ -2131,7 +2223,7 @@
     },
     {
       "type": "player",
-      "playerId": "3BxhtNoRhJS1hQ2tvPZwf2",
+      "playerId": "g9oGAEM242zABgaQo3rQLd",
       "name": "Player #0"
     },
     {
@@ -2175,7 +2267,7 @@
     },
     {
       "type": "player",
-      "playerId": "3BxhtNoRhJS1hQ2tvPZwf2",
+      "playerId": "g9oGAEM242zABgaQo3rQLd",
       "name": "Player #0"
     },
     {
@@ -2198,7 +2290,7 @@
   [
     {
       "type": "player",
-      "playerId": "6dXAkUxyfcigcjTEhtdQWy",
+      "playerId": "x2vR8Z9aA3S7AgVbtjfmxE",
       "name": "Player #0"
     },
     {
@@ -2227,7 +2319,7 @@
     },
     {
       "type": "player",
-      "playerId": "6dXAkUxyfcigcjTEhtdQWy",
+      "playerId": "x2vR8Z9aA3S7AgVbtjfmxE",
       "name": "Player #0"
     },
     {
@@ -2265,7 +2357,7 @@
     },
     {
       "type": "player",
-      "playerId": "6dXAkUxyfcigcjTEhtdQWy",
+      "playerId": "x2vR8Z9aA3S7AgVbtjfmxE",
       "name": "Player #0"
     },
     {
@@ -2294,7 +2386,7 @@
     },
     {
       "type": "player",
-      "playerId": "bYUZjNq83BxHSTtZQHshAx",
+      "playerId": "iwAu6yZWMUtDEc4yF91NB8",
       "name": "Player #0"
     },
     {
@@ -2332,7 +2424,7 @@
     },
     {
       "type": "player",
-      "playerId": "bYUZjNq83BxHSTtZQHshAx",
+      "playerId": "iwAu6yZWMUtDEc4yF91NB8",
       "name": "Player #0"
     },
     {
@@ -2352,7 +2444,7 @@
     },
     {
       "type": "player",
-      "playerId": "qbZhTW2V9my44d56sAse1w",
+      "playerId": "3fd4X9HWWZE56Tg5KdYYt8",
       "name": "Player #0"
     },
     {
@@ -2380,7 +2472,7 @@
     },
     {
       "type": "player",
-      "playerId": "qbZhTW2V9my44d56sAse1w",
+      "playerId": "3fd4X9HWWZE56Tg5KdYYt8",
       "name": "Player #0"
     },
     {
@@ -2418,7 +2510,7 @@
     },
     {
       "type": "player",
-      "playerId": "qbZhTW2V9my44d56sAse1w",
+      "playerId": "3fd4X9HWWZE56Tg5KdYYt8",
       "name": "Player #0"
     },
     {
@@ -2447,7 +2539,7 @@
     },
     {
       "type": "player",
-      "playerId": "qbZhTW2V9my44d56sAse1w",
+      "playerId": "3fd4X9HWWZE56Tg5KdYYt8",
       "name": "Player #0"
     },
     {
@@ -2475,7 +2567,7 @@
     },
     {
       "type": "player",
-      "playerId": "b4Fqmym67tJepStJvjx8XC",
+      "playerId": "ahwCRfDCa9V5UpvvwH2vmh",
       "name": "Player #0"
     },
     {
@@ -2504,7 +2596,7 @@
     },
     {
       "type": "player",
-      "playerId": "b4Fqmym67tJepStJvjx8XC",
+      "playerId": "ahwCRfDCa9V5UpvvwH2vmh",
       "name": "Player #0"
     },
     {
@@ -2523,7 +2615,7 @@
   [
     {
       "type": "player",
-      "playerId": "dY65Au1nTgqtC2zDq5hGXV",
+      "playerId": "7P3up7JM9N14Pudvs3aK2A",
       "name": "Player #0"
     },
     {
@@ -2552,7 +2644,7 @@
     },
     {
       "type": "player",
-      "playerId": "dY65Au1nTgqtC2zDq5hGXV",
+      "playerId": "7P3up7JM9N14Pudvs3aK2A",
       "name": "Player #0"
     },
     {
@@ -2561,7 +2653,7 @@
     },
     {
       "type": "player",
-      "playerId": "df6RPkRWxLHCm76ZHVv4cz",
+      "playerId": "xadyDTXwhamP8S6tohvcne",
       "name": "Player #1"
     },
     {
@@ -2589,7 +2681,7 @@
     },
     {
       "type": "player",
-      "playerId": "dY65Au1nTgqtC2zDq5hGXV",
+      "playerId": "7P3up7JM9N14Pudvs3aK2A",
       "name": "Player #0"
     },
     {
@@ -2616,7 +2708,7 @@
   [
     {
       "type": "player",
-      "playerId": "axBcPnrujhxNT96NucZtX2",
+      "playerId": "icDATqc7N9KbhNCtczPtcf",
       "name": "Player #0"
     },
     {
@@ -2645,7 +2737,7 @@
     },
     {
       "type": "player",
-      "playerId": "axBcPnrujhxNT96NucZtX2",
+      "playerId": "icDATqc7N9KbhNCtczPtcf",
       "name": "Player #0"
     },
     {
@@ -2674,7 +2766,7 @@
     },
     {
       "type": "player",
-      "playerId": "axBcPnrujhxNT96NucZtX2",
+      "playerId": "icDATqc7N9KbhNCtczPtcf",
       "name": "Player #0"
     },
     {
@@ -2703,7 +2795,7 @@
     },
     {
       "type": "player",
-      "playerId": "6fh9BeNAJD6wLSiMVRPu6P",
+      "playerId": "vdF5AkU7fhNiJhWS1ikoRf",
       "name": "Player #0"
     },
     {
@@ -2732,7 +2824,7 @@
     },
     {
       "type": "player",
-      "playerId": "agdZenycA9NQgtXm6Rijnf",
+      "playerId": "vzegLCKoS1H9uyEFTheFBf",
       "name": "Player #0"
     },
     {
@@ -2761,7 +2853,7 @@
     },
     {
       "type": "player",
-      "playerId": "aRBBqxHUtVYvF2wwwa31uQ",
+      "playerId": "1ecF8yPjAWNPGYi71HMgp2",
       "name": "Player #0"
     },
     {
@@ -2790,7 +2882,7 @@
     },
     {
       "type": "player",
-      "playerId": "3UJqKvyepTtNdbyfvxy5Ju",
+      "playerId": "uLGVwnDBha91yUgcEqGQao",
       "name": "Player #0"
     },
     {
@@ -2819,7 +2911,7 @@
     },
     {
       "type": "player",
-      "playerId": "3UJqKvyepTtNdbyfvxy5Ju",
+      "playerId": "uLGVwnDBha91yUgcEqGQao",
       "name": "Player #0"
     },
     {
@@ -2847,7 +2939,7 @@
   [
     {
       "type": "player",
-      "playerId": "7Narh2uVLtzKGPx7FswuB2",
+      "playerId": "ctXuFtLQPLbj9m8xS8Srv9",
       "name": "Player #0"
     },
     {
@@ -2876,7 +2968,7 @@
     },
     {
       "type": "player",
-      "playerId": "1qAFxTo75vAkEHJHh5Mii1",
+      "playerId": "uwoA1ZRhM4832oMPAzSoRn",
       "name": "Player #0"
     },
     {
@@ -2905,7 +2997,7 @@
   [
     {
       "type": "player",
-      "playerId": "1qAFxTo75vAkEHJHh5Mii1",
+      "playerId": "uwoA1ZRhM4832oMPAzSoRn",
       "name": "Player #0"
     },
     {
@@ -2925,7 +3017,7 @@
   [
     {
       "type": "player",
-      "playerId": "escrq9uVUSqiNDDy7hT4Ci",
+      "playerId": "hbxEe2TkAWmL4wyRzHfWay",
       "name": "Player #0"
     },
     {
@@ -2954,7 +3046,7 @@
     },
     {
       "type": "player",
-      "playerId": "escrq9uVUSqiNDDy7hT4Ci",
+      "playerId": "hbxEe2TkAWmL4wyRzHfWay",
       "name": "Player #0"
     },
     {
@@ -2977,7 +3069,7 @@
   [
     {
       "type": "player",
-      "playerId": "rmT8yuXu831wc7QWnxtcb7",
+      "playerId": "xaymrWtChqMPVU3vUr847d",
       "name": "Player #0"
     },
     {
@@ -2997,7 +3089,7 @@
   [
     {
       "type": "player",
-      "playerId": "xvUrp86qrf1C3gDDzzB7J7",
+      "playerId": "oUVVV7XnKBPbFFjNrgyw7i",
       "name": "Player #0"
     },
     {
@@ -3026,7 +3118,7 @@
     },
     {
       "type": "player",
-      "playerId": "xvUrp86qrf1C3gDDzzB7J7",
+      "playerId": "oUVVV7XnKBPbFFjNrgyw7i",
       "name": "Player #0"
     },
     {
@@ -3035,7 +3127,7 @@
     },
     {
       "type": "player",
-      "playerId": "4pg3uiChvWq8U1UPC24x2C",
+      "playerId": "nASkJ5f2tnniUVKCDpQoMA",
       "name": "Player #1"
     },
     {
@@ -3067,7 +3159,7 @@
     },
     {
       "type": "player",
-      "playerId": "4q7PCDZzC1vET9KSWys3vj",
+      "playerId": "frmBdgZWYqNbdki1eGavgN",
       "name": "Player #0"
     },
     {
@@ -3076,7 +3168,7 @@
     },
     {
       "type": "player",
-      "playerId": "ri26Cxbc5qdQrEquiN1fmN",
+      "playerId": "tohSne3ty8oG8ao4RczpXP",
       "name": "Player #1"
     },
     {
@@ -3120,7 +3212,7 @@
     },
     {
       "type": "player",
-      "playerId": "ckCoShjxX8Su3E6ujNLjpv",
+      "playerId": "ncLH6x9m4S8RxvibexfuVR",
       "name": "Player #0"
     },
     {
@@ -3149,7 +3241,7 @@
     },
     {
       "type": "player",
-      "playerId": "ckCoShjxX8Su3E6ujNLjpv",
+      "playerId": "ncLH6x9m4S8RxvibexfuVR",
       "name": "Player #0"
     },
     {
@@ -3168,7 +3260,7 @@
   [
     {
       "type": "player",
-      "playerId": "7ddHddBn5rPU2TmbHUwp2W",
+      "playerId": "12V5nDQYhCHnupQg5xMVEA",
       "name": "Player #0"
     },
     {
@@ -3188,7 +3280,7 @@
   [
     {
       "type": "player",
-      "playerId": "pbW8wUoD7UHCNiDgn1UCp2",
+      "playerId": "6R4qCy6c9CavRAY1uoeBhN",
       "name": "Player #0"
     },
     {
@@ -3217,7 +3309,7 @@
     },
     {
       "type": "player",
-      "playerId": "pbW8wUoD7UHCNiDgn1UCp2",
+      "playerId": "6R4qCy6c9CavRAY1uoeBhN",
       "name": "Player #0"
     },
     {
@@ -3236,7 +3328,7 @@
   [
     {
       "type": "player",
-      "playerId": "eqdd8zsBBWrqscGaLDAHG1",
+      "playerId": "pSxq13QCGMDm9rz6btcsDK",
       "name": "Player #0"
     },
     {
@@ -3265,7 +3357,7 @@
     },
     {
       "type": "player",
-      "playerId": "eqdd8zsBBWrqscGaLDAHG1",
+      "playerId": "pSxq13QCGMDm9rz6btcsDK",
       "name": "Player #0"
     },
     {
@@ -3297,7 +3389,7 @@
     },
     {
       "type": "player",
-      "playerId": "qJDL3sawFDMJJx9TZxh2PB",
+      "playerId": "c8ToSUu2RxwhbaCZxqL7CP",
       "name": "Player #0"
     },
     {
@@ -3317,7 +3409,7 @@
   [
     {
       "type": "player",
-      "playerId": "oQhcuguh5Qkcpv8bpLKAfd",
+      "playerId": "gmt7DvongkDgZSb7qMSs3i",
       "name": "Player #0"
     },
     {
@@ -3337,7 +3429,7 @@
   [
     {
       "type": "player",
-      "playerId": "6JutFMewkN3FSiGZtZwgcF",
+      "playerId": "wjJNBJjddSH3ipw24u9ezF",
       "name": "Player #0"
     },
     {
@@ -3366,7 +3458,7 @@
     },
     {
       "type": "player",
-      "playerId": "6JutFMewkN3FSiGZtZwgcF",
+      "playerId": "wjJNBJjddSH3ipw24u9ezF",
       "name": "Player #0"
     },
     {
@@ -3389,7 +3481,7 @@
   [
     {
       "type": "player",
-      "playerId": "3nDWDMLM52eTgumnD3Ua6p",
+      "playerId": "sezqxrUjGm6v9Chts58Pks",
       "name": "Player #0"
     },
     {
@@ -3418,7 +3510,7 @@
     },
     {
       "type": "player",
-      "playerId": "3nDWDMLM52eTgumnD3Ua6p",
+      "playerId": "sezqxrUjGm6v9Chts58Pks",
       "name": "Player #0"
     },
     {
@@ -3465,7 +3557,7 @@
     },
     {
       "type": "player",
-      "playerId": "3nDWDMLM52eTgumnD3Ua6p",
+      "playerId": "sezqxrUjGm6v9Chts58Pks",
       "name": "Player #0"
     },
     {
@@ -3485,7 +3577,7 @@
   [
     {
       "type": "player",
-      "playerId": "dJwP49ReiAd3AU39NZZkfD",
+      "playerId": "9xTX6zxfGW4SBWwnDq7VBX",
       "name": "Player #0"
     },
     {
@@ -3514,7 +3606,7 @@
     },
     {
       "type": "player",
-      "playerId": "dJwP49ReiAd3AU39NZZkfD",
+      "playerId": "9xTX6zxfGW4SBWwnDq7VBX",
       "name": "Player #0"
     },
     {
@@ -3559,7 +3651,7 @@
     },
     {
       "type": "player",
-      "playerId": "eNgh1v2bGdtBoKhwCbY8R1",
+      "playerId": "mRbigKFmhHHfDoDqP7fvS1",
       "name": "Player #0"
     },
     {
@@ -3604,7 +3696,7 @@
     },
     {
       "type": "player",
-      "playerId": "4hsDytYEP1dybkNm44NKKB",
+      "playerId": "eoC9vk6eUx5T2RSrZqGfVq",
       "name": "Player #0"
     },
     {
@@ -3649,7 +3741,7 @@
     },
     {
       "type": "player",
-      "playerId": "e4sU2Mrsge9Df1g8hcMHJn",
+      "playerId": "oWEzBGxeGnfSL9EWJHTZ9c",
       "name": "Player #0"
     },
     {
@@ -3685,7 +3777,7 @@
   [
     {
       "type": "player",
-      "playerId": "9p1c8Fqzhyec9m4kNBRo5J",
+      "playerId": "tZ4H5pCZ4F9xjvhbuYW3xv",
       "name": "Player #0"
     },
     {
@@ -3705,7 +3797,7 @@
   [
     {
       "type": "player",
-      "playerId": "uVMswMqbaVBtt8qAZoj5Vo",
+      "playerId": "acHWHPUKU3pSi7wAG3qCXB",
       "name": "Player #0"
     },
     {
@@ -3734,7 +3826,7 @@
     },
     {
       "type": "player",
-      "playerId": "dmt9HiJzx1nwfcPbKwKh46",
+      "playerId": "d52czqKKjV2axYk6zTYgFF",
       "name": "Player #0"
     },
     {
@@ -3761,7 +3853,7 @@
   [
     {
       "type": "player",
-      "playerId": "7cRvQCAPhXmP5h2s4eev5h",
+      "playerId": "hEjVgdQ2wjix7K6dSpFggh",
       "name": "Player #0"
     },
     {
@@ -3790,7 +3882,7 @@
     },
     {
       "type": "player",
-      "playerId": "7cRvQCAPhXmP5h2s4eev5h",
+      "playerId": "hEjVgdQ2wjix7K6dSpFggh",
       "name": "Player #0"
     },
     {
@@ -3809,7 +3901,7 @@
   [
     {
       "type": "player",
-      "playerId": "6EkdyZSEVUq5tKQtn54sqU",
+      "playerId": "xz2AE3oqmUyUngAQZVYVwv",
       "name": "Player #0"
     },
     {
@@ -3838,7 +3930,7 @@
     },
     {
       "type": "player",
-      "playerId": "6EkdyZSEVUq5tKQtn54sqU",
+      "playerId": "xz2AE3oqmUyUngAQZVYVwv",
       "name": "Player #0"
     },
     {
@@ -3866,7 +3958,7 @@
     },
     {
       "type": "player",
-      "playerId": "6EkdyZSEVUq5tKQtn54sqU",
+      "playerId": "xz2AE3oqmUyUngAQZVYVwv",
       "name": "Player #0"
     },
     {
@@ -3895,7 +3987,7 @@
   [
     {
       "type": "player",
-      "playerId": "xt4LC4jrGaqRonPszG7DAW",
+      "playerId": "hETgFWhgDcRcvdG7NWxekq",
       "name": "Player #0"
     },
     {
@@ -3924,7 +4016,7 @@
     },
     {
       "type": "player",
-      "playerId": "xt4LC4jrGaqRonPszG7DAW",
+      "playerId": "hETgFWhgDcRcvdG7NWxekq",
       "name": "Player #0"
     },
     {
@@ -3961,7 +4053,7 @@
   [
     {
       "type": "player",
-      "playerId": "f5vFAWbsm3ktEabW3Q5NSX",
+      "playerId": "6bPZ2ULQaeTytWjYt17UMN",
       "name": "Player #0"
     },
     {
@@ -3990,7 +4082,7 @@
     },
     {
       "type": "player",
-      "playerId": "f5vFAWbsm3ktEabW3Q5NSX",
+      "playerId": "6bPZ2ULQaeTytWjYt17UMN",
       "name": "Player #0"
     },
     {
@@ -4017,7 +4109,7 @@
   [
     {
       "type": "player",
-      "playerId": "axAsgRk6u3Pox3ii6VJqn9",
+      "playerId": "tsWxxHnq7QYUAG5Kcj6kGv",
       "name": "Player #0"
     },
     {
@@ -4046,7 +4138,7 @@
     },
     {
       "type": "player",
-      "playerId": "axAsgRk6u3Pox3ii6VJqn9",
+      "playerId": "tsWxxHnq7QYUAG5Kcj6kGv",
       "name": "Player #0"
     },
     {
@@ -4073,7 +4165,7 @@
   [
     {
       "type": "player",
-      "playerId": "jEFCPCHBMb7cNwXisw4jwz",
+      "playerId": "2821KSyxCiDKJkJwjFyNoW",
       "name": "Player #0"
     },
     {
@@ -4102,7 +4194,7 @@
     },
     {
       "type": "player",
-      "playerId": "jEFCPCHBMb7cNwXisw4jwz",
+      "playerId": "2821KSyxCiDKJkJwjFyNoW",
       "name": "Player #0"
     },
     {
@@ -4158,7 +4250,7 @@
     },
     {
       "type": "player",
-      "playerId": "q9ah2izKCjevtBCKnXtrAr",
+      "playerId": "xetqN2PUSgZ8UoAMrVEf3a",
       "name": "Player #0"
     },
     {
@@ -4173,7 +4265,7 @@
   [
     {
       "type": "player",
-      "playerId": "rE9Epm2X6XAwzLDPzqLTeD",
+      "playerId": "oVNosGbS1q1oxkkpsrfvap",
       "name": "Player #0"
     },
     {
@@ -4202,7 +4294,7 @@
     },
     {
       "type": "player",
-      "playerId": "rE9Epm2X6XAwzLDPzqLTeD",
+      "playerId": "oVNosGbS1q1oxkkpsrfvap",
       "name": "Player #0"
     },
     {
@@ -4230,7 +4322,7 @@
     },
     {
       "type": "player",
-      "playerId": "rE9Epm2X6XAwzLDPzqLTeD",
+      "playerId": "oVNosGbS1q1oxkkpsrfvap",
       "name": "Player #0"
     },
     {
@@ -4274,7 +4366,7 @@
     },
     {
       "type": "player",
-      "playerId": "g1eLVZgixHcQd1DYiFDh8Q",
+      "playerId": "9UuKQK1FoMjvgkNuFEf5KB",
       "name": "Player #0"
     },
     {
@@ -4293,7 +4385,7 @@
   [
     {
       "type": "player",
-      "playerId": "2ejLJLiAEfmH9wqCkx3tvp",
+      "playerId": "xgKDzG7uDwgfMCnmP3M6RD",
       "name": "Player #0"
     },
     {
@@ -4322,7 +4414,7 @@
     },
     {
       "type": "player",
-      "playerId": "2ejLJLiAEfmH9wqCkx3tvp",
+      "playerId": "xgKDzG7uDwgfMCnmP3M6RD",
       "name": "Player #0"
     },
     {
@@ -4387,7 +4479,7 @@
     },
     {
       "type": "player",
-      "playerId": "2ejLJLiAEfmH9wqCkx3tvp",
+      "playerId": "xgKDzG7uDwgfMCnmP3M6RD",
       "name": "Player #0"
     },
     {
@@ -4464,7 +4556,7 @@
     },
     {
       "type": "player",
-      "playerId": "aUYiNFjaRfjYhj3sHo3jiQ",
+      "playerId": "veYcwpAXNs5C88t9QzLADe",
       "name": "Player #0"
     },
     {
@@ -4537,7 +4629,7 @@
     },
     {
       "type": "player",
-      "playerId": "8XeCvWH82Y8kueUxfFFXsN",
+      "playerId": "7JNyD8WYUJ2xBptrXoy1pn",
       "name": "Player #0"
     },
     {
@@ -4605,7 +4697,7 @@
   [
     {
       "type": "player",
-      "playerId": "vJ7UPzHaasezHi2iDmfPM9",
+      "playerId": "fUAMyAmomaMRRMbYDMUSut",
       "name": "Player #0"
     },
     {
@@ -4634,7 +4726,7 @@
     },
     {
       "type": "player",
-      "playerId": "vJ7UPzHaasezHi2iDmfPM9",
+      "playerId": "fUAMyAmomaMRRMbYDMUSut",
       "name": "Player #0"
     },
     {
@@ -4653,7 +4745,7 @@
   [
     {
       "type": "player",
-      "playerId": "2obh6W51ka4MdDAxpx5yNy",
+      "playerId": "nzvPzZpNJssLYzzb6W7xeu",
       "name": "Player #0"
     },
     {
@@ -4682,7 +4774,7 @@
     },
     {
       "type": "player",
-      "playerId": "2obh6W51ka4MdDAxpx5yNy",
+      "playerId": "nzvPzZpNJssLYzzb6W7xeu",
       "name": "Player #0"
     },
     {
@@ -4711,7 +4803,7 @@
     },
     {
       "type": "player",
-      "playerId": "5BNJ5cLbsE2KJHsffB7Zbz",
+      "playerId": "15NDiqTx8fnrCT6ThjRPaJ",
       "name": "Player #0"
     },
     {
@@ -4731,7 +4823,7 @@
   [
     {
       "type": "player",
-      "playerId": "cbbA3FHs7ofw2Ts73gBUHL",
+      "playerId": "tisC35WdDRsEPqCPAEssPC",
       "name": "Player #0"
     },
     {
@@ -4760,7 +4852,7 @@
     },
     {
       "type": "player",
-      "playerId": "cbbA3FHs7ofw2Ts73gBUHL",
+      "playerId": "tisC35WdDRsEPqCPAEssPC",
       "name": "Player #0"
     },
     {
@@ -4781,7 +4873,7 @@
     },
     {
       "type": "player",
-      "playerId": "jWYJvuz3ZuLk4N6ziEMJmB",
+      "playerId": "mHKFixhkkC5mNX3VBNARNh",
       "name": "Player #1"
     },
     {
@@ -4815,7 +4907,7 @@
     },
     {
       "type": "player",
-      "playerId": "5M4WABvioir7weVwSB47WF",
+      "playerId": "hUyWCJEq85PdeFBQTSFMNh",
       "name": "Player #0"
     },
     {
@@ -4836,7 +4928,7 @@
     },
     {
       "type": "player",
-      "playerId": "fLSr9MC3MdUrjbresMyqfB",
+      "playerId": "7wYGhDDQezjPcUMhCwU7q7",
       "name": "Player #1"
     },
     {
@@ -4864,7 +4956,7 @@
     },
     {
       "type": "player",
-      "playerId": "5M4WABvioir7weVwSB47WF",
+      "playerId": "hUyWCJEq85PdeFBQTSFMNh",
       "name": "Player #0"
     },
     {
@@ -4885,7 +4977,7 @@
     },
     {
       "type": "player",
-      "playerId": "nAjihWx6sevJJ8UCdwMBXz",
+      "playerId": "vhCLqzmjzynzKrDh3cKMLL",
       "name": "Player #3"
     },
     {
@@ -4913,7 +5005,7 @@
     },
     {
       "type": "player",
-      "playerId": "5M4WABvioir7weVwSB47WF",
+      "playerId": "hUyWCJEq85PdeFBQTSFMNh",
       "name": "Player #0"
     },
     {
@@ -4934,7 +5026,7 @@
     },
     {
       "type": "player",
-      "playerId": "7BsQuBzKfWBdsXkJqYzULS",
+      "playerId": "cVpPntVXi1tbKihV3wMi3S",
       "name": "Player #2"
     },
     {
@@ -4959,7 +5051,7 @@
   [
     {
       "type": "player",
-      "playerId": "frKN3opzTs3Fd49weCgq4i",
+      "playerId": "cqU7jSam4ma2319S1QHPF8",
       "name": "Player #0"
     },
     {
@@ -4979,7 +5071,7 @@
   [
     {
       "type": "player",
-      "playerId": "qetbTwoiuF7TritWvhyxWC",
+      "playerId": "hWkgWM7oZfg8PEQiL2FRSZ",
       "name": "Player #0"
     },
     {
@@ -4999,7 +5091,7 @@
   [
     {
       "type": "player",
-      "playerId": "1dGdWd8dhNnKeW4UG1MFgc",
+      "playerId": "kTt91Bg53r1URzzhLG1E1z",
       "name": "Player #0"
     },
     {
@@ -5019,7 +5111,7 @@
   [
     {
       "type": "player",
-      "playerId": "3oaavTsifp4HVkMAC8cpXA",
+      "playerId": "cJAbqeKyP2ADJBopfq3Bqt",
       "name": "Player #0"
     },
     {
@@ -5039,7 +5131,7 @@
   [
     {
       "type": "player",
-      "playerId": "pws38Fh6vsNkMR1qwNkCQC",
+      "playerId": "tteowq7rkjQEcFadAESmxs",
       "name": "Player #0"
     },
     {
@@ -5068,7 +5160,7 @@
   [
     {
       "type": "player",
-      "playerId": "pKyKatNvTXuk93mqSybSHB",
+      "playerId": "ftf1iGCxXQf12GMPhHuk7x",
       "name": "Player #0"
     },
     {
@@ -5088,7 +5180,7 @@
   [
     {
       "type": "player",
-      "playerId": "skWNoLa9UTKYopY4mjA6Ur",
+      "playerId": "weuqsZJ5PatjUmFwkTSFkG",
       "name": "Player #0"
     },
     {
@@ -5117,7 +5209,7 @@
     },
     {
       "type": "player",
-      "playerId": "enKDF4Hn9eXYd9pQvpCdgg",
+      "playerId": "hdxqa9AHbvSidjh7jN7GJf",
       "name": "Player #0"
     },
     {
@@ -5153,7 +5245,7 @@
     },
     {
       "type": "player",
-      "playerId": "1WkJ4w2cZ4RLBAHgsvoXGf",
+      "playerId": "4gpGfRXmifADkTFqdFNbLu",
       "name": "Player #0"
     },
     {
@@ -5185,7 +5277,7 @@
     },
     {
       "type": "player",
-      "playerId": "1WkJ4w2cZ4RLBAHgsvoXGf",
+      "playerId": "4gpGfRXmifADkTFqdFNbLu",
       "name": "Player #0"
     },
     {
@@ -5217,7 +5309,7 @@
     },
     {
       "type": "player",
-      "playerId": "1WkJ4w2cZ4RLBAHgsvoXGf",
+      "playerId": "4gpGfRXmifADkTFqdFNbLu",
       "name": "Player #0"
     },
     {
@@ -5252,7 +5344,7 @@
     },
     {
       "type": "player",
-      "playerId": "9mV2vgLkoYH3oxWe4KJbsw",
+      "playerId": "7cTJjjBzViwgAKRseg529L",
       "name": "Player #0"
     },
     {
@@ -5279,7 +5371,7 @@
     },
     {
       "type": "player",
-      "playerId": "1ZAR1YHGy7Wjvfzaor4F1v",
+      "playerId": "sp1bTcfLu9HggaZrcv9MXU",
       "name": "Player #0"
     },
     {
@@ -5306,7 +5398,7 @@
     },
     {
       "type": "player",
-      "playerId": "1ZAR1YHGy7Wjvfzaor4F1v",
+      "playerId": "sp1bTcfLu9HggaZrcv9MXU",
       "name": "Player #0"
     },
     {
@@ -5335,7 +5427,7 @@
   [
     {
       "type": "player",
-      "playerId": "hZWhkpZmTY3Rjv11y1dpgi",
+      "playerId": "qZqWqEQwJhxFtaXzsP6iaf",
       "name": "Player #0"
     },
     {
@@ -5346,7 +5438,7 @@
   [
     {
       "type": "player",
-      "playerId": "2DPD3mZBNzmDmPHLMSgY7V",
+      "playerId": "a5kTwpPV46Zm4QNn2iGsEY",
       "name": "Player #1"
     },
     {
@@ -5363,7 +5455,7 @@
   [
     {
       "type": "player",
-      "playerId": "xqCxiYw1pc5weUUjmiZxMp",
+      "playerId": "thEPnpGr6qvpaceWaZvmQT",
       "name": "Player #0"
     },
     {
@@ -5374,7 +5466,7 @@
   [
     {
       "type": "player",
-      "playerId": "2DPD3mZBNzmDmPHLMSgY7V",
+      "playerId": "a5kTwpPV46Zm4QNn2iGsEY",
       "name": "Player #1"
     },
     {
@@ -5385,7 +5477,7 @@
   [
     {
       "type": "player",
-      "playerId": "poGNj9YKjW6FUxPJkaUuj8",
+      "playerId": "5R8Ggoix1TewHL4EvB3NJK",
       "name": "Player #0"
     },
     {
@@ -5405,7 +5497,7 @@
   [
     {
       "type": "player",
-      "playerId": "uYoKWQ2HJnTHPzL2eS69Vx",
+      "playerId": "29JRvjHxjPjyhFZFsZHDpu",
       "name": "Player #0"
     },
     {
@@ -5425,7 +5517,7 @@
   [
     {
       "type": "player",
-      "playerId": "kwggo1igs822daB63VmdAS",
+      "playerId": "okVBuzeK4PMDhZjiXL59YA",
       "name": "Player #0"
     },
     {
@@ -5445,7 +5537,7 @@
   [
     {
       "type": "player",
-      "playerId": "uqPCSAYa9z7bE17yZCyK4r",
+      "playerId": "9THtYwQjW6zvndnxRuNSEA",
       "name": "Player #1"
     },
     {
@@ -5465,7 +5557,7 @@
   [
     {
       "type": "player",
-      "playerId": "4xDk9n4mabtndf7Z7UXmH7",
+      "playerId": "4YMLznr9qL13Et46JdVPL5",
       "name": "Player #0"
     },
     {
@@ -5494,7 +5586,7 @@
     },
     {
       "type": "player",
-      "playerId": "4xDk9n4mabtndf7Z7UXmH7",
+      "playerId": "4YMLznr9qL13Et46JdVPL5",
       "name": "Player #0"
     },
     {
@@ -5529,7 +5621,7 @@
   [
     {
       "type": "player",
-      "playerId": "sqDf3365Nipdcp45jJj1NH",
+      "playerId": "1je6N1o84W3dE6XFf8iUyr",
       "name": "Player #0"
     },
     {
@@ -5558,7 +5650,7 @@
     },
     {
       "type": "player",
-      "playerId": "sqDf3365Nipdcp45jJj1NH",
+      "playerId": "1je6N1o84W3dE6XFf8iUyr",
       "name": "Player #0"
     },
     {
@@ -5586,7 +5678,7 @@
     },
     {
       "type": "player",
-      "playerId": "sqDf3365Nipdcp45jJj1NH",
+      "playerId": "1je6N1o84W3dE6XFf8iUyr",
       "name": "Player #0"
     },
     {
@@ -5605,7 +5697,7 @@
   [
     {
       "type": "player",
-      "playerId": "d65WGUxkTJe3vJgcapz214",
+      "playerId": "hD2Sj21mSzg9wMrWmkcHCr",
       "name": "Player #0"
     },
     {
@@ -5634,7 +5726,7 @@
     },
     {
       "type": "player",
-      "playerId": "d65WGUxkTJe3vJgcapz214",
+      "playerId": "hD2Sj21mSzg9wMrWmkcHCr",
       "name": "Player #0"
     },
     {
@@ -5670,7 +5762,7 @@
     },
     {
       "type": "player",
-      "playerId": "d65WGUxkTJe3vJgcapz214",
+      "playerId": "hD2Sj21mSzg9wMrWmkcHCr",
       "name": "Player #0"
     },
     {
@@ -5705,7 +5797,7 @@
   [
     {
       "type": "player",
-      "playerId": "bC2Jfvdx3HweWfcEu8mVQc",
+      "playerId": "kbcUZyizw6VMVNxKLxm6fm",
       "name": "Player #0"
     },
     {
@@ -5725,7 +5817,7 @@
   [
     {
       "type": "player",
-      "playerId": "xoktuGcZYMwpzpAnssCDjb",
+      "playerId": "skJpYsBkeR2F6xq5Hk55tV",
       "name": "Player #0"
     },
     {
@@ -5754,7 +5846,7 @@
     },
     {
       "type": "player",
-      "playerId": "xoktuGcZYMwpzpAnssCDjb",
+      "playerId": "skJpYsBkeR2F6xq5Hk55tV",
       "name": "Player #0"
     },
     {
@@ -5782,7 +5874,7 @@
     },
     {
       "type": "player",
-      "playerId": "xoktuGcZYMwpzpAnssCDjb",
+      "playerId": "skJpYsBkeR2F6xq5Hk55tV",
       "name": "Player #0"
     },
     {
@@ -5817,7 +5909,7 @@
   [
     {
       "type": "player",
-      "playerId": "jyiXB7LqSdnxL7mFW9ssfH",
+      "playerId": "nNMqEEiuo1oLUt7Upinxsc",
       "name": "Player #0"
     },
     {
@@ -5846,7 +5938,7 @@
     },
     {
       "type": "player",
-      "playerId": "jyiXB7LqSdnxL7mFW9ssfH",
+      "playerId": "nNMqEEiuo1oLUt7Upinxsc",
       "name": "Player #0"
     },
     {
@@ -5866,7 +5958,7 @@
   [
     {
       "type": "player",
-      "playerId": "7zfYK1NUUJDUNfftbggxWw",
+      "playerId": "oVtmZcyHvAN8KZK4EVNwVL",
       "name": "Player #0"
     },
     {
@@ -5895,7 +5987,7 @@
     },
     {
       "type": "player",
-      "playerId": "7zfYK1NUUJDUNfftbggxWw",
+      "playerId": "oVtmZcyHvAN8KZK4EVNwVL",
       "name": "Player #0"
     },
     {
@@ -5933,7 +6025,7 @@
     },
     {
       "type": "player",
-      "playerId": "7zfYK1NUUJDUNfftbggxWw",
+      "playerId": "oVtmZcyHvAN8KZK4EVNwVL",
       "name": "Player #0"
     },
     {
@@ -5962,7 +6054,7 @@
     },
     {
       "type": "player",
-      "playerId": "8wGnUSbZqVzr9gr5ZRifg1",
+      "playerId": "1imgz7KAmNHoDBaQVgYC3H",
       "name": "Player #0"
     },
     {
@@ -6000,7 +6092,7 @@
     },
     {
       "type": "player",
-      "playerId": "8wGnUSbZqVzr9gr5ZRifg1",
+      "playerId": "1imgz7KAmNHoDBaQVgYC3H",
       "name": "Player #0"
     },
     {
@@ -6029,7 +6121,7 @@
     },
     {
       "type": "player",
-      "playerId": "1ZU6tEG3LLqn1u6neVppTf",
+      "playerId": "e1sBBf2JevGHYVzh36MxMD",
       "name": "Player #0"
     },
     {
@@ -6067,7 +6159,7 @@
     },
     {
       "type": "player",
-      "playerId": "1ZU6tEG3LLqn1u6neVppTf",
+      "playerId": "e1sBBf2JevGHYVzh36MxMD",
       "name": "Player #0"
     },
     {
@@ -6087,7 +6179,7 @@
   [
     {
       "type": "player",
-      "playerId": "eMNQvGLDYh68yRyTZCYE9H",
+      "playerId": "eYgsMZGzJ3ttf4qyLZsJk4",
       "name": "Player #0"
     },
     {
@@ -6116,7 +6208,7 @@
   [
     {
       "type": "player",
-      "playerId": "5FSVxBcsfce8uYewguvdgS",
+      "playerId": "8jfJyiMHVVUPpHJ3dWBm6N",
       "name": "Player #0"
     },
     {
@@ -6145,7 +6237,7 @@
   [
     {
       "type": "player",
-      "playerId": "4BxU8g9oReBpvwSMo62sdz",
+      "playerId": "h88mvqdvRynRRp6P9iRheU",
       "name": "Player #0"
     },
     {
@@ -6174,7 +6266,7 @@
   [
     {
       "type": "player",
-      "playerId": "e1ruDr7mzYF3Zvjn6ptcG8",
+      "playerId": "1oJc4Vn7effyx6mKPus2f5",
       "name": "Player #0"
     },
     {
@@ -6203,7 +6295,7 @@
   [
     {
       "type": "player",
-      "playerId": "s3kfdm8T94xSZAdRaFTcA4",
+      "playerId": "sxgTmhEHfkUZK29uK31H3B",
       "name": "Player #0"
     },
     {
@@ -6241,7 +6333,7 @@
   [
     {
       "type": "player",
-      "playerId": "epPqLPCnVf11fHnY1qMWdu",
+      "playerId": "7nVyYP6E6U6GZ6JuEuGi3Z",
       "name": "Player #0"
     },
     {
@@ -6270,7 +6362,7 @@
   [
     {
       "type": "player",
-      "playerId": "epPqLPCnVf11fHnY1qMWdu",
+      "playerId": "7nVyYP6E6U6GZ6JuEuGi3Z",
       "name": "Player #0"
     },
     {
@@ -6289,7 +6381,7 @@
   [
     {
       "type": "player",
-      "playerId": "cyNzAxqw6a25x1stG2SpGb",
+      "playerId": "duFfABNZDzAgkLoffgq5z6",
       "name": "Player #0"
     },
     {
@@ -6327,7 +6419,7 @@
     },
     {
       "type": "player",
-      "playerId": "sYeEqJakG6euX916tnsAXo",
+      "playerId": "n2zqPJsBZqyVDMgc6tqFyb",
       "name": "Player #0"
     },
     {
@@ -6355,7 +6447,7 @@
     },
     {
       "type": "player",
-      "playerId": "sCFeNJypc9dKsLr1pRBSmJ",
+      "playerId": "dCBpd8StEMzdmuRrJxhzDx",
       "name": "Player #0"
     },
     {
@@ -6416,6 +6508,35 @@
   ],
   [
     {
+      "type": "player",
+      "playerId": "it84NMueqZbz439aM6W2p6",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " visited "
+    },
+    {
+      "type": "entity",
+      "entityType": "riverDestination",
+      "riverDestination": "Ballroom"
+    },
+    {
+      "type": "text",
+      "text": " at "
+    },
+    {
+      "type": "entity",
+      "entityType": "riverDestinationSpot",
+      "spot": "TWO_TRAVELER"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
       "type": "entity",
       "entityType": "riverDestination",
       "riverDestination": "Ballroom"
@@ -6426,7 +6547,7 @@
     },
     {
       "type": "player",
-      "playerId": "tCAVjwvCeeVkowTDacMHuA",
+      "playerId": "1w67LQqtGtyaKxkx9y4hWe",
       "name": "Player #0"
     },
     {
@@ -6478,7 +6599,7 @@
     },
     {
       "type": "player",
-      "playerId": "wF39gNzmEMPUboCJatGUXv",
+      "playerId": "38QFbwuWbQzx5pEGHxw8ZF",
       "name": "Player #0"
     },
     {
@@ -6505,7 +6626,7 @@
   [
     {
       "type": "player",
-      "playerId": "jFpFweRyTXPonejKz2pcsd",
+      "playerId": "vRkv8GpyDijTpeGvKZnHBf",
       "name": "Player #0"
     },
     {
@@ -6534,7 +6655,7 @@
     },
     {
       "type": "player",
-      "playerId": "jFpFweRyTXPonejKz2pcsd",
+      "playerId": "vRkv8GpyDijTpeGvKZnHBf",
       "name": "Player #0"
     },
     {
@@ -6566,7 +6687,7 @@
     },
     {
       "type": "player",
-      "playerId": "jFpFweRyTXPonejKz2pcsd",
+      "playerId": "vRkv8GpyDijTpeGvKZnHBf",
       "name": "Player #0"
     },
     {
@@ -6594,7 +6715,7 @@
     },
     {
       "type": "player",
-      "playerId": "jFpFweRyTXPonejKz2pcsd",
+      "playerId": "vRkv8GpyDijTpeGvKZnHBf",
       "name": "Player #0"
     },
     {

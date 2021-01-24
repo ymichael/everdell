@@ -17,7 +17,10 @@ import {
   GameStatePlayFn,
   GameStatePlayable,
 } from "./gameState";
-import { GainAnyResource } from "./gameStatePlayHelpers";
+import {
+  GainAnyResource,
+  GainMoreThan1AnyResource,
+} from "./gameStatePlayHelpers";
 import { Event } from "./event";
 import { Location } from "./location";
 import { toGameText } from "./gameText";
@@ -164,7 +167,9 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
       return player.getPlayedCardNamesByType(CardType.TRAVELER).length;
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("not implemented");
+      if (gameInput.inputType === GameInputType.PLAY_ADORNMENT) {
+        throw new Error("Not Implemented");
+      }
     },
   }),
   [AdornmentName.GILDED_BOOK]: new Adornment({
@@ -179,7 +184,9 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
       return player.getPlayedCardNamesByType(CardType.GOVERNANCE).length;
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("not implemented");
+      if (gameInput.inputType === GameInputType.PLAY_ADORNMENT) {
+        throw new Error("Not Implemented");
+      }
     },
   }),
   [AdornmentName.HOURGLASS]: new Adornment({
@@ -272,7 +279,9 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
       return numPlayedCritters / 2;
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("not implemented");
+      if (gameInput.inputType === GameInputType.PLAY_ADORNMENT) {
+        throw new Error("Not Implemented");
+      }
     },
   }),
   [AdornmentName.MASQUE]: new Adornment({
@@ -287,7 +296,9 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
       return player.getNumResourcesByType(ResourceType.VP) / 3;
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("not implemented");
+      if (gameInput.inputType === GameInputType.PLAY_ADORNMENT) {
+        throw new Error("Not Implemented");
+      }
     },
   }),
   [AdornmentName.MIRROR]: new Adornment({
@@ -320,7 +331,9 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
       );
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("not implemented");
+      if (gameInput.inputType === GameInputType.PLAY_ADORNMENT) {
+        throw new Error("Not Implemented");
+      }
     },
   }),
   [AdornmentName.SCALES]: new Adornment({
@@ -349,7 +362,9 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
     ]),
     baseVP: 3,
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("not implemented");
+      if (gameInput.inputType === GameInputType.PLAY_ADORNMENT) {
+        throw new Error("Not Implemented");
+      }
     },
   }),
   [AdornmentName.SPYGLASS]: new Adornment({
@@ -408,7 +423,9 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
       return player.getPlayedCardNamesByType(CardType.PRODUCTION).length / 2;
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("not implemented");
+      if (gameInput.inputType === GameInputType.PLAY_ADORNMENT) {
+        throw new Error("Not Implemented");
+      }
     },
   }),
   [AdornmentName.TIARA]: new Adornment({
@@ -423,7 +440,24 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
       return player.getPlayedCardNamesByType(CardType.PROSPERITY).length;
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("not implemented");
+      const gainAnyHelper = new GainMoreThan1AnyResource({
+        adornmentContext: AdornmentName.TIARA,
+      });
+      if (gameInput.inputType === GameInputType.PLAY_ADORNMENT) {
+        const player = gameState.getActivePlayer();
+        const numProsperity = player.getPlayedCardNamesByType(
+          CardType.PROSPERITY
+        ).length;
+        if (numProsperity > 0) {
+          gameState.pendingGameInputs.push(
+            gainAnyHelper.getGameInput(numProsperity, {
+              prevInputType: gameInput.inputType,
+            })
+          );
+        }
+      } else if (gainAnyHelper.matchesGameInput(gameInput)) {
+        gainAnyHelper.play(gameState, gameInput);
+      }
     },
   }),
 };

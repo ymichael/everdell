@@ -79,14 +79,14 @@ export const gameTextToDebugStr = (gameText: GameText): string => {
           return part.name;
         case "entity":
           if (part.entityType === "event") {
-            return gameTextToDebugStr([
-              Event.fromName(part.event).getGameTextPart(),
-            ]);
+            return gameTextToDebugStr(
+              Event.fromName(part.event).getShortName()
+            );
           }
           if (part.entityType === "location") {
-            return gameTextToDebugStr([
-              Location.fromName(part.location).getGameTextPart(),
-            ]);
+            return gameTextToDebugStr(
+              Location.fromName(part.location).shortName
+            );
           }
           if (part.entityType === "card") {
             return part.card;
@@ -95,11 +95,9 @@ export const gameTextToDebugStr = (gameText: GameText): string => {
             return part.adornment;
           }
           if (part.entityType === "riverDestination") {
-            return gameTextToDebugStr([
-              RiverDestination.fromName(
-                part.riverDestination
-              ).getGameTextPart(),
-            ]);
+            return gameTextToDebugStr(
+              RiverDestination.fromName(part.riverDestination).shortName
+            );
           }
           if (part.entityType === "riverDestinationSpot") {
             return gameTextToDebugStr(

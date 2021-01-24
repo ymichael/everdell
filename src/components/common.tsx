@@ -186,7 +186,7 @@ export const Description = ({ textParts }: { textParts: GameText }) => {
             if (part.entityType === "adornment") {
               return (
                 <span key={idx} className={styles.entity_part}>
-                  TODO: {part.adornment}
+                  {part.adornment}
                 </span>
               );
             }

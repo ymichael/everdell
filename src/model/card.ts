@@ -1471,13 +1471,13 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         if (!location.canPlay(gameState, gameInput)) {
           throw new Error("Location can't be played");
         }
-        location.triggerLocation(gameState);
         gameState.addGameLogFromCard(CardName.LOOKOUT, [
           player,
           " copied ",
           location,
           ".",
         ]);
+        location.triggerLocation(gameState);
       }
     },
   }),

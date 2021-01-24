@@ -5,6 +5,7 @@ import {
   EventType,
   GameText,
   GameInput,
+  LocationType,
   GameInputType,
   TextPartEntity,
   IGameTextEntity,
@@ -18,6 +19,7 @@ import {
 } from "./gameState";
 import { GainAnyResource } from "./gameStatePlayHelpers";
 import { Event } from "./event";
+import { Location } from "./location";
 import { toGameText } from "./gameText";
 
 // Pearlbrook Adornment
@@ -192,7 +194,69 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
       return player.getPlayedCardNamesByType(CardType.DESTINATION).length;
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("not implemented");
+      const player = gameState.getActivePlayer();
+      const gainAnyHelper = new GainAnyResource({
+        adornmentContext: AdornmentName.HOURGLASS,
+      });
+      if (gameInput.inputType === GameInputType.PLAY_ADORNMENT) {
+        // Ask player which forest location they want to copy
+        const possibleForestLocations = gameState
+          .getPlayableLocations({ checkCanPlaceWorker: false })
+          .map((locationName) => {
+            return Location.fromName(locationName);
+          })
+          .filter((location) => {
+            return location.type === LocationType.FOREST;
+          });
+        if (possibleForestLocations.length === 0) {
+          throw new Error("No eligible forest location available to copy.");
+        }
+
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_LOCATION,
+          prevInputType: gameInput.inputType,
+          label: "Select forest location to copy",
+          adornmentContext: AdornmentName.HOURGLASS,
+          locationOptions: possibleForestLocations.map((x) => x.name),
+          clientOptions: {
+            selectedLocation: null,
+          },
+        });
+        gameState.pendingGameInputs.push(
+          gainAnyHelper.getGameInput({
+            prevInputType: gameInput.inputType,
+          })
+        );
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_LOCATION &&
+        gameInput.adornmentContext === AdornmentName.HOURGLASS
+      ) {
+        const selectedLocation = gameInput.clientOptions.selectedLocation;
+        if (
+          !selectedLocation ||
+          gameInput.locationOptions.indexOf(selectedLocation) === -1
+        ) {
+          throw new Error("Invalid location selected");
+        }
+        const location = Location.fromName(selectedLocation);
+        if (location.type !== LocationType.FOREST) {
+          throw new Error(
+            `Cannot copy ${selectedLocation}. Only forest locations are allowed.`
+          );
+        }
+        if (!location.canPlay(gameState, gameInput)) {
+          throw new Error("Location can't be played");
+        }
+        gameState.addGameLogFromAdornment(AdornmentName.HOURGLASS, [
+          player,
+          " copied ",
+          location,
+          ".",
+        ]);
+        location.triggerLocation(gameState);
+      } else if (gainAnyHelper.matchesGameInput(gameInput)) {
+        gainAnyHelper.play(gameState, gameInput);
+      }
     },
   }),
   [AdornmentName.KEY_TO_THE_CITY]: new Adornment({

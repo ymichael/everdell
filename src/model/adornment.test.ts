@@ -396,6 +396,30 @@ describe("Adornment", () => {
       player.adornmentsInHand.push(name);
     });
 
+    it("should be worth 2 point for every 2 PRODUCTION", () => {
+      const adornment = Adornment.fromName(name);
+      const playerId = player.playerId;
+      expect(adornment.getPoints(gameState, playerId)).to.be(0);
+
+      player.addToCity(CardName.FARM);
+      expect(adornment.getPoints(gameState, playerId)).to.be(0);
+
+      player.addToCity(CardName.FARM);
+      expect(adornment.getPoints(gameState, playerId)).to.be(1);
+
+      player.addToCity(CardName.QUEEN);
+      expect(adornment.getPoints(gameState, playerId)).to.be(1);
+
+      player.addToCity(CardName.KING);
+      expect(adornment.getPoints(gameState, playerId)).to.be(1);
+
+      player.addToCity(CardName.MINE);
+      expect(adornment.getPoints(gameState, playerId)).to.be(1);
+
+      player.addToCity(CardName.MINER_MOLE);
+      expect(adornment.getPoints(gameState, playerId)).to.be(2);
+    });
+
     it("should do nothing if player has no production cards", () => {
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
       [player, gameState] = multiStepGameInputTest(gameState, [
@@ -545,7 +569,7 @@ describe("Adornment", () => {
       player.adornmentsInHand.push(name);
     });
 
-    it("should be able to play", () => {
+    it("should allow the player to gain resources equal to the cost of one GOVERNANCE", () => {
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
       player.addToCityMulti([
         CardName.FARM,
@@ -583,7 +607,7 @@ describe("Adornment", () => {
       expect(player.playedAdornments).to.eql([name]);
     });
 
-    it("should calculate points correctly", () => {
+    it("should be worth 1 point for every 2 GOVERNANCE", () => {
       player.playedAdornments.push(name);
       expect(player.getPointsFromAdornments(gameState)).to.be(0);
 
@@ -949,6 +973,27 @@ describe("Adornment", () => {
       gameState.locationsMap[LocationName.FOREST_THREE_BERRY] = [];
     });
 
+    it("should be worth 1 point for every 1 DESTINATION", () => {
+      const adornment = Adornment.fromName(name);
+      const playerId = player.playerId;
+      expect(adornment.getPoints(gameState, playerId)).to.be(0);
+
+      player.addToCity(CardName.FARM);
+      expect(adornment.getPoints(gameState, playerId)).to.be(0);
+
+      player.addToCity(CardName.QUEEN);
+      expect(adornment.getPoints(gameState, playerId)).to.be(1);
+
+      player.addToCity(CardName.KING);
+      expect(adornment.getPoints(gameState, playerId)).to.be(1);
+
+      player.addToCity(CardName.UNIVERSITY);
+      expect(adornment.getPoints(gameState, playerId)).to.be(2);
+
+      player.addToCity(CardName.CASTLE);
+      expect(adornment.getPoints(gameState, playerId)).to.be(2);
+    });
+
     it("should allow the player to copy a forest location and gain 1 ANY", () => {
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
 
@@ -1230,6 +1275,27 @@ describe("Adornment", () => {
     beforeEach(() => {
       player.gainResources({ [ResourceType.PEARL]: 1 });
       player.adornmentsInHand.push(name);
+    });
+
+    it("should be worth 1 point for every 1 PROSPERITY", () => {
+      const adornment = Adornment.fromName(name);
+      const playerId = player.playerId;
+      expect(adornment.getPoints(gameState, playerId)).to.be(0);
+
+      player.addToCity(CardName.FARM);
+      expect(adornment.getPoints(gameState, playerId)).to.be(0);
+
+      player.addToCity(CardName.QUEEN);
+      expect(adornment.getPoints(gameState, playerId)).to.be(0);
+
+      player.addToCity(CardName.KING);
+      expect(adornment.getPoints(gameState, playerId)).to.be(1);
+
+      player.addToCity(CardName.MINE);
+      expect(adornment.getPoints(gameState, playerId)).to.be(1);
+
+      player.addToCity(CardName.CASTLE);
+      expect(adornment.getPoints(gameState, playerId)).to.be(2);
     });
 
     it("should do nothing if no PROSPERITY", () => {

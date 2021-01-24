@@ -65,15 +65,7 @@ export class Event implements GameStatePlayable, IGameTextEntity {
     playedEventInfoInner, // used for cards that accumulate other cards or resources
     pointsInner, // computed if specified + added to base points
     expansion = null,
-    wonderCost = {
-      resources: {
-        [ResourceType.TWIG]: 0,
-        [ResourceType.RESIN]: 0,
-        [ResourceType.PEBBLE]: 0,
-        [ResourceType.PEARL]: 0,
-      },
-      numCardsToDiscard: 0,
-    },
+    wonderCost,
   }: {
     name: EventName;
     type: EventType;

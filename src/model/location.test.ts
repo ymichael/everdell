@@ -158,16 +158,17 @@ describe("Location", () => {
       [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
         {
-          inputType: GameInputType.SELECT_RESOURCES,
-          toSpend: false,
+          inputType: GameInputType.SELECT_OPTION_GENERIC,
           prevInputType: GameInputType.PLACE_WORKER,
           locationContext: LocationName.FOREST_TWO_CARDS_ONE_WILD,
-          maxResources: 1,
-          minResources: 1,
+          options: [
+            ResourceType.BERRY,
+            ResourceType.TWIG,
+            ResourceType.RESIN,
+            ResourceType.PEBBLE,
+          ],
           clientOptions: {
-            resources: {
-              [ResourceType.TWIG]: 1,
-            },
+            selectedOption: ResourceType.TWIG,
           },
         },
       ]);

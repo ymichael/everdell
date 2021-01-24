@@ -1,5 +1,8 @@
+import pickBy from "lodash/pickBy";
+
 import {
   CardName,
+  LocationName,
   ResourceType,
   ResourceMap,
   GameInput,
@@ -107,27 +110,37 @@ export function getPointsPerRarityLabel({
 }
 
 export class GainAnyResource {
-  private cardContext: CardName;
+  private cardContext: CardName | undefined;
+  private locationContext: LocationName | undefined;
   private skipGameLog: boolean;
 
   constructor({
-    cardContext,
+    cardContext = undefined,
+    locationContext = undefined,
     skipGameLog = false,
   }: {
-    cardContext: CardName;
+    cardContext?: CardName | undefined;
+    locationContext?: LocationName | undefined;
     skipGameLog?: boolean;
   }) {
     this.cardContext = cardContext;
+    this.locationContext = locationContext;
     this.skipGameLog = skipGameLog;
   }
 
   matchesGameInput = (
     gameInput: GameInput
   ): gameInput is GameInputSelectOptionGeneric => {
-    return (
-      gameInput.inputType === GameInputType.SELECT_OPTION_GENERIC &&
-      this.cardContext === gameInput.cardContext
-    );
+    if (gameInput.inputType !== GameInputType.SELECT_OPTION_GENERIC) {
+      return false;
+    }
+    if (this.cardContext !== gameInput.cardContext) {
+      return false;
+    }
+    if (this.locationContext !== gameInput.locationContext) {
+      return false;
+    }
+    return true;
   };
 
   play = (
@@ -143,7 +156,14 @@ export class GainAnyResource {
 
     if (!this.skipGameLog) {
       const logText = [player, ` gained ${selectedOption}.`];
-      gameState.addGameLogFromCard(this.cardContext, logText);
+
+      if (this.cardContext) {
+        gameState.addGameLogFromCard(this.cardContext, logText);
+      } else if (this.locationContext) {
+        gameState.addGameLogFromLocation(this.locationContext, logText);
+      } else {
+        throw new Error("Unexpected game input");
+      }
     }
   };
 
@@ -151,6 +171,14 @@ export class GainAnyResource {
     prevInputType: GameInputType;
     prevInput?: GameInput;
   }): GameInputMultiStep => {
+    const contextObj = pickBy(
+      {
+        cardContext: this.cardContext,
+        locationContext: this.locationContext,
+      },
+      (v) => !!v
+    );
+
     return {
       inputType: GameInputType.SELECT_OPTION_GENERIC,
       label: "Gain 1 ANY",
@@ -163,7 +191,7 @@ export class GainAnyResource {
       clientOptions: {
         selectedOption: null,
       },
-      cardContext: this.cardContext,
+      ...contextObj,
       ...overrides,
     };
   };

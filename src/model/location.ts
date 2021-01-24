@@ -16,7 +16,7 @@ import {
   TextPartEntity,
   IGameTextEntity,
 } from "./types";
-import { sumResources } from "./gameStatePlayHelpers";
+import { sumResources, GainAnyResource } from "./gameStatePlayHelpers";
 import {
   GameState,
   GameStatePlayable,
@@ -648,6 +648,10 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     description: toGameText("CARD CARD ANY"),
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
+      const helper = new GainAnyResource({
+        locationContext: LocationName.FOREST_TWO_CARDS_ONE_WILD,
+      });
+
       if (gameInput.inputType === GameInputType.PLACE_WORKER) {
         player.drawCards(gameState, 2);
 
@@ -656,35 +660,14 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
           [player, " drew 2 CARD."]
         );
 
-        // ask the player what resource they want to gain
-        gameState.pendingGameInputs.push({
-          inputType: GameInputType.SELECT_RESOURCES,
-          label: "Gain 1 ANY",
-          toSpend: false,
-          prevInputType: GameInputType.PLACE_WORKER,
-          locationContext: LocationName.FOREST_TWO_CARDS_ONE_WILD,
-          maxResources: 1,
-          minResources: 1,
-          clientOptions: {
-            resources: {},
-          },
-        });
-      } else if (gameInput.inputType === GameInputType.SELECT_RESOURCES) {
-        const resources = gameInput.clientOptions.resources;
-        if (!resources) {
-          throw new Error("invalid input");
-        }
-        const numResources = sumResources(resources);
-        if (numResources > 1) {
-          throw new Error("Can't gain more than 1 resource");
-        } else if (numResources !== 1) {
-          throw new Error("Must gain 1 resource");
-        }
-        player.gainResources(resources);
-        gameState.addGameLogFromLocation(
-          LocationName.FOREST_TWO_CARDS_ONE_WILD,
-          [player, " gained ", ...resourceMapToGameText(resources), "."]
+        // Ask the player what resource they want to gain
+        gameState.pendingGameInputs.push(
+          helper.getGameInput({
+            prevInputType: GameInputType.PLACE_WORKER,
+          })
         );
+      } else if (helper.matchesGameInput(gameInput)) {
+        helper.play(gameState, gameInput);
       } else {
         throw new Error(`Invalid input type ${gameInput.inputType}`);
       }

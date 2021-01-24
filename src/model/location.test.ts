@@ -215,7 +215,7 @@ describe("Location", () => {
           locationContext:
             LocationName.FOREST_DISCARD_UP_TO_THREE_CARDS_TO_GAIN_WILD_PER_CARD,
           maxResources: 3,
-          minResources: 0,
+          minResources: 3,
           clientOptions: {
             resources: {
               [ResourceType.TWIG]: 1,

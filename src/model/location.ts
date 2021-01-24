@@ -16,7 +16,11 @@ import {
   TextPartEntity,
   IGameTextEntity,
 } from "./types";
-import { sumResources, GainAnyResource } from "./gameStatePlayHelpers";
+import {
+  sumResources,
+  GainAnyResource,
+  GainMoreThan1AnyResource,
+} from "./gameStatePlayHelpers";
 import {
   GameState,
   GameStatePlayable,
@@ -251,6 +255,9 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     ]),
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
+      const helper = new GainMoreThan1AnyResource({
+        locationContext: LocationName.HAVEN,
+      });
       if (gameInput.inputType === GameInputType.PLACE_WORKER) {
         if (player.cardsInHand.length < 1) {
           throw new Error("must have cards to discard");
@@ -282,42 +289,18 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
 
         const numDiscarded = cardsToDiscard.length;
 
-        // ask player which resources they want to get
-        gameState.pendingGameInputs.push({
-          inputType: GameInputType.SELECT_RESOURCES,
-          label: `Gain ${Math.floor(numDiscarded / 2)} ANY`,
-          toSpend: false,
-          prevInputType: GameInputType.DISCARD_CARDS,
-          locationContext: LocationName.HAVEN,
-          minResources: Math.floor(numDiscarded / 2),
-          maxResources: Math.floor(numDiscarded / 2),
-          clientOptions: {
-            resources: {},
-          },
-        });
-
+        // Ask player which resources they want to get
+        gameState.pendingGameInputs.push(
+          helper.getGameInput(Math.floor(numDiscarded / 2), {
+            prevInputType: GameInputType.DISCARD_CARDS,
+          })
+        );
         gameState.addGameLogFromLocation(LocationName.HAVEN, [
           player,
           ` discarded ${numDiscarded} CARD.`,
         ]);
-      } else if (gameInput.inputType === GameInputType.SELECT_RESOURCES) {
-        const resources = gameInput.clientOptions.resources;
-
-        const numResources = sumResources(resources);
-
-        if (numResources > gameInput.maxResources) {
-          throw new Error("Can only gain 1 resource per 2 cards discarded");
-        } else if (numResources !== gameInput.maxResources) {
-          throw new Error(`Must gain ${gameInput.maxResources} resource`);
-        }
-
-        player.gainResources(resources);
-        gameState.addGameLogFromLocation(LocationName.HAVEN, [
-          player,
-          " gained ",
-          ...resourceMapToGameText(resources),
-          ".",
-        ]);
+      } else if (helper.matchesGameInput(gameInput)) {
+        helper.play(gameState, gameInput);
       } else {
         throw new Error(`Invalid input type ${gameInput.inputType}`);
       }
@@ -457,40 +440,16 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     description: toGameText("ANY ANY"),
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
+      const helper = new GainMoreThan1AnyResource({
+        locationContext: LocationName.FOREST_TWO_WILD,
+      });
       if (gameInput.inputType === GameInputType.PLACE_WORKER) {
         // ask the player what resources they want to gain
-        gameState.pendingGameInputs.push({
-          inputType: GameInputType.SELECT_RESOURCES,
-          label: "Gain 2 ANY",
-          toSpend: false,
-          prevInputType: GameInputType.PLACE_WORKER,
-          locationContext: LocationName.FOREST_TWO_WILD,
-          maxResources: 2,
-          minResources: 2,
-          clientOptions: {
-            resources: {},
-          },
-        });
-      } else if (gameInput.inputType === GameInputType.SELECT_RESOURCES) {
-        const resources = gameInput.clientOptions.resources;
-        if (!resources) {
-          throw new Error("invalid input");
-        }
-        // count total number of resources
-        const numResources = sumResources(resources);
-        if (numResources > 2) {
-          throw new Error("Can't gain more than 2 resources");
-        } else if (numResources !== 2) {
-          throw new Error("Need to gain 2 resources");
-        }
-        // Gain requested resources
-        player.gainResources(resources);
-        gameState.addGameLogFromLocation(LocationName.FOREST_TWO_WILD, [
-          player,
-          " gained ",
-          ...resourceMapToGameText(resources),
-          ".",
-        ]);
+        gameState.pendingGameInputs.push(
+          helper.getGameInput(2, { prevInputType: GameInputType.PLACE_WORKER })
+        );
+      } else if (helper.matchesGameInput(gameInput)) {
+        helper.play(gameState, gameInput);
       } else {
         throw new Error(`Invalid input type ${gameInput.inputType}`);
       }
@@ -684,6 +643,11 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
       ),
       playInner: (gameState: GameState, gameInput: GameInput) => {
         const player = gameState.getActivePlayer();
+        const helper = new GainMoreThan1AnyResource({
+          locationContext:
+            LocationName.FOREST_DISCARD_UP_TO_THREE_CARDS_TO_GAIN_WILD_PER_CARD,
+        });
+
         if (gameInput.inputType === GameInputType.PLACE_WORKER) {
           if (player.cardsInHand.length < 1) {
             throw new Error("Must have cards to discard");
@@ -708,49 +672,27 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
             throw new Error("Invalid list of cards to discard");
           }
 
-          // ask the player what resource they want to gain
-          gameState.pendingGameInputs.push({
-            inputType: GameInputType.SELECT_RESOURCES,
-            toSpend: false,
-            label: `Gain ${cardsToDiscard.length} ANY`,
-            prevInputType: GameInputType.DISCARD_CARDS,
-            locationContext:
-              LocationName.FOREST_DISCARD_UP_TO_THREE_CARDS_TO_GAIN_WILD_PER_CARD,
-            maxResources: cardsToDiscard.length,
-            minResources: 0,
-            clientOptions: {
-              resources: {},
-            },
-          });
+          // Ask the player what resource they want to gain
+          gameState.pendingGameInputs.push(
+            helper.getGameInput(cardsToDiscard.length, {
+              prevInputType: GameInputType.DISCARD_CARDS,
+            })
+          );
 
-          // discard the cards
+          // Discard the cards
           cardsToDiscard.forEach((cardName) => {
             player.removeCardFromHand(cardName);
           });
 
           gameState.addGameLogFromLocation(
             LocationName.FOREST_DISCARD_UP_TO_THREE_CARDS_TO_GAIN_WILD_PER_CARD,
-            [player, ` discarded ${cardsToDiscard.length} CARD.`]
+            [
+              player,
+              ` discarded ${cardsToDiscard.length} CARD to gain ${cardsToDiscard.length} ANY.`,
+            ]
           );
-        } else if (gameInput.inputType === GameInputType.SELECT_RESOURCES) {
-          const resources = gameInput.clientOptions.resources;
-          if (!resources) {
-            throw new Error("invalid input");
-          }
-
-          const numResources = sumResources(resources);
-          if (numResources > gameInput.maxResources) {
-            throw new Error(
-              "Can't gain more resources than the number of cards discarded"
-            );
-          } else if (numResources !== gameInput.maxResources) {
-            throw new Error(`Must gain ${gameInput.maxResources} resources`);
-          }
-          player.gainResources(resources);
-          gameState.addGameLogFromLocation(
-            LocationName.FOREST_DISCARD_UP_TO_THREE_CARDS_TO_GAIN_WILD_PER_CARD,
-            [player, " gained ", ...resourceMapToGameText(resources), "."]
-          );
+        } else if (helper.matchesGameInput(gameInput)) {
+          helper.play(gameState, gameInput);
         } else {
           throw new Error(`Invalid input type ${gameInput.inputType}`);
         }

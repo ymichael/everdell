@@ -8,6 +8,7 @@ import {
   GameInput,
   GameInputType,
   GameInputMultiStep,
+  GameInputSelectResources,
   GameInputSelectOptionGeneric,
 } from "./types";
 import {
@@ -15,6 +16,7 @@ import {
   GameStatePlayFn,
   GameStateCountPointsFn,
 } from "./gameState";
+import { resourceMapToGameText } from "./gameText";
 import { Card } from "./card";
 
 export function playSpendResourceToGetVPFactory({
@@ -190,6 +192,112 @@ export class GainAnyResource {
       ],
       clientOptions: {
         selectedOption: null,
+      },
+      ...contextObj,
+      ...overrides,
+    };
+  };
+}
+
+export class GainMoreThan1AnyResource {
+  private cardContext: CardName | undefined;
+  private locationContext: LocationName | undefined;
+  private skipGameLog: boolean;
+
+  constructor({
+    cardContext = undefined,
+    locationContext = undefined,
+    skipGameLog = false,
+  }: {
+    cardContext?: CardName | undefined;
+    locationContext?: LocationName | undefined;
+    skipGameLog?: boolean;
+  }) {
+    this.cardContext = cardContext;
+    this.locationContext = locationContext;
+    this.skipGameLog = skipGameLog;
+  }
+
+  matchesGameInput = (
+    gameInput: GameInput
+  ): gameInput is GameInputSelectResources => {
+    if (gameInput.inputType !== GameInputType.SELECT_RESOURCES) {
+      return false;
+    }
+    if (this.cardContext !== gameInput.cardContext) {
+      return false;
+    }
+    if (this.locationContext !== gameInput.locationContext) {
+      return false;
+    }
+    return true;
+  };
+
+  play = (gameState: GameState, gameInput: GameInputSelectResources): void => {
+    const player = gameState.getActivePlayer();
+    const resources = gameInput.clientOptions.resources;
+    if (!resources) {
+      throw new Error("Invalid input");
+    }
+    const numResources = sumResources(resources);
+    if (
+      gameInput.maxResources === gameInput.minResources &&
+      numResources !== gameInput.minResources
+    ) {
+      throw new Error(`Can only gain ${gameInput.maxResources} resources`);
+    } else if (numResources > gameInput.maxResources) {
+      throw new Error(
+        `Can't gain more than ${gameInput.maxResources} resources`
+      );
+    } else if (numResources < gameInput.minResources) {
+      throw new Error(
+        `Can't gain less than ${gameInput.minResources} resources`
+      );
+    }
+
+    player.gainResources(resources);
+
+    if (!this.skipGameLog) {
+      const logText = [
+        player,
+        " gained ",
+        ...resourceMapToGameText(resources),
+        ".",
+      ];
+
+      if (this.cardContext) {
+        gameState.addGameLogFromCard(this.cardContext, logText);
+      } else if (this.locationContext) {
+        gameState.addGameLogFromLocation(this.locationContext, logText);
+      } else {
+        throw new Error("Unexpected game input");
+      }
+    }
+  };
+
+  getGameInput = (
+    numResources: number,
+    overrides: {
+      prevInputType: GameInputType;
+      prevInput?: GameInput;
+    }
+  ): GameInputMultiStep => {
+    const contextObj = pickBy(
+      {
+        cardContext: this.cardContext,
+        locationContext: this.locationContext,
+      },
+      (v) => !!v
+    );
+
+    return {
+      inputType: GameInputType.SELECT_RESOURCES,
+      label: `Gain ${numResources} ANY`,
+      toSpend: false,
+      maxResources: numResources,
+      minResources: numResources,
+      clientOptions: {
+        resources: {},
       },
       ...contextObj,
       ...overrides,

@@ -87,7 +87,7 @@ describe("Wonder", () => {
       player.addCardToHand(gameState, CardName.INN);
       player.addCardToHand(gameState, CardName.WIFE);
 
-      let player2 = gameState.players[1];
+      const player2 = gameState.players[1];
       player2.gainResources({
         [ResourceType.TWIG]: 2,
         [ResourceType.RESIN]: 2,

@@ -205,6 +205,8 @@ export const Description = ({ textParts }: { textParts: GameText }) => {
                 </span>
               );
             }
+            assertUnreachable(part, `Unexpected part: ${JSON.stringify(part)}`);
+            break;
           default:
             assertUnreachable(part, `Unexpected part: ${JSON.stringify(part)}`);
         }

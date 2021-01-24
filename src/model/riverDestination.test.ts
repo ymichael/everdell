@@ -84,7 +84,7 @@ describe("RiverDestinationMap", () => {
       const riverMap = initialRiverDestinationMap();
       riverMap.spots.THREE_PRODUCTION.revealed = true;
 
-      let riverMapJSON = riverMap.toJSON(false);
+      const riverMapJSON = riverMap.toJSON(false);
       expect(riverMapJSON.spots.SHOAL.name).to.not.be(null);
       expect(riverMapJSON.spots.THREE_PRODUCTION.name).to.not.be(null);
 

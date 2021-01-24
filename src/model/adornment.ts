@@ -5,6 +5,7 @@ import {
   AdornmentName,
   CardType,
   EventName,
+  CardName,
   EventType,
   GameText,
   GameInput,
@@ -300,8 +301,127 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
       return Math.floor(player.getNumResourcesByType(ResourceType.VP) / 3);
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.PLAY_ADORNMENT) {
-        throw new Error("Not Implemented");
+        // Find all playable cards worth up to 3 baseVP
+        const playableCards: CardName[] = [];
+        [...player.cardsInHand, ...gameState.meadowCards].forEach(
+          (cardName) => {
+            const card = Card.fromName(cardName as CardName);
+            if (
+              card.baseVP <= 3 &&
+              player.canAddToCity(cardName, true /* strict */)
+            ) {
+              playableCards.push(card.name);
+            }
+          }
+        );
+        if (playableCards.length !== 0) {
+          gameState.pendingGameInputs.push({
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: gameInput.inputType,
+            label: "Select CARD to play for free",
+            cardOptions: playableCards,
+            maxToSelect: 1,
+            minToSelect: 1,
+            adornmentContext: AdornmentName.MASQUE,
+            clientOptions: {
+              selectedCards: [],
+            },
+          });
+        }
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_CARDS &&
+        gameInput.adornmentContext === AdornmentName.MASQUE
+      ) {
+        const selectedCards = gameInput.clientOptions.selectedCards;
+        if (!selectedCards) {
+          throw new Error("No card selected");
+        }
+        if (selectedCards.length !== 1) {
+          throw new Error("Please select one card");
+        }
+        const card = Card.fromName(selectedCards[0]);
+        if (card.baseVP > 3) {
+          throw new Error("Cannot play a card worth more than 3 base VP");
+        }
+        const cardExistInHand = player.cardsInHand.indexOf(card.name) !== -1;
+        const cardExistInMeadow =
+          gameState.meadowCards.indexOf(card.name) !== -1;
+
+        if (cardExistInHand && cardExistInMeadow) {
+          gameState.pendingGameInputs.push({
+            inputType: GameInputType.SELECT_OPTION_GENERIC,
+            prevInputType: gameInput.inputType,
+            prevInput: gameInput,
+            adornmentContext: AdornmentName.MASQUE,
+            label: ["Select where to play ", card.getGameTextPart(), " from"],
+            options: ["Meadow", "Hand"],
+            clientOptions: {
+              selectedOption: null,
+            },
+          });
+        } else if (cardExistInMeadow || cardExistInHand) {
+          if (cardExistInMeadow) {
+            gameState.removeCardFromMeadow(card.name);
+            gameState.addGameLogFromAdornment(AdornmentName.MASQUE, [
+              player,
+              " played ",
+              card,
+              " from the Meadow.",
+            ]);
+          } else {
+            player.removeCardFromHand(card.name);
+            gameState.addGameLogFromAdornment(AdornmentName.MASQUE, [
+              player,
+              " played ",
+              card,
+              " from their hand.",
+            ]);
+          }
+          card.addToCityAndPlay(gameState, gameInput);
+        } else {
+          throw new Error(
+            "Cannot find the selected card in the Meadow or your hand."
+          );
+        }
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_OPTION_GENERIC &&
+        gameInput.adornmentContext === AdornmentName.MASQUE &&
+        gameInput.prevInput &&
+        gameInput.prevInput.inputType === GameInputType.SELECT_CARDS
+      ) {
+        const selectedCards = gameInput.prevInput.clientOptions.selectedCards;
+        if (!selectedCards) {
+          throw new Error("No card selected");
+        }
+        if (selectedCards.length !== 1) {
+          throw new Error("Incorrect number of cards selected");
+        }
+        const card = Card.fromName(selectedCards[0]);
+        if (card.baseVP > 3) {
+          throw new Error("Cannot play a card worth more than 3 base VP");
+        }
+        if (gameInput.clientOptions.selectedOption === "Meadow") {
+          gameState.removeCardFromMeadow(card.name);
+          gameState.addGameLogFromAdornment(AdornmentName.MASQUE, [
+            player,
+            " played ",
+            card,
+            " from the Meadow.",
+          ]);
+        } else if (gameInput.clientOptions.selectedOption === "Hand") {
+          player.removeCardFromHand(card.name);
+          gameState.addGameLogFromAdornment(AdornmentName.MASQUE, [
+            player,
+            " played ",
+            card,
+            " from their hand.",
+          ]);
+        } else {
+          throw new Error("Please choose one of the options");
+        }
+        card.addToCityAndPlay(gameState, gameInput);
       }
     },
   }),

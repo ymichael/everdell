@@ -317,12 +317,196 @@ describe("Adornment", () => {
       player.adornmentsInHand.push(name);
     });
 
-    xit("should have tests", () => {
-      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
+    it("should allow player to choose to play card from meadow OR hand", () => {
+      gameState.meadowCards.push(CardName.FARM);
+      player.cardsInHand.push(CardName.FARM);
+      expect(player.hasCardInCity(CardName.FARM)).to.be(false);
+
+      const selectCardInput = {
+        inputType: GameInputType.SELECT_CARDS as const,
+        prevInputType: GameInputType.PLAY_ADORNMENT,
+        adornmentContext: name,
+        cardOptions: [CardName.FARM, CardName.FARM],
+        maxToSelect: 1,
+        minToSelect: 1,
+        clientOptions: {
+          selectedCards: [CardName.FARM],
+        },
+      };
+
+      const selectCardFromMeadowSourceInput = {
+        inputType: GameInputType.SELECT_OPTION_GENERIC as const,
+        prevInputType: GameInputType.SELECT_CARDS,
+        prevInput: selectCardInput,
+        adornmentContext: name,
+        options: ["Meadow", "Hand"],
+        clientOptions: { selectedOption: "Meadow" },
+      };
+
+      const selectCardFromHandSourceInput = {
+        inputType: GameInputType.SELECT_OPTION_GENERIC as const,
+        prevInputType: GameInputType.SELECT_CARDS,
+        prevInput: selectCardInput,
+        adornmentContext: name,
+        options: ["Meadow", "Hand"],
+        clientOptions: { selectedOption: "Hand" },
+      };
+
+      const [playerMeadow, gameState2] = multiStepGameInputTest(gameState, [
+        playAdornmentInput(name),
+        selectCardInput,
+        selectCardFromMeadowSourceInput,
+      ]);
+
+      expect(gameState2.meadowCards.indexOf(CardName.FARM)).to.be(-1);
+      expect(playerMeadow.cardsInHand.indexOf(CardName.FARM)).to.be(0);
+      expect(playerMeadow.hasCardInCity(CardName.FARM)).to.be(true);
+
+      const [playerHand, gameState3] = multiStepGameInputTest(gameState, [
+        playAdornmentInput(name),
+        selectCardInput,
+        selectCardFromHandSourceInput,
+      ]);
+
+      expect(gameState3.meadowCards.indexOf(CardName.FARM)).to.be(0);
+      expect(playerHand.cardsInHand.indexOf(CardName.FARM)).to.be(-1);
+      expect(playerHand.hasCardInCity(CardName.FARM)).to.be(true);
+    });
+
+    it("should allow player to buy card from hand for less than 3 points for free", () => {
+      player.cardsInHand.push(CardName.HUSBAND);
+      expect(player.hasCardInCity(CardName.HUSBAND)).to.be(false);
+
       [player, gameState] = multiStepGameInputTest(gameState, [
         playAdornmentInput(name),
+        {
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: GameInputType.PLAY_ADORNMENT,
+          adornmentContext: name,
+          cardOptions: [CardName.HUSBAND],
+          maxToSelect: 1,
+          minToSelect: 1,
+          clientOptions: {
+            selectedCards: [CardName.HUSBAND],
+          },
+        },
       ]);
-      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+
+      expect(player.hasCardInCity(CardName.HUSBAND)).to.be(true);
+      expect(player.cardsInHand.indexOf(CardName.HUSBAND)).to.be(-1);
+    });
+
+    it("should allow player to play card from the meadow for less than 3 points for free", () => {
+      gameState.meadowCards.push(
+        CardName.KING,
+        CardName.QUEEN,
+        CardName.POSTAL_PIGEON,
+        CardName.POSTAL_PIGEON,
+        CardName.FARM,
+        CardName.HUSBAND,
+        CardName.CHAPEL,
+        CardName.MONK
+      );
+      expect(player.hasCardInCity(CardName.HUSBAND)).to.be(false);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        playAdornmentInput(name),
+        {
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: GameInputType.PLAY_ADORNMENT,
+          adornmentContext: name,
+          cardOptions: [
+            CardName.POSTAL_PIGEON,
+            CardName.POSTAL_PIGEON,
+            CardName.FARM,
+            CardName.HUSBAND,
+            CardName.CHAPEL,
+            CardName.MONK,
+          ],
+          maxToSelect: 1,
+          minToSelect: 1,
+          clientOptions: {
+            selectedCards: [CardName.HUSBAND],
+          },
+        },
+      ]);
+
+      expect(player.hasCardInCity(CardName.HUSBAND)).to.be(true);
+      expect(gameState.meadowCards.indexOf(CardName.HUSBAND)).to.be(-1);
+    });
+
+    it("should allow player to play card worth exactly 3 points for free", () => {
+      gameState.meadowCards.push(
+        CardName.KING,
+        CardName.QUEEN,
+        CardName.POSTAL_PIGEON,
+        CardName.POSTAL_PIGEON,
+        CardName.FARM,
+        CardName.HUSBAND,
+        CardName.CHAPEL,
+        CardName.FAIRGROUNDS
+      );
+      expect(player.hasCardInCity(CardName.FAIRGROUNDS)).to.be(false);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        playAdornmentInput(name),
+        {
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: GameInputType.PLAY_ADORNMENT,
+          adornmentContext: name,
+          cardOptions: [
+            CardName.POSTAL_PIGEON,
+            CardName.POSTAL_PIGEON,
+            CardName.FARM,
+            CardName.HUSBAND,
+            CardName.CHAPEL,
+            CardName.FAIRGROUNDS,
+          ],
+          maxToSelect: 1,
+          minToSelect: 1,
+          clientOptions: {
+            selectedCards: [CardName.FAIRGROUNDS],
+          },
+        },
+      ]);
+
+      expect(gameState.meadowCards.indexOf(CardName.FAIRGROUNDS)).to.be(-1);
+      expect(player.hasCardInCity(CardName.FAIRGROUNDS)).to.be(true);
+    });
+
+    it("should not allow player to buy card for than 3 points", () => {
+      gameState.meadowCards.push(
+        CardName.KING,
+        CardName.QUEEN,
+        CardName.POSTAL_PIGEON,
+        CardName.POSTAL_PIGEON,
+        CardName.FARM,
+        CardName.HUSBAND,
+        CardName.CHAPEL,
+        CardName.MONK
+      );
+      gameState = gameState.next(playAdornmentInput(name));
+
+      expect(() => {
+        gameState.next({
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: GameInputType.PLAY_ADORNMENT,
+          adornmentContext: name,
+          cardOptions: [
+            CardName.POSTAL_PIGEON,
+            CardName.POSTAL_PIGEON,
+            CardName.FARM,
+            CardName.HUSBAND,
+            CardName.CHAPEL,
+            CardName.MONK,
+          ],
+          maxToSelect: 1,
+          minToSelect: 1,
+          clientOptions: {
+            selectedCards: [CardName.KING],
+          },
+        });
+      }).to.throwException(/cannot/i);
     });
   });
 

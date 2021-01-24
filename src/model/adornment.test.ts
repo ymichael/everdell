@@ -11,6 +11,7 @@ import {
   GameInputPlayAdornment,
   CardName,
   CardType,
+  EventName,
   ResourceType,
 } from "./types";
 
@@ -47,6 +48,25 @@ describe("Adornment", () => {
     beforeEach(() => {
       player.gainResources({ [ResourceType.PEARL]: 1 });
       player.adornmentsInHand.push(name);
+    });
+
+    it("should be worth 3 points for each wonder", () => {
+      player.playedAdornments.push(name);
+      player.nextSeason();
+      player.nextSeason();
+      player.nextSeason();
+
+      // worth 0 because no wonders built
+      expect(player.getPointsFromAdornments(gameState)).to.be(0);
+
+      player.placeWorkerOnEvent(EventName.SPECIAL_GRADUATION_OF_SCHOLARS);
+      expect(player.getPointsFromAdornments(gameState)).to.be(0);
+
+      player.placeWorkerOnEvent(EventName.WONDER_SUNBLAZE_BRIDGE);
+      expect(player.getPointsFromAdornments(gameState)).to.be(3);
+
+      player.placeWorkerOnEvent(EventName.WONDER_STARFALLS_FLAME);
+      expect(player.getPointsFromAdornments(gameState)).to.be(6);
     });
 
     it("should gain 1 ANY, CARD and PEARL", () => {

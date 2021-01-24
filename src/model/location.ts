@@ -28,11 +28,7 @@ import {
   GameStateCanPlayCheckFn,
 } from "./gameState";
 import shuffle from "lodash/shuffle";
-import {
-  toGameText,
-  resourceMapToGameText,
-  cardListToGameText,
-} from "./gameText";
+import { toGameText, cardListToGameText } from "./gameText";
 import { assertUnreachable } from "../utils";
 
 export class Location implements GameStatePlayable, IGameTextEntity {
@@ -439,7 +435,6 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
     description: toGameText("ANY ANY"),
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      const player = gameState.getActivePlayer();
       const helper = new GainMoreThan1AnyResource({
         locationContext: LocationName.FOREST_TWO_WILD,
       });

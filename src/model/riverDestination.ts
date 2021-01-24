@@ -8,14 +8,22 @@ import {
   RiverDestinationMapSpots,
   RiverDestinationType,
   RiverDestinationName,
+  ResourceType,
   GameText,
   GameInput,
+  GameInputType,
   TextPartEntity,
   IGameTextEntity,
 } from "./types";
 import { RiverDestinationMapJSON } from "./jsonTypes";
-import { toGameText } from "./gameText";
-import { GameState, GameStatePlayable } from "./gameState";
+import { toGameText, cardListToGameText } from "./gameText";
+import { Card } from "./card";
+import {
+  GameState,
+  GameStatePlayable,
+  GameStatePlayFn,
+  GameStateCanPlayCheckFn,
+} from "./gameState";
 import { assertUnreachable } from "../utils";
 
 // Pearlbrook River Destination
@@ -24,26 +32,42 @@ export class RiverDestination implements GameStatePlayable, IGameTextEntity {
   readonly isExclusive: boolean;
   readonly type: RiverDestinationType;
   readonly description: GameText;
+  readonly shortName: GameText;
+  readonly playInner: GameStatePlayFn | undefined;
+  readonly canPlayCheckInner: GameStateCanPlayCheckFn | undefined;
 
   constructor({
     name,
+    shortName,
     type,
     isExclusive = true,
     description,
+    playInner,
+    canPlayCheckInner,
   }: {
     name: RiverDestinationName;
+    shortName: GameText;
     isExclusive?: boolean;
     type: RiverDestinationType;
     description: GameText;
+    playInner?: GameStatePlayFn;
+    canPlayCheckInner?: GameStateCanPlayCheckFn;
   }) {
     this.name = name;
+    this.shortName = shortName;
     this.type = type;
     this.description = description;
     this.isExclusive = isExclusive;
+    this.playInner = playInner;
+    this.canPlayCheckInner = canPlayCheckInner;
   }
 
   getGameTextPart(): TextPartEntity {
-    throw new Error("Not Implemented");
+    return {
+      type: "entity",
+      entityType: "riverDestination",
+      riverDestination: this.name,
+    };
   }
 
   canPlay(gameState: GameState, gameInput: GameInput): boolean {
@@ -51,11 +75,16 @@ export class RiverDestination implements GameStatePlayable, IGameTextEntity {
   }
 
   canPlayCheck(gameState: GameState, gameInput: GameInput): string | null {
-    return "Not Implemented";
+    if (this.canPlayCheckInner) {
+      return this.canPlayCheckInner(gameState, gameInput);
+    }
+    return null;
   }
 
   play(gameState: GameState, gameInput: GameInput): void {
-    throw new Error("Not Implemented");
+    if (this.playInner) {
+      this.playInner(gameState, gameInput);
+    }
   }
 
   getPoints(gameState: GameState, playerId: string): number {
@@ -92,7 +121,7 @@ export class RiverDestinationMap {
 
   canVisitSpotCheck(
     gameState: GameState,
-    spot: RiverDestinationSpot
+    spotName: RiverDestinationSpot
   ): string | null {
     const player = gameState.getActivePlayer();
     if (!gameState.gameOptions.pearlbrook) {
@@ -102,8 +131,16 @@ export class RiverDestinationMap {
       return "Ambassador already placed somewhere else.";
     }
 
+    // Check if spot is already occupied.
+    if (spotName !== RiverDestinationSpot.SHOAL) {
+      const spot = this.spots[spotName];
+      if (spot.ambassadors.length !== 0) {
+        return `${spot} is already occupied.`;
+      }
+    }
+
     // Check if player fulfills the criteria of the spot!
-    switch (spot) {
+    switch (spotName) {
       case RiverDestinationSpot.THREE_PRODUCTION:
         if (player.getPlayedCardNamesByType(CardType.PRODUCTION).length < 3) {
           return "Must have 3 PRODUCTION cards in your city";
@@ -127,7 +164,7 @@ export class RiverDestinationMap {
       case RiverDestinationSpot.SHOAL:
         break;
       default:
-        assertUnreachable(spot, spot);
+        assertUnreachable(spotName, spotName);
     }
 
     return null;
@@ -200,18 +237,74 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
     name: RiverDestinationName.SHOAL,
     type: RiverDestinationType.SHOAL,
     isExclusive: false,
+    shortName: [{ type: "em", text: "Shoal" }],
     description: toGameText("Pay 2 ANY and discard 2 CARD to gain 1 PEARL."),
   }),
   [RiverDestinationName.GUS_THE_GARDENER]: new RiverDestination({
     name: RiverDestinationName.GUS_THE_GARDENER,
     type: RiverDestinationType.CITIZEN,
+    shortName: toGameText("Discard 3 PRODUCTION, Gain VP and PEARL"),
     description: toGameText(
       "Reveal and discard 3 PRODUCTION from your hand to gain 1 VP and 1 PEARL."
     ),
+    playInner(gameState: GameState, gameInput: GameInput) {
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.VISIT_RIVER_DESTINATION) {
+        const cardOptions = player.cardsInHand.filter((cardName) => {
+          return Card.fromName(cardName).cardType === CardType.PRODUCTION;
+        });
+        if (cardOptions.length < 3) {
+          return;
+        }
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: gameInput.inputType,
+          cardOptions,
+          maxToSelect: 3,
+          minToSelect: 3,
+          riverDestinationContext: RiverDestinationName.GUS_THE_GARDENER,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_CARDS &&
+        gameInput.prevInputType === GameInputType.VISIT_RIVER_DESTINATION &&
+        gameInput.riverDestinationContext ===
+          RiverDestinationName.GUS_THE_GARDENER
+      ) {
+        const selectedCards = gameInput.clientOptions.selectedCards;
+        if (
+          selectedCards.length !== 3 ||
+          selectedCards.filter((cardName) => {
+            return Card.fromName(cardName).cardType === CardType.PRODUCTION;
+          }).length !== 3
+        ) {
+          throw new Error("Please select 3 PRODUCTION cards to discard");
+        }
+        gameState.addGameLogFromRiverDestination(
+          RiverDestinationName.GUS_THE_GARDENER,
+          [
+            player,
+            " discarded 3 PRODUCTION cards from their hand (",
+            ...cardListToGameText(selectedCards),
+            ") to gain 1 VP and 1 PEARL.",
+          ]
+        );
+        selectedCards.forEach((cardName) => {
+          player.removeCardFromHand(cardName);
+          gameState.discardPile.addToStack(cardName);
+        });
+        player.gainResources({ [ResourceType.PEARL]: 1, [ResourceType.VP]: 1 });
+      }
+    },
   }),
   [RiverDestinationName.BOSLEY_THE_ARTIST]: new RiverDestination({
     name: RiverDestinationName.BOSLEY_THE_ARTIST,
     type: RiverDestinationType.CITIZEN,
+    shortName: toGameText(
+      "Discard 3 different colored CARD, Gain VP and PEARL"
+    ),
     description: toGameText(
       "Reveal and discard 3 different colored CARD from your hand to gain 1 VP and 1 PEARL."
     ),
@@ -219,6 +312,7 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
   [RiverDestinationName.CRUSTINA_THE_CONSTABLE]: new RiverDestination({
     name: RiverDestinationName.CRUSTINA_THE_CONSTABLE,
     type: RiverDestinationType.CITIZEN,
+    shortName: toGameText("Discard 2 GOVERNANCE CARD, Gain VP and PEARL"),
     description: toGameText(
       "Reveal and discard 2 GOVERNANCE from your hand to gain 1 VP and 1 PEARL."
     ),
@@ -226,6 +320,7 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
   [RiverDestinationName.ILUMINOR_THE_INVENTOR]: new RiverDestination({
     name: RiverDestinationName.ILUMINOR_THE_INVENTOR,
     type: RiverDestinationType.CITIZEN,
+    shortName: toGameText("Discard 2 TRAVELER CARD, Gain VP and PEARL"),
     description: toGameText(
       "Reveal and discard 2 TRAVELER from your hand to gain 1 VP and 1 PEARL."
     ),
@@ -233,6 +328,7 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
   [RiverDestinationName.SNOUT_THE_EXPLORER]: new RiverDestination({
     name: RiverDestinationName.SNOUT_THE_EXPLORER,
     type: RiverDestinationType.CITIZEN,
+    shortName: toGameText("Discard 2 DESTINATION CARD, Gain VP and PEARL"),
     description: toGameText(
       "Reveal and discard 2 DESTINATION from your hand to gain 1 VP and 1 PEARL."
     ),
@@ -240,6 +336,7 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
   [RiverDestinationName.OMICRON_THE_ELDER]: new RiverDestination({
     name: RiverDestinationName.OMICRON_THE_ELDER,
     type: RiverDestinationType.CITIZEN,
+    shortName: toGameText("Discard 1 PROSPERITY CARD, Gain VP and PEARL"),
     description: toGameText(
       "Reveal and discard 1 PROSPERITY from your hand to gain 1 VP and 1 PEARL."
     ),
@@ -247,6 +344,7 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
   [RiverDestinationName.BALLROOM]: new RiverDestination({
     name: RiverDestinationName.BALLROOM,
     type: RiverDestinationType.LOCATION,
+    shortName: toGameText("Pay VP & RESIN, Gain 3 CARD & 1 PEARL"),
     description: toGameText(
       "Pay 1 VP and 1 RESIN to draw 3 CARD and gain 1 PEARL."
     ),
@@ -254,6 +352,7 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
   [RiverDestinationName.WATERMILL]: new RiverDestination({
     name: RiverDestinationName.WATERMILL,
     type: RiverDestinationType.LOCATION,
+    shortName: toGameText("Pay VP & TWIG, Gain 2 CARD & 1 PEARL"),
     description: toGameText(
       "Pay 1 VP and 1 TWIG to draw 2 CARD and gain 1 PEARL."
     ),
@@ -261,6 +360,7 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
   [RiverDestinationName.OBSERVATORY]: new RiverDestination({
     name: RiverDestinationName.OBSERVATORY,
     type: RiverDestinationType.LOCATION,
+    shortName: toGameText("Pay VP & ANY, Gain 2 Meadow CARD & 1 PEARL"),
     description: toGameText(
       "Pay 1 VP and 1 ANY to draw 2 CARD from the Meadow and gain 1 PEARL."
     ),
@@ -268,6 +368,7 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
   [RiverDestinationName.MARKET]: new RiverDestination({
     name: RiverDestinationName.MARKET,
     type: RiverDestinationType.LOCATION,
+    shortName: toGameText("Pay VP & ANY, Gain 3 CARD & 1 PEARL"),
     description: toGameText(
       "Pay 1 VP and 1 ANY to draw 3 CARD and gain 1 PEARL."
     ),
@@ -275,6 +376,7 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
   [RiverDestinationName.GREAT_HALL]: new RiverDestination({
     name: RiverDestinationName.GREAT_HALL,
     type: RiverDestinationType.LOCATION,
+    shortName: toGameText("Pay VP & PEBBLE, Gain 4 CARD & 1 PEARL"),
     description: toGameText(
       "Pay 1 VP and 1 PEBBLE to draw 4 CARD and gain 1 PEARL."
     ),
@@ -282,6 +384,7 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
   [RiverDestinationName.GARDENS]: new RiverDestination({
     name: RiverDestinationName.GARDENS,
     type: RiverDestinationType.LOCATION,
+    shortName: toGameText("Pay VP & BERRY, Gain 3 CARD & 1 PEARL"),
     description: toGameText(
       "Pay 1 VP and 1 BERRY to draw 3 CARD and gain 1 PEARL."
     ),

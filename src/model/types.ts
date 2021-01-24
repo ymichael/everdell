@@ -94,11 +94,6 @@ export type GameInputDiscardCards = {
   maxCards: number;
 
   isAutoAdvancedInput?: boolean;
-
-  locationContext?: LocationName;
-  cardContext?: CardName;
-  eventContext?: EventName;
-
   clientOptions: {
     cardsToDiscard: CardName[];
   };
@@ -109,11 +104,6 @@ export type GameInputSelectPlayer = {
   prevInputType: GameInputType;
   playerOptions: string[];
   mustSelectOne: boolean;
-
-  locationContext?: LocationName;
-  cardContext?: CardName;
-  eventContext?: EventName;
-
   clientOptions: {
     selectedPlayer: string | null;
   };
@@ -127,11 +117,6 @@ export type GameInputSelectCards = {
 
   maxToSelect: number;
   minToSelect: number;
-
-  locationContext?: LocationName;
-  cardContext?: CardName;
-  eventContext?: EventName;
-
   clientOptions: {
     selectedCards: CardName[];
   };
@@ -143,11 +128,6 @@ export type GameInputSelectPlayedCards = {
   cardOptions: PlayedCardInfo[];
   maxToSelect: number;
   minToSelect: number;
-
-  eventContext?: EventName;
-  cardContext?: CardName;
-  locationContext?: LocationName;
-
   clientOptions: {
     selectedCards: PlayedCardInfo[];
   };
@@ -163,11 +143,6 @@ export type GameInputSelectResources = {
   toSpend: boolean;
   excludeResource?: ResourceType;
   specificResource?: ResourceType;
-
-  locationContext?: LocationName;
-  cardContext?: CardName;
-  eventContext?: EventName;
-
   clientOptions: {
     resources: CardCost;
   };
@@ -180,11 +155,6 @@ export type GameInputSelectWorkerPlacement = {
   options: WorkerPlacementInfo[];
 
   mustSelectOne: boolean;
-
-  locationContext?: LocationName;
-  cardContext?: CardName;
-  eventContext?: EventName;
-
   clientOptions: {
     selectedOption: WorkerPlacementInfo | null;
   };
@@ -193,13 +163,7 @@ export type GameInputSelectWorkerPlacement = {
 export type GameInputSelectLocation = {
   inputType: GameInputType.SELECT_LOCATION;
   prevInputType: GameInputType;
-
   locationOptions: LocationName[];
-
-  locationContext?: LocationName;
-  cardContext?: CardName;
-  eventContext?: EventName;
-
   clientOptions: {
     selectedLocation: LocationName | null;
   };
@@ -209,9 +173,6 @@ export type GameInputSelectOptionGeneric = {
   inputType: GameInputType.SELECT_OPTION_GENERIC;
   prevInputType: GameInputType;
   options: string[];
-  locationContext?: LocationName;
-  cardContext?: CardName;
-  eventContext?: EventName;
   playedCardContext?: PlayedCardInfo;
 
   clientOptions: {
@@ -223,10 +184,8 @@ export type GameInputSelectPaymentForCard = {
   inputType: GameInputType.SELECT_PAYMENT_FOR_CARD;
   prevInputType: GameInputType;
 
-  locationContext?: LocationName;
   // if cardContext is specified, must use that card
   cardContext?: CardName;
-
   card: CardName;
 
   // player specified number of resources
@@ -251,6 +210,7 @@ export type GameInputMultiStep = (
   cardContext?: CardName;
   locationContext?: LocationName;
   adornmentContext?: AdornmentName;
+  riverDestinationContext?: RiverDestinationName;
   prevInput?: GameInput;
   label?: string | (string | TextPart)[] | GameText;
 };
@@ -561,6 +521,11 @@ export type TextPartEntity =
       type: "entity";
       entityType: "adornment";
       adornment: AdornmentName;
+    }
+  | {
+      type: "entity";
+      entityType: "riverDestination";
+      riverDestination: RiverDestinationName;
     };
 export type TextPartPlayer = {
   type: "player";

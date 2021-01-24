@@ -3,6 +3,7 @@ import Image from "next/image";
 
 import styles from "../styles/common.module.css";
 import { Event } from "../model/event";
+import { RiverDestination } from "../model/riverDestination";
 import { Location } from "../model/location";
 import { GameText, TextPart, ResourceType, CardType } from "../model/types";
 import { assertUnreachable } from "../utils";
@@ -179,7 +180,24 @@ export const Description = ({ textParts }: { textParts: GameText }) => {
                 </span>
               );
             }
-            break;
+            if (part.entityType === "adornment") {
+              return (
+                <span key={idx} className={styles.entity_part}>
+                  TODO: {part.adornment}
+                </span>
+              );
+            }
+            if (part.entityType === "riverDestination") {
+              return (
+                <span key={idx} className={styles.entity_part}>
+                  <Description
+                    textParts={
+                      RiverDestination.fromName(part.riverDestination).shortName
+                    }
+                  />
+                </span>
+              );
+            }
           default:
             assertUnreachable(part, `Unexpected part: ${JSON.stringify(part)}`);
         }

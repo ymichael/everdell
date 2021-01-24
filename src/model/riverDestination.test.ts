@@ -1,11 +1,29 @@
 import expect from "expect.js";
-import { RiverDestinationName, RiverDestinationType } from "./types";
+import {
+  CardName,
+  ResourceType,
+  RiverDestinationName,
+  RiverDestinationType,
+  RiverDestinationSpot,
+  GameInputType,
+} from "./types";
 import {
   RiverDestination,
   initialRiverDestinationMap,
 } from "./riverDestination";
+import { GameState } from "./gameState";
+import { Player } from "./player";
+import { testInitialGameState, multiStepGameInputTest } from "./testHelpers";
 
-describe("RiverDestination", () => {
+describe("RiverDestinationMap", () => {
+  let gameState: GameState;
+  let player: Player;
+
+  beforeEach(() => {
+    gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
+    player = gameState.getActivePlayer();
+  });
+
   describe("initialRiverDestinationMap", () => {
     it("should return 2 random CITIZEN and 2 random LOCATION river destinations", () => {
       const riverMap = initialRiverDestinationMap();
@@ -73,6 +91,84 @@ describe("RiverDestination", () => {
       expect(riverMapJSON.spots.TWO_DESTINATION.name).to.be(null);
       expect(riverMapJSON.spots.TWO_TRAVELER.name).to.be(null);
       expect(riverMapJSON.spots.TWO_GOVERNANCE.name).to.be(null);
+    });
+  });
+
+  xit("should recieve a PEARL for revealing a river destination", () => {
+    player.addToCity(CardName.JUDGE);
+    player.addToCity(CardName.SHOPKEEPER);
+
+    [player, gameState] = multiStepGameInputTest(gameState, [
+      {
+        inputType: GameInputType.VISIT_RIVER_DESTINATION,
+        clientOptions: {
+          riverDestinationSpot: RiverDestinationSpot.TWO_GOVERNANCE,
+        },
+      },
+    ]);
+  });
+
+  describe(RiverDestinationName.GUS_THE_GARDENER, () => {
+    beforeEach(() => {
+      gameState.riverDestinationMap!.spots[
+        RiverDestinationSpot.TWO_TRAVELER
+      ]!.name = RiverDestinationName.GUS_THE_GARDENER;
+      gameState.riverDestinationMap!.spots[
+        RiverDestinationSpot.TWO_TRAVELER
+      ]!.revealed = true;
+      player.addToCity(CardName.WANDERER);
+      player.addToCity(CardName.RANGER);
+    });
+
+    it("should do nothing if player doesn't have 3 PRODUCTION cards", () => {
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        {
+          inputType: GameInputType.VISIT_RIVER_DESTINATION,
+          clientOptions: {
+            riverDestinationSpot: RiverDestinationSpot.TWO_TRAVELER,
+          },
+        },
+      ]);
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+    });
+
+    it("should allow player to discard 3 PRODUCTION cards", () => {
+      player.cardsInHand.push(CardName.FARM);
+      player.cardsInHand.push(CardName.FARM);
+      player.cardsInHand.push(CardName.QUEEN);
+      player.cardsInHand.push(CardName.JUDGE);
+      player.cardsInHand.push(CardName.MINE);
+
+      expect(player.hasUnusedAmbassador()).to.be(true);
+      expect(player.cardsInHand).to.not.eql([]);
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        {
+          inputType: GameInputType.VISIT_RIVER_DESTINATION,
+          clientOptions: {
+            riverDestinationSpot: RiverDestinationSpot.TWO_TRAVELER,
+          },
+        },
+        {
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: GameInputType.VISIT_RIVER_DESTINATION,
+          cardOptions: [CardName.FARM, CardName.FARM, CardName.MINE],
+          maxToSelect: 3,
+          minToSelect: 3,
+          riverDestinationContext: RiverDestinationName.GUS_THE_GARDENER,
+          clientOptions: {
+            selectedCards: [CardName.FARM, CardName.FARM, CardName.MINE],
+          },
+        },
+      ]);
+
+      expect(player.hasUnusedAmbassador()).to.be(false);
+      expect(player.cardsInHand).to.eql([CardName.QUEEN, CardName.JUDGE]);
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(1);
     });
   });
 });

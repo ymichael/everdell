@@ -1271,12 +1271,20 @@ export class Player implements IGameTextEntity {
     }
   }
 
+  useAmbassador(): void {
+    this.numAmbassadors = 0;
+  }
+
   hasUnusedAmbassador(): boolean {
     return this.numAmbassadors === 1;
   }
 
   recallAmbassador(gameState: GameState): void {
-    throw new Error("Not Implemented");
+    if (!gameState.gameOptions.pearlbrook) {
+      return;
+    }
+    // TODO: Update gameState riverDestinationMap & Ferry
+    this.numAmbassadors = 1;
   }
 
   recallWorkers(gameState: GameState): void {

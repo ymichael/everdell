@@ -34,6 +34,7 @@ export type GameStateJSON = {
   eventsMap: EventNameToPlayerId;
   pendingGameInputs: GameInputMultiStep[];
   gameLog: GameLogEntry[];
+  riverDestinationMap: RiverDestinationMapJSON | null;
 };
 
 export type CardStackJSON = {

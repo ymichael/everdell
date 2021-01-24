@@ -1,5 +1,8 @@
 import {
   AdornmentName,
+  CardType,
+  EventName,
+  EventType,
   GameText,
   GameInput,
   GameInputType,
@@ -14,6 +17,7 @@ import {
   GameStatePlayable,
 } from "./gameState";
 import { GainAnyResource } from "./gameStatePlayHelpers";
+import { Event } from "./event";
 import { toGameText } from "./gameText";
 
 // Pearlbrook Adornment
@@ -149,12 +153,13 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
   [AdornmentName.COMPASS]: new Adornment({
     name: AdornmentName.COMPASS,
     description: toGameText([
-      "You may reactivate 2 TRAVELLER in your city.",
+      "You may reactivate 2 TRAVELER in your city.",
       { type: "HR" },
       "1 VP for each TRAVELER in your city.",
     ]),
     pointsInner: (gameState: GameState, playerId: string) => {
-      throw new Error("not implemented");
+      const player = gameState.getPlayer(playerId);
+      return player.getPlayedCardNamesByType(CardType.TRAVELER).length;
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       throw new Error("not implemented");
@@ -168,7 +173,8 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
       "1 VP for each GOVERNANCE in your city.",
     ]),
     pointsInner: (gameState: GameState, playerId: string) => {
-      throw new Error("not implemented");
+      const player = gameState.getPlayer(playerId);
+      return player.getPlayedCardNamesByType(CardType.GOVERNANCE).length;
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       throw new Error("not implemented");
@@ -182,7 +188,8 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
       "1 VP for each DESTINATION in your city.",
     ]),
     pointsInner: (gameState: GameState, playerId: string) => {
-      throw new Error("not implemented");
+      const player = gameState.getPlayer(playerId);
+      return player.getPlayedCardNamesByType(CardType.DESTINATION).length;
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       throw new Error("not implemented");
@@ -196,7 +203,9 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
       "1 VP for every 2 Constructions in your city.",
     ]),
     pointsInner: (gameState: GameState, playerId: string) => {
-      throw new Error("not implemented");
+      const player = gameState.getPlayer(playerId);
+      const numPlayedCritters = player.getNumPlayedConstructions();
+      return numPlayedCritters / 2;
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       throw new Error("not implemented");
@@ -210,7 +219,8 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
       "Worth 1 for every 3 VP tokens you have.",
     ]),
     pointsInner: (gameState: GameState, playerId: string) => {
-      throw new Error("not implemented");
+      const player = gameState.getPlayer(playerId);
+      return player.getNumResourcesByType(ResourceType.VP) / 3;
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       throw new Error("not implemented");
@@ -224,7 +234,26 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
       "1 VP for each unique colored CARD in your city.",
     ]),
     pointsInner: (gameState: GameState, playerId: string) => {
-      throw new Error("not implemented");
+      const player = gameState.getPlayer(playerId);
+      const numProduction = player.getPlayedCardNamesByType(CardType.PRODUCTION)
+        .length;
+      const numGovernance = player.getPlayedCardNamesByType(CardType.GOVERNANCE)
+        .length;
+      const numDestination = player.getPlayedCardNamesByType(
+        CardType.DESTINATION
+      ).length;
+      const numTraveler = player.getPlayedCardNamesByType(CardType.TRAVELER)
+        .length;
+      const numProsperity = player.getPlayedCardNamesByType(CardType.PROSPERITY)
+        .length;
+
+      return (
+        (numProduction > 0 ? 1 : 0) +
+        (numGovernance > 0 ? 1 : 0) +
+        (numDestination > 0 ? 1 : 0) +
+        (numTraveler > 0 ? 1 : 0) +
+        (numProsperity > 0 ? 1 : 0)
+      );
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       throw new Error("not implemented");
@@ -238,7 +267,10 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
       "1 VP for every CARD in your hand, up to 5.",
     ]),
     pointsInner: (gameState: GameState, playerId: string) => {
-      throw new Error("not implemented");
+      const player = gameState.getPlayer(playerId);
+      const numCards = player.cardsInHand.length;
+
+      return numCards > 5 ? 5 : numCards;
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       throw new Error("not implemented");
@@ -264,7 +296,18 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
       "3 VP for each Wonder you built",
     ]),
     pointsInner: (gameState: GameState, playerId: string) => {
-      throw new Error("not implemented");
+      const player = gameState.getPlayer(playerId);
+      const claimedEvents = player.claimedEvents;
+
+      let numWonders = 0;
+
+      Object.keys(claimedEvents).forEach((eventName) => {
+        const event = Event.fromName(eventName as EventName);
+        if (event.type === EventType.WONDER) {
+          numWonders += 1;
+        }
+      });
+      return numWonders * 3;
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
@@ -297,7 +340,8 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
       "1 VP for every 2 PRODUCTION in your city.",
     ]),
     pointsInner: (gameState: GameState, playerId: string) => {
-      throw new Error("not implemented");
+      const player = gameState.getPlayer(playerId);
+      return player.getPlayedCardNamesByType(CardType.PRODUCTION).length / 2;
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       throw new Error("not implemented");
@@ -311,7 +355,8 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
       "1 VP for each PROSPERITY in your city.",
     ]),
     pointsInner: (gameState: GameState, playerId: string) => {
-      throw new Error("not implemented");
+      const player = gameState.getPlayer(playerId);
+      return player.getPlayedCardNamesByType(CardType.PROSPERITY).length;
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       throw new Error("not implemented");

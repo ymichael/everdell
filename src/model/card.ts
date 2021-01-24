@@ -1161,9 +1161,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     ]),
     resourcesToGain: {},
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      const helper = new GainAnyResource({ cardContext: CardName.HUSBAND });
-      if (helper.matchesGameInput(gameInput)) {
-        helper.play(gameState, gameInput);
+      const gainAnyHelper = new GainAnyResource({
+        cardContext: CardName.HUSBAND,
+      });
+      if (gainAnyHelper.matchesGameInput(gameInput)) {
+        gainAnyHelper.play(gameState, gameInput);
       }
     },
     productionInner: (
@@ -1177,9 +1179,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         cardOwner.hasCardInCity(CardName.FARM) &&
         playedHusbands.length <= playedWifes.length
       ) {
-        const helper = new GainAnyResource({ cardContext: CardName.HUSBAND });
+        const gainAnyHelper = new GainAnyResource({
+          cardContext: CardName.HUSBAND,
+        });
         gameState.pendingGameInputs.push(
-          helper.getGameInput({ prevInputType: gameInput.inputType })
+          gainAnyHelper.getGameInput({ prevInputType: gameInput.inputType })
         );
       }
     },
@@ -1865,7 +1869,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     ),
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
-      const helper = new GainMoreThan1AnyResource({
+      const gainAnyHelper = new GainMoreThan1AnyResource({
         cardContext: CardName.PEDDLER,
       });
       if (
@@ -1881,7 +1885,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           }
           if (numResources !== 0) {
             gameState.pendingGameInputs.push(
-              helper.getGameInput(numResources, {
+              gainAnyHelper.getGameInput(numResources, {
                 prevInputType: gameInput.inputType,
               })
             );
@@ -1895,7 +1899,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             ]);
           }
         } else {
-          helper.play(gameState, gameInput);
+          gainAnyHelper.play(gameState, gameInput);
         }
       }
     },
@@ -3050,7 +3054,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
-      const helper = new GainAnyResource({
+      const gainAnyHelper = new GainAnyResource({
         cardContext: CardName.UNIVERSITY,
         skipGameLog: true,
       });
@@ -3080,13 +3084,13 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           throw new Error("may only choose one card to remove from city");
         }
         gameState.pendingGameInputs.push(
-          helper.getGameInput({
+          gainAnyHelper.getGameInput({
             prevInputType: gameInput.inputType,
             prevInput: gameInput,
           })
         );
       } else if (
-        helper.matchesGameInput(gameInput) &&
+        gainAnyHelper.matchesGameInput(gameInput) &&
         gameInput.prevInputType === GameInputType.SELECT_PLAYED_CARDS &&
         !!gameInput.prevInput &&
         gameInput.prevInput.inputType === GameInputType.SELECT_PLAYED_CARDS
@@ -3101,7 +3105,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         player.gainResources(removedCard.baseCost);
         player.gainResources({ [ResourceType.VP]: 1 });
 
-        helper.play(gameState, gameInput);
+        gainAnyHelper.play(gameState, gameInput);
         gameState.addGameLogFromCard(CardName.UNIVERSITY, [
           player,
           " discarded ",

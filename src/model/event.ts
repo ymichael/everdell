@@ -1187,7 +1187,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       const playedChapel = player.getFirstPlayedCard(CardName.CHAPEL);
-      const helper = new GainMoreThan1AnyResource({
+      const gainAnyHelper = new GainMoreThan1AnyResource({
         eventContext: EventName.SPECIAL_PRISTINE_CHAPEL_CEILING,
       });
 
@@ -1205,13 +1205,13 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
 
         if (numVP !== 0) {
           gameState.pendingGameInputs.push(
-            helper.getGameInput(numVP, {
+            gainAnyHelper.getGameInput(numVP, {
               prevInputType: gameInput.inputType,
             })
           );
         }
-      } else if (helper.matchesGameInput(gameInput)) {
-        helper.play(gameState, gameInput);
+      } else if (gainAnyHelper.matchesGameInput(gameInput)) {
+        gainAnyHelper.play(gameState, gameInput);
       } else {
         throw new Error(`Invalid input type ${gameInput.inputType}`);
       }

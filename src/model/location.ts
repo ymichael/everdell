@@ -251,7 +251,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     ]),
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
-      const helper = new GainMoreThan1AnyResource({
+      const gainAnyHelper = new GainMoreThan1AnyResource({
         locationContext: LocationName.HAVEN,
       });
       if (gameInput.inputType === GameInputType.PLACE_WORKER) {
@@ -287,7 +287,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
 
         // Ask player which resources they want to get
         gameState.pendingGameInputs.push(
-          helper.getGameInput(Math.floor(numDiscarded / 2), {
+          gainAnyHelper.getGameInput(Math.floor(numDiscarded / 2), {
             prevInputType: GameInputType.DISCARD_CARDS,
           })
         );
@@ -295,8 +295,8 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
           player,
           ` discarded ${numDiscarded} CARD.`,
         ]);
-      } else if (helper.matchesGameInput(gameInput)) {
-        helper.play(gameState, gameInput);
+      } else if (gainAnyHelper.matchesGameInput(gameInput)) {
+        gainAnyHelper.play(gameState, gameInput);
       } else {
         throw new Error(`Invalid input type ${gameInput.inputType}`);
       }
@@ -435,16 +435,18 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
     description: toGameText("ANY ANY"),
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      const helper = new GainMoreThan1AnyResource({
+      const gainAnyHelper = new GainMoreThan1AnyResource({
         locationContext: LocationName.FOREST_TWO_WILD,
       });
       if (gameInput.inputType === GameInputType.PLACE_WORKER) {
         // ask the player what resources they want to gain
         gameState.pendingGameInputs.push(
-          helper.getGameInput(2, { prevInputType: GameInputType.PLACE_WORKER })
+          gainAnyHelper.getGameInput(2, {
+            prevInputType: GameInputType.PLACE_WORKER,
+          })
         );
-      } else if (helper.matchesGameInput(gameInput)) {
-        helper.play(gameState, gameInput);
+      } else if (gainAnyHelper.matchesGameInput(gameInput)) {
+        gainAnyHelper.play(gameState, gameInput);
       } else {
         throw new Error(`Invalid input type ${gameInput.inputType}`);
       }
@@ -602,7 +604,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     description: toGameText("CARD CARD ANY"),
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
-      const helper = new GainAnyResource({
+      const gainAnyHelper = new GainAnyResource({
         locationContext: LocationName.FOREST_TWO_CARDS_ONE_WILD,
       });
 
@@ -616,12 +618,12 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
 
         // Ask the player what resource they want to gain
         gameState.pendingGameInputs.push(
-          helper.getGameInput({
+          gainAnyHelper.getGameInput({
             prevInputType: GameInputType.PLACE_WORKER,
           })
         );
-      } else if (helper.matchesGameInput(gameInput)) {
-        helper.play(gameState, gameInput);
+      } else if (gainAnyHelper.matchesGameInput(gameInput)) {
+        gainAnyHelper.play(gameState, gameInput);
       } else {
         throw new Error(`Invalid input type ${gameInput.inputType}`);
       }
@@ -638,7 +640,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
       ),
       playInner: (gameState: GameState, gameInput: GameInput) => {
         const player = gameState.getActivePlayer();
-        const helper = new GainMoreThan1AnyResource({
+        const gainAnyHelper = new GainMoreThan1AnyResource({
           locationContext:
             LocationName.FOREST_DISCARD_UP_TO_THREE_CARDS_TO_GAIN_WILD_PER_CARD,
         });
@@ -669,7 +671,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
 
           // Ask the player what resource they want to gain
           gameState.pendingGameInputs.push(
-            helper.getGameInput(cardsToDiscard.length, {
+            gainAnyHelper.getGameInput(cardsToDiscard.length, {
               prevInputType: GameInputType.DISCARD_CARDS,
             })
           );
@@ -686,8 +688,8 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
               ` discarded ${cardsToDiscard.length} CARD to gain ${cardsToDiscard.length} ANY.`,
             ]
           );
-        } else if (helper.matchesGameInput(gameInput)) {
-          helper.play(gameState, gameInput);
+        } else if (gainAnyHelper.matchesGameInput(gameInput)) {
+          gainAnyHelper.play(gameState, gameInput);
         } else {
           throw new Error(`Invalid input type ${gameInput.inputType}`);
         }

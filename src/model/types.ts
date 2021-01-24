@@ -19,6 +19,7 @@ export enum GameInputType {
   // Pearlbrook specific
   PLAY_ADORNMENT = "PLAY_ADORNMENT",
   VISIT_RIVER_DESTINATION = "VISIT_RIVER_DESTINATION",
+  CLAIM_WONDER = "CLAIM_WONDER",
 }
 
 export type GameInputPlaceWorker = {
@@ -51,6 +52,13 @@ export type GameInputClaimEvent = {
   };
 };
 
+export type GameInputClaimWonder = {
+  inputType: GameInputType.CLAIM_WONDER;
+  clientOptions: {
+    wonder: WonderName | null;
+  };
+};
+
 export type GameInputPlayAdornment = {
   inputType: GameInputType.PLAY_ADORNMENT;
   clientOptions: {
@@ -76,7 +84,8 @@ export type GameInputPrepareForSeason = {
 export type GameInputWorkerPlacementTypes =
   | GameInputClaimEvent
   | GameInputPlaceWorker
-  | GameInputVisitDestinationCard;
+  | GameInputVisitDestinationCard
+  | GameInputClaimWonder;
 
 export type GameInputSimple =
   | GameInputWorkerPlacementTypes
@@ -211,6 +220,7 @@ export type GameInputMultiStep = (
   locationContext?: LocationName;
   adornmentContext?: AdornmentName;
   riverDestinationContext?: RiverDestinationName;
+  wonderContext?: WonderName;
   prevInput?: GameInput;
   label?: string | (string | TextPart)[] | GameText;
 };
@@ -325,6 +335,10 @@ export type EventNameToPlayerId = Partial<
   { [key in EventName]: string | null }
 >;
 
+export type WonderNameToPlayerId = Partial<
+  { [key in WonderName]: string | null }
+>;
+
 export type PlayedCardInfo = {
   cardOwnerId: string;
   cardName: CardName;
@@ -367,14 +381,23 @@ export type WorkerPlacementInfo =
       location: LocationName;
       playedCard?: undefined;
       event?: undefined;
+      wonder?: undefined;
     }
   | {
       playedCard: PlayedCardInfo;
       event?: undefined;
       location?: undefined;
+      wonder?: undefined;
     }
   | {
       event: EventName;
+      location?: undefined;
+      playedCard?: undefined;
+      wonder?: undefined;
+    }
+  | {
+      wonder: WonderName;
+      event?: undefined;
       location?: undefined;
       playedCard?: undefined;
     };
@@ -526,12 +549,19 @@ export type TextPartEntity =
       type: "entity";
       entityType: "riverDestination";
       riverDestination: RiverDestinationName;
+    }
+  | {
+      type: "entity";
+      entityType: "wonder";
+      wonder: WonderName;
     };
+
 export type TextPartPlayer = {
   type: "player";
   playerId: string;
   name: string;
 };
+
 export type TextPartIcon =
   | { type: "resource"; resourceType: ResourceType | "ANY" }
   | { type: "cardType"; cardType: CardType }

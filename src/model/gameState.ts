@@ -5,6 +5,7 @@ import {
   EventNameToPlayerId,
   GameInput,
   GameInputClaimEvent,
+  GameInputClaimWonder,
   GameInputGameEnd,
   GameInputMultiStep,
   GameInputPlaceWorker,
@@ -26,6 +27,7 @@ import {
   RiverDestinationName,
   Season,
   TextPart,
+  WonderNameToPlayerId,
 } from "./types";
 import { GameStateJSON } from "./jsonTypes";
 import { Player } from "./player";
@@ -39,6 +41,7 @@ import {
   RiverDestination,
 } from "./riverDestination";
 import { Event, initialEventMap } from "./event";
+import { Wonder, initialWondersMap } from "./wonder";
 import { initialDeck } from "./deck";
 import { assertUnreachable } from "../utils";
 import {
@@ -122,7 +125,9 @@ export class GameState {
   readonly meadowCards: CardName[];
   readonly locationsMap: LocationNameToPlayerIds;
   readonly eventsMap: EventNameToPlayerId;
+
   readonly riverDestinationMap: RiverDestinationMap | null;
+  readonly wondersMap: WonderNameToPlayerId;
 
   constructor({
     gameStateId,
@@ -134,6 +139,7 @@ export class GameState {
     locationsMap,
     eventsMap,
     riverDestinationMap = null,
+    wondersMap,
     gameLog = [],
     gameOptions = {},
     pendingGameInputs = [],
@@ -147,6 +153,7 @@ export class GameState {
     locationsMap: LocationNameToPlayerIds;
     eventsMap: EventNameToPlayerId;
     riverDestinationMap?: RiverDestinationMap | null;
+    wondersMap: WonderNameToPlayerId;
     pendingGameInputs: GameInputMultiStep[];
     gameLog: GameLogEntry[];
     gameOptions?: Partial<GameOptions>;
@@ -162,6 +169,7 @@ export class GameState {
     this.pendingGameInputs = pendingGameInputs;
     this.gameLog = gameLog;
     this.riverDestinationMap = riverDestinationMap;
+    this.wondersMap = wondersMap;
     this.gameOptions = defaultGameOptions(gameOptions);
   }
 
@@ -249,6 +257,7 @@ export class GameState {
         riverDestinationMap: this.riverDestinationMap
           ? this.riverDestinationMap.toJSON(includePrivate)
           : null,
+        wondersMap: this.wondersMap,
       },
       ...(includePrivate
         ? {
@@ -437,6 +446,16 @@ export class GameState {
         gameInput.riverDestinationContext
       );
       riverDestination.play(this, gameInput);
+    }
+
+    if (gameInput.wonderContext) {
+      const wonder = Wonder.fromName(gameInput.wonderContext);
+      const canPlayWonderErr = wonder.canPlayCheck(this, gameInput);
+
+      if (canPlayWonderErr) {
+        throw new Error(canPlayWonderErr);
+      }
+      wonder.play(this, gameInput);
       return;
     }
 
@@ -540,6 +559,24 @@ export class GameState {
     card.play(this, gameInput);
   }
 
+  private handleClaimWonderGameInput(gameInput: GameInputClaimWonder): void {
+    if (!gameInput.clientOptions?.wonder) {
+      throw new Error("Please select a wonder to claim");
+    }
+
+    const wonder = Wonder.fromName(gameInput.clientOptions.wonder);
+    const canPlayErr = wonder.canPlayCheck(this, gameInput);
+    if (canPlayErr) {
+      throw new Error(canPlayErr);
+    }
+
+    const player = this.getActivePlayer();
+    wonder.play(this, gameInput);
+
+    this.addGameLog([player, " claimed the ", wonder, " wonder."]);
+    this.wondersMap[wonder.name] = this._activePlayerId;
+  }
+
   private handlePlayAdornmentGameInput(
     gameInput: GameInputPlayAdornment
   ): void {
@@ -632,6 +669,9 @@ export class GameState {
         break;
       case GameInputType.VISIT_DESTINATION_CARD:
         this.handleVisitDestinationCardGameInput(gameInput);
+        break;
+      case GameInputType.CLAIM_WONDER:
+        this.handleClaimWonderGameInput(gameInput);
         break;
       default:
         assertUnreachable(
@@ -752,6 +792,7 @@ export class GameState {
       case GameInputType.PLACE_WORKER:
       case GameInputType.VISIT_DESTINATION_CARD:
       case GameInputType.CLAIM_EVENT:
+      case GameInputType.CLAIM_WONDER:
         this.handleWorkerPlacementGameInput(gameInput);
         break;
       case GameInputType.PLAY_ADORNMENT:
@@ -964,6 +1005,7 @@ export class GameState {
         ? initialRiverDestinationMap()
         : null,
       eventsMap: initialEventMap(gameOptionsWithDefaults),
+      wondersMap: initialWondersMap(),
       gameOptions: gameOptionsWithDefaults,
       gameLog: [],
       pendingGameInputs: [],

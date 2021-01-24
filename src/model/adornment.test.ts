@@ -23,7 +23,7 @@ const playAdornmentInput = (
   };
 };
 
-describe("Event", () => {
+describe("Adornment", () => {
   let gameState: GameState;
   let player: Player;
 

@@ -187,6 +187,13 @@ export const Description = ({ textParts }: { textParts: GameText }) => {
                 </span>
               );
             }
+            if (part.entityType === "wonder") {
+              return (
+                <span key={idx} className={styles.entity_part}>
+                  TODO: {part.wonder}
+                </span>
+              );
+            }
             if (part.entityType === "riverDestination") {
               return (
                 <span key={idx} className={styles.entity_part}>

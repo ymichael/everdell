@@ -226,6 +226,8 @@ export const renderGameInputLabel = (
       return <span>{"Play Adornment"}</span>;
     case GameInputType.VISIT_RIVER_DESTINATION:
       return <span>{"Visit River Destination"}</span>;
+    case GameInputType.CLAIM_WONDER:
+      return <span>{"Claim Wonder"}</span>;
     default:
       return renderMultiStepGameInputLabel(gameInput);
   }

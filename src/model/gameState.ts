@@ -24,6 +24,7 @@ import {
   PlayerStatus,
   ResourceType,
   RiverDestinationName,
+  RiverDestinationSpot,
   Season,
   TextPart,
   WonderNameToPlayerId,
@@ -647,19 +648,44 @@ export class GameState {
       spot.revealed = true;
       this.addGameLog([
         player,
-        ` visited ${riverDestinationSpot} and revealed `,
+        ` visited `,
+        {
+          type: "entity",
+          entityType: "riverDestinationSpot",
+          spot: riverDestinationSpot,
+        },
+        ` and revealed `,
         riverDestination,
         ".",
       ]);
       this.addGameLog([player, " gained 1 PEARL."]);
       player.gainResources({ [ResourceType.PEARL]: 1 });
     } else {
-      this.addGameLog([
-        player,
-        " visited ",
-        riverDestination,
-        ` at ${riverDestinationSpot}.`,
-      ]);
+      if (riverDestinationSpot === RiverDestinationSpot.SHOAL) {
+        this.addGameLog([
+          player,
+          " visited ",
+          {
+            type: "entity",
+            entityType: "riverDestinationSpot",
+            spot: riverDestinationSpot,
+          },
+          `.`,
+        ]);
+      } else {
+        this.addGameLog([
+          player,
+          " visited ",
+          riverDestination,
+          ` at `,
+          {
+            type: "entity",
+            entityType: "riverDestinationSpot",
+            spot: riverDestinationSpot,
+          },
+          `.`,
+        ]);
+      }
     }
 
     // Play river destination!

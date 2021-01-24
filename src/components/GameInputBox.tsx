@@ -223,6 +223,10 @@ const GameInputBox: React.FC<{
       : 1
   );
 
+  if (gameInputs.length === 0) {
+    return <pre>{JSON.stringify(gameState, null, 2)}</pre>;
+  }
+
   return (
     <GameInputBoxContainer
       title={title}

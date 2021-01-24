@@ -40,7 +40,13 @@ const ItemsList: React.FC<{ title: string; visible: boolean }> = ({
   );
 };
 
-export default function TestPage() {
+export const getServerSideProps = (context) => {
+  return {
+    props: {},
+  };
+};
+
+export default function TestUIPage() {
   const allRiverDestinations: RiverDestinationName[] = Object.values(
     RiverDestinationName
   ) as RiverDestinationName[];

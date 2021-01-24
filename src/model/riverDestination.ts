@@ -775,7 +775,7 @@ function payVPResourceToDrawCardAndPearl({
       } else {
         gameState.addGameLogFromRiverDestination(name, [
           player,
-          " declined to spend ${resourceType} and VP.",
+          ` declined to spend ${resourceType} and VP.`,
         ]);
         return;
       }

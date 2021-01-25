@@ -201,6 +201,29 @@ export class Card<TCardType extends CardType = CardType>
     return !this.canPlayCheck(gameState, gameInput);
   }
 
+  canPlayIgnoreCost(gameState: GameState): boolean {
+    return this.canPlay(gameState, this.getPlayCardInput());
+  }
+
+  canPlayIgnoreCostAndSource(gameState: GameState): boolean {
+    const player = gameState.getActivePlayer();
+    if (this.name !== CardName.FOOL) {
+      if (!player.canAddToCity(this.name, true /* strict */)) {
+        return false;
+      }
+    }
+    if (this.canPlayCheckInner) {
+      const errorMsg = this.canPlayCheckInner(
+        gameState,
+        this.getPlayCardInput()
+      );
+      if (errorMsg) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   canPlayCheck(gameState: GameState, gameInput: GameInput): string | null {
     const player = gameState.getActivePlayer();
     if (gameInput.inputType === GameInputType.PLAY_CARD) {
@@ -647,9 +670,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
                 gameState.discardPile.drawInner(),
                 gameState.discardPile.drawInner(),
               ];
-        const filteredOptions = revealedCards.filter((cardName) =>
-          player.canAddToCity(cardName, true /* strict */)
-        );
+        const filteredOptions = revealedCards.filter((cardName) => {
+          const card = Card.fromName(cardName);
+          return card.canPlayIgnoreCostAndSource(gameState);
+        });
         gameState.addGameLogFromCard(CardName.CEMETARY, [
           player,
           " revealed ",
@@ -1319,7 +1343,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         const canPlayMeadowCard = gameState.meadowCards.some((cardName) => {
           const card = Card.fromName(cardName);
           return (
-            player.canAddToCity(cardName, true /* strict */) &&
+            card.canPlayIgnoreCostAndSource(gameState) &&
             player.isPaidResourcesValid(
               resources,
               card.baseCost,
@@ -1347,7 +1371,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           cardOptions: gameState.meadowCards.filter((cardName) => {
             const card = Card.fromName(cardName);
             return (
-              player.canAddToCity(cardName, true /* strict */) &&
+              card.canPlayIgnoreCostAndSource(gameState) &&
               player.isPaidResourcesValid(
                 resources,
                 card.baseCost,
@@ -1379,8 +1403,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           throw new Error("Cannot find selected card in the Meadow.");
         }
         const selectedCard = Card.fromName(selectedCardName);
-        if (!player.canAddToCity(selectedCardName, true /* strict */)) {
-          throw new Error(`Unable to add ${selectedCardName} to city`);
+        if (!selectedCard.canPlayIgnoreCostAndSource(gameState)) {
+          throw new Error(`Unable to play ${selectedCardName}`);
         }
 
         gameState.addGameLogFromCard(CardName.INN, [
@@ -2180,7 +2204,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             if (cardOption.baseVP > 3) {
               return false;
             }
-            return player.canAddToCity(cardName, true /* strict */);
+            return cardOption.canPlayIgnoreCostAndSource(gameState);
           }),
           cardOptionsUnfiltered: cardOptions,
           clientOptions: {
@@ -2250,13 +2274,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           ...player.cardsInHand,
         ].some((cardName) => {
           const card = Card.fromName(cardName);
-          return (
-            card.baseVP <= 3 &&
-            player.canAddToCity(
-              cardName,
-              true /* strict because we won't use other card effects */
-            )
-          );
+          return card.baseVP <= 3 && card.canPlayIgnoreCostAndSource(gameState);
         });
         if (!hasPlayableCard) {
           return "No playable cards worth less than 3 VP";
@@ -2274,7 +2292,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             const card = Card.fromName(cardName as CardName);
             if (
               card.baseVP <= 3 &&
-              player.canAddToCity(cardName, true /* strict */)
+              card.canPlayIgnoreCostAndSource(gameState)
             ) {
               playableCards.push(card.name);
             }

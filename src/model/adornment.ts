@@ -464,7 +464,7 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
             const card = Card.fromName(cardName as CardName);
             if (
               card.baseVP <= 3 &&
-              player.canAddToCity(cardName, true /* strict */)
+              card.canPlayIgnoreCostAndSource(gameState)
             ) {
               playableCards.push(card.name);
             }

@@ -346,6 +346,62 @@ describe("Card", () => {
         expect(player.hasCardInCity(CardName.QUEEN)).to.be(true);
       });
 
+      it("allow player to play FOOL even if they already have one in their city", () => {
+        player.addToCity(CardName.CEMETARY);
+
+        let targetPlayer = gameState.players[1];
+
+        // Add some cards to make sure we only give player valid options.
+        player.addToCity(CardName.UNIVERSITY);
+        player.addToCity(CardName.KING);
+        player.addToCity(CardName.FARM);
+        player.addToCity(CardName.FOOL);
+
+        gameState.deck.addToStack(CardName.KING);
+        gameState.deck.addToStack(CardName.QUEEN);
+        gameState.deck.addToStack(CardName.FOOL);
+        gameState.deck.addToStack(CardName.UNIVERSITY);
+
+        expect(player.numAvailableWorkers).to.be(2);
+        expect(gameState.discardPile.length).to.be(0);
+        expect(player.hasCardInCity(CardName.FOOL)).to.be(true);
+        expect(targetPlayer.hasCardInCity(CardName.FOOL)).to.be(false);
+
+        [player, gameState] = multiStepGameInputTest(
+          gameState,
+          [
+            {
+              inputType: GameInputType.VISIT_DESTINATION_CARD,
+              clientOptions: {
+                playedCard: player.getFirstPlayedCard(CardName.CEMETARY),
+              },
+            },
+            {
+              inputType: GameInputType.SELECT_CARDS,
+              prevInputType: GameInputType.SELECT_OPTION_GENERIC,
+              cardContext: CardName.CEMETARY,
+              cardOptions: [CardName.FOOL, CardName.QUEEN],
+              cardOptionsUnfiltered: [
+                CardName.UNIVERSITY,
+                CardName.FOOL,
+                CardName.QUEEN,
+                CardName.KING,
+              ],
+              maxToSelect: 1,
+              minToSelect: 1,
+              clientOptions: {
+                selectedCards: [CardName.FOOL],
+              },
+            },
+          ],
+          { autoAdvance: true }
+        );
+
+        targetPlayer = gameState.getPlayer(targetPlayer.playerId);
+        expect(player.hasCardInCity(CardName.FOOL)).to.be(true);
+        expect(targetPlayer.hasCardInCity(CardName.FOOL)).to.be(true);
+      });
+
       it("skip card selection if none are playable", () => {
         player.addToCity(CardName.CEMETARY);
 
@@ -1656,7 +1712,7 @@ describe("Card", () => {
               },
             },
           ]);
-        }).to.throwException(/unable to add queen to city/i);
+        }).to.throwException(/unable to play queen/i);
       });
 
       it("should allow player buy card using another player's inn", () => {

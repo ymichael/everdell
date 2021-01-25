@@ -709,12 +709,10 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
       const player = gameState.getActivePlayer();
 
       const hasPlayableCard = gameState.meadowCards.some((cardName) => {
+        const card = Card.fromName(cardName);
         return (
           player.canAffordCard(cardName, false, "ANY 1") &&
-          player.canAddToCity(
-            cardName,
-            true /* strict because we won't use other card effects */
-          )
+          card.canPlayIgnoreCostAndSource(gameState)
         );
       });
       if (!hasPlayableCard) {
@@ -751,12 +749,10 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
           throw new Error("Must choose exactly 2 cards from the meadow");
         }
         const isCardPlayable = (cardName: CardName): boolean => {
+          const card = Card.fromName(cardName);
           return (
             player.canAffordCard(cardName, false, "ANY 1") &&
-            player.canAddToCity(
-              cardName,
-              true /* strict because we won't use other card effects */
-            )
+            card.canPlayIgnoreCostAndSource(gameState)
           );
         };
 

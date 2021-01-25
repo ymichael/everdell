@@ -15,6 +15,7 @@
   --border-color: #1a1a1a;
   --text-color-inv: #ffffff;
   --text-color-light: #bbb;
+  --highlight-color: #eee;
 
   --river-col: #1891a2;
   --adornment-col: #f5ccd5;
@@ -44,6 +45,7 @@
   --bg-color: rgb(21 32 43);
   --bg-color-item: rgb(22 39 55);
   --border-color: #3d5465;
+  --highlight-color: rgb(29 52 75 / 86%);
 
   /*--color-vp: #775d0d;*/
   /*--color-vp-text: #d5d7d8;*/

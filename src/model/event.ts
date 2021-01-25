@@ -230,7 +230,10 @@ export class Event implements GameStatePlayable, IGameTextEntity {
 
   static fromName(name: EventName): Event {
     if (oldEventEnums[name]) {
-      name = EventName[oldEventEnums[name]];
+      const oldName = oldEventEnums[name];
+      if (oldName in EventName) {
+        name = EventName[oldName as keyof typeof EventName];
+      }
     }
     return EVENT_REGISTRY[name];
   }

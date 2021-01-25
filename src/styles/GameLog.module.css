@@ -28,3 +28,12 @@
   font-family: var(--font-mono);
   margin-right: 10px;
 }
+
+.log_selected {
+  background-color: var(--highlight-color);
+}
+
+.log_entities {
+  display: flex;
+  flex-flow: row wrap;
+}

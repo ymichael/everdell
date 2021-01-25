@@ -49,6 +49,11 @@ type ProductionInnerFn = (
   cardOwner: Player,
   playedCard: PlayedCardInfo
 ) => void;
+type ProductionWillActivateInnerFn = (
+  gameState: GameState,
+  cardOwner: Player,
+  playedCard: PlayedCardInfo
+) => boolean;
 
 export class Card<TCardType extends CardType = CardType>
   implements GameStatePlayable, IGameTextEntity {
@@ -73,6 +78,9 @@ export class Card<TCardType extends CardType = CardType>
   readonly isOpenDestination: boolean;
 
   readonly productionInner: ProductionInnerFn | undefined;
+  readonly productionWillActivateInner:
+    | ProductionWillActivateInnerFn
+    | undefined;
   readonly resourcesToGain: ProductionResourceMap | undefined;
   readonly numWorkersForPlayerInner: NumWorkersInnerFn | undefined;
   readonly maxWorkerSpots: number;
@@ -88,6 +96,7 @@ export class Card<TCardType extends CardType = CardType>
     associatedCard,
     resourcesToGain,
     productionInner,
+    productionWillActivateInner,
     cardDescription,
     expansion = null,
     isOpenDestination = false, // if the destination is an open destination
@@ -118,10 +127,12 @@ export class Card<TCardType extends CardType = CardType>
     ? {
         resourcesToGain: ProductionResourceMap;
         productionInner?: ProductionInnerFn | undefined;
+        productionWillActivateInner?: ProductionWillActivateInnerFn | undefined;
       }
     : {
         resourcesToGain?: ProductionResourceMap;
         productionInner?: undefined;
+        productionWillActivateInner?: undefined;
       }) &
     (TCardType extends CardType.PROSPERITY
       ? {
@@ -149,6 +160,7 @@ export class Card<TCardType extends CardType = CardType>
 
     // Production cards
     this.productionInner = productionInner;
+    this.productionWillActivateInner = productionWillActivateInner;
     this.resourcesToGain = resourcesToGain;
 
     this.maxWorkerSpots =
@@ -393,6 +405,17 @@ export class Card<TCardType extends CardType = CardType>
     }
   }
 
+  productionWillActivate(
+    gameState: GameState,
+    cardOwner: Player,
+    playedCard: PlayedCardInfo
+  ): boolean {
+    if (this.productionWillActivateInner) {
+      return this.productionWillActivateInner(gameState, cardOwner, playedCard);
+    }
+    return true;
+  }
+
   getPoints(gameState: GameState, playerId: string): number {
     return (
       this.baseVP +
@@ -520,6 +543,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       { type: "entity", entityType: "card", card: CardName.FARM },
       " in your city.",
     ]),
+    productionWillActivateInner: (gameState: GameState, cardOwner: Player) => {
+      return cardOwner.getPlayedCardInfos(CardName.FARM).length !== 0;
+    },
     productionInner: (
       gameState: GameState,
       gameInput: GameInput,
@@ -527,13 +553,15 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     ) => {
       const player = gameState.getActivePlayer();
       const playedFarms = cardOwner.getPlayedCardInfos(CardName.FARM);
-      player.gainResources(gameState, {
-        [ResourceType.TWIG]: 2 * playedFarms.length,
-      });
-      gameState.addGameLogFromCard(CardName.BARGE_TOAD, [
-        player,
-        ` gained ${2 * playedFarms.length} TWIG.`,
-      ]);
+      if (playedFarms.length !== 0) {
+        player.gainResources(gameState, {
+          [ResourceType.TWIG]: 2 * playedFarms.length,
+        });
+        gameState.addGameLogFromCard(CardName.BARGE_TOAD, [
+          player,
+          ` gained ${2 * playedFarms.length} TWIG.`,
+        ]);
+      }
     },
   }),
   [CardName.CASTLE]: new Card({
@@ -791,6 +819,16 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           },
         });
       }
+    },
+    productionWillActivateInner: (gameState: GameState, cardOwner: Player) => {
+      // Activating CHIP_SWEEP is useless if you only have it.
+      // TODO: What if you only have CHIP_SWEEP & MINER_MOLE
+      return (
+        cardOwner
+          .getAllPlayedCardsByType(CardType.PRODUCTION)
+          .filter(({ cardName }) => cardName !== CardName.CHIP_SWEEP).length !==
+        0
+      );
     },
   }),
   [CardName.CLOCK_TOWER]: new Card({
@@ -1227,6 +1265,14 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         gainAnyHelper.play(gameState, gameInput);
       }
     },
+    productionWillActivateInner: (gameState: GameState, cardOwner: Player) => {
+      const playedHusbands = cardOwner.getPlayedCardInfos(CardName.HUSBAND);
+      const playedWifes = cardOwner.getPlayedCardInfos(CardName.WIFE);
+      return (
+        cardOwner.hasCardInCity(CardName.FARM) &&
+        playedHusbands.length <= playedWifes.length
+      );
+    },
     productionInner: (
       gameState: GameState,
       gameInput: GameInput,
@@ -1655,6 +1701,22 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           },
         });
       }
+    },
+    productionWillActivateInner: (gameState: GameState, cardOwner: Player) => {
+      let foundCardToCopy = false;
+      gameState.players.forEach((p) => {
+        if (!foundCardToCopy && p.playerId !== cardOwner.playerId) {
+          foundCardToCopy =
+            p
+              .getAllPlayedCardsByType(CardType.PRODUCTION)
+              .filter(
+                ({ cardName }) =>
+                  cardName !== CardName.CHIP_SWEEP &&
+                  cardName !== CardName.MINER_MOLE
+              ).length !== 0;
+        }
+      });
+      return foundCardToCopy;
     },
   }),
   [CardName.MONASTERY]: new Card({
@@ -3279,8 +3341,31 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       [ResourceType.RESIN]: 1,
       [ResourceType.PEBBLE]: 1,
     },
-    playInner: () => {
-      throw new Error("Not Implemented");
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      const gainAnyHelper = new GainMoreThan1AnyResource({
+        cardContext: CardName.HARBOR,
+      });
+      if (gainAnyHelper.matchesGameInput(gameInput)) {
+        gainAnyHelper.play(gameState, gameInput);
+      }
+    },
+    productionWillActivateInner: (gameState: GameState, cardOwner: Player) => {
+      return cardOwner.getNumResourcesByType(ResourceType.PEARL) >= 2;
+    },
+    productionInner: (
+      gameState: GameState,
+      gameInput: GameInput,
+      cardOwner: Player
+    ) => {
+      const numPearls = cardOwner.getNumResourcesByType(ResourceType.PEARL);
+      if (numPearls >= 2) {
+        const gainAnyHelper = new GainMoreThan1AnyResource({
+          cardContext: CardName.HARBOR,
+        });
+        gameState.pendingGameInputs.push(
+          gainAnyHelper.getGameInput(2, { prevInputType: gameInput.inputType })
+        );
+      }
     },
   }),
   [CardName.MESSENGER]: new Card({
@@ -3512,44 +3597,12 @@ export function onlyRelevantProductionCards(
   playedCards: PlayedCardInfo[]
 ): PlayedCardInfo[] {
   const player = gameState.getActivePlayer();
-  return playedCards.filter(({ cardName, cardOwnerId }) => {
+  return playedCards.filter((playedCard) => {
+    const { cardName, cardOwnerId } = playedCard;
     const cardOwner = gameState.getPlayer(cardOwnerId);
-    if (
-      cardName === CardName.HUSBAND &&
-      !(
-        cardOwner.hasCardInCity(CardName.WIFE) &&
-        cardOwner.hasCardInCity(CardName.FARM)
-      )
-    ) {
+    const card = Card.fromName(cardName);
+    if (!card.productionWillActivate(gameState, cardOwner, playedCard)) {
       return false;
-    }
-    if (
-      cardName === CardName.CHIP_SWEEP &&
-      // Activating CHIP_SWEEP is useless if you only have it.
-      // TODO: What if you only have CHIP_SWEEP & MINER_MOLE
-      cardOwner
-        .getAllPlayedCardsByType(CardType.PRODUCTION)
-        .filter(({ cardName }) => cardName !== CardName.CHIP_SWEEP).length === 0
-    ) {
-      return false;
-    }
-    if (cardName === CardName.MINER_MOLE) {
-      let foundCardToCopy = false;
-      gameState.players.forEach((p) => {
-        if (!foundCardToCopy && p.playerId !== cardOwnerId) {
-          foundCardToCopy =
-            p
-              .getAllPlayedCardsByType(CardType.PRODUCTION)
-              .filter(
-                ({ cardName }) =>
-                  cardName !== CardName.CHIP_SWEEP &&
-                  cardName !== CardName.MINER_MOLE
-              ).length !== 0;
-        }
-      });
-      if (!foundCardToCopy) {
-        return false;
-      }
     }
     if (cardName === CardName.STOREHOUSE && cardOwnerId !== player.playerId) {
       return false;

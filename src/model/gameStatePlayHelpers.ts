@@ -115,7 +115,7 @@ export class GainAnyResource extends GameInputMultiStepHelperBase {
     if (!selectedOption || gameInput.options.indexOf(selectedOption) === -1) {
       throw new Error(`Please select an option`);
     }
-    player.gainResources({ [selectedOption]: 1 });
+    player.gainResources(gameState, { [selectedOption]: 1 });
     this.maybeAddToGameLog(gameState, [player, ` gained ${selectedOption}.`]);
   };
 
@@ -173,7 +173,7 @@ export class GainMoreThan1AnyResource extends GameInputMultiStepHelperBase {
       );
     }
 
-    player.gainResources(resources);
+    player.gainResources(gameState, resources);
     this.maybeAddToGameLog(gameState, [
       player,
       " gained ",

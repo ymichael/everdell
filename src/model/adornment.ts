@@ -204,7 +204,7 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
-      player.gainResources({ [ResourceType.BERRY]: 3 });
+      player.gainResources(gameState, { [ResourceType.BERRY]: 3 });
       const numPlayedCritters = player.getNumPlayedCritters();
       player.drawCards(gameState, numPlayedCritters);
     },
@@ -327,7 +327,7 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
           throw new Error(`Must select GOVERNANCE card`);
         }
 
-        player.gainResources(card.baseCost);
+        player.gainResources(gameState, card.baseCost);
       } else {
         throw new Error(`Unexpected GameInputType ${gameInput.inputType}`);
       }
@@ -727,7 +727,7 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
       } else if (helper.matchesGameInput(gameInput)) {
         helper.play(gameState, gameInput);
         player.drawCards(gameState, 2);
-        player.gainResources({ [ResourceType.VP]: 1 });
+        player.gainResources(gameState, { [ResourceType.VP]: 1 });
         gameState.addGameLogFromAdornment(AdornmentName.SEAGLASS_AMULET, [
           player,
           ` gained 2 1 CARD and 1 VP.`,
@@ -771,7 +771,7 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
       } else if (helper.matchesGameInput(gameInput)) {
         helper.play(gameState, gameInput);
         player.drawCards(gameState, 1);
-        player.gainResources({ [ResourceType.PEARL]: 1 });
+        player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
         gameState.addGameLogFromAdornment(AdornmentName.SPYGLASS, [
           player,
           ` gained 1 ${gameInput.clientOptions.selectedOption}, 1 CARD and 1 PEARL.`,

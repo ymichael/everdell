@@ -30,7 +30,6 @@ import { generate as uuid } from "short-uuid";
 import { sumResources } from "./gameStatePlayHelpers";
 import { assertUnreachable } from "../utils";
 
-const MAX_HAND_SIZE = 8;
 const MAX_CITY_SIZE = 15;
 
 export class Player implements IGameTextEntity {
@@ -131,14 +130,22 @@ export class Player implements IGameTextEntity {
     }
   }
 
+  get maxHandSize(): number {
+    const MAX_HAND_SIZE = 8;
+    if (this.hasCardInCity(CardName.BRIDGE)) {
+      return MAX_HAND_SIZE + this.getNumResourcesByType(ResourceType.PEARL);
+    }
+    return MAX_HAND_SIZE;
+  }
+
   drawMaxCards(gameState: GameState): number {
-    const numDrawn = MAX_HAND_SIZE - this.cardsInHand.length;
+    const numDrawn = this.maxHandSize - this.cardsInHand.length;
     this.drawCards(gameState, numDrawn);
     return numDrawn;
   }
 
   addCardToHand(gameState: GameState, cardName: CardName): void {
-    if (this.cardsInHand.length < MAX_HAND_SIZE) {
+    if (this.cardsInHand.length < this.maxHandSize) {
       this.cardsInHand.push(cardName);
     } else {
       gameState.discardPile.addToStack(cardName);
@@ -1153,21 +1160,24 @@ export class Player implements IGameTextEntity {
     }
   }
 
-  gainResources({
-    VP = 0,
-    TWIG = 0,
-    BERRY = 0,
-    PEBBLE = 0,
-    RESIN = 0,
-    PEARL = 0,
-  }: {
-    [ResourceType.VP]?: number;
-    [ResourceType.TWIG]?: number;
-    [ResourceType.BERRY]?: number;
-    [ResourceType.PEBBLE]?: number;
-    [ResourceType.RESIN]?: number;
-    [ResourceType.PEARL]?: number;
-  }): void {
+  gainResources(
+    gameState: GameState,
+    {
+      VP = 0,
+      TWIG = 0,
+      BERRY = 0,
+      PEBBLE = 0,
+      RESIN = 0,
+      PEARL = 0,
+    }: {
+      [ResourceType.VP]?: number;
+      [ResourceType.TWIG]?: number;
+      [ResourceType.BERRY]?: number;
+      [ResourceType.PEBBLE]?: number;
+      [ResourceType.RESIN]?: number;
+      [ResourceType.PEARL]?: number;
+    }
+  ): void {
     if (VP) {
       this.resources[ResourceType.VP] += VP;
     }

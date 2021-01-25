@@ -339,7 +339,7 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
           player,
           ` gained 1 PEARL.`,
         ]);
-        player.gainResources({ [ResourceType.PEARL]: 1 });
+        player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
       }
     },
   }),
@@ -429,7 +429,10 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
           player.removeCardFromHand(cardName);
           gameState.discardPile.addToStack(cardName);
         });
-        player.gainResources({ [ResourceType.PEARL]: 1, [ResourceType.VP]: 1 });
+        player.gainResources(gameState, {
+          [ResourceType.PEARL]: 1,
+          [ResourceType.VP]: 1,
+        });
       }
     },
   }),
@@ -605,7 +608,7 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
           gameState.removeCardFromMeadow(cardName);
           player.addCardToHand(gameState, cardName);
         });
-        player.gainResources({ [ResourceType.PEARL]: 1 });
+        player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
         gameState.addGameLogFromRiverDestination(
           RiverDestinationName.OBSERVATORY,
           [
@@ -689,7 +692,7 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
         ]);
 
         player.drawCards(gameState, 3);
-        player.gainResources({ [ResourceType.PEARL]: 1 });
+        player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
         gameState.addGameLogFromRiverDestination(RiverDestinationName.MARKET, [
           player,
           ` drew 3 CARD and gained 1 PEARL.`,
@@ -770,7 +773,7 @@ function payVPResourceToDrawCardAndPearl({
           `to draw ${numCardsToDraw} CARD and gain 1 PEARL`,
         ]);
         player.spendResources({ [ResourceType.VP]: 1, [resourceType]: 1 });
-        player.gainResources({ [ResourceType.PEARL]: 1 });
+        player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
         player.drawCards(gameState, numCardsToDraw);
       } else {
         gameState.addGameLogFromRiverDestination(name, [
@@ -844,7 +847,10 @@ function discardCardTypeToGainVPAndPearl({
         player.removeCardFromHand(cardName);
         gameState.discardPile.addToStack(cardName);
       });
-      player.gainResources({ [ResourceType.PEARL]: 1, [ResourceType.VP]: 1 });
+      player.gainResources(gameState, {
+        [ResourceType.PEARL]: 1,
+        [ResourceType.VP]: 1,
+      });
     }
   };
 }

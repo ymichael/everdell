@@ -357,7 +357,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
             ]
           );
 
-          selectedPlayer.gainResources(resources);
+          selectedPlayer.gainResources(gameState, resources);
           player.spendResources(resources);
 
           const eventInfo =

@@ -366,7 +366,7 @@ export class Card<TCardType extends CardType = CardType>
   ): void {
     const player = gameState.getActivePlayer();
     if (this.resourcesToGain && sumResources(this.resourcesToGain)) {
-      player.gainResources(this.resourcesToGain);
+      player.gainResources(gameState, this.resourcesToGain);
       if (this.resourcesToGain.CARD) {
         player.drawCards(gameState, this.resourcesToGain.CARD);
       }
@@ -496,7 +496,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             player.removeCardFromHand(cardName);
             gameState.discardPile.addToStack(cardName);
           });
-          player.gainResources({
+          player.gainResources(gameState, {
             [ResourceType.VP]: numDiscarded,
           });
         }
@@ -527,7 +527,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     ) => {
       const player = gameState.getActivePlayer();
       const playedFarms = player.getPlayedCardInfos(CardName.FARM);
-      player.gainResources({
+      player.gainResources(gameState, {
         [ResourceType.TWIG]: 2 * playedFarms.length,
       });
     },
@@ -922,7 +922,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           throw new Error("Invalid input");
         }
 
-        player.gainResources({
+        player.gainResources(gameState, {
           [selectedOption as ResourceType]: 1,
         });
         gameState.addGameLogFromCard(CardName.COURTHOUSE, [
@@ -1159,7 +1159,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     ) => {
       const player = gameState.getActivePlayer();
       const numToGain = cardOwner.hasCardInCity(CardName.FARM) ? 2 : 1;
-      player.gainResources({
+      player.gainResources(gameState, {
         [ResourceType.BERRY]: numToGain,
       });
       gameState.addGameLogFromCard(CardName.GENERAL_STORE, [
@@ -1752,8 +1752,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         const targetPlayer = gameState.getPlayer(selectedPlayer);
         const resources = prevInput.clientOptions.resources;
         player.spendResources(resources);
-        targetPlayer.gainResources(resources);
-        player.gainResources({
+        targetPlayer.gainResources(gameState, resources);
+        player.gainResources(gameState, {
           [ResourceType.VP]: 4,
         });
         gameState.addGameLogFromCard(CardName.MONASTERY, [
@@ -1845,10 +1845,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         const targetPlayer = gameState.getPlayer(
           gameInput.clientOptions.selectedPlayer
         );
-        targetPlayer.gainResources({
+        targetPlayer.gainResources(gameState, {
           [ResourceType.BERRY]: numBerries,
         });
-        player.gainResources({
+        player.gainResources(gameState, {
           [ResourceType.VP]: 2 * numBerries,
         });
         gameState.addGameLogFromCard(CardName.MONK, [
@@ -2542,7 +2542,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           throw new Error("Cannot ruins non-construction");
         }
         player.removeCardFromCity(gameState, selectedCards[0]);
-        player.gainResources(targetCard.baseCost);
+        player.gainResources(gameState, targetCard.baseCost);
         // This doesn't if we're reactiving a played RUINS
         if (!gameInput.playedCardContext) {
           player.addToCity(CardName.RUINS);
@@ -2622,7 +2622,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             },
           });
         } else {
-          player.gainResources({ [ResourceType.BERRY]: 3 });
+          player.gainResources(gameState, { [ResourceType.BERRY]: 3 });
           const chapelInfo = player.getPlayedCardInfos(CardName.CHAPEL);
           if (chapelInfo.length > 0) {
             const chapel = chapelInfo[0].resources;
@@ -2631,7 +2631,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             }
 
             const numVP = chapel[ResourceType.VP] || 0;
-            player.gainResources({ [ResourceType.VP]: numVP });
+            player.gainResources(gameState, { [ResourceType.VP]: numVP });
             gameState.addGameLogFromCard(CardName.SHEPHERD, [
               player,
               ` gained 3 BERRY and ${numVP} VP.`,
@@ -2660,7 +2660,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         if (targetPlayer.playerId === player.playerId) {
           throw new Error("Cannot select yourself");
         }
-        targetPlayer.gainResources(resourcesToGive);
+        targetPlayer.gainResources(gameState, resourcesToGive);
         gameState.addGameLogFromCard(CardName.SHEPHERD, [
           player,
           " gave ",
@@ -2672,7 +2672,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       } else if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
         // give the player their berries + VP, don't ask them to select a player
 
-        player.gainResources({ [ResourceType.BERRY]: 3 });
+        player.gainResources(gameState, { [ResourceType.BERRY]: 3 });
         const chapelInfo = player.getPlayedCardInfos(CardName.CHAPEL);
 
         if (chapelInfo.length > 0) {
@@ -2682,7 +2682,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           }
 
           const numVP = chapel[ResourceType.VP] || 0;
-          player.gainResources({ [ResourceType.VP]: numVP });
+          player.gainResources(gameState, { [ResourceType.VP]: numVP });
           gameState.addGameLogFromCard(CardName.SHEPHERD, [
             player,
             ` gained 3 BERRY and ${numVP} VP.`,
@@ -2722,7 +2722,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         gameInput.clientOptions.card &&
         Card.fromName(gameInput.clientOptions.card).isCritter
       ) {
-        player.gainResources({
+        player.gainResources(gameState, {
           [ResourceType.BERRY]: 1,
         });
         gameState.addGameLogFromCard(CardName.SHOPKEEPER, [
@@ -2841,7 +2841,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           ...resourceMapToGameText(origPlayedCard.resources!),
           ".",
         ]);
-        player.gainResources(origPlayedCard.resources!);
+        player.gainResources(gameState, origPlayedCard.resources!);
 
         player.updatePlayedCard(gameState, origPlayedCard, {
           ...cloneDeep(origPlayedCard),
@@ -3156,8 +3156,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
 
         // give player resources from base cost + the resource they chose
         const removedCard = Card.fromName(cardToRemove.cardName);
-        player.gainResources(removedCard.baseCost);
-        player.gainResources({ [ResourceType.VP]: 1 });
+        player.gainResources(gameState, removedCard.baseCost);
+        player.gainResources(gameState, { [ResourceType.VP]: 1 });
 
         gainAnyHelper.play(gameState, gameInput);
         gameState.addGameLogFromCard(CardName.UNIVERSITY, [
@@ -3466,7 +3466,7 @@ function playSpendResourceToGetVPFactory({
         ]);
       }
       player.spendResources({ [resourceType]: numToSpend });
-      player.gainResources({ [ResourceType.VP]: numToSpend });
+      player.gainResources(gameState, { [ResourceType.VP]: numToSpend });
     }
   };
 }

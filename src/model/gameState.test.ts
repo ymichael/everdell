@@ -265,7 +265,7 @@ describe("GameState", () => {
 
       expect(gameState.getPlayableCards()).to.eql([]);
 
-      player.gainResources(card.baseCost);
+      player.gainResources(gameState, card.baseCost);
       expect(gameState.getPlayableCards()).to.eql([
         { card: CardName.FARM, fromMeadow: false },
       ]);
@@ -276,7 +276,7 @@ describe("GameState", () => {
 
       const player = gameState.getActivePlayer();
       player.cardsInHand.push(card.name);
-      player.gainResources(card.baseCost);
+      player.gainResources(gameState, card.baseCost);
 
       expect(gameState.getPlayableCards()).to.eql([
         { card: CardName.FARM, fromMeadow: false },
@@ -291,14 +291,14 @@ describe("GameState", () => {
 
     it("should be able to play constructions if city is full (w/ crane)", () => {
       player.cardsInHand.push(CardName.FARM);
-      player.gainResources(Card.fromName(CardName.FARM).baseCost);
+      player.gainResources(gameState, Card.fromName(CardName.FARM).baseCost);
       player.cardsInHand.push(CardName.MINE);
-      player.gainResources(Card.fromName(CardName.MINE).baseCost);
+      player.gainResources(gameState, Card.fromName(CardName.MINE).baseCost);
 
       player.cardsInHand.push(CardName.WIFE);
-      player.gainResources(Card.fromName(CardName.WIFE).baseCost);
+      player.gainResources(gameState, Card.fromName(CardName.WIFE).baseCost);
       player.cardsInHand.push(CardName.KING);
-      player.gainResources(Card.fromName(CardName.KING).baseCost);
+      player.gainResources(gameState, Card.fromName(CardName.KING).baseCost);
 
       expect(gameState.getPlayableCards()).to.eql([
         { card: CardName.FARM, fromMeadow: false },
@@ -345,14 +345,14 @@ describe("GameState", () => {
 
     it("should be able to play critters if city is full (w/ innkeeper)", () => {
       player.cardsInHand.push(CardName.FARM);
-      player.gainResources(Card.fromName(CardName.FARM).baseCost);
+      player.gainResources(gameState, Card.fromName(CardName.FARM).baseCost);
       player.cardsInHand.push(CardName.MINE);
-      player.gainResources(Card.fromName(CardName.MINE).baseCost);
+      player.gainResources(gameState, Card.fromName(CardName.MINE).baseCost);
 
       player.cardsInHand.push(CardName.WIFE);
-      player.gainResources(Card.fromName(CardName.WIFE).baseCost);
+      player.gainResources(gameState, Card.fromName(CardName.WIFE).baseCost);
       player.cardsInHand.push(CardName.KING);
-      player.gainResources(Card.fromName(CardName.KING).baseCost);
+      player.gainResources(gameState, Card.fromName(CardName.KING).baseCost);
 
       expect(gameState.getPlayableCards()).to.eql([
         { card: CardName.FARM, fromMeadow: false },
@@ -397,7 +397,7 @@ describe("GameState", () => {
     it("should be able to play FOOL if city is full", () => {
       const player = gameState.getActivePlayer();
       player.cardsInHand.push(CardName.FOOL);
-      player.gainResources(Card.fromName(CardName.FOOL).baseCost);
+      player.gainResources(gameState, Card.fromName(CardName.FOOL).baseCost);
       expect(gameState.getPlayableCards()).to.eql([
         { card: CardName.FOOL, fromMeadow: false },
       ]);
@@ -413,7 +413,7 @@ describe("GameState", () => {
 
     it("should be able to play RUINS if city is full (w/ construction)", () => {
       player.cardsInHand.push(CardName.RUINS);
-      player.gainResources(Card.fromName(CardName.RUINS).baseCost);
+      player.gainResources(gameState, Card.fromName(CardName.RUINS).baseCost);
 
       // no construction to destroy
       expect(gameState.getPlayableCards()).to.eql([]);
@@ -917,7 +917,7 @@ describe("GameState", () => {
       gameState.players[0].addToCity(CardName.FARM); // 1
       gameState.players[0].addToCity(CardName.QUEEN); // 4
       gameState.players[0].addToCity(CardName.KING); // 4 + 0 events
-      gameState.players[0].gainResources({
+      gameState.players[0].gainResources(gameState, {
         [ResourceType.VP]: 5,
       });
 
@@ -925,7 +925,7 @@ describe("GameState", () => {
       gameState.players[1].addToCity(CardName.HISTORIAN); // 1
       gameState.players[1].addToCity(CardName.HUSBAND); // 2
       gameState.players[1].addToCity(CardName.WIFE); // 2 + 3 (for husband)
-      gameState.players[1].gainResources({
+      gameState.players[1].gainResources(gameState, {
         [ResourceType.RESIN]: 1,
         [ResourceType.PEBBLE]: 1,
       });

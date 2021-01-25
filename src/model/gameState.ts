@@ -560,7 +560,7 @@ export class GameState {
 
     // If card isn't owned by active player, pay the other player a VP
     if (cardOwner.playerId !== activePlayer.playerId) {
-      cardOwner.gainResources({ [ResourceType.VP]: 1 });
+      cardOwner.gainResources(this, { [ResourceType.VP]: 1 });
       this.addGameLog([
         cardOwner,
         " gained 1 VP when ",
@@ -667,7 +667,7 @@ export class GameState {
         ".",
       ]);
       this.addGameLog([player, " gained 1 PEARL."]);
-      player.gainResources({ [ResourceType.PEARL]: 1 });
+      player.gainResources(this, { [ResourceType.PEARL]: 1 });
     } else {
       if (riverDestinationSpot === RiverDestinationSpot.SHOAL) {
         this.addGameLog([

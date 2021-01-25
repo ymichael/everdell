@@ -40,7 +40,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     player.cardsInHand.push(CardName.MINER_MOLE);
     player.cardsInHand.push(CardName.CHIP_SWEEP);
 
-    player.gainResources({
+    player.gainResources(gameState, {
       [ResourceType.VP]: 12,
       [ResourceType.TWIG]: 4,
       [ResourceType.BERRY]: 7,

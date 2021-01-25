@@ -46,7 +46,7 @@ describe("Adornment", () => {
   describe(AdornmentName.SPYGLASS, () => {
     const name = AdornmentName.SPYGLASS;
     beforeEach(() => {
-      player.gainResources({ [ResourceType.PEARL]: 1 });
+      player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
       player.adornmentsInHand.push(name);
     });
 
@@ -104,7 +104,7 @@ describe("Adornment", () => {
   describe(AdornmentName.SCALES, () => {
     const name = AdornmentName.SCALES;
     beforeEach(() => {
-      player.gainResources({ [ResourceType.PEARL]: 1 });
+      player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
       player.adornmentsInHand.push(name);
     });
 
@@ -314,7 +314,7 @@ describe("Adornment", () => {
   describe(AdornmentName.MIRROR, () => {
     const name = AdornmentName.MIRROR;
     beforeEach(() => {
-      player.gainResources({ [ResourceType.PEARL]: 1 });
+      player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
       player.adornmentsInHand.push(name);
     });
 
@@ -504,7 +504,7 @@ describe("Adornment", () => {
   describe(AdornmentName.KEY_TO_THE_CITY, () => {
     const name = AdornmentName.KEY_TO_THE_CITY;
     beforeEach(() => {
-      player.gainResources({ [ResourceType.PEARL]: 1 });
+      player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
       player.adornmentsInHand.push(name);
     });
 
@@ -568,7 +568,7 @@ describe("Adornment", () => {
   describe(AdornmentName.SUNDIAL, () => {
     const name = AdornmentName.SUNDIAL;
     beforeEach(() => {
-      player.gainResources({ [ResourceType.PEARL]: 1 });
+      player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
       player.adornmentsInHand.push(name);
     });
 
@@ -741,7 +741,7 @@ describe("Adornment", () => {
   describe(AdornmentName.GILDED_BOOK, () => {
     const name = AdornmentName.GILDED_BOOK;
     beforeEach(() => {
-      player.gainResources({ [ResourceType.PEARL]: 1 });
+      player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
       player.adornmentsInHand.push(name);
     });
 
@@ -813,7 +813,7 @@ describe("Adornment", () => {
   describe(AdornmentName.SEAGLASS_AMULET, () => {
     const name = AdornmentName.SEAGLASS_AMULET;
     beforeEach(() => {
-      player.gainResources({ [ResourceType.PEARL]: 1 });
+      player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
       player.adornmentsInHand.push(name);
     });
 
@@ -861,7 +861,7 @@ describe("Adornment", () => {
   describe(AdornmentName.MASQUE, () => {
     const name = AdornmentName.MASQUE;
     beforeEach(() => {
-      player.gainResources({ [ResourceType.PEARL]: 1 });
+      player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
       player.adornmentsInHand.push(name);
     });
 
@@ -870,22 +870,22 @@ describe("Adornment", () => {
       const playerId = player.playerId;
       expect(adornment.getPoints(gameState, playerId)).to.be(0);
 
-      player.gainResources({ [ResourceType.VP]: 1 });
+      player.gainResources(gameState, { [ResourceType.VP]: 1 });
       expect(adornment.getPoints(gameState, playerId)).to.be(0);
 
-      player.gainResources({ [ResourceType.VP]: 1 });
+      player.gainResources(gameState, { [ResourceType.VP]: 1 });
       expect(adornment.getPoints(gameState, playerId)).to.be(0);
 
-      player.gainResources({ [ResourceType.VP]: 1 });
+      player.gainResources(gameState, { [ResourceType.VP]: 1 });
       expect(adornment.getPoints(gameState, playerId)).to.be(1);
 
-      player.gainResources({ [ResourceType.VP]: 7 });
+      player.gainResources(gameState, { [ResourceType.VP]: 7 });
       expect(adornment.getPoints(gameState, playerId)).to.be(1 + 2);
 
-      player.gainResources({ [ResourceType.VP]: 7 });
+      player.gainResources(gameState, { [ResourceType.VP]: 7 });
       expect(adornment.getPoints(gameState, playerId)).to.be(1 + 4);
 
-      player.gainResources({ [ResourceType.VP]: 7 });
+      player.gainResources(gameState, { [ResourceType.VP]: 7 });
       expect(adornment.getPoints(gameState, playerId)).to.be(1 + 7);
     });
 
@@ -1085,7 +1085,7 @@ describe("Adornment", () => {
   describe(AdornmentName.BELL, () => {
     const name = AdornmentName.BELL;
     beforeEach(() => {
-      player.gainResources({ [ResourceType.PEARL]: 1 });
+      player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
       player.adornmentsInHand.push(name);
     });
 
@@ -1142,7 +1142,7 @@ describe("Adornment", () => {
   describe(AdornmentName.HOURGLASS, () => {
     const name = AdornmentName.HOURGLASS;
     beforeEach(() => {
-      player.gainResources({ [ResourceType.PEARL]: 1 });
+      player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
       player.adornmentsInHand.push(name);
 
       gameState.locationsMap[LocationName.FOREST_TWO_BERRY_ONE_CARD] = [];
@@ -1221,7 +1221,7 @@ describe("Adornment", () => {
   describe(AdornmentName.COMPASS, () => {
     const name = AdornmentName.COMPASS;
     beforeEach(() => {
-      player.gainResources({ [ResourceType.PEARL]: 1 });
+      player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
       player.adornmentsInHand.push(name);
     });
 
@@ -1449,7 +1449,7 @@ describe("Adornment", () => {
   describe(AdornmentName.TIARA, () => {
     const name = AdornmentName.TIARA;
     beforeEach(() => {
-      player.gainResources({ [ResourceType.PEARL]: 1 });
+      player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
       player.adornmentsInHand.push(name);
     });
 

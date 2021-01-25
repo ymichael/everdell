@@ -239,7 +239,7 @@ describe("RiverDestinationMap", () => {
     it("should do nothing if player doesn't have VP", () => {
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
       expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
-      player.gainResources({ [ResourceType.RESIN]: 1 });
+      player.gainResources(gameState, { [ResourceType.RESIN]: 1 });
       [player, gameState] = multiStepGameInputTest(gameState, [
         {
           inputType: GameInputType.VISIT_RIVER_DESTINATION,
@@ -254,7 +254,7 @@ describe("RiverDestinationMap", () => {
     it("should do nothing if player doesn't have RESIN", () => {
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
       expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
-      player.gainResources({ [ResourceType.VP]: 1 });
+      player.gainResources(gameState, { [ResourceType.VP]: 1 });
       [player, gameState] = multiStepGameInputTest(gameState, [
         {
           inputType: GameInputType.VISIT_RIVER_DESTINATION,
@@ -268,7 +268,10 @@ describe("RiverDestinationMap", () => {
 
     it("should ask the player to choose spend RESIN & VP", () => {
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
-      player.gainResources({ [ResourceType.VP]: 1, [ResourceType.RESIN]: 1 });
+      player.gainResources(gameState, {
+        [ResourceType.VP]: 1,
+        [ResourceType.RESIN]: 1,
+      });
       expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
       expect(player.getNumResourcesByType(ResourceType.VP)).to.be(1);
       expect(player.cardsInHand.length).to.be(0);
@@ -296,7 +299,10 @@ describe("RiverDestinationMap", () => {
 
     it("allow the player to choose NOT to spend RESIN & VP", () => {
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
-      player.gainResources({ [ResourceType.VP]: 1, [ResourceType.RESIN]: 1 });
+      player.gainResources(gameState, {
+        [ResourceType.VP]: 1,
+        [ResourceType.RESIN]: 1,
+      });
       expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
       expect(player.getNumResourcesByType(ResourceType.VP)).to.be(1);
       expect(player.cardsInHand.length).to.be(0);
@@ -336,7 +342,7 @@ describe("RiverDestinationMap", () => {
         ]);
       }).to.throwException(/not enough resources/i);
 
-      player.gainResources({ [ResourceType.BERRY]: 2 });
+      player.gainResources(gameState, { [ResourceType.BERRY]: 2 });
       expect(() => {
         [player, gameState] = multiStepGameInputTest(gameState, [
           {
@@ -350,7 +356,7 @@ describe("RiverDestinationMap", () => {
     });
 
     it("should ask the player to spend resources and discard cards", () => {
-      player.gainResources({ [ResourceType.BERRY]: 2 });
+      player.gainResources(gameState, { [ResourceType.BERRY]: 2 });
       player.cardsInHand.push(CardName.FARM);
       player.cardsInHand.push(CardName.FARM);
 
@@ -387,7 +393,7 @@ describe("RiverDestinationMap", () => {
     });
 
     it("should auto advance if possible", () => {
-      player.gainResources({ [ResourceType.BERRY]: 2 });
+      player.gainResources(gameState, { [ResourceType.BERRY]: 2 });
       player.cardsInHand.push(CardName.FARM);
       player.cardsInHand.push(CardName.FARM);
 

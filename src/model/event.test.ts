@@ -249,7 +249,7 @@ describe("Event", () => {
       const gameInput = claimEventInput(event.name);
 
       gameState.eventsMap[EventName.SPECIAL_CROAK_WART_CURE] = null;
-      player.gainResources({ [ResourceType.BERRY]: 2 });
+      player.gainResources(gameState, { [ResourceType.BERRY]: 2 });
 
       player.addToCity(CardName.UNDERTAKER);
       player.addToCity(CardName.BARGE_TOAD);
@@ -367,7 +367,7 @@ describe("Event", () => {
 
       player.addToCity(CardName.LOOKOUT);
       player.addToCity(CardName.MINER_MOLE);
-      player.gainResources({ [ResourceType.TWIG]: 3 });
+      player.gainResources(gameState, { [ResourceType.TWIG]: 3 });
 
       // check if the player can claim the event
       expect(event.canPlay(gameState, gameInput)).to.be(true);
@@ -471,7 +471,7 @@ describe("Event", () => {
 
       player.addToCity(CardName.LOOKOUT);
       player.addToCity(CardName.MINER_MOLE);
-      player.gainResources({ [ResourceType.TWIG]: 3 });
+      player.gainResources(gameState, { [ResourceType.TWIG]: 3 });
 
       // check if the player can claim the event
       expect(event.canPlay(gameState, gameInput)).to.be(true);
@@ -523,7 +523,7 @@ describe("Event", () => {
 
       player.addToCity(CardName.BARD);
       player.addToCity(CardName.INN);
-      player.gainResources({ [ResourceType.BERRY]: 5 });
+      player.gainResources(gameState, { [ResourceType.BERRY]: 5 });
 
       // check if the player can claim the event
       expect(event.canPlay(gameState, gameInput)).to.be(true);
@@ -626,7 +626,7 @@ describe("Event", () => {
 
       player.addToCity(CardName.BARD);
       player.addToCity(CardName.INN);
-      player.gainResources({ [ResourceType.BERRY]: 5 });
+      player.gainResources(gameState, { [ResourceType.BERRY]: 5 });
 
       // check if the player can claim the event
       expect(event.canPlay(gameState, gameInput)).to.be(true);
@@ -678,7 +678,7 @@ describe("Event", () => {
 
       player.addToCity(CardName.PEDDLER);
       player.addToCity(CardName.GENERAL_STORE);
-      player.gainResources({
+      player.gainResources(gameState, {
         [ResourceType.TWIG]: 3,
         [ResourceType.RESIN]: 1,
         [ResourceType.PEBBLE]: 2,
@@ -803,7 +803,7 @@ describe("Event", () => {
 
       player.addToCity(CardName.PEDDLER);
       player.addToCity(CardName.GENERAL_STORE);
-      player.gainResources({
+      player.gainResources(gameState, {
         [ResourceType.TWIG]: 3,
         [ResourceType.RESIN]: 1,
         [ResourceType.PEBBLE]: 2,
@@ -1388,7 +1388,7 @@ describe("Event", () => {
 
       player.addToCity(CardName.SHOPKEEPER);
       player.addToCity(CardName.POST_OFFICE);
-      player.gainResources({ [ResourceType.TWIG]: 3 });
+      player.gainResources(gameState, { [ResourceType.TWIG]: 3 });
 
       expect(
         player.claimedEvents[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN]
@@ -1453,7 +1453,7 @@ describe("Event", () => {
 
       player.addToCity(CardName.SHOPKEEPER);
       player.addToCity(CardName.POST_OFFICE);
-      player.gainResources({
+      player.gainResources(gameState, {
         [ResourceType.TWIG]: 3,
         [ResourceType.RESIN]: 2,
         [ResourceType.PEBBLE]: 2,
@@ -1589,7 +1589,7 @@ describe("Event", () => {
 
       player.addToCity(CardName.SHOPKEEPER);
       player.addToCity(CardName.POST_OFFICE);
-      player.gainResources({
+      player.gainResources(gameState, {
         [ResourceType.TWIG]: 3,
         [ResourceType.RESIN]: 2,
         [ResourceType.PEBBLE]: 2,
@@ -1711,7 +1711,7 @@ describe("Event", () => {
 
       player.addToCity(CardName.SHOPKEEPER);
       player.addToCity(CardName.POST_OFFICE);
-      player.gainResources({
+      player.gainResources(gameState, {
         [ResourceType.TWIG]: 3,
         [ResourceType.RESIN]: 2,
         [ResourceType.PEBBLE]: 2,
@@ -1772,7 +1772,7 @@ describe("Event", () => {
 
       player.addToCity(CardName.SHOPKEEPER);
       player.addToCity(CardName.POST_OFFICE);
-      player.gainResources({
+      player.gainResources(gameState, {
         [ResourceType.TWIG]: 3,
         [ResourceType.RESIN]: 2,
         [ResourceType.PEBBLE]: 2,
@@ -1855,7 +1855,7 @@ describe("Event", () => {
       player = gameState.getActivePlayer();
       const gameInput = claimEventInput(event.name);
 
-      player.gainResources({
+      player.gainResources(gameState, {
         [ResourceType.TWIG]: 1,
         [ResourceType.RESIN]: 1,
         [ResourceType.PEBBLE]: 1,
@@ -1903,7 +1903,7 @@ describe("Event", () => {
       player = gameState.getActivePlayer();
       const gameInput = claimEventInput(event.name);
 
-      player.gainResources({
+      player.gainResources(gameState, {
         [ResourceType.TWIG]: 1,
         [ResourceType.RESIN]: 1,
         [ResourceType.PEBBLE]: 1,
@@ -1926,7 +1926,7 @@ describe("Event", () => {
       player = gameState.getActivePlayer();
       const gameInput = claimEventInput(event.name);
 
-      player.gainResources({
+      player.gainResources(gameState, {
         [ResourceType.TWIG]: 1,
         [ResourceType.RESIN]: 1,
         [ResourceType.PEBBLE]: 1,
@@ -1948,7 +1948,7 @@ describe("Event", () => {
       player = gameState.getActivePlayer();
       const gameInput = claimEventInput(event.name);
 
-      player.gainResources({
+      player.gainResources(gameState, {
         [ResourceType.TWIG]: 2,
         [ResourceType.RESIN]: 2,
         [ResourceType.PEBBLE]: 2,
@@ -1996,7 +1996,7 @@ describe("Event", () => {
       player = gameState.getActivePlayer();
       const gameInput = claimEventInput(event.name);
 
-      player.gainResources({
+      player.gainResources(gameState, {
         [ResourceType.TWIG]: 2,
         [ResourceType.RESIN]: 1,
         [ResourceType.PEBBLE]: 2,
@@ -2019,7 +2019,7 @@ describe("Event", () => {
       player = gameState.getActivePlayer();
       const gameInput = claimEventInput(event.name);
 
-      player.gainResources({
+      player.gainResources(gameState, {
         [ResourceType.TWIG]: 2,
         [ResourceType.RESIN]: 2,
         [ResourceType.PEBBLE]: 2,
@@ -2041,7 +2041,7 @@ describe("Event", () => {
       player = gameState.getActivePlayer();
       const gameInput = claimEventInput(event.name);
 
-      player.gainResources({
+      player.gainResources(gameState, {
         [ResourceType.TWIG]: 2,
         [ResourceType.RESIN]: 2,
         [ResourceType.PEBBLE]: 2,
@@ -2090,7 +2090,7 @@ describe("Event", () => {
       player = gameState.getActivePlayer();
       const gameInput = claimEventInput(event.name);
 
-      player.gainResources({
+      player.gainResources(gameState, {
         [ResourceType.TWIG]: 2,
         [ResourceType.RESIN]: 1,
         [ResourceType.PEBBLE]: 2,
@@ -2113,7 +2113,7 @@ describe("Event", () => {
       player = gameState.getActivePlayer();
       const gameInput = claimEventInput(event.name);
 
-      player.gainResources({
+      player.gainResources(gameState, {
         [ResourceType.TWIG]: 2,
         [ResourceType.RESIN]: 2,
         [ResourceType.PEBBLE]: 2,
@@ -2135,7 +2135,7 @@ describe("Event", () => {
       player = gameState.getActivePlayer();
       const gameInput = claimEventInput(event.name);
 
-      player.gainResources({
+      player.gainResources(gameState, {
         [ResourceType.TWIG]: 3,
         [ResourceType.RESIN]: 3,
         [ResourceType.PEBBLE]: 3,
@@ -2184,7 +2184,7 @@ describe("Event", () => {
       player = gameState.getActivePlayer();
       const gameInput = claimEventInput(event.name);
 
-      player.gainResources({
+      player.gainResources(gameState, {
         [ResourceType.TWIG]: 2,
         [ResourceType.RESIN]: 1,
         [ResourceType.PEBBLE]: 2,
@@ -2207,7 +2207,7 @@ describe("Event", () => {
       player = gameState.getActivePlayer();
       const gameInput = claimEventInput(event.name);
 
-      player.gainResources({
+      player.gainResources(gameState, {
         [ResourceType.TWIG]: 3,
         [ResourceType.RESIN]: 3,
         [ResourceType.PEBBLE]: 3,

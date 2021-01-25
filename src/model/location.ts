@@ -197,7 +197,7 @@ export class Location implements GameStatePlayable, IGameTextEntity {
     }
     if (this.resourcesToGain && sumResources(this.resourcesToGain)) {
       const player = gameState.getActivePlayer();
-      player.gainResources(this.resourcesToGain);
+      player.gainResources(gameState, this.resourcesToGain);
       if (this.resourcesToGain.CARD) {
         player.drawCards(gameState, this.resourcesToGain.CARD);
       }

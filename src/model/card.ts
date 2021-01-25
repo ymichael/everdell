@@ -14,6 +14,7 @@ import {
   EventType,
   GameInput,
   GameInputType,
+  GameInputPlayCard,
   PlayedCardInfo,
   GameText,
   TextPartEntity,
@@ -306,23 +307,10 @@ export class Card<TCardType extends CardType = CardType>
 
     const playCardGameInput = this.getPlayCardInput(gameInput, playedCard);
 
-    // Do this first so that logs are ordered properly:
-    // 1. play card
-    // 2. historian/shopkeeper etc
-    // 3+. card related actions..
-    [CardName.HISTORIAN, CardName.SHOPKEEPER, CardName.COURTHOUSE].forEach(
-      (cardName) => {
-        if (player.hasCardInCity(cardName)) {
-          const card = Card.fromName(cardName);
-          card.activateCard(
-            gameState,
-            playCardGameInput,
-            player,
-            player.getFirstPlayedCard(cardName) as PlayedCardInfo
-          );
-        }
-      }
-    );
+    // Track that the player played a card.
+    // Before we go to the next player, make sure we trigger things like
+    // SHOPKEEPER/HISTORIAN/COURTHOUSE.
+    player.pendingPlayCardGameInput.push(playCardGameInput);
 
     if (
       this.cardType === CardType.PRODUCTION ||
@@ -370,7 +358,7 @@ export class Card<TCardType extends CardType = CardType>
   private getPlayCardInput(
     gameInput: GameInput | null = null,
     playedCard: PlayedCardInfo | undefined = undefined
-  ): GameInput {
+  ): GameInputPlayCard {
     let playCardGameInput: GameInput;
     if (gameInput && gameInput.inputType === GameInputType.PLAY_CARD) {
       if (playedCard) {

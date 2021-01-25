@@ -864,6 +864,14 @@ export class GameState {
       this.prepareForSeason(player, gameInput);
     }
 
+    // A player played a card, resolve triggered effects
+    if (
+      this.pendingGameInputs.length === 0 &&
+      player.pendingPlayCardGameInput.length !== 0
+    ) {
+      player.triggerPendingPlayCardEffects(this);
+    }
+
     // If there are no more pending game inputs go to the next player.
     if (this.pendingGameInputs.length === 0) {
       this.nextPlayer();

@@ -3016,11 +3016,12 @@ describe("Card", () => {
         player.addToCity(CardName.HISTORIAN);
         player.addToCity(CardName.SHOPKEEPER);
 
-        gameState.deck.addToStack(CardName.WANDERER);
-        gameState.deck.addToStack(CardName.FARM);
-
         // For historian
         gameState.deck.addToStack(CardName.WIFE);
+
+        // For Postal Pigeon
+        gameState.deck.addToStack(CardName.WANDERER);
+        gameState.deck.addToStack(CardName.FARM);
 
         player.cardsInHand = [card.name];
 
@@ -3059,11 +3060,12 @@ describe("Card", () => {
         player.addToCity(CardName.HISTORIAN);
         player.addToCity(CardName.COURTHOUSE);
 
-        gameState.deck.addToStack(CardName.WANDERER);
-        gameState.deck.addToStack(CardName.FARM);
-
         // For historian
         gameState.deck.addToStack(CardName.WIFE);
+
+        // For Postal Pigeon
+        gameState.deck.addToStack(CardName.WANDERER);
+        gameState.deck.addToStack(CardName.FARM);
 
         player.cardsInHand = [card.name];
 
@@ -3107,6 +3109,85 @@ describe("Card", () => {
         expect(player.cardsInHand.length).to.eql(2);
         // From COURTHOUSE
         expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(1);
+      });
+
+      it("should NOT trigger SHOPKEEPER if played via the postal pigeon", () => {
+        const card = Card.fromName(CardName.POSTAL_PIGEON);
+        player.gainResources(gameState, card.baseCost);
+
+        // For Postal Pigeon
+        gameState.deck.addToStack(CardName.WANDERER);
+        gameState.deck.addToStack(CardName.SHOPKEEPER);
+
+        player.cardsInHand = [card.name];
+
+        expect(gameState.discardPile.length).to.eql(0);
+        expect(player.cardsInHand.length).to.eql(1);
+
+        expect(player.hasCardInCity(card.name)).to.be(false);
+        expect(player.hasCardInCity(CardName.SHOPKEEPER)).to.be(false);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+          {
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: GameInputType.PLAY_CARD,
+            cardContext: CardName.POSTAL_PIGEON,
+            maxToSelect: 1,
+            minToSelect: 0,
+            cardOptions: [CardName.SHOPKEEPER, CardName.WANDERER],
+            cardOptionsUnfiltered: [CardName.SHOPKEEPER, CardName.WANDERER],
+            clientOptions: {
+              selectedCards: [CardName.SHOPKEEPER],
+            },
+          },
+        ]);
+
+        expect(player.hasCardInCity(card.name)).to.be(true);
+        expect(player.hasCardInCity(CardName.SHOPKEEPER)).to.be(true);
+
+        // Spent all berries
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+      });
+
+      it("should NOT trigger HISTORIAN if played via the postal pigeon", () => {
+        const card = Card.fromName(CardName.POSTAL_PIGEON);
+        player.gainResources(gameState, card.baseCost);
+
+        // For Postal Pigeon
+        gameState.deck.addToStack(CardName.WANDERER);
+        gameState.deck.addToStack(CardName.HISTORIAN);
+
+        player.cardsInHand = [card.name];
+
+        expect(gameState.discardPile.length).to.eql(0);
+        expect(player.cardsInHand.length).to.eql(1);
+
+        expect(player.hasCardInCity(card.name)).to.be(false);
+        expect(player.hasCardInCity(CardName.SHOPKEEPER)).to.be(false);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+          {
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: GameInputType.PLAY_CARD,
+            cardContext: CardName.POSTAL_PIGEON,
+            maxToSelect: 1,
+            minToSelect: 0,
+            cardOptions: [CardName.HISTORIAN, CardName.WANDERER],
+            cardOptionsUnfiltered: [CardName.HISTORIAN, CardName.WANDERER],
+            clientOptions: {
+              selectedCards: [CardName.HISTORIAN],
+            },
+          },
+        ]);
+
+        expect(player.hasCardInCity(card.name)).to.be(true);
+        expect(player.hasCardInCity(CardName.HISTORIAN)).to.be(true);
+        // Did not draw card.
+        expect(player.cardsInHand.length).to.be(0);
       });
     });
 

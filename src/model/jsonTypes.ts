@@ -11,6 +11,7 @@ import {
   PlayerStatus,
   WorkerPlacementInfo,
   GameInputMultiStep,
+  GameInputPlayCard,
   EventNameToPlayerId,
   GameLogEntry,
   LocationNameToPlayerIds,
@@ -59,6 +60,7 @@ export type PlayerJSON = {
   adornmentsInHand: AdornmentName[];
   playedAdornments: AdornmentName[];
   numAmbassadors: number;
+  pendingPlayCardGameInput: GameInputPlayCard[];
 };
 
 export type RiverDestinationMapJSON = {

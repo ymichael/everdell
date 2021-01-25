@@ -11,6 +11,7 @@ import {
   ResourceType,
   GameInput,
   GameInputType,
+  GameInputPlayCard,
   TextPartPlayer,
   PlayedCardInfo,
   PlayedEventInfo,
@@ -52,6 +53,11 @@ export class Player implements IGameTextEntity {
 
   public playerStatus: PlayerStatus;
 
+  // Keep track of PLAY_CARD game inputs that have yet to completely resolve.
+  // We need this because we want to fully resolve a card's effects
+  // before triggering things like HISTORIAN/SHOPKEEPER/COURTHOUSE.
+  public pendingPlayCardGameInput: GameInputPlayCard[];
+
   public adornmentsInHand: AdornmentName[];
   public playedAdornments: AdornmentName[];
 
@@ -77,6 +83,7 @@ export class Player implements IGameTextEntity {
     playerStatus = PlayerStatus.DURING_SEASON,
     adornmentsInHand = [],
     playedAdornments = [],
+    pendingPlayCardGameInput = [],
   }: {
     name: string;
     playerSecret?: string;
@@ -92,6 +99,7 @@ export class Player implements IGameTextEntity {
     playerStatus?: PlayerStatus;
     adornmentsInHand?: AdornmentName[];
     playedAdornments?: AdornmentName[];
+    pendingPlayCardGameInput?: GameInputPlayCard[];
   }) {
     this.playerId = playerId;
     this.playerSecret = playerSecret;
@@ -104,6 +112,7 @@ export class Player implements IGameTextEntity {
     this.claimedEvents = claimedEvents;
     this.placedWorkers = placedWorkers;
     this.playerStatus = playerStatus;
+    this.pendingPlayCardGameInput = pendingPlayCardGameInput;
 
     // pearlbrook only
     this.numAmbassadors = numAmbassadors;
@@ -209,6 +218,45 @@ export class Player implements IGameTextEntity {
       });
     }
     return removedCards;
+  }
+
+  triggerPendingPlayCardEffects(gameState: GameState): void {
+    // Reset the pending play card game inputs
+    const pendingPlayCardGameInput = [...this.pendingPlayCardGameInput];
+    this.pendingPlayCardGameInput = [];
+
+    // Reverse array so we can process from back to front.
+    pendingPlayCardGameInput.reverse();
+
+    // Keep track of pending cards names.
+    const pendingCardNames = pendingPlayCardGameInput.map(
+      (gameInput) => gameInput.clientOptions.card
+    );
+
+    while (pendingPlayCardGameInput.length !== 0) {
+      const gameInput = pendingPlayCardGameInput.pop() as GameInputPlayCard;
+      pendingCardNames.pop();
+      [CardName.HISTORIAN, CardName.SHOPKEEPER, CardName.COURTHOUSE].forEach(
+        (cardName) => {
+          // Don't trigger if we just played this card and we haven't gotten to it yet.
+          // Eg. We played POSTAL_PIGEON -> SHOPKEEPER. We shouldn't activate SHOPKEEPER
+          // on the POSTAL_PIGEON.
+          if (pendingCardNames.indexOf(cardName) !== -1) {
+            return;
+          }
+
+          if (this.hasCardInCity(cardName)) {
+            const card = Card.fromName(cardName);
+            card.activateCard(
+              gameState,
+              gameInput,
+              this,
+              this.getFirstPlayedCard(cardName) as PlayedCardInfo
+            );
+          }
+        }
+      );
+    }
   }
 
   getNumOccupiedSpacesInCity(): number {
@@ -1357,6 +1405,7 @@ export class Player implements IGameTextEntity {
       cardsInHand: [],
       placedWorkers: this.placedWorkers,
       playerStatus: this.playerStatus,
+      pendingPlayCardGameInput: this.pendingPlayCardGameInput,
       ...(includePrivate
         ? {
             playerSecret: this.playerSecret,

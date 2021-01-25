@@ -3,6 +3,10 @@ import Image from "next/image";
 
 import styles from "../styles/common.module.css";
 import { Event } from "../model/event";
+import {
+  RiverDestination,
+  RiverDestinationMap,
+} from "../model/riverDestination";
 import { Location } from "../model/location";
 import { GameText, TextPart, ResourceType, CardType } from "../model/types";
 import { assertUnreachable } from "../utils";
@@ -179,6 +183,34 @@ export const Description = ({ textParts }: { textParts: GameText }) => {
                 </span>
               );
             }
+            if (part.entityType === "adornment") {
+              return (
+                <span key={idx} className={styles.entity_part}>
+                  {part.adornment}
+                </span>
+              );
+            }
+            if (part.entityType === "riverDestination") {
+              return (
+                <span key={idx} className={styles.entity_part}>
+                  <Description
+                    textParts={
+                      RiverDestination.fromName(part.riverDestination).shortName
+                    }
+                  />
+                </span>
+              );
+            }
+            if (part.entityType === "riverDestinationSpot") {
+              return (
+                <span key={idx} className={styles.entity_part}>
+                  <Description
+                    textParts={RiverDestinationMap.getSpotGameText(part.spot)}
+                  />
+                </span>
+              );
+            }
+            assertUnreachable(part, `Unexpected part: ${JSON.stringify(part)}`);
             break;
           default:
             assertUnreachable(part, `Unexpected part: ${JSON.stringify(part)}`);

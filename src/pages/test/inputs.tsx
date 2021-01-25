@@ -40,7 +40,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     player.cardsInHand.push(CardName.MINER_MOLE);
     player.cardsInHand.push(CardName.CHIP_SWEEP);
 
-    player.gainResources({
+    player.gainResources(gameState, {
       [ResourceType.VP]: 12,
       [ResourceType.TWIG]: 4,
       [ResourceType.BERRY]: 7,
@@ -73,7 +73,16 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     LocationName.FOREST_DISCARD_ANY_THEN_DRAW_TWO_PER_CARD
   ] = [];
 
-  gameState.meadowCards.push(CardName.KING, CardName.FARM);
+  gameState.meadowCards.push(
+    CardName.KING,
+    CardName.KING,
+    CardName.MINE,
+    CardName.MINER_MOLE,
+    CardName.FARM,
+    CardName.RANGER,
+    CardName.WIFE,
+    CardName.CHIP_SWEEP
+  );
 
   const game = new GameModel({
     gameId: "testGameId",

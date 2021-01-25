@@ -180,8 +180,8 @@ const Card: React.FC<{ name: CardName; usedForCritter?: boolean }> = ({
           </div>
           <div className={[styles.card_header, colorClass].join(" ")}>
             <span>{name}</span>
-            {card.isPearlbrook && (
-              <span className={styles.pearlbrook}>pearlbrook</span>
+            {card.expansion && (
+              <span className={styles.expansion}>{card.expansion}</span>
             )}
           </div>
         </div>

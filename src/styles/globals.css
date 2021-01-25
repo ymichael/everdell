@@ -15,6 +15,12 @@
   --border-color: #1a1a1a;
   --text-color-inv: #ffffff;
   --text-color-light: #bbb;
+  --highlight-color: #eee;
+
+  --river-col: #1891a2;
+  --adornment-col: #f5ccd5;
+  --adornment-border-col: #b22243;
+  --border-color-river: #09343b;
 
   --color-vp: #e3b117;
   --color-vp-text: #3c1346;
@@ -39,6 +45,7 @@
   --bg-color: rgb(21 32 43);
   --bg-color-item: rgb(22 39 55);
   --border-color: #3d5465;
+  --highlight-color: rgb(29 52 75 / 86%);
 
   /*--color-vp: #775d0d;*/
   /*--color-vp-text: #d5d7d8;*/
@@ -54,6 +61,10 @@
   --color-loc-forest: var(--border-color);
   --color-loc-haven: var(--border-color);
   --color-loc-journey: var(--border-color);
+
+  --adornment-col: #e26983;
+  --adornment-border-col: #bf2547;
+  --border-color-river: #1891a2;
 }
 
 html,

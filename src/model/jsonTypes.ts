@@ -1,4 +1,6 @@
 import {
+  RiverDestinationMapSpots,
+  AdornmentName,
   GameOptions,
   CardName,
   EventName,
@@ -32,6 +34,7 @@ export type GameStateJSON = {
   eventsMap: EventNameToPlayerId;
   pendingGameInputs: GameInputMultiStep[];
   gameLog: GameLogEntry[];
+  riverDestinationMap: RiverDestinationMapJSON | null;
 };
 
 export type CardStackJSON = {
@@ -53,4 +56,11 @@ export type PlayerJSON = {
   claimedEvents: Partial<Record<EventName, PlayedEventInfo>>;
   placedWorkers: WorkerPlacementInfo[];
   playerStatus: PlayerStatus;
+  adornmentsInHand: AdornmentName[];
+  playedAdornments: AdornmentName[];
+  numAmbassadors: number;
+};
+
+export type RiverDestinationMapJSON = {
+  spots: RiverDestinationMapSpots;
 };

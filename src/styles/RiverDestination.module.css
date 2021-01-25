@@ -1,0 +1,61 @@
+.spot {
+  padding: 0 10px;
+}
+
+.spot_name {
+  align-items: center;
+  font-size: 12px;
+  line-height: 1.5em;
+  text-transform: uppercase;
+  font-weight: var(--font-bold);
+  text-align: center;
+}
+
+.hidden_item {
+  align-items: center;
+  font-size: 12px;
+  line-height: 1.5em;
+  padding: 20px;
+  text-align: center;
+}
+
+.hidden_item,
+.item {
+  min-height: 140px;
+  width: 240px;
+  border-radius: 5px;
+  position: relative;
+  border: 1px solid var(--border-color-river);
+  background-color: var(--bg-color-item);
+  overflow: hidden;
+  display: flex;
+  align-self: flex-start;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.header {
+  font-weight: var(--font-bold);
+  background-color: var(--river-col);
+  color: var(--text-color-inv);
+  height: 35px;
+  font-size: 12px;
+  padding: 8px;
+  text-align: center;
+  text-transform: uppercase;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.description {
+  text-align: center;
+  padding: 10px 5px 5px 5px;
+  font-size: 12px;
+  line-height: 1.5em;
+}
+
+.location_type {
+  font-weight: normal;
+  font-size: 10px;
+}

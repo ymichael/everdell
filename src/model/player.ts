@@ -2,6 +2,7 @@ import isEqual from "lodash/isEqual";
 import cloneDeep from "lodash/cloneDeep";
 import merge from "lodash/merge";
 import {
+  AdornmentName,
   CardCost,
   CardName,
   CardType,
@@ -21,6 +22,7 @@ import {
 } from "./types";
 import { PlayerJSON } from "./jsonTypes";
 import { GameState } from "./gameState";
+import { Adornment } from "./adornment";
 import { Card } from "./card";
 import { Event } from "./event";
 import { Location } from "./location";
@@ -28,7 +30,6 @@ import { generate as uuid } from "short-uuid";
 import { sumResources } from "./gameStatePlayHelpers";
 import { assertUnreachable } from "../utils";
 
-const MAX_HAND_SIZE = 8;
 const MAX_CITY_SIZE = 15;
 
 export class Player implements IGameTextEntity {
@@ -47,7 +48,12 @@ export class Player implements IGameTextEntity {
   private numWorkers: number;
   private placedWorkers: WorkerPlacementInfo[];
 
+  private numAmbassadors: number;
+
   public playerStatus: PlayerStatus;
+
+  public adornmentsInHand: AdornmentName[];
+  public playedAdornments: AdornmentName[];
 
   constructor({
     name,
@@ -65,9 +71,12 @@ export class Player implements IGameTextEntity {
     },
     currentSeason = Season.WINTER,
     numWorkers = 2,
+    numAmbassadors = 0,
     claimedEvents = {},
     placedWorkers = [],
     playerStatus = PlayerStatus.DURING_SEASON,
+    adornmentsInHand = [],
+    playedAdornments = [],
   }: {
     name: string;
     playerSecret?: string;
@@ -77,9 +86,12 @@ export class Player implements IGameTextEntity {
     resources?: Record<ResourceType, number>;
     currentSeason?: Season;
     numWorkers?: number;
+    numAmbassadors?: number;
     claimedEvents?: Partial<Record<EventName, PlayedEventInfo>>;
     placedWorkers?: WorkerPlacementInfo[];
     playerStatus?: PlayerStatus;
+    adornmentsInHand?: AdornmentName[];
+    playedAdornments?: AdornmentName[];
   }) {
     this.playerId = playerId;
     this.playerSecret = playerSecret;
@@ -92,6 +104,11 @@ export class Player implements IGameTextEntity {
     this.claimedEvents = claimedEvents;
     this.placedWorkers = placedWorkers;
     this.playerStatus = playerStatus;
+
+    // pearlbrook only
+    this.numAmbassadors = numAmbassadors;
+    this.adornmentsInHand = adornmentsInHand;
+    this.playedAdornments = playedAdornments;
   }
 
   get playerSecretUNSAFE(): string {
@@ -113,14 +130,22 @@ export class Player implements IGameTextEntity {
     }
   }
 
+  get maxHandSize(): number {
+    const MAX_HAND_SIZE = 8;
+    if (this.hasCardInCity(CardName.BRIDGE)) {
+      return MAX_HAND_SIZE + this.getNumResourcesByType(ResourceType.PEARL);
+    }
+    return MAX_HAND_SIZE;
+  }
+
   drawMaxCards(gameState: GameState): number {
-    const numDrawn = MAX_HAND_SIZE - this.cardsInHand.length;
+    const numDrawn = this.maxHandSize - this.cardsInHand.length;
     this.drawCards(gameState, numDrawn);
     return numDrawn;
   }
 
   addCardToHand(gameState: GameState, cardName: CardName): void {
-    if (this.cardsInHand.length < MAX_HAND_SIZE) {
+    if (this.cardsInHand.length < this.maxHandSize) {
       this.cardsInHand.push(cardName);
     } else {
       gameState.discardPile.addToStack(cardName);
@@ -306,17 +331,37 @@ export class Player implements IGameTextEntity {
     return points;
   }
 
+  getPointsFromAdornments(gameState: GameState): number {
+    let points = 0;
+    this.playedAdornments.forEach((adornmentName) => {
+      const adornment = Adornment.fromName(adornmentName as AdornmentName);
+      points += adornment.getPoints(gameState, this.playerId);
+    });
+    return points;
+  }
+
   getPoints(gameState: GameState): number {
     let points = 0;
     points += this.getPointsFromCards(gameState);
     points += this.getPointsFromEvents(gameState);
     points += this.getPointsFromJourney(gameState);
     points += this.getNumResourcesByType(ResourceType.VP);
+    points += this.getNumResourcesByType(ResourceType.PEARL) * 2;
+    points += this.getPointsFromAdornments(gameState);
     return points;
   }
 
   getResources(): Record<ResourceType, number> {
     return { ...this.resources };
+  }
+
+  getCardCostResources(): CardCost {
+    return {
+      [ResourceType.TWIG]: this.getNumResourcesByType(ResourceType.TWIG),
+      [ResourceType.BERRY]: this.getNumResourcesByType(ResourceType.BERRY),
+      [ResourceType.PEBBLE]: this.getNumResourcesByType(ResourceType.PEBBLE),
+      [ResourceType.RESIN]: this.getNumResourcesByType(ResourceType.RESIN),
+    };
   }
 
   getNumCardCostResources(): number {
@@ -422,14 +467,7 @@ export class Player implements IGameTextEntity {
   }
 
   getNumCardType(cardType: CardType): number {
-    let numCards = 0;
-    this.forEachPlayedCard(({ cardName }) => {
-      const card = Card.fromName(cardName);
-      if (card.cardType === cardType) {
-        numCards += 1;
-      }
-    });
-    return numCards;
+    return this.getPlayedCardNamesByType(cardType).length;
   }
 
   // Returns all played destination cards that a player has played that have
@@ -519,6 +557,7 @@ export class Player implements IGameTextEntity {
         case GameInputType.DISCARD_CARDS:
         case GameInputType.SELECT_PLAYER:
         case GameInputType.SELECT_WORKER_PLACEMENT:
+        case GameInputType.SELECT_PLAYED_ADORNMENT:
           return gameInput;
 
         case GameInputType.SELECT_OPTION_GENERIC:
@@ -602,7 +641,7 @@ export class Player implements IGameTextEntity {
   activateProduction(gameState: GameState, gameInput: GameInput): void {
     this.getAllPlayedCardsByType(CardType.PRODUCTION).forEach((playedCard) => {
       const card = Card.fromName(playedCard.cardName);
-      card.gainProduction(gameState, gameInput, this, playedCard);
+      card.activateCard(gameState, gameInput, this, playedCard);
     });
   }
 
@@ -1050,12 +1089,14 @@ export class Player implements IGameTextEntity {
     BERRY = 0,
     PEBBLE = 0,
     RESIN = 0,
+    PEARL = 0,
   }: {
     [ResourceType.VP]?: number;
     [ResourceType.TWIG]?: number;
     [ResourceType.BERRY]?: number;
     [ResourceType.PEBBLE]?: number;
     [ResourceType.RESIN]?: number;
+    [ResourceType.PEARL]?: number;
   }): void {
     if (VP) {
       if (this.resources[ResourceType.VP] < VP) {
@@ -1107,21 +1148,36 @@ export class Player implements IGameTextEntity {
       }
       this.resources[ResourceType.RESIN] -= RESIN;
     }
+    if (PEARL) {
+      if (this.resources[ResourceType.PEARL] < PEARL) {
+        throw new Error(
+          `Insufficient ${ResourceType.PEARL}. Need ${PEARL}, but only have ${
+            this.resources[ResourceType.PEARL]
+          } PEARL`
+        );
+      }
+      this.resources[ResourceType.PEARL] -= PEARL;
+    }
   }
 
-  gainResources({
-    VP = 0,
-    TWIG = 0,
-    BERRY = 0,
-    PEBBLE = 0,
-    RESIN = 0,
-  }: {
-    [ResourceType.VP]?: number;
-    [ResourceType.TWIG]?: number;
-    [ResourceType.BERRY]?: number;
-    [ResourceType.PEBBLE]?: number;
-    [ResourceType.RESIN]?: number;
-  }): void {
+  gainResources(
+    gameState: GameState,
+    {
+      VP = 0,
+      TWIG = 0,
+      BERRY = 0,
+      PEBBLE = 0,
+      RESIN = 0,
+      PEARL = 0,
+    }: {
+      [ResourceType.VP]?: number;
+      [ResourceType.TWIG]?: number;
+      [ResourceType.BERRY]?: number;
+      [ResourceType.PEBBLE]?: number;
+      [ResourceType.RESIN]?: number;
+      [ResourceType.PEARL]?: number;
+    }
+  ): void {
     if (VP) {
       this.resources[ResourceType.VP] += VP;
     }
@@ -1136,6 +1192,16 @@ export class Player implements IGameTextEntity {
     }
     if (RESIN) {
       this.resources[ResourceType.RESIN] += RESIN;
+    }
+    if (PEARL) {
+      this.resources[ResourceType.PEARL] += PEARL;
+      if (this.hasCardInCity(CardName.BRIDGE)) {
+        this.drawCards(gameState, 2 * PEARL);
+        gameState.addGameLogFromCard(CardName.BRIDGE, [
+          this,
+          " drew ${PEARL * 2} CARD.",
+        ]);
+      }
     }
   }
 
@@ -1226,6 +1292,22 @@ export class Player implements IGameTextEntity {
     }
   }
 
+  useAmbassador(): void {
+    this.numAmbassadors = 0;
+  }
+
+  hasUnusedAmbassador(): boolean {
+    return this.numAmbassadors === 1;
+  }
+
+  recallAmbassador(gameState: GameState): void {
+    if (!gameState.gameOptions.pearlbrook) {
+      return;
+    }
+    // TODO: Update gameState riverDestinationMap & Ferry
+    this.numAmbassadors = 1;
+  }
+
   recallWorkers(gameState: GameState): void {
     if (this.numAvailableWorkers !== 0) {
       throw new Error("Still have available workers");
@@ -1271,6 +1353,7 @@ export class Player implements IGameTextEntity {
       numWorkers: this.numWorkers,
       currentSeason: this.currentSeason,
       claimedEvents: this.claimedEvents,
+      numAmbassadors: this.numAmbassadors,
       cardsInHand: [],
       placedWorkers: this.placedWorkers,
       playerStatus: this.playerStatus,
@@ -1280,6 +1363,8 @@ export class Player implements IGameTextEntity {
             cardsInHand: this.cardsInHand,
           }
         : {}),
+      adornmentsInHand: this.adornmentsInHand,
+      playedAdornments: this.playedAdornments,
     });
   }
 

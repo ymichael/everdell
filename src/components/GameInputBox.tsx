@@ -143,6 +143,12 @@ const GameInputBoxInner = ({
           viewingPlayer={viewingPlayer}
           locations={gameInput.locationOptions}
         />
+      ) : gameInput.inputType === GameInputType.VISIT_RIVER_DESTINATION ? (
+        <>TODO</>
+      ) : gameInput.inputType === GameInputType.PLAY_ADORNMENT ? (
+        <>TODO</>
+      ) : gameInput.inputType === GameInputType.SELECT_PLAYED_ADORNMENT ? (
+        <>TODO</>
       ) : (
         <>
           {assertUnreachable(
@@ -216,6 +222,10 @@ const GameInputBox: React.FC<{
       ? -1
       : 1
   );
+
+  if (gameInputs.length === 0) {
+    return <pre>{JSON.stringify(gameState, null, 2)}</pre>;
+  }
 
   return (
     <GameInputBoxContainer

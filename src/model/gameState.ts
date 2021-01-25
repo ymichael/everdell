@@ -1,4 +1,5 @@
 import {
+  AdornmentName,
   CardName,
   EventName,
   EventNameToPlayerId,
@@ -7,10 +8,12 @@ import {
   GameInputGameEnd,
   GameInputMultiStep,
   GameInputPlaceWorker,
+  GameInputPlayAdornment,
   GameInputPlayCard,
   GameInputPrepareForSeason,
   GameInputType,
   GameInputVisitDestinationCard,
+  GameInputVisitRiverDestination,
   GameInputWorkerPlacementTypes,
   GameLogEntry,
   GameOptions,
@@ -20,14 +23,22 @@ import {
   PlayedCardInfo,
   PlayerStatus,
   ResourceType,
+  RiverDestinationName,
+  RiverDestinationSpot,
   Season,
   TextPart,
 } from "./types";
 import { GameStateJSON } from "./jsonTypes";
 import { Player } from "./player";
+import { Adornment } from "./adornment";
 import { Card } from "./card";
 import { CardStack, discardPile } from "./cardStack";
 import { Location, initialLocationsMap } from "./location";
+import {
+  initialRiverDestinationMap,
+  RiverDestinationMap,
+  RiverDestination,
+} from "./riverDestination";
 import { Event, initialEventMap } from "./event";
 import { initialDeck } from "./deck";
 import { assertUnreachable } from "../utils";
@@ -80,6 +91,20 @@ export const gameTextToDebugStr = (gameText: GameText): string => {
           if (part.entityType === "card") {
             return part.card;
           }
+          if (part.entityType === "adornment") {
+            return part.adornment;
+          }
+          if (part.entityType === "riverDestination") {
+            return gameTextToDebugStr(
+              RiverDestination.fromName(part.riverDestination).shortName
+            );
+          }
+          if (part.entityType === "riverDestinationSpot") {
+            return gameTextToDebugStr(
+              RiverDestinationMap.getSpotGameText(part.spot)
+            );
+          }
+          assertUnreachable(part, `Unexpected part: ${JSON.stringify(part)}`);
           break;
         default:
           assertUnreachable(part, `Unexpected part: ${JSON.stringify(part)}`);
@@ -88,18 +113,32 @@ export const gameTextToDebugStr = (gameText: GameText): string => {
     .join("");
 };
 
+const defaultGameOptions = (gameOptions: Partial<GameOptions>): GameOptions => {
+  return {
+    realtimePoints: false,
+    pearlbrook: false,
+    ...gameOptions,
+  };
+};
+
 export class GameState {
   readonly gameStateId: number;
   readonly gameOptions: GameOptions;
+  readonly gameLog: GameLogEntry[];
+  readonly pendingGameInputs: GameInputMultiStep[];
+
+  // Player & Active Player
   private _activePlayerId: Player["playerId"];
-  public pendingGameInputs: GameInputMultiStep[];
   readonly players: Player[];
-  readonly meadowCards: CardName[];
+
   readonly discardPile: CardStack;
   readonly deck: CardStack;
+
+  readonly meadowCards: CardName[];
   readonly locationsMap: LocationNameToPlayerIds;
   readonly eventsMap: EventNameToPlayerId;
-  readonly gameLog: GameLogEntry[];
+
+  readonly riverDestinationMap: RiverDestinationMap | null;
 
   constructor({
     gameStateId,
@@ -110,6 +149,7 @@ export class GameState {
     deck,
     locationsMap,
     eventsMap,
+    riverDestinationMap = null,
     gameLog = [],
     gameOptions = {},
     pendingGameInputs = [],
@@ -122,6 +162,7 @@ export class GameState {
     deck: CardStack;
     locationsMap: LocationNameToPlayerIds;
     eventsMap: EventNameToPlayerId;
+    riverDestinationMap?: RiverDestinationMap | null;
     pendingGameInputs: GameInputMultiStep[];
     gameLog: GameLogEntry[];
     gameOptions?: Partial<GameOptions>;
@@ -136,15 +177,34 @@ export class GameState {
     this._activePlayerId = activePlayerId || players[0].playerId;
     this.pendingGameInputs = pendingGameInputs;
     this.gameLog = gameLog;
-    this.gameOptions = {
-      realtimePoints: false,
-      pearlbrook: false,
-      ...gameOptions,
-    };
+    this.riverDestinationMap = riverDestinationMap;
+    this.gameOptions = defaultGameOptions(gameOptions);
   }
 
   get activePlayerId(): string {
     return this._activePlayerId;
+  }
+
+  addGameLogFromRiverDestination(
+    name: RiverDestinationName,
+    args: Parameters<typeof toGameText>[0]
+  ): void {
+    if (typeof args === "string") {
+      this.addGameLog([RiverDestination.fromName(name), ": ", args]);
+    } else {
+      this.addGameLog([RiverDestination.fromName(name), ": ", ...args]);
+    }
+  }
+
+  addGameLogFromAdornment(
+    adornment: AdornmentName,
+    args: Parameters<typeof toGameText>[0]
+  ): void {
+    if (typeof args === "string") {
+      this.addGameLog([Adornment.fromName(adornment), ": ", args]);
+    } else {
+      this.addGameLog([Adornment.fromName(adornment), ": ", ...args]);
+    }
   }
 
   addGameLogFromCard(
@@ -213,6 +273,9 @@ export class GameState {
         discardPile: this.discardPile.toJSON(includePrivate),
         gameLog: this.gameLog,
         gameOptions: this.gameOptions,
+        riverDestinationMap: this.riverDestinationMap
+          ? this.riverDestinationMap.toJSON(includePrivate)
+          : null,
       },
       ...(includePrivate
         ? {
@@ -333,7 +396,11 @@ export class GameState {
   updatePendingGameInputs(
     mapFn: (gameInput: GameInputMultiStep) => GameInputMultiStep
   ): void {
-    this.pendingGameInputs = this.pendingGameInputs.map(mapFn);
+    const newPendingInputs = this.pendingGameInputs.map(mapFn);
+    while (this.pendingGameInputs.length !== 0) {
+      this.pendingGameInputs.pop();
+    }
+    this.pendingGameInputs.push(...newPendingInputs);
   }
 
   private removeMultiStepGameInput(gameInput: GameInputMultiStep): void {
@@ -389,6 +456,24 @@ export class GameState {
         throw new Error(canPlayEventErr);
       }
       event.play(this, gameInput);
+      return;
+    }
+
+    if (gameInput.adornmentContext) {
+      const adornment = Adornment.fromName(gameInput.adornmentContext);
+      const canPlayAdornmentErr = adornment.canPlayCheck(this, gameInput);
+      if (canPlayAdornmentErr) {
+        throw new Error(canPlayAdornmentErr);
+      }
+      adornment.play(this, gameInput);
+      return;
+    }
+
+    if (gameInput.riverDestinationContext) {
+      const riverDestination = RiverDestination.fromName(
+        gameInput.riverDestinationContext
+      );
+      riverDestination.play(this, gameInput);
       return;
     }
 
@@ -475,7 +560,7 @@ export class GameState {
 
     // If card isn't owned by active player, pay the other player a VP
     if (cardOwner.playerId !== activePlayer.playerId) {
-      cardOwner.gainResources({ [ResourceType.VP]: 1 });
+      cardOwner.gainResources(this, { [ResourceType.VP]: 1 });
       this.addGameLog([
         cardOwner,
         " gained 1 VP when ",
@@ -490,6 +575,129 @@ export class GameState {
 
     // Take card's effect
     card.play(this, gameInput);
+  }
+
+  private handlePlayAdornmentGameInput(
+    gameInput: GameInputPlayAdornment
+  ): void {
+    if (!gameInput.clientOptions?.adornment) {
+      throw new Error("Please select an adornment to play");
+    }
+
+    const adornment = Adornment.fromName(gameInput.clientOptions.adornment);
+
+    const player = this.getActivePlayer();
+
+    const canPlayErr = adornment.canPlayCheck(this, gameInput);
+    if (canPlayErr) {
+      throw new Error(canPlayErr);
+    }
+
+    this.addGameLog([player, " played ", adornment, "."]);
+
+    adornment.play(this, gameInput);
+    player.spendResources({ [ResourceType.PEARL]: 1 });
+    player.playedAdornments.push(adornment.name);
+    const idx = player.adornmentsInHand.indexOf(adornment.name);
+    if (idx === -1) {
+      throw new Error(`${adornment.name} isn't in player's hand`);
+    } else {
+      player.adornmentsInHand.splice(idx, 1);
+    }
+  }
+
+  private handleVisitRiverDestination(
+    gameInput: GameInputVisitRiverDestination
+  ): void {
+    if (!this.gameOptions.pearlbrook) {
+      throw new Error(
+        "Unexpected action, not playing with the Pearlbook expansion."
+      );
+    }
+    const riverDestinationSpot = gameInput.clientOptions?.riverDestinationSpot;
+    if (!riverDestinationSpot) {
+      throw new Error("Please select an river destination to visit");
+    }
+    const riverDestinationMap = this.riverDestinationMap;
+    if (!riverDestinationMap) {
+      throw new Error("Could not find River Destination");
+    }
+    const canVisitErr = riverDestinationMap.canVisitSpotCheck(
+      this,
+      riverDestinationSpot
+    );
+    if (canVisitErr) {
+      throw new Error(canVisitErr);
+    }
+
+    const player = this.getActivePlayer();
+    const spot = riverDestinationMap.spots[riverDestinationSpot];
+    // Should not happen unless we're using the public gameState object.
+    if (!spot.name) {
+      throw new Error("Unable to reveal River Destination card.");
+    }
+
+    // TODO: This won't work for the FERRY card.
+    spot.ambassadors.push(player.playerId);
+    player.useAmbassador();
+
+    const riverDestination = RiverDestination.fromName(spot.name);
+
+    const canPlayRiverDestinationErr = riverDestination.canPlayCheck(
+      this,
+      gameInput
+    );
+    if (canPlayRiverDestinationErr) {
+      throw new Error(canPlayRiverDestinationErr);
+    }
+
+    if (!spot.revealed) {
+      // Reveal!
+      spot.revealed = true;
+      this.addGameLog([
+        player,
+        ` visited `,
+        {
+          type: "entity",
+          entityType: "riverDestinationSpot",
+          spot: riverDestinationSpot,
+        },
+        ` and revealed `,
+        riverDestination,
+        ".",
+      ]);
+      this.addGameLog([player, " gained 1 PEARL."]);
+      player.gainResources(this, { [ResourceType.PEARL]: 1 });
+    } else {
+      if (riverDestinationSpot === RiverDestinationSpot.SHOAL) {
+        this.addGameLog([
+          player,
+          " visited ",
+          {
+            type: "entity",
+            entityType: "riverDestinationSpot",
+            spot: riverDestinationSpot,
+          },
+          `.`,
+        ]);
+      } else {
+        this.addGameLog([
+          player,
+          " visited ",
+          riverDestination,
+          ` at `,
+          {
+            type: "entity",
+            entityType: "riverDestinationSpot",
+            spot: riverDestinationSpot,
+          },
+          `.`,
+        ]);
+      }
+    }
+
+    // Play river destination!
+    riverDestination.play(this, gameInput);
   }
 
   handleWorkerPlacementGameInput(
@@ -566,6 +774,18 @@ export class GameState {
       " recalled their workers.",
     ]);
 
+    if (this.gameOptions.pearlbrook) {
+      if (!player.hasUnusedAmbassador()) {
+        this.addGameLog([
+          { type: "em", text: "Prepare for season" },
+          ": ",
+          player,
+          " recalled their ambassador.",
+        ]);
+        player.recallAmbassador(this);
+      }
+    }
+
     player.nextSeason();
     this.addGameLog([
       { type: "em", text: "Prepare for season" },
@@ -604,6 +824,7 @@ export class GameState {
       case GameInputType.SELECT_RESOURCES:
       case GameInputType.DISCARD_CARDS:
       case GameInputType.SELECT_OPTION_GENERIC:
+      case GameInputType.SELECT_PLAYED_ADORNMENT:
         this.handleMultiStepGameInput(gameInput);
         break;
       case GameInputType.PLAY_CARD:
@@ -613,6 +834,12 @@ export class GameState {
       case GameInputType.VISIT_DESTINATION_CARD:
       case GameInputType.CLAIM_EVENT:
         this.handleWorkerPlacementGameInput(gameInput);
+        break;
+      case GameInputType.PLAY_ADORNMENT:
+        this.handlePlayAdornmentGameInput(gameInput);
+        break;
+      case GameInputType.VISIT_RIVER_DESTINATION:
+        this.handleVisitRiverDestination(gameInput);
         break;
       case GameInputType.PREPARE_FOR_SEASON:
         this.handlePrepareForSeason(gameInput);
@@ -698,6 +925,40 @@ export class GameState {
         isAutoAdvancedInput: true,
       };
     }
+
+    if (
+      pendingInput.inputType === GameInputType.SELECT_PLAYED_CARDS &&
+      pendingInput.minToSelect === pendingInput.maxToSelect &&
+      pendingInput.cardOptions.length === pendingInput.minToSelect
+    ) {
+      return {
+        ...pendingInput,
+        clientOptions: { selectedCards: pendingInput.cardOptions },
+      };
+    }
+
+    if (
+      pendingInput.inputType === GameInputType.SELECT_CARDS &&
+      pendingInput.minToSelect === pendingInput.maxToSelect &&
+      pendingInput.cardOptions.length === pendingInput.minToSelect
+    ) {
+      return {
+        ...pendingInput,
+        clientOptions: { selectedCards: pendingInput.cardOptions },
+      };
+    }
+
+    if (
+      pendingInput.inputType === GameInputType.SELECT_WORKER_PLACEMENT &&
+      pendingInput.mustSelectOne &&
+      pendingInput.options.length === 1
+    ) {
+      return {
+        ...pendingInput,
+        clientOptions: { selectedOption: pendingInput.options[0] },
+      };
+    }
+
     if (
       pendingInput.inputType === GameInputType.SELECT_OPTION_GENERIC &&
       pendingInput.options.length === 1
@@ -725,6 +986,19 @@ export class GameState {
       } else if (player.getNumCardCostResources() == 0) {
         return {
           ...pendingInput,
+          isAutoAdvancedInput: true,
+        };
+      } else if (
+        !pendingInput.specificResource &&
+        !pendingInput.excludeResource &&
+        pendingInput.minResources === pendingInput.maxResources &&
+        player.getNumCardCostResources() === pendingInput.minResources
+      ) {
+        return {
+          ...pendingInput,
+          clientOptions: {
+            resources: player.getCardCostResources(),
+          },
           isAutoAdvancedInput: true,
         };
       }
@@ -783,6 +1057,9 @@ export class GameState {
       players: gameStateJSON.players.map((pJSON: any) =>
         Player.fromJSON(pJSON)
       ),
+      riverDestinationMap: gameStateJSON.riverDestinationMap
+        ? RiverDestinationMap.fromJSON(gameStateJSON.riverDestinationMap)
+        : null,
     });
   }
 
@@ -799,20 +1076,32 @@ export class GameState {
       throw new Error(`Unable to create a game with ${players.length} players`);
     }
 
+    const gameOptionsWithDefaults = defaultGameOptions(gameOptions);
+
     const gameState = new GameState({
       gameStateId: 1,
       players,
       meadowCards: [],
-      deck: initialDeck(),
+      deck: initialDeck(gameOptionsWithDefaults),
       discardPile: discardPile(),
-      locationsMap: initialLocationsMap(players.length),
-      eventsMap: initialEventMap(),
-      gameOptions,
+      locationsMap: initialLocationsMap(
+        players.length,
+        gameOptionsWithDefaults
+      ),
+      riverDestinationMap: gameOptionsWithDefaults.pearlbrook
+        ? initialRiverDestinationMap()
+        : null,
+      eventsMap: initialEventMap(gameOptionsWithDefaults),
+      gameOptions: gameOptionsWithDefaults,
       gameLog: [],
       pendingGameInputs: [],
     });
 
     gameState.addGameLog(`Game created with ${players.length} players.`);
+
+    if (gameOptionsWithDefaults.pearlbrook) {
+      gameState.addGameLog(`Playing with the Pearlbrook expansion.`);
+    }
 
     if (shuffleDeck) {
       gameState.deck.shuffle();
@@ -820,6 +1109,9 @@ export class GameState {
 
     // Players draw cards
     players.forEach((p, idx) => {
+      if (gameOptionsWithDefaults.pearlbrook) {
+        p.recallAmbassador(gameState);
+      }
       p.drawCards(gameState, STARTING_PLAYER_HAND_SIZE + idx);
     });
     gameState.addGameLog(`Dealing cards to each player.`);

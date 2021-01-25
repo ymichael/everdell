@@ -152,7 +152,7 @@ describe("Player", () => {
       expect(player.canAffordCard(CardName.FARM, false /* isMeadow */)).to.be(
         false
       );
-      player.gainResources(Card.fromName(CardName.FARM).baseCost);
+      player.gainResources(gameState, Card.fromName(CardName.FARM).baseCost);
       expect(player.canAffordCard(CardName.FARM, false /* isMeadow */)).to.be(
         true
       );
@@ -233,7 +233,7 @@ describe("Player", () => {
       expect(player.canAffordCard(CardName.CRANE, false /* isMeadow */)).to.be(
         false
       );
-      player.gainResources({
+      player.gainResources(gameState, {
         [ResourceType.BERRY]: 1,
       });
       expect(player.canAffordCard(CardName.CRANE, false /* isMeadow */)).to.be(
@@ -244,13 +244,13 @@ describe("Player", () => {
       expect(
         player.canAffordCard(CardName.RESIN_REFINERY, false /* isMeadow */)
       ).to.be(false);
-      player.gainResources({
+      player.gainResources(gameState, {
         [ResourceType.BERRY]: 1,
       });
       expect(
         player.canAffordCard(CardName.RESIN_REFINERY, false /* isMeadow */)
       ).to.be(false);
-      player.gainResources({
+      player.gainResources(gameState, {
         [ResourceType.PEBBLE]: 1,
       });
       expect(
@@ -294,7 +294,7 @@ describe("Player", () => {
         )
       ).to.match(/Can't spend/);
 
-      player.gainResources({
+      player.gainResources(gameState, {
         [ResourceType.TWIG]: 1,
         [ResourceType.RESIN]: 1,
       });
@@ -311,7 +311,7 @@ describe("Player", () => {
         )
       ).to.match(/insufficient/);
 
-      player.gainResources({
+      player.gainResources(gameState, {
         [ResourceType.TWIG]: 1,
       });
       expect(
@@ -501,7 +501,7 @@ describe("Player", () => {
           )
         ).to.be(null);
 
-        player.gainResources({
+        player.gainResources(gameState, {
           [ResourceType.BERRY]: 1,
         });
 
@@ -1258,7 +1258,7 @@ describe("Player", () => {
     it("includes journey locations", () => {
       const player = gameState.getActivePlayer();
       player.addToCityMulti([CardName.FARM, CardName.INN]);
-      player.gainResources({
+      player.gainResources(gameState, {
         [ResourceType.VP]: 5,
       });
       player.placeWorkerOnLocation(LocationName.JOURNEY_FIVE);
@@ -1269,7 +1269,7 @@ describe("Player", () => {
     it("includes point tokens", () => {
       const player = gameState.getActivePlayer();
       player.addToCityMulti([CardName.FARM, CardName.INN]);
-      player.gainResources({
+      player.gainResources(gameState, {
         [ResourceType.VP]: 5,
       });
       expect(player.getPoints(gameState)).to.be(8);

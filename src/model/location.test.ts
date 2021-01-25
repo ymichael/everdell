@@ -158,16 +158,17 @@ describe("Location", () => {
       [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
         {
-          inputType: GameInputType.SELECT_RESOURCES,
-          toSpend: false,
+          inputType: GameInputType.SELECT_OPTION_GENERIC,
           prevInputType: GameInputType.PLACE_WORKER,
           locationContext: LocationName.FOREST_TWO_CARDS_ONE_WILD,
-          maxResources: 1,
-          minResources: 1,
+          options: [
+            ResourceType.BERRY,
+            ResourceType.TWIG,
+            ResourceType.RESIN,
+            ResourceType.PEBBLE,
+          ],
           clientOptions: {
-            resources: {
-              [ResourceType.TWIG]: 1,
-            },
+            selectedOption: ResourceType.TWIG,
           },
         },
       ]);
@@ -214,7 +215,7 @@ describe("Location", () => {
           locationContext:
             LocationName.FOREST_DISCARD_UP_TO_THREE_CARDS_TO_GAIN_WILD_PER_CARD,
           maxResources: 3,
-          minResources: 0,
+          minResources: 3,
           clientOptions: {
             resources: {
               [ResourceType.TWIG]: 1,
@@ -386,7 +387,7 @@ describe("Location", () => {
       );
 
       player = gameState.getActivePlayer();
-      player.gainResources({ [ResourceType.BERRY]: 5 });
+      player.gainResources(gameState, { [ResourceType.BERRY]: 5 });
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(5);
       expect(player.hasCardInCity(CardName.HUSBAND)).to.be(false);
 
@@ -487,7 +488,7 @@ describe("Location", () => {
       );
 
       player = gameState.getActivePlayer();
-      player.gainResources({
+      player.gainResources(gameState, {
         [ResourceType.TWIG]: 5,
         [ResourceType.PEBBLE]: 5,
         [ResourceType.RESIN]: 5,
@@ -538,7 +539,7 @@ describe("Location", () => {
         CardName.POSTAL_PIGEON,
         CardName.HUSBAND,
       ]);
-      player.gainResources({ [ResourceType.BERRY]: 5 });
+      player.gainResources(gameState, { [ResourceType.BERRY]: 5 });
 
       const gameInput = placeWorkerInput(location.name);
       gameState.locationsMap[
@@ -583,7 +584,7 @@ describe("Location", () => {
         CardName.POSTAL_PIGEON,
         CardName.HUSBAND,
       ]);
-      player.gainResources({ [ResourceType.BERRY]: 5 });
+      player.gainResources(gameState, { [ResourceType.BERRY]: 5 });
 
       const gameInput = placeWorkerInput(location.name);
       gameState.locationsMap[
@@ -652,7 +653,7 @@ describe("Location", () => {
       );
 
       player = gameState.getActivePlayer();
-      player.gainResources({ [ResourceType.BERRY]: 5 });
+      player.gainResources(gameState, { [ResourceType.BERRY]: 5 });
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(5);
 
       const gameInput = placeWorkerInput(location.name);

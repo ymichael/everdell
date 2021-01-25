@@ -15,6 +15,11 @@ export enum GameInputType {
   DISCARD_CARDS = "DISCARD_CARDS",
   SELECT_PAYMENT_FOR_CARD = "SELECT_PAYMENT_FOR_CARD",
   SELECT_OPTION_GENERIC = "SELECT_OPTION_GENERIC",
+
+  // Pearlbrook specific
+  PLAY_ADORNMENT = "PLAY_ADORNMENT",
+  VISIT_RIVER_DESTINATION = "VISIT_RIVER_DESTINATION",
+  SELECT_PLAYED_ADORNMENT = "SELECT_PLAYED_ADORNMENT",
 }
 
 export type GameInputPlaceWorker = {
@@ -33,6 +38,13 @@ export type GameInputVisitDestinationCard = {
 
 export type GameInputPlayCard = {
   inputType: GameInputType.PLAY_CARD;
+
+  // We overload this input when re-activating cards/playing cards via other means
+  // eg. using other cards/locations. These are used to identify the played card and
+  // provide more context to the action..
+  playedCardContext?: PlayedCardInfo;
+  prevInputType?: GameInputType;
+
   clientOptions: {
     card: CardName | null;
     fromMeadow: boolean;
@@ -44,6 +56,20 @@ export type GameInputClaimEvent = {
   inputType: GameInputType.CLAIM_EVENT;
   clientOptions: {
     event: EventName | null;
+  };
+};
+
+export type GameInputPlayAdornment = {
+  inputType: GameInputType.PLAY_ADORNMENT;
+  clientOptions: {
+    adornment: AdornmentName | null;
+  };
+};
+
+export type GameInputVisitRiverDestination = {
+  inputType: GameInputType.VISIT_RIVER_DESTINATION;
+  clientOptions: {
+    riverDestinationSpot: RiverDestinationSpot | null;
   };
 };
 
@@ -64,6 +90,9 @@ export type GameInputSimple =
   | GameInputWorkerPlacementTypes
   | GameInputPlayCard
   | GameInputGameEnd
+  | GameInputPrepareForSeason
+  | GameInputPlayAdornment
+  | GameInputVisitRiverDestination
   | GameInputPrepareForSeason;
 
 export type GameInputDiscardCards = {
@@ -73,13 +102,20 @@ export type GameInputDiscardCards = {
   maxCards: number;
 
   isAutoAdvancedInput?: boolean;
-
-  locationContext?: LocationName;
-  cardContext?: CardName;
-  eventContext?: EventName;
-
   clientOptions: {
     cardsToDiscard: CardName[];
+  };
+};
+
+export type GameInputSelectPlayedAdornment = {
+  inputType: GameInputType.SELECT_PLAYED_ADORNMENT;
+  prevInputType: GameInputType;
+  adornmentOptions: AdornmentName[];
+  maxToSelect: number;
+  minToSelect: number;
+  mustSelectFromOpponents: boolean;
+  clientOptions: {
+    adornment: AdornmentName[];
   };
 };
 
@@ -88,11 +124,6 @@ export type GameInputSelectPlayer = {
   prevInputType: GameInputType;
   playerOptions: string[];
   mustSelectOne: boolean;
-
-  locationContext?: LocationName;
-  cardContext?: CardName;
-  eventContext?: EventName;
-
   clientOptions: {
     selectedPlayer: string | null;
   };
@@ -106,11 +137,6 @@ export type GameInputSelectCards = {
 
   maxToSelect: number;
   minToSelect: number;
-
-  locationContext?: LocationName;
-  cardContext?: CardName;
-  eventContext?: EventName;
-
   clientOptions: {
     selectedCards: CardName[];
   };
@@ -122,11 +148,6 @@ export type GameInputSelectPlayedCards = {
   cardOptions: PlayedCardInfo[];
   maxToSelect: number;
   minToSelect: number;
-
-  eventContext?: EventName;
-  cardContext?: CardName;
-  locationContext?: LocationName;
-
   clientOptions: {
     selectedCards: PlayedCardInfo[];
   };
@@ -142,11 +163,6 @@ export type GameInputSelectResources = {
   toSpend: boolean;
   excludeResource?: ResourceType;
   specificResource?: ResourceType;
-
-  locationContext?: LocationName;
-  cardContext?: CardName;
-  eventContext?: EventName;
-
   clientOptions: {
     resources: CardCost;
   };
@@ -159,11 +175,6 @@ export type GameInputSelectWorkerPlacement = {
   options: WorkerPlacementInfo[];
 
   mustSelectOne: boolean;
-
-  locationContext?: LocationName;
-  cardContext?: CardName;
-  eventContext?: EventName;
-
   clientOptions: {
     selectedOption: WorkerPlacementInfo | null;
   };
@@ -172,13 +183,7 @@ export type GameInputSelectWorkerPlacement = {
 export type GameInputSelectLocation = {
   inputType: GameInputType.SELECT_LOCATION;
   prevInputType: GameInputType;
-
   locationOptions: LocationName[];
-
-  locationContext?: LocationName;
-  cardContext?: CardName;
-  eventContext?: EventName;
-
   clientOptions: {
     selectedLocation: LocationName | null;
   };
@@ -188,9 +193,6 @@ export type GameInputSelectOptionGeneric = {
   inputType: GameInputType.SELECT_OPTION_GENERIC;
   prevInputType: GameInputType;
   options: string[];
-  locationContext?: LocationName;
-  cardContext?: CardName;
-  eventContext?: EventName;
   playedCardContext?: PlayedCardInfo;
 
   clientOptions: {
@@ -202,10 +204,8 @@ export type GameInputSelectPaymentForCard = {
   inputType: GameInputType.SELECT_PAYMENT_FOR_CARD;
   prevInputType: GameInputType;
 
-  locationContext?: LocationName;
   // if cardContext is specified, must use that card
   cardContext?: CardName;
-
   card: CardName;
 
   // player specified number of resources
@@ -213,6 +213,15 @@ export type GameInputSelectPaymentForCard = {
     card: CardName;
     paymentOptions: CardPaymentOptions;
   };
+};
+
+export type GameInputMultiStepContext = {
+  eventContext?: EventName;
+  cardContext?: CardName;
+  playedCardContext?: PlayedCardInfo;
+  locationContext?: LocationName;
+  adornmentContext?: AdornmentName;
+  riverDestinationContext?: RiverDestinationName;
 };
 
 export type GameInputMultiStep = (
@@ -225,13 +234,12 @@ export type GameInputMultiStep = (
   | GameInputSelectPaymentForCard
   | GameInputSelectWorkerPlacement
   | GameInputSelectOptionGeneric
-) & {
-  eventContext?: EventName;
-  cardContext?: CardName;
-  locationContext?: LocationName;
-  prevInput?: GameInput;
-  label?: string | (string | TextPart)[] | GameText;
-};
+  | GameInputSelectPlayedAdornment
+) &
+  GameInputMultiStepContext & {
+    prevInput?: GameInput;
+    label?: string | (string | TextPart)[] | GameText;
+  };
 
 export type GameInput = GameInputSimple | GameInputMultiStep;
 
@@ -266,6 +274,7 @@ export enum LocationType {
 export enum EventType {
   BASIC = "BASIC",
   SPECIAL = "SPECIAL",
+  WONDER = "WONDER",
 }
 
 export enum LocationName {
@@ -294,30 +303,51 @@ export enum LocationName {
   FOREST_TWO_CARDS_ONE_WILD = "TWO_CARDS_ONE_WILD",
   FOREST_DISCARD_UP_TO_THREE_CARDS_TO_GAIN_WILD_PER_CARD = "DISCARD_UP_TO_THREE_CARDS_TO_GAIN_WILD_PER_CARD",
   FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS = "DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS",
+
+  // Pearlbrook
+  FOREST_TWO_PEBBLE_ONE_CARD = "FOREST_TWO_PEBBLE_ONE_CARD",
+  FOREST_RESIN_PEBBLE_OR_FOUR_CARDS = "FOREST_RESIN_PEBBLE_OR_FOUR_CARDS",
+  FOREST_ACTIVATE_2_PRODUCTION = "FOREST_ACTIVATE_2_PRODUCTION",
+  FOREST_BERRY_PEBBLE_CARD = "FOREST_BERRY_PEBBLE_CARD",
+  FOREST_DISCARD_2_MEADOW_DRAW_2_MEADOW_GAIN_ANY = "FOREST_DISCARD_2_MEADOW_DRAW_2_MEADOW_GAIN_ANY",
 }
 
 export enum EventName {
-  BASIC_FOUR_PRODUCTION = "FOUR PRODUCTION CARDS",
-  BASIC_THREE_DESTINATION = "THREE DESTINATION CARDS",
-  BASIC_THREE_GOVERNANCE = "THREE GOVERNANCE CARDS",
-  BASIC_THREE_TRAVELER = "THREE TRAVELER CARDS",
+  BASIC_FOUR_PRODUCTION = "4 PRODUCTION",
+  BASIC_THREE_DESTINATION = "3 DESTINATION",
+  BASIC_THREE_GOVERNANCE = "3 GOVERNANCE",
+  BASIC_THREE_TRAVELER = "3 TRAVELER",
 
-  SPECIAL_GRADUATION_OF_SCHOLARS = "GRADUATION OF SCHOLARS",
-  SPECIAL_A_BRILLIANT_MARKETING_PLAN = "A BRILLIANT MARKETING PLAN",
-  SPECIAL_PERFORMER_IN_RESIDENCE = "PERFORMER IN RESIDENCE",
-  SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES = "CAPTURE OF THE ACORN THIEVES",
-  SPECIAL_MINISTERING_TO_MISCREANTS = "MINISTERING TO MISCREANTS",
-  SPECIAL_CROAK_WART_CURE = "CROAK WART CURE",
-  SPECIAL_AN_EVENING_OF_FIREWORKS = "AN EVENING OF FIREWORKS",
-  SPECIAL_A_WEE_RUN_CITY = "A WEE RUN CITY",
-  SPECIAL_TAX_RELIEF = "TAX RELIEF",
-  SPECIAL_UNDER_NEW_MANAGEMENT = "UNDER NEW MANAGEMENT",
-  SPECIAL_ANCIENT_SCROLLS_DISCOVERED = "ANCIENT SCROLLS DISCOVERED",
-  SPECIAL_FLYING_DOCTOR_SERVICE = "FLYING DOCTOR SERVICE",
-  SPECIAL_PATH_OF_THE_PILGRIMS = "PATH OF THE PILGRIMS",
-  SPECIAL_REMEMBERING_THE_FALLEN = "REMEMBERING THE FALLEN",
-  SPECIAL_PRISTINE_CHAPEL_CEILING = "PRISTINE CHAPEL CEILING",
-  SPECIAL_THE_EVERDELL_GAMES = "THE EVERDELL GAMES",
+  SPECIAL_GRADUATION_OF_SCHOLARS = "Graduation of Scholars",
+  SPECIAL_A_BRILLIANT_MARKETING_PLAN = "A Brilliant Marketing Plan",
+  SPECIAL_PERFORMER_IN_RESIDENCE = "Performer in Residence",
+  SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES = "Capture of the Acorn Thieves",
+  SPECIAL_MINISTERING_TO_MISCREANTS = "Ministering to Miscreants",
+  SPECIAL_CROAK_WART_CURE = "Croak Wart Cure",
+  SPECIAL_AN_EVENING_OF_FIREWORKS = "An Evening of Fireworks",
+  SPECIAL_A_WEE_RUN_CITY = "A Wee Run City",
+  SPECIAL_TAX_RELIEF = "Tax Relief",
+  SPECIAL_UNDER_NEW_MANAGEMENT = "Under New Management",
+  SPECIAL_ANCIENT_SCROLLS_DISCOVERED = "Ancient Scrolls Discovered",
+  SPECIAL_FLYING_DOCTOR_SERVICE = "Flying Doctor Service",
+  SPECIAL_PATH_OF_THE_PILGRIMS = "Path of the Pilgrims",
+  SPECIAL_REMEMBERING_THE_FALLEN = "Remembering the Fallen",
+  SPECIAL_PRISTINE_CHAPEL_CEILING = "Pristine Chapel Ceiling",
+  SPECIAL_THE_EVERDELL_GAMES = "The Everdell Games",
+
+  // Pearlbrook events
+  SPECIAL_ROMANTIC_CRUISE = "Romantic Cruise",
+  SPECIAL_X_MARKS_THE_SPOT = "X Marks the Spot",
+  SPECIAL_RIVERSIDE_RESORT = "Riverside Resort",
+  SPECIAL_MASQUERADE_INVITATIONS = "Masquerade Invitations",
+  SPECIAL_SUNKEN_TREASURE_DISCOVERED = "Sunken Treasure Discovered",
+  SPECIAL_RIVER_RACE = "River Race",
+
+  // Pearlbrook Wonders
+  WONDER_SUNBLAZE_BRIDGE = "Sunblaze Bridge",
+  WONDER_STARFALLS_FLAME = "Starfalls flame",
+  WONDER_HOPEWATCH_GATE = "Hopewatch Gate",
+  WONDER_MISTRISE_FOUNTAIN = "Mistrise Fountain",
 }
 
 export type LocationNameToPlayerIds = Partial<
@@ -466,6 +496,16 @@ export type CardCost = {
   [ResourceType.RESIN]?: number;
 };
 
+export type WonderCost = {
+  resources: {
+    [ResourceType.TWIG]: number;
+    [ResourceType.PEBBLE]: number;
+    [ResourceType.RESIN]: number;
+    [ResourceType.PEARL]: number;
+  };
+  numCardsToDiscard: number;
+};
+
 export enum PlayerStatus {
   DURING_SEASON = "DURING_SEASON",
   PREPARING_FOR_SEASON = "PREPARING_FOR_SEASON",
@@ -512,12 +552,29 @@ export type TextPartEntity =
       type: "entity";
       entityType: "event";
       event: EventName;
+    }
+  | {
+      type: "entity";
+      entityType: "adornment";
+      adornment: AdornmentName;
+    }
+  | {
+      type: "entity";
+      entityType: "riverDestination";
+      riverDestination: RiverDestinationName;
+    }
+  | {
+      type: "entity";
+      entityType: "riverDestinationSpot";
+      spot: RiverDestinationSpot;
     };
+
 export type TextPartPlayer = {
   type: "player";
   playerId: string;
   name: string;
 };
+
 export type TextPartIcon =
   | { type: "resource"; resourceType: ResourceType | "ANY" }
   | { type: "cardType"; cardType: CardType }
@@ -542,3 +599,63 @@ export type GameOptions = {
   realtimePoints: boolean;
   pearlbrook: boolean;
 };
+
+export enum RiverDestinationType {
+  SHOAL = "SHOAL",
+  CITIZEN = "CITIZEN",
+  LOCATION = "LOCATION",
+}
+
+export enum RiverDestinationName {
+  SHOAL = "Shoal",
+  GUS_THE_GARDENER = "Gus the Gardener",
+  BOSLEY_THE_ARTIST = "Bosley the Artist",
+  CRUSTINA_THE_CONSTABLE = "Crustina the Constable",
+  ILUMINOR_THE_INVENTOR = "Iluminor the Inventor",
+  SNOUT_THE_EXPLORER = "Snout the Explorer",
+  OMICRON_THE_ELDER = "Omicron the Elder",
+  BALLROOM = "Ballroom",
+  WATERMILL = "Watermill",
+  OBSERVATORY = "Observatory",
+  MARKET = "Market",
+  GREAT_HALL = "Great Hall",
+  GARDENS = "Gardens",
+}
+
+export enum ExpansionType {
+  PEARLBROOK = "PEARLBROOK",
+}
+
+export enum AdornmentName {
+  SPYGLASS = "Spyglass",
+  SCALES = "Scales",
+  MIRROR = "Mirror",
+  KEY_TO_THE_CITY = "Key to the City",
+  SUNDIAL = "Sundial",
+  GILDED_BOOK = "Gilded Book",
+  SEAGLASS_AMULET = "Seaglass Amulet",
+  MASQUE = "Masque",
+  BELL = "Bell",
+  HOURGLASS = "Hourglass",
+  COMPASS = "Compass",
+  TIARA = "Tiara",
+}
+
+export enum RiverDestinationSpot {
+  SHOAL = "SHOAL",
+  THREE_PRODUCTION = "THREE_PRODUCTION",
+  TWO_DESTINATION = "TWO_DESTINATION",
+  TWO_GOVERNANCE = "TWO_GOVERNANCE",
+  TWO_TRAVELER = "TWO_TRAVELER",
+}
+
+type RiverDestinationSpotInfo = {
+  name: RiverDestinationName | null;
+  ambassadors: string[];
+  revealed: boolean;
+};
+
+export type RiverDestinationMapSpots = Record<
+  RiverDestinationSpot,
+  RiverDestinationSpotInfo
+>;

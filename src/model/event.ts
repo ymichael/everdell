@@ -1,4 +1,6 @@
 import {
+  GameOptions,
+  ExpansionType,
   CardName,
   CardType,
   EventType,
@@ -11,6 +13,7 @@ import {
   GameText,
   TextPartEntity,
   IGameTextEntity,
+  WonderCost,
 } from "./types";
 import { Card } from "./card";
 import {
@@ -19,7 +22,7 @@ import {
   GameStatePlayFn,
   GameStateCanPlayCheckFn,
 } from "./gameState";
-import { sumResources } from "./gameStatePlayHelpers";
+import { sumResources, GainMoreThan1AnyResource } from "./gameStatePlayHelpers";
 import shuffle from "lodash/shuffle";
 import {
   toGameText,
@@ -37,6 +40,7 @@ export class Event implements GameStatePlayable, IGameTextEntity {
 
   readonly name: EventName;
   readonly shortName: GameText | undefined;
+  readonly expansion: ExpansionType | null;
   readonly type: EventType;
   readonly baseVP: number;
   readonly requiredCards: CardName[] | undefined;
@@ -45,6 +49,8 @@ export class Event implements GameStatePlayable, IGameTextEntity {
   // every event has requirements to play,
   // but not all events result in an action when played
   readonly canPlayCheckInner: GameStateCanPlayCheckFn | undefined;
+
+  readonly wonderCost: WonderCost | undefined; // used for Pearlbrook's wonders
 
   constructor({
     name,
@@ -58,10 +64,13 @@ export class Event implements GameStatePlayable, IGameTextEntity {
     canPlayCheckInner, // called when we check canPlay function
     playedEventInfoInner, // used for cards that accumulate other cards or resources
     pointsInner, // computed if specified + added to base points
+    expansion = null,
+    wonderCost,
   }: {
     name: EventName;
     type: EventType;
     baseVP: number;
+    expansion?: ExpansionType | null;
     shortName?: GameText | undefined;
     requiredCards?: CardName[];
     eventDescription?: GameText;
@@ -70,9 +79,11 @@ export class Event implements GameStatePlayable, IGameTextEntity {
     playInner?: GameStatePlayFn;
     playedEventInfoInner?: () => PlayedEventInfo;
     pointsInner?: (gameState: GameState, playerId: string) => number;
+    wonderCost?: WonderCost;
   }) {
     this.name = name;
     this.type = type;
+    this.expansion = expansion;
     this.baseVP = baseVP;
     this.requiredCards = requiredCards;
     this.eventDescription = eventDescription;
@@ -82,6 +93,7 @@ export class Event implements GameStatePlayable, IGameTextEntity {
     this.playedEventInfoInner = playedEventInfoInner;
     this.pointsInner = pointsInner;
     this.shortName = shortName;
+    this.wonderCost = wonderCost;
   }
 
   getGameTextPart(): TextPartEntity {
@@ -141,12 +153,37 @@ export class Event implements GameStatePlayable, IGameTextEntity {
       if (player.numAvailableWorkers <= 0) {
         return `Active player (${player.playerId}) doesn't have any workers to place.`;
       }
+
       // Check whether player has required cards, if any
       if (this.requiredCards) {
         for (let i = 0; i < this.requiredCards.length; i++) {
           if (!player.hasCardInCity(this.requiredCards[i])) {
             return `Need to have played ${this.requiredCards[i]} to claim event {$this.name}`;
           }
+        }
+      }
+
+      // For wonders, check whether player can pay wonder cost
+      if (this.wonderCost) {
+        const resourcesNeeded = this.wonderCost.resources;
+        const cardsNeeded = this.wonderCost.numCardsToDiscard;
+        const playerResources = player.getResources();
+
+        if (
+          playerResources[ResourceType.TWIG] <
+            resourcesNeeded[ResourceType.TWIG] ||
+          playerResources[ResourceType.RESIN] <
+            resourcesNeeded[ResourceType.RESIN] ||
+          playerResources[ResourceType.PEBBLE] <
+            resourcesNeeded[ResourceType.PEBBLE] ||
+          playerResources[ResourceType.PEARL] <
+            resourcesNeeded[ResourceType.PEARL]
+        ) {
+          return `Player doesn't have enough resources to pay for Wonder`;
+        }
+
+        if (player.cardsInHand.length < cardsNeeded) {
+          return `Player doesn't have enough cards to discard for Wonder`;
         }
       }
     }
@@ -192,6 +229,12 @@ export class Event implements GameStatePlayable, IGameTextEntity {
   }
 
   static fromName(name: EventName): Event {
+    if (oldEventEnums[name]) {
+      const oldName = oldEventEnums[name];
+      if (oldName in EventName) {
+        name = EventName[oldName as keyof typeof EventName];
+      }
+    }
     return EVENT_REGISTRY[name];
   }
 
@@ -205,6 +248,33 @@ export class Event implements GameStatePlayable, IGameTextEntity {
       });
   }
 }
+
+// We previously had EventName be UPPERCASED string, so we have some games
+// in the db that store these strings in the game state. Hardcoding these here
+// so we don't break those games.
+// 1/14/2021
+const oldEventEnums: Record<any, any> = {
+  "FOUR PRODUCTION CARDS": "BASIC_FOUR_PRODUCTION",
+  "THREE DESTINATION CARDS": "BASIC_THREE_DESTINATION",
+  "THREE GOVERNANCE CARDS": "BASIC_THREE_GOVERNANCE",
+  "THREE TRAVELER CARDS": "BASIC_THREE_TRAVELER",
+  "GRADUATION OF SCHOLARS": "SPECIAL_GRADUATION_OF_SCHOLARS",
+  "A BRILLIANT MARKETING PLAN": "SPECIAL_A_BRILLIANT_MARKETING_PLAN",
+  "PERFORMER IN RESIDENCE": "SPECIAL_PERFORMER_IN_RESIDENCE",
+  "CAPTURE OF THE ACORN THIEVES": "SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES",
+  "MINISTERING TO MISCREANTS": "SPECIAL_MINISTERING_TO_MISCREANTS",
+  "CROAK WART CURE": "SPECIAL_CROAK_WART_CURE",
+  "AN EVENING OF FIREWORKS": "SPECIAL_AN_EVENING_OF_FIREWORKS",
+  "A WEE RUN CITY": "SPECIAL_A_WEE_RUN_CITY",
+  "TAX RELIEF": "SPECIAL_TAX_RELIEF",
+  "UNDER NEW MANAGEMENT": "SPECIAL_UNDER_NEW_MANAGEMENT",
+  "ANCIENT SCROLLS DISCOVERED": "SPECIAL_ANCIENT_SCROLLS_DISCOVERED",
+  "FLYING DOCTOR SERVICE": "SPECIAL_FLYING_DOCTOR_SERVICE",
+  "PATH OF THE PILGRIMS": "SPECIAL_PATH_OF_THE_PILGRIMS",
+  "REMEMBERING THE FALLEN": "SPECIAL_REMEMBERING_THE_FALLEN",
+  "PRISTINE CHAPEL CEILING": "SPECIAL_PRISTINE_CHAPEL_CEILING",
+  "THE EVERDELL GAMES": "SPECIAL_THE_EVERDELL_GAMES",
+};
 
 const EVENT_REGISTRY: Record<EventName, Event> = {
   [EventName.BASIC_FOUR_PRODUCTION]: new Event({
@@ -320,7 +390,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
             ]
           );
 
-          selectedPlayer.gainResources(resources);
+          selectedPlayer.gainResources(gameState, resources);
           player.spendResources(resources);
 
           const eventInfo =
@@ -480,6 +550,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           eventContext: EventName.SPECIAL_AN_EVENING_OF_FIREWORKS,
           maxResources: 3,
           minResources: 0,
+          specificResource: ResourceType.TWIG,
           clientOptions: {
             resources: {},
           },
@@ -1066,6 +1137,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           label: "Place up to 3 BERRY here (worth 2 VP each)",
           prevInputType: GameInputType.CLAIM_EVENT,
           eventContext: EventName.SPECIAL_PERFORMER_IN_RESIDENCE,
+          specificResource: ResourceType.BERRY,
           maxResources: 3,
           minResources: 0,
           clientOptions: {
@@ -1075,19 +1147,15 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       } else if (gameInput.inputType === GameInputType.SELECT_RESOURCES) {
         const resources = gameInput.clientOptions.resources;
         if (!resources) {
-          throw new Error("invalid input");
+          throw new Error("Invalid input");
         }
-
         const numBerries = resources[ResourceType.BERRY];
-
         if (!numBerries) {
-          throw new Error("must provide number of berries");
+          throw new Error("Must provide number of berries");
         }
-
         if (numBerries > 3) {
-          throw new Error("too many berries");
+          throw new Error("Select up to 3 berries");
         }
-
         const eventInfo =
           player.claimedEvents[EventName.SPECIAL_PERFORMER_IN_RESIDENCE];
 
@@ -1151,74 +1219,32 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     // draw 1 card and receive 1 resource for each VP on your chapel
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
-      // get number of VP on chapel
-      const playedCards = player.playedCards;
-      if (!playedCards) {
-        throw new Error("no cards in city");
-      }
+      const playedChapel = player.getFirstPlayedCard(CardName.CHAPEL);
+      const gainAnyHelper = new GainMoreThan1AnyResource({
+        eventContext: EventName.SPECIAL_PRISTINE_CHAPEL_CEILING,
+      });
 
-      const chapel = playedCards[CardName.CHAPEL];
-      if (!chapel) {
-        throw new Error("No chapel in city");
-      }
-
-      if (chapel.length > 1) {
-        throw new Error("Cannot have more than one chapel");
-      }
-      const chapelResources = chapel[0].resources;
-
+      const chapelResources = playedChapel.resources;
       if (!chapelResources) {
-        throw new Error("Invalid resources");
+        throw new Error("Invalid resources on chapel");
       }
-
       const numVP = chapelResources[ResourceType.VP] || 0;
-
       if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
         player.drawCards(gameState, numVP);
-
         gameState.addGameLogFromEvent(
           EventName.SPECIAL_PRISTINE_CHAPEL_CEILING,
           [player, ` drew ${numVP} CARD.`]
         );
 
         if (numVP !== 0) {
-          gameState.pendingGameInputs.push({
-            inputType: GameInputType.SELECT_RESOURCES,
-            toSpend: false,
-            label: `Gain ${numVP} ANY`,
-            prevInputType: GameInputType.CLAIM_EVENT,
-            eventContext: EventName.SPECIAL_PRISTINE_CHAPEL_CEILING,
-            maxResources: numVP,
-            minResources: numVP,
-            clientOptions: {
-              resources: {},
-            },
-          });
+          gameState.pendingGameInputs.push(
+            gainAnyHelper.getGameInput(numVP, {
+              prevInputType: gameInput.inputType,
+            })
+          );
         }
-      } else if (gameInput.inputType === GameInputType.SELECT_RESOURCES) {
-        const resources = gameInput.clientOptions.resources;
-        if (!resources) {
-          throw new Error("invalid input");
-        }
-        // count total number of resources
-
-        const numResources =
-          (resources[ResourceType.BERRY] || 0) +
-          (resources[ResourceType.TWIG] || 0) +
-          (resources[ResourceType.RESIN] || 0) +
-          (resources[ResourceType.PEBBLE] || 0);
-
-        if (numResources > numVP) {
-          throw new Error("Can't gain more resources than VP on the Chapel");
-        }
-
-        // gain requested resources
-        player.gainResources(resources);
-
-        gameState.addGameLogFromEvent(
-          EventName.SPECIAL_PRISTINE_CHAPEL_CEILING,
-          [player, " gained ", ...resourceMapToGameText(resources), "."]
-        );
+      } else if (gainAnyHelper.matchesGameInput(gameInput)) {
+        gainAnyHelper.play(gameState, gameInput);
       } else {
         throw new Error(`Invalid input type ${gameInput.inputType}`);
       }
@@ -1467,6 +1493,350 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       );
     },
   }),
+
+  // Pearlbrook events
+  [EventName.SPECIAL_ROMANTIC_CRUISE]: new Event({
+    name: EventName.SPECIAL_ROMANTIC_CRUISE,
+    baseVP: 0,
+    requiredCards: [CardName.FERRY, CardName.HUSBAND],
+    type: EventType.SPECIAL,
+    eventDescription: toGameText([
+      "When achieved, you may search through the deck for a ",
+      { type: "entity", entityType: "card", card: CardName.WIFE },
+      " CARD and play it for free.",
+      { type: "BR" },
+      "Or you may gain 5 VP.",
+    ]),
+    expansion: ExpansionType.PEARLBROOK,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
+    },
+  }),
+  [EventName.SPECIAL_X_MARKS_THE_SPOT]: new Event({
+    name: EventName.SPECIAL_X_MARKS_THE_SPOT,
+    baseVP: 0,
+    requiredCards: [CardName.PIRATE_SHIP, CardName.STOREHOUSE],
+    type: EventType.SPECIAL,
+    eventDescription: toGameText([
+      "When achieved, place 1 VP on your ",
+      { type: "entity", entityType: "card", card: CardName.STOREHOUSE },
+      " for each resource there, up to 6.",
+    ]),
+    expansion: ExpansionType.PEARLBROOK,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
+    },
+  }),
+  [EventName.SPECIAL_RIVERSIDE_RESORT]: new Event({
+    name: EventName.SPECIAL_RIVERSIDE_RESORT,
+    baseVP: 0,
+    requiredCards: [CardName.HARBOR, CardName.INNKEEPER],
+    type: EventType.SPECIAL,
+    eventDescription: toGameText([
+      "When achieved, you may place up to 3 ",
+      { type: "em", text: "Critters" },
+      " from the Meadow facedown beneath this Event.",
+      { type: "HR" },
+      "Worth 2 VP for each ",
+      { type: "em", text: "Critters" },
+      " beneath this Event.",
+    ]),
+    expansion: ExpansionType.PEARLBROOK,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
+    },
+  }),
+  [EventName.SPECIAL_MASQUERADE_INVITATIONS]: new Event({
+    name: EventName.SPECIAL_MASQUERADE_INVITATIONS,
+    baseVP: 0,
+    requiredCards: [CardName.MESSENGER, CardName.FAIRGROUNDS],
+    type: EventType.SPECIAL,
+    eventDescription: toGameText([
+      "When achieved, you may give up to 6 CARD to opponents. ",
+      { type: "BR" },
+      "Gain 1 VP for each CARD given this way.",
+    ]),
+    expansion: ExpansionType.PEARLBROOK,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
+    },
+  }),
+  [EventName.SPECIAL_SUNKEN_TREASURE_DISCOVERED]: new Event({
+    name: EventName.SPECIAL_SUNKEN_TREASURE_DISCOVERED,
+    baseVP: 0,
+    requiredCards: [CardName.PIRATE, CardName.CRANE],
+    type: EventType.SPECIAL,
+    eventDescription: toGameText([
+      "When achieved, you may play 1 CARD from the Meadow worth up to 3 VP for free.",
+    ]),
+    expansion: ExpansionType.PEARLBROOK,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
+    },
+  }),
+  [EventName.SPECIAL_RIVER_RACE]: new Event({
+    name: EventName.SPECIAL_RIVER_RACE,
+    baseVP: 4,
+    requiredCards: [CardName.FERRY_FERRET, CardName.TWIG_BARGE],
+    type: EventType.SPECIAL,
+    eventDescription: toGameText([
+      "When achived, place either your ",
+      { type: "entity", entityType: "card", card: CardName.FERRY_FERRET },
+      " or ",
+      { type: "entity", entityType: "card", card: CardName.TWIG_BARGE },
+      " facedown beneath this event.",
+      { type: "HR" },
+      "If ",
+      { type: "entity", entityType: "card", card: CardName.FERRY_FERRET },
+      ", gain 2 VP",
+      { type: "BR" },
+      "If ",
+      { type: "entity", entityType: "card", card: CardName.TWIG_BARGE },
+      ", gain 2 ANY",
+    ]),
+    expansion: ExpansionType.PEARLBROOK,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
+    },
+  }),
+
+  // Pearlbrook Wonders
+  [EventName.WONDER_HOPEWATCH_GATE]: new Event({
+    name: EventName.WONDER_HOPEWATCH_GATE,
+    eventDescription: toGameText([
+      "Pay 1 TWIG, 1 RESIN, 1 PEBBLE, 2 PEARL, and discard 2 CARD.",
+    ]),
+    type: EventType.WONDER,
+    baseVP: 10,
+    wonderCost: {
+      resources: {
+        [ResourceType.TWIG]: 1,
+        [ResourceType.RESIN]: 1,
+        [ResourceType.PEBBLE]: 1,
+        [ResourceType.PEARL]: 2,
+      },
+      numCardsToDiscard: 2,
+    },
+    expansion: ExpansionType.PEARLBROOK,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+
+      if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          label: `Select 3 CARD to discard`,
+          eventContext: EventName.WONDER_HOPEWATCH_GATE,
+          maxToSelect: 2,
+          minToSelect: 2,
+          cardOptions: player.cardsInHand,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_CARDS) {
+        // make sure you chose the right number
+        const selectedCards = gameInput.clientOptions.selectedCards;
+
+        if (selectedCards.length < 2) {
+          throw new Error("Too few cards discarded");
+        }
+
+        // player spends resources
+        player.spendResources({
+          [ResourceType.TWIG]: 1,
+          [ResourceType.RESIN]: 1,
+          [ResourceType.PEBBLE]: 1,
+          [ResourceType.PEARL]: 2,
+        });
+
+        // remove the cards from player's hand
+        selectedCards.forEach((cardName) => {
+          player.removeCardFromHand(cardName as CardName);
+          gameState.discardPile.addToStack(cardName);
+        });
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
+      }
+    },
+  }),
+  [EventName.WONDER_MISTRISE_FOUNTAIN]: new Event({
+    name: EventName.WONDER_MISTRISE_FOUNTAIN,
+    eventDescription: toGameText([
+      "Pay 2 TWIG, 2 RESIN, 2 PEBBLE, 2 PEARL, and discard 2 CARD.",
+    ]),
+    type: EventType.WONDER,
+    baseVP: 15,
+    wonderCost: {
+      resources: {
+        [ResourceType.TWIG]: 2,
+        [ResourceType.RESIN]: 2,
+        [ResourceType.PEBBLE]: 2,
+        [ResourceType.PEARL]: 2,
+      },
+      numCardsToDiscard: 2,
+    },
+    expansion: ExpansionType.PEARLBROOK,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+
+      if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          label: `Select 3 CARD to discard`,
+          eventContext: EventName.WONDER_MISTRISE_FOUNTAIN,
+          maxToSelect: 2,
+          minToSelect: 2,
+          cardOptions: player.cardsInHand,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_CARDS) {
+        // make sure you chose the right number
+        const selectedCards = gameInput.clientOptions.selectedCards;
+
+        if (selectedCards.length < 2) {
+          throw new Error("Too few cards discarded");
+        }
+
+        // player spends resources
+        player.spendResources({
+          [ResourceType.TWIG]: 2,
+          [ResourceType.RESIN]: 2,
+          [ResourceType.PEBBLE]: 2,
+          [ResourceType.PEARL]: 2,
+        });
+
+        // remove the cards from player's hand
+        selectedCards.forEach((cardName) => {
+          player.removeCardFromHand(cardName as CardName);
+          gameState.discardPile.addToStack(cardName);
+        });
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
+      }
+    },
+  }),
+  [EventName.WONDER_SUNBLAZE_BRIDGE]: new Event({
+    name: EventName.WONDER_SUNBLAZE_BRIDGE,
+    eventDescription: toGameText([
+      "Pay 2 TWIG, 2 RESIN, 2 PEBBLE, 3 PEARL, and discard 3 CARD.",
+    ]),
+    type: EventType.WONDER,
+    baseVP: 20,
+    wonderCost: {
+      resources: {
+        [ResourceType.TWIG]: 2,
+        [ResourceType.RESIN]: 2,
+        [ResourceType.PEBBLE]: 2,
+        [ResourceType.PEARL]: 3,
+      },
+      numCardsToDiscard: 3,
+    },
+    expansion: ExpansionType.PEARLBROOK,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+
+      if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          label: `Select 3 CARD to discard`,
+          eventContext: EventName.WONDER_SUNBLAZE_BRIDGE,
+          maxToSelect: 3,
+          minToSelect: 3,
+          cardOptions: player.cardsInHand,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_CARDS) {
+        // make sure you chose the right number
+        const selectedCards = gameInput.clientOptions.selectedCards;
+
+        if (selectedCards.length < 3) {
+          throw new Error("Too few cards discarded");
+        }
+
+        // player spends resources
+        player.spendResources({
+          [ResourceType.TWIG]: 2,
+          [ResourceType.RESIN]: 2,
+          [ResourceType.PEBBLE]: 2,
+          [ResourceType.PEARL]: 3,
+        });
+
+        // remove the cards from player's hand
+        selectedCards.forEach((cardName) => {
+          player.removeCardFromHand(cardName as CardName);
+          gameState.discardPile.addToStack(cardName);
+        });
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
+      }
+    },
+  }),
+  [EventName.WONDER_STARFALLS_FLAME]: new Event({
+    name: EventName.WONDER_STARFALLS_FLAME,
+    eventDescription: toGameText([
+      "Pay 3 TWIG, 3 RESIN, 3 PEBBLE, 3 PEARL, and discard 3 CARD.",
+    ]),
+    type: EventType.WONDER,
+    baseVP: 25,
+    wonderCost: {
+      resources: {
+        [ResourceType.TWIG]: 3,
+        [ResourceType.RESIN]: 3,
+        [ResourceType.PEBBLE]: 3,
+        [ResourceType.PEARL]: 3,
+      },
+      numCardsToDiscard: 3,
+    },
+    expansion: ExpansionType.PEARLBROOK,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+
+      if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          label: `Select 3 CARD to discard`,
+          eventContext: EventName.WONDER_STARFALLS_FLAME,
+          maxToSelect: 3,
+          minToSelect: 3,
+          cardOptions: player.cardsInHand,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_CARDS) {
+        // make sure you chose the right number
+        const selectedCards = gameInput.clientOptions.selectedCards;
+
+        if (selectedCards.length < 3) {
+          throw new Error("Too few cards discarded");
+        }
+
+        // player spends resources
+        player.spendResources({
+          [ResourceType.TWIG]: 3,
+          [ResourceType.RESIN]: 3,
+          [ResourceType.PEBBLE]: 3,
+          [ResourceType.PEARL]: 3,
+        });
+
+        // remove the cards from player's hand
+        selectedCards.forEach((cardName) => {
+          player.removeCardFromHand(cardName as CardName);
+          gameState.discardPile.addToStack(cardName);
+        });
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
+      }
+    },
+  }),
 };
 
 const baseGameSpecialEvents: EventName[] = [
@@ -1488,14 +1858,43 @@ const baseGameSpecialEvents: EventName[] = [
   EventName.SPECIAL_THE_EVERDELL_GAMES,
 ];
 
-export const initialEventMap = (): EventNameToPlayerId => {
-  const ret: EventNameToPlayerId = {};
-  [...Event.byType(EventType.BASIC)].forEach((ty) => {
-    ret[ty] = null;
-  });
+const pearlbrookSpecialEvents: EventName[] = [
+  EventName.SPECIAL_ROMANTIC_CRUISE,
+  EventName.SPECIAL_X_MARKS_THE_SPOT,
+  EventName.SPECIAL_RIVERSIDE_RESORT,
+  EventName.SPECIAL_MASQUERADE_INVITATIONS,
+  EventName.SPECIAL_SUNKEN_TREASURE_DISCOVERED,
+  EventName.SPECIAL_RIVER_RACE,
+];
 
-  shuffle(baseGameSpecialEvents)
-    .slice(0, 4)
+export const initialEventMap = ({
+  pearlbrook,
+}: Pick<GameOptions, "pearlbrook">): EventNameToPlayerId => {
+  const ret: EventNameToPlayerId = {};
+
+  // if pearlbrook, use the wonders instead of basic events
+  if (pearlbrook) {
+    [...Event.byType(EventType.WONDER)].forEach((ty) => {
+      ret[ty] = null;
+    });
+  } else {
+    [...Event.byType(EventType.BASIC)].forEach((ty) => {
+      ret[ty] = null;
+    });
+  }
+
+  let toSelect = 4;
+  const specialEvents = [...baseGameSpecialEvents];
+  if (pearlbrook) {
+    // Use at least 1 pearlbrook special event.
+    const [chosen, ...rest] = shuffle(pearlbrookSpecialEvents);
+    ret[chosen] = null;
+    toSelect -= 1;
+    specialEvents.push(...rest);
+  }
+
+  shuffle(specialEvents)
+    .slice(0, toSelect)
     .forEach((ty) => {
       ret[ty] = null;
     });

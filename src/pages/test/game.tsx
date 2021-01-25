@@ -34,7 +34,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     player.cardsInHand.push(CardName.RANGER);
     player.cardsInHand.push(CardName.BARD);
 
-    player.gainResources({
+    player.gainResources(gameState, {
       [ResourceType.VP]: 12,
       [ResourceType.TWIG]: 4,
       [ResourceType.BERRY]: 7,

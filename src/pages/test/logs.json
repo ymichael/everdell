@@ -20,7 +20,1404 @@
   [
     {
       "type": "player",
-      "playerId": "oUTjgRwfmNqhaRJDm26NFo",
+      "playerId": "b4e3TgADNHf9djPaKb3JAg",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Spyglass"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Spyglass"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "b4e3TgADNHf9djPaKb3JAg",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gained 1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "PEBBLE"
+    },
+    {
+      "type": "text",
+      "text": ", 1 "
+    },
+    {
+      "type": "symbol",
+      "symbol": "CARD"
+    },
+    {
+      "type": "text",
+      "text": " and 1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "PEARL"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "8gYie8vSiJJbcHYCdsMmPa",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Scales"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Scales"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "8gYie8vSiJJbcHYCdsMmPa",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " discarded 4 "
+    },
+    {
+      "type": "symbol",
+      "symbol": "CARD"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Scales"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "8gYie8vSiJJbcHYCdsMmPa",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gained "
+    },
+    {
+      "type": "text",
+      "text": "3 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "BERRY"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "text",
+      "text": "1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "TWIG"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Scales"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "3rAJSof1n3faiJBq9JD9Bm",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " did not discard any "
+    },
+    {
+      "type": "symbol",
+      "symbol": "CARD"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "i5tTcFMKqsHsK7Qsu2UipL",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Mirror"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Hourglass"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "kXaHNS4v2beB5LdNYyLnH1",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " copied "
+    },
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "THREE_BERRY"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Hourglass"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "kXaHNS4v2beB5LdNYyLnH1",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gained "
+    },
+    {
+      "type": "resource",
+      "resourceType": "PEBBLE"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "bUekogEdcf2quUuSv1JRFW",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Key to the City"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Key to the City"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "bUekogEdcf2quUuSv1JRFW",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gained "
+    },
+    {
+      "type": "text",
+      "text": "1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "BERRY"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "text",
+      "text": "1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "TWIG"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "dx9MRobmtL5yN2BiFPn9j4",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Sundial"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Sundial"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "iHPNKcNFNhBvqBgjTYc1ua",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " activated "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Mine"
+    },
+    {
+      "type": "text",
+      "text": ", "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Farm"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Farm"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Mine"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "iHPNKcNFNhBvqBgjTYc1ua",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gained "
+    },
+    {
+      "type": "text",
+      "text": "1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "PEBBLE"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Farm"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "iHPNKcNFNhBvqBgjTYc1ua",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gained "
+    },
+    {
+      "type": "text",
+      "text": "1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "BERRY"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Sundial"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "tCKqxm2KgSxeNUHxL3pSME",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " activated "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Farm"
+    },
+    {
+      "type": "text",
+      "text": ", "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Farm"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Farm"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Sundial"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "dcAw6ABnZ2aXLxKjX3V6C2",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " activated "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Mine"
+    },
+    {
+      "type": "text",
+      "text": ", "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Miner Mole"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Chip Sweep"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Chip Sweep"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "dcAw6ABnZ2aXLxKjX3V6C2",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " activated "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Mine"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Miner Mole"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "dcAw6ABnZ2aXLxKjX3V6C2",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " activated "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Farm"
+    },
+    {
+      "type": "text",
+      "text": " from "
+    },
+    {
+      "type": "player",
+      "playerId": "kbqK8giTDkgZXc74daTmFP",
+      "name": "Player #1"
+    },
+    {
+      "type": "text",
+      "text": "'s city."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "rKXYW5pUAUPheeY3Ca5RoE",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Gilded Book"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "7dGZXbLACSo4jdtd4FVNGd",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Seaglass Amulet"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Seaglass Amulet"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "7dGZXbLACSo4jdtd4FVNGd",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gained "
+    },
+    {
+      "type": "text",
+      "text": "1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "PEBBLE"
+    },
+    {
+      "type": "text",
+      "text": ", "
+    },
+    {
+      "type": "text",
+      "text": "1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "RESIN"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "text",
+      "text": "1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "TWIG"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Seaglass Amulet"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "7dGZXbLACSo4jdtd4FVNGd",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gained 2 1 "
+    },
+    {
+      "type": "symbol",
+      "symbol": "CARD"
+    },
+    {
+      "type": "text",
+      "text": " and 1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "gz2QtNSqTmvvg7UKPCKUTa",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Masque"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Masque"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "gz2QtNSqTmvvg7UKPCKUTa",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Farm"
+    },
+    {
+      "type": "text",
+      "text": " from the Meadow."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Masque"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "gz2QtNSqTmvvg7UKPCKUTa",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Farm"
+    },
+    {
+      "type": "text",
+      "text": " from their hand."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Masque"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "iJu8DGWKh66CXKFsHrP4Y4",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Husband"
+    },
+    {
+      "type": "text",
+      "text": " from their hand."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Masque"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "evAi4JN19qjT4YwMxnSsz9",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Husband"
+    },
+    {
+      "type": "text",
+      "text": " from the Meadow."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Masque"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "vvnctPyX5PvKxXREvgfv9Z",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Fairgrounds"
+    },
+    {
+      "type": "text",
+      "text": " from the Meadow."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Fairgrounds"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "vvnctPyX5PvKxXREvgfv9Z",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " drew 2 "
+    },
+    {
+      "type": "symbol",
+      "symbol": "CARD"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "3MLGmRMtV9DWx7DaLWUt7P",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Bell"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "bdjCeHjcJLaJjdyicG28ej",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Hourglass"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "qt8f4K5pMsZUby4cwK9uPh",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Compass"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Compass"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "4JbkRgmjFubYgqQhjRrTJX",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " declined to reactivate any "
+    },
+    {
+      "type": "cardType",
+      "cardType": "TRAVELER"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Compass"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "uufEXzQMYGNoboADXhgVN1",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " activated "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Wanderer"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Wanderer"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Wanderer"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "uufEXzQMYGNoboADXhgVN1",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " drew 3 "
+    },
+    {
+      "type": "symbol",
+      "symbol": "CARD"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Compass"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "azKkfCchGiA2jtWtJgUUph",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " activated "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Ruins"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Ruins"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "azKkfCchGiA2jtWtJgUUph",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " ruined "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Farm"
+    },
+    {
+      "type": "text",
+      "text": " and drew 2 "
+    },
+    {
+      "type": "symbol",
+      "symbol": "CARD"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Compass"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "ivMUw3Vm3MuMeVvT9iHhTP",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " activated "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Fool"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Fool"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "ivMUw3Vm3MuMeVvT9iHhTP",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " removed the "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Fool"
+    },
+    {
+      "type": "text",
+      "text": " from their city."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Fool"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "ivMUw3Vm3MuMeVvT9iHhTP",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " added the "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Fool"
+    },
+    {
+      "type": "text",
+      "text": " to "
+    },
+    {
+      "type": "player",
+      "playerId": "fB3NbsF8ETfrdPaoBthDij",
+      "name": "Player #1"
+    },
+    {
+      "type": "text",
+      "text": "'s city."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Compass"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "5sXmBuZMSYsr6VAE1Bs9Ma",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " activated "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Ranger"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Ranger"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "5sXmBuZMSYsr6VAE1Bs9Ma",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " moved deployed worker on "
+    },
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "ONE_STONE"
+    },
+    {
+      "type": "text",
+      "text": " to "
+    },
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "TWO_TWIGS_AND_ONE_CARD"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "5sXmBuZMSYsr6VAE1Bs9Ma",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " place a worker on "
+    },
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "TWO_TWIGS_AND_ONE_CARD"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "r7C2HLWLGGWueHt8e42Ta8",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Tiara"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Tiara"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "eAw9vhaSsL2pcqncChRDaz",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gained "
+    },
+    {
+      "type": "text",
+      "text": "2 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "BERRY"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "5P9w1GyE1hDgkyCGXEnK5d",
       "name": "Player #0"
     },
     {
@@ -49,7 +1446,7 @@
     },
     {
       "type": "player",
-      "playerId": "oUTjgRwfmNqhaRJDm26NFo",
+      "playerId": "5P9w1GyE1hDgkyCGXEnK5d",
       "name": "Player #0"
     },
     {
@@ -77,7 +1474,7 @@
     },
     {
       "type": "player",
-      "playerId": "eRFes6rTqreEbhBjJmUbo3",
+      "playerId": "r7wcTjMyXFFCr9hh3G1JT3",
       "name": "Player #0"
     },
     {
@@ -113,7 +1510,7 @@
     },
     {
       "type": "player",
-      "playerId": "pBAs3evVQ6gDjJFH8DxV4d",
+      "playerId": "5nYWKYkoj79BGbv465Vxtr",
       "name": "Player #0"
     },
     {
@@ -140,7 +1537,7 @@
   [
     {
       "type": "player",
-      "playerId": "hz59bhqc1V1J9dJKEKGxL8",
+      "playerId": "73UYLT4QjcZyYiDTJ9FFRp",
       "name": "Player #0"
     },
     {
@@ -160,7 +1557,7 @@
   [
     {
       "type": "player",
-      "playerId": "5GmFBLFFWZxTUMg9PQGx1m",
+      "playerId": "juBjG2KZwYm9zLbjGpAtSz",
       "name": "Player #0"
     },
     {
@@ -189,7 +1586,7 @@
     },
     {
       "type": "player",
-      "playerId": "5GmFBLFFWZxTUMg9PQGx1m",
+      "playerId": "juBjG2KZwYm9zLbjGpAtSz",
       "name": "Player #0"
     },
     {
@@ -245,7 +1642,7 @@
     },
     {
       "type": "player",
-      "playerId": "5GmFBLFFWZxTUMg9PQGx1m",
+      "playerId": "juBjG2KZwYm9zLbjGpAtSz",
       "name": "Player #0"
     },
     {
@@ -274,7 +1671,7 @@
     },
     {
       "type": "player",
-      "playerId": "aYyBm3infPEm8CwzxW4mKG",
+      "playerId": "bJjCF26STsntG36Q18WLhy",
       "name": "Player #0"
     },
     {
@@ -321,7 +1718,7 @@
   [
     {
       "type": "player",
-      "playerId": "d9SXXpx4BZpyveciYeBXmu",
+      "playerId": "pgjBFxueqZC4keC6JmPgMB",
       "name": "Player #0"
     },
     {
@@ -341,7 +1738,7 @@
   [
     {
       "type": "player",
-      "playerId": "toLYVkuknXZ4opw7ErkAEv",
+      "playerId": "4nEc1SRp3sehuTaKZktciV",
       "name": "Player #0"
     },
     {
@@ -362,38 +1759,6 @@
     {
       "type": "entity",
       "entityType": "card",
-      "card": "Mine"
-    },
-    {
-      "type": "text",
-      "text": ": "
-    },
-    {
-      "type": "player",
-      "playerId": "1xLZDHQc13YaDbuhc6xipY",
-      "name": "Player #0"
-    },
-    {
-      "type": "text",
-      "text": " gained "
-    },
-    {
-      "type": "text",
-      "text": "1 "
-    },
-    {
-      "type": "resource",
-      "resourceType": "PEBBLE"
-    },
-    {
-      "type": "text",
-      "text": "."
-    }
-  ],
-  [
-    {
-      "type": "entity",
-      "entityType": "card",
       "card": "Chip Sweep"
     },
     {
@@ -402,68 +1767,7 @@
     },
     {
       "type": "player",
-      "playerId": "1xLZDHQc13YaDbuhc6xipY",
-      "name": "Player #0"
-    },
-    {
-      "type": "text",
-      "text": " activated "
-    },
-    {
-      "type": "entity",
-      "entityType": "card",
-      "card": "Mine"
-    },
-    {
-      "type": "text",
-      "text": "."
-    }
-  ],
-  [
-    {
-      "type": "entity",
-      "entityType": "card",
-      "card": "Farm"
-    },
-    {
-      "type": "text",
-      "text": ": "
-    },
-    {
-      "type": "player",
-      "playerId": "iPNuKioET2fdp1VrfCrRCM",
-      "name": "Player #0"
-    },
-    {
-      "type": "text",
-      "text": " gained "
-    },
-    {
-      "type": "text",
-      "text": "1 "
-    },
-    {
-      "type": "resource",
-      "resourceType": "BERRY"
-    },
-    {
-      "type": "text",
-      "text": "."
-    }
-  ],
-  [
-    {
-      "type": "entity",
-      "entityType": "card",
-      "card": "Chip Sweep"
-    },
-    {
-      "type": "text",
-      "text": ": "
-    },
-    {
-      "type": "player",
-      "playerId": "iPNuKioET2fdp1VrfCrRCM",
+      "playerId": "bejLkTDDiJsbpQczFJXAuz",
       "name": "Player #0"
     },
     {
@@ -483,7 +1787,7 @@
   [
     {
       "type": "player",
-      "playerId": "4SHQdW68GaFQvPgVPkMSkG",
+      "playerId": "uVMKLyzQbWbT1X87FQbmys",
       "name": "Player #0"
     },
     {
@@ -502,7 +1806,7 @@
     },
     {
       "type": "player",
-      "playerId": "4SHQdW68GaFQvPgVPkMSkG",
+      "playerId": "uVMKLyzQbWbT1X87FQbmys",
       "name": "Player #0"
     },
     {
@@ -529,7 +1833,7 @@
     },
     {
       "type": "player",
-      "playerId": "4SHQdW68GaFQvPgVPkMSkG",
+      "playerId": "uVMKLyzQbWbT1X87FQbmys",
       "name": "Player #0"
     },
     {
@@ -548,7 +1852,7 @@
     },
     {
       "type": "player",
-      "playerId": "4SHQdW68GaFQvPgVPkMSkG",
+      "playerId": "uVMKLyzQbWbT1X87FQbmys",
       "name": "Player #0"
     },
     {
@@ -576,7 +1880,7 @@
     },
     {
       "type": "player",
-      "playerId": "mB9154vGwqtm1GzYbVTkPB",
+      "playerId": "oJbgkBXo7vrPktYzDdGrSa",
       "name": "Player #0"
     },
     {
@@ -613,7 +1917,7 @@
     },
     {
       "type": "player",
-      "playerId": "mB9154vGwqtm1GzYbVTkPB",
+      "playerId": "oJbgkBXo7vrPktYzDdGrSa",
       "name": "Player #0"
     },
     {
@@ -645,7 +1949,7 @@
     },
     {
       "type": "player",
-      "playerId": "hjWHm9NnottdKibK6gbL2z",
+      "playerId": "uENscKhLrDcHg4ArTMsEpD",
       "name": "Player #0"
     },
     {
@@ -682,16 +1986,12 @@
     },
     {
       "type": "player",
-      "playerId": "hjWHm9NnottdKibK6gbL2z",
+      "playerId": "uENscKhLrDcHg4ArTMsEpD",
       "name": "Player #0"
     },
     {
       "type": "text",
       "text": " gained "
-    },
-    {
-      "type": "text",
-      "text": "1 "
     },
     {
       "type": "resource",
@@ -714,7 +2014,7 @@
     },
     {
       "type": "player",
-      "playerId": "hjWHm9NnottdKibK6gbL2z",
+      "playerId": "uENscKhLrDcHg4ArTMsEpD",
       "name": "Player #0"
     },
     {
@@ -731,7 +2031,7 @@
     },
     {
       "type": "player",
-      "playerId": "gyWQpJZCy5rUzdh2B54ZZk",
+      "playerId": "oavEvnG8stWnFr87stkBc5",
       "name": "Player #1"
     },
     {
@@ -742,7 +2042,7 @@
   [
     {
       "type": "player",
-      "playerId": "cmtLW3kb6kBKLDC3DDteBe",
+      "playerId": "x7V2SsHAiUdZmMabAFoo7A",
       "name": "Player #0"
     },
     {
@@ -762,7 +2062,7 @@
   [
     {
       "type": "player",
-      "playerId": "aykshxvkdZgd9fVHi3FZ8S",
+      "playerId": "pF2AqkJrWGuEKdnTFVNoGb",
       "name": "Player #0"
     },
     {
@@ -791,7 +2091,7 @@
     },
     {
       "type": "player",
-      "playerId": "aykshxvkdZgd9fVHi3FZ8S",
+      "playerId": "pF2AqkJrWGuEKdnTFVNoGb",
       "name": "Player #0"
     },
     {
@@ -810,7 +2110,7 @@
   [
     {
       "type": "player",
-      "playerId": "jQ2nqY5Wv1BqRvFAPVZNDJ",
+      "playerId": "wFzKfhoUStsyU98WABdzxf",
       "name": "Player #0"
     },
     {
@@ -839,7 +2139,7 @@
   [
     {
       "type": "player",
-      "playerId": "no6jVbxsma66DCrAzKSSEt",
+      "playerId": "vrCkqK6zn67m2Xnp1xmaJm",
       "name": "Player #0"
     },
     {
@@ -868,7 +2168,7 @@
     },
     {
       "type": "player",
-      "playerId": "oswpLQqVM96FBMxTrGR2Cg",
+      "playerId": "e5cR5JGcZ469v192ht5ZSx",
       "name": "Player #0"
     },
     {
@@ -895,7 +2195,7 @@
   [
     {
       "type": "player",
-      "playerId": "thwb9MWMZrt5awuHx35vD3",
+      "playerId": "5o4L7HS3C8BiDXu4Rv7yT6",
       "name": "Player #0"
     },
     {
@@ -933,7 +2233,7 @@
   [
     {
       "type": "player",
-      "playerId": "4bpm6dWikcfTTMKBqNSkKp",
+      "playerId": "1MCcB2iATQHTVB75GJp5PH",
       "name": "Player #0"
     },
     {
@@ -971,7 +2271,7 @@
   [
     {
       "type": "player",
-      "playerId": "oyF5rHyWjrSSjDuGP7Lwc7",
+      "playerId": "rGkxx1t2gD8N6uhTsSWkBC",
       "name": "Player #0"
     },
     {
@@ -990,36 +2290,8 @@
   ],
   [
     {
-      "type": "entity",
-      "entityType": "card",
-      "card": "Fairgrounds"
-    },
-    {
-      "type": "text",
-      "text": ": "
-    },
-    {
       "type": "player",
-      "playerId": "oyF5rHyWjrSSjDuGP7Lwc7",
-      "name": "Player #0"
-    },
-    {
-      "type": "text",
-      "text": " drew 2 "
-    },
-    {
-      "type": "symbol",
-      "symbol": "CARD"
-    },
-    {
-      "type": "text",
-      "text": "."
-    }
-  ],
-  [
-    {
-      "type": "player",
-      "playerId": "7WkvuQXMz1oJbYnFUAAuVL",
+      "playerId": "3tqDKDrr7ZEYXAgXC4BfVC",
       "name": "Player #0"
     },
     {
@@ -1034,44 +2306,6 @@
     {
       "type": "text",
       "text": "."
-    }
-  ],
-  [
-    {
-      "type": "entity",
-      "entityType": "card",
-      "card": "Fool"
-    },
-    {
-      "type": "text",
-      "text": ": "
-    },
-    {
-      "type": "player",
-      "playerId": "7WkvuQXMz1oJbYnFUAAuVL",
-      "name": "Player #0"
-    },
-    {
-      "type": "text",
-      "text": " added the "
-    },
-    {
-      "type": "entity",
-      "entityType": "card",
-      "card": "Fool"
-    },
-    {
-      "type": "text",
-      "text": " to "
-    },
-    {
-      "type": "player",
-      "playerId": "nEuvrzcLmYaQzQMjJAGXvZ",
-      "name": "Player #1"
-    },
-    {
-      "type": "text",
-      "text": "'s city."
     }
   ],
   [
@@ -1083,7 +2317,7 @@
   [
     {
       "type": "player",
-      "playerId": "exsSFJQdqG36mVD6aSmdTy",
+      "playerId": "uJbB8FooBrSmsRdB9xGjH5",
       "name": "Player #0"
     },
     {
@@ -1112,7 +2346,7 @@
     },
     {
       "type": "player",
-      "playerId": "exsSFJQdqG36mVD6aSmdTy",
+      "playerId": "uJbB8FooBrSmsRdB9xGjH5",
       "name": "Player #0"
     },
     {
@@ -1140,7 +2374,7 @@
     },
     {
       "type": "player",
-      "playerId": "nCXKoMf8rVgFzbtTcoHjgd",
+      "playerId": "6zMLXYvAzsaxF8SXfBkbwL",
       "name": "Player #0"
     },
     {
@@ -1159,7 +2393,7 @@
   [
     {
       "type": "player",
-      "playerId": "bQmLwckP4qY92yf5dfZRSD",
+      "playerId": "x8T9zfagppYFMmyeZvDv82",
       "name": "Player #0"
     },
     {
@@ -1188,7 +2422,7 @@
     },
     {
       "type": "player",
-      "playerId": "bQmLwckP4qY92yf5dfZRSD",
+      "playerId": "x8T9zfagppYFMmyeZvDv82",
       "name": "Player #0"
     },
     {
@@ -1207,7 +2441,7 @@
   [
     {
       "type": "player",
-      "playerId": "cS8EMMHEjbCnJTTW8uFPm6",
+      "playerId": "njBSBP2J2UTzaaFH1opf5v",
       "name": "Player #0"
     },
     {
@@ -1227,7 +2461,7 @@
   [
     {
       "type": "player",
-      "playerId": "c9LNNitcndFMNRte1GVUNG",
+      "playerId": "pCnRxoutowoUUWgQ3zWtbX",
       "name": "Player #0"
     },
     {
@@ -1247,7 +2481,7 @@
   [
     {
       "type": "player",
-      "playerId": "cJF93GvGpaTjFgrZVtjWtk",
+      "playerId": "hRxdYh5553kmJjks8k8XJ5",
       "name": "Player #0"
     },
     {
@@ -1276,7 +2510,7 @@
     },
     {
       "type": "player",
-      "playerId": "cJF93GvGpaTjFgrZVtjWtk",
+      "playerId": "hRxdYh5553kmJjks8k8XJ5",
       "name": "Player #0"
     },
     {
@@ -1305,7 +2539,7 @@
     },
     {
       "type": "player",
-      "playerId": "cJF93GvGpaTjFgrZVtjWtk",
+      "playerId": "hRxdYh5553kmJjks8k8XJ5",
       "name": "Player #0"
     },
     {
@@ -1334,7 +2568,7 @@
     },
     {
       "type": "player",
-      "playerId": "6ntraySk3KDvatqjyVsYMb",
+      "playerId": "2udT6u44GDC4wKJiumo67m",
       "name": "Player #0"
     },
     {
@@ -1363,7 +2597,7 @@
     },
     {
       "type": "player",
-      "playerId": "6ntraySk3KDvatqjyVsYMb",
+      "playerId": "2udT6u44GDC4wKJiumo67m",
       "name": "Player #0"
     },
     {
@@ -1383,7 +2617,7 @@
   [
     {
       "type": "player",
-      "playerId": "pkLB8xWmmZnLMcMX15txZS",
+      "playerId": "6NMqTaQGAUkhqzdNx8iybn",
       "name": "Player #1"
     },
     {
@@ -1400,7 +2634,7 @@
     },
     {
       "type": "player",
-      "playerId": "fauB4ETC7vPz8yUNzSHTiQ",
+      "playerId": "mFEoJa4nzJAVhUuHrqgsde",
       "name": "Player #0"
     },
     {
@@ -1429,7 +2663,7 @@
     },
     {
       "type": "player",
-      "playerId": "dZHGdyYBne2QHE7RQtYEFp",
+      "playerId": "giyEBwsdaRaaoZt69yUFxs",
       "name": "Player #0"
     },
     {
@@ -1458,7 +2692,7 @@
     },
     {
       "type": "player",
-      "playerId": "dZHGdyYBne2QHE7RQtYEFp",
+      "playerId": "giyEBwsdaRaaoZt69yUFxs",
       "name": "Player #0"
     },
     {
@@ -1478,7 +2712,7 @@
   [
     {
       "type": "player",
-      "playerId": "ewcb7tnmFm1K1NxAarmya2",
+      "playerId": "sMmi82yqGwHKfAmxvrG6bb",
       "name": "Player #0"
     },
     {
@@ -1507,7 +2741,7 @@
   [
     {
       "type": "player",
-      "playerId": "7xGCWjQ61k52E4zJgBRBxF",
+      "playerId": "ajLkphC7Wf7XKDScTURLpT",
       "name": "Player #0"
     },
     {
@@ -1536,7 +2770,7 @@
   [
     {
       "type": "player",
-      "playerId": "dvZfczgn8tj2Xpj3XUccu5",
+      "playerId": "pxVrb8iF296pTB9rokgD2f",
       "name": "Player #0"
     },
     {
@@ -1565,7 +2799,7 @@
     },
     {
       "type": "player",
-      "playerId": "dvZfczgn8tj2Xpj3XUccu5",
+      "playerId": "pxVrb8iF296pTB9rokgD2f",
       "name": "Player #0"
     },
     {
@@ -1594,7 +2828,7 @@
     },
     {
       "type": "player",
-      "playerId": "6i5mhpun8sFNcKTtzccRKv",
+      "playerId": "eMBT7X11svDfMkBpUGfEjm",
       "name": "Player #0"
     },
     {
@@ -1623,7 +2857,7 @@
     },
     {
       "type": "player",
-      "playerId": "xbuBPR42xryKa3HS5MtBVc",
+      "playerId": "pDCEM7bxQiyLNLVEmMRAu1",
       "name": "Player #0"
     },
     {
@@ -1652,7 +2886,7 @@
     },
     {
       "type": "player",
-      "playerId": "xbuBPR42xryKa3HS5MtBVc",
+      "playerId": "pDCEM7bxQiyLNLVEmMRAu1",
       "name": "Player #0"
     },
     {
@@ -1679,7 +2913,7 @@
   [
     {
       "type": "player",
-      "playerId": "65QvqRE1gPa2V23LZeUHJv",
+      "playerId": "55FWA5ZKrcBWbaq8XqwXzv",
       "name": "Player #0"
     },
     {
@@ -1708,7 +2942,7 @@
     },
     {
       "type": "player",
-      "playerId": "65QvqRE1gPa2V23LZeUHJv",
+      "playerId": "55FWA5ZKrcBWbaq8XqwXzv",
       "name": "Player #0"
     },
     {
@@ -1726,7 +2960,7 @@
     },
     {
       "type": "player",
-      "playerId": "p6Ec6gUxrYeiQjdwSHjAHY",
+      "playerId": "vpsPSdbxN95Us6jCwCTh5h",
       "name": "Player #1"
     },
     {
@@ -1746,7 +2980,7 @@
     },
     {
       "type": "player",
-      "playerId": "vaoWsWL9eEjtgDpjWwbnct",
+      "playerId": "4ce6KUNHdHw6gKuZdwJFsk",
       "name": "Player #0"
     },
     {
@@ -1764,7 +2998,7 @@
     },
     {
       "type": "player",
-      "playerId": "icP6EtZh6Dsi5Weey4wvPv",
+      "playerId": "rGhaZpm9WQujq5mcKe36g1",
       "name": "Player #1"
     },
     {
@@ -1784,45 +3018,7 @@
     },
     {
       "type": "player",
-      "playerId": "kh265rEWerMtAKtjDtV7Wm",
-      "name": "Player #0"
-    },
-    {
-      "type": "text",
-      "text": " activated "
-    },
-    {
-      "type": "entity",
-      "entityType": "card",
-      "card": "Farm"
-    },
-    {
-      "type": "text",
-      "text": " from "
-    },
-    {
-      "type": "player",
-      "playerId": "gFKDTaNCHR1MCG7yiFhU4o",
-      "name": "Player #1"
-    },
-    {
-      "type": "text",
-      "text": "'s city."
-    }
-  ],
-  [
-    {
-      "type": "entity",
-      "entityType": "card",
-      "card": "Miner Mole"
-    },
-    {
-      "type": "text",
-      "text": ": "
-    },
-    {
-      "type": "player",
-      "playerId": "mkhX27muorUz3pfjBQ4M7J",
+      "playerId": "wXaBfSqjhWQSXPpfg8B1RD",
       "name": "Player #0"
     },
     {
@@ -1840,7 +3036,7 @@
     },
     {
       "type": "player",
-      "playerId": "mkhX27muorUz3pfjBQ4M7J",
+      "playerId": "wXaBfSqjhWQSXPpfg8B1RD",
       "name": "Player #0"
     },
     {
@@ -1851,7 +3047,7 @@
   [
     {
       "type": "player",
-      "playerId": "9urhVAGMEgVqHZhS159evw",
+      "playerId": "tj7Epz3QBQNUarCnU4AcCS",
       "name": "Player #0"
     },
     {
@@ -1880,7 +3076,7 @@
     },
     {
       "type": "player",
-      "playerId": "9urhVAGMEgVqHZhS159evw",
+      "playerId": "tj7Epz3QBQNUarCnU4AcCS",
       "name": "Player #0"
     },
     {
@@ -1901,7 +3097,7 @@
     },
     {
       "type": "player",
-      "playerId": "npYqMENXRsB3fnLtMx74Ga",
+      "playerId": "9WfSbynhC6njyyLBqR5d6F",
       "name": "Player #1"
     },
     {
@@ -1920,7 +3116,7 @@
   [
     {
       "type": "player",
-      "playerId": "jQP2ae46dBBvzRENAF2LCj",
+      "playerId": "dUHP5Kb2w4YTy8sa4z951s",
       "name": "Player #0"
     },
     {
@@ -1949,7 +3145,7 @@
     },
     {
       "type": "player",
-      "playerId": "gGrFwU5yXMzFdusE5mRFEb",
+      "playerId": "cpwFsxBRF9hum342TUF9aR",
       "name": "Player #0"
     },
     {
@@ -1966,7 +3162,7 @@
     },
     {
       "type": "player",
-      "playerId": "sxRR5kTcvVpT3QV731pJzE",
+      "playerId": "92HgApgNSR7Y7oa5KZXgSA",
       "name": "Player #1"
     },
     {
@@ -1985,7 +3181,7 @@
   [
     {
       "type": "player",
-      "playerId": "hp6s21edoA6ynXeXfAoDiY",
+      "playerId": "u5Kdu85B2aNHukMQT9XVYr",
       "name": "Player #0"
     },
     {
@@ -2014,7 +3210,7 @@
     },
     {
       "type": "player",
-      "playerId": "4sKbXjjfGWMEKUWhuhPwSG",
+      "playerId": "sSm6FUr5kyGJET5bybUKGH",
       "name": "Player #0"
     },
     {
@@ -2058,7 +3254,7 @@
     },
     {
       "type": "player",
-      "playerId": "4sKbXjjfGWMEKUWhuhPwSG",
+      "playerId": "sSm6FUr5kyGJET5bybUKGH",
       "name": "Player #0"
     },
     {
@@ -2081,7 +3277,7 @@
   [
     {
       "type": "player",
-      "playerId": "3M5tGhBMPKTmavbXN9vK3U",
+      "playerId": "3uLktBaC2wCAGBFxmQJxvf",
       "name": "Player #0"
     },
     {
@@ -2110,7 +3306,7 @@
     },
     {
       "type": "player",
-      "playerId": "3M5tGhBMPKTmavbXN9vK3U",
+      "playerId": "3uLktBaC2wCAGBFxmQJxvf",
       "name": "Player #0"
     },
     {
@@ -2148,7 +3344,7 @@
     },
     {
       "type": "player",
-      "playerId": "3M5tGhBMPKTmavbXN9vK3U",
+      "playerId": "3uLktBaC2wCAGBFxmQJxvf",
       "name": "Player #0"
     },
     {
@@ -2177,7 +3373,7 @@
     },
     {
       "type": "player",
-      "playerId": "sDWSBPPy5vV6ZTJAxrabUn",
+      "playerId": "d5sja2DMJWqfxxmRzDseXE",
       "name": "Player #0"
     },
     {
@@ -2215,7 +3411,7 @@
     },
     {
       "type": "player",
-      "playerId": "sDWSBPPy5vV6ZTJAxrabUn",
+      "playerId": "d5sja2DMJWqfxxmRzDseXE",
       "name": "Player #0"
     },
     {
@@ -2235,7 +3431,7 @@
     },
     {
       "type": "player",
-      "playerId": "f2MZdRaPuEnvQt3LheH58y",
+      "playerId": "wqD5yVQ9PuBUJFbd6xgzCZ",
       "name": "Player #0"
     },
     {
@@ -2263,7 +3459,7 @@
     },
     {
       "type": "player",
-      "playerId": "f2MZdRaPuEnvQt3LheH58y",
+      "playerId": "wqD5yVQ9PuBUJFbd6xgzCZ",
       "name": "Player #0"
     },
     {
@@ -2301,7 +3497,7 @@
     },
     {
       "type": "player",
-      "playerId": "f2MZdRaPuEnvQt3LheH58y",
+      "playerId": "wqD5yVQ9PuBUJFbd6xgzCZ",
       "name": "Player #0"
     },
     {
@@ -2322,34 +3518,6 @@
     {
       "type": "entity",
       "entityType": "card",
-      "card": "Wanderer"
-    },
-    {
-      "type": "text",
-      "text": ": "
-    },
-    {
-      "type": "player",
-      "playerId": "f2MZdRaPuEnvQt3LheH58y",
-      "name": "Player #0"
-    },
-    {
-      "type": "text",
-      "text": " drew 3 "
-    },
-    {
-      "type": "symbol",
-      "symbol": "CARD"
-    },
-    {
-      "type": "text",
-      "text": "."
-    }
-  ],
-  [
-    {
-      "type": "entity",
-      "entityType": "card",
       "card": "Postal Pigeon"
     },
     {
@@ -2358,7 +3526,7 @@
     },
     {
       "type": "player",
-      "playerId": "hSSvGLVD2Fr6MGn8gHj4DG",
+      "playerId": "dcRdctnioSeCzTcCXR4aBx",
       "name": "Player #0"
     },
     {
@@ -2387,7 +3555,7 @@
     },
     {
       "type": "player",
-      "playerId": "hSSvGLVD2Fr6MGn8gHj4DG",
+      "playerId": "dcRdctnioSeCzTcCXR4aBx",
       "name": "Player #0"
     },
     {
@@ -2406,7 +3574,7 @@
   [
     {
       "type": "player",
-      "playerId": "bxmpYaAxKxaXBnrbsJCuK4",
+      "playerId": "9HVDA6hbG1jPoCJo8oRLMs",
       "name": "Player #0"
     },
     {
@@ -2435,7 +3603,7 @@
     },
     {
       "type": "player",
-      "playerId": "bxmpYaAxKxaXBnrbsJCuK4",
+      "playerId": "9HVDA6hbG1jPoCJo8oRLMs",
       "name": "Player #0"
     },
     {
@@ -2444,7 +3612,7 @@
     },
     {
       "type": "player",
-      "playerId": "kQ97Tt1ur5zAMxBrmpg1KV",
+      "playerId": "2LJG2HDAg7FKyufVCZfwPx",
       "name": "Player #1"
     },
     {
@@ -2472,7 +3640,7 @@
     },
     {
       "type": "player",
-      "playerId": "bxmpYaAxKxaXBnrbsJCuK4",
+      "playerId": "9HVDA6hbG1jPoCJo8oRLMs",
       "name": "Player #0"
     },
     {
@@ -2499,7 +3667,7 @@
   [
     {
       "type": "player",
-      "playerId": "72WQZyoJeELb2JCLocyGG5",
+      "playerId": "4YhwQmyyXmpHjrpDNHt3MS",
       "name": "Player #0"
     },
     {
@@ -2528,7 +3696,7 @@
     },
     {
       "type": "player",
-      "playerId": "72WQZyoJeELb2JCLocyGG5",
+      "playerId": "4YhwQmyyXmpHjrpDNHt3MS",
       "name": "Player #0"
     },
     {
@@ -2557,7 +3725,7 @@
     },
     {
       "type": "player",
-      "playerId": "72WQZyoJeELb2JCLocyGG5",
+      "playerId": "4YhwQmyyXmpHjrpDNHt3MS",
       "name": "Player #0"
     },
     {
@@ -2586,7 +3754,7 @@
     },
     {
       "type": "player",
-      "playerId": "kgwzXehTuT3nYfZ81r9zQ3",
+      "playerId": "ccJrnxzDNHdcxdmHmTwMn8",
       "name": "Player #0"
     },
     {
@@ -2615,7 +3783,7 @@
     },
     {
       "type": "player",
-      "playerId": "jFqiBmTXVvXmzX4gmo1Pox",
+      "playerId": "qMH2MrC6A9PrrzvSH8CR9y",
       "name": "Player #0"
     },
     {
@@ -2644,7 +3812,7 @@
     },
     {
       "type": "player",
-      "playerId": "d5ST78pQ5tuJ4P5qbueML5",
+      "playerId": "fFpChg6occLAdddoFoEQe9",
       "name": "Player #0"
     },
     {
@@ -2673,7 +3841,7 @@
     },
     {
       "type": "player",
-      "playerId": "da8u9cLuDZE7KWCk3Hc5Sf",
+      "playerId": "5cny9AEgg2ZugXrH9MrDLH",
       "name": "Player #0"
     },
     {
@@ -2692,45 +3860,8 @@
   ],
   [
     {
-      "type": "entity",
-      "entityType": "card",
-      "card": "Ruins"
-    },
-    {
-      "type": "text",
-      "text": ": "
-    },
-    {
       "type": "player",
-      "playerId": "da8u9cLuDZE7KWCk3Hc5Sf",
-      "name": "Player #0"
-    },
-    {
-      "type": "text",
-      "text": " ruined "
-    },
-    {
-      "type": "entity",
-      "entityType": "card",
-      "card": "Farm"
-    },
-    {
-      "type": "text",
-      "text": " and drew 2 "
-    },
-    {
-      "type": "symbol",
-      "symbol": "CARD"
-    },
-    {
-      "type": "text",
-      "text": "."
-    }
-  ],
-  [
-    {
-      "type": "player",
-      "playerId": "uvVx62TdFw32YyQnZt6Lor",
+      "playerId": "s56Eg4HNYHC2zryKHCLTE9",
       "name": "Player #0"
     },
     {
@@ -2749,66 +3880,8 @@
   ],
   [
     {
-      "type": "entity",
-      "entityType": "card",
-      "card": "Ranger"
-    },
-    {
-      "type": "text",
-      "text": ": "
-    },
-    {
       "type": "player",
-      "playerId": "2tqqcaM9sJYHpkv99ZDNPV",
-      "name": "Player #0"
-    },
-    {
-      "type": "text",
-      "text": " moved deployed worker on "
-    },
-    {
-      "type": "entity",
-      "entityType": "location",
-      "location": "ONE_STONE"
-    },
-    {
-      "type": "text",
-      "text": " to "
-    },
-    {
-      "type": "entity",
-      "entityType": "location",
-      "location": "TWO_TWIGS_AND_ONE_CARD"
-    },
-    {
-      "type": "text",
-      "text": "."
-    }
-  ],
-  [
-    {
-      "type": "player",
-      "playerId": "2tqqcaM9sJYHpkv99ZDNPV",
-      "name": "Player #0"
-    },
-    {
-      "type": "text",
-      "text": " place a worker on "
-    },
-    {
-      "type": "entity",
-      "entityType": "location",
-      "location": "TWO_TWIGS_AND_ONE_CARD"
-    },
-    {
-      "type": "text",
-      "text": "."
-    }
-  ],
-  [
-    {
-      "type": "player",
-      "playerId": "1i2qUXGaaRAc1YtRv8NnrK",
+      "playerId": "hbL2aAeEBfSqbb4FDrMES3",
       "name": "Player #0"
     },
     {
@@ -2837,7 +3910,7 @@
     },
     {
       "type": "player",
-      "playerId": "1i2qUXGaaRAc1YtRv8NnrK",
+      "playerId": "hbL2aAeEBfSqbb4FDrMES3",
       "name": "Player #0"
     },
     {
@@ -2860,7 +3933,7 @@
   [
     {
       "type": "player",
-      "playerId": "eq7sgBoZysKC1nBgZRNsqf",
+      "playerId": "3j5eM7EMiExwq2B5eJHQtX",
       "name": "Player #0"
     },
     {
@@ -2880,7 +3953,7 @@
   [
     {
       "type": "player",
-      "playerId": "cNwzPHe2eJaPhLjDTMJTmn",
+      "playerId": "og9SpcTHZpakHQohGuHEMe",
       "name": "Player #0"
     },
     {
@@ -2909,7 +3982,7 @@
     },
     {
       "type": "player",
-      "playerId": "cNwzPHe2eJaPhLjDTMJTmn",
+      "playerId": "og9SpcTHZpakHQohGuHEMe",
       "name": "Player #0"
     },
     {
@@ -2918,7 +3991,7 @@
     },
     {
       "type": "player",
-      "playerId": "eDxUTEYTNhX7grUyKDk9YL",
+      "playerId": "qQJ2H1sm3KZHWaeFDwftgp",
       "name": "Player #1"
     },
     {
@@ -2950,7 +4023,7 @@
     },
     {
       "type": "player",
-      "playerId": "sWWfZEjtZMsbEqpKbT6aMJ",
+      "playerId": "wbJkY8xtsCMH2m1m3i1BPv",
       "name": "Player #0"
     },
     {
@@ -2959,7 +4032,7 @@
     },
     {
       "type": "player",
-      "playerId": "2Qt5MFL29kVEyJ6xGdLPQd",
+      "playerId": "affESf8CbZRtZgyTCyR2Ea",
       "name": "Player #1"
     },
     {
@@ -3003,7 +4076,7 @@
     },
     {
       "type": "player",
-      "playerId": "kkZFA1VxmSGrrbMYpBiwwj",
+      "playerId": "qZA22xi5KLbUwcTXkkoySt",
       "name": "Player #0"
     },
     {
@@ -3032,7 +4105,7 @@
     },
     {
       "type": "player",
-      "playerId": "kkZFA1VxmSGrrbMYpBiwwj",
+      "playerId": "qZA22xi5KLbUwcTXkkoySt",
       "name": "Player #0"
     },
     {
@@ -3051,7 +4124,7 @@
   [
     {
       "type": "player",
-      "playerId": "fydw7sT6DcHBv2s2h8MTfN",
+      "playerId": "unQuYHGcZM468tNe53BGSY",
       "name": "Player #0"
     },
     {
@@ -3071,7 +4144,7 @@
   [
     {
       "type": "player",
-      "playerId": "88ZMSk8GEuBpMS9qLUQPzV",
+      "playerId": "cbpRwvgMV3oAiQNDazKUa8",
       "name": "Player #0"
     },
     {
@@ -3100,7 +4173,7 @@
     },
     {
       "type": "player",
-      "playerId": "88ZMSk8GEuBpMS9qLUQPzV",
+      "playerId": "cbpRwvgMV3oAiQNDazKUa8",
       "name": "Player #0"
     },
     {
@@ -3119,7 +4192,7 @@
   [
     {
       "type": "player",
-      "playerId": "4MeR5rMmFjUoGJPaSR625i",
+      "playerId": "xfyZRfoXCS41b64TJ5HccQ",
       "name": "Player #0"
     },
     {
@@ -3148,7 +4221,7 @@
     },
     {
       "type": "player",
-      "playerId": "4MeR5rMmFjUoGJPaSR625i",
+      "playerId": "xfyZRfoXCS41b64TJ5HccQ",
       "name": "Player #0"
     },
     {
@@ -3180,7 +4253,7 @@
     },
     {
       "type": "player",
-      "playerId": "veSHZ8y6Ur2Puws9ApKnei",
+      "playerId": "w4dEwnpWgFoLQy7bzEqm1e",
       "name": "Player #0"
     },
     {
@@ -3200,7 +4273,7 @@
   [
     {
       "type": "player",
-      "playerId": "bECKhGPjAgsskumfVerfuZ",
+      "playerId": "5Xw2ViA5XkDjf4jna3swtL",
       "name": "Player #0"
     },
     {
@@ -3220,7 +4293,7 @@
   [
     {
       "type": "player",
-      "playerId": "owrHxiM97oZT8bbCfsSJwD",
+      "playerId": "4BJ932AFqYFGwB9o2vr9T4",
       "name": "Player #0"
     },
     {
@@ -3249,7 +4322,7 @@
     },
     {
       "type": "player",
-      "playerId": "owrHxiM97oZT8bbCfsSJwD",
+      "playerId": "4BJ932AFqYFGwB9o2vr9T4",
       "name": "Player #0"
     },
     {
@@ -3272,7 +4345,7 @@
   [
     {
       "type": "player",
-      "playerId": "ovGY2X34aWmLwEym4eYusr",
+      "playerId": "fJFYRHGMSY72aQfAEy4jNB",
       "name": "Player #0"
     },
     {
@@ -3301,7 +4374,7 @@
     },
     {
       "type": "player",
-      "playerId": "ovGY2X34aWmLwEym4eYusr",
+      "playerId": "fJFYRHGMSY72aQfAEy4jNB",
       "name": "Player #0"
     },
     {
@@ -3348,7 +4421,7 @@
     },
     {
       "type": "player",
-      "playerId": "ovGY2X34aWmLwEym4eYusr",
+      "playerId": "fJFYRHGMSY72aQfAEy4jNB",
       "name": "Player #0"
     },
     {
@@ -3368,7 +4441,7 @@
   [
     {
       "type": "player",
-      "playerId": "ihcGQ2Hh9cPKfpb9tVWA2m",
+      "playerId": "stJkDV3XXA76u2BGBCBhfL",
       "name": "Player #0"
     },
     {
@@ -3397,7 +4470,7 @@
     },
     {
       "type": "player",
-      "playerId": "ihcGQ2Hh9cPKfpb9tVWA2m",
+      "playerId": "stJkDV3XXA76u2BGBCBhfL",
       "name": "Player #0"
     },
     {
@@ -3412,10 +4485,6 @@
     {
       "type": "text",
       "text": " from their city and gained "
-    },
-    {
-      "type": "text",
-      "text": "1 "
     },
     {
       "type": "resource",
@@ -3446,7 +4515,7 @@
     },
     {
       "type": "player",
-      "playerId": "8NRZnwJexpfqCbjaAFUcWt",
+      "playerId": "8x4kgddTwy7JshvAAMdeuq",
       "name": "Player #0"
     },
     {
@@ -3463,12 +4532,8 @@
       "text": " from their city and gained "
     },
     {
-      "type": "text",
-      "text": "1 "
-    },
-    {
       "type": "resource",
-      "resourceType": "TWIG"
+      "resourceType": "BERRY"
     },
     {
       "type": "text",
@@ -3495,7 +4560,7 @@
     },
     {
       "type": "player",
-      "playerId": "7EBcNZP6hhvLdkLD5SV7sQ",
+      "playerId": "sT96DKgGbneCMB8yocVL15",
       "name": "Player #0"
     },
     {
@@ -3512,10 +4577,6 @@
       "text": " from their city and gained "
     },
     {
-      "type": "text",
-      "text": "1 "
-    },
-    {
       "type": "resource",
       "resourceType": "TWIG"
     },
@@ -3544,7 +4605,7 @@
     },
     {
       "type": "player",
-      "playerId": "keCcwDNxF7dyZoNN7z95Zu",
+      "playerId": "umCrCjxizuRvzcbvEHFLpU",
       "name": "Player #0"
     },
     {
@@ -3559,10 +4620,6 @@
     {
       "type": "text",
       "text": " from their city and gained "
-    },
-    {
-      "type": "text",
-      "text": "1 "
     },
     {
       "type": "resource",
@@ -3584,7 +4641,7 @@
   [
     {
       "type": "player",
-      "playerId": "2Zc1kK2WuQjGxxcppRniBn",
+      "playerId": "vaGDPhdu1urgS1SaP297QR",
       "name": "Player #0"
     },
     {
@@ -3604,7 +4661,7 @@
   [
     {
       "type": "player",
-      "playerId": "8zATN3oS7fH6mmEZaGVHp4",
+      "playerId": "rpq7dEVhdyqiAyij4Y1rh5",
       "name": "Player #0"
     },
     {
@@ -3633,7 +4690,7 @@
     },
     {
       "type": "player",
-      "playerId": "1ighamkhSmZWARKccGHH5y",
+      "playerId": "fVPnuRXyVxmUqa2Gqyfq5m",
       "name": "Player #0"
     },
     {
@@ -3659,8 +4716,56 @@
   ],
   [
     {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Bridge"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
       "type": "player",
-      "playerId": "7q8NV9CokUpR3Pv2b4oYxW",
+      "playerId": "9chtz1X8Vu38KEbY7EKH3j",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " drew ${PEARL * 2} "
+    },
+    {
+      "type": "symbol",
+      "symbol": "CARD"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "5bpakigZsSp4Jm2dKq9E7c",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Bridge"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "gUGQ5gpE723FXnTNT7uHF1",
       "name": "Player #0"
     },
     {
@@ -3670,7 +4775,7 @@
     {
       "type": "entity",
       "entityType": "event",
-      "event": "GRADUATION OF SCHOLARS"
+      "event": "Graduation of Scholars"
     },
     {
       "type": "text",
@@ -3681,7 +4786,7 @@
     {
       "type": "entity",
       "entityType": "event",
-      "event": "GRADUATION OF SCHOLARS"
+      "event": "Graduation of Scholars"
     },
     {
       "type": "text",
@@ -3689,7 +4794,7 @@
     },
     {
       "type": "player",
-      "playerId": "7q8NV9CokUpR3Pv2b4oYxW",
+      "playerId": "gUGQ5gpE723FXnTNT7uHF1",
       "name": "Player #0"
     },
     {
@@ -3708,7 +4813,7 @@
   [
     {
       "type": "player",
-      "playerId": "pxDk8drUS5AqKCUnngMzTY",
+      "playerId": "3b4XCKj89YdXfPYRZxddqK",
       "name": "Player #0"
     },
     {
@@ -3718,7 +4823,7 @@
     {
       "type": "entity",
       "entityType": "event",
-      "event": "CROAK WART CURE"
+      "event": "Croak Wart Cure"
     },
     {
       "type": "text",
@@ -3729,7 +4834,7 @@
     {
       "type": "entity",
       "entityType": "event",
-      "event": "CROAK WART CURE"
+      "event": "Croak Wart Cure"
     },
     {
       "type": "text",
@@ -3737,7 +4842,7 @@
     },
     {
       "type": "player",
-      "playerId": "pxDk8drUS5AqKCUnngMzTY",
+      "playerId": "3b4XCKj89YdXfPYRZxddqK",
       "name": "Player #0"
     },
     {
@@ -3757,7 +4862,7 @@
     {
       "type": "entity",
       "entityType": "event",
-      "event": "CROAK WART CURE"
+      "event": "Croak Wart Cure"
     },
     {
       "type": "text",
@@ -3765,7 +4870,7 @@
     },
     {
       "type": "player",
-      "playerId": "pxDk8drUS5AqKCUnngMzTY",
+      "playerId": "3b4XCKj89YdXfPYRZxddqK",
       "name": "Player #0"
     },
     {
@@ -3794,7 +4899,7 @@
   [
     {
       "type": "player",
-      "playerId": "fzbFr4qH4V7XjqqFGDnb1N",
+      "playerId": "qei1rGVijNyBtzapMHvfE9",
       "name": "Player #0"
     },
     {
@@ -3804,7 +4909,7 @@
     {
       "type": "entity",
       "entityType": "event",
-      "event": "CAPTURE OF THE ACORN THIEVES"
+      "event": "Capture of the Acorn Thieves"
     },
     {
       "type": "text",
@@ -3815,7 +4920,7 @@
     {
       "type": "entity",
       "entityType": "event",
-      "event": "CAPTURE OF THE ACORN THIEVES"
+      "event": "Capture of the Acorn Thieves"
     },
     {
       "type": "text",
@@ -3823,7 +4928,7 @@
     },
     {
       "type": "player",
-      "playerId": "fzbFr4qH4V7XjqqFGDnb1N",
+      "playerId": "qei1rGVijNyBtzapMHvfE9",
       "name": "Player #0"
     },
     {
@@ -3860,7 +4965,7 @@
   [
     {
       "type": "player",
-      "playerId": "xkWv9Cqux8UcCZB9BJuxP2",
+      "playerId": "wKPETUz8Gj7WaRGy4b6kGB",
       "name": "Player #0"
     },
     {
@@ -3870,7 +4975,7 @@
     {
       "type": "entity",
       "entityType": "event",
-      "event": "AN EVENING OF FIREWORKS"
+      "event": "An Evening of Fireworks"
     },
     {
       "type": "text",
@@ -3881,7 +4986,7 @@
     {
       "type": "entity",
       "entityType": "event",
-      "event": "AN EVENING OF FIREWORKS"
+      "event": "An Evening of Fireworks"
     },
     {
       "type": "text",
@@ -3889,7 +4994,7 @@
     },
     {
       "type": "player",
-      "playerId": "xkWv9Cqux8UcCZB9BJuxP2",
+      "playerId": "wKPETUz8Gj7WaRGy4b6kGB",
       "name": "Player #0"
     },
     {
@@ -3916,7 +5021,7 @@
   [
     {
       "type": "player",
-      "playerId": "hi1ph6StrbopzrCkL61mT3",
+      "playerId": "nmoTHTyE7qYoSdTZJ2oKMa",
       "name": "Player #0"
     },
     {
@@ -3926,7 +5031,7 @@
     {
       "type": "entity",
       "entityType": "event",
-      "event": "PERFORMER IN RESIDENCE"
+      "event": "Performer in Residence"
     },
     {
       "type": "text",
@@ -3937,7 +5042,7 @@
     {
       "type": "entity",
       "entityType": "event",
-      "event": "PERFORMER IN RESIDENCE"
+      "event": "Performer in Residence"
     },
     {
       "type": "text",
@@ -3945,7 +5050,7 @@
     },
     {
       "type": "player",
-      "playerId": "hi1ph6StrbopzrCkL61mT3",
+      "playerId": "nmoTHTyE7qYoSdTZJ2oKMa",
       "name": "Player #0"
     },
     {
@@ -3972,7 +5077,7 @@
   [
     {
       "type": "player",
-      "playerId": "d6DEjyo28m8BiyPu8VaEiY",
+      "playerId": "gVoq7NKpyuzRW4DJaJy3rT",
       "name": "Player #0"
     },
     {
@@ -3982,7 +5087,7 @@
     {
       "type": "entity",
       "entityType": "event",
-      "event": "UNDER NEW MANAGEMENT"
+      "event": "Under New Management"
     },
     {
       "type": "text",
@@ -3993,7 +5098,7 @@
     {
       "type": "entity",
       "entityType": "event",
-      "event": "UNDER NEW MANAGEMENT"
+      "event": "Under New Management"
     },
     {
       "type": "text",
@@ -4001,7 +5106,7 @@
     },
     {
       "type": "player",
-      "playerId": "d6DEjyo28m8BiyPu8VaEiY",
+      "playerId": "gVoq7NKpyuzRW4DJaJy3rT",
       "name": "Player #0"
     },
     {
@@ -4049,7 +5154,7 @@
     {
       "type": "entity",
       "entityType": "event",
-      "event": "UNDER NEW MANAGEMENT"
+      "event": "Under New Management"
     },
     {
       "type": "text",
@@ -4057,7 +5162,7 @@
     },
     {
       "type": "player",
-      "playerId": "9jQXWc3o99hKtVKU8QfWpx",
+      "playerId": "wUPUeZXvYV7bgJvFGohydS",
       "name": "Player #0"
     },
     {
@@ -4072,7 +5177,7 @@
   [
     {
       "type": "player",
-      "playerId": "dhWtGkdbkcCtM91VWYKqcU",
+      "playerId": "jjAC2ffA15Q7CCq2a6SAoZ",
       "name": "Player #0"
     },
     {
@@ -4082,7 +5187,7 @@
     {
       "type": "entity",
       "entityType": "event",
-      "event": "PRISTINE CHAPEL CEILING"
+      "event": "Pristine Chapel Ceiling"
     },
     {
       "type": "text",
@@ -4093,7 +5198,7 @@
     {
       "type": "entity",
       "entityType": "event",
-      "event": "PRISTINE CHAPEL CEILING"
+      "event": "Pristine Chapel Ceiling"
     },
     {
       "type": "text",
@@ -4101,7 +5206,7 @@
     },
     {
       "type": "player",
-      "playerId": "dhWtGkdbkcCtM91VWYKqcU",
+      "playerId": "jjAC2ffA15Q7CCq2a6SAoZ",
       "name": "Player #0"
     },
     {
@@ -4121,7 +5226,7 @@
     {
       "type": "entity",
       "entityType": "event",
-      "event": "PRISTINE CHAPEL CEILING"
+      "event": "Pristine Chapel Ceiling"
     },
     {
       "type": "text",
@@ -4129,7 +5234,7 @@
     },
     {
       "type": "player",
-      "playerId": "dhWtGkdbkcCtM91VWYKqcU",
+      "playerId": "jjAC2ffA15Q7CCq2a6SAoZ",
       "name": "Player #0"
     },
     {
@@ -4165,7 +5270,7 @@
     {
       "type": "entity",
       "entityType": "event",
-      "event": "PRISTINE CHAPEL CEILING"
+      "event": "Pristine Chapel Ceiling"
     },
     {
       "type": "text",
@@ -4173,7 +5278,7 @@
     },
     {
       "type": "player",
-      "playerId": "cdcFK1c1ug3W36H27Np3cy",
+      "playerId": "eAed39Cmz7wGeEAN3VnD2x",
       "name": "Player #0"
     },
     {
@@ -4192,7 +5297,7 @@
   [
     {
       "type": "player",
-      "playerId": "2pqvCjASWYBXvKDpJ9ddrg",
+      "playerId": "kK28a5S17fzJk3NWVs2aVz",
       "name": "Player #0"
     },
     {
@@ -4202,7 +5307,7 @@
     {
       "type": "entity",
       "entityType": "event",
-      "event": "ANCIENT SCROLLS DISCOVERED"
+      "event": "Ancient Scrolls Discovered"
     },
     {
       "type": "text",
@@ -4213,7 +5318,7 @@
     {
       "type": "entity",
       "entityType": "event",
-      "event": "ANCIENT SCROLLS DISCOVERED"
+      "event": "Ancient Scrolls Discovered"
     },
     {
       "type": "text",
@@ -4221,7 +5326,7 @@
     },
     {
       "type": "player",
-      "playerId": "2pqvCjASWYBXvKDpJ9ddrg",
+      "playerId": "kK28a5S17fzJk3NWVs2aVz",
       "name": "Player #0"
     },
     {
@@ -4278,7 +5383,7 @@
     {
       "type": "entity",
       "entityType": "event",
-      "event": "ANCIENT SCROLLS DISCOVERED"
+      "event": "Ancient Scrolls Discovered"
     },
     {
       "type": "text",
@@ -4286,7 +5391,7 @@
     },
     {
       "type": "player",
-      "playerId": "2pqvCjASWYBXvKDpJ9ddrg",
+      "playerId": "kK28a5S17fzJk3NWVs2aVz",
       "name": "Player #0"
     },
     {
@@ -4355,7 +5460,7 @@
     {
       "type": "entity",
       "entityType": "event",
-      "event": "ANCIENT SCROLLS DISCOVERED"
+      "event": "Ancient Scrolls Discovered"
     },
     {
       "type": "text",
@@ -4363,7 +5468,7 @@
     },
     {
       "type": "player",
-      "playerId": "8UpHvwc5hfpr34ZDkf5Ght",
+      "playerId": "wZeLX3vtYAhPsP8r9N9ojA",
       "name": "Player #0"
     },
     {
@@ -4428,7 +5533,7 @@
     {
       "type": "entity",
       "entityType": "event",
-      "event": "ANCIENT SCROLLS DISCOVERED"
+      "event": "Ancient Scrolls Discovered"
     },
     {
       "type": "text",
@@ -4436,7 +5541,7 @@
     },
     {
       "type": "player",
-      "playerId": "iyw6dkvbbquZTGQh7o6jeq",
+      "playerId": "rv54JUUv8vkebf5FoW7N5E",
       "name": "Player #0"
     },
     {
@@ -4504,7 +5609,7 @@
   [
     {
       "type": "player",
-      "playerId": "dWLb8vC99R9kZVUmmoj8Q4",
+      "playerId": "72Cgd3xc4S9dJJhiohsJ63",
       "name": "Player #0"
     },
     {
@@ -4514,7 +5619,7 @@
     {
       "type": "entity",
       "entityType": "event",
-      "event": "TAX RELIEF"
+      "event": "Tax Relief"
     },
     {
       "type": "text",
@@ -4525,7 +5630,7 @@
     {
       "type": "entity",
       "entityType": "event",
-      "event": "TAX RELIEF"
+      "event": "Tax Relief"
     },
     {
       "type": "text",
@@ -4533,7 +5638,7 @@
     },
     {
       "type": "player",
-      "playerId": "dWLb8vC99R9kZVUmmoj8Q4",
+      "playerId": "72Cgd3xc4S9dJJhiohsJ63",
       "name": "Player #0"
     },
     {
@@ -4552,7 +5657,7 @@
   [
     {
       "type": "player",
-      "playerId": "f8bAyN2d7iNLpzAfTG5RYJ",
+      "playerId": "8XPSCvPWXwHwWDuA7dHfSg",
       "name": "Player #0"
     },
     {
@@ -4562,7 +5667,7 @@
     {
       "type": "entity",
       "entityType": "event",
-      "event": "A WEE RUN CITY"
+      "event": "A Wee Run City"
     },
     {
       "type": "text",
@@ -4573,7 +5678,7 @@
     {
       "type": "entity",
       "entityType": "event",
-      "event": "A WEE RUN CITY"
+      "event": "A Wee Run City"
     },
     {
       "type": "text",
@@ -4581,7 +5686,7 @@
     },
     {
       "type": "player",
-      "playerId": "f8bAyN2d7iNLpzAfTG5RYJ",
+      "playerId": "8XPSCvPWXwHwWDuA7dHfSg",
       "name": "Player #0"
     },
     {
@@ -4602,7 +5707,7 @@
     {
       "type": "entity",
       "entityType": "event",
-      "event": "A WEE RUN CITY"
+      "event": "A Wee Run City"
     },
     {
       "type": "text",
@@ -4610,7 +5715,7 @@
     },
     {
       "type": "player",
-      "playerId": "bFYSibCMxZFZPZYq3gQJLk",
+      "playerId": "5USL4JNh5jPE6jxatZHAFp",
       "name": "Player #0"
     },
     {
@@ -4620,7 +5725,7 @@
     {
       "type": "entity",
       "entityType": "event",
-      "event": "A WEE RUN CITY"
+      "event": "A Wee Run City"
     },
     {
       "type": "text",
@@ -4630,7 +5735,7 @@
   [
     {
       "type": "player",
-      "playerId": "qCf7vkD6wVeU2rmJC3qftx",
+      "playerId": "1k1U7nf3oUtNhuJQYjgXZM",
       "name": "Player #0"
     },
     {
@@ -4640,7 +5745,7 @@
     {
       "type": "entity",
       "entityType": "event",
-      "event": "A BRILLIANT MARKETING PLAN"
+      "event": "A Brilliant Marketing Plan"
     },
     {
       "type": "text",
@@ -4651,7 +5756,7 @@
     {
       "type": "entity",
       "entityType": "event",
-      "event": "A BRILLIANT MARKETING PLAN"
+      "event": "A Brilliant Marketing Plan"
     },
     {
       "type": "text",
@@ -4659,7 +5764,7 @@
     },
     {
       "type": "player",
-      "playerId": "qCf7vkD6wVeU2rmJC3qftx",
+      "playerId": "1k1U7nf3oUtNhuJQYjgXZM",
       "name": "Player #0"
     },
     {
@@ -4680,7 +5785,7 @@
     },
     {
       "type": "player",
-      "playerId": "wVq6nGydfgibcujLw6UM4E",
+      "playerId": "h3XxSHdmCAyW2iphqYba9o",
       "name": "Player #1"
     },
     {
@@ -4706,7 +5811,7 @@
     {
       "type": "entity",
       "entityType": "event",
-      "event": "A BRILLIANT MARKETING PLAN"
+      "event": "A Brilliant Marketing Plan"
     },
     {
       "type": "text",
@@ -4714,7 +5819,7 @@
     },
     {
       "type": "player",
-      "playerId": "4nxtwzMYWPbr1yqshYnnyu",
+      "playerId": "92wY28n9i7d9pdwkdijisN",
       "name": "Player #0"
     },
     {
@@ -4735,7 +5840,7 @@
     },
     {
       "type": "player",
-      "playerId": "vZijFeD65xfPmvtmfYhUxm",
+      "playerId": "4VxhfxnvKfhXfRDTVZCEti",
       "name": "Player #1"
     },
     {
@@ -4755,7 +5860,7 @@
     {
       "type": "entity",
       "entityType": "event",
-      "event": "A BRILLIANT MARKETING PLAN"
+      "event": "A Brilliant Marketing Plan"
     },
     {
       "type": "text",
@@ -4763,7 +5868,7 @@
     },
     {
       "type": "player",
-      "playerId": "4nxtwzMYWPbr1yqshYnnyu",
+      "playerId": "92wY28n9i7d9pdwkdijisN",
       "name": "Player #0"
     },
     {
@@ -4784,7 +5889,7 @@
     },
     {
       "type": "player",
-      "playerId": "svqCrDQz9i6rnywLC7bEtf",
+      "playerId": "mYdEsfazYbmSn7CytJrVTT",
       "name": "Player #3"
     },
     {
@@ -4804,7 +5909,7 @@
     {
       "type": "entity",
       "entityType": "event",
-      "event": "A BRILLIANT MARKETING PLAN"
+      "event": "A Brilliant Marketing Plan"
     },
     {
       "type": "text",
@@ -4812,7 +5917,7 @@
     },
     {
       "type": "player",
-      "playerId": "4nxtwzMYWPbr1yqshYnnyu",
+      "playerId": "92wY28n9i7d9pdwkdijisN",
       "name": "Player #0"
     },
     {
@@ -4833,7 +5938,7 @@
     },
     {
       "type": "player",
-      "playerId": "nPSjLXpkof6EiJv2aTLGfH",
+      "playerId": "vhTvHYwWEu144JKcozhpBm",
       "name": "Player #2"
     },
     {
@@ -4851,8 +5956,94 @@
   ],
   [
     {
+      "type": "text",
+      "text": "Playing with the Pearlbrook expansion."
+    }
+  ],
+  [
+    {
       "type": "player",
-      "playerId": "5Ki6ESoLtzrd9bAvtFCTzX",
+      "playerId": "fzgoCt6xDfNTu6mG6ikFep",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " claimed the "
+    },
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "Hopewatch Gate"
+    },
+    {
+      "type": "text",
+      "text": " event."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "aB6CJkvQaVFsf63Vnw7kX6",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " claimed the "
+    },
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "Mistrise Fountain"
+    },
+    {
+      "type": "text",
+      "text": " event."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "huigB321R5kor7uMo3Jkfr",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " claimed the "
+    },
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "Sunblaze Bridge"
+    },
+    {
+      "type": "text",
+      "text": " event."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "objBqZFM82Fh71XYq4Z4Lx",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " claimed the "
+    },
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "Starfalls flame"
+    },
+    {
+      "type": "text",
+      "text": " event."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "g75oZZnuR321yfngqReuqb",
       "name": "Player #0"
     },
     {
@@ -4881,7 +6072,7 @@
   [
     {
       "type": "player",
-      "playerId": "mMEt79e1ozJDu3anvzqVtk",
+      "playerId": "biW9kuYQpiWiJjK4yNEtRw",
       "name": "Player #0"
     },
     {
@@ -4901,7 +6092,7 @@
   [
     {
       "type": "player",
-      "playerId": "8mGz1sscawPpY9J8LZALv9",
+      "playerId": "9Tfp7CYZdHhPBHkGSeV1PA",
       "name": "Player #0"
     },
     {
@@ -4911,7 +6102,7 @@
     {
       "type": "entity",
       "entityType": "event",
-      "event": "FOUR PRODUCTION CARDS"
+      "event": "4 PRODUCTION"
     },
     {
       "type": "text",
@@ -4930,7 +6121,7 @@
     },
     {
       "type": "player",
-      "playerId": "oLRd6791XkfCDvRJzs3QDY",
+      "playerId": "srzjgq1MAVd3sgCZiCJWBz",
       "name": "Player #0"
     },
     {
@@ -4966,7 +6157,7 @@
     },
     {
       "type": "player",
-      "playerId": "hNbZdoyJiGmU9he2SXEsxa",
+      "playerId": "6Y7fHt6ub5zJ3SP4KJpXzf",
       "name": "Player #0"
     },
     {
@@ -4998,7 +6189,7 @@
     },
     {
       "type": "player",
-      "playerId": "hNbZdoyJiGmU9he2SXEsxa",
+      "playerId": "6Y7fHt6ub5zJ3SP4KJpXzf",
       "name": "Player #0"
     },
     {
@@ -5030,7 +6221,7 @@
     },
     {
       "type": "player",
-      "playerId": "hNbZdoyJiGmU9he2SXEsxa",
+      "playerId": "6Y7fHt6ub5zJ3SP4KJpXzf",
       "name": "Player #0"
     },
     {
@@ -5065,7 +6256,7 @@
     },
     {
       "type": "player",
-      "playerId": "oc863d7KVnhbkyj42FQsoQ",
+      "playerId": "xxT6YzYRStrXmE79eXBJDE",
       "name": "Player #0"
     },
     {
@@ -5092,7 +6283,7 @@
     },
     {
       "type": "player",
-      "playerId": "3oUSS64JdJxFRpvrriiA2V",
+      "playerId": "fnUoj25AuXaahSW6m5dpYZ",
       "name": "Player #0"
     },
     {
@@ -5119,7 +6310,7 @@
     },
     {
       "type": "player",
-      "playerId": "3oUSS64JdJxFRpvrriiA2V",
+      "playerId": "fnUoj25AuXaahSW6m5dpYZ",
       "name": "Player #0"
     },
     {
@@ -5148,7 +6339,7 @@
   [
     {
       "type": "player",
-      "playerId": "wU5EzokkH2fbXGM9bxJesk",
+      "playerId": "dTnojLLuAVLTefSPQ59DFg",
       "name": "Player #0"
     },
     {
@@ -5159,7 +6350,7 @@
   [
     {
       "type": "player",
-      "playerId": "kLQcvf6zCihArLcQgaiyy8",
+      "playerId": "29mFZrSCQAaZKdH8KWyPi8",
       "name": "Player #1"
     },
     {
@@ -5176,7 +6367,7 @@
   [
     {
       "type": "player",
-      "playerId": "1NPpHDowftnpDxaivYqDSu",
+      "playerId": "8hTYuzTcu7BbgoNXygiK8t",
       "name": "Player #0"
     },
     {
@@ -5187,7 +6378,7 @@
   [
     {
       "type": "player",
-      "playerId": "kLQcvf6zCihArLcQgaiyy8",
+      "playerId": "29mFZrSCQAaZKdH8KWyPi8",
       "name": "Player #1"
     },
     {
@@ -5198,7 +6389,7 @@
   [
     {
       "type": "player",
-      "playerId": "hMcJtvVvN7jwrA9Z3tTSw8",
+      "playerId": "rEVY4AxXELWLpixt17GSg7",
       "name": "Player #0"
     },
     {
@@ -5218,7 +6409,7 @@
   [
     {
       "type": "player",
-      "playerId": "vSw8CMme6mqmAHhc5i7Dud",
+      "playerId": "iQqtCUvm37TWmWZMAPJ7MQ",
       "name": "Player #0"
     },
     {
@@ -5238,7 +6429,7 @@
   [
     {
       "type": "player",
-      "playerId": "4cmp637jCCygPtvXPTBpXk",
+      "playerId": "xkbkXZyzi9QFBRJViSLG2q",
       "name": "Player #0"
     },
     {
@@ -5258,7 +6449,7 @@
   [
     {
       "type": "player",
-      "playerId": "4cZeYx6jXh4wHzw3ywfzBq",
+      "playerId": "jwNeZmLgmhQMamNykDQSMq",
       "name": "Player #1"
     },
     {
@@ -5278,7 +6469,7 @@
   [
     {
       "type": "player",
-      "playerId": "sfZMtBWSET79mL3drA6RJB",
+      "playerId": "ubvJtMvokspqeJPxYqjFES",
       "name": "Player #0"
     },
     {
@@ -5307,7 +6498,7 @@
     },
     {
       "type": "player",
-      "playerId": "sfZMtBWSET79mL3drA6RJB",
+      "playerId": "ubvJtMvokspqeJPxYqjFES",
       "name": "Player #0"
     },
     {
@@ -5342,7 +6533,7 @@
   [
     {
       "type": "player",
-      "playerId": "ivEzTKT28j6U9RyVhkaXmr",
+      "playerId": "kQFmBPdJXy1Frou1XEFnZQ",
       "name": "Player #0"
     },
     {
@@ -5371,7 +6562,7 @@
     },
     {
       "type": "player",
-      "playerId": "ivEzTKT28j6U9RyVhkaXmr",
+      "playerId": "kQFmBPdJXy1Frou1XEFnZQ",
       "name": "Player #0"
     },
     {
@@ -5399,16 +6590,12 @@
     },
     {
       "type": "player",
-      "playerId": "ivEzTKT28j6U9RyVhkaXmr",
+      "playerId": "kQFmBPdJXy1Frou1XEFnZQ",
       "name": "Player #0"
     },
     {
       "type": "text",
       "text": " gained "
-    },
-    {
-      "type": "text",
-      "text": "1 "
     },
     {
       "type": "resource",
@@ -5422,7 +6609,7 @@
   [
     {
       "type": "player",
-      "playerId": "9SoehkfBGkDzy7m9D3XKLD",
+      "playerId": "fWKDsntQK9MXCPL3Z7Mzua",
       "name": "Player #0"
     },
     {
@@ -5451,7 +6638,7 @@
     },
     {
       "type": "player",
-      "playerId": "9SoehkfBGkDzy7m9D3XKLD",
+      "playerId": "fWKDsntQK9MXCPL3Z7Mzua",
       "name": "Player #0"
     },
     {
@@ -5461,6 +6648,14 @@
     {
       "type": "symbol",
       "symbol": "CARD"
+    },
+    {
+      "type": "text",
+      "text": " to gain 3 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "ANY"
     },
     {
       "type": "text",
@@ -5479,7 +6674,7 @@
     },
     {
       "type": "player",
-      "playerId": "9SoehkfBGkDzy7m9D3XKLD",
+      "playerId": "fWKDsntQK9MXCPL3Z7Mzua",
       "name": "Player #0"
     },
     {
@@ -5514,7 +6709,7 @@
   [
     {
       "type": "player",
-      "playerId": "xeTyNUvLqXEWsxdos9Wqdt",
+      "playerId": "jQceWVSwtY7raJqobFu9jP",
       "name": "Player #0"
     },
     {
@@ -5534,7 +6729,7 @@
   [
     {
       "type": "player",
-      "playerId": "t8d1rZoEaEosq7brRLDTmD",
+      "playerId": "nu4JUB7tfaYtmC48vLFPpD",
       "name": "Player #0"
     },
     {
@@ -5563,7 +6758,7 @@
     },
     {
       "type": "player",
-      "playerId": "t8d1rZoEaEosq7brRLDTmD",
+      "playerId": "nu4JUB7tfaYtmC48vLFPpD",
       "name": "Player #0"
     },
     {
@@ -5591,7 +6786,7 @@
     },
     {
       "type": "player",
-      "playerId": "t8d1rZoEaEosq7brRLDTmD",
+      "playerId": "nu4JUB7tfaYtmC48vLFPpD",
       "name": "Player #0"
     },
     {
@@ -5626,7 +6821,7 @@
   [
     {
       "type": "player",
-      "playerId": "3GChqUkz5K7Go2oWhaunD8",
+      "playerId": "bo2jYgusf9w6whkyGuihVN",
       "name": "Player #0"
     },
     {
@@ -5655,7 +6850,7 @@
     },
     {
       "type": "player",
-      "playerId": "3GChqUkz5K7Go2oWhaunD8",
+      "playerId": "bo2jYgusf9w6whkyGuihVN",
       "name": "Player #0"
     },
     {
@@ -5675,7 +6870,7 @@
   [
     {
       "type": "player",
-      "playerId": "5bTRGMEQFqLFWrCZWSD5DR",
+      "playerId": "sG4i2gUj9TF7NaJJeVECU1",
       "name": "Player #0"
     },
     {
@@ -5704,7 +6899,7 @@
     },
     {
       "type": "player",
-      "playerId": "5bTRGMEQFqLFWrCZWSD5DR",
+      "playerId": "sG4i2gUj9TF7NaJJeVECU1",
       "name": "Player #0"
     },
     {
@@ -5742,7 +6937,7 @@
     },
     {
       "type": "player",
-      "playerId": "5bTRGMEQFqLFWrCZWSD5DR",
+      "playerId": "sG4i2gUj9TF7NaJJeVECU1",
       "name": "Player #0"
     },
     {
@@ -5771,7 +6966,7 @@
     },
     {
       "type": "player",
-      "playerId": "b7RrWEZg8b25hgGMGQLkBG",
+      "playerId": "d5Prr69KSD9tnNWnf5gumf",
       "name": "Player #0"
     },
     {
@@ -5809,7 +7004,7 @@
     },
     {
       "type": "player",
-      "playerId": "b7RrWEZg8b25hgGMGQLkBG",
+      "playerId": "d5Prr69KSD9tnNWnf5gumf",
       "name": "Player #0"
     },
     {
@@ -5838,7 +7033,7 @@
     },
     {
       "type": "player",
-      "playerId": "gQdkV6TKprwGSi5wKKbpNd",
+      "playerId": "wbtHhEhEHwz5SWxRECjZNi",
       "name": "Player #0"
     },
     {
@@ -5876,7 +7071,7 @@
     },
     {
       "type": "player",
-      "playerId": "gQdkV6TKprwGSi5wKKbpNd",
+      "playerId": "wbtHhEhEHwz5SWxRECjZNi",
       "name": "Player #0"
     },
     {
@@ -5896,7 +7091,7 @@
   [
     {
       "type": "player",
-      "playerId": "nhFMzCj8iEToW13c6egoWe",
+      "playerId": "m8SNKb8zxKEsDsYyDXPUqh",
       "name": "Player #0"
     },
     {
@@ -5925,7 +7120,7 @@
   [
     {
       "type": "player",
-      "playerId": "9QLjMvnLhUkMfRjAtDYwYK",
+      "playerId": "dCCEBxQHnVGWoqLSrwsTin",
       "name": "Player #0"
     },
     {
@@ -5954,7 +7149,7 @@
   [
     {
       "type": "player",
-      "playerId": "8WEQF6iEtM1tK2AeQzY48W",
+      "playerId": "3aVhE8epGYtpQKSC34TzzF",
       "name": "Player #0"
     },
     {
@@ -5983,7 +7178,7 @@
   [
     {
       "type": "player",
-      "playerId": "25U7Mbj7xLXZXZ75cGTFPJ",
+      "playerId": "pNof58hUgNpMjWq9XT14WV",
       "name": "Player #0"
     },
     {
@@ -6012,7 +7207,7 @@
   [
     {
       "type": "player",
-      "playerId": "j5rzUZP5yQW8Do8C2Zr7Qb",
+      "playerId": "em3fsxK6dDMSAHaC1tSDsF",
       "name": "Player #0"
     },
     {
@@ -6041,6 +7236,407 @@
       "type": "entity",
       "entityType": "card",
       "card": "Dungeon"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "pkbB3VGAqN3btYuzyV9xNS",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " visited "
+    },
+    {
+      "type": "entity",
+      "entityType": "riverDestinationSpot",
+      "spot": "TWO_GOVERNANCE"
+    },
+    {
+      "type": "text",
+      "text": " and revealed "
+    },
+    {
+      "type": "entity",
+      "entityType": "riverDestination",
+      "riverDestination": "Gus the Gardener"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "pkbB3VGAqN3btYuzyV9xNS",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gained 1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "PEARL"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "tsmpogxNUVQZUvmazhQwqt",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " visited "
+    },
+    {
+      "type": "entity",
+      "entityType": "riverDestination",
+      "riverDestination": "Gus the Gardener"
+    },
+    {
+      "type": "text",
+      "text": " at "
+    },
+    {
+      "type": "entity",
+      "entityType": "riverDestinationSpot",
+      "spot": "TWO_TRAVELER"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "riverDestination",
+      "riverDestination": "Gus the Gardener"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "mLqTUM7KeSAUogzpRBDgVv",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " declined to discard any "
+    },
+    {
+      "type": "symbol",
+      "symbol": "CARD"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "riverDestination",
+      "riverDestination": "Gus the Gardener"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "vCbwXnbWx6Lw71T8Taq6Ge",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " discarded 3 "
+    },
+    {
+      "type": "cardType",
+      "cardType": "PRODUCTION"
+    },
+    {
+      "type": "text",
+      "text": " cards from their hand ("
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Farm"
+    },
+    {
+      "type": "text",
+      "text": ", "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Farm"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Mine"
+    },
+    {
+      "type": "text",
+      "text": ") to gain 1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": " and 1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "PEARL"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "aaPWeedhpY9rQUg44RQ9Bt",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " visited "
+    },
+    {
+      "type": "entity",
+      "entityType": "riverDestination",
+      "riverDestination": "Ballroom"
+    },
+    {
+      "type": "text",
+      "text": " at "
+    },
+    {
+      "type": "entity",
+      "entityType": "riverDestinationSpot",
+      "spot": "TWO_TRAVELER"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "riverDestination",
+      "riverDestination": "Ballroom"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "3hDCM8vMaBU8g4mStkqKmq",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " spent "
+    },
+    {
+      "type": "resource",
+      "resourceType": "RESIN"
+    },
+    {
+      "type": "text",
+      "text": " and "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": " "
+    },
+    {
+      "type": "text",
+      "text": "to draw 3 "
+    },
+    {
+      "type": "symbol",
+      "symbol": "CARD"
+    },
+    {
+      "type": "text",
+      "text": " and gain 1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "PEARL"
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "riverDestination",
+      "riverDestination": "Ballroom"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "ozrUJRSSTzkamshosZ9XT7",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " declined to spend "
+    },
+    {
+      "type": "resource",
+      "resourceType": "RESIN"
+    },
+    {
+      "type": "text",
+      "text": " and "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "playerId": "oUFSBNSdnXRh45rHVzPPpb",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " visited "
+    },
+    {
+      "type": "entity",
+      "entityType": "riverDestinationSpot",
+      "spot": "SHOAL"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "riverDestination",
+      "riverDestination": "Shoal"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "oUFSBNSdnXRh45rHVzPPpb",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " paid "
+    },
+    {
+      "type": "text",
+      "text": "2 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "BERRY"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "riverDestination",
+      "riverDestination": "Shoal"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "oUFSBNSdnXRh45rHVzPPpb",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " discarded 2 "
+    },
+    {
+      "type": "symbol",
+      "symbol": "CARD"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "riverDestination",
+      "riverDestination": "Shoal"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "playerId": "oUFSBNSdnXRh45rHVzPPpb",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gained 1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "PEARL"
     },
     {
       "type": "text",

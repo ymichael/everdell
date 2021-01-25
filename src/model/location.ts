@@ -747,11 +747,9 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
         if (!cardOptions) {
           throw new Error("Invalid list of cards chosen from meadow provided.");
         }
-
         if (cardOptions.length != 2) {
           throw new Error("Must choose exactly 2 cards from the meadow");
         }
-
         const isCardPlayable = (cardName: CardName): boolean => {
           return (
             player.canAffordCard(cardName, false, "ANY 1") &&
@@ -765,7 +763,6 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
         // Make sure player can play at least one of the chosen cards
         const canPlayAtLeastOne =
           isCardPlayable(cardOptions[0]) || isCardPlayable(cardOptions[1]);
-
         if (!canPlayAtLeastOne) {
           throw new Error(
             "Must choose at least 1 card that can be played with 1 ANY discount"
@@ -776,25 +773,17 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
           LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS,
           [
             player,
-            " took ",
+            " selected ",
             ...cardListToGameText(cardOptions),
             " from the Meadow.",
           ]
         );
 
-        // add cards to player's hand
-        player.addCardToHand(gameState, cardOptions[0]);
-        player.addCardToHand(gameState, cardOptions[1]);
-
-        // remove the cards from meadow + replenish
-        gameState.removeCardFromMeadow(cardOptions[0]);
-        gameState.removeCardFromMeadow(cardOptions[1]);
-        gameState.replenishMeadow();
-
-        // player should choose a card to play
+        // Player should choose a card to play
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_CARDS,
           prevInputType: gameInput.inputType,
+          prevInput: gameInput,
           label: "Select CARD to play for one less ANY",
           cardOptions: cardOptions,
           maxToSelect: 1,
@@ -812,33 +801,46 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
           LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS
       ) {
         // make sure they could play card if discounted
-        const cardOptions = gameInput.clientOptions.selectedCards;
-        if (!cardOptions) {
+        const cardOptions = gameInput.cardOptions;
+        const selectedCards = gameInput.clientOptions.selectedCards;
+        if (!selectedCards) {
           throw new Error("Must select card to play.");
         }
-
-        if (cardOptions.length !== 1) {
+        if (selectedCards.length !== 1) {
           throw new Error("Must select exactly 1 card to play");
         }
+        const selectedCardName = selectedCards[0];
+        if (cardOptions.indexOf(selectedCardName) === -1) {
+          throw new Error("Please select one of the options");
+        }
 
-        const selectedCardName = cardOptions[0];
         const selectedCard = Card.fromName(selectedCardName);
         const canAffordCard = player.canAffordCard(
           selectedCardName,
           false,
           "ANY 1"
         );
-
         if (!canAffordCard) {
           throw new Error("Cannot afford this card, even with discount.");
         }
+
+        const keptedCardName =
+          cardOptions[0] === selectedCardName ? cardOptions[1] : cardOptions[0];
+
+        // Remove the cards from meadow + replenish
+        gameState.removeCardFromMeadow(cardOptions[0]);
+        gameState.removeCardFromMeadow(cardOptions[1]);
+
+        // Add kept card to player's hand
+        player.addCardToHand(gameState, keptedCardName);
+
+        gameState.replenishMeadow();
 
         if (sumResources(selectedCard.baseCost) <= 1) {
           gameState.addGameLogFromLocation(
             LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS,
             [player, " played ", selectedCard, " for 1 less."]
           );
-          player.removeCardFromHand(selectedCardName);
           selectedCard.addToCityAndPlay(gameState, gameInput);
           return;
         }
@@ -883,12 +885,9 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
         );
 
         player.payForCard(gameState, gameInput);
-        player.removeCardFromHand(card.name);
         card.addToCityAndPlay(gameState, gameInput);
       } else {
-        throw new Error(
-          "Unexpected input type ${gameInput.inputType} with previous input type ${gameInput.prevInputType}"
-        );
+        throw new Error(`Unexpected input type ${gameInput.inputType}`);
       }
     },
   }),

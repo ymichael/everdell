@@ -396,23 +396,26 @@ describe("Location", () => {
         LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS
       ] = [];
 
+      const selectCardsInput = {
+        inputType: GameInputType.SELECT_CARDS as const,
+        prevInputType: GameInputType.PLACE_WORKER,
+        cardOptions: meadow,
+        maxToSelect: 2,
+        minToSelect: 2,
+        locationContext:
+          LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS,
+        clientOptions: {
+          selectedCards: [CardName.HUSBAND, CardName.EVERTREE],
+        },
+      };
+
       [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
-        {
-          inputType: GameInputType.SELECT_CARDS,
-          prevInputType: GameInputType.PLACE_WORKER,
-          cardOptions: meadow,
-          maxToSelect: 2,
-          minToSelect: 2,
-          locationContext:
-            LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS,
-          clientOptions: {
-            selectedCards: [CardName.HUSBAND, CardName.EVERTREE],
-          },
-        },
+        selectCardsInput,
         {
           inputType: GameInputType.SELECT_CARDS,
           prevInputType: GameInputType.SELECT_CARDS,
+          prevInput: selectCardsInput,
           cardOptions: [CardName.HUSBAND, CardName.EVERTREE],
           maxToSelect: 1,
           minToSelect: 1,
@@ -438,6 +441,78 @@ describe("Location", () => {
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(3);
       expect(player.cardsInHand).to.eql([CardName.EVERTREE]);
       expect(player.hasCardInCity(CardName.HUSBAND)).to.be(true);
+    });
+
+    it("player can visit FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS (at max hand)", () => {
+      const meadow = [
+        CardName.HUSBAND,
+        CardName.INNKEEPER,
+        CardName.WIFE,
+        CardName.CEMETARY,
+        CardName.THEATRE,
+        CardName.EVERTREE,
+        CardName.HUSBAND,
+        CardName.HUSBAND,
+      ];
+      gameState = testInitialGameState({ meadowCards: meadow });
+
+      const location = Location.fromName(
+        LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS
+      );
+
+      player = gameState.getActivePlayer();
+      const cardsInHand = [
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+      ];
+
+      // Player hand is full
+      player.cardsInHand = cardsInHand;
+
+      const gameInput = placeWorkerInput(location.name);
+      gameState.locationsMap[
+        LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS
+      ] = [];
+
+      const selectCardsInput = {
+        inputType: GameInputType.SELECT_CARDS as const,
+        prevInputType: GameInputType.PLACE_WORKER,
+        cardOptions: meadow,
+        maxToSelect: 2,
+        minToSelect: 2,
+        locationContext:
+          LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS,
+        clientOptions: {
+          selectedCards: [CardName.HUSBAND, CardName.INNKEEPER],
+        },
+      };
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        gameInput,
+        selectCardsInput,
+        {
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: GameInputType.SELECT_CARDS,
+          prevInput: selectCardsInput,
+          cardOptions: [CardName.HUSBAND, CardName.INNKEEPER],
+          maxToSelect: 1,
+          minToSelect: 1,
+          locationContext:
+            LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS,
+          clientOptions: {
+            selectedCards: [CardName.INNKEEPER],
+          },
+        },
+      ]);
+
+      expect(player.cardsInHand).to.eql(cardsInHand);
+      expect(player.hasCardInCity(CardName.INNKEEPER)).to.be(true);
     });
 
     it("cannot visit if player cannot play any meadow cards for 1 less", () => {
@@ -591,23 +666,26 @@ describe("Location", () => {
         LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS
       ] = [];
 
+      const selectCardsInput = {
+        inputType: GameInputType.SELECT_CARDS as const,
+        prevInputType: GameInputType.PLACE_WORKER,
+        cardOptions: meadow,
+        maxToSelect: 2,
+        minToSelect: 2,
+        locationContext:
+          LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS,
+        clientOptions: {
+          selectedCards: [CardName.WIFE, CardName.THEATRE],
+        },
+      };
+
       [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
-        {
-          inputType: GameInputType.SELECT_CARDS,
-          prevInputType: GameInputType.PLACE_WORKER,
-          cardOptions: meadow,
-          maxToSelect: 2,
-          minToSelect: 2,
-          locationContext:
-            LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS,
-          clientOptions: {
-            selectedCards: [CardName.WIFE, CardName.THEATRE],
-          },
-        },
+        selectCardsInput,
         {
           inputType: GameInputType.SELECT_CARDS,
           prevInputType: GameInputType.SELECT_CARDS,
+          prevInput: selectCardsInput,
           cardOptions: [CardName.WIFE, CardName.THEATRE],
           maxToSelect: 1,
           minToSelect: 1,
@@ -705,22 +783,25 @@ describe("Location", () => {
         LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS
       ] = [];
 
+      const selectCardsInput = {
+        inputType: GameInputType.SELECT_CARDS as const,
+        prevInputType: GameInputType.PLACE_WORKER,
+        cardOptions: meadow,
+        maxToSelect: 2,
+        minToSelect: 2,
+        locationContext:
+          LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS,
+        clientOptions: {
+          selectedCards: [CardName.CEMETARY, CardName.CRANE],
+        },
+      };
+
       [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
-        {
-          inputType: GameInputType.SELECT_CARDS as const,
-          prevInputType: GameInputType.PLACE_WORKER,
-          cardOptions: meadow,
-          maxToSelect: 2,
-          minToSelect: 2,
-          locationContext:
-            LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS,
-          clientOptions: {
-            selectedCards: [CardName.CEMETARY, CardName.CRANE],
-          },
-        },
+        selectCardsInput,
         {
           inputType: GameInputType.SELECT_CARDS,
+          prevInput: selectCardsInput,
           prevInputType: GameInputType.SELECT_CARDS,
           cardOptions: [CardName.CEMETARY, CardName.CRANE],
           maxToSelect: 1,

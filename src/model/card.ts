@@ -201,10 +201,6 @@ export class Card<TCardType extends CardType = CardType>
     return !this.canPlayCheck(gameState, gameInput);
   }
 
-  canPlayIgnoreCost(gameState: GameState): boolean {
-    return this.canPlay(gameState, this.getPlayCardInput());
-  }
-
   canPlayIgnoreCostAndSource(gameState: GameState): boolean {
     const player = gameState.getActivePlayer();
     if (this.name !== CardName.FOOL) {

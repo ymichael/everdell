@@ -1212,7 +1212,7 @@ export class GameState {
       const card = Card.fromName(cardName);
       if (
         player.canAffordCard(card.name, true) &&
-        card.canPlayIgnoreCost(this)
+        card.canPlayIgnoreCostAndSource(this)
       ) {
         ret.push({ card: cardName, fromMeadow: true });
       }
@@ -1221,16 +1221,7 @@ export class GameState {
       const card = Card.fromName(cardName);
       if (
         player.canAffordCard(card.name, true) &&
-        card.canPlay(this, {
-          inputType: GameInputType.PLAY_CARD as const,
-          clientOptions: {
-            card: cardName,
-            fromMeadow: false,
-            paymentOptions: {
-              resources: {},
-            },
-          },
-        })
+        card.canPlayIgnoreCostAndSource(this)
       ) {
         ret.push({ card: cardName, fromMeadow: false });
       }

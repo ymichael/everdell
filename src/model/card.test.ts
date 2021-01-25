@@ -4838,6 +4838,20 @@ describe("Card", () => {
         // MAX hand size reached!
         expect(player.cardsInHand.length).to.be(17);
       });
+
+      it("should do nothing", () => {
+        const card = Card.fromName(CardName.BRIDGE);
+
+        player.gainResources(gameState, card.baseCost);
+        player.cardsInHand.push(card.name);
+        player.gainResources(gameState, {
+          [ResourceType.PEARL]: 2,
+        });
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+        ]);
+        expect(player.maxHandSize).to.be(10);
+      });
     });
   });
 });

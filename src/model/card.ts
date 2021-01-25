@@ -3249,8 +3249,14 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       [ResourceType.TWIG]: 2,
       [ResourceType.PEBBLE]: 1,
     },
-    playInner: () => {
-      throw new Error("Not Implemented");
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.PLAY_CARD) {
+        gameState.addGameLogFromCard(CardName.BRIDGE, [
+          player,
+          "'s hand size is now ${player.maxHandSize}.",
+        ]);
+      }
     },
   }),
   [CardName.HARBOR]: new Card({

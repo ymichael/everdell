@@ -526,10 +526,14 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       cardOwner: Player
     ) => {
       const player = gameState.getActivePlayer();
-      const playedFarms = player.getPlayedCardInfos(CardName.FARM);
+      const playedFarms = cardOwner.getPlayedCardInfos(CardName.FARM);
       player.gainResources(gameState, {
         [ResourceType.TWIG]: 2 * playedFarms.length,
       });
+      gameState.addGameLogFromCard(CardName.BARGE_TOAD, [
+        player,
+        ` gained ${2 * playedFarms.length} TWIG.`,
+      ]);
     },
   }),
   [CardName.CASTLE]: new Card({

@@ -2271,6 +2271,43 @@ describe("Card", () => {
         expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
       });
 
+      it("should allow the player to copy another player's BARGE_TOAD", () => {
+        const card = Card.fromName(CardName.MINER_MOLE);
+
+        let player1 = gameState.getActivePlayer();
+        const player2 = gameState.players[1];
+
+        player2.addToCity(CardName.BARGE_TOAD);
+        player2.addToCity(CardName.FARM);
+
+        // Make sure we can play this card
+        player1.gainResources(card.baseCost);
+        player1.cardsInHand.push(card.name);
+
+        expect(player1.hasCardInCity(card.name)).to.be(false);
+
+        [player1, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+          {
+            inputType: GameInputType.SELECT_PLAYED_CARDS,
+            prevInputType: GameInputType.PLAY_CARD,
+            cardContext: CardName.MINER_MOLE,
+            maxToSelect: 1,
+            minToSelect: 1,
+            cardOptions: [
+              ...player2.getPlayedCardInfos(CardName.BARGE_TOAD),
+              ...player2.getPlayedCardInfos(CardName.FARM),
+            ],
+            clientOptions: {
+              selectedCards: player2.getPlayedCardInfos(CardName.BARGE_TOAD),
+            },
+          },
+        ]);
+
+        // player gains 2 twig
+        expect(player1.getNumResourcesByType(ResourceType.TWIG)).to.be(2);
+      });
+
       it("should allow the player to copy another player's HUSBAND", () => {
         const card = Card.fromName(CardName.MINER_MOLE);
 

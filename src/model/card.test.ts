@@ -2283,7 +2283,7 @@ describe("Card", () => {
         player2.addToCity(CardName.FARM);
 
         // Make sure we can play this card
-        player1.gainResources(card.baseCost);
+        player1.gainResources(gameState, card.baseCost);
         player1.cardsInHand.push(card.name);
 
         expect(player1.hasCardInCity(card.name)).to.be(false);

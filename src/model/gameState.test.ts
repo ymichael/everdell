@@ -254,6 +254,22 @@ describe("GameState", () => {
     });
   });
 
+  describe("getPlayableCards", () => {
+    it("should return cards from both the Meadow and your Hand", () => {
+      gameState.meadowCards.push(CardName.FARM, CardName.MINE);
+      player.cardsInHand.push(CardName.FARM, CardName.MINE);
+      player.gainResources(gameState, Card.fromName(CardName.FARM).baseCost);
+      player.gainResources(gameState, Card.fromName(CardName.MINE).baseCost);
+
+      expect(gameState.getPlayableCards()).to.eql([
+        { card: CardName.FARM, fromMeadow: true },
+        { card: CardName.MINE, fromMeadow: true },
+        { card: CardName.FARM, fromMeadow: false },
+        { card: CardName.MINE, fromMeadow: false },
+      ]);
+    });
+  });
+
   describe("PLAY_CARD", () => {
     it("should be able to pay for the card to play it", () => {
       const card = Card.fromName(CardName.FARM);

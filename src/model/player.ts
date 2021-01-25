@@ -1195,6 +1195,13 @@ export class Player implements IGameTextEntity {
     }
     if (PEARL) {
       this.resources[ResourceType.PEARL] += PEARL;
+      if (this.hasCardInCity(CardName.BRIDGE)) {
+        this.drawCards(gameState, 2 * PEARL);
+        gameState.addGameLogFromCard(CardName.BRIDGE, [
+          this,
+          "drew ${PEARL * 2} CARD.",
+        ]);
+      }
     }
   }
 

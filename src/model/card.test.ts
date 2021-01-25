@@ -4815,16 +4815,28 @@ describe("Card", () => {
       });
 
       it("should draw 2 cards every time you gain a PEARL", () => {
-        expect(player.maxHandSize).to.be(8);
-
         player.addToCity(CardName.BRIDGE);
-        expect(player.maxHandSize).to.be(8);
+
+        expect(player.cardsInHand.length).to.be(0);
 
         player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
-        expect(player.maxHandSize).to.be(9);
+        expect(player.cardsInHand.length).to.be(2);
 
         player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
-        expect(player.maxHandSize).to.be(10);
+        expect(player.cardsInHand.length).to.be(4);
+
+        player.gainResources(gameState, { [ResourceType.PEARL]: 4 });
+        expect(player.cardsInHand.length).to.be(12);
+
+        player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
+        expect(player.cardsInHand.length).to.be(14);
+
+        player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
+        expect(player.cardsInHand.length).to.be(16);
+
+        player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
+        // MAX hand size reached!
+        expect(player.cardsInHand.length).to.be(17);
       });
     });
   });

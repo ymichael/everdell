@@ -5083,6 +5083,32 @@ describe("Card", () => {
       });
     });
 
+    describe(CardName.FERRY_FERRET, () => {
+      const card = Card.fromName(CardName.FERRY_FERRET);
+
+      it("should do nothing if fewer than 2 PEARL", () => {
+        player.cardsInHand = [card.name];
+        player.gainResources(gameState, card.baseCost);
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+        ]);
+        expect(player.hasCardInCity(card.name)).to.be(true);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+      });
+
+      it("should gain 2 VP if at least 2 PEARL", () => {
+        player.cardsInHand = [card.name];
+        player.gainResources(gameState, card.baseCost);
+        player.gainResources(gameState, { [ResourceType.PEARL]: 2 });
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+        ]);
+        expect(player.hasCardInCity(card.name)).to.be(true);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(2);
+      });
+    });
+
     describe(CardName.MESSENGER, () => {
       const card = Card.fromName(CardName.MESSENGER);
 

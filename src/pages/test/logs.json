@@ -4954,6 +4954,52 @@
     {
       "type": "entity",
       "entityType": "card",
+      "card": "Ferry Ferret"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Ferry Ferret"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gained 2 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
       "card": "Messenger"
     },
     {

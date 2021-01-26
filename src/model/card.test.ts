@@ -5027,5 +5027,41 @@ describe("Card", () => {
         expect(player.maxHandSize).to.be(10);
       });
     });
+
+    describe(CardName.HARBOR, () => {
+      const card = Card.fromName(CardName.HARBOR);
+
+      it("should do nothing if fewer than 2 PEARL", () => {
+        player.cardsInHand = [card.name];
+        player.gainResources(gameState, card.baseCost);
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+        ]);
+        expect(player.hasCardInCity(card.name)).to.be(true);
+      });
+
+      it("should gain a wild resource if at least 2 PEARL", () => {
+        player.cardsInHand = [card.name];
+        player.gainResources(gameState, card.baseCost);
+        player.gainResources(gameState, { [ResourceType.PEARL]: 2 });
+
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+          {
+            inputType: GameInputType.SELECT_RESOURCES,
+            prevInputType: GameInputType.PLAY_CARD,
+            cardContext: card.name,
+            maxResources: 2,
+            minResources: 2,
+            toSpend: false,
+            clientOptions: {
+              resources: { [ResourceType.BERRY]: 2 },
+            },
+          },
+        ]);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
+      });
+    });
   });
 });

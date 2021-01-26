@@ -300,7 +300,7 @@ describe("GameState", () => {
 
       // Fill up city
       for (let i = 0; i < 15; i++) {
-        player.addToCity(CardName.FARM);
+        player.addToCity(gameState, CardName.FARM);
       }
       expect(gameState.getPlayableCards()).to.eql([]);
     });
@@ -324,9 +324,9 @@ describe("GameState", () => {
       ]);
 
       // Fill up city
-      player.addToCity(CardName.CRANE);
+      player.addToCity(gameState, CardName.CRANE);
       for (let i = 0; i < 14; i++) {
-        player.addToCity(CardName.FARM);
+        player.addToCity(gameState, CardName.FARM);
       }
 
       // Only constructions
@@ -378,9 +378,9 @@ describe("GameState", () => {
       ]);
 
       // Fill up city
-      player.addToCity(CardName.INNKEEPER);
+      player.addToCity(gameState, CardName.INNKEEPER);
       for (let i = 0; i < 14; i++) {
-        player.addToCity(CardName.FARM);
+        player.addToCity(gameState, CardName.FARM);
       }
 
       // Only critters
@@ -420,7 +420,7 @@ describe("GameState", () => {
 
       // Fill up city
       for (let i = 0; i < 15; i++) {
-        player.addToCity(CardName.FARM);
+        player.addToCity(gameState, CardName.FARM);
       }
       expect(gameState.getPlayableCards()).to.eql([
         { card: CardName.FOOL, fromMeadow: false },
@@ -436,7 +436,7 @@ describe("GameState", () => {
 
       // Fill up city
       for (let i = 0; i < 15; i++) {
-        player.addToCity(CardName.FARM);
+        player.addToCity(gameState, CardName.FARM);
       }
       expect(gameState.getPlayableCards()).to.eql([
         { card: CardName.RUINS, fromMeadow: false },
@@ -481,18 +481,18 @@ describe("GameState", () => {
         },
       ]);
 
-      player.addToCity(CardName.UNIVERSITY);
+      player.addToCity(gameState, CardName.UNIVERSITY);
       expect(gameState.getVisitableDestinationCards()).to.eql([]);
 
-      player.addToCity(CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
       expect(gameState.getVisitableDestinationCards()).to.eql([
         player.getFirstPlayedCard(CardName.UNIVERSITY),
       ]);
 
       const player2 = gameState.players[1];
-      player2.addToCity(CardName.QUEEN);
-      player2.addToCity(CardName.INN);
-      player2.addToCity(CardName.UNIVERSITY);
+      player2.addToCity(gameState, CardName.QUEEN);
+      player2.addToCity(gameState, CardName.INN);
+      player2.addToCity(gameState, CardName.UNIVERSITY);
 
       expect(gameState.getVisitableDestinationCards()).to.eql([
         player.getFirstPlayedCard(CardName.UNIVERSITY),
@@ -564,14 +564,14 @@ describe("GameState", () => {
       let player1 = gameState.getActivePlayer();
       const player2 = gameState.players[1];
 
-      player1.addToCity(CardName.MINE);
-      player1.addToCity(CardName.MINE);
-      player1.addToCity(CardName.FARM);
-      player1.addToCity(CardName.FARM);
-      player2.addToCity(CardName.MINE);
-      player2.addToCity(CardName.MINE);
-      player2.addToCity(CardName.FARM);
-      player2.addToCity(CardName.FARM);
+      player1.addToCity(gameState, CardName.MINE);
+      player1.addToCity(gameState, CardName.MINE);
+      player1.addToCity(gameState, CardName.FARM);
+      player1.addToCity(gameState, CardName.FARM);
+      player2.addToCity(gameState, CardName.MINE);
+      player2.addToCity(gameState, CardName.MINE);
+      player2.addToCity(gameState, CardName.FARM);
+      player2.addToCity(gameState, CardName.FARM);
 
       expect(player1.numAvailableWorkers).to.be(2);
       expect(player2.numAvailableWorkers).to.be(2);
@@ -605,10 +605,10 @@ describe("GameState", () => {
 
   describe("PREPARE_FOR_SEASON", () => {
     it("should activate production in WINTER", () => {
-      player.addToCity(CardName.FARM);
-      player.addToCity(CardName.FARM);
-      player.addToCity(CardName.MINE);
-      player.addToCity(CardName.MINE);
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.MINE);
+      player.addToCity(gameState, CardName.MINE);
       expect(player.currentSeason).to.be(Season.WINTER);
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
       expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
@@ -631,10 +631,10 @@ describe("GameState", () => {
     });
 
     it("WINTER: should auto advance MONK/DOCTOR/WOODCARVER/PEDDLER if there are no other pending inputs", () => {
-      player.addToCity(CardName.MONK);
-      player.addToCity(CardName.DOCTOR);
-      player.addToCity(CardName.WOODCARVER);
-      player.addToCity(CardName.PEDDLER);
+      player.addToCity(gameState, CardName.MONK);
+      player.addToCity(gameState, CardName.DOCTOR);
+      player.addToCity(gameState, CardName.WOODCARVER);
+      player.addToCity(gameState, CardName.PEDDLER);
 
       expect(player.currentSeason).to.be(Season.WINTER);
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
@@ -661,11 +661,11 @@ describe("GameState", () => {
     });
 
     it("WINTER: should NOT auto advance MONK/DOCTOR/WOODCARVER/PEDDLER if there are other pending inputs", () => {
-      player.addToCity(CardName.MONK);
-      player.addToCity(CardName.DOCTOR);
-      player.addToCity(CardName.WOODCARVER);
-      player.addToCity(CardName.PEDDLER);
-      player.addToCity(CardName.FARM);
+      player.addToCity(gameState, CardName.MONK);
+      player.addToCity(gameState, CardName.DOCTOR);
+      player.addToCity(gameState, CardName.WOODCARVER);
+      player.addToCity(gameState, CardName.PEDDLER);
+      player.addToCity(gameState, CardName.FARM);
 
       expect(player.currentSeason).to.be(Season.WINTER);
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
@@ -704,12 +704,12 @@ describe("GameState", () => {
     });
 
     it("WINTER: should NOT auto advance MONK/DOCTOR/WOODCARVER/PEDDLER if there are other pending inputs", () => {
-      player.addToCity(CardName.MONK);
-      player.addToCity(CardName.DOCTOR);
-      player.addToCity(CardName.WOODCARVER);
-      player.addToCity(CardName.PEDDLER);
-      player.addToCity(CardName.FARM);
-      player.addToCity(CardName.MINE);
+      player.addToCity(gameState, CardName.MONK);
+      player.addToCity(gameState, CardName.DOCTOR);
+      player.addToCity(gameState, CardName.WOODCARVER);
+      player.addToCity(gameState, CardName.PEDDLER);
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.MINE);
 
       expect(player.currentSeason).to.be(Season.WINTER);
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
@@ -791,10 +791,10 @@ describe("GameState", () => {
     });
 
     it("should activate production in SUMMER", () => {
-      player.addToCity(CardName.FARM);
-      player.addToCity(CardName.FARM);
-      player.addToCity(CardName.MINE);
-      player.addToCity(CardName.MINE);
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.MINE);
+      player.addToCity(gameState, CardName.MINE);
 
       player.nextSeason();
       player.nextSeason();
@@ -825,10 +825,10 @@ describe("GameState", () => {
     });
 
     it("should draw 2 cards from the meadow in SPRING", () => {
-      player.addToCity(CardName.FARM);
-      player.addToCity(CardName.FARM);
-      player.addToCity(CardName.MINE);
-      player.addToCity(CardName.MINE);
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.MINE);
+      player.addToCity(gameState, CardName.MINE);
 
       player.nextSeason();
 
@@ -930,17 +930,17 @@ describe("GameState", () => {
 
   describe("gameLog", () => {
     it("should report game end information", () => {
-      gameState.players[0].addToCity(CardName.FARM); // 1
-      gameState.players[0].addToCity(CardName.QUEEN); // 4
-      gameState.players[0].addToCity(CardName.KING); // 4 + 0 events
+      gameState.players[0].addToCity(gameState, CardName.FARM); // 1
+      gameState.players[0].addToCity(gameState, CardName.QUEEN); // 4
+      gameState.players[0].addToCity(gameState, CardName.KING); // 4 + 0 events
       gameState.players[0].gainResources(gameState, {
         [ResourceType.VP]: 5,
       });
 
-      gameState.players[1].addToCity(CardName.ARCHITECT); // 2 + 2
-      gameState.players[1].addToCity(CardName.HISTORIAN); // 1
-      gameState.players[1].addToCity(CardName.HUSBAND); // 2
-      gameState.players[1].addToCity(CardName.WIFE); // 2 + 3 (for husband)
+      gameState.players[1].addToCity(gameState, CardName.ARCHITECT); // 2 + 2
+      gameState.players[1].addToCity(gameState, CardName.HISTORIAN); // 1
+      gameState.players[1].addToCity(gameState, CardName.HUSBAND); // 2
+      gameState.players[1].addToCity(gameState, CardName.WIFE); // 2 + 3 (for husband)
       gameState.players[1].gainResources(gameState, {
         [ResourceType.RESIN]: 1,
         [ResourceType.PEBBLE]: 1,

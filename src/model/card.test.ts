@@ -228,7 +228,7 @@ describe("Card", () => {
         const card = Card.fromName(CardName.BARGE_TOAD);
         player.cardsInHand.push(card.name);
         player.gainResources(gameState, card.baseCost);
-        player.addToCity(CardName.FARM);
+        player.addToCity(gameState, CardName.FARM);
 
         expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
         [player, gameState] = multiStepGameInputTest(gameState, [
@@ -241,10 +241,10 @@ describe("Card", () => {
         const card = Card.fromName(CardName.BARGE_TOAD);
         player.cardsInHand.push(card.name);
         player.gainResources(gameState, card.baseCost);
-        player.addToCity(CardName.FARM);
-        player.addToCity(CardName.FARM);
-        player.addToCity(CardName.FARM);
-        player.addToCity(CardName.FARM);
+        player.addToCity(gameState, CardName.FARM);
+        player.addToCity(gameState, CardName.FARM);
+        player.addToCity(gameState, CardName.FARM);
+        player.addToCity(gameState, CardName.FARM);
 
         expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
         [player, gameState] = multiStepGameInputTest(gameState, [
@@ -257,42 +257,42 @@ describe("Card", () => {
     describe(CardName.CASTLE, () => {
       it("should be worth 1 VP per common construction", () => {
         const card = Card.fromName(CardName.CASTLE);
-        player.addToCity(card.name);
+        player.addToCity(gameState, card.name);
 
         expect(card.getPoints(gameState, player.playerId)).to.be(4);
 
-        player.addToCity(CardName.FARM);
-        player.addToCity(CardName.FARM);
-        player.addToCity(CardName.FARM);
+        player.addToCity(gameState, CardName.FARM);
+        player.addToCity(gameState, CardName.FARM);
+        player.addToCity(gameState, CardName.FARM);
         expect(card.getPoints(gameState, player.playerId)).to.be(4 + 3);
       });
 
       it("does not count unique constructions / critters", () => {
         const card = Card.fromName(CardName.CASTLE);
-        player.addToCity(card.name);
+        player.addToCity(gameState, card.name);
 
         expect(card.getPoints(gameState, player.playerId)).to.be(4);
 
-        player.addToCity(CardName.EVERTREE);
-        player.addToCity(CardName.PALACE);
-        player.addToCity(CardName.DUNGEON);
+        player.addToCity(gameState, CardName.EVERTREE);
+        player.addToCity(gameState, CardName.PALACE);
+        player.addToCity(gameState, CardName.DUNGEON);
         expect(card.getPoints(gameState, player.playerId)).to.be(4);
 
-        player.addToCity(CardName.WIFE);
-        player.addToCity(CardName.RANGER);
-        player.addToCity(CardName.QUEEN);
+        player.addToCity(gameState, CardName.WIFE);
+        player.addToCity(gameState, CardName.RANGER);
+        player.addToCity(gameState, CardName.QUEEN);
         expect(card.getPoints(gameState, player.playerId)).to.be(4);
       });
     });
 
     describe(CardName.CEMETARY, () => {
       it("allow player to play one revealed card", () => {
-        player.addToCity(CardName.CEMETARY);
+        player.addToCity(gameState, CardName.CEMETARY);
 
         // Add some cards to make sure we only give player valid options.
-        player.addToCity(CardName.UNIVERSITY);
-        player.addToCity(CardName.KING);
-        player.addToCity(CardName.FARM);
+        player.addToCity(gameState, CardName.UNIVERSITY);
+        player.addToCity(gameState, CardName.KING);
+        player.addToCity(gameState, CardName.FARM);
 
         // Add some cards to the discard pile.
         gameState.discardPile.addToStack(CardName.FARM);
@@ -347,15 +347,15 @@ describe("Card", () => {
       });
 
       it("allow player to play FOOL even if they already have one in their city", () => {
-        player.addToCity(CardName.CEMETARY);
+        player.addToCity(gameState, CardName.CEMETARY);
 
         let targetPlayer = gameState.players[1];
 
         // Add some cards to make sure we only give player valid options.
-        player.addToCity(CardName.UNIVERSITY);
-        player.addToCity(CardName.KING);
-        player.addToCity(CardName.FARM);
-        player.addToCity(CardName.FOOL);
+        player.addToCity(gameState, CardName.UNIVERSITY);
+        player.addToCity(gameState, CardName.KING);
+        player.addToCity(gameState, CardName.FARM);
+        player.addToCity(gameState, CardName.FOOL);
 
         gameState.deck.addToStack(CardName.KING);
         gameState.deck.addToStack(CardName.QUEEN);
@@ -403,11 +403,11 @@ describe("Card", () => {
       });
 
       it("skip card selection if none are playable", () => {
-        player.addToCity(CardName.CEMETARY);
+        player.addToCity(gameState, CardName.CEMETARY);
 
         // Add some cards to make sure we only give player valid options.
-        player.addToCity(CardName.UNIVERSITY);
-        player.addToCity(CardName.KING);
+        player.addToCity(gameState, CardName.UNIVERSITY);
+        player.addToCity(gameState, CardName.KING);
 
         // Add some cards to the discard pile.
         gameState.discardPile.addToStack(CardName.FARM);
@@ -442,7 +442,7 @@ describe("Card", () => {
       });
 
       it("should auto advance if there aren't any cards in the discard pile", () => {
-        player.addToCity(CardName.CEMETARY);
+        player.addToCity(gameState, CardName.CEMETARY);
 
         expect(gameState.discardPile.length).to.be(0);
         expect(player.numAvailableWorkers).to.be(2);
@@ -495,7 +495,7 @@ describe("Card", () => {
       });
 
       it("should not allow discard pile as an option if there aren't any cards there", () => {
-        player.addToCity(CardName.CEMETARY);
+        player.addToCity(gameState, CardName.CEMETARY);
 
         expect(gameState.discardPile.length).to.be(0);
         expect(player.numAvailableWorkers).to.be(2);
@@ -528,7 +528,7 @@ describe("Card", () => {
         let player = gameState.getActivePlayer();
         const card = Card.fromName(CardName.CHAPEL);
 
-        player.addToCity(CardName.CHAPEL);
+        player.addToCity(gameState, CardName.CHAPEL);
 
         expect(player.numAvailableWorkers).to.be(2);
         expect(player.getFirstPlayedCard(CardName.CHAPEL)).to.eql({
@@ -567,7 +567,7 @@ describe("Card", () => {
         let player = gameState.getActivePlayer();
         const card = Card.fromName(CardName.CHAPEL);
 
-        player.addToCity(CardName.CHAPEL);
+        player.addToCity(gameState, CardName.CHAPEL);
         let chapelInfo = player.getFirstPlayedCard(CardName.CHAPEL);
         let chapelResources = chapelInfo.resources || { [ResourceType.VP]: 0 };
         chapelResources[ResourceType.VP] = 1;
@@ -622,8 +622,8 @@ describe("Card", () => {
       it("should allow the player to select a card to play", () => {
         const card = Card.fromName(CardName.CHIP_SWEEP);
 
-        player.addToCity(CardName.MINE);
-        player.addToCity(CardName.FARM);
+        player.addToCity(gameState, CardName.MINE);
+        player.addToCity(gameState, CardName.FARM);
 
         // Make sure we can play this card
         player.gainResources(gameState, card.baseCost);
@@ -656,8 +656,8 @@ describe("Card", () => {
       it("should not allow the player to copy their HUSBAND (if they are missing a WIFE AND FARM)", () => {
         const card = Card.fromName(CardName.CHIP_SWEEP);
 
-        player.addToCity(CardName.HUSBAND);
-        player.addToCity(CardName.FARM);
+        player.addToCity(gameState, CardName.HUSBAND);
+        player.addToCity(gameState, CardName.FARM);
 
         // Make sure we can play this card
         player.gainResources(gameState, card.baseCost);
@@ -685,7 +685,7 @@ describe("Card", () => {
 
     describe(CardName.CLOCK_TOWER, () => {
       it("should not prompt user to activate CLOCK_TOWER if no applicable workers", () => {
-        player.addToCity(CardName.CLOCK_TOWER);
+        player.addToCity(gameState, CardName.CLOCK_TOWER);
         expect(player.currentSeason).to.be(Season.WINTER);
         expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
         expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
@@ -714,11 +714,11 @@ describe("Card", () => {
       });
 
       it("should prompt user to activate CLOCK_TOWER before recalling workers", () => {
-        player.addToCity(CardName.CLOCK_TOWER);
-        player.addToCity(CardName.FARM);
-        player.addToCity(CardName.FARM);
-        player.addToCity(CardName.MINE);
-        player.addToCity(CardName.MINE);
+        player.addToCity(gameState, CardName.CLOCK_TOWER);
+        player.addToCity(gameState, CardName.FARM);
+        player.addToCity(gameState, CardName.FARM);
+        player.addToCity(gameState, CardName.MINE);
+        player.addToCity(gameState, CardName.MINE);
         expect(player.currentSeason).to.be(Season.WINTER);
         expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
         expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
@@ -836,12 +836,12 @@ describe("Card", () => {
       });
 
       it("should with multiple multi-step productions", () => {
-        player.addToCity(CardName.CLOCK_TOWER);
-        player.addToCity(CardName.TEACHER);
-        player.addToCity(CardName.CHIP_SWEEP);
-        player.addToCity(CardName.FARM);
-        player.addToCity(CardName.HUSBAND);
-        player.addToCity(CardName.WIFE);
+        player.addToCity(gameState, CardName.CLOCK_TOWER);
+        player.addToCity(gameState, CardName.TEACHER);
+        player.addToCity(gameState, CardName.CHIP_SWEEP);
+        player.addToCity(gameState, CardName.FARM);
+        player.addToCity(gameState, CardName.HUSBAND);
+        player.addToCity(gameState, CardName.WIFE);
         expect(player.currentSeason).to.be(Season.WINTER);
         expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
         expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
@@ -961,7 +961,7 @@ describe("Card", () => {
 
     describe(CardName.COURTHOUSE, () => {
       it("should do nothing is player plays a critter", () => {
-        player.addToCity(CardName.COURTHOUSE);
+        player.addToCity(gameState, CardName.COURTHOUSE);
 
         const cardToPlay = Card.fromName(CardName.HUSBAND);
         player.cardsInHand = [cardToPlay.name];
@@ -970,7 +970,7 @@ describe("Card", () => {
       });
 
       it("should ask to gain a non berry resource after a construction is played", () => {
-        player.addToCity(CardName.COURTHOUSE);
+        player.addToCity(gameState, CardName.COURTHOUSE);
 
         const cardToPlay = Card.fromName(CardName.FARM);
         player.cardsInHand = [cardToPlay.name];
@@ -998,7 +998,7 @@ describe("Card", () => {
 
     describe(CardName.CRANE, () => {
       it("should make constructions 3 cheaper", () => {
-        player.addToCity(CardName.CRANE);
+        player.addToCity(gameState, CardName.CRANE);
         player.cardsInHand.push(CardName.FARM);
 
         expect(() => {
@@ -1037,7 +1037,7 @@ describe("Card", () => {
       });
 
       it("cannot be used for critters", () => {
-        player.addToCity(CardName.CRANE);
+        player.addToCity(gameState, CardName.CRANE);
         player.cardsInHand.push(CardName.WIFE);
 
         expect(() => {
@@ -1123,10 +1123,10 @@ describe("Card", () => {
     describe(CardName.DUNGEON, () => {
       it("should allow players to play a card even if city is full", () => {
         const card = Card.fromName(CardName.DUNGEON);
-        player.addToCity(card.name);
+        player.addToCity(gameState, card.name);
         player.cardsInHand.push(CardName.FARM);
         for (let i = 0; i < 14; i++) {
-          player.addToCity(CardName.HUSBAND);
+          player.addToCity(gameState, CardName.HUSBAND);
         }
         [player, gameState] = multiStepGameInputTest(gameState, [
           playCardInput(CardName.FARM, {
@@ -1143,12 +1143,12 @@ describe("Card", () => {
 
       it("should NOT allow players to use DUNGEON with WANDERER if city is full", () => {
         const card = Card.fromName(CardName.DUNGEON);
-        player.addToCity(card.name);
+        player.addToCity(gameState, card.name);
         player.cardsInHand.push(CardName.FARM);
         for (let i = 0; i < 14; i++) {
-          player.addToCity(CardName.HUSBAND);
+          player.addToCity(gameState, CardName.HUSBAND);
         }
-        player.addToCity(CardName.WANDERER);
+        player.addToCity(gameState, CardName.WANDERER);
         expect(() => {
           [player, gameState] = multiStepGameInputTest(gameState, [
             playCardInput(CardName.FARM, {
@@ -1167,20 +1167,20 @@ describe("Card", () => {
 
     describe(CardName.EVERTREE, () => {
       it("should be worth 1 extra point per purple card", () => {
-        player.addToCity(CardName.EVERTREE);
+        player.addToCity(gameState, CardName.EVERTREE);
 
         const card = Card.fromName(CardName.EVERTREE);
         const playerId = player.playerId;
 
         expect(card.getPoints(gameState, playerId)).to.be(5 + 1);
 
-        player.addToCity(CardName.WIFE);
+        player.addToCity(gameState, CardName.WIFE);
         expect(card.getPoints(gameState, playerId)).to.be(5 + 2);
 
-        player.addToCity(CardName.PALACE);
+        player.addToCity(gameState, CardName.PALACE);
         expect(card.getPoints(gameState, playerId)).to.be(5 + 3);
 
-        player.addToCity(CardName.UNIVERSITY);
+        player.addToCity(gameState, CardName.UNIVERSITY);
         expect(card.getPoints(gameState, playerId)).to.be(5 + 3);
       });
     });
@@ -1321,7 +1321,7 @@ describe("Card", () => {
         const player3 = gameState.players[2].playerId;
         const card = Card.fromName(CardName.FOOL);
 
-        targetPlayer.addToCityMulti([
+        targetPlayer.addToCityMulti(gameState, [
           CardName.FARM,
           CardName.FARM,
           CardName.FARM,
@@ -1370,7 +1370,7 @@ describe("Card", () => {
         const player3 = gameState.players[2].playerId;
         const card = Card.fromName(CardName.FOOL);
 
-        targetPlayer.addToCity(card.name);
+        targetPlayer.addToCity(gameState, card.name);
 
         // Make sure we can play this card
         player.gainResources(gameState, card.baseCost);
@@ -1412,7 +1412,7 @@ describe("Card", () => {
         const card = Card.fromName(CardName.GENERAL_STORE);
         const gameInput = playCardInput(card.name);
 
-        player.addToCity(CardName.FARM);
+        player.addToCity(gameState, CardName.FARM);
         player.cardsInHand.push(card.name);
         player.gainResources(gameState, card.baseCost);
         expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
@@ -1424,7 +1424,7 @@ describe("Card", () => {
 
     describe(CardName.HISTORIAN, () => {
       it("should draw a card if player plays a construction", () => {
-        player.addToCity(CardName.HISTORIAN);
+        player.addToCity(gameState, CardName.HISTORIAN);
 
         const cardToPlay = Card.fromName(CardName.MINE);
         player.cardsInHand = [cardToPlay.name];
@@ -1440,7 +1440,7 @@ describe("Card", () => {
       });
 
       it("should draw a card if player plays a critter", () => {
-        player.addToCity(CardName.HISTORIAN);
+        player.addToCity(gameState, CardName.HISTORIAN);
 
         const cardToPlay = Card.fromName(CardName.SHOPKEEPER);
         player.cardsInHand = [cardToPlay.name];
@@ -1471,8 +1471,8 @@ describe("Card", () => {
       it("should do nothing if there's no available wife", () => {
         const card = Card.fromName(CardName.HUSBAND);
         // Add husband & wife to city
-        player.addToCity(CardName.WIFE);
-        player.addToCity(CardName.HUSBAND);
+        player.addToCity(gameState, CardName.WIFE);
+        player.addToCity(gameState, CardName.HUSBAND);
 
         player.cardsInHand = [CardName.HUSBAND];
         player.gainResources(gameState, card.baseCost);
@@ -1483,8 +1483,8 @@ describe("Card", () => {
         const card = Card.fromName(CardName.HUSBAND);
 
         player.cardsInHand = [CardName.HUSBAND];
-        player.addToCity(CardName.WIFE);
-        player.addToCity(CardName.FARM);
+        player.addToCity(gameState, CardName.WIFE);
+        player.addToCity(gameState, CardName.FARM);
         player.gainResources(gameState, card.baseCost);
 
         [player, gameState] = multiStepGameInputTest(gameState, [
@@ -1530,7 +1530,7 @@ describe("Card", () => {
 
         const card = Card.fromName(CardName.INN);
 
-        player.addToCity(CardName.INN);
+        player.addToCity(gameState, CardName.INN);
 
         expect(player.numAvailableWorkers).to.be(2);
         expect(player.getFirstPlayedCard(CardName.INN)).to.eql({
@@ -1601,7 +1601,7 @@ describe("Card", () => {
 
         // Make sure we can play this card
         player.gainResources(gameState, { [ResourceType.BERRY]: 4 });
-        player.addToCity(CardName.INN);
+        player.addToCity(gameState, CardName.INN);
 
         expect(player.numAvailableWorkers).to.be(2);
         expect(player.hasCardInCity(CardName.QUEEN)).to.be(false);
@@ -1678,10 +1678,10 @@ describe("Card", () => {
 
         // Make sure we can play this card
         player.gainResources(gameState, { [ResourceType.BERRY]: 4 });
-        player.addToCity(CardName.INN);
+        player.addToCity(gameState, CardName.INN);
         // Already have QUEEN & KING in city.
-        player.addToCity(CardName.QUEEN);
-        player.addToCity(CardName.KING);
+        player.addToCity(gameState, CardName.QUEEN);
+        player.addToCity(gameState, CardName.KING);
 
         expect(player.numAvailableWorkers).to.be(2);
         expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(4);
@@ -1737,7 +1737,7 @@ describe("Card", () => {
 
         const card = Card.fromName(CardName.INN);
 
-        player2.addToCity(CardName.INN);
+        player2.addToCity(gameState, CardName.INN);
 
         expect(player.numAvailableWorkers).to.be(2);
         expect(player.hasCardInCity(CardName.QUEEN)).to.be(false);
@@ -1796,7 +1796,7 @@ describe("Card", () => {
 
         // Make sure we can play this card
         player.cardsInHand.push(CardName.WIFE);
-        player.addToCity(CardName.INN);
+        player.addToCity(gameState, CardName.INN);
 
         expect(player.numAvailableWorkers).to.be(2);
         expect(player.hasCardInCity(CardName.WIFE)).to.be(false);
@@ -1847,7 +1847,7 @@ describe("Card", () => {
         const idx = gameState.meadowCards.indexOf(CardName.LOOKOUT);
         expect(idx).to.be(-1);
 
-        player.addToCity(CardName.INN);
+        player.addToCity(gameState, CardName.INN);
         player.cardsInHand.push(CardName.WIFE);
 
         expect(player.numAvailableWorkers).to.be(2);
@@ -1897,7 +1897,7 @@ describe("Card", () => {
     describe(CardName.INNKEEPER, () => {
       it("can be used to play a critter for 3 BERRY less", () => {
         const card = Card.fromName(CardName.WIFE);
-        player.addToCity(CardName.INNKEEPER);
+        player.addToCity(gameState, CardName.INNKEEPER);
         player.cardsInHand.push(card.name);
         expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
 
@@ -1920,11 +1920,11 @@ describe("Card", () => {
 
       it("can be used to play a critter even if city is full", () => {
         const card = Card.fromName(CardName.WIFE);
-        player.addToCity(CardName.INNKEEPER);
+        player.addToCity(gameState, CardName.INNKEEPER);
         player.cardsInHand.push(card.name);
 
         for (let i = 0; i < 14; i++) {
-          player.addToCity(CardName.FARM);
+          player.addToCity(gameState, CardName.FARM);
         }
 
         expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
@@ -1949,7 +1949,7 @@ describe("Card", () => {
 
       it("can be used to play a critter that cost more then 3 BERRY", () => {
         const card = Card.fromName(CardName.QUEEN);
-        player.addToCity(CardName.INNKEEPER);
+        player.addToCity(gameState, CardName.INNKEEPER);
         player.cardsInHand.push(card.name);
         player.gainResources(gameState, { [ResourceType.BERRY]: 2 });
 
@@ -1972,7 +1972,7 @@ describe("Card", () => {
 
       it("cannot be used to play a construction", () => {
         const card = Card.fromName(CardName.FARM);
-        player.addToCity(CardName.INNKEEPER);
+        player.addToCity(gameState, CardName.INNKEEPER);
         player.cardsInHand.push(card.name);
         expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
         expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
@@ -2016,7 +2016,7 @@ describe("Card", () => {
     describe(CardName.LOOKOUT, () => {
       it("should allow player to copy a basic location", () => {
         let player1 = gameState.getActivePlayer();
-        player1.addToCity(CardName.LOOKOUT);
+        player1.addToCity(gameState, CardName.LOOKOUT);
 
         expect(player1.numAvailableWorkers).to.be(2);
         expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
@@ -2062,7 +2062,7 @@ describe("Card", () => {
       it("should allow player to copy a forest location", () => {
         gameState.locationsMap[LocationName.FOREST_TWO_BERRY_ONE_CARD] = [];
         let player1 = gameState.getActivePlayer();
-        player1.addToCity(CardName.LOOKOUT);
+        player1.addToCity(gameState, CardName.LOOKOUT);
 
         expect(player1.numAvailableWorkers).to.be(2);
         expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
@@ -2120,7 +2120,7 @@ describe("Card", () => {
         ];
         player1.placeWorkerOnLocation(LocationName.BASIC_TWO_CARDS_AND_ONE_VP);
 
-        player1.addToCity(CardName.LOOKOUT);
+        player1.addToCity(gameState, CardName.LOOKOUT);
 
         expect(player1.numAvailableWorkers).to.be(1);
         expect(player1.cardsInHand.length).to.be(0);
@@ -2162,7 +2162,7 @@ describe("Card", () => {
           LocationName.FOREST_DISCARD_ANY_THEN_DRAW_TWO_PER_CARD
         ] = [];
         let player1 = gameState.getActivePlayer();
-        player1.addToCity(CardName.LOOKOUT);
+        player1.addToCity(gameState, CardName.LOOKOUT);
         player1.cardsInHand = [
           CardName.FARM,
           CardName.FARM,
@@ -2231,7 +2231,7 @@ describe("Card", () => {
       it("should allow player to copy location with a worker on it", () => {
         gameState.locationsMap[LocationName.FOREST_TWO_BERRY_ONE_CARD] = [];
         let player1 = gameState.getActivePlayer();
-        player1.addToCity(CardName.LOOKOUT);
+        player1.addToCity(gameState, CardName.LOOKOUT);
 
         expect(player1.numAvailableWorkers).to.be(2);
         expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
@@ -2298,8 +2298,8 @@ describe("Card", () => {
         let player1 = gameState.getActivePlayer();
         const player2 = gameState.players[1];
 
-        player2.addToCity(CardName.GENERAL_STORE);
-        player2.addToCity(CardName.FARM);
+        player2.addToCity(gameState, CardName.GENERAL_STORE);
+        player2.addToCity(gameState, CardName.FARM);
 
         // Make sure we can play this card
         player1.gainResources(gameState, card.baseCost);
@@ -2335,8 +2335,8 @@ describe("Card", () => {
         let player1 = gameState.getActivePlayer();
         const player2 = gameState.players[1];
 
-        player2.addToCity(CardName.BARGE_TOAD);
-        player2.addToCity(CardName.FARM);
+        player2.addToCity(gameState, CardName.BARGE_TOAD);
+        player2.addToCity(gameState, CardName.FARM);
 
         // Make sure we can play this card
         player1.gainResources(gameState, card.baseCost);
@@ -2372,9 +2372,9 @@ describe("Card", () => {
         let player1 = gameState.getActivePlayer();
         const player2 = gameState.players[1];
 
-        player2.addToCity(CardName.HUSBAND);
-        player2.addToCity(CardName.WIFE);
-        player2.addToCity(CardName.FARM);
+        player2.addToCity(gameState, CardName.HUSBAND);
+        player2.addToCity(gameState, CardName.WIFE);
+        player2.addToCity(gameState, CardName.FARM);
 
         // Make sure we can play this card
         player1.gainResources(gameState, card.baseCost);
@@ -2423,8 +2423,8 @@ describe("Card", () => {
         let player1 = gameState.getActivePlayer();
         const player2 = gameState.players[1];
 
-        player2.addToCity(CardName.HUSBAND);
-        player2.addToCity(CardName.FARM);
+        player2.addToCity(gameState, CardName.HUSBAND);
+        player2.addToCity(gameState, CardName.FARM);
 
         // Make sure we can play this card
         player1.gainResources(gameState, card.baseCost);
@@ -2456,13 +2456,13 @@ describe("Card", () => {
         let player1 = gameState.getActivePlayer();
         const player2 = gameState.players[1];
 
-        player1.addToCity(CardName.FARM);
-        player1.addToCity(CardName.CHIP_SWEEP);
-        player1.addToCity(CardName.GENERAL_STORE);
+        player1.addToCity(gameState, CardName.FARM);
+        player1.addToCity(gameState, CardName.CHIP_SWEEP);
+        player1.addToCity(gameState, CardName.GENERAL_STORE);
 
-        player2.addToCity(CardName.MINER_MOLE);
-        player2.addToCity(CardName.CHIP_SWEEP);
-        player2.addToCity(CardName.GENERAL_STORE);
+        player2.addToCity(gameState, CardName.MINER_MOLE);
+        player2.addToCity(gameState, CardName.CHIP_SWEEP);
+        player2.addToCity(gameState, CardName.GENERAL_STORE);
 
         // Make sure we can play this card
         player1.gainResources(gameState, card.baseCost);
@@ -2496,7 +2496,7 @@ describe("Card", () => {
 
     describe(CardName.MONASTERY, () => {
       it("work", () => {
-        player.addToCity(CardName.MONASTERY);
+        player.addToCity(gameState, CardName.MONASTERY);
         expect(() => {
           multiStepGameInputTest(gameState, [
             {
@@ -2765,24 +2765,24 @@ describe("Card", () => {
     describe(CardName.PALACE, () => {
       it("worth 1 vp more per unique construction", () => {
         const card = Card.fromName(CardName.PALACE);
-        player.addToCity(card.name);
+        player.addToCity(gameState, card.name);
         const playerId = player.playerId;
 
         expect(card.getPoints(gameState, playerId)).to.be(4 + 1);
 
-        player.addToCity(CardName.DUNGEON);
+        player.addToCity(gameState, CardName.DUNGEON);
         expect(card.getPoints(gameState, playerId)).to.be(4 + 2);
 
-        player.addToCity(CardName.THEATRE);
+        player.addToCity(gameState, CardName.THEATRE);
         expect(card.getPoints(gameState, playerId)).to.be(4 + 3);
 
-        player.addToCity(CardName.UNIVERSITY);
+        player.addToCity(gameState, CardName.UNIVERSITY);
         expect(card.getPoints(gameState, playerId)).to.be(4 + 4);
 
-        player.addToCity(CardName.FARM);
+        player.addToCity(gameState, CardName.FARM);
         expect(card.getPoints(gameState, playerId)).to.be(4 + 4);
 
-        player.addToCity(CardName.RANGER);
+        player.addToCity(gameState, CardName.RANGER);
         expect(card.getPoints(gameState, playerId)).to.be(4 + 4);
       });
     });
@@ -3013,8 +3013,8 @@ describe("Card", () => {
       it("should trigger HISTORIAN/SHOPKEEPER cards when played via the postal pigeon", () => {
         const card = Card.fromName(CardName.POSTAL_PIGEON);
         player.gainResources(gameState, card.baseCost);
-        player.addToCity(CardName.HISTORIAN);
-        player.addToCity(CardName.SHOPKEEPER);
+        player.addToCity(gameState, CardName.HISTORIAN);
+        player.addToCity(gameState, CardName.SHOPKEEPER);
 
         // For historian
         gameState.deck.addToStack(CardName.WIFE);
@@ -3057,8 +3057,8 @@ describe("Card", () => {
       it("should trigger COURTHOUSE cards when played via the postal pigeon", () => {
         const card = Card.fromName(CardName.POSTAL_PIGEON);
         player.gainResources(gameState, card.baseCost);
-        player.addToCity(CardName.HISTORIAN);
-        player.addToCity(CardName.COURTHOUSE);
+        player.addToCity(gameState, CardName.HISTORIAN);
+        player.addToCity(gameState, CardName.COURTHOUSE);
 
         // For historian
         gameState.deck.addToStack(CardName.WIFE);
@@ -3195,7 +3195,7 @@ describe("Card", () => {
       it("should not be visitable if player has less than 2 cards", () => {
         const card = Card.fromName(CardName.POST_OFFICE);
         player.cardsInHand = [];
-        player.addToCity(CardName.POST_OFFICE);
+        player.addToCity(gameState, CardName.POST_OFFICE);
 
         const visitDestinationInput = {
           inputType: GameInputType.VISIT_DESTINATION_CARD as const,
@@ -3218,7 +3218,7 @@ describe("Card", () => {
           CardName.QUEEN,
           CardName.KING,
         ];
-        player.addToCity(CardName.POST_OFFICE);
+        player.addToCity(gameState, CardName.POST_OFFICE);
 
         expect(player.numAvailableWorkers).to.be(2);
         expect(player.getPlayedCardInfos(CardName.POST_OFFICE)).to.eql([
@@ -3319,7 +3319,7 @@ describe("Card", () => {
         player = gameState.getActivePlayer();
 
         const card = Card.fromName(CardName.QUEEN);
-        player.addToCity(CardName.QUEEN);
+        player.addToCity(gameState, CardName.QUEEN);
         player.cardsInHand.push(CardName.FARM);
 
         expect(player.numAvailableWorkers).to.be(2);
@@ -3390,7 +3390,7 @@ describe("Card", () => {
 
       it("should allow player to buy card from hand for less than 3 points for free", () => {
         const card = Card.fromName(CardName.QUEEN);
-        player.addToCity(CardName.QUEEN);
+        player.addToCity(gameState, CardName.QUEEN);
         player.cardsInHand.push(CardName.HUSBAND);
 
         expect(player.numAvailableWorkers).to.be(2);
@@ -3437,7 +3437,7 @@ describe("Card", () => {
         player = gameState.getActivePlayer();
 
         const card = Card.fromName(CardName.QUEEN);
-        player.addToCity(CardName.QUEEN);
+        player.addToCity(gameState, CardName.QUEEN);
 
         expect(player.numAvailableWorkers).to.be(2);
         expect(player.hasCardInCity(CardName.HUSBAND)).to.be(false);
@@ -3490,7 +3490,7 @@ describe("Card", () => {
         let player = gameState.getActivePlayer();
 
         const card = Card.fromName(CardName.QUEEN);
-        player.addToCity(CardName.QUEEN);
+        player.addToCity(gameState, CardName.QUEEN);
 
         expect(player.numAvailableWorkers).to.be(2);
         expect(player.hasCardInCity(CardName.FAIRGROUNDS)).to.be(false);
@@ -3543,7 +3543,7 @@ describe("Card", () => {
         const player = gameState.getActivePlayer();
 
         const card = Card.fromName(CardName.QUEEN);
-        player.addToCity(CardName.QUEEN);
+        player.addToCity(gameState, CardName.QUEEN);
 
         expect(player.numAvailableWorkers).to.be(2);
 
@@ -3591,7 +3591,7 @@ describe("Card", () => {
         });
         const player = gameState.getActivePlayer();
         const card = Card.fromName(CardName.QUEEN);
-        player.addToCity(CardName.QUEEN);
+        player.addToCity(gameState, CardName.QUEEN);
 
         expect(() => {
           gameState.next({
@@ -3606,7 +3606,7 @@ describe("Card", () => {
       it("should not allow player to visit the queen if occupied", () => {
         const card = Card.fromName(CardName.QUEEN);
         player.cardsInHand.push(CardName.WIFE);
-        player.addToCity(CardName.QUEEN);
+        player.addToCity(gameState, CardName.QUEEN);
         player.placeWorkerOnCard(
           gameState,
           player.getFirstPlayedCard(CardName.QUEEN)
@@ -3640,9 +3640,9 @@ describe("Card", () => {
         player.cardsInHand.push(CardName.WIFE);
 
         // Fill up city
-        player.addToCity(CardName.QUEEN);
+        player.addToCity(gameState, CardName.QUEEN);
         for (let i = 0; i < 14; i++) {
-          player.addToCity(CardName.FARM);
+          player.addToCity(gameState, CardName.FARM);
         }
 
         expect(() => {
@@ -3673,9 +3673,9 @@ describe("Card", () => {
         // Make sure we can play this card
         player.gainResources(gameState, card.baseCost);
         player.cardsInHand.push(CardName.RUINS);
-        player.addToCity(CardName.QUEEN);
+        player.addToCity(gameState, CardName.QUEEN);
         for (let i = 0; i < 14; i++) {
-          player.addToCity(CardName.FARM);
+          player.addToCity(gameState, CardName.FARM);
         }
 
         [player, gameState] = multiStepGameInputTest(gameState, [
@@ -3888,7 +3888,7 @@ describe("Card", () => {
       it("should be playable if there's a construction in the city", () => {
         const card = Card.fromName(CardName.RUINS);
         player.cardsInHand.push(card.name);
-        player.addToCity(CardName.FARM);
+        player.addToCity(gameState, CardName.FARM);
         [player, gameState] = multiStepGameInputTest(gameState, [
           playCardInput(card.name),
           {
@@ -3911,9 +3911,9 @@ describe("Card", () => {
       it("should be playable even if there's no space in the city", () => {
         const card = Card.fromName(CardName.RUINS);
         player.cardsInHand.push(card.name);
-        player.addToCity(CardName.FARM);
+        player.addToCity(gameState, CardName.FARM);
         for (let i = 0; i < 14; i++) {
-          player.addToCity(CardName.HUSBAND);
+          player.addToCity(gameState, CardName.HUSBAND);
         }
         [player, gameState] = multiStepGameInputTest(gameState, [
           playCardInput(card.name),
@@ -3938,24 +3938,24 @@ describe("Card", () => {
     describe(CardName.SCHOOL, () => {
       it("worth 1 extra VP per common critter", () => {
         const card = Card.fromName(CardName.SCHOOL);
-        player.addToCity(card.name);
+        player.addToCity(gameState, card.name);
         const playerId = player.playerId;
 
         expect(card.getPoints(gameState, playerId)).to.be(2 + 0);
 
-        player.addToCity(CardName.DUNGEON);
+        player.addToCity(gameState, CardName.DUNGEON);
         expect(card.getPoints(gameState, playerId)).to.be(2 + 0);
 
-        player.addToCity(CardName.RANGER);
+        player.addToCity(gameState, CardName.RANGER);
         expect(card.getPoints(gameState, playerId)).to.be(2 + 0);
 
-        player.addToCity(CardName.HUSBAND);
+        player.addToCity(gameState, CardName.HUSBAND);
         expect(card.getPoints(gameState, playerId)).to.be(2 + 1);
 
-        player.addToCity(CardName.WANDERER);
+        player.addToCity(gameState, CardName.WANDERER);
         expect(card.getPoints(gameState, playerId)).to.be(2 + 2);
 
-        player.addToCity(CardName.WANDERER);
+        player.addToCity(gameState, CardName.WANDERER);
         expect(card.getPoints(gameState, playerId)).to.be(2 + 3);
       });
     });
@@ -4006,7 +4006,7 @@ describe("Card", () => {
           [ResourceType.BERRY]: 2,
         });
         player1.addCardToHand(gameState, card.name);
-        player1.addToCity(CardName.JUDGE);
+        player1.addToCity(gameState, CardName.JUDGE);
         expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
         expect(player2.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
 
@@ -4070,7 +4070,7 @@ describe("Card", () => {
           [ResourceType.BERRY]: 2,
         });
         player1.addCardToHand(gameState, card.name);
-        player1.addToCity(CardName.QUEEN);
+        player1.addToCity(gameState, CardName.QUEEN);
         expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
         expect(player2.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
 
@@ -4107,7 +4107,7 @@ describe("Card", () => {
 
     describe(CardName.SHOPKEEPER, () => {
       it("should do nothing if player plays a construction", () => {
-        player.addToCity(CardName.SHOPKEEPER);
+        player.addToCity(gameState, CardName.SHOPKEEPER);
 
         const cardToPlay = Card.fromName(CardName.MINE);
         player.cardsInHand = [cardToPlay.name];
@@ -4123,7 +4123,7 @@ describe("Card", () => {
       });
 
       it("should gain a berry if player plays a critter", () => {
-        player.addToCity(CardName.SHOPKEEPER);
+        player.addToCity(gameState, CardName.SHOPKEEPER);
 
         const cardToPlay = Card.fromName(CardName.QUEEN);
         player.cardsInHand = [cardToPlay.name];
@@ -4201,7 +4201,7 @@ describe("Card", () => {
         player.cardsInHand = [card.name];
 
         // play one store card
-        const storehouse1 = player.addToCity(card.name);
+        const storehouse1 = player.addToCity(gameState, card.name);
         // put 5 berries on it.
         storehouse1.resources![ResourceType.BERRY]! = 5;
 
@@ -4262,7 +4262,7 @@ describe("Card", () => {
 
       it("should add resources to the correct storehouse", () => {
         const card = Card.fromName(CardName.STOREHOUSE);
-        const storehouse1 = player.addToCity(card.name);
+        const storehouse1 = player.addToCity(gameState, card.name);
         storehouse1.resources![ResourceType.BERRY]! = 5;
 
         expect(player.getFirstPlayedCard(card.name)).to.eql({
@@ -4304,9 +4304,9 @@ describe("Card", () => {
       });
 
       it("should allow multiple CHIP_SWEEP to add resources to same correct storehouse", () => {
-        player.addToCity(CardName.CHIP_SWEEP);
-        player.addToCity(CardName.CHIP_SWEEP);
-        player.addToCity(CardName.STOREHOUSE);
+        player.addToCity(gameState, CardName.CHIP_SWEEP);
+        player.addToCity(gameState, CardName.CHIP_SWEEP);
+        player.addToCity(gameState, CardName.STOREHOUSE);
 
         // Use up all workers
         gameState.locationsMap[LocationName.BASIC_TWO_CARDS_AND_ONE_VP]!.push(
@@ -4417,7 +4417,7 @@ describe("Card", () => {
 
       it("should give player resources after visiting the storehouse", () => {
         const card = Card.fromName(CardName.STOREHOUSE);
-        const storehouse = player.addToCity(card.name);
+        const storehouse = player.addToCity(gameState, card.name);
         storehouse.resources![ResourceType.BERRY]! = 5;
 
         expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
@@ -4519,24 +4519,24 @@ describe("Card", () => {
     describe(CardName.THEATRE, () => {
       it("worth 1 extra VP per unique critter", () => {
         const card = Card.fromName(CardName.THEATRE);
-        player.addToCity(card.name);
+        player.addToCity(gameState, card.name);
         const playerId = player.playerId;
 
         expect(card.getPoints(gameState, playerId)).to.be(3 + 0);
 
-        player.addToCity(CardName.DUNGEON);
+        player.addToCity(gameState, CardName.DUNGEON);
         expect(card.getPoints(gameState, playerId)).to.be(3 + 0);
 
-        player.addToCity(CardName.RANGER);
+        player.addToCity(gameState, CardName.RANGER);
         expect(card.getPoints(gameState, playerId)).to.be(3 + 1);
 
-        player.addToCity(CardName.HUSBAND);
+        player.addToCity(gameState, CardName.HUSBAND);
         expect(card.getPoints(gameState, playerId)).to.be(3 + 1);
 
-        player.addToCity(CardName.WANDERER);
+        player.addToCity(gameState, CardName.WANDERER);
         expect(card.getPoints(gameState, playerId)).to.be(3 + 1);
 
-        player.addToCity(CardName.BARD);
+        player.addToCity(gameState, CardName.BARD);
         expect(card.getPoints(gameState, playerId)).to.be(3 + 2);
       });
     });
@@ -4645,10 +4645,10 @@ describe("Card", () => {
 
     describe(CardName.UNIVERSITY, () => {
       it("should allow player remove card from city with university", () => {
-        player.addToCity(CardName.UNIVERSITY);
-        player.addToCity(CardName.FARM);
-        player.addToCity(CardName.CHAPEL);
-        player.addToCity(CardName.MONK);
+        player.addToCity(gameState, CardName.UNIVERSITY);
+        player.addToCity(gameState, CardName.FARM);
+        player.addToCity(gameState, CardName.CHAPEL);
+        player.addToCity(gameState, CardName.MONK);
 
         expect(player.numAvailableWorkers).to.be(2);
         expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
@@ -4705,8 +4705,8 @@ describe("Card", () => {
       });
 
       it("remove card with non-permanently placed worker on it", () => {
-        player.addToCity(CardName.UNIVERSITY);
-        player.addToCity(CardName.LOOKOUT);
+        player.addToCity(gameState, CardName.UNIVERSITY);
+        player.addToCity(gameState, CardName.LOOKOUT);
 
         expect(player.numAvailableWorkers).to.be(2);
         expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
@@ -4775,9 +4775,9 @@ describe("Card", () => {
         let player1 = gameState.getActivePlayer();
         let player2 = gameState.players[1];
 
-        player1.addToCity(CardName.UNIVERSITY);
-        player1.addToCity(CardName.INN);
-        player2.addToCity(CardName.LOOKOUT);
+        player1.addToCity(gameState, CardName.UNIVERSITY);
+        player1.addToCity(gameState, CardName.INN);
+        player2.addToCity(gameState, CardName.LOOKOUT);
 
         expect(player1.numAvailableWorkers).to.be(2);
         expect(player2.numAvailableWorkers).to.be(2);
@@ -4838,8 +4838,8 @@ describe("Card", () => {
       });
 
       it("remove card with permanently placed worker on it", () => {
-        player.addToCity(CardName.UNIVERSITY);
-        player.addToCity(CardName.MONASTERY);
+        player.addToCity(gameState, CardName.UNIVERSITY);
+        player.addToCity(gameState, CardName.MONASTERY);
 
         expect(player.numAvailableWorkers).to.be(2);
         expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
@@ -4923,19 +4923,19 @@ describe("Card", () => {
       it("should be worth 3 points when paired with HUSBAND", () => {
         expect(player.getPointsFromCards(gameState)).to.be(0);
 
-        player.addToCity(CardName.WIFE);
+        player.addToCity(gameState, CardName.WIFE);
         expect(player.getPointsFromCards(gameState)).to.be(2);
 
-        player.addToCity(CardName.WIFE);
+        player.addToCity(gameState, CardName.WIFE);
         expect(player.getPointsFromCards(gameState)).to.be(4);
 
-        player.addToCity(CardName.HUSBAND);
+        player.addToCity(gameState, CardName.HUSBAND);
         expect(player.getPointsFromCards(gameState)).to.be(6 + 3);
 
-        player.addToCity(CardName.HUSBAND);
+        player.addToCity(gameState, CardName.HUSBAND);
         expect(player.getPointsFromCards(gameState)).to.be(8 + 3 + 3);
 
-        player.addToCity(CardName.HUSBAND);
+        player.addToCity(gameState, CardName.HUSBAND);
         expect(player.getPointsFromCards(gameState)).to.be(10 + 3 + 3);
       });
     });
@@ -4997,7 +4997,7 @@ describe("Card", () => {
       it("should increase your max hand size by the number of PEARL", () => {
         expect(player.maxHandSize).to.be(8);
 
-        player.addToCity(CardName.BRIDGE);
+        player.addToCity(gameState, CardName.BRIDGE);
         expect(player.maxHandSize).to.be(8);
 
         player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
@@ -5008,7 +5008,7 @@ describe("Card", () => {
       });
 
       it("should draw 2 cards every time you gain a PEARL", () => {
-        player.addToCity(CardName.BRIDGE);
+        player.addToCity(gameState, CardName.BRIDGE);
 
         expect(player.cardsInHand.length).to.be(0);
 
@@ -5121,7 +5121,7 @@ describe("Card", () => {
       });
 
       it("should be playable w a construction", () => {
-        player.addToCity(CardName.FARM);
+        player.addToCity(gameState, CardName.FARM);
         player.cardsInHand = [card.name];
         player.gainResources(gameState, card.baseCost);
         [player, gameState] = multiStepGameInputTest(
@@ -5144,9 +5144,8 @@ describe("Card", () => {
       });
 
       it("should be relocated if Construction is destroyed", () => {
-        player.addToCity(CardName.FARM);
-        player.addToCity(CardName.MESSENGER);
-        player.addToCity(CardName.UNIVERSITY);
+        player.addToCity(gameState, CardName.FARM);
+        player.addToCity(gameState, CardName.MESSENGER);
 
         player.updatePlayedCard(
           gameState,
@@ -5158,6 +5157,8 @@ describe("Card", () => {
           player.getFirstPlayedCard(CardName.MESSENGER),
           { shareSpaceWith: CardName.FARM }
         );
+
+        player.addToCity(gameState, CardName.UNIVERSITY);
 
         const selectPlayedCardInput = {
           inputType: GameInputType.SELECT_PLAYED_CARDS as const,
@@ -5217,7 +5218,7 @@ describe("Card", () => {
       });
 
       it("should remove from Construction if MESSENGER is removed from city", () => {
-        player.addToCity(CardName.FARM);
+        player.addToCity(gameState, CardName.FARM);
         player.cardsInHand = [card.name];
         player.gainResources(gameState, card.baseCost);
         [player, gameState] = multiStepGameInputTest(
@@ -5240,9 +5241,9 @@ describe("Card", () => {
       });
 
       it("should be relocated if Construction is destroyed", () => {
-        player.addToCity(CardName.FARM);
-        player.addToCity(CardName.MESSENGER);
-        player.addToCity(CardName.UNIVERSITY);
+        player.addToCity(gameState, CardName.FARM);
+        player.addToCity(gameState, CardName.MESSENGER);
+        player.addToCity(gameState, CardName.UNIVERSITY);
 
         player.updatePlayedCard(
           gameState,
@@ -5312,11 +5313,55 @@ describe("Card", () => {
         });
       });
 
-      it("should be removed if no Construction to moved to", () => {
-        player.addToCity(CardName.FARM);
-        player.addToCity(CardName.UNIVERSITY);
-        player.addToCity(CardName.MESSENGER);
-        player.addToCity(CardName.MESSENGER);
+      it("should be relocated if Construction is destroyed via played RUINS", () => {
+        player.addToCity(gameState, CardName.FARM);
+        player.addToCity(gameState, CardName.MESSENGER);
+
+        player.updatePlayedCard(
+          gameState,
+          player.getFirstPlayedCard(CardName.FARM),
+          { shareSpaceWith: CardName.MESSENGER }
+        );
+        player.updatePlayedCard(
+          gameState,
+          player.getFirstPlayedCard(CardName.MESSENGER),
+          { shareSpaceWith: CardName.FARM }
+        );
+        player.cardsInHand.push(CardName.RUINS);
+
+        expect(player.getFirstPlayedCard(CardName.MESSENGER)).to.eql({
+          cardName: CardName.MESSENGER,
+          cardOwnerId: player.playerId,
+          shareSpaceWith: CardName.FARM,
+        });
+
+        [player, gameState] = multiStepGameInputTest(
+          gameState,
+          [playCardInput(CardName.RUINS)],
+          { autoAdvance: true }
+        );
+
+        expect(player.hasCardInCity(CardName.MESSENGER)).to.be(true);
+        expect(player.getFirstPlayedCard(CardName.MESSENGER)).to.eql({
+          cardName: CardName.MESSENGER,
+          cardOwnerId: player.playerId,
+          shareSpaceWith: CardName.RUINS,
+        });
+        expect(player.hasCardInCity(CardName.RUINS)).to.be(true);
+        expect(player.getFirstPlayedCard(CardName.RUINS)).to.eql({
+          cardName: CardName.RUINS,
+          cardOwnerId: player.playerId,
+          usedForCritter: false,
+          shareSpaceWith: CardName.MESSENGER,
+        });
+      });
+
+      // See: https://boardgamegeek.com/thread/2261133/article/32762766#32762766
+      it("should be remain if there is no Construction to move to", () => {
+        player.addToCity(gameState, CardName.FARM);
+        player.addToCity(gameState, CardName.UNIVERSITY);
+        player.addToCity(gameState, CardName.MESSENGER);
+        player.addToCity(gameState, CardName.MESSENGER);
 
         player.updatePlayedCard(
           gameState,
@@ -5383,7 +5428,19 @@ describe("Card", () => {
           ],
           { autoAdvance: true }
         );
-        expect(player.getPlayedCardInfos(CardName.MESSENGER).length).to.be(1);
+        expect(player.getPlayedCardInfos(CardName.MESSENGER)).to.eql([
+          {
+            cardName: CardName.MESSENGER,
+            cardOwnerId: player.playerId,
+            shareSpaceWith: undefined,
+          },
+          {
+            cardName: CardName.MESSENGER,
+            cardOwnerId: player.playerId,
+            shareSpaceWith: CardName.UNIVERSITY,
+          },
+        ]);
+        expect(player.getPlayedCardInfos(CardName.MESSENGER).length).to.be(2);
       });
     });
   });

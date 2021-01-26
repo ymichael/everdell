@@ -68,12 +68,12 @@ describe("RiverDestinationMap", () => {
           const map = gameState.riverDestinationMap as RiverDestinationMap;
           expect(map.canVisitSpotCheck(gameState, name)).to.match(/must have/i);
 
-          player.addToCity(CardName.FARM);
-          player.addToCity(CardName.FARM);
-          player.addToCity(CardName.UNIVERSITY);
+          player.addToCity(gameState, CardName.FARM);
+          player.addToCity(gameState, CardName.FARM);
+          player.addToCity(gameState, CardName.UNIVERSITY);
           expect(map.canVisitSpotCheck(gameState, name)).to.match(/must have/i);
 
-          player.addToCity(CardName.FARM);
+          player.addToCity(gameState, CardName.FARM);
           expect(map.canVisitSpotCheck(gameState, name)).to.be(null);
         });
 
@@ -81,9 +81,9 @@ describe("RiverDestinationMap", () => {
           const map = gameState.riverDestinationMap as RiverDestinationMap;
           expect(map.canVisitSpotCheck(gameState, name)).to.match(/must have/i);
 
-          player.addToCity(CardName.FARM);
-          player.addToCity(CardName.FARM);
-          player.addToCity(CardName.MESSENGER);
+          player.addToCity(gameState, CardName.FARM);
+          player.addToCity(gameState, CardName.FARM);
+          player.addToCity(gameState, CardName.MESSENGER);
 
           player.updatePlayedCard(
             gameState,
@@ -106,12 +106,12 @@ describe("RiverDestinationMap", () => {
 
           expect(map.canVisitSpotCheck(gameState, name)).to.match(/must have/i);
 
-          player.addToCity(CardName.RANGER);
-          player.addToCity(CardName.FARM);
-          player.addToCity(CardName.UNIVERSITY);
+          player.addToCity(gameState, CardName.RANGER);
+          player.addToCity(gameState, CardName.FARM);
+          player.addToCity(gameState, CardName.UNIVERSITY);
           expect(map.canVisitSpotCheck(gameState, name)).to.match(/must have/i);
 
-          player.addToCity(CardName.QUEEN);
+          player.addToCity(gameState, CardName.QUEEN);
           expect(map.canVisitSpotCheck(gameState, name)).to.be(null);
         });
 
@@ -119,8 +119,8 @@ describe("RiverDestinationMap", () => {
           const map = gameState.riverDestinationMap as RiverDestinationMap;
           expect(map.canVisitSpotCheck(gameState, name)).to.match(/must have/i);
 
-          player.addToCity(CardName.UNIVERSITY);
-          player.addToCity(CardName.MESSENGER);
+          player.addToCity(gameState, CardName.UNIVERSITY);
+          player.addToCity(gameState, CardName.MESSENGER);
 
           player.updatePlayedCard(
             gameState,
@@ -143,12 +143,12 @@ describe("RiverDestinationMap", () => {
 
           expect(map.canVisitSpotCheck(gameState, name)).to.match(/must have/i);
 
-          player.addToCity(CardName.RANGER);
-          player.addToCity(CardName.JUDGE);
-          player.addToCity(CardName.UNIVERSITY);
+          player.addToCity(gameState, CardName.RANGER);
+          player.addToCity(gameState, CardName.JUDGE);
+          player.addToCity(gameState, CardName.UNIVERSITY);
           expect(map.canVisitSpotCheck(gameState, name)).to.match(/must have/i);
 
-          player.addToCity(CardName.SHOPKEEPER);
+          player.addToCity(gameState, CardName.SHOPKEEPER);
           expect(map.canVisitSpotCheck(gameState, name)).to.be(null);
         });
 
@@ -156,8 +156,8 @@ describe("RiverDestinationMap", () => {
           const map = gameState.riverDestinationMap as RiverDestinationMap;
           expect(map.canVisitSpotCheck(gameState, name)).to.match(/must have/i);
 
-          player.addToCity(CardName.COURTHOUSE);
-          player.addToCity(CardName.MESSENGER);
+          player.addToCity(gameState, CardName.COURTHOUSE);
+          player.addToCity(gameState, CardName.MESSENGER);
 
           player.updatePlayedCard(
             gameState,
@@ -181,12 +181,12 @@ describe("RiverDestinationMap", () => {
 
           expect(map.canVisitSpotCheck(gameState, name)).to.match(/must have/i);
 
-          player.addToCity(CardName.RANGER);
-          player.addToCity(CardName.FARM);
-          player.addToCity(CardName.UNIVERSITY);
+          player.addToCity(gameState, CardName.RANGER);
+          player.addToCity(gameState, CardName.FARM);
+          player.addToCity(gameState, CardName.UNIVERSITY);
           expect(map.canVisitSpotCheck(gameState, name)).to.match(/must have/i);
 
-          player.addToCity(CardName.WANDERER);
+          player.addToCity(gameState, CardName.WANDERER);
           expect(map.canVisitSpotCheck(gameState, name)).to.be(null);
         });
 
@@ -194,9 +194,9 @@ describe("RiverDestinationMap", () => {
           const map = gameState.riverDestinationMap as RiverDestinationMap;
           expect(map.canVisitSpotCheck(gameState, name)).to.match(/must have/i);
 
-          player.addToCity(CardName.FARM);
-          player.addToCity(CardName.RANGER);
-          player.addToCity(CardName.MESSENGER);
+          player.addToCity(gameState, CardName.FARM);
+          player.addToCity(gameState, CardName.RANGER);
+          player.addToCity(gameState, CardName.MESSENGER);
 
           player.updatePlayedCard(
             gameState,
@@ -210,7 +210,7 @@ describe("RiverDestinationMap", () => {
           );
           expect(map.canVisitSpotCheck(gameState, name)).to.match(/must have/i);
 
-          player.addToCity(CardName.WANDERER);
+          player.addToCity(gameState, CardName.WANDERER);
           expect(map.canVisitSpotCheck(gameState, name)).to.be(null);
         });
       });
@@ -253,8 +253,8 @@ describe("RiverDestinationMap", () => {
   });
 
   it("should receive a PEARL for revealing a river destination", () => {
-    player.addToCity(CardName.JUDGE);
-    player.addToCity(CardName.SHOPKEEPER);
+    player.addToCity(gameState, CardName.JUDGE);
+    player.addToCity(gameState, CardName.SHOPKEEPER);
 
     const spot = RiverDestinationSpot.TWO_GOVERNANCE;
     gameState.riverDestinationMap!.spots[spot]!.name =
@@ -284,8 +284,8 @@ describe("RiverDestinationMap", () => {
       gameState.riverDestinationMap!.spots[spot]!.name =
         RiverDestinationName.GUS_THE_GARDENER;
       gameState.riverDestinationMap!.spots[spot]!.revealed = true;
-      player.addToCity(CardName.WANDERER);
-      player.addToCity(CardName.RANGER);
+      player.addToCity(gameState, CardName.WANDERER);
+      player.addToCity(gameState, CardName.RANGER);
     });
 
     it("should do nothing if player doesn't have 3 PRODUCTION cards", () => {
@@ -390,8 +390,8 @@ describe("RiverDestinationMap", () => {
       gameState.riverDestinationMap!.spots[spot]!.name =
         RiverDestinationName.BALLROOM;
       gameState.riverDestinationMap!.spots[spot]!.revealed = true;
-      player.addToCity(CardName.WANDERER);
-      player.addToCity(CardName.RANGER);
+      player.addToCity(gameState, CardName.WANDERER);
+      player.addToCity(gameState, CardName.RANGER);
     });
 
     it("should do nothing if player doesn't have VP", () => {

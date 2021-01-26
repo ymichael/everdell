@@ -49,17 +49,17 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     });
 
     // City
-    player.addToCity(CardName.UNIVERSITY);
-    player.addToCity(CardName.DUNGEON);
-    player.addToCity(CardName.WANDERER);
-    player.addToCity(CardName.HUSBAND);
-    player.addToCity(CardName.RESIN_REFINERY);
-    player.addToCity(CardName.INN);
-    player.addToCity(CardName.WIFE);
-    player.addToCity(CardName.QUEEN);
-    player.addToCity(CardName.LOOKOUT);
-    player.addToCity(CardName.CHIP_SWEEP);
-    player.addToCity(CardName.MINER_MOLE);
+    player.addToCity(gameState, CardName.UNIVERSITY);
+    player.addToCity(gameState, CardName.DUNGEON);
+    player.addToCity(gameState, CardName.WANDERER);
+    player.addToCity(gameState, CardName.HUSBAND);
+    player.addToCity(gameState, CardName.RESIN_REFINERY);
+    player.addToCity(gameState, CardName.INN);
+    player.addToCity(gameState, CardName.WIFE);
+    player.addToCity(gameState, CardName.QUEEN);
+    player.addToCity(gameState, CardName.LOOKOUT);
+    player.addToCity(gameState, CardName.CHIP_SWEEP);
+    player.addToCity(gameState, CardName.MINER_MOLE);
 
     player.placeWorkerOnCard(
       gameState,
@@ -133,7 +133,9 @@ export default function TestGameInputPage(props: { game: GameJSON }) {
   });
 
   let gameStateClocktower = gameStatePlacedWorkers.clone();
-  gameStateClocktower.getActivePlayer().addToCity(CardName.CLOCK_TOWER);
+  gameStateClocktower
+    .getActivePlayer()
+    .addToCity(gameStateClocktower, CardName.CLOCK_TOWER);
   gameStateClocktower = gameStateClocktower.next({
     inputType: GameInputType.PREPARE_FOR_SEASON,
   });
@@ -175,7 +177,9 @@ export default function TestGameInputPage(props: { game: GameJSON }) {
   });
 
   let gameStateCourthouse = gameStateImpl.clone();
-  gameStateCourthouse.getActivePlayer().addToCity(CardName.COURTHOUSE);
+  gameStateCourthouse
+    .getActivePlayer()
+    .addToCity(gameStateCourthouse, CardName.COURTHOUSE);
   gameStateCourthouse.getActivePlayer().cardsInHand.push(CardName.FAIRGROUNDS);
   gameStateCourthouse = gameStateCourthouse.next({
     inputType: GameInputType.PLAY_CARD,

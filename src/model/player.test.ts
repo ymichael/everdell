@@ -37,7 +37,7 @@ describe("Player", () => {
       expect(p.canAddToCity(CardName.KING, true /* strict */)).to.be(true);
       expect(p.canAddToCity(CardName.KING, false /* strict */)).to.be(true);
 
-      p.addToCity(CardName.KING);
+      p.addToCity(gameState, CardName.KING);
       expect(p.canAddToCity(CardName.KING, true /* strict */)).to.be(false);
       expect(p.canAddToCity(CardName.KING, false /* strict */)).to.be(false);
     });
@@ -47,7 +47,7 @@ describe("Player", () => {
       expect(p.canAddToCity(CardName.FARM, true /* strict */)).to.be(true);
       expect(p.canAddToCity(CardName.FARM, false /* strict */)).to.be(true);
 
-      p.addToCity(CardName.FARM);
+      p.addToCity(gameState, CardName.FARM);
       expect(p.canAddToCity(CardName.FARM, true /* strict */)).to.be(true);
       expect(p.canAddToCity(CardName.FARM, false /* strict */)).to.be(true);
     });
@@ -56,7 +56,7 @@ describe("Player", () => {
       const p = gameState.getActivePlayer();
       // Max city size is 15
       for (let i = 0; i < 15; i++) {
-        p.addToCity(CardName.FARM);
+        p.addToCity(gameState, CardName.FARM);
       }
       expect(p.canAddToCity(CardName.FARM, false /* strict */)).to.be(false);
       expect(p.canAddToCity(CardName.FARM, true /* strict */)).to.be(false);
@@ -65,7 +65,7 @@ describe("Player", () => {
     it("should be able to add WANDERER even if city is full", () => {
       const p = gameState.getActivePlayer();
       for (let i = 0; i < 15; i++) {
-        p.addToCity(CardName.FARM);
+        p.addToCity(gameState, CardName.FARM);
       }
       expect(p.canAddToCity(CardName.WANDERER, false /* strict */)).to.be(true);
       expect(p.canAddToCity(CardName.WANDERER, true /* strict */)).to.be(true);
@@ -74,7 +74,7 @@ describe("Player", () => {
     it("should be able to add PIRATE even if city is full", () => {
       const p = gameState.getActivePlayer();
       for (let i = 0; i < 15; i++) {
-        p.addToCity(CardName.FARM);
+        p.addToCity(gameState, CardName.FARM);
       }
       expect(p.canAddToCity(CardName.PIRATE, false /* strict */)).to.be(true);
       expect(p.canAddToCity(CardName.PIRATE, true /* strict */)).to.be(true);
@@ -83,7 +83,7 @@ describe("Player", () => {
     it("should be able to add MESSENGER even if city is full (w/ contruction)", () => {
       const p = gameState.getActivePlayer();
       for (let i = 0; i < 15; i++) {
-        p.addToCity(CardName.FARM);
+        p.addToCity(gameState, CardName.FARM);
       }
       expect(p.canAddToCity(CardName.MESSENGER, false /* strict */)).to.be(
         true
@@ -94,7 +94,7 @@ describe("Player", () => {
     it("should NOT be able to add MESSENGER even if city is full (w/o contruction)", () => {
       const p = gameState.getActivePlayer();
       for (let i = 0; i < 15; i++) {
-        p.addToCity(CardName.WIFE);
+        p.addToCity(gameState, CardName.WIFE);
       }
       expect(p.canAddToCity(CardName.MESSENGER, false /* strict */)).to.be(
         false
@@ -108,16 +108,16 @@ describe("Player", () => {
       const p = gameState.getActivePlayer();
 
       for (let i = 0; i < 13; i++) {
-        p.addToCity(CardName.FARM);
+        p.addToCity(gameState, CardName.FARM);
       }
-      p.addToCity(CardName.HUSBAND);
-      p.addToCity(CardName.WIFE);
+      p.addToCity(gameState, CardName.HUSBAND);
+      p.addToCity(gameState, CardName.WIFE);
 
       expect(p.canAddToCity(CardName.FARM, true /* strict */)).to.be(true);
       expect(p.canAddToCity(CardName.FARM, false /* strict */)).to.be(true);
 
       // Add another husband
-      p.addToCity(CardName.HUSBAND);
+      p.addToCity(gameState, CardName.HUSBAND);
 
       expect(p.canAddToCity(CardName.FARM, true /* strict */)).to.be(false);
       expect(p.canAddToCity(CardName.FARM, false /* strict */)).to.be(false);
@@ -133,9 +133,9 @@ describe("Player", () => {
       const p = gameState.getActivePlayer();
 
       for (let i = 0; i < 14; i++) {
-        p.addToCity(CardName.FARM);
+        p.addToCity(gameState, CardName.FARM);
       }
-      p.addToCity(CardName.CRANE);
+      p.addToCity(gameState, CardName.CRANE);
 
       // constructions are okay if not strict
       expect(p.canAddToCity(CardName.FARM, false /* strict */)).to.be(true);
@@ -150,9 +150,9 @@ describe("Player", () => {
       const p = gameState.getActivePlayer();
 
       for (let i = 0; i < 14; i++) {
-        p.addToCity(CardName.FARM);
+        p.addToCity(gameState, CardName.FARM);
       }
-      p.addToCity(CardName.INNKEEPER);
+      p.addToCity(gameState, CardName.INNKEEPER);
 
       // critters are okay if not strict
       expect(p.canAddToCity(CardName.WIFE, false /* strict */)).to.be(true);
@@ -166,7 +166,7 @@ describe("Player", () => {
     it("should account for RUINS", () => {
       const p = gameState.getActivePlayer();
       for (let i = 0; i < 15; i++) {
-        p.addToCity(CardName.FARM);
+        p.addToCity(gameState, CardName.FARM);
       }
       // city is full
       expect(p.canAddToCity(CardName.FARM, true /* strict */)).to.be(false);
@@ -197,7 +197,7 @@ describe("Player", () => {
       expect(
         player.canAffordCard(CardName.HUSBAND, false /* isMeadow */)
       ).to.be(false);
-      player.addToCity(CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
       expect(
         player.canAffordCard(CardName.HUSBAND, false /* isMeadow */)
       ).to.be(true);
@@ -214,7 +214,7 @@ describe("Player", () => {
       expect(player.canAffordCard(CardName.FARM, false /* isMeadow */)).to.be(
         false
       );
-      player.addToCity(CardName.CRANE);
+      player.addToCity(gameState, CardName.CRANE);
       expect(player.canAffordCard(CardName.FARM, false /* isMeadow */)).to.be(
         true
       );
@@ -230,7 +230,7 @@ describe("Player", () => {
       expect(player.canAffordCard(CardName.WIFE, false /* isMeadow */)).to.be(
         false
       );
-      player.addToCity(CardName.INNKEEPER);
+      player.addToCity(gameState, CardName.INNKEEPER);
       expect(player.canAffordCard(CardName.WIFE, false /* isMeadow */)).to.be(
         true
       );
@@ -246,7 +246,7 @@ describe("Player", () => {
       expect(player.canAffordCard(CardName.WIFE, false /* isMeadow */)).to.be(
         false
       );
-      player.addToCity(CardName.QUEEN);
+      player.addToCity(gameState, CardName.QUEEN);
       expect(player.canAffordCard(CardName.WIFE, false /* isMeadow */)).to.be(
         true
       );
@@ -262,7 +262,7 @@ describe("Player", () => {
       expect(player.canAffordCard(CardName.CRANE, false /* isMeadow */)).to.be(
         false
       );
-      player.addToCity(CardName.JUDGE);
+      player.addToCity(gameState, CardName.JUDGE);
       expect(player.canAffordCard(CardName.CRANE, false /* isMeadow */)).to.be(
         false
       );
@@ -395,7 +395,7 @@ describe("Player", () => {
         )
       ).to.match(/cannot find associated card/i);
 
-      player.addToCity(CardName.INN);
+      player.addToCity(gameState, CardName.INN);
       expect(
         player.validatePaymentOptions(
           playCardInput(CardName.INNKEEPER, {
@@ -418,7 +418,7 @@ describe("Player", () => {
           })
         )
       ).to.match(/cannot find associated card/i);
-      player.addToCity(CardName.EVERTREE);
+      player.addToCity(gameState, CardName.EVERTREE);
       expect(
         player.validatePaymentOptions(
           playCardInput(CardName.KING, {
@@ -443,8 +443,8 @@ describe("Player", () => {
           })
         )
       ).to.match(/unable to invoke dungeon/i);
-      player.addToCity(CardName.WIFE);
-      player.addToCity(CardName.DUNGEON);
+      player.addToCity(gameState, CardName.WIFE);
+      player.addToCity(gameState, CardName.DUNGEON);
       expect(
         player.validatePaymentOptions(
           playCardInput(CardName.FARM, {
@@ -470,7 +470,7 @@ describe("Player", () => {
         )
       ).to.match(/unable to invoke dungeon/i);
 
-      player.addToCity(CardName.RANGER);
+      player.addToCity(gameState, CardName.RANGER);
 
       expect(
         player.validatePaymentOptions(
@@ -512,7 +512,7 @@ describe("Player", () => {
           )
         ).to.match(/innkeeper/i);
 
-        player.addToCity(CardName.INNKEEPER);
+        player.addToCity(gameState, CardName.INNKEEPER);
         expect(
           player.validatePaymentOptions(
             playCardInput(CardName.FARM, {
@@ -565,8 +565,8 @@ describe("Player", () => {
           )
         ).to.match(/unable to find queen/i);
 
-        player.addToCity(CardName.QUEEN);
-        player.addToCity(CardName.CASTLE);
+        player.addToCity(gameState, CardName.QUEEN);
+        player.addToCity(gameState, CardName.CASTLE);
         expect(
           player.validatePaymentOptions(
             playCardInput(CardName.FARM, {
@@ -614,7 +614,7 @@ describe("Player", () => {
           )
         ).to.match(/unable to find crane/i);
 
-        player.addToCity(CardName.CRANE);
+        player.addToCity(gameState, CardName.CRANE);
         expect(
           player.validatePaymentOptions(
             playCardInput(CardName.FARM, {
@@ -651,7 +651,7 @@ describe("Player", () => {
           )
         ).to.match(/unable to find inn/i);
 
-        player.addToCity(CardName.INN);
+        player.addToCity(gameState, CardName.INN);
         expect(
           player.validatePaymentOptions(
             playCardInput(CardName.FARM, {
@@ -845,9 +845,9 @@ describe("Player", () => {
 
       expect(availableClosedDestinationCards.length).to.be(0);
 
-      player.addToCity(CardName.INN);
-      player.addToCity(CardName.LOOKOUT);
-      player.addToCity(CardName.QUEEN);
+      player.addToCity(gameState, CardName.INN);
+      player.addToCity(gameState, CardName.LOOKOUT);
+      player.addToCity(gameState, CardName.QUEEN);
 
       availableClosedDestinationCards = player.getAvailableClosedDestinationCards();
 
@@ -859,9 +859,9 @@ describe("Player", () => {
 
       expect(availableOpenDestinationCards.length).to.be(0);
 
-      player.addToCity(CardName.INN);
-      player.addToCity(CardName.POST_OFFICE);
-      player.addToCity(CardName.LOOKOUT);
+      player.addToCity(gameState, CardName.INN);
+      player.addToCity(gameState, CardName.POST_OFFICE);
+      player.addToCity(gameState, CardName.LOOKOUT);
 
       availableOpenDestinationCards = player.getAvailableOpenDestinationCards();
       expect(player.getNumCardsInCity()).to.be(3);
@@ -883,7 +883,7 @@ describe("Player", () => {
         });
 
         let player = gameState.getActivePlayer();
-        player.addToCity(CardName.INN);
+        player.addToCity(gameState, CardName.INN);
         expect(player.hasUnusedByCritterConstruction(CardName.INN)).to.be(true);
         player.cardsInHand = [card.name];
 
@@ -940,8 +940,8 @@ describe("Player", () => {
         player.cardsInHand = [card.name, card.name, card.name];
 
         // Add 2 farms
-        player.addToCity(CardName.FARM);
-        player.addToCity(CardName.FARM);
+        player.addToCity(gameState, CardName.FARM);
+        player.addToCity(gameState, CardName.FARM);
 
         expect(player.hasUnusedByCritterConstruction(CardName.FARM)).to.be(
           true
@@ -990,8 +990,8 @@ describe("Player", () => {
         player.cardsInHand = [card.name, card.name, card.name];
 
         // Add 2 farms
-        player.addToCity(CardName.FARM);
-        player.addToCity(CardName.EVERTREE);
+        player.addToCity(gameState, CardName.FARM);
+        player.addToCity(gameState, CardName.EVERTREE);
 
         expect(player.hasUnusedByCritterConstruction(CardName.FARM)).to.be(
           true
@@ -1049,7 +1049,7 @@ describe("Player", () => {
         });
         let player = gameState.getActivePlayer();
 
-        player.addToCity(CardName.CRANE);
+        player.addToCity(gameState, CardName.CRANE);
         player.cardsInHand = [card.name];
         expect(player.hasCardInCity(CardName.CRANE)).to.be(true);
         expect(card.canPlay(gameState, gameInput)).to.be(true);
@@ -1073,7 +1073,7 @@ describe("Player", () => {
         });
         let player = gameState.getActivePlayer();
 
-        player.addToCity(CardName.INNKEEPER);
+        player.addToCity(gameState, CardName.INNKEEPER);
         player.cardsInHand = [card.name];
         expect(player.hasCardInCity(CardName.INNKEEPER)).to.be(true);
         expect(card.canPlay(gameState, gameInput)).to.be(true);
@@ -1097,7 +1097,7 @@ describe("Player", () => {
         });
         let player = gameState.getActivePlayer();
 
-        player.addToCity(CardName.QUEEN);
+        player.addToCity(gameState, CardName.QUEEN);
         player.cardsInHand = [card.name];
 
         expect(card.canPlay(gameState, gameInput)).to.be(true);
@@ -1142,8 +1142,8 @@ describe("Player", () => {
         let player = gameState.getActivePlayer();
         player.cardsInHand = [card.name];
 
-        player.addToCity(CardName.DUNGEON);
-        player.addToCity(CardName.WIFE);
+        player.addToCity(gameState, CardName.DUNGEON);
+        player.addToCity(gameState, CardName.WIFE);
 
         expect(player.getFirstPlayedCard(CardName.DUNGEON)).to.eql({
           cardName: CardName.DUNGEON,
@@ -1187,7 +1187,7 @@ describe("Player", () => {
       expect(player1.numAvailableWorkers).to.be(2);
 
       // Player 1 has a worker on player 2's INN
-      player2.addToCity(CardName.INN);
+      player2.addToCity(gameState, CardName.INN);
       player1.placeWorkerOnCard(
         gameState,
         player2.getFirstPlayedCard(CardName.INN)
@@ -1217,26 +1217,26 @@ describe("Player", () => {
       expect(player.numAvailableWorkers).to.be(3);
 
       // Player has 1 worker on lookout, 1 worker on monastery
-      player.addToCity(CardName.LOOKOUT);
+      player.addToCity(gameState, CardName.LOOKOUT);
       player.placeWorkerOnCard(
         gameState,
         player.getFirstPlayedCard(CardName.LOOKOUT)
       );
 
-      player.addToCity(CardName.MONASTERY);
+      player.addToCity(gameState, CardName.MONASTERY);
       player.placeWorkerOnCard(
         gameState,
         player.getFirstPlayedCard(CardName.MONASTERY)
       );
 
-      player.addToCity(CardName.CEMETARY);
+      player.addToCity(gameState, CardName.CEMETARY);
       player.placeWorkerOnCard(
         gameState,
         player.getFirstPlayedCard(CardName.CEMETARY)
       );
 
-      player.addToCity(CardName.FARM);
-      player.addToCity(CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
 
       player.forEachPlayedCard(({ cardName, workers = [] }) => {
         if (
@@ -1266,8 +1266,8 @@ describe("Player", () => {
   describe("placing workers on storehouse", () => {
     it("Storehouse is not a destination card, but can have a worker placed on it", () => {
       const player = gameState.getActivePlayer();
-      player.addToCity(CardName.STOREHOUSE);
-      player.addToCity(CardName.INN);
+      player.addToCity(gameState, CardName.STOREHOUSE);
+      player.addToCity(gameState, CardName.INN);
 
       const closedDestinations = player.getAvailableClosedDestinationCards();
       expect(closedDestinations).to.eql([
@@ -1282,7 +1282,7 @@ describe("Player", () => {
   describe("getPoints", () => {
     it("calculate points for player with no events", () => {
       const player = gameState.getActivePlayer();
-      player.addToCityMulti([CardName.FARM, CardName.INN]);
+      player.addToCityMulti(gameState, [CardName.FARM, CardName.INN]);
 
       const points = player.getPoints(gameState);
       expect(points).to.be(3);
@@ -1290,7 +1290,7 @@ describe("Player", () => {
 
     it("includes journey locations", () => {
       const player = gameState.getActivePlayer();
-      player.addToCityMulti([CardName.FARM, CardName.INN]);
+      player.addToCityMulti(gameState, [CardName.FARM, CardName.INN]);
       player.gainResources(gameState, {
         [ResourceType.VP]: 5,
       });
@@ -1301,7 +1301,7 @@ describe("Player", () => {
 
     it("includes point tokens", () => {
       const player = gameState.getActivePlayer();
-      player.addToCityMulti([CardName.FARM, CardName.INN]);
+      player.addToCityMulti(gameState, [CardName.FARM, CardName.INN]);
       player.gainResources(gameState, {
         [ResourceType.VP]: 5,
       });
@@ -1310,7 +1310,7 @@ describe("Player", () => {
 
     it("includes point tokens on cards", () => {
       const player = gameState.getActivePlayer();
-      player.addToCityMulti([CardName.CLOCK_TOWER]);
+      player.addToCityMulti(gameState, [CardName.CLOCK_TOWER]);
       expect(player.getPoints(gameState)).to.be(3);
     });
   });

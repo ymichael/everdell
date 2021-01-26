@@ -5100,6 +5100,39 @@
     {
       "type": "entity",
       "entityType": "card",
+      "card": "Messenger"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "text",
+      "text": "Unpaired "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Messenger"
+    },
+    {
+      "type": "text",
+      "text": " now shares the same space as "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "University"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
       "card": "University"
     },
     {
@@ -5157,7 +5190,44 @@
     },
     {
       "type": "text",
-      "text": " has no Construction to share a space with, removed from city."
+      "text": " doesn't have a Construction to share a space with. "
+    },
+    {
+      "type": "text",
+      "text": "It'll share a space with the next played Construction."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Messenger"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "text",
+      "text": "Unpaired "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Messenger"
+    },
+    {
+      "type": "text",
+      "text": " now shares the same space as "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Ruins"
+    },
+    {
+      "type": "text",
+      "text": "."
     }
   ],
   [

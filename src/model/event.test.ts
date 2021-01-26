@@ -72,10 +72,10 @@ describe("Event", () => {
 
       expect(event.canPlay(gameState, gameInput)).to.be(false);
 
-      player.addToCity(CardName.MINE);
-      player.addToCity(CardName.MINE);
-      player.addToCity(CardName.FARM);
-      player.addToCity(CardName.FARM);
+      player.addToCity(gameState, CardName.MINE);
+      player.addToCity(gameState, CardName.MINE);
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
       expect(event.canPlay(gameState, gameInput)).to.be(true);
 
       expect(Object.keys(player.claimedEvents).length == 0);
@@ -93,9 +93,9 @@ describe("Event", () => {
 
       expect(event.canPlay(gameState, gameInput)).to.be(false);
 
-      player.addToCity(CardName.UNIVERSITY);
-      player.addToCity(CardName.QUEEN);
-      player.addToCity(CardName.LOOKOUT);
+      player.addToCity(gameState, CardName.UNIVERSITY);
+      player.addToCity(gameState, CardName.QUEEN);
+      player.addToCity(gameState, CardName.LOOKOUT);
       expect(event.canPlay(gameState, gameInput)).to.be(true);
 
       expect(Object.keys(player.claimedEvents).length == 0);
@@ -113,9 +113,9 @@ describe("Event", () => {
 
       expect(event.canPlay(gameState, gameInput)).to.be(false);
 
-      player.addToCity(CardName.WANDERER);
-      player.addToCity(CardName.WANDERER);
-      player.addToCity(CardName.RANGER);
+      player.addToCity(gameState, CardName.WANDERER);
+      player.addToCity(gameState, CardName.WANDERER);
+      player.addToCity(gameState, CardName.RANGER);
       expect(event.canPlay(gameState, gameInput)).to.be(true);
 
       expect(Object.keys(player.claimedEvents).length == 0);
@@ -133,9 +133,9 @@ describe("Event", () => {
 
       expect(event.canPlay(gameState, gameInput)).to.be(false);
 
-      player.addToCity(CardName.JUDGE);
-      player.addToCity(CardName.HISTORIAN);
-      player.addToCity(CardName.INNKEEPER);
+      player.addToCity(gameState, CardName.JUDGE);
+      player.addToCity(gameState, CardName.HISTORIAN);
+      player.addToCity(gameState, CardName.INNKEEPER);
       expect(event.canPlay(gameState, gameInput)).to.be(true);
 
       expect(Object.keys(player.claimedEvents).length == 0);
@@ -155,24 +155,24 @@ describe("Event", () => {
 
       expect(event.canPlay(gameState, gameInput)).to.be(false);
 
-      player.addToCity(CardName.JUDGE);
-      player.addToCity(CardName.HISTORIAN);
+      player.addToCity(gameState, CardName.JUDGE);
+      player.addToCity(gameState, CardName.HISTORIAN);
       expect(event.canPlay(gameState, gameInput)).to.be(false);
 
-      player.addToCity(CardName.FARM);
-      player.addToCity(CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
       expect(event.canPlay(gameState, gameInput)).to.be(false);
 
-      player.addToCity(CardName.WANDERER);
-      player.addToCity(CardName.WANDERER);
+      player.addToCity(gameState, CardName.WANDERER);
+      player.addToCity(gameState, CardName.WANDERER);
       expect(event.canPlay(gameState, gameInput)).to.be(false);
 
-      player.addToCity(CardName.QUEEN);
-      player.addToCity(CardName.LOOKOUT);
+      player.addToCity(gameState, CardName.QUEEN);
+      player.addToCity(gameState, CardName.LOOKOUT);
       expect(event.canPlay(gameState, gameInput)).to.be(false);
 
-      player.addToCity(CardName.KING);
-      player.addToCity(CardName.WIFE);
+      player.addToCity(gameState, CardName.KING);
+      player.addToCity(gameState, CardName.WIFE);
       expect(event.canPlay(gameState, gameInput)).to.be(true);
 
       expect(Object.keys(player.claimedEvents).length == 0);
@@ -189,8 +189,8 @@ describe("Event", () => {
       const gameInput = claimEventInput(event.name);
 
       gameState.eventsMap[EventName.SPECIAL_GRADUATION_OF_SCHOLARS] = null;
-      player.addToCity(CardName.TEACHER);
-      player.addToCity(CardName.UNIVERSITY);
+      player.addToCity(gameState, CardName.TEACHER);
+      player.addToCity(gameState, CardName.UNIVERSITY);
 
       player.cardsInHand = [
         CardName.POSTAL_PIGEON,
@@ -251,10 +251,10 @@ describe("Event", () => {
       gameState.eventsMap[EventName.SPECIAL_CROAK_WART_CURE] = null;
       player.gainResources(gameState, { [ResourceType.BERRY]: 2 });
 
-      player.addToCity(CardName.UNDERTAKER);
-      player.addToCity(CardName.BARGE_TOAD);
-      player.addToCity(CardName.FARM);
-      player.addToCity(CardName.CASTLE);
+      player.addToCity(gameState, CardName.UNDERTAKER);
+      player.addToCity(gameState, CardName.BARGE_TOAD);
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.CASTLE);
 
       // check if the player can claim the event
       expect(event.canPlay(gameState, gameInput)).to.be(true);
@@ -312,12 +312,12 @@ describe("Event", () => {
         EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES
       ] = null;
 
-      player.addToCity(CardName.COURTHOUSE);
-      player.addToCity(CardName.RANGER);
-      player.addToCity(CardName.FARM);
-      player.addToCity(CardName.POSTAL_PIGEON);
-      player.addToCity(CardName.WIFE);
-      player.addToCity(CardName.QUEEN);
+      player.addToCity(gameState, CardName.COURTHOUSE);
+      player.addToCity(gameState, CardName.RANGER);
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.POSTAL_PIGEON);
+      player.addToCity(gameState, CardName.WIFE);
+      player.addToCity(gameState, CardName.QUEEN);
 
       // check if the player can claim the event
       expect(event.canPlay(gameState, gameInput)).to.be(true);
@@ -365,8 +365,8 @@ describe("Event", () => {
 
       gameState.eventsMap[EventName.SPECIAL_AN_EVENING_OF_FIREWORKS] = null;
 
-      player.addToCity(CardName.LOOKOUT);
-      player.addToCity(CardName.MINER_MOLE);
+      player.addToCity(gameState, CardName.LOOKOUT);
+      player.addToCity(gameState, CardName.MINER_MOLE);
       player.gainResources(gameState, { [ResourceType.TWIG]: 3 });
 
       // check if the player can claim the event
@@ -469,8 +469,8 @@ describe("Event", () => {
 
       gameState.eventsMap[EventName.SPECIAL_AN_EVENING_OF_FIREWORKS] = null;
 
-      player.addToCity(CardName.LOOKOUT);
-      player.addToCity(CardName.MINER_MOLE);
+      player.addToCity(gameState, CardName.LOOKOUT);
+      player.addToCity(gameState, CardName.MINER_MOLE);
       player.gainResources(gameState, { [ResourceType.TWIG]: 3 });
 
       // check if the player can claim the event
@@ -521,8 +521,8 @@ describe("Event", () => {
 
       gameState.eventsMap[EventName.SPECIAL_PERFORMER_IN_RESIDENCE] = null;
 
-      player.addToCity(CardName.BARD);
-      player.addToCity(CardName.INN);
+      player.addToCity(gameState, CardName.BARD);
+      player.addToCity(gameState, CardName.INN);
       player.gainResources(gameState, { [ResourceType.BERRY]: 5 });
 
       // check if the player can claim the event
@@ -624,8 +624,8 @@ describe("Event", () => {
 
       gameState.eventsMap[EventName.SPECIAL_PERFORMER_IN_RESIDENCE] = null;
 
-      player.addToCity(CardName.BARD);
-      player.addToCity(CardName.INN);
+      player.addToCity(gameState, CardName.BARD);
+      player.addToCity(gameState, CardName.INN);
       player.gainResources(gameState, { [ResourceType.BERRY]: 5 });
 
       // check if the player can claim the event
@@ -676,8 +676,8 @@ describe("Event", () => {
 
       gameState.eventsMap[EventName.SPECIAL_UNDER_NEW_MANAGEMENT] = null;
 
-      player.addToCity(CardName.PEDDLER);
-      player.addToCity(CardName.GENERAL_STORE);
+      player.addToCity(gameState, CardName.PEDDLER);
+      player.addToCity(gameState, CardName.GENERAL_STORE);
       player.gainResources(gameState, {
         [ResourceType.TWIG]: 3,
         [ResourceType.RESIN]: 1,
@@ -747,8 +747,8 @@ describe("Event", () => {
 
       gameState.eventsMap[EventName.SPECIAL_UNDER_NEW_MANAGEMENT] = null;
 
-      player.addToCity(CardName.PEDDLER);
-      player.addToCity(CardName.GENERAL_STORE);
+      player.addToCity(gameState, CardName.PEDDLER);
+      player.addToCity(gameState, CardName.GENERAL_STORE);
 
       // check if the player can claim the event
       expect(event.canPlay(gameState, gameInput)).to.be(true);
@@ -801,8 +801,8 @@ describe("Event", () => {
 
       gameState.eventsMap[EventName.SPECIAL_UNDER_NEW_MANAGEMENT] = null;
 
-      player.addToCity(CardName.PEDDLER);
-      player.addToCity(CardName.GENERAL_STORE);
+      player.addToCity(gameState, CardName.PEDDLER);
+      player.addToCity(gameState, CardName.GENERAL_STORE);
       player.gainResources(gameState, {
         [ResourceType.TWIG]: 3,
         [ResourceType.RESIN]: 1,
@@ -905,8 +905,8 @@ describe("Event", () => {
 
       gameState.eventsMap[EventName.SPECIAL_PRISTINE_CHAPEL_CEILING] = null;
 
-      player.addToCity(CardName.WOODCARVER);
-      player.addToCity(CardName.CHAPEL);
+      player.addToCity(gameState, CardName.WOODCARVER);
+      player.addToCity(gameState, CardName.CHAPEL);
       player.getPlayedCardInfos(CardName.CHAPEL).forEach((info) => {
         info.resources = { [ResourceType.VP]: 2 };
       });
@@ -952,8 +952,8 @@ describe("Event", () => {
 
       gameState.eventsMap[EventName.SPECIAL_PRISTINE_CHAPEL_CEILING] = null;
 
-      player.addToCity(CardName.WOODCARVER);
-      player.addToCity(CardName.CHAPEL);
+      player.addToCity(gameState, CardName.WOODCARVER);
+      player.addToCity(gameState, CardName.CHAPEL);
 
       // check if the player can claim the event
       expect(event.canPlay(gameState, gameInput)).to.be(true);
@@ -983,8 +983,8 @@ describe("Event", () => {
 
       gameState.eventsMap[EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED] = null;
 
-      player.addToCity(CardName.HISTORIAN);
-      player.addToCity(CardName.RUINS);
+      player.addToCity(gameState, CardName.HISTORIAN);
+      player.addToCity(gameState, CardName.RUINS);
 
       // add cards to deck so we know what cards were drawn
       gameState.deck.addToStack(CardName.KING);
@@ -1055,8 +1055,8 @@ describe("Event", () => {
 
       gameState.eventsMap[EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED] = null;
 
-      player.addToCity(CardName.HISTORIAN);
-      player.addToCity(CardName.RUINS);
+      player.addToCity(gameState, CardName.HISTORIAN);
+      player.addToCity(gameState, CardName.RUINS);
 
       // add cards to deck so we know what cards were drawn
       gameState.deck.addToStack(CardName.KING);
@@ -1126,8 +1126,8 @@ describe("Event", () => {
 
       gameState.eventsMap[EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED] = null;
 
-      player.addToCity(CardName.HISTORIAN);
-      player.addToCity(CardName.RUINS);
+      player.addToCity(gameState, CardName.HISTORIAN);
+      player.addToCity(gameState, CardName.RUINS);
 
       // add cards to deck so we know what cards were drawn
       gameState.deck.addToStack(CardName.KING);
@@ -1206,7 +1206,7 @@ describe("Event", () => {
 
       gameState.eventsMap[EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED] = null;
 
-      player.addToCity(CardName.HISTORIAN);
+      player.addToCity(gameState, CardName.HISTORIAN);
 
       // check if the player can claim the event
       expect(event.canPlay(gameState, gameInput)).to.be(false);
@@ -1230,8 +1230,8 @@ describe("Event", () => {
 
       gameState.eventsMap[EventName.SPECIAL_TAX_RELIEF] = null;
 
-      player.addToCity(CardName.JUDGE);
-      player.addToCity(CardName.QUEEN);
+      player.addToCity(gameState, CardName.JUDGE);
+      player.addToCity(gameState, CardName.QUEEN);
 
       expect(player.claimedEvents[EventName.SPECIAL_TAX_RELIEF]).to.be(
         undefined
@@ -1249,9 +1249,9 @@ describe("Event", () => {
 
       gameState.eventsMap[EventName.SPECIAL_TAX_RELIEF] = null;
 
-      player.addToCity(CardName.JUDGE);
-      player.addToCity(CardName.QUEEN);
-      player.addToCity(CardName.FARM);
+      player.addToCity(gameState, CardName.JUDGE);
+      player.addToCity(gameState, CardName.QUEEN);
+      player.addToCity(gameState, CardName.FARM);
 
       expect(player.claimedEvents[EventName.SPECIAL_TAX_RELIEF]).to.be(
         undefined
@@ -1275,8 +1275,8 @@ describe("Event", () => {
 
       gameState.eventsMap[EventName.SPECIAL_A_WEE_RUN_CITY] = null;
 
-      player.addToCity(CardName.CHIP_SWEEP);
-      player.addToCity(CardName.CLOCK_TOWER);
+      player.addToCity(gameState, CardName.CHIP_SWEEP);
+      player.addToCity(gameState, CardName.CLOCK_TOWER);
 
       gameState.locationsMap[LocationName.BASIC_ONE_BERRY]!.push(
         player.playerId
@@ -1313,8 +1313,8 @@ describe("Event", () => {
 
       gameState.eventsMap[EventName.SPECIAL_A_WEE_RUN_CITY] = null;
 
-      player.addToCity(CardName.CHIP_SWEEP);
-      player.addToCity(CardName.CLOCK_TOWER);
+      player.addToCity(gameState, CardName.CHIP_SWEEP);
+      player.addToCity(gameState, CardName.CLOCK_TOWER);
 
       gameState.locationsMap[LocationName.BASIC_ONE_BERRY]!.push(
         player.playerId
@@ -1350,8 +1350,8 @@ describe("Event", () => {
 
       gameState.eventsMap[EventName.SPECIAL_A_WEE_RUN_CITY] = null;
 
-      player.addToCity(CardName.CHIP_SWEEP);
-      player.addToCity(CardName.CLOCK_TOWER);
+      player.addToCity(gameState, CardName.CHIP_SWEEP);
+      player.addToCity(gameState, CardName.CLOCK_TOWER);
 
       expect(player.numAvailableWorkers).to.be(2);
 
@@ -1386,8 +1386,8 @@ describe("Event", () => {
 
       gameState.eventsMap[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN] = null;
 
-      player.addToCity(CardName.SHOPKEEPER);
-      player.addToCity(CardName.POST_OFFICE);
+      player.addToCity(gameState, CardName.SHOPKEEPER);
+      player.addToCity(gameState, CardName.POST_OFFICE);
       player.gainResources(gameState, { [ResourceType.TWIG]: 3 });
 
       expect(
@@ -1451,8 +1451,8 @@ describe("Event", () => {
 
       gameState.eventsMap[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN] = null;
 
-      player.addToCity(CardName.SHOPKEEPER);
-      player.addToCity(CardName.POST_OFFICE);
+      player.addToCity(gameState, CardName.SHOPKEEPER);
+      player.addToCity(gameState, CardName.POST_OFFICE);
       player.gainResources(gameState, {
         [ResourceType.TWIG]: 3,
         [ResourceType.RESIN]: 2,
@@ -1587,8 +1587,8 @@ describe("Event", () => {
 
       gameState.eventsMap[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN] = null;
 
-      player.addToCity(CardName.SHOPKEEPER);
-      player.addToCity(CardName.POST_OFFICE);
+      player.addToCity(gameState, CardName.SHOPKEEPER);
+      player.addToCity(gameState, CardName.POST_OFFICE);
       player.gainResources(gameState, {
         [ResourceType.TWIG]: 3,
         [ResourceType.RESIN]: 2,
@@ -1709,8 +1709,8 @@ describe("Event", () => {
 
       gameState.eventsMap[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN] = null;
 
-      player.addToCity(CardName.SHOPKEEPER);
-      player.addToCity(CardName.POST_OFFICE);
+      player.addToCity(gameState, CardName.SHOPKEEPER);
+      player.addToCity(gameState, CardName.POST_OFFICE);
       player.gainResources(gameState, {
         [ResourceType.TWIG]: 3,
         [ResourceType.RESIN]: 2,
@@ -1770,8 +1770,8 @@ describe("Event", () => {
 
       gameState.eventsMap[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN] = null;
 
-      player.addToCity(CardName.SHOPKEEPER);
-      player.addToCity(CardName.POST_OFFICE);
+      player.addToCity(gameState, CardName.SHOPKEEPER);
+      player.addToCity(gameState, CardName.POST_OFFICE);
       player.gainResources(gameState, {
         [ResourceType.TWIG]: 3,
         [ResourceType.RESIN]: 2,

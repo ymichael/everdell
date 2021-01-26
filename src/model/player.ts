@@ -165,7 +165,7 @@ export class Player implements IGameTextEntity {
     }
   }
 
-  addToCity(cardName: CardName): PlayedCardInfo {
+  addToCity(gameState: GameState, cardName: CardName): PlayedCardInfo {
     if (!this.canAddToCity(cardName, true /* strict */)) {
       throw new Error(`Unable to add ${cardName} to city`);
     }
@@ -173,11 +173,31 @@ export class Player implements IGameTextEntity {
     this.playedCards[cardName] = this.playedCards[cardName] || [];
     const playedCard = card.getPlayedCardInfo(this.playerId);
     this.playedCards[cardName]!.push(playedCard);
+
+    // If there's an unoccupied Messenger, and this card is a construction, pair them!
+    const unpairedMessengers = this.getUnpairedMessengers();
+    if (unpairedMessengers.length !== 0 && card.isConstruction) {
+      const unpairedMessenger = unpairedMessengers[0];
+      this.updatePlayedCard(gameState, playedCard, {
+        shareSpaceWith: CardName.MESSENGER,
+      });
+      this.updatePlayedCard(gameState, unpairedMessenger, {
+        shareSpaceWith: cardName,
+      });
+      gameState.addGameLogFromCard(CardName.MESSENGER, [
+        "Unpaired ",
+        Card.fromName(CardName.MESSENGER),
+        " now shares the same space as ",
+        Card.fromName(cardName),
+        ".",
+      ]);
+    }
+
     return playedCard;
   }
 
-  addToCityMulti(cards: CardName[]): void {
-    cards.forEach((cardName) => this.addToCity(cardName));
+  addToCityMulti(gameState: GameState, cards: CardName[]): void {
+    cards.forEach((cardName) => this.addToCity(gameState, cardName));
   }
 
   removeCardFromCity(
@@ -236,12 +256,16 @@ export class Player implements IGameTextEntity {
           .filter((playedCard) => {
             return !playedCard.shareSpaceWith;
           });
-
         if (cardOptions.length === 0) {
-          player.removeCardFromCity(gameState, sharedMesenger);
+          // NOTE: Messenger stays in the city!
+          // See: https://boardgamegeek.com/thread/2261133/article/32762766#32762766
+          player.updatePlayedCard(gameState, sharedMesenger, {
+            shareSpaceWith: undefined,
+          });
           gameState.addGameLogFromCard(CardName.MESSENGER, [
             Card.fromName(CardName.MESSENGER),
-            " has no Construction to share a space with, removed from city.",
+            " doesn't have a Construction to share a space with. ",
+            "It'll share a space with the next played Construction.",
           ]);
         } else {
           gameState.addGameLogFromCard(CardName.MESSENGER, [
@@ -319,6 +343,14 @@ export class Player implements IGameTextEntity {
     }
   }
 
+  getUnpairedMessengers(): PlayedCardInfo[] {
+    return this.getPlayedCardInfos(CardName.MESSENGER).filter(
+      ({ shareSpaceWith }) => {
+        return !shareSpaceWith;
+      }
+    );
+  }
+
   getNumOccupiedSpacesInCity(): number {
     let numOccupiedSpacesInCity = 0;
     this.forEachPlayedCard(({ cardName }) => {
@@ -352,6 +384,10 @@ export class Player implements IGameTextEntity {
           this.getPlayedCardInfos(CardName.MESSENGER).length >
         0
       );
+    }
+
+    if (card.isConstruction && this.getUnpairedMessengers().length !== 0) {
+      return true;
     }
 
     // If strict is true, we're about to add this card to the city

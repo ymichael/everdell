@@ -569,7 +569,7 @@ describe("Location", () => {
         [ResourceType.RESIN]: 5,
       });
       for (let i = 0; i < 15; i++) {
-        player.addToCity(CardName.HUSBAND);
+        player.addToCity(gameState, CardName.HUSBAND);
       }
 
       const gameInput = placeWorkerInput(location.name);
@@ -597,7 +597,7 @@ describe("Location", () => {
       );
 
       player = gameState.getActivePlayer();
-      player.addToCityMulti([
+      player.addToCityMulti(gameState, [
         CardName.HUSBAND,
         CardName.RANGER,
         CardName.FARM,
@@ -642,7 +642,7 @@ describe("Location", () => {
       );
 
       player = gameState.getActivePlayer();
-      player.addToCityMulti([
+      player.addToCityMulti(gameState, [
         CardName.HUSBAND,
         CardName.RANGER,
         CardName.FARM,

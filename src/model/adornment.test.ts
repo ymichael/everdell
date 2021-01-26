@@ -321,7 +321,7 @@ describe("Adornment", () => {
     it("should play MIRROR and copy BELL", () => {
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
       const player2 = gameState.players[1];
-      player.addToCity(CardName.WIFE);
+      player.addToCity(gameState, CardName.WIFE);
 
       player2.playedAdornments.push(AdornmentName.BELL);
       player2.playedAdornments.push(AdornmentName.GILDED_BOOK);
@@ -358,8 +358,8 @@ describe("Adornment", () => {
       gameState.locationsMap[LocationName.FOREST_TWO_BERRY_ONE_CARD] = [];
       gameState.locationsMap[LocationName.FOREST_THREE_BERRY] = [];
       const player2 = gameState.players[1];
-      player.addToCity(CardName.WIFE);
-      player.addToCity(CardName.INN);
+      player.addToCity(gameState, CardName.WIFE);
+      player.addToCity(gameState, CardName.INN);
 
       player2.playedAdornments.push(AdornmentName.BELL);
       player2.playedAdornments.push(AdornmentName.HOURGLASS);
@@ -423,7 +423,7 @@ describe("Adornment", () => {
     it("MIRROR is still playable even if no adornments to copy", () => {
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
       const player2 = gameState.players[1];
-      player.addToCity(CardName.WIFE);
+      player.addToCity(gameState, CardName.WIFE);
 
       [player, gameState] = multiStepGameInputTest(gameState, [
         playAdornmentInput(name),
@@ -438,7 +438,7 @@ describe("Adornment", () => {
     it("Allow player to play MIRROR without selecting a played adornment", () => {
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
       const player2 = gameState.players[1];
-      player.addToCity(CardName.WIFE);
+      player.addToCity(gameState, CardName.WIFE);
 
       player2.playedAdornments.push(AdornmentName.BELL);
       player2.playedAdornments.push(AdornmentName.GILDED_BOOK);
@@ -471,32 +471,32 @@ describe("Adornment", () => {
       player.playedAdornments.push(name);
       expect(player.getPointsFromAdornments(gameState)).to.be(0);
 
-      player.addToCity(CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
       expect(player.getPointsFromAdornments(gameState)).to.be(1);
 
-      player.addToCity(CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
       // still 1, because didn't add another unique color
       expect(player.getPointsFromAdornments(gameState)).to.be(1);
 
-      player.addToCity(CardName.INN);
+      player.addToCity(gameState, CardName.INN);
       expect(player.getPointsFromAdornments(gameState)).to.be(2);
 
-      player.addToCity(CardName.HUSBAND);
+      player.addToCity(gameState, CardName.HUSBAND);
       expect(player.getPointsFromAdornments(gameState)).to.be(2);
 
-      player.addToCity(CardName.WIFE);
+      player.addToCity(gameState, CardName.WIFE);
       expect(player.getPointsFromAdornments(gameState)).to.be(3);
 
-      player.addToCity(CardName.UNDERTAKER);
+      player.addToCity(gameState, CardName.UNDERTAKER);
       expect(player.getPointsFromAdornments(gameState)).to.be(4);
 
-      player.addToCity(CardName.EVERTREE);
+      player.addToCity(gameState, CardName.EVERTREE);
       expect(player.getPointsFromAdornments(gameState)).to.be(4);
 
-      player.addToCity(CardName.INNKEEPER);
+      player.addToCity(gameState, CardName.INNKEEPER);
       expect(player.getPointsFromAdornments(gameState)).to.be(5);
 
-      player.addToCity(CardName.HISTORIAN);
+      player.addToCity(gameState, CardName.HISTORIAN);
       expect(player.getPointsFromAdornments(gameState)).to.be(5);
     });
   });
@@ -512,8 +512,8 @@ describe("Adornment", () => {
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
       expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
-      player.addToCity(CardName.FARM);
-      player.addToCity(CardName.POST_OFFICE);
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.POST_OFFICE);
 
       const selectResourcesInput = {
         inputType: GameInputType.SELECT_RESOURCES as const,
@@ -546,21 +546,21 @@ describe("Adornment", () => {
       // worth 0 because no constructions
       expect(player.getPointsFromAdornments(gameState)).to.be(0);
 
-      player.addToCity(CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
 
       // still 0 because only 1 construction
       expect(player.getPointsFromAdornments(gameState)).to.be(0);
 
-      player.addToCity(CardName.MONASTERY);
+      player.addToCity(gameState, CardName.MONASTERY);
       expect(player.getPointsFromAdornments(gameState)).to.be(1);
 
-      player.addToCity(CardName.HUSBAND);
+      player.addToCity(gameState, CardName.HUSBAND);
       expect(player.getPointsFromAdornments(gameState)).to.be(1);
 
-      player.addToCity(CardName.INN);
+      player.addToCity(gameState, CardName.INN);
       expect(player.getPointsFromAdornments(gameState)).to.be(1);
 
-      player.addToCity(CardName.CASTLE);
+      player.addToCity(gameState, CardName.CASTLE);
       expect(player.getPointsFromAdornments(gameState)).to.be(2);
     });
   });
@@ -577,22 +577,22 @@ describe("Adornment", () => {
       const playerId = player.playerId;
       expect(adornment.getPoints(gameState, playerId)).to.be(0);
 
-      player.addToCity(CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
       expect(adornment.getPoints(gameState, playerId)).to.be(0);
 
-      player.addToCity(CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
       expect(adornment.getPoints(gameState, playerId)).to.be(1);
 
-      player.addToCity(CardName.QUEEN);
+      player.addToCity(gameState, CardName.QUEEN);
       expect(adornment.getPoints(gameState, playerId)).to.be(1);
 
-      player.addToCity(CardName.KING);
+      player.addToCity(gameState, CardName.KING);
       expect(adornment.getPoints(gameState, playerId)).to.be(1);
 
-      player.addToCity(CardName.MINE);
+      player.addToCity(gameState, CardName.MINE);
       expect(adornment.getPoints(gameState, playerId)).to.be(1);
 
-      player.addToCity(CardName.MINER_MOLE);
+      player.addToCity(gameState, CardName.MINER_MOLE);
       expect(adornment.getPoints(gameState, playerId)).to.be(2);
     });
 
@@ -609,9 +609,9 @@ describe("Adornment", () => {
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
       expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
 
-      player.addToCity(CardName.MINE);
-      player.addToCity(CardName.FARM);
-      player.addToCity(CardName.FARM);
+      player.addToCity(gameState, CardName.MINE);
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
 
       [player, gameState] = multiStepGameInputTest(gameState, [
         playAdornmentInput(name),
@@ -626,10 +626,10 @@ describe("Adornment", () => {
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
       expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
 
-      player.addToCity(CardName.MINE);
-      player.addToCity(CardName.FARM);
-      player.addToCity(CardName.FARM);
-      player.addToCity(CardName.FARM);
+      player.addToCity(gameState, CardName.MINE);
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
 
       [player, gameState] = multiStepGameInputTest(gameState, [
         playAdornmentInput(name),
@@ -659,10 +659,10 @@ describe("Adornment", () => {
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
       expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
 
-      player.addToCity(CardName.MINE);
-      player.addToCity(CardName.FARM);
-      player.addToCity(CardName.FARM);
-      player.addToCity(CardName.FARM);
+      player.addToCity(gameState, CardName.MINE);
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
 
       [player, gameState] = multiStepGameInputTest(gameState, [
         playAdornmentInput(name),
@@ -689,12 +689,12 @@ describe("Adornment", () => {
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
       expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
 
-      player.addToCity(CardName.MINE);
-      player.addToCity(CardName.CHIP_SWEEP);
-      player.addToCity(CardName.FARM);
-      player.addToCity(CardName.MINER_MOLE);
+      player.addToCity(gameState, CardName.MINE);
+      player.addToCity(gameState, CardName.CHIP_SWEEP);
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.MINER_MOLE);
 
-      gameState.players[1].addToCity(CardName.FARM);
+      gameState.players[1].addToCity(gameState, CardName.FARM);
 
       [player, gameState] = multiStepGameInputTest(
         gameState,
@@ -747,7 +747,7 @@ describe("Adornment", () => {
 
     it("should allow the player to gain resources equal to the cost of one GOVERNANCE", () => {
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
-      player.addToCityMulti([
+      player.addToCityMulti(gameState, [
         CardName.FARM,
         CardName.DUNGEON,
         CardName.CLOCK_TOWER,
@@ -787,25 +787,25 @@ describe("Adornment", () => {
       player.playedAdornments.push(name);
       expect(player.getPointsFromAdornments(gameState)).to.be(0);
 
-      player.addToCity(CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
       expect(player.getPointsFromAdornments(gameState)).to.be(0);
 
-      player.addToCity(CardName.DUNGEON);
+      player.addToCity(gameState, CardName.DUNGEON);
       expect(player.getPointsFromAdornments(gameState)).to.be(1);
 
-      player.addToCity(CardName.HUSBAND);
+      player.addToCity(gameState, CardName.HUSBAND);
       expect(player.getPointsFromAdornments(gameState)).to.be(1);
 
-      player.addToCity(CardName.INNKEEPER);
+      player.addToCity(gameState, CardName.INNKEEPER);
       expect(player.getPointsFromAdornments(gameState)).to.be(2);
 
-      player.addToCity(CardName.CLOCK_TOWER);
+      player.addToCity(gameState, CardName.CLOCK_TOWER);
       expect(player.getPointsFromAdornments(gameState)).to.be(3);
 
-      player.addToCity(CardName.POSTAL_PIGEON);
+      player.addToCity(gameState, CardName.POSTAL_PIGEON);
       expect(player.getPointsFromAdornments(gameState)).to.be(3);
 
-      player.addToCity(CardName.HISTORIAN);
+      player.addToCity(gameState, CardName.HISTORIAN);
       expect(player.getPointsFromAdornments(gameState)).to.be(4);
     });
   });
@@ -1110,10 +1110,10 @@ describe("Adornment", () => {
       const adornment = Adornment.fromName(name);
       const gameInput = playAdornmentInput(name);
 
-      player.addToCity(CardName.WIFE);
-      player.addToCity(CardName.POSTAL_PIGEON);
-      player.addToCity(CardName.HUSBAND);
-      player.addToCity(CardName.HUSBAND);
+      player.addToCity(gameState, CardName.WIFE);
+      player.addToCity(gameState, CardName.POSTAL_PIGEON);
+      player.addToCity(gameState, CardName.HUSBAND);
+      player.addToCity(gameState, CardName.HUSBAND);
 
       expect(adornment.canPlay(gameState, gameInput)).to.be(true);
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
@@ -1130,9 +1130,9 @@ describe("Adornment", () => {
     });
 
     it("odd number of critters in city", () => {
-      player.addToCity(CardName.WIFE);
-      player.addToCity(CardName.POSTAL_PIGEON);
-      player.addToCity(CardName.HUSBAND);
+      player.addToCity(gameState, CardName.WIFE);
+      player.addToCity(gameState, CardName.POSTAL_PIGEON);
+      player.addToCity(gameState, CardName.HUSBAND);
       player.playedAdornments.push(name);
 
       expect(player.getPointsFromAdornments(gameState)).to.be(1);
@@ -1154,19 +1154,19 @@ describe("Adornment", () => {
       const playerId = player.playerId;
       expect(adornment.getPoints(gameState, playerId)).to.be(0);
 
-      player.addToCity(CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
       expect(adornment.getPoints(gameState, playerId)).to.be(0);
 
-      player.addToCity(CardName.QUEEN);
+      player.addToCity(gameState, CardName.QUEEN);
       expect(adornment.getPoints(gameState, playerId)).to.be(1);
 
-      player.addToCity(CardName.KING);
+      player.addToCity(gameState, CardName.KING);
       expect(adornment.getPoints(gameState, playerId)).to.be(1);
 
-      player.addToCity(CardName.UNIVERSITY);
+      player.addToCity(gameState, CardName.UNIVERSITY);
       expect(adornment.getPoints(gameState, playerId)).to.be(2);
 
-      player.addToCity(CardName.CASTLE);
+      player.addToCity(gameState, CardName.CASTLE);
       expect(adornment.getPoints(gameState, playerId)).to.be(2);
     });
 
@@ -1235,8 +1235,8 @@ describe("Adornment", () => {
 
     it("should ask to reactivate traveller cards and allow none to be selected", () => {
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
-      player.addToCity(CardName.WANDERER);
-      player.addToCity(CardName.WANDERER);
+      player.addToCity(gameState, CardName.WANDERER);
+      player.addToCity(gameState, CardName.WANDERER);
 
       expect(player.cardsInHand.length).to.be(0);
 
@@ -1259,8 +1259,8 @@ describe("Adornment", () => {
 
     it("should ask to reactivate traveller cards and activate selected cards", () => {
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
-      player.addToCity(CardName.WANDERER);
-      player.addToCity(CardName.WANDERER);
+      player.addToCity(gameState, CardName.WANDERER);
+      player.addToCity(gameState, CardName.WANDERER);
 
       expect(player.cardsInHand.length).to.be(0);
 
@@ -1285,8 +1285,8 @@ describe("Adornment", () => {
 
     it("should work for RUINS", () => {
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
-      player.addToCity(CardName.RUINS);
-      player.addToCity(CardName.FARM);
+      player.addToCity(gameState, CardName.RUINS);
+      player.addToCity(gameState, CardName.FARM);
 
       expect(player.hasCardInCity(CardName.FARM)).to.be(true);
       expect(player.getPlayedCardInfos(CardName.RUINS).length).to.be(1);
@@ -1327,7 +1327,7 @@ describe("Adornment", () => {
 
     it("should work for FOOL", () => {
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
-      player.addToCity(CardName.FOOL);
+      player.addToCity(gameState, CardName.FOOL);
 
       let targetPlayer = gameState.players[1];
       expect(player.hasCardInCity(CardName.FOOL)).to.be(true);
@@ -1361,7 +1361,7 @@ describe("Adornment", () => {
 
     it("should work for RANGER", () => {
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
-      player.addToCity(CardName.RANGER);
+      player.addToCity(gameState, CardName.RANGER);
 
       gameState.locationsMap[LocationName.BASIC_ONE_STONE]!.push(
         player.playerId
@@ -1427,11 +1427,11 @@ describe("Adornment", () => {
 
     it("should only prompt for reactivatable cards", () => {
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
-      player.addToCity(CardName.FOOL);
+      player.addToCity(gameState, CardName.FOOL);
 
       // Both players already have FOOL in their city.
       const targetPlayer = gameState.players[1];
-      targetPlayer.addToCity(CardName.FOOL);
+      targetPlayer.addToCity(gameState, CardName.FOOL);
 
       expect(player.hasCardInCity(CardName.FOOL)).to.be(true);
       expect(targetPlayer.hasCardInCity(CardName.FOOL)).to.be(true);
@@ -1458,19 +1458,19 @@ describe("Adornment", () => {
       const playerId = player.playerId;
       expect(adornment.getPoints(gameState, playerId)).to.be(0);
 
-      player.addToCity(CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
       expect(adornment.getPoints(gameState, playerId)).to.be(0);
 
-      player.addToCity(CardName.QUEEN);
+      player.addToCity(gameState, CardName.QUEEN);
       expect(adornment.getPoints(gameState, playerId)).to.be(0);
 
-      player.addToCity(CardName.KING);
+      player.addToCity(gameState, CardName.KING);
       expect(adornment.getPoints(gameState, playerId)).to.be(1);
 
-      player.addToCity(CardName.MINE);
+      player.addToCity(gameState, CardName.MINE);
       expect(adornment.getPoints(gameState, playerId)).to.be(1);
 
-      player.addToCity(CardName.CASTLE);
+      player.addToCity(gameState, CardName.CASTLE);
       expect(adornment.getPoints(gameState, playerId)).to.be(2);
     });
 
@@ -1483,8 +1483,8 @@ describe("Adornment", () => {
     });
 
     it("should allow the player to gain ANY per PROSPERITY", () => {
-      player.addToCity(CardName.WIFE);
-      player.addToCity(CardName.WIFE);
+      player.addToCity(gameState, CardName.WIFE);
+      player.addToCity(gameState, CardName.WIFE);
 
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);

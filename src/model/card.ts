@@ -302,7 +302,7 @@ export class Card<TCardType extends CardType = CardType>
 
     let playedCard: PlayedCardInfo | undefined = undefined;
     if (this.name !== CardName.FOOL && this.name !== CardName.RUINS) {
-      playedCard = player.addToCity(this.name);
+      playedCard = player.addToCity(gameState, this.name);
     }
 
     const playCardGameInput = this.getPlayCardInput(gameInput, playedCard);
@@ -1176,7 +1176,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         const selectedPlayer = gameState.getPlayer(
           gameInput.clientOptions.selectedPlayer
         );
-        selectedPlayer.addToCity(CardName.FOOL);
+        selectedPlayer.addToCity(gameState, CardName.FOOL);
         gameState.addGameLogFromCard(CardName.FOOL, [
           player,
           " added the ",
@@ -2616,7 +2616,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         player.gainResources(gameState, targetCard.baseCost);
         // This doesn't if we're reactiving a played RUINS
         if (!gameInput.playedCardContext) {
-          player.addToCity(CardName.RUINS);
+          player.addToCity(gameState, CardName.RUINS);
         }
         player.drawCards(gameState, 2);
         gameState.addGameLogFromCard(CardName.RUINS, [
@@ -3223,23 +3223,22 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         !!gameInput.prevInput &&
         gameInput.prevInput.inputType === GameInputType.SELECT_PLAYED_CARDS
       ) {
-        // remove card from city + put in discard pile
         const prevInput = gameInput.prevInput;
         const cardToRemove = prevInput.clientOptions.selectedCards[0];
-        player.removeCardFromCity(gameState, cardToRemove, true);
-
-        // give player resources from base cost + the resource they chose
         const removedCard = Card.fromName(cardToRemove.cardName);
-        player.gainResources(gameState, removedCard.baseCost);
-        player.gainResources(gameState, { [ResourceType.VP]: 1 });
-
-        gainAnyHelper.play(gameState, gameInput);
         gameState.addGameLogFromCard(CardName.UNIVERSITY, [
           player,
           " discarded ",
           removedCard,
           ` from their city and gained ${gameInput.clientOptions.selectedOption} and 1 VP.`,
         ]);
+
+        // Remove card from city + put in discard pile
+        player.removeCardFromCity(gameState, cardToRemove, true);
+        // give player resources from base cost + the resource they chose
+        player.gainResources(gameState, removedCard.baseCost);
+        player.gainResources(gameState, { [ResourceType.VP]: 1 });
+        gainAnyHelper.play(gameState, gameInput);
       }
     },
   }),

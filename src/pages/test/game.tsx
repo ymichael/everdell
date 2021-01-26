@@ -43,15 +43,15 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     });
 
     // City
-    player.addToCity(CardName.UNIVERSITY);
-    player.addToCity(CardName.DUNGEON);
-    player.addToCity(CardName.EVERTREE);
-    player.addToCity(CardName.INNKEEPER);
-    player.addToCity(CardName.RESIN_REFINERY);
-    player.addToCity(CardName.INN);
-    player.addToCity(CardName.FARM);
-    player.addToCity(CardName.MINE).usedForCritter = true;
-    player.addToCity(CardName.CLOCK_TOWER);
+    player.addToCity(gameState, CardName.UNIVERSITY);
+    player.addToCity(gameState, CardName.DUNGEON);
+    player.addToCity(gameState, CardName.EVERTREE);
+    player.addToCity(gameState, CardName.INNKEEPER);
+    player.addToCity(gameState, CardName.RESIN_REFINERY);
+    player.addToCity(gameState, CardName.INN);
+    player.addToCity(gameState, CardName.FARM);
+    player.addToCity(gameState, CardName.MINE).usedForCritter = true;
+    player.addToCity(gameState, CardName.CLOCK_TOWER);
 
     player.placeWorkerOnCard(
       gameState,

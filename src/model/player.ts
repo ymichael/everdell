@@ -365,6 +365,10 @@ export class Player implements IGameTextEntity {
     });
     // Only count each husband/wife pair once
     numOccupiedSpacesInCity -= this.getNumHusbandWifePairs();
+
+    // Account for unpaired messengers.
+    numOccupiedSpacesInCity += this.getUnpairedMessengers().length;
+
     return numOccupiedSpacesInCity;
   }
 

@@ -80,6 +80,23 @@ describe("Player", () => {
       expect(p.canAddToCity(CardName.PIRATE, true /* strict */)).to.be(true);
     });
 
+    it("should be able to add Construction even if city is full (if there's unpaired MESSENGER)", () => {
+      const p = gameState.getActivePlayer();
+      for (let i = 0; i < 14; i++) {
+        p.addToCity(gameState, CardName.WIFE);
+      }
+
+      const playedFarm = p.addToCity(gameState, CardName.FARM);
+      p.addToCity(gameState, CardName.MESSENGER);
+      p.removeCardFromCity(gameState, playedFarm);
+
+      expect(p.canAddToCity(CardName.FARM, false /* strict */)).to.be(true);
+      expect(p.canAddToCity(CardName.FARM, true /* strict */)).to.be(true);
+
+      expect(p.canAddToCity(CardName.WIFE, false /* strict */)).to.be(false);
+      expect(p.canAddToCity(CardName.WIFE, true /* strict */)).to.be(false);
+    });
+
     it("should be able to add MESSENGER even if city is full (w/ contruction)", () => {
       const p = gameState.getActivePlayer();
       for (let i = 0; i < 15; i++) {

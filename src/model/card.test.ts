@@ -5117,7 +5117,7 @@ describe("Card", () => {
         player.gainResources(gameState, card.baseCost);
         expect(() => {
           multiStepGameInputTest(gameState, [playCardInput(card.name)]);
-        }).to.throwException(/No Construction to share a space with/);
+        }).to.throwException(/Cannot add Messenger/);
       });
 
       it("should be playable w a construction", () => {
@@ -5313,10 +5313,10 @@ describe("Card", () => {
       });
 
       it("should be removed if no Construction to moved to", () => {
-        player.addToCity(CardName.MESSENGER);
-        player.addToCity(CardName.MESSENGER);
         player.addToCity(CardName.FARM);
         player.addToCity(CardName.UNIVERSITY);
+        player.addToCity(CardName.MESSENGER);
+        player.addToCity(CardName.MESSENGER);
 
         player.updatePlayedCard(
           gameState,

@@ -62,13 +62,46 @@ describe("Player", () => {
       expect(p.canAddToCity(CardName.FARM, true /* strict */)).to.be(false);
     });
 
-    it("should be able to add wanderer even if city is full", () => {
+    it("should be able to add WANDERER even if city is full", () => {
       const p = gameState.getActivePlayer();
       for (let i = 0; i < 15; i++) {
         p.addToCity(CardName.FARM);
       }
       expect(p.canAddToCity(CardName.WANDERER, false /* strict */)).to.be(true);
       expect(p.canAddToCity(CardName.WANDERER, true /* strict */)).to.be(true);
+    });
+
+    it("should be able to add PIRATE even if city is full", () => {
+      const p = gameState.getActivePlayer();
+      for (let i = 0; i < 15; i++) {
+        p.addToCity(CardName.FARM);
+      }
+      expect(p.canAddToCity(CardName.PIRATE, false /* strict */)).to.be(true);
+      expect(p.canAddToCity(CardName.PIRATE, true /* strict */)).to.be(true);
+    });
+
+    it("should be able to add MESSENGER even if city is full (w/ contruction)", () => {
+      const p = gameState.getActivePlayer();
+      for (let i = 0; i < 15; i++) {
+        p.addToCity(CardName.FARM);
+      }
+      expect(p.canAddToCity(CardName.MESSENGER, false /* strict */)).to.be(
+        true
+      );
+      expect(p.canAddToCity(CardName.MESSENGER, true /* strict */)).to.be(true);
+    });
+
+    it("should NOT be able to add MESSENGER even if city is full (w/o contruction)", () => {
+      const p = gameState.getActivePlayer();
+      for (let i = 0; i < 15; i++) {
+        p.addToCity(CardName.WIFE);
+      }
+      expect(p.canAddToCity(CardName.MESSENGER, false /* strict */)).to.be(
+        false
+      );
+      expect(p.canAddToCity(CardName.MESSENGER, true /* strict */)).to.be(
+        false
+      );
     });
 
     it("should account for husband/wife pairs", () => {

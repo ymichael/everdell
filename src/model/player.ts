@@ -322,7 +322,11 @@ export class Player implements IGameTextEntity {
   getNumOccupiedSpacesInCity(): number {
     let numOccupiedSpacesInCity = 0;
     this.forEachPlayedCard(({ cardName }) => {
-      if (cardName === CardName.WANDERER) {
+      if (
+        cardName === CardName.WANDERER ||
+        cardName === CardName.PIRATE ||
+        cardName === CardName.MESSENGER
+      ) {
         return;
       }
       numOccupiedSpacesInCity += 1;
@@ -337,8 +341,17 @@ export class Player implements IGameTextEntity {
     if (card.isUnique && this.hasCardInCity(card.name)) {
       return false;
     }
-    if (cardName === CardName.WANDERER) {
+    if (cardName === CardName.WANDERER || cardName === CardName.PIRATE) {
       return true;
+    }
+
+    if (cardName === CardName.MESSENGER) {
+      // Must have more Constructions than Messengers.
+      return (
+        this.getPlayedConstructions().length -
+          this.getPlayedCardInfos(CardName.MESSENGER).length >
+        0
+      );
     }
 
     // If strict is true, we're about to add this card to the city

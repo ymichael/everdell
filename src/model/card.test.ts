@@ -3603,6 +3603,25 @@ describe("Card", () => {
         }).to.throwException(/no playable cards/i);
       });
 
+      it("should not allow player to visit the queen if occupied", () => {
+        const card = Card.fromName(CardName.QUEEN);
+        player.cardsInHand.push(CardName.WIFE);
+        player.addToCity(CardName.QUEEN);
+        player.placeWorkerOnCard(
+          gameState,
+          player.getFirstPlayedCard(CardName.QUEEN)
+        );
+
+        expect(() => {
+          gameState.next({
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            clientOptions: {
+              playedCard: player.getFirstPlayedCard(CardName.QUEEN),
+            },
+          });
+        }).to.throwException(/cannot place worker/i);
+      });
+
       it("should not allow player to visit the queen if there are no playable cards", () => {
         gameState = testInitialGameState({
           meadowCards: [
@@ -5061,6 +5080,41 @@ describe("Card", () => {
           },
         ]);
         expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
+      });
+    });
+
+    describe(CardName.MESSENGER, () => {
+      const card = Card.fromName(CardName.MESSENGER);
+
+      it("should not be playable w/o a construction", () => {
+        player.cardsInHand = [card.name];
+        player.gainResources(gameState, card.baseCost);
+        expect(() => {
+          multiStepGameInputTest(gameState, [playCardInput(card.name)]);
+        }).to.throwException(/No Construction to share a space with/);
+      });
+
+      it("should be playable w a construction", () => {
+        player.addToCity(CardName.FARM);
+        player.cardsInHand = [card.name];
+        player.gainResources(gameState, card.baseCost);
+        [player, gameState] = multiStepGameInputTest(
+          gameState,
+          [playCardInput(card.name)],
+          { autoAdvance: true }
+        );
+        expect(player.hasCardInCity(card.name)).to.be(true);
+        expect(player.getFirstPlayedCard(CardName.FARM)).to.eql({
+          cardName: CardName.FARM,
+          cardOwnerId: player.playerId,
+          usedForCritter: false,
+          shareSpaceWith: card.name,
+        });
+        expect(player.getFirstPlayedCard(card.name)).to.eql({
+          cardName: card.name,
+          cardOwnerId: player.playerId,
+          shareSpaceWith: CardName.FARM,
+        });
       });
     });
   });

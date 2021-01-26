@@ -379,6 +379,9 @@ export type PlayedCardInfo = {
 
   // dungeon
   pairedCards?: CardName[];
+
+  // Messenger
+  shareSpaceWith?: CardName | null;
 };
 
 export type PlayedEventInfo = {

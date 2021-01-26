@@ -2868,27 +2868,29 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           throw new Error("Cannot find played card");
         }
         const selectedOption = gameInput.clientOptions.selectedOption;
-        const newPlayedCard = cloneDeep(origPlayedCard);
+        const updatedResources = {
+          ...origPlayedCard.resources,
+        };
         if (selectedOption === "3 TWIG") {
-          newPlayedCard.resources![ResourceType.TWIG]! += 3;
+          updatedResources[ResourceType.TWIG]! += 3;
           gameState.addGameLogFromCard(CardName.STOREHOUSE, [
             player,
             " added 3 TWIG.",
           ]);
         } else if (selectedOption === "2 RESIN") {
-          newPlayedCard.resources![ResourceType.RESIN]! += 2;
+          updatedResources[ResourceType.RESIN]! += 2;
           gameState.addGameLogFromCard(CardName.STOREHOUSE, [
             player,
             " added 2 RESIN.",
           ]);
         } else if (selectedOption === "1 PEBBLE") {
-          newPlayedCard.resources![ResourceType.PEBBLE]! += 1;
+          updatedResources[ResourceType.PEBBLE]! += 1;
           gameState.addGameLogFromCard(CardName.STOREHOUSE, [
             player,
             " added 1 PEBBLE.",
           ]);
         } else if (selectedOption === "2 BERRY") {
-          newPlayedCard.resources![ResourceType.BERRY]! += 2;
+          updatedResources[ResourceType.BERRY]! += 2;
           gameState.addGameLogFromCard(CardName.STOREHOUSE, [
             player,
             " added 2 BERRY.",
@@ -2896,7 +2898,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         } else {
           throw new Error("Must select an option!");
         }
-        player.updatePlayedCard(gameState, origPlayedCard, newPlayedCard);
+        player.updatePlayedCard(gameState, origPlayedCard, {
+          resources: updatedResources,
+        });
       } else if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
         const playedCard = gameInput.clientOptions.playedCard;
         if (!playedCard) {
@@ -2915,7 +2919,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         player.gainResources(gameState, origPlayedCard.resources!);
 
         player.updatePlayedCard(gameState, origPlayedCard, {
-          ...cloneDeep(origPlayedCard),
           resources: {
             [ResourceType.TWIG]: 0,
             [ResourceType.RESIN]: 0,
@@ -3390,11 +3393,76 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: false,
     isUnique: false,
     baseCost: { [ResourceType.BERRY]: 2 },
-    canPlayCheckInner: () => {
-      throw new Error("Not Implemented");
+    playedCardInfoDefault: { shareSpaceWith: null },
+    canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.PLAY_CARD) {
+        const numConstructions = player.getPlayedConstructions().length;
+        const numMessengers = player.getPlayedCardInfos(CardName.MESSENGER)
+          .length;
+        if (numConstructions - numMessengers < 1) {
+          return "No Construction to share a space with.";
+        }
+      }
+      return null;
     },
-    playInner: () => {
-      throw new Error("Not Implemented");
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.PLAY_CARD) {
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          prevInputType: gameInput.inputType,
+          label: "Select a Construction to share a space with",
+          cardOptions: player.getPlayedConstructions().filter((playedCard) => {
+            return !playedCard.shareSpaceWith;
+          }),
+          cardContext: CardName.MESSENGER,
+          playedCardContext: gameInput.playedCardContext,
+          maxToSelect: 1,
+          minToSelect: 1,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS &&
+        gameInput.cardContext === CardName.MESSENGER
+      ) {
+        const selectedCards = gameInput.clientOptions.selectedCards;
+        if (selectedCards.length !== 1) {
+          throw new Error("Please select a construction");
+        }
+        if (!gameInput.cardOptions.find((x) => isEqual(x, selectedCards[0]))) {
+          throw new Error("Please select an option");
+        }
+        const selectedPlayedCard = player.findPlayedCard(selectedCards[0]);
+        if (!selectedPlayedCard) {
+          throw new Error("Could not find selected card in your city.");
+        }
+        const playedMessenger =
+          gameInput.playedCardContext &&
+          player.findPlayedCard(gameInput.playedCardContext);
+        console.log(playedMessenger);
+        console.log({
+          ...playedMessenger,
+          shareSpaceWith: selectedPlayedCard.cardName,
+        });
+
+        if (!playedMessenger) {
+          throw new Error("Could not find Messenger your city.");
+        }
+        if (playedMessenger.shareSpaceWith) {
+          throw new Error(
+            "Messenger already shares space with another construction."
+          );
+        }
+        player.updatePlayedCard(gameState, selectedPlayedCard, {
+          shareSpaceWith: CardName.MESSENGER,
+        });
+        player.updatePlayedCard(gameState, playedMessenger, {
+          shareSpaceWith: selectedPlayedCard.cardName,
+        });
+      }
     },
   }),
   [CardName.SHIPWRIGHT]: new Card({

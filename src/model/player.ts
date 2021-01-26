@@ -1,6 +1,5 @@
 import isEqual from "lodash/isEqual";
 import cloneDeep from "lodash/cloneDeep";
-import merge from "lodash/merge";
 import {
   AdornmentName,
   CardCost,
@@ -579,15 +578,21 @@ export class Player implements IGameTextEntity {
   updatePlayedCard(
     gameState: GameState,
     origPlayedCard: PlayedCardInfo,
-    newPlayedCard: PlayedCardInfo
+    playedCardChanges: Partial<PlayedCardInfo>
   ): void {
     let found = false;
-
     const origPlayedCardCopy = cloneDeep(origPlayedCard);
-    this.getPlayedCardInfos(origPlayedCard.cardName).forEach((x) => {
+    const cardName = origPlayedCard.cardName;
+
+    const newPlayedCard = {} as PlayedCardInfo;
+    Object.assign(newPlayedCard, origPlayedCard, playedCardChanges);
+
+    this.playedCards[cardName] = this.getPlayedCardInfos(cardName).map((x) => {
       if (!found && isEqual(x, origPlayedCardCopy)) {
-        merge(x, newPlayedCard);
         found = true;
+        return newPlayedCard;
+      } else {
+        return x;
       }
     });
 
@@ -727,10 +732,7 @@ export class Player implements IGameTextEntity {
 
     workers.push(this.playerId);
 
-    cardOwner.updatePlayedCard(gameState, origPlayedCard, {
-      ...cloneDeep(origPlayedCard),
-      workers,
-    });
+    cardOwner.updatePlayedCard(gameState, origPlayedCard, { workers });
 
     this.placeWorkerCommon({ playedCard });
   }

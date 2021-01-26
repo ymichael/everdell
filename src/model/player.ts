@@ -125,11 +125,7 @@ export class Player implements IGameTextEntity {
   }
 
   getGameTextPart(): TextPartPlayer {
-    return {
-      type: "player",
-      playerId: this.playerId,
-      name: this.name,
-    };
+    return { type: "player", name: this.name };
   }
 
   drawCards(gameState: GameState, count: number): void {

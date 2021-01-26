@@ -185,6 +185,7 @@ export class Player implements IGameTextEntity {
     playedCardInfo: PlayedCardInfo,
     addToDiscardPile = true
   ): CardName[] {
+    const player = gameState.getActivePlayer();
     const { cardName, pairedCards = [] } = playedCardInfo;
 
     const playedCards = this.playedCards[cardName];
@@ -200,6 +201,70 @@ export class Player implements IGameTextEntity {
     const idx = playedCards.indexOf(playedCardInfo_);
     if (idx === -1) {
       throw new Error(`Unable to find ${JSON.stringify(playedCardInfo)}`);
+    }
+
+    // Messenger.
+    if (playedCardInfo.shareSpaceWith) {
+      // Removing a messenger, unset the corresponding construction.
+      if (playedCardInfo.cardName === CardName.MESSENGER) {
+        const sharedConstruction = (
+          this.playedCards[playedCardInfo.shareSpaceWith] || []
+        ).find(({ shareSpaceWith }) => {
+          return shareSpaceWith === playedCardInfo.cardName;
+        });
+        if (!sharedConstruction) {
+          throw new Error(
+            "Couldn't find the Construction shared by the Messenger."
+          );
+        }
+        player.updatePlayedCard(gameState, sharedConstruction, {
+          shareSpaceWith: undefined,
+        });
+      } else {
+        const sharedMesenger = (
+          this.playedCards[CardName.MESSENGER] || []
+        ).find(({ shareSpaceWith }) => {
+          return shareSpaceWith === playedCardInfo.cardName;
+        });
+        if (!sharedMesenger) {
+          throw new Error(
+            "Couldn't find the Messenger shared by the Construction."
+          );
+        }
+        const cardOptions = player
+          .getPlayedConstructions()
+          .filter((playedCard) => {
+            return !playedCard.shareSpaceWith;
+          });
+
+        if (cardOptions.length === 0) {
+          player.removeCardFromCity(gameState, sharedMesenger);
+          gameState.addGameLogFromCard(CardName.MESSENGER, [
+            Card.fromName(CardName.MESSENGER),
+            " has no Construction to share a space with, removed from city.",
+          ]);
+        } else {
+          gameState.addGameLogFromCard(CardName.MESSENGER, [
+            "Needs a new space.",
+          ]);
+          player.updatePlayedCard(gameState, sharedMesenger, {
+            shareSpaceWith: undefined,
+          });
+          gameState.pendingGameInputs.push({
+            inputType: GameInputType.SELECT_PLAYED_CARDS,
+            prevInputType: GameInputType.PLAY_CARD,
+            label: "Select a new Construction to share a space with",
+            cardOptions,
+            cardContext: CardName.MESSENGER,
+            playedCardContext: sharedMesenger,
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              selectedCards: [],
+            },
+          });
+        }
+      }
     }
 
     // Remove playedCard

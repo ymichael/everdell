@@ -4899,6 +4899,228 @@
     },
     {
       "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Harbor"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Harbor"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gained "
+    },
+    {
+      "type": "text",
+      "text": "2 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "BERRY"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Messenger"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Messenger"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " added "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Messenger"
+    },
+    {
+      "type": "text",
+      "text": " to the same space as "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Farm"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Messenger"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "text",
+      "text": "Needs a new space."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Messenger"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " added "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Messenger"
+    },
+    {
+      "type": "text",
+      "text": " to the same space as "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "University"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "University"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " discarded "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Messenger"
+    },
+    {
+      "type": "text",
+      "text": " from their city and gained "
+    },
+    {
+      "type": "resource",
+      "resourceType": "BERRY"
+    },
+    {
+      "type": "text",
+      "text": " and 1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Messenger"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Messenger"
+    },
+    {
+      "type": "text",
+      "text": " has no Construction to share a space with, removed from city."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
       "text": " claimed the "
     },
     {

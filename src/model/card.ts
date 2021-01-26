@@ -3442,12 +3442,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         const playedMessenger =
           gameInput.playedCardContext &&
           player.findPlayedCard(gameInput.playedCardContext);
-        console.log(playedMessenger);
-        console.log({
-          ...playedMessenger,
-          shareSpaceWith: selectedPlayedCard.cardName,
-        });
-
         if (!playedMessenger) {
           throw new Error("Could not find Messenger your city.");
         }
@@ -3456,6 +3450,14 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             "Messenger already shares space with another construction."
           );
         }
+        gameState.addGameLogFromCard(CardName.MESSENGER, [
+          player,
+          " added ",
+          Card.fromName(CardName.MESSENGER),
+          " to the same space as ",
+          Card.fromName(selectedPlayedCard.cardName),
+          ".",
+        ]);
         player.updatePlayedCard(gameState, selectedPlayedCard, {
           shareSpaceWith: CardName.MESSENGER,
         });

@@ -5116,6 +5116,249 @@ describe("Card", () => {
           shareSpaceWith: CardName.FARM,
         });
       });
+
+      it("should be relocated if Construction is destroyed", () => {
+        player.addToCity(CardName.FARM);
+        player.addToCity(CardName.MESSENGER);
+        player.addToCity(CardName.UNIVERSITY);
+
+        player.updatePlayedCard(
+          gameState,
+          player.getFirstPlayedCard(CardName.FARM),
+          { shareSpaceWith: CardName.MESSENGER }
+        );
+        player.updatePlayedCard(
+          gameState,
+          player.getFirstPlayedCard(CardName.MESSENGER),
+          { shareSpaceWith: CardName.FARM }
+        );
+
+        const selectPlayedCardInput = {
+          inputType: GameInputType.SELECT_PLAYED_CARDS as const,
+          prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+          cardContext: CardName.UNIVERSITY,
+          cardOptions: player
+            .getAllPlayedCards()
+            .filter(({ cardName }) => cardName !== CardName.UNIVERSITY),
+          maxToSelect: 1,
+          minToSelect: 1,
+          clientOptions: {
+            selectedCards: [player.getFirstPlayedCard(CardName.FARM)],
+          },
+        };
+
+        [player, gameState] = multiStepGameInputTest(
+          gameState,
+          [
+            {
+              inputType: GameInputType.VISIT_DESTINATION_CARD,
+              clientOptions: {
+                playedCard: player.getFirstPlayedCard(CardName.UNIVERSITY),
+              },
+            },
+            selectPlayedCardInput,
+            {
+              inputType: GameInputType.SELECT_OPTION_GENERIC,
+              prevInputType: GameInputType.SELECT_PLAYED_CARDS,
+              prevInput: selectPlayedCardInput,
+              cardContext: CardName.UNIVERSITY,
+              options: [
+                ResourceType.BERRY,
+                ResourceType.TWIG,
+                ResourceType.RESIN,
+                ResourceType.PEBBLE,
+              ],
+              clientOptions: {
+                selectedOption: ResourceType.BERRY,
+              },
+            },
+          ],
+          { autoAdvance: true }
+        );
+        expect(player.getFirstPlayedCard(CardName.MESSENGER)).to.eql({
+          cardName: CardName.MESSENGER,
+          cardOwnerId: player.playerId,
+          shareSpaceWith: CardName.UNIVERSITY,
+        });
+
+        expect(player.getFirstPlayedCard(CardName.UNIVERSITY)).to.eql({
+          cardName: CardName.UNIVERSITY,
+          cardOwnerId: player.playerId,
+          usedForCritter: false,
+          workers: [player.playerId],
+          shareSpaceWith: CardName.MESSENGER,
+        });
+      });
+
+      it("should remove from Construction if MESSENGER is removed from city", () => {
+        player.addToCity(CardName.FARM);
+        player.cardsInHand = [card.name];
+        player.gainResources(gameState, card.baseCost);
+        [player, gameState] = multiStepGameInputTest(
+          gameState,
+          [playCardInput(card.name)],
+          { autoAdvance: true }
+        );
+        expect(player.hasCardInCity(card.name)).to.be(true);
+        expect(player.getFirstPlayedCard(CardName.FARM)).to.eql({
+          cardName: CardName.FARM,
+          cardOwnerId: player.playerId,
+          usedForCritter: false,
+          shareSpaceWith: card.name,
+        });
+        expect(player.getFirstPlayedCard(card.name)).to.eql({
+          cardName: card.name,
+          cardOwnerId: player.playerId,
+          shareSpaceWith: CardName.FARM,
+        });
+      });
+
+      it("should be relocated if Construction is destroyed", () => {
+        player.addToCity(CardName.FARM);
+        player.addToCity(CardName.MESSENGER);
+        player.addToCity(CardName.UNIVERSITY);
+
+        player.updatePlayedCard(
+          gameState,
+          player.getFirstPlayedCard(CardName.FARM),
+          { shareSpaceWith: CardName.MESSENGER }
+        );
+        player.updatePlayedCard(
+          gameState,
+          player.getFirstPlayedCard(CardName.MESSENGER),
+          { shareSpaceWith: CardName.FARM }
+        );
+
+        const selectPlayedCardInput = {
+          inputType: GameInputType.SELECT_PLAYED_CARDS as const,
+          prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+          cardContext: CardName.UNIVERSITY,
+          cardOptions: player
+            .getAllPlayedCards()
+            .filter(({ cardName }) => cardName !== CardName.UNIVERSITY),
+          maxToSelect: 1,
+          minToSelect: 1,
+          clientOptions: {
+            selectedCards: [player.getFirstPlayedCard(CardName.MESSENGER)],
+          },
+        };
+
+        expect(player.getFirstPlayedCard(CardName.FARM)).to.eql({
+          cardName: CardName.FARM,
+          cardOwnerId: player.playerId,
+          usedForCritter: false,
+          shareSpaceWith: CardName.MESSENGER,
+        });
+
+        [player, gameState] = multiStepGameInputTest(
+          gameState,
+          [
+            {
+              inputType: GameInputType.VISIT_DESTINATION_CARD,
+              clientOptions: {
+                playedCard: player.getFirstPlayedCard(CardName.UNIVERSITY),
+              },
+            },
+            selectPlayedCardInput,
+            {
+              inputType: GameInputType.SELECT_OPTION_GENERIC,
+              prevInputType: GameInputType.SELECT_PLAYED_CARDS,
+              prevInput: selectPlayedCardInput,
+              cardContext: CardName.UNIVERSITY,
+              options: [
+                ResourceType.BERRY,
+                ResourceType.TWIG,
+                ResourceType.RESIN,
+                ResourceType.PEBBLE,
+              ],
+              clientOptions: {
+                selectedOption: ResourceType.BERRY,
+              },
+            },
+          ],
+          { autoAdvance: true }
+        );
+        expect(player.getFirstPlayedCard(CardName.FARM)).to.eql({
+          cardName: CardName.FARM,
+          cardOwnerId: player.playerId,
+          usedForCritter: false,
+          shareSpaceWith: undefined,
+        });
+      });
+
+      it("should be removed if no Construction to moved to", () => {
+        player.addToCity(CardName.MESSENGER);
+        player.addToCity(CardName.MESSENGER);
+        player.addToCity(CardName.FARM);
+        player.addToCity(CardName.UNIVERSITY);
+
+        player.updatePlayedCard(
+          gameState,
+          player.getFirstPlayedCard(CardName.FARM),
+          { shareSpaceWith: CardName.MESSENGER }
+        );
+        player.updatePlayedCard(
+          gameState,
+          player.getFirstPlayedCard(CardName.MESSENGER),
+          { shareSpaceWith: CardName.FARM }
+        );
+        player.updatePlayedCard(
+          gameState,
+          player.getFirstPlayedCard(CardName.UNIVERSITY),
+          { shareSpaceWith: CardName.MESSENGER }
+        );
+        player.updatePlayedCard(
+          gameState,
+          player.getPlayedCardInfos(CardName.MESSENGER)[1],
+          { shareSpaceWith: CardName.UNIVERSITY }
+        );
+
+        const selectPlayedCardInput = {
+          inputType: GameInputType.SELECT_PLAYED_CARDS as const,
+          prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+          cardContext: CardName.UNIVERSITY,
+          cardOptions: player
+            .getAllPlayedCards()
+            .filter(({ cardName }) => cardName !== CardName.UNIVERSITY),
+          maxToSelect: 1,
+          minToSelect: 1,
+          clientOptions: {
+            selectedCards: [player.getFirstPlayedCard(CardName.FARM)],
+          },
+        };
+
+        expect(player.getPlayedCardInfos(CardName.MESSENGER).length).to.be(2);
+
+        [player, gameState] = multiStepGameInputTest(
+          gameState,
+          [
+            {
+              inputType: GameInputType.VISIT_DESTINATION_CARD,
+              clientOptions: {
+                playedCard: player.getFirstPlayedCard(CardName.UNIVERSITY),
+              },
+            },
+            selectPlayedCardInput,
+            {
+              inputType: GameInputType.SELECT_OPTION_GENERIC,
+              prevInputType: GameInputType.SELECT_PLAYED_CARDS,
+              prevInput: selectPlayedCardInput,
+              cardContext: CardName.UNIVERSITY,
+              options: [
+                ResourceType.BERRY,
+                ResourceType.TWIG,
+                ResourceType.RESIN,
+                ResourceType.PEBBLE,
+              ],
+              clientOptions: {
+                selectedOption: ResourceType.BERRY,
+              },
+            },
+          ],
+          { autoAdvance: true }
+        );
+        expect(player.getPlayedCardInfos(CardName.MESSENGER).length).to.be(1);
+      });
     });
   });
 });

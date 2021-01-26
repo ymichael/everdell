@@ -9,6 +9,7 @@ import {
 } from "./types";
 import {
   RiverDestination,
+  RiverDestinationMap,
   initialRiverDestinationMap,
 } from "./riverDestination";
 import { GameState } from "./gameState";
@@ -59,42 +60,199 @@ describe("RiverDestinationMap", () => {
     });
   });
 
-  describe("toJSON/fromJSON", () => {
-    it("should hide unrevealed destinations if includePrivate is false", () => {
-      const riverMap = initialRiverDestinationMap();
+  describe("RiverDestinationMap", () => {
+    describe("canVisitSpotCheck", () => {
+      describe(RiverDestinationSpot.THREE_PRODUCTION, () => {
+        const name = RiverDestinationSpot.THREE_PRODUCTION;
+        it("should only allow players with 3 PRODUCTION", () => {
+          const map = gameState.riverDestinationMap as RiverDestinationMap;
+          expect(map.canVisitSpotCheck(gameState, name)).to.match(/must have/i);
 
-      let riverMapJSON = riverMap.toJSON(false);
-      expect(riverMapJSON.spots.SHOAL.name).to.not.be(null);
+          player.addToCity(CardName.FARM);
+          player.addToCity(CardName.FARM);
+          player.addToCity(CardName.UNIVERSITY);
+          expect(map.canVisitSpotCheck(gameState, name)).to.match(/must have/i);
 
-      expect(riverMapJSON.spots.THREE_PRODUCTION.name).to.be(null);
-      expect(riverMapJSON.spots.TWO_DESTINATION.name).to.be(null);
-      expect(riverMapJSON.spots.TWO_TRAVELER.name).to.be(null);
-      expect(riverMapJSON.spots.TWO_GOVERNANCE.name).to.be(null);
+          player.addToCity(CardName.FARM);
+          expect(map.canVisitSpotCheck(gameState, name)).to.be(null);
+        });
 
-      riverMapJSON = riverMap.toJSON(true);
-      expect(riverMapJSON.spots.SHOAL.name).to.not.be(null);
+        it("should account for MESSENGER", () => {
+          const map = gameState.riverDestinationMap as RiverDestinationMap;
+          expect(map.canVisitSpotCheck(gameState, name)).to.match(/must have/i);
 
-      expect(riverMapJSON.spots.THREE_PRODUCTION.name).to.not.be(null);
-      expect(riverMapJSON.spots.TWO_DESTINATION.name).to.not.be(null);
-      expect(riverMapJSON.spots.TWO_TRAVELER.name).to.not.be(null);
-      expect(riverMapJSON.spots.TWO_GOVERNANCE.name).to.not.be(null);
+          player.addToCity(CardName.FARM);
+          player.addToCity(CardName.FARM);
+          player.addToCity(CardName.MESSENGER);
+
+          player.updatePlayedCard(
+            gameState,
+            player.getFirstPlayedCard(CardName.FARM),
+            { shareSpaceWith: CardName.MESSENGER }
+          );
+          player.updatePlayedCard(
+            gameState,
+            player.getFirstPlayedCard(CardName.MESSENGER),
+            { shareSpaceWith: CardName.FARM }
+          );
+          expect(map.canVisitSpotCheck(gameState, name)).to.be(null);
+        });
+      });
+      describe(RiverDestinationSpot.TWO_DESTINATION, () => {
+        const name = RiverDestinationSpot.TWO_DESTINATION;
+
+        it("should only allow players with 2 DESTINATION", () => {
+          const map = gameState.riverDestinationMap as RiverDestinationMap;
+
+          expect(map.canVisitSpotCheck(gameState, name)).to.match(/must have/i);
+
+          player.addToCity(CardName.RANGER);
+          player.addToCity(CardName.FARM);
+          player.addToCity(CardName.UNIVERSITY);
+          expect(map.canVisitSpotCheck(gameState, name)).to.match(/must have/i);
+
+          player.addToCity(CardName.QUEEN);
+          expect(map.canVisitSpotCheck(gameState, name)).to.be(null);
+        });
+
+        it("should account for MESSENGER", () => {
+          const map = gameState.riverDestinationMap as RiverDestinationMap;
+          expect(map.canVisitSpotCheck(gameState, name)).to.match(/must have/i);
+
+          player.addToCity(CardName.UNIVERSITY);
+          player.addToCity(CardName.MESSENGER);
+
+          player.updatePlayedCard(
+            gameState,
+            player.getFirstPlayedCard(CardName.UNIVERSITY),
+            { shareSpaceWith: CardName.MESSENGER }
+          );
+          player.updatePlayedCard(
+            gameState,
+            player.getFirstPlayedCard(CardName.MESSENGER),
+            { shareSpaceWith: CardName.UNIVERSITY }
+          );
+          expect(map.canVisitSpotCheck(gameState, name)).to.be(null);
+        });
+      });
+      describe(RiverDestinationSpot.TWO_GOVERNANCE, () => {
+        const name = RiverDestinationSpot.TWO_GOVERNANCE;
+
+        it("should only allow players with 2 GOVERNANCE", () => {
+          const map = gameState.riverDestinationMap as RiverDestinationMap;
+
+          expect(map.canVisitSpotCheck(gameState, name)).to.match(/must have/i);
+
+          player.addToCity(CardName.RANGER);
+          player.addToCity(CardName.JUDGE);
+          player.addToCity(CardName.UNIVERSITY);
+          expect(map.canVisitSpotCheck(gameState, name)).to.match(/must have/i);
+
+          player.addToCity(CardName.SHOPKEEPER);
+          expect(map.canVisitSpotCheck(gameState, name)).to.be(null);
+        });
+
+        it("should account for MESSENGER", () => {
+          const map = gameState.riverDestinationMap as RiverDestinationMap;
+          expect(map.canVisitSpotCheck(gameState, name)).to.match(/must have/i);
+
+          player.addToCity(CardName.COURTHOUSE);
+          player.addToCity(CardName.MESSENGER);
+
+          player.updatePlayedCard(
+            gameState,
+            player.getFirstPlayedCard(CardName.COURTHOUSE),
+            { shareSpaceWith: CardName.MESSENGER }
+          );
+          player.updatePlayedCard(
+            gameState,
+            player.getFirstPlayedCard(CardName.MESSENGER),
+            { shareSpaceWith: CardName.COURTHOUSE }
+          );
+          expect(map.canVisitSpotCheck(gameState, name)).to.be(null);
+        });
+      });
+
+      describe(RiverDestinationSpot.TWO_TRAVELER, () => {
+        const name = RiverDestinationSpot.TWO_TRAVELER;
+
+        it("should only allow players with 2 TRAVELER", () => {
+          const map = gameState.riverDestinationMap as RiverDestinationMap;
+
+          expect(map.canVisitSpotCheck(gameState, name)).to.match(/must have/i);
+
+          player.addToCity(CardName.RANGER);
+          player.addToCity(CardName.FARM);
+          player.addToCity(CardName.UNIVERSITY);
+          expect(map.canVisitSpotCheck(gameState, name)).to.match(/must have/i);
+
+          player.addToCity(CardName.WANDERER);
+          expect(map.canVisitSpotCheck(gameState, name)).to.be(null);
+        });
+
+        it("should account for MESSENGER", () => {
+          const map = gameState.riverDestinationMap as RiverDestinationMap;
+          expect(map.canVisitSpotCheck(gameState, name)).to.match(/must have/i);
+
+          player.addToCity(CardName.FARM);
+          player.addToCity(CardName.RANGER);
+          player.addToCity(CardName.MESSENGER);
+
+          player.updatePlayedCard(
+            gameState,
+            player.getFirstPlayedCard(CardName.FARM),
+            { shareSpaceWith: CardName.MESSENGER }
+          );
+          player.updatePlayedCard(
+            gameState,
+            player.getFirstPlayedCard(CardName.MESSENGER),
+            { shareSpaceWith: CardName.FARM }
+          );
+          expect(map.canVisitSpotCheck(gameState, name)).to.match(/must have/i);
+
+          player.addToCity(CardName.WANDERER);
+          expect(map.canVisitSpotCheck(gameState, name)).to.be(null);
+        });
+      });
     });
 
-    it("should not hide revealed destinations", () => {
-      const riverMap = initialRiverDestinationMap();
-      riverMap.spots.THREE_PRODUCTION.revealed = true;
+    describe("toJSON/fromJSON", () => {
+      it("should hide unrevealed destinations if includePrivate is false", () => {
+        const riverMap = initialRiverDestinationMap();
 
-      const riverMapJSON = riverMap.toJSON(false);
-      expect(riverMapJSON.spots.SHOAL.name).to.not.be(null);
-      expect(riverMapJSON.spots.THREE_PRODUCTION.name).to.not.be(null);
+        let riverMapJSON = riverMap.toJSON(false);
+        expect(riverMapJSON.spots.SHOAL.name).to.not.be(null);
 
-      expect(riverMapJSON.spots.TWO_DESTINATION.name).to.be(null);
-      expect(riverMapJSON.spots.TWO_TRAVELER.name).to.be(null);
-      expect(riverMapJSON.spots.TWO_GOVERNANCE.name).to.be(null);
+        expect(riverMapJSON.spots.THREE_PRODUCTION.name).to.be(null);
+        expect(riverMapJSON.spots.TWO_DESTINATION.name).to.be(null);
+        expect(riverMapJSON.spots.TWO_TRAVELER.name).to.be(null);
+        expect(riverMapJSON.spots.TWO_GOVERNANCE.name).to.be(null);
+
+        riverMapJSON = riverMap.toJSON(true);
+        expect(riverMapJSON.spots.SHOAL.name).to.not.be(null);
+
+        expect(riverMapJSON.spots.THREE_PRODUCTION.name).to.not.be(null);
+        expect(riverMapJSON.spots.TWO_DESTINATION.name).to.not.be(null);
+        expect(riverMapJSON.spots.TWO_TRAVELER.name).to.not.be(null);
+        expect(riverMapJSON.spots.TWO_GOVERNANCE.name).to.not.be(null);
+      });
+
+      it("should not hide revealed destinations", () => {
+        const riverMap = initialRiverDestinationMap();
+        riverMap.spots.THREE_PRODUCTION.revealed = true;
+
+        const riverMapJSON = riverMap.toJSON(false);
+        expect(riverMapJSON.spots.SHOAL.name).to.not.be(null);
+        expect(riverMapJSON.spots.THREE_PRODUCTION.name).to.not.be(null);
+
+        expect(riverMapJSON.spots.TWO_DESTINATION.name).to.be(null);
+        expect(riverMapJSON.spots.TWO_TRAVELER.name).to.be(null);
+        expect(riverMapJSON.spots.TWO_GOVERNANCE.name).to.be(null);
+      });
     });
   });
 
-  it("should recieve a PEARL for revealing a river destination", () => {
+  it("should receive a PEARL for revealing a river destination", () => {
     player.addToCity(CardName.JUDGE);
     player.addToCity(CardName.SHOPKEEPER);
 

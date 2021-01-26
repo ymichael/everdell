@@ -5,6 +5,7 @@ import uniq from "lodash/uniq";
 
 import {
   CardType,
+  CardName,
   RiverDestinationSpot,
   RiverDestinationMapSpots,
   RiverDestinationType,
@@ -144,24 +145,48 @@ export class RiverDestinationMap {
     }
 
     // Check if player fulfills the criteria of the spot!
+    const adjustCountsBy = {
+      [CardType.PRODUCTION]: 0,
+      [CardType.DESTINATION]: 0,
+      [CardType.GOVERNANCE]: 0,
+      [CardType.TRAVELER]: 0,
+      [CardType.PROSPERITY]: 0,
+    };
+    const messenger = Card.fromName(CardName.MESSENGER);
+    player.getPlayedCardInfos(messenger.name).forEach(({ shareSpaceWith }) => {
+      if (!shareSpaceWith) {
+        throw new Error("Messenger not sharing a space with any Construction.");
+      }
+      const card = Card.fromName(shareSpaceWith);
+      adjustCountsBy[messenger.cardType] -= 1;
+      adjustCountsBy[card.cardType] += 1;
+    });
+
+    const getNumByCardType = (cardType: CardType): number => {
+      return (
+        player.getPlayedCardNamesByType(cardType).length +
+        adjustCountsBy[cardType]
+      );
+    };
+
     switch (spotName) {
       case RiverDestinationSpot.THREE_PRODUCTION:
-        if (player.getPlayedCardNamesByType(CardType.PRODUCTION).length < 3) {
+        if (getNumByCardType(CardType.PRODUCTION) < 3) {
           return "Must have 3 PRODUCTION cards in your city";
         }
         break;
       case RiverDestinationSpot.TWO_DESTINATION:
-        if (player.getPlayedCardNamesByType(CardType.DESTINATION).length < 2) {
+        if (getNumByCardType(CardType.DESTINATION) < 2) {
           return "Must have 2 DESTINATION cards in your city";
         }
         break;
       case RiverDestinationSpot.TWO_GOVERNANCE:
-        if (player.getPlayedCardNamesByType(CardType.GOVERNANCE).length < 2) {
+        if (getNumByCardType(CardType.GOVERNANCE) < 2) {
           return "Must have 2 GOVERNANCE cards in your city";
         }
         break;
       case RiverDestinationSpot.TWO_TRAVELER:
-        if (player.getPlayedCardNamesByType(CardType.TRAVELER).length < 2) {
+        if (getNumByCardType(CardType.TRAVELER) < 2) {
           return "Must have 2 TRAVELER cards in your city";
         }
         break;
@@ -178,12 +203,12 @@ export class RiverDestinationMap {
     switch (spot) {
       case RiverDestinationSpot.SHOAL:
         return toGameText("Shoal");
+      case RiverDestinationSpot.THREE_PRODUCTION:
+        return toGameText("2 PRODUCTION");
       case RiverDestinationSpot.TWO_TRAVELER:
         return toGameText("2 TRAVELER");
       case RiverDestinationSpot.TWO_GOVERNANCE:
         return toGameText("2 GOVERNANCE");
-      case RiverDestinationSpot.THREE_PRODUCTION:
-        return toGameText("2 PRODUCTION");
       case RiverDestinationSpot.TWO_DESTINATION:
         return toGameText("2 DESTINATION");
       default:

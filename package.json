@@ -11,7 +11,7 @@
     "collect_test_data": "DUMP_GAME_TEST_DATA=1 npm run test -- -r src/model/testHooks.ts",
     "test": "rm -rf ./db/test.sqlite && DB_PATH=./db/test.sqlite mocha -r ts-node/register src/**/*.test.ts",
     "test:watch": "npm run test -- --watch --extension ts",
-    "test-ui": "HOST=http://localhost:3000 DB_PATH=./db/game.sqlite mocha --timeout 60000 -r ts-node/register src/test_ui/*.ts",
+    "test-cypress": "DB_PATH=./db/game.sqlite cypress open",
     "typecheck": "tsc",
     "typecheck:watch": "tsc --watch",
     "build": "next build",

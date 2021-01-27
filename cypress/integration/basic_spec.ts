@@ -22,3 +22,6 @@ describe("Basic", () => {
     cy.contains(name2);
   });
 });
+
+// Workaround --isolatedModules error.
+export {}

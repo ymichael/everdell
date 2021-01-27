@@ -1,10 +1,10 @@
 import { GameJSON } from "../../src/model/jsonTypes";
 
 describe("Load Game", () => {
-  const gameJSON: GameJSON;
+  let gameJSON: GameJSON;
 
   beforeEach(async () => {
-    gameJSON = await cy.task("db:createTestGame1");
+    gameJSON = await (cy.task("db:createTestGame1") as unknown as Promise<GameJSON>);
   });
 
   it("should be able to load player page", () => {

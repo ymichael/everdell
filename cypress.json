@@ -2,8 +2,5 @@
   "projectId": "a7bq2k",
   "fixturesFolder": false,
   "nodeVersion": "system",
-  "baseUrl": "http://localhost:3000",
-  "env": {
-    "DB_PATH": "/db/game.sqlite"
-  }
+  "baseUrl": "http://localhost:3000"
 }

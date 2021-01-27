@@ -36,15 +36,35 @@ export const CardTypeSymbol = ({ cardType }: { cardType: CardType }) => {
   return (
     <>
       {cardType === CardType.PRODUCTION ? (
-        <Image src="/images/production.png" layout="fill" />
+        <Image
+          alt="PRODUCTION card type"
+          src="/images/production.png"
+          layout="fill"
+        />
       ) : cardType === CardType.GOVERNANCE ? (
-        <Image src="/images/governance.png" layout="fill" />
+        <Image
+          alt="GOVERNANCE card type"
+          src="/images/governance.png"
+          layout="fill"
+        />
       ) : cardType === CardType.DESTINATION ? (
-        <Image src="/images/destination.png" layout="fill" />
+        <Image
+          alt="DESTINATION card type"
+          src="/images/destination.png"
+          layout="fill"
+        />
       ) : cardType === CardType.PROSPERITY ? (
-        <Image src="/images/prosperity.png" layout="fill" />
+        <Image
+          alt="PROSPERITY card type"
+          src="/images/prosperity.png"
+          layout="fill"
+        />
       ) : cardType === CardType.TRAVELER ? (
-        <Image src="/images/traveler.png" layout="fill" />
+        <Image
+          alt="TRAVELER card type"
+          src="/images/traveler.png"
+          layout="fill"
+        />
       ) : (
         <>{cardType}</>
       )}
@@ -58,22 +78,34 @@ export const CardIcon = () => {
 
 export const WorkerSpotIcon = ({ locked = false }: { locked?: boolean }) => {
   if (locked) {
-    return <Image src="/images/worker_spot_locked.png" layout="fill" />;
+    return (
+      <Image
+        alt="Worker Spot (Locked)"
+        src="/images/worker_spot_locked.png"
+        layout="fill"
+      />
+    );
   } else {
-    return <Image src="/images/worker_spot.png" layout="fill" />;
+    return (
+      <Image alt="Worker Spot" src="/images/worker_spot.png" layout="fill" />
+    );
   }
 };
 
 export const EmptyCitySpotIcon = () => {
-  return <Image src="/images/city_slot.png" layout="fill" />;
+  return (
+    <Image alt="Empty City Spot" src="/images/city_slot.png" layout="fill" />
+  );
 };
 
 export const VPIcon = () => {
-  return <Image src="/images/vp.png" layout="fill" />;
+  return <Image alt="VP Token" src="/images/vp.png" layout="fill" />;
 };
 
 export const WildResourceIcon = () => {
-  return <Image src="/images/wild_resource.png" layout="fill" />;
+  return (
+    <Image alt="WILD Resource" src="/images/wild_resource.png" layout="fill" />
+  );
 };
 
 export const ResourceTypeIcon = ({
@@ -84,15 +116,15 @@ export const ResourceTypeIcon = ({
   return (
     <>
       {resourceType === ResourceType.BERRY ? (
-        <Image src="/images/berry.png" layout="fill" />
+        <Image alt="BERRY Resource" src="/images/berry.png" layout="fill" />
       ) : resourceType === ResourceType.TWIG ? (
-        <Image src="/images/twig.png" layout="fill" />
+        <Image alt="TWIG Resource" src="/images/twig.png" layout="fill" />
       ) : resourceType === ResourceType.PEBBLE ? (
-        <Image src="/images/pebble.png" layout="fill" />
+        <Image alt="PEBBLE Resource" src="/images/pebble.png" layout="fill" />
       ) : resourceType === ResourceType.RESIN ? (
-        <Image src="/images/resin.png" layout="fill" />
+        <Image alt="RESIN Resource" src="/images/resin.png" layout="fill" />
       ) : resourceType === ResourceType.PEARL ? (
-        <Image src="/images/pearl.png" layout="fill" />
+        <Image alt="PEARL Resource" src="/images/pearl.png" layout="fill" />
       ) : (
         <>{resourceType}</>
       )}

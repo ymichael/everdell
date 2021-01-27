@@ -3511,7 +3511,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     baseCost: {
       [ResourceType.BERRY]: 3,
     },
-    playInner: () => {
+    playInner: (gameState: GameState, gameInput: GameInput) => {
       throw new Error("Not Implemented");
     },
   }),
@@ -3533,7 +3533,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     baseVP: 0,
     numInDeck: 3,
     baseCost: {},
-    playInner: () => {
+    playInner: (gameState: GameState, gameInput: GameInput) => {
       throw new Error("Not Implemented");
     },
   }),
@@ -3560,7 +3560,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     numWorkersForPlayerInner() {
       throw new Error("Not Implemented");
     },
-    playInner: () => {
+    playInner: (gameState: GameState, gameInput: GameInput) => {
       throw new Error("Not Implemented");
     },
   }),

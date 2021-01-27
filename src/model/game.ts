@@ -86,6 +86,18 @@ export class Game {
   }
 }
 
+export const createGameFromGameState = async (
+  gameState: GameState
+): Promise<Game> => {
+  const game = new Game({
+    gameId: uuid(),
+    gameSecret: uuid(),
+    gameState,
+  });
+  await game.save();
+  return game;
+};
+
 export const createGame = async (
   playerNames: string[],
   gameOptions: Partial<GameOptions> = {
@@ -97,17 +109,10 @@ export const createGame = async (
       `Unable to create a game with ${playerNames.length} players`
     );
   }
-  const gameId = uuid();
-  const gameSecret = uuid();
-  console.log(`Creating game: ${gameId}`);
   const players = playerNames.map((name) => createPlayer(name));
-  const game = new Game({
-    gameId,
-    gameSecret,
-    gameState: GameState.initialGameState({ players, gameOptions }),
-  });
-
-  await game.save();
+  const gameState = GameState.initialGameState({ players, gameOptions });
+  const game = await createGameFromGameState(gameState);
+  console.log(`Game created: ${game.gameId}`);
   return game;
 };
 

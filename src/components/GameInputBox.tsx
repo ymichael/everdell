@@ -273,6 +273,7 @@ const GameInputBox: React.FC<{
                   <div key={idx} className={styles.input_type_radio}>
                     <label>
                       <input
+                        id={`js-game-input-type-${gameInput.inputType}`}
                         type="radio"
                         name="selectedInputType"
                         value={idx}

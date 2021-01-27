@@ -60,6 +60,7 @@ const GameInputPlayCard: React.FC<{
             <div key={idx} className={styles.clickable}>
               <div
                 key={idx}
+                data-cy={`play-card-item:${cardName}`}
                 onClick={() => {
                   resetPaymentOptions(cardName, "DEFAULT", {
                     _idx: idx,

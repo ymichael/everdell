@@ -1,13 +1,15 @@
 import { GameJSON } from "../../src/model/jsonTypes";
 
-describe("Load Game", () => {
+describe("Place Worker", () => {
   let gameJSON: GameJSON;
 
   beforeEach(async () => {
-    gameJSON = await (cy.task("db:createTestGame1") as unknown as Promise<GameJSON>);
+    gameJSON = await ((cy.task(
+      "db:basic-game"
+    ) as unknown) as Promise<GameJSON>);
   });
 
-  it("should be able to load player page", () => {
+  it("should allow players to place workers", () => {
     const player1 = gameJSON.gameState.players[0];
     const player2 = gameJSON.gameState.players[1];
 
@@ -19,7 +21,7 @@ describe("Load Game", () => {
     cy.visit(`/game/${gameJSON.gameId}?playerSecret=${player1.playerSecret}`);
     cy.contains("Visit Location");
     cy.get("#js-game-input-box-form").within(() => {
-      cy.get("#js-place-worker-item-1").click();
+      cy.get("[data-cy='place-worker-item:ONE_BERRY']").click();
     });
     cy.contains("Submit").click();
     cy.contains("Waiting for Elynn");
@@ -29,7 +31,7 @@ describe("Load Game", () => {
     cy.contains("Michael placed a worker");
     cy.contains("Visit Location");
     cy.get("#js-game-input-box-form").within(() => {
-      cy.get("#js-place-worker-item-2").click();
+      cy.get("[data-cy='place-worker-item:ONE_STONE']").click();
     });
     cy.contains("Submit").click();
     cy.contains("Elynn placed a worker");

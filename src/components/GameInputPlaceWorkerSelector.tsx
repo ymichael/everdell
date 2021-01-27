@@ -23,7 +23,7 @@ const GameInputPlaceWorkerSelector: React.FC<{
           return (
             <div
               key={idx}
-              id={`js-place-worker-item-${idx}`}
+              data-cy={`place-worker-item:${location}`}
               className={styles.clickable}
               onClick={() => {
                 helpers.setValue(location);

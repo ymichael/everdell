@@ -72,5 +72,5 @@ jobs:
 
       - name: Cypress run
         uses: cypress-io/github-action@v2.7.0
-        with:
-          env: DB_PATH=./db/game.sqlite
+        env:
+          DB_PATH: ./db/game.sqlite

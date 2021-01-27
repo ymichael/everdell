@@ -3485,11 +3485,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     baseCost: {
       [ResourceType.BERRY]: 4,
     },
-    pointsInner: () => {
-      throw new Error("Not Implemented");
-    },
-    playInner: () => {
-      throw new Error("Not Implemented");
+    pointsInner: (gameState: GameState, playerId: string) => {
+      const player = gameState.getPlayer(playerId);
+      return player.getAllPlayedCards().filter(({ cardName }) => {
+        return Card.fromName(cardName).expansion === ExpansionType.PEARLBROOK;
+      }).length;
     },
   }),
   [CardName.PIRATE]: new Card({

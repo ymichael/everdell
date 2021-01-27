@@ -5109,6 +5109,26 @@ describe("Card", () => {
       });
     });
 
+    describe(CardName.SHIPWRIGHT, () => {
+      const card = Card.fromName(CardName.SHIPWRIGHT);
+
+      it("should be worth 1 point per Pearlbrook card", () => {
+        const playerId = player.playerId;
+        player.addToCity(gameState, card.name);
+
+        expect(card.getPoints(gameState, playerId)).to.be(2 + 1 /* itself */);
+
+        player.addToCity(gameState, CardName.PIRATE);
+        expect(card.getPoints(gameState, playerId)).to.be(2 + 2);
+
+        player.addToCity(gameState, CardName.WIFE);
+        expect(card.getPoints(gameState, playerId)).to.be(2 + 2);
+
+        player.addToCity(gameState, CardName.HARBOR);
+        expect(card.getPoints(gameState, playerId)).to.be(2 + 3);
+      });
+    });
+
     describe(CardName.MESSENGER, () => {
       const card = Card.fromName(CardName.MESSENGER);
 

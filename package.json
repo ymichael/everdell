@@ -12,6 +12,7 @@
     "test": "rm -rf ./db/test.sqlite && DB_PATH=./db/test.sqlite mocha -r ts-node/register src/**/*.test.ts",
     "test:watch": "npm run test -- --watch --extension ts",
     "test-ui": "HOST=http://localhost:3000 DB_PATH=./db/game.sqlite mocha --timeout 60000 -r ts-node/register src/test_ui/*.ts",
+    "test-cypress": "DB_PATH=./db/game.sqlite cypress open",
     "typecheck": "tsc",
     "typecheck:watch": "tsc --watch",
     "build": "next build",
@@ -22,6 +23,7 @@
     "lint": "eslint src --quiet --ext .ts,tsx"
   },
   "dependencies": {
+    "cypress": "^6.3.0",
     "expect.js": "^0.3.1",
     "formik": "^2.2.6",
     "lodash": "^4.17.20",

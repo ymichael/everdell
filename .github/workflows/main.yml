@@ -37,7 +37,7 @@ jobs:
       - name: Run unit tests
         run: npm run test
 
-  e2e-test:
+  cypress-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -69,5 +69,6 @@ jobs:
           PORT=3000 npm run start &
           sleep 5 && 
           curl http://localhost:3000/api/status -I
-      - name: Run ui tests
-        run: npm run test-ui
+
+      - name: Cypress run
+        uses: cypress-io/github-action@v2.7.0

@@ -384,7 +384,7 @@ export class GameState {
     }
 
     const player = this.getActivePlayer();
-    this.addGameLog([player, " place a worker on ", location, "."]);
+    this.addGameLog([player, " placed a worker on ", location, "."]);
 
     // Before we place the worker because locations need to check occupancy.
     location.play(this, gameInput);

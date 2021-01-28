@@ -10,18 +10,20 @@ on:
 
 jobs:
   npm-ci:
-    - uses: actions/checkout@v2
-    - name: Setup Node.js environment
-      uses: actions/setup-node@v2.1.4
-    - name: node_modules cache
-      id: cache
-      uses: actions/cache@v2
-      with:
-        path: ${{ github.workspace }}/node_modules
-        key: ${{ runner.os }}-npm-ci-${{ hashFiles('**/package-lock.json') }}
-    - name: npm ci
-      if: steps.cache.outputs.cache-hit != 'true'
-      run: npm ci
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v2.1.4
+      - name: node_modules cache
+        id: cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ github.workspace }}/node_modules
+          key: ${{ runner.os }}-npm-ci-${{ hashFiles('**/package-lock.json') }}
+      - name: npm ci
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm ci
 
   unit-test:
     runs-on: ubuntu-latest

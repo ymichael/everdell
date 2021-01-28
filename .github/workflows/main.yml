@@ -75,6 +75,8 @@ jobs:
         with:
           record: true
           quiet: true
+          # we have already installed all dependencies above
+          install: false  
         env:
           DB_PATH: ./db/game.sqlite
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}

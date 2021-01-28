@@ -72,9 +72,9 @@ jobs:
 
       - name: Cypress run
         uses: cypress-io/github-action@v2.7.0
-        env:
-          DB_PATH: ./db/game.sqlite
         with:
           record: true
+        env:
+          DB_PATH: ./db/game.sqlite
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  

@@ -78,11 +78,11 @@ describe("Event", () => {
       player.addToCity(gameState, CardName.FARM);
       expect(event.canPlay(gameState, gameInput)).to.be(true);
 
-      expect(Object.keys(player.claimedEvents).length == 0);
+      expect(player.getNumClaimedEvents() == 0).to.be(true);
 
       event.play(gameState, gameInput);
-      expect(player.claimedEvents[EventName.BASIC_FOUR_PRODUCTION]);
-      expect(Object.keys(player.claimedEvents).length == 1);
+      expect(player.getClaimedEvent(EventName.BASIC_FOUR_PRODUCTION));
+      expect(player.getNumClaimedEvents() == 1).to.be(true);
     });
   });
 
@@ -98,11 +98,11 @@ describe("Event", () => {
       player.addToCity(gameState, CardName.LOOKOUT);
       expect(event.canPlay(gameState, gameInput)).to.be(true);
 
-      expect(Object.keys(player.claimedEvents).length == 0);
+      expect(player.getNumClaimedEvents() == 0).to.be(true);
 
       event.play(gameState, gameInput);
-      expect(player.claimedEvents[EventName.BASIC_THREE_DESTINATION]);
-      expect(Object.keys(player.claimedEvents).length == 1);
+      expect(player.getClaimedEvent(EventName.BASIC_THREE_DESTINATION));
+      expect(player.getNumClaimedEvents() == 1).to.be(true);
     });
   });
 
@@ -118,11 +118,11 @@ describe("Event", () => {
       player.addToCity(gameState, CardName.RANGER);
       expect(event.canPlay(gameState, gameInput)).to.be(true);
 
-      expect(Object.keys(player.claimedEvents).length == 0);
+      expect(player.getNumClaimedEvents() == 0).to.be(true);
 
       event.play(gameState, gameInput);
-      expect(player.claimedEvents[EventName.BASIC_THREE_TRAVELER]);
-      expect(Object.keys(player.claimedEvents).length == 1);
+      expect(player.getClaimedEvent(EventName.BASIC_THREE_TRAVELER));
+      expect(player.getNumClaimedEvents() == 1).to.be(true);
     });
   });
 
@@ -138,11 +138,11 @@ describe("Event", () => {
       player.addToCity(gameState, CardName.INNKEEPER);
       expect(event.canPlay(gameState, gameInput)).to.be(true);
 
-      expect(Object.keys(player.claimedEvents).length == 0);
+      expect(player.getNumClaimedEvents() == 0).to.be(true);
 
       event.play(gameState, gameInput);
-      expect(player.claimedEvents[EventName.BASIC_THREE_GOVERNANCE]);
-      expect(Object.keys(player.claimedEvents).length == 1);
+      expect(player.getClaimedEvent(EventName.BASIC_THREE_GOVERNANCE));
+      expect(player.getNumClaimedEvents() == 1).to.be(true);
     });
   });
 
@@ -175,11 +175,11 @@ describe("Event", () => {
       player.addToCity(gameState, CardName.WIFE);
       expect(event.canPlay(gameState, gameInput)).to.be(true);
 
-      expect(Object.keys(player.claimedEvents).length == 0);
+      expect(player.getNumClaimedEvents() == 0).to.be(true);
 
       event.play(gameState, gameInput);
-      expect(player.claimedEvents[EventName.SPECIAL_THE_EVERDELL_GAMES]);
-      expect(Object.keys(player.claimedEvents).length == 1);
+      expect(player.getClaimedEvent(EventName.SPECIAL_THE_EVERDELL_GAMES));
+      expect(player.getNumClaimedEvents() == 1).to.be(true);
     });
   });
 
@@ -206,7 +206,7 @@ describe("Event", () => {
       // Try to claim the event + check that you get the correct game state back
       expect(gameState.pendingGameInputs).to.eql([]);
       expect(
-        player.claimedEvents[EventName.SPECIAL_GRADUATION_OF_SCHOLARS]
+        player.getClaimedEvent(EventName.SPECIAL_GRADUATION_OF_SCHOLARS)
       ).to.be(undefined);
 
       expect(event.canPlay(gameState, gameInput)).to.be(true);
@@ -236,7 +236,7 @@ describe("Event", () => {
         },
       ]);
       expect(
-        player.claimedEvents[EventName.SPECIAL_GRADUATION_OF_SCHOLARS]
+        player.getClaimedEvent(EventName.SPECIAL_GRADUATION_OF_SCHOLARS)
       ).to.eql({
         storedCards: [CardName.POSTAL_PIGEON, CardName.HUSBAND, CardName.WIFE],
       });
@@ -266,7 +266,7 @@ describe("Event", () => {
 
       // try to claim the event + check that you get the correct game state back
       expect(gameState.pendingGameInputs).to.eql([]);
-      expect(player.claimedEvents[EventName.SPECIAL_CROAK_WART_CURE]).to.be(
+      expect(player.getClaimedEvent(EventName.SPECIAL_CROAK_WART_CURE)).to.be(
         undefined
       );
 
@@ -325,7 +325,7 @@ describe("Event", () => {
       // try to claim the event + check that you get the correct game state back
       expect(gameState.pendingGameInputs).to.eql([]);
       expect(
-        player.claimedEvents[EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES]
+        player.getClaimedEvent(EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES)
       ).to.be(undefined);
 
       [player, gameState] = multiStepGameInputTest(gameState, [
@@ -375,7 +375,7 @@ describe("Event", () => {
       // try to claim the event + check that you get the correct game state back
       expect(gameState.pendingGameInputs).to.eql([]);
       expect(
-        player.claimedEvents[EventName.SPECIAL_AN_EVENING_OF_FIREWORKS]
+        player.getClaimedEvent(EventName.SPECIAL_AN_EVENING_OF_FIREWORKS)
       ).to.be(undefined);
 
       [player, gameState] = multiStepGameInputTest(gameState, [
@@ -400,8 +400,9 @@ describe("Event", () => {
       expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
 
       // check that correct resources are on card
-      const eventInfo =
-        player.claimedEvents[EventName.SPECIAL_AN_EVENING_OF_FIREWORKS];
+      const eventInfo = player.getClaimedEvent(
+        EventName.SPECIAL_AN_EVENING_OF_FIREWORKS
+      );
 
       if (!eventInfo) {
         throw new Error("invalid event info");
@@ -479,7 +480,7 @@ describe("Event", () => {
       // try to claim the event + check that you get the correct game state back
       expect(gameState.pendingGameInputs).to.eql([]);
       expect(
-        player.claimedEvents[EventName.SPECIAL_AN_EVENING_OF_FIREWORKS]
+        player.getClaimedEvent(EventName.SPECIAL_AN_EVENING_OF_FIREWORKS)
       ).to.be(undefined);
 
       gameState = gameState.next(gameInput);
@@ -531,7 +532,7 @@ describe("Event", () => {
       // try to claim the event + check that you get the correct game state back
       expect(gameState.pendingGameInputs).to.eql([]);
       expect(
-        player.claimedEvents[EventName.SPECIAL_PERFORMER_IN_RESIDENCE]
+        player.getClaimedEvent(EventName.SPECIAL_PERFORMER_IN_RESIDENCE)
       ).to.be(undefined);
 
       [player, gameState] = multiStepGameInputTest(gameState, [
@@ -556,8 +557,9 @@ describe("Event", () => {
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
 
       // check that correct resources are on card
-      const eventInfo =
-        player.claimedEvents[EventName.SPECIAL_PERFORMER_IN_RESIDENCE];
+      const eventInfo = player.getClaimedEvent(
+        EventName.SPECIAL_PERFORMER_IN_RESIDENCE
+      );
 
       if (!eventInfo) {
         throw new Error("invalid event info");
@@ -634,7 +636,7 @@ describe("Event", () => {
       // try to claim the event + check that you get the correct game state back
       expect(gameState.pendingGameInputs).to.eql([]);
       expect(
-        player.claimedEvents[EventName.SPECIAL_PERFORMER_IN_RESIDENCE]
+        player.getClaimedEvent(EventName.SPECIAL_PERFORMER_IN_RESIDENCE)
       ).to.be(undefined);
 
       gameState = gameState.next(gameInput);
@@ -690,7 +692,7 @@ describe("Event", () => {
       // try to claim the event + check that you get the correct game state back
       expect(gameState.pendingGameInputs).to.eql([]);
       expect(
-        player.claimedEvents[EventName.SPECIAL_UNDER_NEW_MANAGEMENT]
+        player.getClaimedEvent(EventName.SPECIAL_UNDER_NEW_MANAGEMENT)
       ).to.be(undefined);
 
       [player, gameState] = multiStepGameInputTest(gameState, [
@@ -720,8 +722,9 @@ describe("Event", () => {
       expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(1);
 
       // check that correct resources are on card
-      const eventInfo =
-        player.claimedEvents[EventName.SPECIAL_UNDER_NEW_MANAGEMENT];
+      const eventInfo = player.getClaimedEvent(
+        EventName.SPECIAL_UNDER_NEW_MANAGEMENT
+      );
 
       if (!eventInfo) {
         throw new Error("invalid event info");
@@ -756,7 +759,7 @@ describe("Event", () => {
       // try to claim the event + check that you get the correct game state back
       expect(gameState.pendingGameInputs).to.eql([]);
       expect(
-        player.claimedEvents[EventName.SPECIAL_UNDER_NEW_MANAGEMENT]
+        player.getClaimedEvent(EventName.SPECIAL_UNDER_NEW_MANAGEMENT)
       ).to.be(undefined);
 
       [player, gameState] = multiStepGameInputTest(gameState, [
@@ -778,8 +781,9 @@ describe("Event", () => {
       expect(player.hasCardInCity(CardName.PEDDLER)).to.eql(true);
 
       // check that correct resources are on card
-      const eventInfo =
-        player.claimedEvents[EventName.SPECIAL_UNDER_NEW_MANAGEMENT];
+      const eventInfo = player.getClaimedEvent(
+        EventName.SPECIAL_UNDER_NEW_MANAGEMENT
+      );
 
       if (!eventInfo) {
         throw new Error("invalid event info");
@@ -815,7 +819,7 @@ describe("Event", () => {
       // try to claim the event + check that you get the correct game state back
       expect(gameState.pendingGameInputs).to.eql([]);
       expect(
-        player.claimedEvents[EventName.SPECIAL_UNDER_NEW_MANAGEMENT]
+        player.getClaimedEvent(EventName.SPECIAL_UNDER_NEW_MANAGEMENT)
       ).to.be(undefined);
 
       [player, gameState] = multiStepGameInputTest(gameState, [
@@ -841,8 +845,9 @@ describe("Event", () => {
       expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(2);
 
       // check that correct resources are on card
-      const eventInfo =
-        player.claimedEvents[EventName.SPECIAL_UNDER_NEW_MANAGEMENT];
+      const eventInfo = player.getClaimedEvent(
+        EventName.SPECIAL_UNDER_NEW_MANAGEMENT
+      );
 
       if (!eventInfo) {
         throw new Error("invalid event info");
@@ -917,7 +922,7 @@ describe("Event", () => {
       // try to claim the event + check that you get the correct game state back
       expect(gameState.pendingGameInputs).to.eql([]);
       expect(
-        player.claimedEvents[EventName.SPECIAL_PRISTINE_CHAPEL_CEILING]
+        player.getClaimedEvent(EventName.SPECIAL_PRISTINE_CHAPEL_CEILING)
       ).to.be(undefined);
 
       [player, gameState] = multiStepGameInputTest(gameState, [
@@ -961,7 +966,7 @@ describe("Event", () => {
       // try to claim the event + check that you get the correct game state back
       expect(gameState.pendingGameInputs).to.eql([]);
       expect(
-        player.claimedEvents[EventName.SPECIAL_PRISTINE_CHAPEL_CEILING]
+        player.getClaimedEvent(EventName.SPECIAL_PRISTINE_CHAPEL_CEILING)
       ).to.be(undefined);
 
       [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
@@ -999,7 +1004,7 @@ describe("Event", () => {
       // try to claim the event + check that you get the correct game state back
       expect(gameState.pendingGameInputs).to.eql([]);
       expect(
-        player.claimedEvents[EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED]
+        player.getClaimedEvent(EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED)
       ).to.be(undefined);
 
       [player, gameState] = multiStepGameInputTest(gameState, [
@@ -1026,8 +1031,9 @@ describe("Event", () => {
       // player should have 0 cards in hand
       expect(player.cardsInHand.length).to.be(0);
 
-      const eventInfo =
-        player.claimedEvents[EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED];
+      const eventInfo = player.getClaimedEvent(
+        EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED
+      );
 
       if (!eventInfo) {
         throw new Error("invalid event info");
@@ -1071,7 +1077,7 @@ describe("Event", () => {
       // try to claim the event + check that you get the correct game state back
       expect(gameState.pendingGameInputs).to.eql([]);
       expect(
-        player.claimedEvents[EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED]
+        player.getClaimedEvent(EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED)
       ).to.be(undefined);
 
       [player, gameState] = multiStepGameInputTest(gameState, [
@@ -1098,8 +1104,9 @@ describe("Event", () => {
       // player should have Queen and King
       expect(player.cardsInHand).to.eql([CardName.QUEEN, CardName.KING]);
 
-      const eventInfo =
-        player.claimedEvents[EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED];
+      const eventInfo = player.getClaimedEvent(
+        EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED
+      );
 
       if (!eventInfo) {
         throw new Error("invalid event info");
@@ -1142,7 +1149,7 @@ describe("Event", () => {
       // try to claim the event + check that you get the correct game state back
       expect(gameState.pendingGameInputs).to.eql([]);
       expect(
-        player.claimedEvents[EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED]
+        player.getClaimedEvent(EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED)
       ).to.be(undefined);
 
       [player, gameState] = multiStepGameInputTest(gameState, [
@@ -1181,8 +1188,9 @@ describe("Event", () => {
         CardName.KING,
       ]);
 
-      const eventInfo =
-        player.claimedEvents[EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED];
+      const eventInfo = player.getClaimedEvent(
+        EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED
+      );
 
       if (!eventInfo) {
         throw new Error("invalid event info");
@@ -1211,14 +1219,14 @@ describe("Event", () => {
       // check if the player can claim the event
       expect(event.canPlay(gameState, gameInput)).to.be(false);
       expect(
-        player.claimedEvents[EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED]
+        player.getClaimedEvent(EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED)
       ).to.be(undefined);
 
       expect(() => {
         gameState.next(gameInput);
       }).to.throwException(/Need to have played/i);
       expect(
-        player.claimedEvents[EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED]
+        player.getClaimedEvent(EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED)
       ).to.be(undefined);
     });
   });
@@ -1233,13 +1241,13 @@ describe("Event", () => {
       player.addToCity(gameState, CardName.JUDGE);
       player.addToCity(gameState, CardName.QUEEN);
 
-      expect(player.claimedEvents[EventName.SPECIAL_TAX_RELIEF]).to.be(
+      expect(player.getClaimedEvent(EventName.SPECIAL_TAX_RELIEF)).to.be(
         undefined
       );
 
       gameState = gameState.next(gameInput);
 
-      expect(player.claimedEvents[EventName.SPECIAL_TAX_RELIEF]);
+      expect(player.getClaimedEvent(EventName.SPECIAL_TAX_RELIEF));
       expect(event.getPoints(gameState, player.playerId)).to.be(3);
     });
 
@@ -1253,14 +1261,14 @@ describe("Event", () => {
       player.addToCity(gameState, CardName.QUEEN);
       player.addToCity(gameState, CardName.FARM);
 
-      expect(player.claimedEvents[EventName.SPECIAL_TAX_RELIEF]).to.be(
+      expect(player.getClaimedEvent(EventName.SPECIAL_TAX_RELIEF)).to.be(
         undefined
       );
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
 
       [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
 
-      expect(player.claimedEvents[EventName.SPECIAL_TAX_RELIEF]);
+      expect(player.getClaimedEvent(EventName.SPECIAL_TAX_RELIEF));
       expect(event.getPoints(gameState, player.playerId)).to.be(3);
 
       // indicates that production was activated
@@ -1391,7 +1399,7 @@ describe("Event", () => {
       player.gainResources(gameState, { [ResourceType.TWIG]: 3 });
 
       expect(
-        player.claimedEvents[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN]
+        player.getClaimedEvent(EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN)
       ).to.be(undefined);
 
       const selectPlayerInput = {
@@ -1430,7 +1438,7 @@ describe("Event", () => {
       player2 = gameState.getPlayer(player2.playerId);
 
       expect(
-        player.claimedEvents[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN]
+        player.getClaimedEvent(EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN)
       );
       expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
       // shopkeeper is worth 1, post office is worth 2
@@ -1461,7 +1469,7 @@ describe("Event", () => {
       });
 
       expect(
-        player.claimedEvents[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN]
+        player.getClaimedEvent(EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN)
       ).to.be(undefined);
 
       const selectFirstOppo = {
@@ -1560,7 +1568,7 @@ describe("Event", () => {
       player4 = gameState.getPlayer(player4.playerId);
 
       expect(
-        player.claimedEvents[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN]
+        player.getClaimedEvent(EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN)
       );
       expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(2);
       expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
@@ -1597,7 +1605,7 @@ describe("Event", () => {
       });
 
       expect(
-        player.claimedEvents[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN]
+        player.getClaimedEvent(EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN)
       ).to.be(undefined);
 
       const selectFirstOppo = {
@@ -1682,7 +1690,7 @@ describe("Event", () => {
       player4 = gameState.getPlayer(player4.playerId);
 
       expect(
-        player.claimedEvents[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN]
+        player.getClaimedEvent(EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN)
       );
       expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(2);
       expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
@@ -1719,7 +1727,7 @@ describe("Event", () => {
       });
 
       expect(
-        player.claimedEvents[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN]
+        player.getClaimedEvent(EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN)
       ).to.be(undefined);
 
       const selectFirstOppo = {
@@ -1780,7 +1788,7 @@ describe("Event", () => {
       });
 
       expect(
-        player.claimedEvents[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN]
+        player.getClaimedEvent(EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN)
       ).to.be(undefined);
 
       const selectFirstOppo = {

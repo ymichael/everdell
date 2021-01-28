@@ -9,7 +9,7 @@ import {
 } from "../model/types";
 import { Player } from "../model/player";
 import { GameState } from "../model/gameState";
-import { Event as EventModel } from "../model/event";
+import { Event as EventModel, oldEventEnums } from "../model/event";
 import { Location as LocationModel } from "../model/location";
 
 import GameLog from "./GameLog";
@@ -139,7 +139,19 @@ export const Events: React.FC<{
   numColumns?: number;
 }> = ({ gameState, numColumns = 3 }) => {
   const renderClaimedEvent = (name: EventName) => {
-    const playerId = gameState.eventsMap[name];
+    // See comment above oldEventEnums
+    const oldEventName = Object.keys(gameState.eventsMap).find(
+      (oldEventName) => {
+        if (oldEventEnums[oldEventName]) {
+          const oldName = oldEventEnums[oldEventName];
+          return EventName[oldName as keyof typeof EventName] === name;
+        }
+      }
+    );
+
+    const playerId =
+      gameState.eventsMap[name] ||
+      (oldEventName && gameState.eventsMap[oldEventName as EventName]);
     const claimedBy = playerId ? gameState.getPlayer(playerId).name : null;
     return (
       <div key={name} className={styles.event_item}>

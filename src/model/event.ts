@@ -253,7 +253,7 @@ export class Event implements GameStatePlayable, IGameTextEntity {
 // in the db that store these strings in the game state. Hardcoding these here
 // so we don't break those games.
 // 1/14/2021
-const oldEventEnums: Record<any, any> = {
+export const oldEventEnums: Record<any, any> = {
   "FOUR PRODUCTION CARDS": "BASIC_FOUR_PRODUCTION",
   "THREE DESTINATION CARDS": "BASIC_THREE_DESTINATION",
   "THREE GOVERNANCE CARDS": "BASIC_THREE_GOVERNANCE",
@@ -393,8 +393,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           selectedPlayer.gainResources(gameState, resources);
           player.spendResources(resources);
 
-          const eventInfo =
-            player.claimedEvents[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN];
+          const eventInfo = player.getClaimedEvent(
+            EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN
+          );
           if (!eventInfo) {
             throw new Error("Cannot find event info");
           }
@@ -571,8 +572,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           throw new Error("too many twigs");
         }
 
-        const eventInfo =
-          player.claimedEvents[EventName.SPECIAL_AN_EVENING_OF_FIREWORKS];
+        const eventInfo = player.getClaimedEvent(
+          EventName.SPECIAL_AN_EVENING_OF_FIREWORKS
+        );
 
         if (!eventInfo) {
           throw new Error("Cannot find event info");
@@ -596,8 +598,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
 
-      const eventInfo =
-        player.claimedEvents[EventName.SPECIAL_AN_EVENING_OF_FIREWORKS];
+      const eventInfo = player.getClaimedEvent(
+        EventName.SPECIAL_AN_EVENING_OF_FIREWORKS
+      );
 
       if (!eventInfo) {
         throw new Error("Invalid event info");
@@ -678,8 +681,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           throw new Error("Too many cards");
         }
 
-        const eventInfo =
-          player.claimedEvents[EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED];
+        const eventInfo = player.getClaimedEvent(
+          EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED
+        );
         if (!eventInfo) {
           throw new Error("Cannot find event info");
         }
@@ -722,8 +726,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     // TODO: add playInner
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
-      const eventInfo =
-        player.claimedEvents[EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED];
+      const eventInfo = player.getClaimedEvent(
+        EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED
+      );
       if (!eventInfo) {
         throw new Error("Cannot find event info");
       }
@@ -789,8 +794,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           }
         });
 
-        const eventInfo =
-          player.claimedEvents[EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES];
+        const eventInfo = player.getClaimedEvent(
+          EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES
+        );
         if (!eventInfo) {
           throw new Error("Cannot find event info");
         }
@@ -828,8 +834,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     // 3 points per critter beneath event
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
-      const eventInfo =
-        player.claimedEvents[EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES];
+      const eventInfo = player.getClaimedEvent(
+        EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES
+      );
       if (!eventInfo) {
         throw new Error("Cannot find event info");
       }
@@ -908,8 +915,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         if (selectedCards.length != 2) {
           throw new Error("Must select 2 cards to discard");
         }
-        const eventInfo =
-          player.claimedEvents[EventName.SPECIAL_CROAK_WART_CURE];
+        const eventInfo = player.getClaimedEvent(
+          EventName.SPECIAL_CROAK_WART_CURE
+        );
         if (!eventInfo) {
           throw new Error("Cannot find event info");
         }
@@ -1005,8 +1013,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           }
         });
 
-        const eventInfo =
-          player.claimedEvents[EventName.SPECIAL_GRADUATION_OF_SCHOLARS];
+        const eventInfo = player.getClaimedEvent(
+          EventName.SPECIAL_GRADUATION_OF_SCHOLARS
+        );
         if (!eventInfo) {
           throw new Error("Cannot find event info");
         }
@@ -1032,8 +1041,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
 
-      const eventInfo =
-        player.claimedEvents[EventName.SPECIAL_GRADUATION_OF_SCHOLARS];
+      const eventInfo = player.getClaimedEvent(
+        EventName.SPECIAL_GRADUATION_OF_SCHOLARS
+      );
       if (!eventInfo) {
         throw new Error("Cannot find event info");
       }
@@ -1049,8 +1059,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
 
-      const eventInfo =
-        player.claimedEvents[EventName.SPECIAL_MINISTERING_TO_MISCREANTS];
+      const eventInfo = player.getClaimedEvent(
+        EventName.SPECIAL_MINISTERING_TO_MISCREANTS
+      );
       if (!eventInfo) {
         throw new Error("Cannot find event info");
       }
@@ -1079,8 +1090,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
 
-      const eventInfo =
-        player.claimedEvents[EventName.SPECIAL_PATH_OF_THE_PILGRIMS];
+      const eventInfo = player.getClaimedEvent(
+        EventName.SPECIAL_PATH_OF_THE_PILGRIMS
+      );
       if (!eventInfo) {
         throw new Error("Cannot find event info");
       }
@@ -1156,8 +1168,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         if (numBerries > 3) {
           throw new Error("Select up to 3 berries");
         }
-        const eventInfo =
-          player.claimedEvents[EventName.SPECIAL_PERFORMER_IN_RESIDENCE];
+        const eventInfo = player.getClaimedEvent(
+          EventName.SPECIAL_PERFORMER_IN_RESIDENCE
+        );
 
         if (!eventInfo) {
           throw new Error("Cannot find event info");
@@ -1182,8 +1195,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
 
-      const eventInfo =
-        player.claimedEvents[EventName.SPECIAL_PERFORMER_IN_RESIDENCE];
+      const eventInfo = player.getClaimedEvent(
+        EventName.SPECIAL_PERFORMER_IN_RESIDENCE
+      );
 
       if (!eventInfo) {
         throw new Error("Invalid event info");
@@ -1253,8 +1267,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
 
-      const eventInfo =
-        player.claimedEvents[EventName.SPECIAL_PRISTINE_CHAPEL_CEILING];
+      const eventInfo = player.getClaimedEvent(
+        EventName.SPECIAL_PRISTINE_CHAPEL_CEILING
+      );
       if (!eventInfo) {
         throw new Error("Cannot find event info");
       }
@@ -1295,8 +1310,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
 
-      const eventInfo =
-        player.claimedEvents[EventName.SPECIAL_REMEMBERING_THE_FALLEN];
+      const eventInfo = player.getClaimedEvent(
+        EventName.SPECIAL_REMEMBERING_THE_FALLEN
+      );
       if (!eventInfo) {
         throw new Error("Cannot find event info");
       }
@@ -1441,8 +1457,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           throw new Error("too many resources");
         }
 
-        const eventInfo =
-          player.claimedEvents[EventName.SPECIAL_UNDER_NEW_MANAGEMENT];
+        const eventInfo = player.getClaimedEvent(
+          EventName.SPECIAL_UNDER_NEW_MANAGEMENT
+        );
 
         if (!eventInfo) {
           throw new Error("Cannot find event info");
@@ -1473,8 +1490,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
 
-      const eventInfo =
-        player.claimedEvents[EventName.SPECIAL_UNDER_NEW_MANAGEMENT];
+      const eventInfo = player.getClaimedEvent(
+        EventName.SPECIAL_UNDER_NEW_MANAGEMENT
+      );
 
       if (!eventInfo) {
         throw new Error("Invalid event info");

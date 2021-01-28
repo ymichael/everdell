@@ -24,7 +24,7 @@ import { PlayerJSON } from "./jsonTypes";
 import { GameState } from "./gameState";
 import { Adornment } from "./adornment";
 import { Card } from "./card";
-import { Event } from "./event";
+import { Event, oldEventEnums } from "./event";
 import { Location } from "./location";
 import { generate as uuid } from "short-uuid";
 import { sumResources } from "./gameStatePlayHelpers";
@@ -451,6 +451,31 @@ export class Player implements IGameTextEntity {
     }
   }
 
+  getClaimedEvent(eventName: EventName): PlayedEventInfo | undefined {
+    if (this.claimedEvents[eventName]) {
+      return this.claimedEvents[eventName];
+    }
+
+    // See comment above oldEventEnums.
+    const oldEventName = Object.keys(this.claimedEvents).find(
+      (oldEventName) => {
+        if (oldEventEnums[oldEventName]) {
+          const oldName = oldEventEnums[oldEventName];
+          return EventName[oldName as keyof typeof EventName] === eventName;
+        }
+      }
+    );
+
+    if (oldEventName) {
+      return this.claimedEvents[oldEventName as EventName];
+    }
+    return undefined;
+  }
+
+  getNumClaimedEvents(): number {
+    return Object.keys(this.claimedEvents).length;
+  }
+
   getNumHusbandWifePairs(): number {
     const numHusbands = (this.playedCards[CardName.HUSBAND] || []).length;
     const numWifes = (this.playedCards[CardName.WIFE] || []).length;
@@ -539,7 +564,7 @@ export class Player implements IGameTextEntity {
   }
 
   getNumResourcesByType(resourceType: ResourceType): number {
-    return this.resources[resourceType];
+    return this.resources[resourceType] || 0;
   }
 
   getNumPlayedConstructions(): number {

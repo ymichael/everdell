@@ -33,6 +33,18 @@ module.exports = (on, config) => {
       const game = await createGameFromGameState(gameState);
       return game.toJSON(true);
     },
+    "db:claim-event-game": async () => {
+      const gameState = testInitialGameState({
+        playerNames: ["Michael", "Elynn"],
+      });
+      const player = gameState.getActivePlayer();
+      player.addToCity(gameState, CardName.MINE);
+      player.addToCity(gameState, CardName.MINE);
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
+      const game = await createGameFromGameState(gameState);
+      return game.toJSON(true);
+    },
     "db:visit-destination-game": async () => {
       const gameState = testInitialGameState({
         playerNames: ["Michael", "Elynn"],

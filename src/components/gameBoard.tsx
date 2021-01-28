@@ -180,7 +180,7 @@ export const Events: React.FC<{
 
   return (
     <GameBlock title={"Events"}>
-      <div className={styles.event_items}>
+      <div id={"js-game-events"} className={styles.event_items}>
         {columns.map((events, idx) => {
           return (
             <div key={idx} className={styles.event_items_col}>

@@ -81,19 +81,21 @@ export const Event = ({
   claimedBy?: string | null;
 }) => {
   return (
-    <ItemWrapper
-      isHighlighted={!!claimedBy}
-      footerChildren={
-        claimedBy && (
-          <div className={styles.claimed_by}>
-            <span className={styles.claimed_label}>{"Claimed: "}</span>
-            <span className={styles.claimed_by_text}>{claimedBy}</span>
-          </div>
-        )
-      }
-    >
-      <EventInner name={name} />
-    </ItemWrapper>
+    <div data-cy={`event:${name}`}>
+      <ItemWrapper
+        isHighlighted={!!claimedBy}
+        footerChildren={
+          claimedBy && (
+            <div className={styles.claimed_by}>
+              <span className={styles.claimed_label}>{"Claimed: "}</span>
+              <span className={styles.claimed_by_text}>{claimedBy}</span>
+            </div>
+          )
+        }
+      >
+        <EventInner name={name} />
+      </ItemWrapper>
+    </div>
   );
 };
 

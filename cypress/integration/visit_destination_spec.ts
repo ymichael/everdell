@@ -11,7 +11,6 @@ describe("Visit Destination", () => {
 
   it("should allow players to play cards", () => {
     const player1 = gameJSON.gameState.players[0];
-    const player2 = gameJSON.gameState.players[1];
 
     // Take player 1's turn.
     cy.visit(`/game/${gameJSON.gameId}?playerSecret=${player1.playerSecret}`);

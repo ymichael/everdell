@@ -1,7 +1,3 @@
-/// <reference types="cypress" />
-// ***********************************************************
-// https://on.cypress.io/plugins-guide
-// ***********************************************************
 /**
  * @type {Cypress.PluginConfig}
  */

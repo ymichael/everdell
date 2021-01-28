@@ -195,7 +195,7 @@ export const PlayerCity: React.FC<{
   ];
 
   return playedCards.length !== 0 ? (
-    <>
+    <div data-cy={`player-city:${player.name}`}>
       <div className={styles.city_stats}>
         {labelToCount
           .filter(([_, count]) => count)
@@ -222,9 +222,11 @@ export const PlayerCity: React.FC<{
           </ItemWrapper>
         ))}
       </div>
-    </>
+    </div>
   ) : (
-    <div className={styles.empty_city}>City is empty.</div>
+    <div data-cy={`player-city:${player.name}`} className={styles.empty_city}>
+      City is empty.
+    </div>
   );
 };
 

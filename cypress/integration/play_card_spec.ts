@@ -21,6 +21,10 @@ describe("Play Card", () => {
     cy.get("#js-game-input-type-PLACE_WORKER").click();
     cy.get("#js-game-input-type-PLAY_CARD").click();
 
+    cy.get("[data-cy='player-city:Michael']").within(() => {
+      cy.contains("City is empty");
+    });
+
     // Play MINE
     cy.get("#js-game-input-box-form").within(() => {
       cy.get("[data-cy='play-card-item:Mine']").click();
@@ -30,5 +34,9 @@ describe("Play Card", () => {
     cy.contains("Michael played Mine");
     cy.contains("Mine: Michael gained 1");
     cy.contains("Waiting for Elynn");
+
+    cy.get("[data-cy='player-city:Michael']").within(() => {
+      cy.contains("Mine");
+    });
   });
 });

@@ -27,6 +27,7 @@ const GameInputVisitDestinationCard: React.FC<{
             <ItemWrapper key={idx} isHighlighted={isSelected}>
               <div
                 className={styles.clickable}
+                data-cy={`visit-destination-card-item:${playedCard.cardName}`}
                 key={idx}
                 onClick={() => {
                   helpers.setValue(playedCard);

@@ -33,5 +33,29 @@ module.exports = (on, config) => {
       const game = await createGameFromGameState(gameState);
       return game.toJSON(true);
     },
+    "db:visit-destination-game": async () => {
+      const gameState = testInitialGameState({
+        playerNames: ["Michael", "Elynn"],
+      });
+
+      gameState.meadowCards.push(
+        CardName.KING,
+        CardName.QUEEN,
+        CardName.POSTAL_PIGEON,
+        CardName.POSTAL_PIGEON,
+        CardName.FARM,
+        CardName.HUSBAND,
+        CardName.CHAPEL,
+        CardName.MONK
+      );
+
+      // To reveal after we play a card from the Meadow
+      gameState.deck.addToStack(CardName.DOCTOR);
+
+      const player = gameState.getActivePlayer();
+      player.addToCity(gameState, CardName.INN);
+      const game = await createGameFromGameState(gameState);
+      return game.toJSON(true);
+    },
   });
 };

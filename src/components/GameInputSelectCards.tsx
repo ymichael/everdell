@@ -27,6 +27,7 @@ const GameInputSelectCards: React.FC<{
         return (
           <div
             className={styles.clickable}
+            data-cy={`select-card-item:${card}`}
             key={idx}
             onClick={() => {
               if (isSelected) {

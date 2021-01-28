@@ -18,8 +18,10 @@ describe("Play Card", () => {
     cy.contains("Play Card");
 
     // Should be able to place worker / play card.
-    cy.get("#js-game-input-type-PLACE_WORKER").click();
-    cy.get("#js-game-input-type-PLAY_CARD").click();
+    cy.get("#js-game-input-box-form").within(() => {
+      cy.get("#js-game-input-type-PLACE_WORKER").click();
+      cy.get("#js-game-input-type-PLAY_CARD").click();
+    });
 
     cy.get("[data-cy='player-city:Michael']").within(() => {
       cy.contains("City is empty");
@@ -28,8 +30,8 @@ describe("Play Card", () => {
     // Play MINE
     cy.get("#js-game-input-box-form").within(() => {
       cy.get("[data-cy='play-card-item:Mine']").click();
+      cy.contains("Submit").click();
     });
-    cy.contains("Submit").click();
 
     cy.contains("Michael played Mine");
     cy.contains("Mine: Michael gained 1");

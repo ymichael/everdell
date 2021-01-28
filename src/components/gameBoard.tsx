@@ -23,19 +23,21 @@ export const Meadow: React.FC<{ meadowCards: CardName[] }> = ({
 }) => {
   return (
     <GameBlock title={"Meadow"}>
-      <div className={styles.items_no_wrap}>
-        {meadowCards.slice(0, 4).map((cardName, idx) => (
-          <ItemWrapper key={idx}>
-            <Card name={cardName} />
-          </ItemWrapper>
-        ))}
-      </div>
-      <div className={styles.items_no_wrap}>
-        {meadowCards.slice(4).map((cardName, idx) => (
-          <ItemWrapper key={idx}>
-            <Card name={cardName} />
-          </ItemWrapper>
-        ))}
+      <div id={"js-meadow-cards"}>
+        <div className={styles.items_no_wrap}>
+          {meadowCards.slice(0, 4).map((cardName, idx) => (
+            <ItemWrapper key={idx}>
+              <Card name={cardName} />
+            </ItemWrapper>
+          ))}
+        </div>
+        <div className={styles.items_no_wrap}>
+          {meadowCards.slice(4).map((cardName, idx) => (
+            <ItemWrapper key={idx}>
+              <Card name={cardName} />
+            </ItemWrapper>
+          ))}
+        </div>
       </div>
     </GameBlock>
   );

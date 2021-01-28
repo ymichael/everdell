@@ -25,6 +25,7 @@ const GameInputSelectPlayedCards: React.FC<{
         const isSelected = !!selectedCardIdx.current[idx];
         return (
           <div
+            data-cy={`played-card-item:${cardInfo.cardName}`}
             className={styles.clickable}
             key={idx}
             onClick={() => {

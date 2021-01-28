@@ -74,6 +74,7 @@ jobs:
         uses: cypress-io/github-action@v2.7.0
         with:
           record: true
+          quiet: true
         env:
           DB_PATH: ./db/game.sqlite
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}

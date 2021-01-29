@@ -3599,8 +3599,30 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     baseVP: 0,
     numInDeck: 3,
     baseCost: {},
+    canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
+      const activePlayer = gameState.getActivePlayer();
+      if (
+        !gameState.players.find((player) => {
+          if (player.playerId === activePlayer.playerId) {
+            return false;
+          }
+          return player.canAddToCity(CardName.PIRATE_SHIP, true /* strict */);
+        })
+      ) {
+        return "No space in any opponent's city.";
+      }
+      return null;
+    },
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
+      if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
+        throw new Error("Not Implemented");
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_PLAYER &&
+        gameInput.cardContext === CardName.PIRATE_SHIP
+      ) {
+        // TODO: Remember to move the playedCardInfo too!
+        throw new Error("Not Implemented");
+      }
     },
   }),
   [CardName.FERRY]: new Card({

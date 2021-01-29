@@ -9,38 +9,15 @@ on:
   workflow_dispatch:
 
 jobs:
-  npm-ci:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v2.1.4
-      - name: node_modules cache
-        id: npm-ci-cache
-        uses: actions/cache@v2
-        with:
-          path: ./node_modules
-          key: ${{ runner.os }}-npm-ci-${{ hashFiles('**/package-lock.json') }}
-      - name: npm ci
-        if: steps.npm-ci-cache.outputs.cache-hit != 'true'
-        run: npm ci
-
   unit-test:
     runs-on: ubuntu-latest
-    needs: npm-ci
     steps:
       - uses: actions/checkout@v2
       - name: Setup Node.js environment
         uses: actions/setup-node@v2.1.4
-
-      - name: node_modules cache
-        id: npm-ci-cache
-        uses: actions/cache@v2
-        with:
-          path: ./node_modules
-          key: ${{ runner.os }}-npm-ci-${{ hashFiles('**/package-lock.json') }}
-      - name: npm ci
-        if: steps.npm-ci-cache.outputs.cache-hit != 'true'
+      - uses: bahmutov/npm-install@v1
+      - name: Install Dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci
 
       - name: Run prettier check
@@ -54,21 +31,16 @@ jobs:
 
   cypress-test:
     runs-on: ubuntu-latest
-    needs: npm-ci
     steps:
       - uses: actions/checkout@v2
       - name: Setup Node.js environment
         uses: actions/setup-node@v2.1.4
-
-      - name: node_modules cache
-        id: npm-ci-cache
+      - uses: bahmutov/npm-install@v1
+      - name: nextjs cache
         uses: actions/cache@v2
         with:
-          path: ./node_modules
-          key: ${{ runner.os }}-npm-ci-${{ hashFiles('**/package-lock.json') }}
-      - name: npm ci
-        if: steps.npm-ci-cache.outputs.cache-hit != 'true'
-        run: npm ci
+          path: ${{ github.workspace }}/.next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}
 
       - name: Run build
         run: npm run build:ci
@@ -84,8 +56,8 @@ jobs:
           record: true
           quiet: true
           # we have already installed all dependencies above
-          install: false
+          install: false  
         env:
           DB_PATH: ./db/game.sqlite
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  

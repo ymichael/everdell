@@ -22,7 +22,7 @@ jobs:
           path: |
             ./node_modules
             ~/.cache/Cypress
-          key: ${{ runner.os }}-npm-ci-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-npm-ci-2-${{ hashFiles('**/package-lock.json') }}
       - name: npm ci
         if: steps.npm-ci-cache.outputs.cache-hit != 'true'
         run: npm ci
@@ -42,7 +42,7 @@ jobs:
           path: |
             ./node_modules
             .cache/Cypress
-          key: ${{ runner.os }}-npm-ci-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-npm-ci-2-${{ hashFiles('**/package-lock.json') }}
 
       - name: Run prettier check
         run: npm run format:ci
@@ -68,7 +68,7 @@ jobs:
           path: |
             ./node_modules
             ~/.cache/Cypress
-          key: ${{ runner.os }}-npm-ci-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-npm-ci-2-${{ hashFiles('**/package-lock.json') }}
 
       - name: nextjs cache
         id: next-js-cache
@@ -103,7 +103,7 @@ jobs:
           path: |
             ./node_modules
             ~/.cache/Cypress
-          key: ${{ runner.os }}-npm-ci-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-npm-ci-2-${{ hashFiles('**/package-lock.json') }}
 
       - name: nextjs build output
         id: next-js-build-cache

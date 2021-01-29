@@ -23,6 +23,9 @@ jobs:
             ./node_modules
             ~/.cache/Cypress
           key: ${{ runner.os }}-npm-ci-${{ hashFiles('**/package-lock.json') }}
+      - name: npm ci
+        if: steps.npm-ci-cache.outputs.cache-hit != 'true'
+        run: npm ci
 
   unit-test:
     runs-on: ubuntu-latest

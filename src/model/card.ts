@@ -3512,7 +3512,73 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       [ResourceType.BERRY]: 3,
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.PLAY_CARD) {
+        if (player.cardsInHand.length === 0) {
+          gameState.addGameLogFromCard(CardName.PIRATE, [
+            player,
+            " has no CARD to discard.",
+          ]);
+          return;
+        }
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.DISCARD_CARDS,
+          prevInputType: gameInput.inputType,
+          cardContext: CardName.PIRATE,
+          label: "Discard up to 4 CARD",
+          minCards: 0,
+          maxCards: 4,
+          clientOptions: {
+            cardsToDiscard: [],
+          },
+        });
+      } else if (
+        gameInput.inputType === GameInputType.DISCARD_CARDS &&
+        gameInput.cardContext === CardName.PIRATE
+      ) {
+        const cardsToDiscard = gameInput.clientOptions.cardsToDiscard;
+        if (!cardsToDiscard) {
+          throw new Error("Invalid input");
+        }
+        if (cardsToDiscard.length > gameInput.maxCards) {
+          throw new Error("Discard up to 4 cards");
+        }
+        if (cardsToDiscard.length === 0) {
+          gameState.addGameLogFromCard(CardName.PIRATE, [
+            player,
+            " decline to discard any CARD.",
+          ]);
+          return;
+        }
+
+        let basePoints = 0;
+        const revealedCards: CardName[] = [];
+        cardsToDiscard.forEach((cardName) => {
+          const revealedCard = Card.fromName(gameState.drawCard());
+          basePoints += revealedCard.baseVP;
+          revealedCards.push(revealedCard.name);
+          player.removeCardFromHand(cardName);
+          gameState.discardPile.addToStack(cardName);
+        });
+
+        gameState.addGameLogFromCard(CardName.PIRATE, [
+          player,
+          ` discarded ${cardsToDiscard.length} CARD`,
+        ]);
+        gameState.addGameLogFromCard(CardName.PIRATE, [
+          player,
+          ` revealed `,
+          ...cardListToGameText(revealedCards),
+          ` (${basePoints} total base points).`,
+        ]);
+        if (basePoints >= 7) {
+          player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
+          gameState.addGameLogFromCard(CardName.PIRATE, [
+            player,
+            ` gains 1 PEARL.`,
+          ]);
+        }
+      }
     },
   }),
   [CardName.PIRATE_SHIP]: new Card({

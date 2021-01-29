@@ -5463,5 +5463,86 @@ describe("Card", () => {
         expect(player.getPlayedCardInfos(CardName.MESSENGER).length).to.be(2);
       });
     });
+
+    describe(CardName.PIRATE, () => {
+      const card = Card.fromName(CardName.PIRATE);
+
+      it("should do nothing if the player has no cards in hand", () => {
+        player.cardsInHand.push(card.name);
+        player.gainResources(gameState, card.baseCost);
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+        ]);
+        expect(player.hasCardInCity(card.name));
+      });
+
+      it("should prompt player to discard cards", () => {
+        player.cardsInHand.push(
+          card.name,
+          CardName.FARM,
+          CardName.FARM,
+          CardName.FARM,
+          CardName.FARM
+        );
+        player.gainResources(gameState, card.baseCost);
+
+        gameState.deck.addToStack(CardName.KING);
+        gameState.deck.addToStack(CardName.KING);
+        gameState.deck.addToStack(CardName.KING);
+        gameState.deck.addToStack(CardName.KING);
+
+        expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+          {
+            inputType: GameInputType.DISCARD_CARDS,
+            prevInputType: GameInputType.PLAY_CARD,
+            cardContext: CardName.PIRATE,
+            minCards: 0,
+            maxCards: 4,
+            clientOptions: {
+              cardsToDiscard: [CardName.FARM, CardName.FARM, CardName.FARM],
+            },
+          },
+        ]);
+        expect(player.hasCardInCity(card.name));
+        expect(player.cardsInHand).to.eql([CardName.FARM]);
+        expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
+      });
+
+      it("should not gain PEARL if base points of revealed cards less than 7", () => {
+        player.cardsInHand.push(
+          card.name,
+          CardName.FARM,
+          CardName.FARM,
+          CardName.FARM,
+          CardName.FARM
+        );
+        player.gainResources(gameState, card.baseCost);
+
+        gameState.deck.addToStack(CardName.RUINS);
+        gameState.deck.addToStack(CardName.RUINS);
+        gameState.deck.addToStack(CardName.RUINS);
+        gameState.deck.addToStack(CardName.RUINS);
+
+        expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+          {
+            inputType: GameInputType.DISCARD_CARDS,
+            prevInputType: GameInputType.PLAY_CARD,
+            cardContext: CardName.PIRATE,
+            minCards: 0,
+            maxCards: 4,
+            clientOptions: {
+              cardsToDiscard: [CardName.FARM, CardName.FARM, CardName.FARM],
+            },
+          },
+        ]);
+        expect(player.hasCardInCity(card.name));
+        expect(player.cardsInHand).to.eql([CardName.FARM]);
+        expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+      });
+    });
   });
 });

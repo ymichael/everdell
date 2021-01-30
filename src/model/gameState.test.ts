@@ -191,6 +191,11 @@ describe("GameState", () => {
       player = gameState.getActivePlayer();
     });
 
+    it("should not return anything if player has no unused ambassador", () => {
+      player.useAmbassador();
+      expect(gameState.getPlayableAmbassadorLocations()).to.eql([]);
+    });
+
     it("should return SHOAL if player has unused ambassador", () => {
       expect(gameState.getPlayableAmbassadorLocations()).to.eql([
         { type: "spot", spot: RiverDestinationSpot.SHOAL },

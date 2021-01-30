@@ -18,7 +18,7 @@ export enum GameInputType {
 
   // Pearlbrook specific
   PLAY_ADORNMENT = "PLAY_ADORNMENT",
-  VISIT_RIVER_DESTINATION = "VISIT_RIVER_DESTINATION",
+  PLACE_AMBASSADOR = "PLACE_AMBASSADOR",
   SELECT_PLAYED_ADORNMENT = "SELECT_PLAYED_ADORNMENT",
   SELECT_RIVER_DESTINATION = "SELECT_RIVER_DESTINATION",
 }
@@ -67,10 +67,10 @@ export type GameInputPlayAdornment = {
   };
 };
 
-export type GameInputVisitRiverDestination = {
-  inputType: GameInputType.VISIT_RIVER_DESTINATION;
+export type GameInputPlaceAmbassador = {
+  inputType: GameInputType.PLACE_AMBASSADOR;
   clientOptions: {
-    riverDestinationSpot: RiverDestinationSpot | null;
+    loc: AmbassadorPlacementInfo | null;
   };
 };
 
@@ -93,7 +93,7 @@ export type GameInputSimple =
   | GameInputGameEnd
   | GameInputPrepareForSeason
   | GameInputPlayAdornment
-  | GameInputVisitRiverDestination
+  | GameInputPlaceAmbassador
   | GameInputPrepareForSeason;
 
 export type GameInputDiscardCards = {
@@ -390,6 +390,9 @@ export type PlayedCardInfo = {
 
   // Messenger
   shareSpaceWith?: CardName | null;
+
+  // Ferry
+  ambassador?: string | null;
 };
 
 export type PlayedEventInfo = {
@@ -421,6 +424,16 @@ export type WorkerPlacementInfo =
       event: EventName;
       location?: undefined;
       playedCard?: undefined;
+    };
+
+export type AmbassadorPlacementInfo =
+  | {
+      type: "spot";
+      spot: RiverDestinationSpot;
+    }
+  | {
+      type: "card";
+      playedCard: PlayedCardInfo;
     };
 
 // All known cards

@@ -13,7 +13,7 @@ import {
   GameInputPrepareForSeason,
   GameInputType,
   GameInputVisitDestinationCard,
-  GameInputVisitRiverDestination,
+  GameInputPlaceAmbassador,
   GameInputWorkerPlacementTypes,
   GameLogEntry,
   GameOptions,
@@ -606,98 +606,105 @@ export class GameState {
     }
   }
 
-  private handleVisitRiverDestination(
-    gameInput: GameInputVisitRiverDestination
-  ): void {
+  private handlePlaceAmbassador(gameInput: GameInputPlaceAmbassador): void {
     if (!this.gameOptions.pearlbrook) {
       throw new Error(
         "Unexpected action, not playing with the Pearlbook expansion."
       );
     }
-    const riverDestinationSpot = gameInput.clientOptions?.riverDestinationSpot;
-    if (!riverDestinationSpot) {
-      throw new Error("Please select an river destination to visit");
-    }
-    const riverDestinationMap = this.riverDestinationMap;
-    if (!riverDestinationMap) {
-      throw new Error("Could not find River Destination");
-    }
-    const canVisitErr = riverDestinationMap.canVisitSpotCheck(
-      this,
-      riverDestinationSpot
-    );
-    if (canVisitErr) {
-      throw new Error(canVisitErr);
-    }
 
     const player = this.getActivePlayer();
-    const spot = riverDestinationMap.spots[riverDestinationSpot];
-    // Should not happen unless we're using the public gameState object.
-    if (!spot.name) {
-      throw new Error("Unable to reveal River Destination card.");
+    const loc = gameInput.clientOptions.loc;
+    if (!loc) {
+      throw new Error("Please select an Ambassadors location");
     }
 
-    // TODO: This won't work for the FERRY card.
-    spot.ambassadors.push(player.playerId);
-    player.useAmbassador();
-
-    const riverDestination = RiverDestination.fromName(spot.name);
-
-    const canPlayRiverDestinationErr = riverDestination.canPlayCheck(
-      this,
-      gameInput
-    );
-    if (canPlayRiverDestinationErr) {
-      throw new Error(canPlayRiverDestinationErr);
-    }
-
-    if (!spot.revealed) {
-      // Reveal!
-      spot.revealed = true;
-      this.addGameLog([
-        player,
-        ` visited `,
-        {
-          type: "entity",
-          entityType: "riverDestinationSpot",
-          spot: riverDestinationSpot,
-        },
-        ` and revealed `,
-        riverDestination,
-        ".",
-      ]);
-      this.addGameLog([player, " gained 1 PEARL."]);
-      player.gainResources(this, { [ResourceType.PEARL]: 1 });
-    } else {
-      if (riverDestinationSpot === RiverDestinationSpot.SHOAL) {
-        this.addGameLog([
-          player,
-          " visited ",
-          {
-            type: "entity",
-            entityType: "riverDestinationSpot",
-            spot: riverDestinationSpot,
-          },
-          `.`,
-        ]);
-      } else {
-        this.addGameLog([
-          player,
-          " visited ",
-          riverDestination,
-          ` at `,
-          {
-            type: "entity",
-            entityType: "riverDestinationSpot",
-            spot: riverDestinationSpot,
-          },
-          `.`,
-        ]);
+    if (loc.type === "spot") {
+      const riverDestinationSpot = loc.spot;
+      if (!riverDestinationSpot) {
+        throw new Error("Please select an river destination to visit");
       }
+      const riverDestinationMap = this.riverDestinationMap;
+      if (!riverDestinationMap) {
+        throw new Error("Could not find River Destination");
+      }
+      const canVisitErr = riverDestinationMap.canVisitSpotCheck(
+        this,
+        riverDestinationSpot
+      );
+      if (canVisitErr) {
+        throw new Error(canVisitErr);
+      }
+
+      const spot = riverDestinationMap.spots[riverDestinationSpot];
+      // Should not happen unless we're using the public gameState object.
+      if (!spot.name) {
+        throw new Error("Unable to reveal River Destination card.");
+      }
+      spot.ambassadors.push(player.playerId);
+
+      const riverDestination = RiverDestination.fromName(spot.name);
+      const canPlayRiverDestinationErr = riverDestination.canPlayCheck(
+        this,
+        gameInput
+      );
+      if (canPlayRiverDestinationErr) {
+        throw new Error(canPlayRiverDestinationErr);
+      }
+      if (!spot.revealed) {
+        // Reveal!
+        spot.revealed = true;
+        this.addGameLog([
+          player,
+          ` visited `,
+          {
+            type: "entity",
+            entityType: "riverDestinationSpot",
+            spot: riverDestinationSpot,
+          },
+          ` and revealed `,
+          riverDestination,
+          ".",
+        ]);
+        this.addGameLog([player, " gained 1 PEARL."]);
+        player.gainResources(this, { [ResourceType.PEARL]: 1 });
+      } else {
+        if (riverDestinationSpot === RiverDestinationSpot.SHOAL) {
+          this.addGameLog([
+            player,
+            " visited ",
+            {
+              type: "entity",
+              entityType: "riverDestinationSpot",
+              spot: riverDestinationSpot,
+            },
+            `.`,
+          ]);
+        } else {
+          this.addGameLog([
+            player,
+            " visited ",
+            riverDestination,
+            ` at `,
+            {
+              type: "entity",
+              entityType: "riverDestinationSpot",
+              spot: riverDestinationSpot,
+            },
+            `.`,
+          ]);
+        }
+      }
+
+      // Play river destination!
+      riverDestination.play(this, gameInput);
+    } else if (loc.type === "card") {
+      throw new Error("Not Implemented");
+    } else {
+      assertUnreachable(loc, loc);
     }
 
-    // Play river destination!
-    riverDestination.play(this, gameInput);
+    player.useAmbassador();
   }
 
   handleWorkerPlacementGameInput(
@@ -839,8 +846,8 @@ export class GameState {
       case GameInputType.PLAY_ADORNMENT:
         this.handlePlayAdornmentGameInput(gameInput);
         break;
-      case GameInputType.VISIT_RIVER_DESTINATION:
-        this.handleVisitRiverDestination(gameInput);
+      case GameInputType.PLACE_AMBASSADOR:
+        this.handlePlaceAmbassador(gameInput);
         break;
       case GameInputType.PREPARE_FOR_SEASON:
         this.handlePrepareForSeason(gameInput);

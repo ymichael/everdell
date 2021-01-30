@@ -3733,6 +3733,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     associatedCard: CardName.FERRY_FERRET,
     cardType: CardType.DESTINATION,
     maxWorkerSpots: 0,
+    playedCardInfoDefault: {
+      ambassador: null,
+    },
     cardDescription: toGameText([
       "Copy any revealed ",
       { type: "em", text: "River Destination" },

@@ -264,9 +264,9 @@ describe("RiverDestinationMap", () => {
     expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
     [player, gameState] = multiStepGameInputTest(gameState, [
       {
-        inputType: GameInputType.VISIT_RIVER_DESTINATION,
+        inputType: GameInputType.PLACE_AMBASSADOR,
         clientOptions: {
-          riverDestinationSpot: spot,
+          loc: { type: "spot", spot: spot },
         },
       },
     ]);
@@ -292,9 +292,9 @@ describe("RiverDestinationMap", () => {
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
       [player, gameState] = multiStepGameInputTest(gameState, [
         {
-          inputType: GameInputType.VISIT_RIVER_DESTINATION,
+          inputType: GameInputType.PLACE_AMBASSADOR,
           clientOptions: {
-            riverDestinationSpot: RiverDestinationSpot.TWO_TRAVELER,
+            loc: { type: "spot", spot: RiverDestinationSpot.TWO_TRAVELER },
           },
         },
       ]);
@@ -315,14 +315,14 @@ describe("RiverDestinationMap", () => {
 
       [player, gameState] = multiStepGameInputTest(gameState, [
         {
-          inputType: GameInputType.VISIT_RIVER_DESTINATION,
+          inputType: GameInputType.PLACE_AMBASSADOR,
           clientOptions: {
-            riverDestinationSpot: RiverDestinationSpot.TWO_TRAVELER,
+            loc: { type: "spot", spot: RiverDestinationSpot.TWO_TRAVELER },
           },
         },
         {
           inputType: GameInputType.SELECT_CARDS,
-          prevInputType: GameInputType.VISIT_RIVER_DESTINATION,
+          prevInputType: GameInputType.PLACE_AMBASSADOR,
           cardOptions: [CardName.FARM, CardName.FARM, CardName.MINE],
           maxToSelect: 3,
           minToSelect: 0,
@@ -359,14 +359,14 @@ describe("RiverDestinationMap", () => {
 
       [player, gameState] = multiStepGameInputTest(gameState, [
         {
-          inputType: GameInputType.VISIT_RIVER_DESTINATION,
+          inputType: GameInputType.PLACE_AMBASSADOR,
           clientOptions: {
-            riverDestinationSpot: RiverDestinationSpot.TWO_TRAVELER,
+            loc: { type: "spot", spot: RiverDestinationSpot.TWO_TRAVELER },
           },
         },
         {
           inputType: GameInputType.SELECT_CARDS,
-          prevInputType: GameInputType.VISIT_RIVER_DESTINATION,
+          prevInputType: GameInputType.PLACE_AMBASSADOR,
           cardOptions: [CardName.FARM, CardName.FARM, CardName.MINE],
           maxToSelect: 3,
           minToSelect: 0,
@@ -400,9 +400,9 @@ describe("RiverDestinationMap", () => {
       player.gainResources(gameState, { [ResourceType.RESIN]: 1 });
       [player, gameState] = multiStepGameInputTest(gameState, [
         {
-          inputType: GameInputType.VISIT_RIVER_DESTINATION,
+          inputType: GameInputType.PLACE_AMBASSADOR,
           clientOptions: {
-            riverDestinationSpot: RiverDestinationSpot.TWO_TRAVELER,
+            loc: { type: "spot", spot: RiverDestinationSpot.TWO_TRAVELER },
           },
         },
       ]);
@@ -415,9 +415,9 @@ describe("RiverDestinationMap", () => {
       player.gainResources(gameState, { [ResourceType.VP]: 1 });
       [player, gameState] = multiStepGameInputTest(gameState, [
         {
-          inputType: GameInputType.VISIT_RIVER_DESTINATION,
+          inputType: GameInputType.PLACE_AMBASSADOR,
           clientOptions: {
-            riverDestinationSpot: RiverDestinationSpot.TWO_TRAVELER,
+            loc: { type: "spot", spot: RiverDestinationSpot.TWO_TRAVELER },
           },
         },
       ]);
@@ -436,14 +436,14 @@ describe("RiverDestinationMap", () => {
 
       [player, gameState] = multiStepGameInputTest(gameState, [
         {
-          inputType: GameInputType.VISIT_RIVER_DESTINATION,
+          inputType: GameInputType.PLACE_AMBASSADOR,
           clientOptions: {
-            riverDestinationSpot: RiverDestinationSpot.TWO_TRAVELER,
+            loc: { type: "spot", spot: RiverDestinationSpot.TWO_TRAVELER },
           },
         },
         {
           inputType: GameInputType.SELECT_OPTION_GENERIC,
-          prevInputType: GameInputType.VISIT_RIVER_DESTINATION,
+          prevInputType: GameInputType.PLACE_AMBASSADOR,
           riverDestinationContext: RiverDestinationName.BALLROOM,
           options: ["Ok", "Decline"],
           clientOptions: { selectedOption: "Ok" },
@@ -467,14 +467,14 @@ describe("RiverDestinationMap", () => {
 
       [player, gameState] = multiStepGameInputTest(gameState, [
         {
-          inputType: GameInputType.VISIT_RIVER_DESTINATION,
+          inputType: GameInputType.PLACE_AMBASSADOR,
           clientOptions: {
-            riverDestinationSpot: RiverDestinationSpot.TWO_TRAVELER,
+            loc: { type: "spot", spot: RiverDestinationSpot.TWO_TRAVELER },
           },
         },
         {
           inputType: GameInputType.SELECT_OPTION_GENERIC,
-          prevInputType: GameInputType.VISIT_RIVER_DESTINATION,
+          prevInputType: GameInputType.PLACE_AMBASSADOR,
           riverDestinationContext: RiverDestinationName.BALLROOM,
           options: ["Ok", "Decline"],
           clientOptions: { selectedOption: "Decline" },
@@ -492,9 +492,9 @@ describe("RiverDestinationMap", () => {
       expect(() => {
         [player, gameState] = multiStepGameInputTest(gameState, [
           {
-            inputType: GameInputType.VISIT_RIVER_DESTINATION,
+            inputType: GameInputType.PLACE_AMBASSADOR,
             clientOptions: {
-              riverDestinationSpot: RiverDestinationSpot.SHOAL,
+              loc: { type: "spot", spot: RiverDestinationSpot.SHOAL },
             },
           },
         ]);
@@ -504,9 +504,9 @@ describe("RiverDestinationMap", () => {
       expect(() => {
         [player, gameState] = multiStepGameInputTest(gameState, [
           {
-            inputType: GameInputType.VISIT_RIVER_DESTINATION,
+            inputType: GameInputType.PLACE_AMBASSADOR,
             clientOptions: {
-              riverDestinationSpot: RiverDestinationSpot.SHOAL,
+              loc: { type: "spot", spot: RiverDestinationSpot.SHOAL },
             },
           },
         ]);
@@ -521,14 +521,14 @@ describe("RiverDestinationMap", () => {
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
       [player, gameState] = multiStepGameInputTest(gameState, [
         {
-          inputType: GameInputType.VISIT_RIVER_DESTINATION,
+          inputType: GameInputType.PLACE_AMBASSADOR,
           clientOptions: {
-            riverDestinationSpot: RiverDestinationSpot.SHOAL,
+            loc: { type: "spot", spot: RiverDestinationSpot.SHOAL },
           },
         },
         {
           inputType: GameInputType.SELECT_RESOURCES,
-          prevInputType: GameInputType.VISIT_RIVER_DESTINATION,
+          prevInputType: GameInputType.PLACE_AMBASSADOR,
           riverDestinationContext: RiverDestinationName.SHOAL,
           toSpend: true,
           minResources: 2,
@@ -560,9 +560,9 @@ describe("RiverDestinationMap", () => {
         gameState,
         [
           {
-            inputType: GameInputType.VISIT_RIVER_DESTINATION,
+            inputType: GameInputType.PLACE_AMBASSADOR,
             clientOptions: {
-              riverDestinationSpot: RiverDestinationSpot.SHOAL,
+              loc: { type: "spot", spot: RiverDestinationSpot.SHOAL },
             },
           },
         ],

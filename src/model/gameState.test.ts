@@ -9,6 +9,7 @@ import {
   EventName,
   PlayerStatus,
   ResourceType,
+  RiverDestinationSpot,
   LocationType,
 } from "./types";
 import { Event } from "./event";
@@ -180,6 +181,58 @@ describe("GameState", () => {
       expect(gameState.getPlayableLocations()).to.eql([
         ...Location.byType(LocationType.BASIC),
         ...Location.byType(LocationType.HAVEN),
+      ]);
+    });
+  });
+
+  describe("getPlayableAmbassadorLocations", () => {
+    beforeEach(() => {
+      gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
+      player = gameState.getActivePlayer();
+    });
+
+    it("should return SHOAL if player has unused ambassador", () => {
+      expect(gameState.getPlayableAmbassadorLocations()).to.eql([
+        { type: "spot", spot: RiverDestinationSpot.SHOAL },
+      ]);
+    });
+
+    it("should return THREE_PRODUCTION if player has 3 PRODUCTION in city", () => {
+      expect(gameState.getPlayableAmbassadorLocations()).to.eql([
+        { type: "spot", spot: RiverDestinationSpot.SHOAL },
+      ]);
+
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
+
+      expect(gameState.getPlayableAmbassadorLocations()).to.eql([
+        { type: "spot", spot: RiverDestinationSpot.SHOAL },
+        { type: "spot", spot: RiverDestinationSpot.THREE_PRODUCTION },
+      ]);
+    });
+
+    it("should return TWO_TRAVELER if player has 2 TRAVELER in city", () => {
+      expect(gameState.getPlayableAmbassadorLocations()).to.eql([
+        { type: "spot", spot: RiverDestinationSpot.SHOAL },
+      ]);
+
+      player.addToCity(gameState, CardName.RANGER);
+      player.addToCity(gameState, CardName.WANDERER);
+
+      expect(gameState.getPlayableAmbassadorLocations()).to.eql([
+        { type: "spot", spot: RiverDestinationSpot.SHOAL },
+        { type: "spot", spot: RiverDestinationSpot.TWO_TRAVELER },
+      ]);
+
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
+
+      expect(gameState.getPlayableAmbassadorLocations()).to.eql([
+        { type: "spot", spot: RiverDestinationSpot.SHOAL },
+        { type: "spot", spot: RiverDestinationSpot.THREE_PRODUCTION },
+        { type: "spot", spot: RiverDestinationSpot.TWO_TRAVELER },
       ]);
     });
   });

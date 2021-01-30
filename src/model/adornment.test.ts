@@ -331,12 +331,9 @@ describe("Adornment", () => {
         prevInputType: GameInputType.PLAY_ADORNMENT,
         adornmentContext: name,
         adornmentOptions: [AdornmentName.BELL, AdornmentName.GILDED_BOOK],
-        maxToSelect: 1,
-        minToSelect: 0,
-        mustSelectFromOpponents: true,
         clientOptions: {
           // let's do bell because it's easy
-          adornment: [AdornmentName.BELL],
+          adornment: AdornmentName.BELL,
         },
       };
 
@@ -369,11 +366,8 @@ describe("Adornment", () => {
         prevInputType: GameInputType.PLAY_ADORNMENT,
         adornmentContext: name,
         adornmentOptions: [AdornmentName.BELL, AdornmentName.HOURGLASS],
-        maxToSelect: 1,
-        minToSelect: 0,
-        mustSelectFromOpponents: true,
         clientOptions: {
-          adornment: [AdornmentName.HOURGLASS],
+          adornment: AdornmentName.HOURGLASS,
         },
       };
 
@@ -448,11 +442,8 @@ describe("Adornment", () => {
         prevInputType: GameInputType.PLAY_ADORNMENT,
         adornmentContext: name,
         adornmentOptions: [AdornmentName.BELL, AdornmentName.GILDED_BOOK],
-        maxToSelect: 1,
-        minToSelect: 0,
-        mustSelectFromOpponents: true,
         clientOptions: {
-          adornment: [],
+          adornment: null,
         },
       };
 

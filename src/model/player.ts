@@ -722,7 +722,7 @@ export class Player implements IGameTextEntity {
     gameState: GameState,
     origPlayedCard: PlayedCardInfo,
     playedCardChanges: Partial<PlayedCardInfo>
-  ): void {
+  ): PlayedCardInfo {
     let found = false;
     const origPlayedCardCopy = cloneDeep(origPlayedCard);
     const cardName = origPlayedCard.cardName;
@@ -750,6 +750,7 @@ export class Player implements IGameTextEntity {
         case GameInputType.SELECT_PLAYER:
         case GameInputType.SELECT_WORKER_PLACEMENT:
         case GameInputType.SELECT_PLAYED_ADORNMENT:
+        case GameInputType.SELECT_RIVER_DESTINATION:
           return gameInput;
 
         case GameInputType.SELECT_OPTION_GENERIC:
@@ -783,6 +784,8 @@ export class Player implements IGameTextEntity {
         }\n ${JSON.stringify(origPlayedCard, null, 2)}`
       );
     }
+
+    return Object.freeze(newPlayedCard);
   }
 
   findPlayedCard(
@@ -1416,6 +1419,14 @@ export class Player implements IGameTextEntity {
     return this.placedWorkers.filter(this.isRecallableWorker);
   }
 
+  getPlacedWorker(
+    workerPlacementInfo: WorkerPlacementInfo
+  ): WorkerPlacementInfo | undefined {
+    return this.placedWorkers.find((placedWorker) =>
+      isEqual(placedWorker, workerPlacementInfo)
+    );
+  }
+
   recallWorker(
     gameState: GameState,
     workerPlacementInfo: WorkerPlacementInfo,
@@ -1429,11 +1440,7 @@ export class Player implements IGameTextEntity {
       throw new Error("Cannot recall worker");
     }
     if (removeFromPlacedWorkers) {
-      const toRemove:
-        | WorkerPlacementInfo
-        | undefined = this.placedWorkers.find((placedWorker) =>
-        isEqual(placedWorker, workerPlacementInfo)
-      );
+      const toRemove = this.getPlacedWorker(workerPlacementInfo);
       if (!toRemove) {
         throw new Error("Cannot find worker");
       }

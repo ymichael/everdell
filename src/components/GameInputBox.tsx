@@ -143,11 +143,13 @@ const GameInputBoxInner = ({
           viewingPlayer={viewingPlayer}
           locations={gameInput.locationOptions}
         />
-      ) : gameInput.inputType === GameInputType.VISIT_RIVER_DESTINATION ? (
+      ) : gameInput.inputType === GameInputType.PLACE_AMBASSADOR ? (
         <>TODO</>
       ) : gameInput.inputType === GameInputType.PLAY_ADORNMENT ? (
         <>TODO</>
       ) : gameInput.inputType === GameInputType.SELECT_PLAYED_ADORNMENT ? (
+        <>TODO</>
+      ) : gameInput.inputType === GameInputType.SELECT_RIVER_DESTINATION ? (
         <>TODO</>
       ) : (
         <>

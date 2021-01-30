@@ -18,8 +18,9 @@ export enum GameInputType {
 
   // Pearlbrook specific
   PLAY_ADORNMENT = "PLAY_ADORNMENT",
-  VISIT_RIVER_DESTINATION = "VISIT_RIVER_DESTINATION",
+  PLACE_AMBASSADOR = "PLACE_AMBASSADOR",
   SELECT_PLAYED_ADORNMENT = "SELECT_PLAYED_ADORNMENT",
+  SELECT_RIVER_DESTINATION = "SELECT_RIVER_DESTINATION",
 }
 
 export type GameInputPlaceWorker = {
@@ -66,10 +67,10 @@ export type GameInputPlayAdornment = {
   };
 };
 
-export type GameInputVisitRiverDestination = {
-  inputType: GameInputType.VISIT_RIVER_DESTINATION;
+export type GameInputPlaceAmbassador = {
+  inputType: GameInputType.PLACE_AMBASSADOR;
   clientOptions: {
-    riverDestinationSpot: RiverDestinationSpot | null;
+    loc: AmbassadorPlacementInfo | null;
   };
 };
 
@@ -92,7 +93,7 @@ export type GameInputSimple =
   | GameInputGameEnd
   | GameInputPrepareForSeason
   | GameInputPlayAdornment
-  | GameInputVisitRiverDestination
+  | GameInputPlaceAmbassador
   | GameInputPrepareForSeason;
 
 export type GameInputDiscardCards = {
@@ -111,11 +112,17 @@ export type GameInputSelectPlayedAdornment = {
   inputType: GameInputType.SELECT_PLAYED_ADORNMENT;
   prevInputType: GameInputType;
   adornmentOptions: AdornmentName[];
-  maxToSelect: number;
-  minToSelect: number;
-  mustSelectFromOpponents: boolean;
   clientOptions: {
-    adornment: AdornmentName[];
+    adornment: AdornmentName | null;
+  };
+};
+
+export type GameInputSelectRiverDestination = {
+  inputType: GameInputType.SELECT_RIVER_DESTINATION;
+  prevInputType: GameInputType;
+  options: RiverDestinationName[];
+  clientOptions: {
+    riverDestination: RiverDestinationName | null;
   };
 };
 
@@ -235,6 +242,7 @@ export type GameInputMultiStep = (
   | GameInputSelectWorkerPlacement
   | GameInputSelectOptionGeneric
   | GameInputSelectPlayedAdornment
+  | GameInputSelectRiverDestination
 ) &
   GameInputMultiStepContext & {
     prevInput?: GameInput;
@@ -382,6 +390,9 @@ export type PlayedCardInfo = {
 
   // Messenger
   shareSpaceWith?: CardName | null;
+
+  // Ferry
+  ambassador?: string | null;
 };
 
 export type PlayedEventInfo = {
@@ -413,6 +424,16 @@ export type WorkerPlacementInfo =
       event: EventName;
       location?: undefined;
       playedCard?: undefined;
+    };
+
+export type AmbassadorPlacementInfo =
+  | {
+      type: "spot";
+      spot: RiverDestinationSpot;
+    }
+  | {
+      type: "card";
+      playedCard: PlayedCardInfo;
     };
 
 // All known cards

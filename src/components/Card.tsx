@@ -6,6 +6,7 @@ import { Player } from "../model/player";
 import { resourceMapToGameText, toGameText } from "../model/gameText";
 import {
   GameIcon,
+  AmbassadorSpotIcon,
   WorkerSpotIcon,
   Description,
   CardTypeSymbol,
@@ -196,6 +197,13 @@ const Card: React.FC<{ name: CardName; usedForCritter?: boolean }> = ({
               );
             })}
           </div>
+          {card.name === CardName.FERRY && (
+            <div className={styles.worker_spot_row}>
+              <div className={styles.worker_spot}>
+                <AmbassadorSpotIcon />
+              </div>
+            </div>
+          )}
           {card.maxWorkerSpots !== 0 && (
             <div className={styles.worker_spot_row}>
               <div className={styles.worker_spot}>

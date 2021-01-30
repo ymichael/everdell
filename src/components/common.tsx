@@ -92,6 +92,16 @@ export const WorkerSpotIcon = ({ locked = false }: { locked?: boolean }) => {
   }
 };
 
+export const AmbassadorSpotIcon = () => {
+  return (
+    <Image
+      alt="Ambassador Spot"
+      src="/images/ambassador_spot.png"
+      layout="fill"
+    />
+  );
+};
+
 export const EmptyCitySpotIcon = () => {
   return (
     <Image alt="Empty City Spot" src="/images/city_slot.png" layout="fill" />

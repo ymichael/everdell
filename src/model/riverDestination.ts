@@ -287,7 +287,7 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
     shortName: [{ type: "em", text: "Shoal" }],
     description: toGameText("Pay 2 ANY and discard 2 CARD to gain 1 PEARL."),
     canPlayCheckInner(gameState: GameState, gameInput: GameInput) {
-      if (gameInput.inputType === GameInputType.VISIT_RIVER_DESTINATION) {
+      if (gameInput.inputType === GameInputType.PLACE_AMBASSADOR) {
         const player = gameState.getActivePlayer();
         if (player.getNumCardCostResources() < 2) {
           return "Not enough resources to spend.";
@@ -300,7 +300,7 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
     },
     playInner(gameState: GameState, gameInput: GameInput) {
       const player = gameState.getActivePlayer();
-      if (gameInput.inputType === GameInputType.VISIT_RIVER_DESTINATION) {
+      if (gameInput.inputType === GameInputType.PLACE_AMBASSADOR) {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_RESOURCES,
           prevInputType: gameInput.inputType,
@@ -315,7 +315,7 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
         });
       } else if (
         gameInput.inputType === GameInputType.SELECT_RESOURCES &&
-        gameInput.prevInputType === GameInputType.VISIT_RIVER_DESTINATION &&
+        gameInput.prevInputType === GameInputType.PLACE_AMBASSADOR &&
         gameInput.riverDestinationContext === RiverDestinationName.SHOAL
       ) {
         const selectedResources = gameInput.clientOptions.resources;
@@ -392,7 +392,7 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
     ),
     playInner(gameState: GameState, gameInput: GameInput) {
       const player = gameState.getActivePlayer();
-      if (gameInput.inputType === GameInputType.VISIT_RIVER_DESTINATION) {
+      if (gameInput.inputType === GameInputType.PLACE_AMBASSADOR) {
         const numCardTypesInHand = uniq(
           player.cardsInHand.map((cardName) => {
             return Card.fromName(cardName).cardType;
@@ -419,7 +419,7 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
         });
       } else if (
         gameInput.inputType === GameInputType.SELECT_CARDS &&
-        gameInput.prevInputType === GameInputType.VISIT_RIVER_DESTINATION &&
+        gameInput.prevInputType === GameInputType.PLACE_AMBASSADOR &&
         gameInput.riverDestinationContext ===
           RiverDestinationName.BOSLEY_THE_ARTIST
       ) {
@@ -548,7 +548,7 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
     ),
     playInner(gameState: GameState, gameInput: GameInput) {
       const player = gameState.getActivePlayer();
-      if (gameInput.inputType === GameInputType.VISIT_RIVER_DESTINATION) {
+      if (gameInput.inputType === GameInputType.PLACE_AMBASSADOR) {
         if (
           player.getNumCardCostResources() < 1 ||
           player.getNumResourcesByType(ResourceType.VP) < 1
@@ -578,7 +578,7 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
         });
       } else if (
         gameInput.inputType === GameInputType.SELECT_OPTION_GENERIC &&
-        gameInput.prevInputType === GameInputType.VISIT_RIVER_DESTINATION &&
+        gameInput.prevInputType === GameInputType.PLACE_AMBASSADOR &&
         gameInput.riverDestinationContext === RiverDestinationName.OBSERVATORY
       ) {
         const selectedOption = gameInput.clientOptions.selectedOption;
@@ -659,7 +659,7 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
     ),
     playInner(gameState: GameState, gameInput: GameInput) {
       const player = gameState.getActivePlayer();
-      if (gameInput.inputType === GameInputType.VISIT_RIVER_DESTINATION) {
+      if (gameInput.inputType === GameInputType.PLACE_AMBASSADOR) {
         if (
           player.getNumCardCostResources() < 1 ||
           player.getNumResourcesByType(ResourceType.VP) < 1
@@ -688,7 +688,7 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
         });
       } else if (
         gameInput.inputType === GameInputType.SELECT_OPTION_GENERIC &&
-        gameInput.prevInputType === GameInputType.VISIT_RIVER_DESTINATION &&
+        gameInput.prevInputType === GameInputType.PLACE_AMBASSADOR &&
         gameInput.riverDestinationContext === RiverDestinationName.MARKET
       ) {
         const selectedOption = gameInput.clientOptions.selectedOption;
@@ -764,7 +764,7 @@ function payVPResourceToDrawCardAndPearl({
 }): GameStatePlayFn {
   return (gameState: GameState, gameInput: GameInput) => {
     const player = gameState.getActivePlayer();
-    if (gameInput.inputType === GameInputType.VISIT_RIVER_DESTINATION) {
+    if (gameInput.inputType === GameInputType.PLACE_AMBASSADOR) {
       if (
         player.getNumResourcesByType(resourceType) < 1 ||
         player.getNumResourcesByType(ResourceType.VP) < 1
@@ -784,7 +784,7 @@ function payVPResourceToDrawCardAndPearl({
       });
     } else if (
       gameInput.inputType === GameInputType.SELECT_OPTION_GENERIC &&
-      gameInput.prevInputType === GameInputType.VISIT_RIVER_DESTINATION &&
+      gameInput.prevInputType === GameInputType.PLACE_AMBASSADOR &&
       gameInput.riverDestinationContext === name
     ) {
       const selectedOption = gameInput.clientOptions.selectedOption;
@@ -822,7 +822,7 @@ function discardCardTypeToGainVPAndPearl({
 }): GameStatePlayFn {
   return (gameState: GameState, gameInput: GameInput) => {
     const player = gameState.getActivePlayer();
-    if (gameInput.inputType === GameInputType.VISIT_RIVER_DESTINATION) {
+    if (gameInput.inputType === GameInputType.PLACE_AMBASSADOR) {
       const cardOptions = player.cardsInHand.filter((cardName) => {
         return Card.fromName(cardName).cardType === cardType;
       });
@@ -843,7 +843,7 @@ function discardCardTypeToGainVPAndPearl({
       });
     } else if (
       gameInput.inputType === GameInputType.SELECT_CARDS &&
-      gameInput.prevInputType === GameInputType.VISIT_RIVER_DESTINATION &&
+      gameInput.prevInputType === GameInputType.PLACE_AMBASSADOR &&
       gameInput.riverDestinationContext === name
     ) {
       const selectedCards = gameInput.clientOptions.selectedCards;

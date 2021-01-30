@@ -209,6 +209,15 @@ const renderMultiStepGameInputLabel = (
           ]}
         />
       );
+    case GameInputType.SELECT_RIVER_DESTINATION:
+      return (
+        <Description
+          textParts={[
+            ...inputContextPrefix(gameInput),
+            { type: "text", text: `Select River Destination` },
+          ]}
+        />
+      );
     default:
       assertUnreachable(gameInput, gameInput);
   }
@@ -233,8 +242,8 @@ export const renderGameInputLabel = (
       return <span>{"End Game"}</span>;
     case GameInputType.PLAY_ADORNMENT:
       return <span>{"Play Adornment"}</span>;
-    case GameInputType.VISIT_RIVER_DESTINATION:
-      return <span>{"Visit River Destination"}</span>;
+    case GameInputType.PLACE_AMBASSADOR:
+      return <span>{"Place Ambassador"}</span>;
     default:
       return renderMultiStepGameInputLabel(gameInput);
   }

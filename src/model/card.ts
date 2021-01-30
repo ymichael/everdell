@@ -3512,7 +3512,73 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       [ResourceType.BERRY]: 3,
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.PLAY_CARD) {
+        if (player.cardsInHand.length === 0) {
+          gameState.addGameLogFromCard(CardName.PIRATE, [
+            player,
+            " has no CARD to discard.",
+          ]);
+          return;
+        }
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.DISCARD_CARDS,
+          prevInputType: gameInput.inputType,
+          cardContext: CardName.PIRATE,
+          label: "Discard up to 4 CARD",
+          minCards: 0,
+          maxCards: 4,
+          clientOptions: {
+            cardsToDiscard: [],
+          },
+        });
+      } else if (
+        gameInput.inputType === GameInputType.DISCARD_CARDS &&
+        gameInput.cardContext === CardName.PIRATE
+      ) {
+        const cardsToDiscard = gameInput.clientOptions.cardsToDiscard;
+        if (!cardsToDiscard) {
+          throw new Error("Invalid input");
+        }
+        if (cardsToDiscard.length > gameInput.maxCards) {
+          throw new Error("Discard up to 4 cards");
+        }
+        if (cardsToDiscard.length === 0) {
+          gameState.addGameLogFromCard(CardName.PIRATE, [
+            player,
+            " decline to discard any CARD.",
+          ]);
+          return;
+        }
+
+        let basePoints = 0;
+        const revealedCards: CardName[] = [];
+        cardsToDiscard.forEach((cardName) => {
+          const revealedCard = Card.fromName(gameState.drawCard());
+          basePoints += revealedCard.baseVP;
+          revealedCards.push(revealedCard.name);
+          player.removeCardFromHand(cardName);
+          gameState.discardPile.addToStack(cardName);
+        });
+
+        gameState.addGameLogFromCard(CardName.PIRATE, [
+          player,
+          ` discarded ${cardsToDiscard.length} CARD`,
+        ]);
+        gameState.addGameLogFromCard(CardName.PIRATE, [
+          player,
+          ` revealed `,
+          ...cardListToGameText(revealedCards),
+          ` (${basePoints} total base points).`,
+        ]);
+        if (basePoints >= 7) {
+          player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
+          gameState.addGameLogFromCard(CardName.PIRATE, [
+            player,
+            ` gains 1 PEARL.`,
+          ]);
+        }
+      }
     },
   }),
   [CardName.PIRATE_SHIP]: new Card({
@@ -3533,8 +3599,132 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     baseVP: 0,
     numInDeck: 3,
     baseCost: {},
+    canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
+      const activePlayer = gameState.getActivePlayer();
+      if (
+        !gameState.players.find((player) => {
+          if (player.playerId === activePlayer.playerId) {
+            return false;
+          }
+          return player.canAddToCity(CardName.PIRATE_SHIP, true /* strict */);
+        })
+      ) {
+        return "No space in any opponent's city.";
+      }
+      return null;
+    },
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
+      const player = gameState.getActivePlayer();
+      const gainAnyHelper = new GainMoreThan1AnyResource({
+        cardContext: CardName.PIRATE_SHIP,
+        skipGameLog: true,
+      });
+      if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
+        const playerOptions = gameState.players
+          .filter((p) => {
+            if (p.playerId === player.playerId) {
+              return false;
+            }
+            return p.canAddToCity(CardName.PIRATE_SHIP, true /* strict */);
+          })
+          .map((p) => p.playerId);
+        if (playerOptions.length === 0) {
+          throw new Error("No space in any opponent's city.");
+        }
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_PLAYER,
+          label: "Move to another Player's city",
+          prevInputType: gameInput.inputType,
+          prevInput: gameInput,
+          cardContext: CardName.PIRATE_SHIP,
+          playerOptions,
+          mustSelectOne: true,
+          clientOptions: {
+            selectedPlayer: null,
+          },
+        });
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_PLAYER &&
+        gameInput.cardContext === CardName.PIRATE_SHIP
+      ) {
+        const targetPlayerId = gameInput.clientOptions.selectedPlayer;
+        if (!targetPlayerId) {
+          throw new Error(
+            "Please choose a player to move the Pirate Ship to their city."
+          );
+        }
+        const prevInput = gameInput.prevInput;
+        if (
+          prevInput?.inputType !== GameInputType.VISIT_DESTINATION_CARD ||
+          !prevInput.clientOptions.playedCard
+        ) {
+          throw new Error("Unexpected game input");
+        }
+        const origPlayedCard = player.findPlayedCard(
+          prevInput.clientOptions.playedCard
+        );
+        if (!origPlayedCard) {
+          throw new Error("Could not find played pirate ship");
+        }
+        const targetPlayer = gameState.getPlayer(targetPlayerId);
+
+        gameState.addGameLogFromCard(CardName.PIRATE_SHIP, [
+          player,
+          " moved their ",
+          Card.fromName(CardName.PIRATE_SHIP),
+          " to ",
+          targetPlayer,
+          "'s city.",
+        ]);
+        player.removeCardFromCity(
+          gameState,
+          origPlayedCard,
+          false /* addToDiscardPile */
+        );
+
+        const placedWorker = player.getPlacedWorker({
+          playedCard: origPlayedCard,
+        });
+        if (!placedWorker || !placedWorker.playedCard) {
+          throw new Error("Could not find placed worker on Pirate Ship");
+        }
+        // Update the cardOwnerId on the WorkerPlacementInfo.
+        placedWorker.playedCard.cardOwnerId = targetPlayer.playerId;
+
+        const newPlayedCard = targetPlayer.addToCity(
+          gameState,
+          CardName.PIRATE_SHIP
+        );
+        targetPlayer.updatePlayedCard(gameState, newPlayedCard, {
+          ...origPlayedCard,
+          cardOwnerId: targetPlayerId,
+        });
+
+        const numPearls = targetPlayer.getNumResourcesByType(
+          ResourceType.PEARL
+        );
+        if (numPearls !== 0) {
+          gameState.pendingGameInputs.push(
+            gainAnyHelper.getGameInput(Math.min(numPearls, 3), {
+              prevInputType: gameInput.inputType,
+            })
+          );
+        }
+      } else if (gainAnyHelper.matchesGameInput(gameInput)) {
+        gainAnyHelper.play(gameState, gameInput);
+        player.gainResources(gameState, {
+          [ResourceType.VP]: gameInput.minResources,
+        });
+        gameState.addGameLogFromCard(CardName.PIRATE_SHIP, [
+          player,
+          " gained ",
+          ...resourceMapToGameText({
+            ...gameInput.clientOptions.resources,
+            [ResourceType.VP]: gameInput.minResources,
+          }),
+          ".",
+        ]);
+      }
     },
   }),
   [CardName.FERRY]: new Card({
@@ -3542,6 +3732,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     name: CardName.FERRY,
     associatedCard: CardName.FERRY_FERRET,
     cardType: CardType.DESTINATION,
+    maxWorkerSpots: 0,
+    playedCardInfoDefault: {
+      ambassador: null,
+    },
     cardDescription: toGameText([
       "Copy any revealed ",
       { type: "em", text: "River Destination" },
@@ -3557,11 +3751,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       [ResourceType.TWIG]: 2,
       [ResourceType.RESIN]: 2,
     },
-    numWorkersForPlayerInner() {
-      throw new Error("Not Implemented");
-    },
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
+      if (gameInput.inputType === GameInputType.PLACE_AMBASSADOR) {
+        throw new Error("Not Implemented");
+      }
     },
   }),
   [CardName.FERRY_FERRET]: new Card({

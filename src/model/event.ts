@@ -1683,7 +1683,60 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     ]),
     expansion: ExpansionType.PEARLBROOK,
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
+      const player = gameState.getActivePlayer();
+
+      if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
+        // get all playable cards that are <= 3 VP
+        const meadowOptions = gameState.meadowCards.filter((cardName) => {
+          const card = Card.fromName(cardName);
+          return card.baseVP <= 3 && player.canAddToCity(card.name, true);
+        });
+
+        if (meadowOptions.length > 0) {
+          gameState.pendingGameInputs.push({
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: gameInput.inputType,
+            label:
+              "Select 1 CARD from the Meadow worth up to 3 VP to play for free.",
+            cardOptions: meadowOptions,
+            maxToSelect: 1,
+            minToSelect: 0, // you don't have to select a card
+            eventContext: EventName.SPECIAL_SUNKEN_TREASURE_DISCOVERED,
+            clientOptions: {
+              selectedCards: [],
+            },
+          });
+        }
+      } else if (
+        gameInput.inputType == GameInputType.SELECT_CARDS &&
+        gameInput.eventContext === EventName.SPECIAL_SUNKEN_TREASURE_DISCOVERED
+      ) {
+        const selectedCards = gameInput.clientOptions.selectedCards;
+
+        if (selectedCards.length > 1) {
+          throw new Error("incorrect number of cards selected");
+        }
+
+        if (selectedCards.length === 1) {
+          const card = Card.fromName(selectedCards[0]);
+          if (card.baseVP > 3) {
+            throw new Error("cannot play a card worth more than 3 VP");
+          }
+
+          gameState.removeCardFromMeadow(card.name);
+          gameState.addGameLogFromCard(CardName.QUEEN, [
+            player,
+            " played ",
+            card,
+            " from the Meadow.",
+          ]);
+
+          card.addToCityAndPlay(gameState, gameInput);
+          gameState.replenishMeadow();
+        }
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
+      }
     },
   }),
   [EventName.SPECIAL_RIVER_RACE]: new Event({

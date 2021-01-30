@@ -2668,4 +2668,235 @@ describe("Event", () => {
       expect(player.getPointsFromEvents(gameState)).to.be(0);
     });
   });
+
+  describe(EventName.SPECIAL_SUNKEN_TREASURE_DISCOVERED, () => {
+    it("can claim event, choose a card, and have meadow replenish properly", () => {
+      gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
+      player = gameState.getActivePlayer();
+      const event = Event.fromName(
+        EventName.SPECIAL_SUNKEN_TREASURE_DISCOVERED
+      );
+      const gameInput = claimEventInput(event.name);
+
+      const topOfDeck = [
+        CardName.HUSBAND,
+        CardName.QUEEN,
+        CardName.WIFE,
+        CardName.FARM,
+        CardName.INN,
+        CardName.POST_OFFICE,
+        CardName.POSTAL_PIGEON,
+        CardName.RANGER,
+      ];
+      topOfDeck.reverse();
+      topOfDeck.forEach((cardName) => {
+        gameState.deck.addToStack(cardName);
+      });
+
+      gameState.replenishMeadow();
+
+      // so we know which card to expect in the meadow
+      gameState.deck.addToStack(CardName.WOODCARVER);
+
+      const selectCardsInput = {
+        inputType: GameInputType.SELECT_CARDS as const,
+        prevInputType: GameInputType.CLAIM_EVENT,
+        eventContext: EventName.SPECIAL_SUNKEN_TREASURE_DISCOVERED,
+        cardOptions: [
+          CardName.HUSBAND,
+          CardName.WIFE,
+          CardName.FARM,
+          CardName.INN,
+          CardName.POST_OFFICE,
+          CardName.POSTAL_PIGEON,
+          CardName.RANGER,
+        ],
+        maxToSelect: 1,
+        minToSelect: 0,
+        clientOptions: {
+          selectedCards: [CardName.HUSBAND],
+        },
+      };
+
+      gameState.eventsMap[EventName.SPECIAL_SUNKEN_TREASURE_DISCOVERED] = null;
+
+      player.addToCity(gameState, CardName.PIRATE);
+      player.addToCity(gameState, CardName.CRANE);
+
+      expect(player.getPointsFromCards(gameState)).to.be(2);
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_SUNKEN_TREASURE_DISCOVERED)
+      ).to.be(undefined);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        gameInput,
+        selectCardsInput,
+      ]);
+
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_SUNKEN_TREASURE_DISCOVERED)
+      );
+      expect(gameState.meadowCards).to.eql([
+        CardName.QUEEN,
+        CardName.WIFE,
+        CardName.FARM,
+        CardName.INN,
+        CardName.POST_OFFICE,
+        CardName.POSTAL_PIGEON,
+        CardName.RANGER,
+        CardName.WOODCARVER,
+      ]);
+
+      expect(player.getPointsFromEvents(gameState)).to.be(0);
+      expect(player.getPointsFromCards(gameState)).to.be(4);
+    });
+
+    it("cannot play card worth more than 3 VP", () => {
+      gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
+      player = gameState.getActivePlayer();
+      const event = Event.fromName(
+        EventName.SPECIAL_SUNKEN_TREASURE_DISCOVERED
+      );
+      const gameInput = claimEventInput(event.name);
+
+      const topOfDeck = [
+        CardName.HUSBAND,
+        CardName.QUEEN,
+        CardName.WIFE,
+        CardName.FARM,
+        CardName.INN,
+        CardName.POST_OFFICE,
+        CardName.POSTAL_PIGEON,
+        CardName.RANGER,
+      ];
+      topOfDeck.reverse();
+      topOfDeck.forEach((cardName) => {
+        gameState.deck.addToStack(cardName);
+      });
+
+      gameState.replenishMeadow();
+
+      // so we know which card to expect in the meadow
+      gameState.deck.addToStack(CardName.WOODCARVER);
+
+      const selectCardsInput = {
+        inputType: GameInputType.SELECT_CARDS as const,
+        prevInputType: GameInputType.CLAIM_EVENT,
+        eventContext: EventName.SPECIAL_SUNKEN_TREASURE_DISCOVERED,
+        cardOptions: [
+          CardName.HUSBAND,
+          CardName.WIFE,
+          CardName.FARM,
+          CardName.INN,
+          CardName.POST_OFFICE,
+          CardName.POSTAL_PIGEON,
+          CardName.RANGER,
+        ],
+        maxToSelect: 1,
+        minToSelect: 0,
+        clientOptions: {
+          selectedCards: [CardName.QUEEN],
+        },
+      };
+
+      gameState.eventsMap[EventName.SPECIAL_SUNKEN_TREASURE_DISCOVERED] = null;
+
+      player.addToCity(gameState, CardName.PIRATE);
+      player.addToCity(gameState, CardName.CRANE);
+
+      expect(player.getPointsFromCards(gameState)).to.be(2);
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_SUNKEN_TREASURE_DISCOVERED)
+      ).to.be(undefined);
+
+      gameState = gameState.next(gameInput);
+
+      expect(() => gameState.next(selectCardsInput)).to.throwException(
+        /worth more than 3 VP/i
+      );
+    });
+
+    it("played card effect happens", () => {
+      gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
+      player = gameState.getActivePlayer();
+      const event = Event.fromName(
+        EventName.SPECIAL_SUNKEN_TREASURE_DISCOVERED
+      );
+      const gameInput = claimEventInput(event.name);
+
+      const topOfDeck = [
+        CardName.HUSBAND,
+        CardName.QUEEN,
+        CardName.WIFE,
+        CardName.FARM,
+        CardName.INN,
+        CardName.POST_OFFICE,
+        CardName.POSTAL_PIGEON,
+        CardName.RANGER,
+      ];
+      topOfDeck.reverse();
+      topOfDeck.forEach((cardName) => {
+        gameState.deck.addToStack(cardName);
+      });
+
+      gameState.replenishMeadow();
+
+      // so we know which card to expect in the meadow
+      gameState.deck.addToStack(CardName.WOODCARVER);
+
+      const selectCardsInput = {
+        inputType: GameInputType.SELECT_CARDS as const,
+        prevInputType: GameInputType.CLAIM_EVENT,
+        eventContext: EventName.SPECIAL_SUNKEN_TREASURE_DISCOVERED,
+        cardOptions: [
+          CardName.HUSBAND,
+          CardName.WIFE,
+          CardName.FARM,
+          CardName.INN,
+          CardName.POST_OFFICE,
+          CardName.POSTAL_PIGEON,
+          CardName.RANGER,
+        ],
+        maxToSelect: 1,
+        minToSelect: 0,
+        clientOptions: {
+          selectedCards: [CardName.FARM],
+        },
+      };
+
+      gameState.eventsMap[EventName.SPECIAL_SUNKEN_TREASURE_DISCOVERED] = null;
+
+      player.addToCity(gameState, CardName.PIRATE);
+      player.addToCity(gameState, CardName.CRANE);
+
+      expect(player.getPointsFromCards(gameState)).to.be(2);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_SUNKEN_TREASURE_DISCOVERED)
+      ).to.be(undefined);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        gameInput,
+        selectCardsInput,
+      ]);
+
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_SUNKEN_TREASURE_DISCOVERED)
+      );
+      expect(gameState.meadowCards).to.eql([
+        CardName.HUSBAND,
+        CardName.QUEEN,
+        CardName.WIFE,
+        CardName.INN,
+        CardName.POST_OFFICE,
+        CardName.POSTAL_PIGEON,
+        CardName.RANGER,
+        CardName.WOODCARVER,
+      ]);
+
+      expect(player.getPointsFromEvents(gameState)).to.be(0);
+      expect(player.getPointsFromCards(gameState)).to.be(3);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
+    });
+  });
 });

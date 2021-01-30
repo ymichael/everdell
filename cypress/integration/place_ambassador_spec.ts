@@ -18,9 +18,8 @@ describe("Place Ambassador", () => {
 
     cy.contains("River");
     cy.get("#js-game-river").within(() => {
-      cy.contains("Visit to gain 1 and reveal hidden River Destination.");
-      cy.get("[data-cy='river-destination-hidden']").then((ret) => {
-        expect(ret.length).to.equal(3);
+      cy.get("[data-cy='river-destination-spot:TWO_TRAVELER']").within(() => {
+        cy.contains("Visit to gain 1 and reveal hidden River Destination.");
       });
     });
 
@@ -37,6 +36,14 @@ describe("Place Ambassador", () => {
       cy.contains("Submit").click();
     });
 
+    cy.contains("2 : Michael visited 2 and revealed");
+    cy.get("#js-game-river").within(() => {
+      cy.get("[data-cy='river-destination-spot:TWO_TRAVELER']").within(() => {
+        cy.contains("Great Hall");
+        cy.contains("Ambassadors: Michael");
+      });
+    });
+
     cy.get("#js-game-river").within(() => {
       cy.contains("Visit to gain 1 and reveal hidden River Destination.");
       cy.get("[data-cy='river-destination-hidden']").then((ret) => {
@@ -44,7 +51,6 @@ describe("Place Ambassador", () => {
       });
     });
 
-    cy.contains("2 : Michael visited 2 and revealed");
     cy.contains("2 : Michael gained 1 ");
     cy.contains("Waiting for Elynn");
   });

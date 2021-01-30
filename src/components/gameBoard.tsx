@@ -286,6 +286,9 @@ export const River: React.FC<{
               <RiverDestinationSpot
                 name={spotName}
                 destination={spotInfo.name}
+                ambassadors={spotInfo.ambassadors.map(
+                  (playerId) => gameState.getPlayer(playerId).name
+                )}
               />
             );
           })}

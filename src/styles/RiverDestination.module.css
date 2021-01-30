@@ -59,3 +59,14 @@
   font-weight: normal;
   font-size: 10px;
 }
+
+.ambassadors {
+  font-size: 10px;
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: normal;
+}
+
+.ambassador {
+  font-weight: var(--font-bold);
+}

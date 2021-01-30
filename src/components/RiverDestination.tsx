@@ -60,32 +60,44 @@ const RiverDestination = ({ name }: { name: RiverDestinationName }) => {
 export const RiverDestinationSpot = ({
   name,
   destination = null,
+  ambassadors = null,
 }: {
   name: RiverDestinationSpotName;
   destination?: RiverDestinationName | null;
+  ambassadors?: string[] | null;
 }) => {
-  destination =
-    name == RiverDestinationSpotName.SHOAL
-      ? RiverDestinationName.SHOAL
-      : destination;
+  const isShoal = name == RiverDestinationSpotName.SHOAL;
+  destination = isShoal ? RiverDestinationName.SHOAL : destination;
+  const isUnavailable = !!(ambassadors && !isShoal && ambassadors.length !== 0);
   return (
-    <ItemWrapper
-      footerChildren={
-        <div className={styles.spot_name}>
-          <Description
-            textParts={RiverDestinationSpotModel.fromName(name).shortName}
-          />
+    <div data-cy={`river-destination-spot:${name}`}>
+      <ItemWrapper
+        isHighlighted={isUnavailable}
+        footerChildren={
+          <div className={styles.spot_name}>
+            <Description
+              textParts={RiverDestinationSpotModel.fromName(name).shortName}
+            />
+            {ambassadors && ambassadors.length !== 0 && (
+              <div className={styles.ambassadors}>
+                <span>Ambassadors: </span>
+                <span className={styles.ambassador}>
+                  {ambassadors.join(", ")}
+                </span>
+              </div>
+            )}
+          </div>
+        }
+      >
+        <div className={styles.spot}>
+          {destination ? (
+            <RiverDestinationInner name={destination} />
+          ) : (
+            <RiverDestinationHidden />
+          )}
         </div>
-      }
-    >
-      <div className={styles.spot}>
-        {destination ? (
-          <RiverDestinationInner name={destination} />
-        ) : (
-          <RiverDestinationHidden />
-        )}
-      </div>
-    </ItemWrapper>
+      </ItemWrapper>
+    </div>
   );
 };
 

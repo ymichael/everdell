@@ -372,6 +372,8 @@ export class Player implements IGameTextEntity {
     return numOccupiedSpacesInCity;
   }
 
+  // should always use strict unless there's a chance you'll remove something
+  // before you add to the city (eg, removing an Innkeeper to play another card)
   canAddToCity(cardName: CardName, strict: boolean): boolean {
     const card = Card.fromName(cardName);
     if (card.isUnique && this.hasCardInCity(card.name)) {

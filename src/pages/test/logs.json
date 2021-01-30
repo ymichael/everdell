@@ -218,6 +218,105 @@
     {
       "type": "entity",
       "entityType": "adornment",
+      "adornment": "Mirror"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " copied "
+    },
+    {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Bell"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Bell"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gained "
+    },
+    {
+      "type": "text",
+      "text": "3 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "BERRY"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "text",
+      "text": "1 "
+    },
+    {
+      "type": "symbol",
+      "symbol": "CARD"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Mirror"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " copied "
+    },
+    {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Hourglass"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "adornment",
       "adornment": "Hourglass"
     },
     {
@@ -271,6 +370,40 @@
   ],
   [
     {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Mirror"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "text",
+      "text": "No played Adornments to copy."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Mirror"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " decline to copy any played Adornments."
+    }
+  ],
+  [
+    {
       "type": "player",
       "name": "Player #0"
     },
@@ -282,6 +415,61 @@
       "type": "entity",
       "entityType": "adornment",
       "adornment": "Key to the City"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Key to the City"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gained "
+    },
+    {
+      "type": "text",
+      "text": "1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "BERRY"
+    },
+    {
+      "type": "text",
+      "text": ", "
+    },
+    {
+      "type": "text",
+      "text": "1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "TWIG"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "text",
+      "text": "2 "
+    },
+    {
+      "type": "symbol",
+      "symbol": "CARD"
     },
     {
       "type": "text",
@@ -369,6 +557,14 @@
       "text": " activated "
     },
     {
+      "type": "cardType",
+      "cardType": "PRODUCTION"
+    },
+    {
+      "type": "text",
+      "text": " in "
+    },
+    {
       "type": "entity",
       "entityType": "card",
       "card": "Mine"
@@ -477,6 +673,14 @@
       "text": " activated "
     },
     {
+      "type": "cardType",
+      "cardType": "PRODUCTION"
+    },
+    {
+      "type": "text",
+      "text": " in "
+    },
+    {
       "type": "entity",
       "entityType": "card",
       "card": "Farm"
@@ -521,6 +725,14 @@
     {
       "type": "text",
       "text": " activated "
+    },
+    {
+      "type": "cardType",
+      "cardType": "PRODUCTION"
+    },
+    {
+      "type": "text",
+      "text": " in "
     },
     {
       "type": "entity",
@@ -635,6 +847,49 @@
   ],
   [
     {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Gilded Book"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gained "
+    },
+    {
+      "type": "text",
+      "text": "1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "RESIN"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "text",
+      "text": "2 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "PEBBLE"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
       "type": "player",
       "name": "Player #0"
     },
@@ -692,7 +947,7 @@
     },
     {
       "type": "text",
-      "text": " & "
+      "text": ", "
     },
     {
       "type": "text",
@@ -704,26 +959,11 @@
     },
     {
       "type": "text",
-      "text": "."
-    }
-  ],
-  [
-    {
-      "type": "entity",
-      "entityType": "adornment",
-      "adornment": "Seaglass Amulet"
+      "text": ", "
     },
     {
       "type": "text",
-      "text": ": "
-    },
-    {
-      "type": "player",
-      "name": "Player #0"
-    },
-    {
-      "type": "text",
-      "text": " gained 2 1 "
+      "text": "2 "
     },
     {
       "type": "symbol",
@@ -731,7 +971,11 @@
     },
     {
       "type": "text",
-      "text": " and 1 "
+      "text": " & "
+    },
+    {
+      "type": "text",
+      "text": "1 "
     },
     {
       "type": "resource",
@@ -949,6 +1193,80 @@
   ],
   [
     {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Bell"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gained "
+    },
+    {
+      "type": "text",
+      "text": "3 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "BERRY"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Bell"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gained "
+    },
+    {
+      "type": "text",
+      "text": "3 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "BERRY"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "text",
+      "text": "4 "
+    },
+    {
+      "type": "symbol",
+      "symbol": "CARD"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
       "type": "player",
       "name": "Player #0"
     },
@@ -1028,7 +1346,7 @@
     },
     {
       "type": "text",
-      "text": " activated "
+      "text": " reactivated "
     },
     {
       "type": "entity",
@@ -1092,7 +1410,7 @@
     },
     {
       "type": "text",
-      "text": " activated "
+      "text": " reactivated "
     },
     {
       "type": "entity",
@@ -1156,7 +1474,7 @@
     },
     {
       "type": "text",
-      "text": " activated "
+      "text": " reactivated "
     },
     {
       "type": "entity",
@@ -1248,7 +1566,7 @@
     },
     {
       "type": "text",
-      "text": " activated "
+      "text": " reactivated "
     },
     {
       "type": "entity",

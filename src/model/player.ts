@@ -1391,7 +1391,7 @@ export class Player implements IGameTextEntity {
         this.drawCards(gameState, 2 * PEARL);
         gameState.addGameLogFromCard(CardName.BRIDGE, [
           this,
-          " drew ${PEARL * 2} CARD.",
+          ` drew ${PEARL * 2} CARD.`,
         ]);
       }
     }

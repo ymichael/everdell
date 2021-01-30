@@ -3328,7 +3328,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       if (gameInput.inputType === GameInputType.PLAY_CARD) {
         gameState.addGameLogFromCard(CardName.BRIDGE, [
           player,
-          "'s hand size is now ${player.maxHandSize}.",
+          `'s hand size is now ${player.maxHandSize}.`,
         ]);
       }
     },
@@ -3634,7 +3634,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         }
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_PLAYER,
-          label: "Move to another Player's city",
+          label: [
+            "Move to another Player's city",
+            " (Gain 1 ANY and 1 VP per PEARL that opponent has, up to a max of 3)",
+          ],
           prevInputType: gameInput.inputType,
           prevInput: gameInput,
           cardContext: CardName.PIRATE_SHIP,

@@ -5489,6 +5489,44 @@ describe("Card", () => {
       });
 
       it("should move to opponent's city", () => {
+        gameState = testInitialGameState({ numPlayers: 3 });
+        player = gameState.getActivePlayer();
+
+        let targetPlayer = gameState.players[1];
+
+        player.addToCity(gameState, card.name);
+        expect(player.hasCardInCity(card.name)).to.be(true);
+        expect(targetPlayer.hasCardInCity(card.name)).to.be(false);
+
+        const visitDestinationInput = {
+          inputType: GameInputType.VISIT_DESTINATION_CARD as const,
+          clientOptions: {
+            playedCard: player.getFirstPlayedCard(card.name),
+          },
+        };
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          visitDestinationInput,
+          {
+            inputType: GameInputType.SELECT_PLAYER,
+            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+            prevInput: visitDestinationInput,
+            cardContext: card.name,
+            playerOptions: [
+              targetPlayer.playerId,
+              gameState.players[2].playerId,
+            ],
+            mustSelectOne: true,
+            clientOptions: { selectedPlayer: targetPlayer.playerId },
+          },
+        ]);
+
+        targetPlayer = gameState.getPlayer(targetPlayer.playerId);
+        expect(player.hasCardInCity(card.name)).to.be(false);
+        expect(targetPlayer.hasCardInCity(card.name)).to.be(true);
+      });
+
+      it("should auto advance moving to an opponent's city", () => {
         let targetPlayer = gameState.players[1];
 
         player.addToCity(gameState, card.name);

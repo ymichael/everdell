@@ -3614,14 +3614,116 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       return null;
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      const gainAnyHelper = new GainMoreThan1AnyResource({
+        cardContext: CardName.PIRATE_SHIP,
+        skipGameLog: true,
+      });
       if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
-        throw new Error("Not Implemented");
+        const playerOptions = gameState.players
+          .filter((p) => {
+            if (p.playerId === player.playerId) {
+              return false;
+            }
+            return p.canAddToCity(CardName.PIRATE_SHIP, true /* strict */);
+          })
+          .map((p) => p.playerId);
+        if (playerOptions.length === 0) {
+          throw new Error("No space in any opponent's city.");
+        }
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_PLAYER,
+          label: "Move to another Player's city",
+          prevInputType: gameInput.inputType,
+          prevInput: gameInput,
+          cardContext: CardName.PIRATE_SHIP,
+          playerOptions,
+          mustSelectOne: true,
+          clientOptions: {
+            selectedPlayer: null,
+          },
+        });
       } else if (
         gameInput.inputType === GameInputType.SELECT_PLAYER &&
         gameInput.cardContext === CardName.PIRATE_SHIP
       ) {
-        // TODO: Remember to move the playedCardInfo too!
-        throw new Error("Not Implemented");
+        const targetPlayerId = gameInput.clientOptions.selectedPlayer;
+        if (!targetPlayerId) {
+          throw new Error(
+            "Please choose a player to move the Pirate Ship to their city."
+          );
+        }
+        const prevInput = gameInput.prevInput;
+        if (
+          prevInput?.inputType !== GameInputType.VISIT_DESTINATION_CARD ||
+          !prevInput.clientOptions.playedCard
+        ) {
+          throw new Error("Unexpected game input");
+        }
+        const origPlayedCard = player.findPlayedCard(
+          prevInput.clientOptions.playedCard
+        );
+        if (!origPlayedCard) {
+          throw new Error("Could not find played pirate ship");
+        }
+        const targetPlayer = gameState.getPlayer(targetPlayerId);
+
+        gameState.addGameLogFromCard(CardName.PIRATE_SHIP, [
+          player,
+          " moved their ",
+          Card.fromName(CardName.PIRATE_SHIP),
+          " to ",
+          targetPlayer,
+          "'s city.",
+        ]);
+        player.removeCardFromCity(
+          gameState,
+          origPlayedCard,
+          false /* addToDiscardPile */
+        );
+
+        const placedWorker = player.getPlacedWorker({
+          playedCard: origPlayedCard,
+        });
+        if (!placedWorker || !placedWorker.playedCard) {
+          throw new Error("Could not find placed worker on Pirate Ship");
+        }
+        // Update the cardOwnerId on the WorkerPlacementInfo.
+        placedWorker.playedCard.cardOwnerId = targetPlayer.playerId;
+
+        const newPlayedCard = targetPlayer.addToCity(
+          gameState,
+          CardName.PIRATE_SHIP
+        );
+        targetPlayer.updatePlayedCard(gameState, newPlayedCard, {
+          ...origPlayedCard,
+          cardOwnerId: targetPlayerId,
+        });
+
+        const numPearls = targetPlayer.getNumResourcesByType(
+          ResourceType.PEARL
+        );
+        if (numPearls !== 0) {
+          gameState.pendingGameInputs.push(
+            gainAnyHelper.getGameInput(Math.min(numPearls, 3), {
+              prevInputType: gameInput.inputType,
+            })
+          );
+        }
+      } else if (gainAnyHelper.matchesGameInput(gameInput)) {
+        gainAnyHelper.play(gameState, gameInput);
+        player.gainResources(gameState, {
+          [ResourceType.VP]: gameInput.minResources,
+        });
+        gameState.addGameLogFromCard(CardName.PIRATE_SHIP, [
+          player,
+          " gained ",
+          ...resourceMapToGameText({
+            ...gameInput.clientOptions.resources,
+            [ResourceType.VP]: gameInput.minResources,
+          }),
+          ".",
+        ]);
       }
     },
   }),

@@ -1304,7 +1304,7 @@
     },
     {
       "type": "text",
-      "text": " place a worker on "
+      "text": " placed a worker on "
     },
     {
       "type": "entity",
@@ -5237,6 +5237,359 @@
     },
     {
       "type": "text",
+      "text": " place a worker on "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Pirate Ship"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Pirate Ship"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " moved their "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Pirate Ship"
+    },
+    {
+      "type": "text",
+      "text": " to "
+    },
+    {
+      "type": "player",
+      "name": "Player #1"
+    },
+    {
+      "type": "text",
+      "text": "'s city."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Pirate Ship"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gained "
+    },
+    {
+      "type": "text",
+      "text": "1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "BERRY"
+    },
+    {
+      "type": "text",
+      "text": ", "
+    },
+    {
+      "type": "text",
+      "text": "1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "PEBBLE"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "text",
+      "text": "2 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Pirate Ship"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gained "
+    },
+    {
+      "type": "text",
+      "text": "2 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "BERRY"
+    },
+    {
+      "type": "text",
+      "text": ", "
+    },
+    {
+      "type": "text",
+      "text": "1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "PEBBLE"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "text",
+      "text": "3 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Pirate"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Pirate"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " has no "
+    },
+    {
+      "type": "symbol",
+      "symbol": "CARD"
+    },
+    {
+      "type": "text",
+      "text": " to discard."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Pirate"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " discarded 3 "
+    },
+    {
+      "type": "symbol",
+      "symbol": "CARD"
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Pirate"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " revealed "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "King"
+    },
+    {
+      "type": "text",
+      "text": ", "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "King"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "King"
+    },
+    {
+      "type": "text",
+      "text": " (12 total base points)."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Pirate"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gains 1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "PEARL"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Pirate"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " revealed "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Ruins"
+    },
+    {
+      "type": "text",
+      "text": ", "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Ruins"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Ruins"
+    },
+    {
+      "type": "text",
+      "text": " (0 total base points)."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
       "text": " claimed the "
     },
     {
@@ -6806,7 +7159,7 @@
     },
     {
       "type": "text",
-      "text": " place a worker on "
+      "text": " placed a worker on "
     },
     {
       "type": "entity",
@@ -6825,7 +7178,7 @@
     },
     {
       "type": "text",
-      "text": " place a worker on "
+      "text": " placed a worker on "
     },
     {
       "type": "entity",
@@ -6844,7 +7197,7 @@
     },
     {
       "type": "text",
-      "text": " place a worker on "
+      "text": " placed a worker on "
     },
     {
       "type": "entity",
@@ -6863,7 +7216,7 @@
     },
     {
       "type": "text",
-      "text": " place a worker on "
+      "text": " placed a worker on "
     },
     {
       "type": "entity",
@@ -6882,7 +7235,7 @@
     },
     {
       "type": "text",
-      "text": " place a worker on "
+      "text": " placed a worker on "
     },
     {
       "type": "entity",
@@ -6944,7 +7297,7 @@
     },
     {
       "type": "text",
-      "text": " place a worker on "
+      "text": " placed a worker on "
     },
     {
       "type": "entity",
@@ -7017,7 +7370,7 @@
     },
     {
       "type": "text",
-      "text": " place a worker on "
+      "text": " placed a worker on "
     },
     {
       "type": "entity",
@@ -7114,7 +7467,7 @@
     },
     {
       "type": "text",
-      "text": " place a worker on "
+      "text": " placed a worker on "
     },
     {
       "type": "entity",
@@ -7133,7 +7486,7 @@
     },
     {
       "type": "text",
-      "text": " place a worker on "
+      "text": " placed a worker on "
     },
     {
       "type": "entity",
@@ -7222,7 +7575,7 @@
     },
     {
       "type": "text",
-      "text": " place a worker on "
+      "text": " placed a worker on "
     },
     {
       "type": "entity",
@@ -7269,7 +7622,7 @@
     },
     {
       "type": "text",
-      "text": " place a worker on "
+      "text": " placed a worker on "
     },
     {
       "type": "entity",

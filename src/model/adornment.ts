@@ -28,7 +28,11 @@ import {
 import { Event } from "./event";
 import { Location } from "./location";
 import { Card, onlyRelevantProductionCards } from "./card";
-import { toGameText, cardListToGameText } from "./gameText";
+import {
+  toGameText,
+  cardListToGameText,
+  resourceMapToGameText,
+} from "./gameText";
 
 // Pearlbrook Adornment
 export class Adornment implements GameStatePlayable, IGameTextEntity {
@@ -165,8 +169,17 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
-      player.gainResources(gameState, { [ResourceType.BERRY]: 3 });
       const numPlayedCritters = player.getNumPlayedCritters();
+      gameState.addGameLogFromAdornment(AdornmentName.BELL, [
+        player,
+        " gained ",
+        ...resourceMapToGameText({
+          [ResourceType.BERRY]: 3,
+          CARD: numPlayedCritters,
+        }),
+        ".",
+      ]);
+      player.gainResources(gameState, { [ResourceType.BERRY]: 3 });
       player.drawCards(gameState, numPlayedCritters);
     },
   }),
@@ -586,6 +599,10 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
               adornment: null,
             },
           });
+        } else {
+          gameState.addGameLogFromAdornment(AdornmentName.MIRROR, [
+            "No played Adornments to copy.",
+          ]);
         }
       } else if (
         gameInput.inputType === GameInputType.SELECT_PLAYED_ADORNMENT &&
@@ -597,7 +614,18 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
             throw new Error("Please select one of the Adornments");
           }
           const adornment = Adornment.fromName(selectedAdornment);
+          gameState.addGameLogFromAdornment(AdornmentName.MIRROR, [
+            player,
+            " copied ",
+            adornment,
+            ".",
+          ]);
           adornment.triggerAdornment(gameState);
+        } else {
+          gameState.addGameLogFromAdornment(AdornmentName.MIRROR, [
+            player,
+            " decline to copy any played Adornments.",
+          ]);
         }
       }
     },

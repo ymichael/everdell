@@ -63,6 +63,25 @@ module.exports = (on: any, config: any) => {
         }
       );
     },
+    "db:select-played-adornment-game": async () => {
+      return await getTestGameJSON(
+        { gameOptions: { pearlbrook: true } },
+        (gameState, player) => {
+          player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
+          player.adornmentsInHand.push(AdornmentName.MIRROR);
+
+          player.addToCity(gameState, CardName.WIFE);
+          player.addToCity(gameState, CardName.WIFE);
+          player.addToCity(gameState, CardName.WIFE);
+          player.addToCity(gameState, CardName.WIFE);
+
+          gameState.players[1].playedAdornments.push(AdornmentName.BELL);
+          gameState.players[1].playedAdornments.push(
+            AdornmentName.KEY_TO_THE_CITY
+          );
+        }
+      );
+    },
     "db:place-ambassador-game": async () => {
       return await getTestGameJSON(
         { gameOptions: { pearlbrook: true } },

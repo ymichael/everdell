@@ -16,7 +16,6 @@ describe("Place Ambassador", () => {
     cy.visit(`/game/${gameJSON.gameId}?playerSecret=${player1.playerSecret}`);
     cy.contains("Place Ambassador");
 
-    // Should be able to claim event
     cy.get("#js-game-input-box-form").within(() => {
       cy.get("#js-game-input-type-PLACE_AMBASSADOR").click();
 

@@ -156,7 +156,10 @@ const GameInputBoxInner = ({
           adornments={gameState.getPlayableAdornments()}
         />
       ) : gameInput.inputType === GameInputType.SELECT_PLAYED_ADORNMENT ? (
-        <>TODO</>
+        <GameInputPlayAdornmentSelector
+          name={"gameInput.clientOptions.adornment"}
+          adornments={gameInput.adornmentOptions}
+        />
       ) : gameInput.inputType === GameInputType.SELECT_RIVER_DESTINATION ? (
         <>TODO</>
       ) : (

@@ -15,6 +15,7 @@ import { Location as LocationModel } from "../model/location";
 import GameLog from "./GameLog";
 import Card, { PlayedCard } from "./Card";
 import Location from "./Location";
+import { RiverDestinationSpot } from "./RiverDestination";
 import Adornment from "./Adornment";
 import Event from "./Event";
 import { GameBlock, ItemWrapper } from "./common";
@@ -268,5 +269,27 @@ export const GameBoard: React.FC<{
         <Events gameState={gameState} numColumns={2} />
       </div>
     </div>
+  );
+};
+
+export const River: React.FC<{
+  gameState: GameState;
+  viewingPlayer: Player | null;
+}> = ({ gameState, viewingPlayer }) => {
+  return (
+    <GameBlock title={"River"}>
+      <div id={"js-game-river"} className={styles.river_items}>
+        {gameState
+          .riverDestinationMap!.spotEntries()
+          .map(([spotName, spotInfo], idx) => {
+            return (
+              <RiverDestinationSpot
+                name={spotName}
+                destination={spotInfo.name}
+              />
+            );
+          })}
+      </div>
+    </GameBlock>
   );
 };

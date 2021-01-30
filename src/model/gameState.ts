@@ -1125,7 +1125,11 @@ export class GameState {
     gameState.addGameLog(`Game created with ${players.length} players.`);
 
     if (gameOptionsWithDefaults.pearlbrook) {
-      gameState.addGameLog(`Playing with the Pearlbrook expansion.`);
+      gameState.addGameLog([
+        `Playing with the `,
+        { type: "em", text: "Pearlbrook" },
+        ` expansion.`,
+      ]);
     }
 
     if (shuffleDeck) {

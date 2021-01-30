@@ -312,6 +312,12 @@ export class RiverDestinationMap {
     riverDestination.play(gameState, gameInput);
   }
 
+  spotEntries(): [RiverDestinationSpotName, RiverDestinationSpotNameInfo][] {
+    const ret: [RiverDestinationSpotName, RiverDestinationSpotNameInfo][] = [];
+    this.forEachSpot((a, b) => ret.push([a, b]));
+    return ret;
+  }
+
   forEachSpot(
     fn: (
       spot: RiverDestinationSpotName,

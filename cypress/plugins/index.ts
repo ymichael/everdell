@@ -128,6 +128,13 @@ module.exports = (on: any, config: any) => {
           player.addToCity(gameState, CardName.FARM);
           player.addToCity(gameState, CardName.FARM);
 
+          gameState.riverDestinationMap!.spots[
+            RiverDestinationSpotName.TWO_GOVERNANCE
+          ].name = RiverDestinationName.OMICRON_THE_ELDER;
+          gameState.riverDestinationMap!.spots[
+            RiverDestinationSpotName.TWO_TRAVELER
+          ].name = RiverDestinationName.GREAT_HALL;
+
           gameState.riverDestinationMap!.revealSpot(
             RiverDestinationSpotName.TWO_GOVERNANCE
           );

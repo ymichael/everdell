@@ -16,6 +16,14 @@ describe("Place Ambassador", () => {
     cy.visit(`/game/${gameJSON.gameId}?playerSecret=${player1.playerSecret}`);
     cy.contains("Place Ambassador");
 
+    cy.contains("River");
+    cy.get("#js-game-river").within(() => {
+      cy.contains("Visit to gain 1 and reveal hidden River Destination.");
+      cy.get("[data-cy='river-destination-hidden']").then((ret) => {
+        expect(ret.length).to.equal(3);
+      });
+    });
+
     cy.get("#js-game-input-box-form").within(() => {
       cy.get("#js-game-input-type-PLACE_AMBASSADOR").click();
 
@@ -27,6 +35,13 @@ describe("Place Ambassador", () => {
 
       cy.get("[data-cy='place-ambassador-item-spot:TWO_TRAVELER']").click();
       cy.contains("Submit").click();
+    });
+
+    cy.get("#js-game-river").within(() => {
+      cy.contains("Visit to gain 1 and reveal hidden River Destination.");
+      cy.get("[data-cy='river-destination-hidden']").then((ret) => {
+        expect(ret.length).to.equal(2);
+      });
     });
 
     cy.contains("2 : Michael visited 2 and revealed");

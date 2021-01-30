@@ -33,7 +33,7 @@ const RiverDestinationInner = ({ name }: { name: RiverDestinationName }) => {
 
 const RiverDestinationHidden = () => {
   return (
-    <div className={styles.hidden_item}>
+    <div data-cy={`river-destination-hidden`} className={styles.hidden_item}>
       <div></div>
       <Description
         textParts={[

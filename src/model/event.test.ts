@@ -2230,7 +2230,7 @@ describe("Event", () => {
     });
   });
 
-  describe.only(EventName.SPECIAL_RIVERSIDE_RESORT, () => {
+  describe(EventName.SPECIAL_RIVERSIDE_RESORT, () => {
     it("can claim event + meadow replenishes properly", () => {
       gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
       player = gameState.getActivePlayer();

@@ -2229,4 +2229,443 @@ describe("Event", () => {
       }).to.throwException(/enough cards/i);
     });
   });
+
+  describe.only(EventName.SPECIAL_RIVERSIDE_RESORT, () => {
+    it("can claim event + meadow replenishes properly", () => {
+      gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
+      player = gameState.getActivePlayer();
+      const event = Event.fromName(EventName.SPECIAL_RIVERSIDE_RESORT);
+      const gameInput = claimEventInput(event.name);
+
+      let topOfDeck = [
+        CardName.HUSBAND,
+        CardName.QUEEN,
+        CardName.WIFE,
+        CardName.FARM,
+        CardName.INN,
+        CardName.POST_OFFICE,
+        CardName.POSTAL_PIGEON,
+        CardName.RANGER,
+      ];
+      topOfDeck.reverse();
+      topOfDeck.forEach((cardName) => {
+        gameState.deck.addToStack(cardName);
+      });
+
+      gameState.replenishMeadow();
+
+      // so we know which cards to expect in the meadow
+      topOfDeck = [CardName.MINER_MOLE, CardName.MINE, CardName.WOODCARVER];
+      topOfDeck.forEach((cardName) => {
+        gameState.deck.addToStack(cardName);
+      });
+
+      const selectCardsInput = {
+        inputType: GameInputType.SELECT_CARDS as const,
+        prevInputType: GameInputType.CLAIM_EVENT,
+        eventContext: EventName.SPECIAL_RIVERSIDE_RESORT,
+        cardOptions: [
+          CardName.HUSBAND,
+          CardName.QUEEN,
+          CardName.WIFE,
+          CardName.POSTAL_PIGEON,
+          CardName.RANGER,
+        ],
+        maxToSelect: 3,
+        minToSelect: 0,
+        clientOptions: {
+          selectedCards: [CardName.RANGER, CardName.HUSBAND, CardName.QUEEN],
+        },
+      };
+
+      gameState.eventsMap[EventName.SPECIAL_RIVERSIDE_RESORT] = null;
+
+      player.addToCity(gameState, CardName.INNKEEPER);
+      player.addToCity(gameState, CardName.HARBOR);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_RIVERSIDE_RESORT)).to.be(
+        undefined
+      );
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        gameInput,
+        selectCardsInput,
+      ]);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_RIVERSIDE_RESORT));
+      expect(gameState.meadowCards).to.eql([
+        CardName.WIFE,
+        CardName.FARM,
+        CardName.INN,
+        CardName.POST_OFFICE,
+        CardName.POSTAL_PIGEON,
+        CardName.WOODCARVER,
+        CardName.MINE,
+        CardName.MINER_MOLE,
+      ]);
+      expect(event.getPoints(gameState, player.playerId)).to.be(6);
+      expect(player.getPointsFromEvents(gameState)).to.be(6);
+    });
+
+    it("should not be able to put non-Critters under event", () => {
+      gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
+      player = gameState.getActivePlayer();
+      const event = Event.fromName(EventName.SPECIAL_RIVERSIDE_RESORT);
+      const gameInput = claimEventInput(event.name);
+
+      let topOfDeck = [
+        CardName.HUSBAND,
+        CardName.QUEEN,
+        CardName.WIFE,
+        CardName.FARM,
+        CardName.INN,
+        CardName.POST_OFFICE,
+        CardName.POSTAL_PIGEON,
+        CardName.RANGER,
+      ];
+      topOfDeck.reverse();
+      topOfDeck.forEach((cardName) => {
+        gameState.deck.addToStack(cardName);
+      });
+
+      gameState.replenishMeadow();
+
+      // so we know which cards to expect in the meadow
+      topOfDeck = [CardName.MINER_MOLE, CardName.MINE, CardName.WOODCARVER];
+      topOfDeck.forEach((cardName) => {
+        gameState.deck.addToStack(cardName);
+      });
+
+      const selectCardsInput = {
+        inputType: GameInputType.SELECT_CARDS as const,
+        prevInputType: GameInputType.CLAIM_EVENT,
+        eventContext: EventName.SPECIAL_RIVERSIDE_RESORT,
+        cardOptions: [
+          CardName.HUSBAND,
+          CardName.QUEEN,
+          CardName.WIFE,
+          CardName.POSTAL_PIGEON,
+          CardName.RANGER,
+        ],
+        maxToSelect: 3,
+        minToSelect: 0,
+        clientOptions: {
+          selectedCards: [CardName.FARM, CardName.HUSBAND, CardName.QUEEN],
+        },
+      };
+
+      gameState.eventsMap[EventName.SPECIAL_RIVERSIDE_RESORT] = null;
+
+      player.addToCity(gameState, CardName.INNKEEPER);
+      player.addToCity(gameState, CardName.HARBOR);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_RIVERSIDE_RESORT)).to.be(
+        undefined
+      );
+
+      gameState.next(gameInput);
+
+      expect(() => {
+        gameState.next(selectCardsInput);
+      }).to.throwException(/only put critters/i);
+    });
+
+    it("calculate points correctly if putting 3 Critters beneath event", () => {
+      gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
+      player = gameState.getActivePlayer();
+      const event = Event.fromName(EventName.SPECIAL_RIVERSIDE_RESORT);
+      const gameInput = claimEventInput(event.name);
+
+      let topOfDeck = [
+        CardName.HUSBAND,
+        CardName.QUEEN,
+        CardName.WIFE,
+        CardName.FARM,
+        CardName.INN,
+        CardName.POST_OFFICE,
+        CardName.POSTAL_PIGEON,
+        CardName.RANGER,
+      ];
+      topOfDeck.reverse();
+      topOfDeck.forEach((cardName) => {
+        gameState.deck.addToStack(cardName);
+      });
+
+      gameState.replenishMeadow();
+
+      // so we know which cards to expect in the meadow
+      topOfDeck = [CardName.MINER_MOLE, CardName.MINE, CardName.WOODCARVER];
+      topOfDeck.forEach((cardName) => {
+        gameState.deck.addToStack(cardName);
+      });
+
+      const selectCardsInput = {
+        inputType: GameInputType.SELECT_CARDS as const,
+        prevInputType: GameInputType.CLAIM_EVENT,
+        eventContext: EventName.SPECIAL_RIVERSIDE_RESORT,
+        cardOptions: [
+          CardName.HUSBAND,
+          CardName.QUEEN,
+          CardName.WIFE,
+          CardName.POSTAL_PIGEON,
+          CardName.RANGER,
+        ],
+        maxToSelect: 3,
+        minToSelect: 0,
+        clientOptions: {
+          selectedCards: [CardName.RANGER, CardName.HUSBAND, CardName.QUEEN],
+        },
+      };
+
+      gameState.eventsMap[EventName.SPECIAL_RIVERSIDE_RESORT] = null;
+
+      player.addToCity(gameState, CardName.INNKEEPER);
+      player.addToCity(gameState, CardName.HARBOR);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_RIVERSIDE_RESORT)).to.be(
+        undefined
+      );
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        gameInput,
+        selectCardsInput,
+      ]);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_RIVERSIDE_RESORT));
+      expect(gameState.meadowCards).to.eql([
+        CardName.WIFE,
+        CardName.FARM,
+        CardName.INN,
+        CardName.POST_OFFICE,
+        CardName.POSTAL_PIGEON,
+        CardName.WOODCARVER,
+        CardName.MINE,
+        CardName.MINER_MOLE,
+      ]);
+      expect(event.getPoints(gameState, player.playerId)).to.be(6);
+      expect(player.getPointsFromEvents(gameState)).to.be(6);
+    });
+
+    it("should calculate points correctly if putting 2 Critters beneath event", () => {
+      gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
+      player = gameState.getActivePlayer();
+      const event = Event.fromName(EventName.SPECIAL_RIVERSIDE_RESORT);
+      const gameInput = claimEventInput(event.name);
+
+      let topOfDeck = [
+        CardName.HUSBAND,
+        CardName.QUEEN,
+        CardName.WIFE,
+        CardName.FARM,
+        CardName.INN,
+        CardName.POST_OFFICE,
+        CardName.POSTAL_PIGEON,
+        CardName.RANGER,
+      ];
+      topOfDeck.reverse();
+      topOfDeck.forEach((cardName) => {
+        gameState.deck.addToStack(cardName);
+      });
+
+      gameState.replenishMeadow();
+
+      // so we know which cards to expect in the meadow
+      topOfDeck = [CardName.MINER_MOLE, CardName.MINE, CardName.WOODCARVER];
+      topOfDeck.forEach((cardName) => {
+        gameState.deck.addToStack(cardName);
+      });
+
+      const selectCardsInput = {
+        inputType: GameInputType.SELECT_CARDS as const,
+        prevInputType: GameInputType.CLAIM_EVENT,
+        eventContext: EventName.SPECIAL_RIVERSIDE_RESORT,
+        cardOptions: [
+          CardName.HUSBAND,
+          CardName.QUEEN,
+          CardName.WIFE,
+          CardName.POSTAL_PIGEON,
+          CardName.RANGER,
+        ],
+        maxToSelect: 3,
+        minToSelect: 0,
+        clientOptions: {
+          selectedCards: [CardName.HUSBAND, CardName.QUEEN],
+        },
+      };
+
+      gameState.eventsMap[EventName.SPECIAL_RIVERSIDE_RESORT] = null;
+
+      player.addToCity(gameState, CardName.INNKEEPER);
+      player.addToCity(gameState, CardName.HARBOR);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_RIVERSIDE_RESORT)).to.be(
+        undefined
+      );
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        gameInput,
+        selectCardsInput,
+      ]);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_RIVERSIDE_RESORT));
+      expect(gameState.meadowCards).to.eql([
+        CardName.WIFE,
+        CardName.FARM,
+        CardName.INN,
+        CardName.POST_OFFICE,
+        CardName.POSTAL_PIGEON,
+        CardName.RANGER,
+        CardName.WOODCARVER,
+        CardName.MINE,
+      ]);
+      expect(event.getPoints(gameState, player.playerId)).to.be(4);
+      expect(player.getPointsFromEvents(gameState)).to.be(4);
+    });
+
+    it("should calculate points correctly if putting 1 Critters beneath event", () => {
+      gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
+      player = gameState.getActivePlayer();
+      const event = Event.fromName(EventName.SPECIAL_RIVERSIDE_RESORT);
+      const gameInput = claimEventInput(event.name);
+
+      let topOfDeck = [
+        CardName.HUSBAND,
+        CardName.QUEEN,
+        CardName.WIFE,
+        CardName.FARM,
+        CardName.INN,
+        CardName.POST_OFFICE,
+        CardName.POSTAL_PIGEON,
+        CardName.RANGER,
+      ];
+      topOfDeck.reverse();
+      topOfDeck.forEach((cardName) => {
+        gameState.deck.addToStack(cardName);
+      });
+
+      gameState.replenishMeadow();
+
+      // so we know which cards to expect in the meadow
+      topOfDeck = [CardName.MINER_MOLE, CardName.MINE, CardName.WOODCARVER];
+      topOfDeck.forEach((cardName) => {
+        gameState.deck.addToStack(cardName);
+      });
+
+      const selectCardsInput = {
+        inputType: GameInputType.SELECT_CARDS as const,
+        prevInputType: GameInputType.CLAIM_EVENT,
+        eventContext: EventName.SPECIAL_RIVERSIDE_RESORT,
+        cardOptions: [
+          CardName.HUSBAND,
+          CardName.QUEEN,
+          CardName.WIFE,
+          CardName.POSTAL_PIGEON,
+          CardName.RANGER,
+        ],
+        maxToSelect: 3,
+        minToSelect: 0,
+        clientOptions: {
+          selectedCards: [CardName.QUEEN],
+        },
+      };
+
+      gameState.eventsMap[EventName.SPECIAL_RIVERSIDE_RESORT] = null;
+
+      player.addToCity(gameState, CardName.INNKEEPER);
+      player.addToCity(gameState, CardName.HARBOR);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_RIVERSIDE_RESORT)).to.be(
+        undefined
+      );
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        gameInput,
+        selectCardsInput,
+      ]);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_RIVERSIDE_RESORT));
+      expect(gameState.meadowCards).to.eql([
+        CardName.HUSBAND,
+        CardName.WIFE,
+        CardName.FARM,
+        CardName.INN,
+        CardName.POST_OFFICE,
+        CardName.POSTAL_PIGEON,
+        CardName.RANGER,
+        CardName.WOODCARVER,
+      ]);
+      expect(event.getPoints(gameState, player.playerId)).to.be(2);
+      expect(player.getPointsFromEvents(gameState)).to.be(2);
+    });
+
+    it("should calculate points correctly if putting 0 Critters beneath event", () => {
+      gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
+      player = gameState.getActivePlayer();
+      const event = Event.fromName(EventName.SPECIAL_RIVERSIDE_RESORT);
+      const gameInput = claimEventInput(event.name);
+
+      let topOfDeck = [
+        CardName.HUSBAND,
+        CardName.QUEEN,
+        CardName.WIFE,
+        CardName.FARM,
+        CardName.INN,
+        CardName.POST_OFFICE,
+        CardName.POSTAL_PIGEON,
+        CardName.RANGER,
+      ];
+      topOfDeck.reverse();
+      topOfDeck.forEach((cardName) => {
+        gameState.deck.addToStack(cardName);
+      });
+
+      gameState.replenishMeadow();
+
+      const selectCardsInput = {
+        inputType: GameInputType.SELECT_CARDS as const,
+        prevInputType: GameInputType.CLAIM_EVENT,
+        eventContext: EventName.SPECIAL_RIVERSIDE_RESORT,
+        cardOptions: [
+          CardName.HUSBAND,
+          CardName.QUEEN,
+          CardName.WIFE,
+          CardName.POSTAL_PIGEON,
+          CardName.RANGER,
+        ],
+        maxToSelect: 3,
+        minToSelect: 0,
+        clientOptions: {
+          selectedCards: [],
+        },
+      };
+
+      gameState.eventsMap[EventName.SPECIAL_RIVERSIDE_RESORT] = null;
+
+      player.addToCity(gameState, CardName.INNKEEPER);
+      player.addToCity(gameState, CardName.HARBOR);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_RIVERSIDE_RESORT)).to.be(
+        undefined
+      );
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        gameInput,
+        selectCardsInput,
+      ]);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_RIVERSIDE_RESORT));
+      expect(gameState.meadowCards).to.eql([
+        CardName.HUSBAND,
+        CardName.QUEEN,
+        CardName.WIFE,
+        CardName.FARM,
+        CardName.INN,
+        CardName.POST_OFFICE,
+        CardName.POSTAL_PIGEON,
+        CardName.RANGER,
+      ]);
+      expect(event.getPoints(gameState, player.playerId)).to.be(0);
+      expect(player.getPointsFromEvents(gameState)).to.be(0);
+    });
+  });
 });

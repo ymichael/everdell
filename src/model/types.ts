@@ -429,7 +429,7 @@ export type WorkerPlacementInfo =
 export type AmbassadorPlacementInfo =
   | {
       type: "spot";
-      spot: RiverDestinationSpot;
+      spot: RiverDestinationSpotName;
     }
   | {
       type: "card";
@@ -590,7 +590,7 @@ export type TextPartEntity =
   | {
       type: "entity";
       entityType: "riverDestinationSpot";
-      spot: RiverDestinationSpot;
+      spot: RiverDestinationSpotName;
     };
 
 export type TextPartPlayer = {
@@ -664,7 +664,7 @@ export enum AdornmentName {
   TIARA = "Tiara",
 }
 
-export enum RiverDestinationSpot {
+export enum RiverDestinationSpotName {
   SHOAL = "SHOAL",
   THREE_PRODUCTION = "THREE_PRODUCTION",
   TWO_DESTINATION = "TWO_DESTINATION",
@@ -672,13 +672,13 @@ export enum RiverDestinationSpot {
   TWO_TRAVELER = "TWO_TRAVELER",
 }
 
-export type RiverDestinationSpotInfo = {
+export type RiverDestinationSpotNameInfo = {
   name: RiverDestinationName | null;
   ambassadors: string[];
   revealed: boolean;
 };
 
 export type RiverDestinationMapSpots = Record<
-  RiverDestinationSpot,
-  RiverDestinationSpotInfo
+  RiverDestinationSpotName,
+  RiverDestinationSpotNameInfo
 >;

@@ -25,7 +25,7 @@ import {
   PlayerStatus,
   ResourceType,
   RiverDestinationName,
-  RiverDestinationSpot,
+  RiverDestinationSpotName,
   Season,
   TextPart,
 } from "./types";
@@ -37,8 +37,9 @@ import { CardStack, discardPile } from "./cardStack";
 import { Location, initialLocationsMap } from "./location";
 import {
   initialRiverDestinationMap,
-  RiverDestinationMap,
   RiverDestination,
+  RiverDestinationMap,
+  RiverDestinationSpot,
 } from "./riverDestination";
 import { Event, initialEventMap } from "./event";
 import { initialDeck } from "./deck";
@@ -102,7 +103,7 @@ export const gameTextToDebugStr = (gameText: GameText): string => {
           }
           if (part.entityType === "riverDestinationSpot") {
             return gameTextToDebugStr(
-              RiverDestinationMap.getSpotGameText(part.spot)
+              RiverDestinationSpot.fromName(part.spot).shortName
             );
           }
           assertUnreachable(part, `Unexpected part: ${JSON.stringify(part)}`);
@@ -184,6 +185,17 @@ export class GameState {
 
   get activePlayerId(): string {
     return this._activePlayerId;
+  }
+
+  addGameLogFromRiverDestinationSpot(
+    name: RiverDestinationSpotName,
+    args: Parameters<typeof toGameText>[0]
+  ): void {
+    if (typeof args === "string") {
+      this.addGameLog([RiverDestinationSpot.fromName(name), ": ", args]);
+    } else {
+      this.addGameLog([RiverDestinationSpot.fromName(name), ": ", ...args]);
+    }
   }
 
   addGameLogFromRiverDestination(
@@ -621,72 +633,22 @@ export class GameState {
     }
 
     if (loc.type === "spot") {
-      const riverDestinationSpot = loc.spot;
-      if (!riverDestinationSpot) {
-        throw new Error("Please select a river destination to visit");
-      }
       const riverDestinationMap = this.riverDestinationMap;
       if (!riverDestinationMap) {
-        throw new Error("Could not find River Destination");
+        throw new Error("Game does not have river destinations");
+      }
+      const riverDestinationSpotName = loc.spot;
+      if (!riverDestinationSpotName) {
+        throw new Error("Please select a river destination spot to visit");
       }
       const canVisitErr = riverDestinationMap.canVisitSpotCheck(
         this,
-        riverDestinationSpot
+        riverDestinationSpotName
       );
       if (canVisitErr) {
         throw new Error(canVisitErr);
       }
-
-      const spot = riverDestinationMap.spots[riverDestinationSpot];
-      // Should not happen unless we're using the public gameState object.
-      if (!spot.name) {
-        throw new Error("Unable to reveal River Destination card.");
-      }
-      spot.ambassadors.push(player.playerId);
-
-      const riverDestination = RiverDestination.fromName(spot.name);
-      const canPlayRiverDestinationErr = riverDestination.canPlayCheck(
-        this,
-        gameInput
-      );
-      if (canPlayRiverDestinationErr) {
-        throw new Error(canPlayRiverDestinationErr);
-      }
-      const spotEntity = {
-        type: "entity" as const,
-        entityType: "riverDestinationSpot" as const,
-        spot: riverDestinationSpot,
-      };
-      if (!spot.revealed) {
-        // Reveal!
-        spot.revealed = true;
-        this.addGameLog([
-          player,
-          ` visited `,
-          spotEntity,
-          ` and revealed `,
-          riverDestination,
-          ".",
-        ]);
-        this.addGameLog([player, " gained 1 PEARL."]);
-        player.gainResources(this, { [ResourceType.PEARL]: 1 });
-      } else {
-        if (riverDestinationSpot === RiverDestinationSpot.SHOAL) {
-          this.addGameLog([player, " visited ", spotEntity, `.`]);
-        } else {
-          this.addGameLog([
-            player,
-            " visited ",
-            riverDestination,
-            ` at `,
-            spotEntity,
-            `.`,
-          ]);
-        }
-      }
-
-      // Play river destination!
-      riverDestination.play(this, gameInput);
+      riverDestinationMap.visitSpot(this, gameInput, riverDestinationSpotName);
     } else if (loc.type === "card") {
       const playedCard = loc.playedCard;
       if (!playedCard) {

@@ -3,7 +3,7 @@ import Image from "next/image";
 
 import styles from "../styles/common.module.css";
 import { Event } from "../model/event";
-import { RiverDestinationMap } from "../model/riverDestination";
+import { RiverDestinationSpot } from "../model/riverDestination";
 import { Location } from "../model/location";
 import { GameText, TextPart, ResourceType, CardType } from "../model/types";
 import { assertUnreachable } from "../utils";
@@ -242,7 +242,9 @@ export const Description = ({ textParts }: { textParts: GameText }) => {
               return (
                 <span key={idx} className={styles.entity_part}>
                   <Description
-                    textParts={RiverDestinationMap.getSpotGameText(part.spot)}
+                    textParts={
+                      RiverDestinationSpot.fromName(part.spot).shortName
+                    }
                   />
                 </span>
               );

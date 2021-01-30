@@ -4,7 +4,7 @@ import {
   ResourceType,
   RiverDestinationName,
   RiverDestinationType,
-  RiverDestinationSpot,
+  RiverDestinationSpotName,
   GameInputType,
 } from "./types";
 import {
@@ -62,8 +62,8 @@ describe("RiverDestinationMap", () => {
 
   describe("RiverDestinationMap", () => {
     describe("canVisitSpotCheck", () => {
-      describe(RiverDestinationSpot.THREE_PRODUCTION, () => {
-        const name = RiverDestinationSpot.THREE_PRODUCTION;
+      describe(RiverDestinationSpotName.THREE_PRODUCTION, () => {
+        const name = RiverDestinationSpotName.THREE_PRODUCTION;
         it("should only allow players with 3 PRODUCTION", () => {
           const map = gameState.riverDestinationMap as RiverDestinationMap;
           expect(map.canVisitSpotCheck(gameState, name)).to.match(/must have/i);
@@ -98,8 +98,8 @@ describe("RiverDestinationMap", () => {
           expect(map.canVisitSpotCheck(gameState, name)).to.be(null);
         });
       });
-      describe(RiverDestinationSpot.TWO_DESTINATION, () => {
-        const name = RiverDestinationSpot.TWO_DESTINATION;
+      describe(RiverDestinationSpotName.TWO_DESTINATION, () => {
+        const name = RiverDestinationSpotName.TWO_DESTINATION;
 
         it("should only allow players with 2 DESTINATION", () => {
           const map = gameState.riverDestinationMap as RiverDestinationMap;
@@ -135,8 +135,8 @@ describe("RiverDestinationMap", () => {
           expect(map.canVisitSpotCheck(gameState, name)).to.be(null);
         });
       });
-      describe(RiverDestinationSpot.TWO_GOVERNANCE, () => {
-        const name = RiverDestinationSpot.TWO_GOVERNANCE;
+      describe(RiverDestinationSpotName.TWO_GOVERNANCE, () => {
+        const name = RiverDestinationSpotName.TWO_GOVERNANCE;
 
         it("should only allow players with 2 GOVERNANCE", () => {
           const map = gameState.riverDestinationMap as RiverDestinationMap;
@@ -173,8 +173,8 @@ describe("RiverDestinationMap", () => {
         });
       });
 
-      describe(RiverDestinationSpot.TWO_TRAVELER, () => {
-        const name = RiverDestinationSpot.TWO_TRAVELER;
+      describe(RiverDestinationSpotName.TWO_TRAVELER, () => {
+        const name = RiverDestinationSpotName.TWO_TRAVELER;
 
         it("should only allow players with 2 TRAVELER", () => {
           const map = gameState.riverDestinationMap as RiverDestinationMap;
@@ -256,7 +256,7 @@ describe("RiverDestinationMap", () => {
     player.addToCity(gameState, CardName.JUDGE);
     player.addToCity(gameState, CardName.SHOPKEEPER);
 
-    const spot = RiverDestinationSpot.TWO_GOVERNANCE;
+    const spot = RiverDestinationSpotName.TWO_GOVERNANCE;
     gameState.riverDestinationMap!.spots[spot]!.name =
       RiverDestinationName.GUS_THE_GARDENER;
     expect(gameState.riverDestinationMap!.spots[spot]!.revealed).to.be(false);
@@ -272,15 +272,16 @@ describe("RiverDestinationMap", () => {
     ]);
 
     expect(
-      gameState.riverDestinationMap!.spots[RiverDestinationSpot.TWO_GOVERNANCE]!
-        .revealed
+      gameState.riverDestinationMap!.spots[
+        RiverDestinationSpotName.TWO_GOVERNANCE
+      ]!.revealed
     ).to.be(true);
     expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
   });
 
   describe(RiverDestinationName.GUS_THE_GARDENER, () => {
     beforeEach(() => {
-      const spot = RiverDestinationSpot.TWO_TRAVELER;
+      const spot = RiverDestinationSpotName.TWO_TRAVELER;
       gameState.riverDestinationMap!.spots[spot]!.name =
         RiverDestinationName.GUS_THE_GARDENER;
       gameState.riverDestinationMap!.spots[spot]!.revealed = true;
@@ -294,7 +295,7 @@ describe("RiverDestinationMap", () => {
         {
           inputType: GameInputType.PLACE_AMBASSADOR,
           clientOptions: {
-            loc: { type: "spot", spot: RiverDestinationSpot.TWO_TRAVELER },
+            loc: { type: "spot", spot: RiverDestinationSpotName.TWO_TRAVELER },
           },
         },
       ]);
@@ -317,7 +318,7 @@ describe("RiverDestinationMap", () => {
         {
           inputType: GameInputType.PLACE_AMBASSADOR,
           clientOptions: {
-            loc: { type: "spot", spot: RiverDestinationSpot.TWO_TRAVELER },
+            loc: { type: "spot", spot: RiverDestinationSpotName.TWO_TRAVELER },
           },
         },
         {
@@ -361,7 +362,7 @@ describe("RiverDestinationMap", () => {
         {
           inputType: GameInputType.PLACE_AMBASSADOR,
           clientOptions: {
-            loc: { type: "spot", spot: RiverDestinationSpot.TWO_TRAVELER },
+            loc: { type: "spot", spot: RiverDestinationSpotName.TWO_TRAVELER },
           },
         },
         {
@@ -386,7 +387,7 @@ describe("RiverDestinationMap", () => {
 
   describe(RiverDestinationName.BALLROOM, () => {
     beforeEach(() => {
-      const spot = RiverDestinationSpot.TWO_TRAVELER;
+      const spot = RiverDestinationSpotName.TWO_TRAVELER;
       gameState.riverDestinationMap!.spots[spot]!.name =
         RiverDestinationName.BALLROOM;
       gameState.riverDestinationMap!.spots[spot]!.revealed = true;
@@ -402,7 +403,7 @@ describe("RiverDestinationMap", () => {
         {
           inputType: GameInputType.PLACE_AMBASSADOR,
           clientOptions: {
-            loc: { type: "spot", spot: RiverDestinationSpot.TWO_TRAVELER },
+            loc: { type: "spot", spot: RiverDestinationSpotName.TWO_TRAVELER },
           },
         },
       ]);
@@ -417,7 +418,7 @@ describe("RiverDestinationMap", () => {
         {
           inputType: GameInputType.PLACE_AMBASSADOR,
           clientOptions: {
-            loc: { type: "spot", spot: RiverDestinationSpot.TWO_TRAVELER },
+            loc: { type: "spot", spot: RiverDestinationSpotName.TWO_TRAVELER },
           },
         },
       ]);
@@ -438,7 +439,7 @@ describe("RiverDestinationMap", () => {
         {
           inputType: GameInputType.PLACE_AMBASSADOR,
           clientOptions: {
-            loc: { type: "spot", spot: RiverDestinationSpot.TWO_TRAVELER },
+            loc: { type: "spot", spot: RiverDestinationSpotName.TWO_TRAVELER },
           },
         },
         {
@@ -469,7 +470,7 @@ describe("RiverDestinationMap", () => {
         {
           inputType: GameInputType.PLACE_AMBASSADOR,
           clientOptions: {
-            loc: { type: "spot", spot: RiverDestinationSpot.TWO_TRAVELER },
+            loc: { type: "spot", spot: RiverDestinationSpotName.TWO_TRAVELER },
           },
         },
         {
@@ -494,7 +495,7 @@ describe("RiverDestinationMap", () => {
           {
             inputType: GameInputType.PLACE_AMBASSADOR,
             clientOptions: {
-              loc: { type: "spot", spot: RiverDestinationSpot.SHOAL },
+              loc: { type: "spot", spot: RiverDestinationSpotName.SHOAL },
             },
           },
         ]);
@@ -506,7 +507,7 @@ describe("RiverDestinationMap", () => {
           {
             inputType: GameInputType.PLACE_AMBASSADOR,
             clientOptions: {
-              loc: { type: "spot", spot: RiverDestinationSpot.SHOAL },
+              loc: { type: "spot", spot: RiverDestinationSpotName.SHOAL },
             },
           },
         ]);
@@ -523,7 +524,7 @@ describe("RiverDestinationMap", () => {
         {
           inputType: GameInputType.PLACE_AMBASSADOR,
           clientOptions: {
-            loc: { type: "spot", spot: RiverDestinationSpot.SHOAL },
+            loc: { type: "spot", spot: RiverDestinationSpotName.SHOAL },
           },
         },
         {
@@ -562,7 +563,7 @@ describe("RiverDestinationMap", () => {
           {
             inputType: GameInputType.PLACE_AMBASSADOR,
             clientOptions: {
-              loc: { type: "spot", spot: RiverDestinationSpot.SHOAL },
+              loc: { type: "spot", spot: RiverDestinationSpotName.SHOAL },
             },
           },
         ],

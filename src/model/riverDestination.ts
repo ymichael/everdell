@@ -6,9 +6,9 @@ import uniq from "lodash/uniq";
 import {
   CardType,
   CardName,
-  RiverDestinationSpot,
+  RiverDestinationSpotName,
   RiverDestinationMapSpots,
-  RiverDestinationSpotInfo,
+  RiverDestinationSpotNameInfo,
   RiverDestinationType,
   RiverDestinationName,
   ResourceType,
@@ -34,7 +34,15 @@ import {
 } from "./gameState";
 import { assertUnreachable } from "../utils";
 
-// Pearlbrook River Destination
+/**
+ * Pearlbrook River RiverDestinations
+ *
+ * - RiverDestinationMap stores the game state
+ *   (eg. which spots hold which destinations, which are revealed)
+ * - RiverDestinationSpot class refers to the place on the board (eg. 2 TRAVELLER)
+ * - RiverDestination refers to the cards that get placed on the spot.
+ */
+
 export class RiverDestination implements GameStatePlayable, IGameTextEntity {
   readonly name: RiverDestinationName;
   readonly isExclusive: boolean;
@@ -118,6 +126,37 @@ export class RiverDestination implements GameStatePlayable, IGameTextEntity {
   }
 }
 
+export class RiverDestinationSpot implements IGameTextEntity {
+  readonly name: RiverDestinationSpotName;
+  readonly shortName: GameText;
+
+  constructor({
+    name,
+    shortName,
+  }: {
+    name: RiverDestinationSpotName;
+    shortName: GameText;
+  }) {
+    this.name = name;
+    this.shortName = shortName;
+  }
+
+  getGameTextPart(): TextPartEntity {
+    return {
+      type: "entity",
+      entityType: "riverDestinationSpot",
+      spot: this.name,
+    };
+  }
+
+  static fromName(name: RiverDestinationSpotName): RiverDestinationSpot {
+    if (!SPOT_REGISTRY[name]) {
+      throw new Error(`Invalid RiverDestinationSpot: ${name}`);
+    }
+    return SPOT_REGISTRY[name];
+  }
+}
+
 export class RiverDestinationMap {
   readonly spots: RiverDestinationMapSpots;
 
@@ -127,7 +166,7 @@ export class RiverDestinationMap {
 
   canVisitSpotCheck(
     gameState: GameState,
-    spotName: RiverDestinationSpot
+    spotName: RiverDestinationSpotName
   ): string | null {
     const player = gameState.getActivePlayer();
     if (!gameState.gameOptions.pearlbrook) {
@@ -138,7 +177,7 @@ export class RiverDestinationMap {
     }
 
     // Check if spot is already occupied.
-    if (spotName !== RiverDestinationSpot.SHOAL) {
+    if (spotName !== RiverDestinationSpotName.SHOAL) {
       const spot = this.spots[spotName];
       if (spot.ambassadors.length !== 0) {
         return `${spot} is already occupied.`;
@@ -171,27 +210,27 @@ export class RiverDestinationMap {
     };
 
     switch (spotName) {
-      case RiverDestinationSpot.THREE_PRODUCTION:
+      case RiverDestinationSpotName.THREE_PRODUCTION:
         if (getNumByCardType(CardType.PRODUCTION) < 3) {
           return "Must have 3 PRODUCTION cards in your city";
         }
         break;
-      case RiverDestinationSpot.TWO_DESTINATION:
+      case RiverDestinationSpotName.TWO_DESTINATION:
         if (getNumByCardType(CardType.DESTINATION) < 2) {
           return "Must have 2 DESTINATION cards in your city";
         }
         break;
-      case RiverDestinationSpot.TWO_GOVERNANCE:
+      case RiverDestinationSpotName.TWO_GOVERNANCE:
         if (getNumByCardType(CardType.GOVERNANCE) < 2) {
           return "Must have 2 GOVERNANCE cards in your city";
         }
         break;
-      case RiverDestinationSpot.TWO_TRAVELER:
+      case RiverDestinationSpotName.TWO_TRAVELER:
         if (getNumByCardType(CardType.TRAVELER) < 2) {
           return "Must have 2 TRAVELER cards in your city";
         }
         break;
-      case RiverDestinationSpot.SHOAL:
+      case RiverDestinationSpotName.SHOAL:
         break;
       default:
         assertUnreachable(spotName, spotName);
@@ -200,12 +239,90 @@ export class RiverDestinationMap {
     return null;
   }
 
-  forEachSpot(
-    fn: (spot: RiverDestinationSpot, spotInfo: RiverDestinationSpotInfo) => void
+  revealSpot(name: RiverDestinationSpotName): void {
+    const spotInfo = this.spots[name];
+    // Should not happen unless we're using the public gameState object.
+    if (!spotInfo.name) {
+      throw new Error("Unable to reveal River Destination card.");
+    }
+    if (spotInfo.revealed) {
+      throw new Error("Spot already revealed");
+    }
+    spotInfo.revealed = true;
+  }
+
+  visitSpot(
+    gameState: GameState,
+    gameInput: GameInput,
+    spotName: RiverDestinationSpotName
   ): void {
-    (Object.keys(this.spots) as RiverDestinationSpot[]).forEach((spotName) => {
-      fn(spotName, this.spots[spotName]);
-    });
+    const player = gameState.getActivePlayer();
+    const riverDestinationSpot = RiverDestinationSpot.fromName(spotName);
+    const spotInfo = this.spots[spotName];
+    // Should not happen unless we're using the public gameState object.
+    if (!spotInfo.name) {
+      throw new Error("Unable to reveal River Destination card.");
+    }
+
+    spotInfo.ambassadors.push(player.playerId);
+
+    const riverDestination = RiverDestination.fromName(spotInfo.name);
+    const canPlayRiverDestinationErr = riverDestination.canPlayCheck(
+      gameState,
+      gameInput
+    );
+    if (canPlayRiverDestinationErr) {
+      throw new Error(canPlayRiverDestinationErr);
+    }
+
+    if (!spotInfo.revealed) {
+      this.revealSpot(spotName);
+      gameState.addGameLogFromRiverDestinationSpot(spotName, [
+        player,
+        ` visited `,
+        riverDestinationSpot,
+        ` and revealed `,
+        riverDestination,
+        ".",
+      ]);
+      gameState.addGameLogFromRiverDestinationSpot(spotName, [
+        player,
+        " gained 1 PEARL.",
+      ]);
+      player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
+    } else {
+      if (spotName === RiverDestinationSpotName.SHOAL) {
+        gameState.addGameLogFromRiverDestinationSpot(spotName, [
+          player,
+          " visited ",
+          riverDestinationSpot,
+          `.`,
+        ]);
+      } else {
+        gameState.addGameLogFromRiverDestinationSpot(spotName, [
+          player,
+          " visited ",
+          riverDestination,
+          ` at `,
+          riverDestinationSpot,
+          `.`,
+        ]);
+      }
+    }
+    riverDestination.play(gameState, gameInput);
+  }
+
+  forEachSpot(
+    fn: (
+      spot: RiverDestinationSpotName,
+      spotInfo: RiverDestinationSpotNameInfo
+    ) => void
+  ): void {
+    (Object.keys(this.spots) as RiverDestinationSpotName[]).forEach(
+      (spotName) => {
+        fn(spotName, this.spots[spotName]);
+      }
+    );
   }
 
   getRevealedDestinations(): RiverDestinationName[] {
@@ -225,24 +342,6 @@ export class RiverDestinationMap {
     this.forEachSpot((_, spotInfo) => {
       spotInfo.ambassadors = spotInfo.ambassadors.filter((x) => x !== playerId);
     });
-  }
-
-  static getSpotGameText(spot: RiverDestinationSpot): GameText {
-    switch (spot) {
-      case RiverDestinationSpot.SHOAL:
-        return toGameText("Shoal");
-      case RiverDestinationSpot.THREE_PRODUCTION:
-        return toGameText("2 PRODUCTION");
-      case RiverDestinationSpot.TWO_TRAVELER:
-        return toGameText("2 TRAVELER");
-      case RiverDestinationSpot.TWO_GOVERNANCE:
-        return toGameText("2 GOVERNANCE");
-      case RiverDestinationSpot.TWO_DESTINATION:
-        return toGameText("2 DESTINATION");
-      default:
-        assertUnreachable(spot, spot);
-    }
-    return [];
   }
 
   static fromJSON(json: RiverDestinationMapJSON): RiverDestinationMap {
@@ -305,6 +404,29 @@ export const initialRiverDestinationMap = (): RiverDestinationMap => {
       },
     },
   });
+};
+
+const SPOT_REGISTRY: Record<RiverDestinationSpotName, RiverDestinationSpot> = {
+  [RiverDestinationSpotName.SHOAL]: new RiverDestinationSpot({
+    name: RiverDestinationSpotName.SHOAL,
+    shortName: toGameText("Shoal"),
+  }),
+  [RiverDestinationSpotName.THREE_PRODUCTION]: new RiverDestinationSpot({
+    name: RiverDestinationSpotName.THREE_PRODUCTION,
+    shortName: toGameText("3 PRODUCTION"),
+  }),
+  [RiverDestinationSpotName.TWO_DESTINATION]: new RiverDestinationSpot({
+    name: RiverDestinationSpotName.TWO_DESTINATION,
+    shortName: toGameText("2 DESTINATION"),
+  }),
+  [RiverDestinationSpotName.TWO_GOVERNANCE]: new RiverDestinationSpot({
+    name: RiverDestinationSpotName.TWO_GOVERNANCE,
+    shortName: toGameText("2 GOVERNANCE"),
+  }),
+  [RiverDestinationSpotName.TWO_TRAVELER]: new RiverDestinationSpot({
+    name: RiverDestinationSpotName.TWO_TRAVELER,
+    shortName: toGameText("2 TRAVELER"),
+  }),
 };
 
 const REGISTRY: Record<RiverDestinationName, RiverDestination> = {

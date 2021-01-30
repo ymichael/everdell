@@ -8355,6 +8355,15 @@
   ],
   [
     {
+      "type": "entity",
+      "entityType": "riverDestinationSpot",
+      "spot": "TWO_GOVERNANCE"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
       "type": "player",
       "name": "Player #0"
     },
@@ -8383,6 +8392,15 @@
   ],
   [
     {
+      "type": "entity",
+      "entityType": "riverDestinationSpot",
+      "spot": "TWO_GOVERNANCE"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
       "type": "player",
       "name": "Player #0"
     },
@@ -8400,6 +8418,15 @@
     }
   ],
   [
+    {
+      "type": "entity",
+      "entityType": "riverDestinationSpot",
+      "spot": "TWO_TRAVELER"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
     {
       "type": "player",
       "name": "Player #0"
@@ -8526,6 +8553,15 @@
   ],
   [
     {
+      "type": "entity",
+      "entityType": "riverDestinationSpot",
+      "spot": "TWO_TRAVELER"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
       "type": "player",
       "name": "Player #0"
     },
@@ -8588,6 +8624,15 @@
     }
   ],
   [
+    {
+      "type": "entity",
+      "entityType": "riverDestinationSpot",
+      "spot": "SHOAL"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
     {
       "type": "player",
       "name": "Player #0"

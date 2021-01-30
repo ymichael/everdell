@@ -18,7 +18,7 @@ import {
   Season,
   LocationName,
   RiverDestinationName,
-  RiverDestinationSpot,
+  RiverDestinationSpotName,
 } from "./types";
 
 describe("Card", () => {
@@ -5745,7 +5745,7 @@ describe("Card", () => {
         player = gameState.getActivePlayer();
 
         gameState.riverDestinationMap!.spots[
-          RiverDestinationSpot.TWO_TRAVELER
+          RiverDestinationSpotName.TWO_TRAVELER
         ].name = RiverDestinationName.BALLROOM;
       });
 
@@ -5769,7 +5769,7 @@ describe("Card", () => {
       it("should be visitable if there are revealed river destinations", () => {
         player.addToCity(gameState, card.name);
         gameState.riverDestinationMap!.spots[
-          RiverDestinationSpot.TWO_TRAVELER
+          RiverDestinationSpotName.TWO_TRAVELER
         ].revealed = true;
 
         expect(player.hasUnusedAmbassador()).to.be(true);
@@ -5830,7 +5830,7 @@ describe("Card", () => {
       it("should auto advance if there's only one option", () => {
         player.addToCity(gameState, card.name);
         gameState.riverDestinationMap!.spots[
-          RiverDestinationSpot.TWO_TRAVELER
+          RiverDestinationSpotName.TWO_TRAVELER
         ].revealed = true;
 
         expect(player.hasUnusedAmbassador()).to.be(true);
@@ -5889,7 +5889,7 @@ describe("Card", () => {
       it("should recall ambassador properly", () => {
         player.addToCity(gameState, card.name);
         gameState.riverDestinationMap!.spots[
-          RiverDestinationSpot.TWO_TRAVELER
+          RiverDestinationSpotName.TWO_TRAVELER
         ].revealed = true;
 
         expect(player.hasUnusedAmbassador()).to.be(true);

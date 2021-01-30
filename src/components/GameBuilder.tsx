@@ -20,6 +20,7 @@ const GameBuilder: React.FC = () => {
           players: [getDummyPlayer("Player 1"), getDummyPlayer("Player 2")],
           randomizeStartingPlayer: true,
           realtimePoints: true,
+          pearlbrook: false,
         }}
         onSubmit={async (values, actions) => {
           const response = await fetch("/api/create-game", {
@@ -49,7 +50,7 @@ const GameBuilder: React.FC = () => {
                   <FieldArray
                     name="players"
                     render={(arrayHelpers) => (
-                      <div className={styles.game_builder_players}>
+                      <div className={styles.game_builder_wrapper}>
                         <h2>Players</h2>
                         {numPlayers > 0 ? (
                           players.map((player, idx) => (
@@ -102,6 +103,12 @@ const GameBuilder: React.FC = () => {
                         ) : (
                           <></>
                         )}
+                        <h3>Expansions</h3>
+                        <label className={styles.game_builder_option}>
+                          <Field type="checkbox" name="pearlbrook" />
+                          {"Pearlbrook"}
+                        </label>
+                        <h3>Game Settings</h3>
                         <label className={styles.game_builder_option}>
                           <Field
                             type="checkbox"

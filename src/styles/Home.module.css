@@ -62,12 +62,19 @@
   padding-bottom: 40px;
 }
 
-.game_builder_players h2 {
+.game_builder_wrapper h2 {
   font-family: var(--font-cursive);
   font-size: 40px;
   text-align: center;
   margin: 0;
   padding-bottom: 5px;
+}
+
+.game_builder_wrapper h3 {
+  padding: 8px 0;
+  font-family: var(--font-cursive);
+  font-size: 25px;
+  margin: 0;
 }
 
 .game_builder_fields {

@@ -32,9 +32,10 @@ export default async (
     ? shuffle([...body.players])
     : [...body.players];
   const realtimePoints = !!body.realtimePoints;
+  const pearlbrook = !!body.pearlbrook;
   const game = await createGame(
     players.map((p: any) => p.name),
-    { realtimePoints }
+    { realtimePoints, pearlbrook }
   );
   res.json({
     success: "ok",

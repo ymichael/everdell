@@ -1724,12 +1724,10 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           }
 
           gameState.removeCardFromMeadow(card.name);
-          gameState.addGameLogFromCard(CardName.QUEEN, [
-            player,
-            " played ",
-            card,
-            " from the Meadow.",
-          ]);
+          gameState.addGameLogFromEvent(
+            EventName.SPECIAL_SUNKEN_TREASURE_DISCOVERED,
+            [player, " played ", card, " from the Meadow."]
+          );
 
           card.addToCityAndPlay(gameState, gameInput);
           gameState.replenishMeadow();

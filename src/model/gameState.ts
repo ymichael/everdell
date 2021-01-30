@@ -1,5 +1,6 @@
 import {
   AdornmentName,
+  AmbassadorPlacementInfo,
   CardName,
   EventName,
   EventNameToPlayerId,
@@ -1203,6 +1204,22 @@ export class GameState {
     });
   };
 
+  getPlayableAmbassadorLocations(): AmbassadorPlacementInfo[] {
+    const riverDestinationMap = this.riverDestinationMap;
+    if (!riverDestinationMap || !this.gameOptions.pearlbrook) {
+      throw new Error("Only playable with Pearlbrook.");
+    }
+    const ret: AmbassadorPlacementInfo[] = [];
+    (Object.keys(riverDestinationMap.spots) as RiverDestinationSpot[]).forEach(
+      (spot) => {
+        if (!riverDestinationMap.canVisitSpotCheck(this, spot)) {
+          ret.push({ type: "spot", spot });
+        }
+      }
+    );
+    return ret;
+  }
+
   getVisitableDestinationCards = (): PlayedCardInfo[] => {
     const activePlayer = this.getActivePlayer();
     const ret = [...activePlayer.getAvailableClosedDestinationCards()];
@@ -1304,6 +1321,20 @@ export class GameState {
         },
       });
     }
+
+    if (this.gameOptions.pearlbrook) {
+      if (player.hasUnusedAmbassador()) {
+        if (this.getPlayableAmbassadorLocations().length !== 0) {
+          possibleGameInputs.push({
+            inputType: GameInputType.PLACE_AMBASSADOR,
+            clientOptions: {
+              loc: null,
+            },
+          });
+        }
+      }
+    }
+
     return possibleGameInputs;
   }
 }

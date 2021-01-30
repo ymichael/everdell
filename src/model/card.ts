@@ -3751,11 +3751,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       [ResourceType.TWIG]: 2,
       [ResourceType.RESIN]: 2,
     },
-    numWorkersForPlayerInner() {
-      throw new Error("Not Implemented");
-    },
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
+      if (gameInput.inputType === GameInputType.PLACE_AMBASSADOR) {
+        throw new Error("Not Implemented");
+      }
     },
   }),
   [CardName.FERRY_FERRET]: new Card({

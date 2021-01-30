@@ -158,7 +158,7 @@ export class Event implements GameStatePlayable, IGameTextEntity {
       if (this.requiredCards) {
         for (let i = 0; i < this.requiredCards.length; i++) {
           if (!player.hasCardInCity(this.requiredCards[i])) {
-            return `Need to have played ${this.requiredCards[i]} to claim event {$this.name}`;
+            return `Need to have played ${this.requiredCards[i]} to claim event ${this.name}`;
           }
         }
       }
@@ -723,7 +723,6 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       storedCards: [],
     }),
     // Reveal 5 cards. You may draw any or place any beneath this event
-    // TODO: add playInner
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
       const eventInfo = player.getClaimedEvent(
@@ -1561,7 +1560,102 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     ]),
     expansion: ExpansionType.PEARLBROOK,
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
+      const player = gameState.getActivePlayer();
+
+      if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
+        const meadowCards = gameState.meadowCards;
+
+        let crittersInMeadow: CardName[] = [];
+
+        // get all the critters
+        meadowCards.forEach((meadowCard) => {
+          const card = Card.fromName(meadowCard);
+          if (card.isCritter) {
+            crittersInMeadow.push(card.name);
+          }
+        });
+
+        if (crittersInMeadow.length > 0) {
+          gameState.pendingGameInputs.push({
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: GameInputType.CLAIM_EVENT,
+            label: [
+              "Place up to 3 ",
+              { type: "em", text: "Critters" },
+              " from the meadow beneath this Event. (Worth 2 VP each)",
+            ],
+            eventContext: EventName.SPECIAL_RIVERSIDE_RESORT,
+            cardOptions: crittersInMeadow,
+            maxToSelect: 3,
+            minToSelect: 0,
+            clientOptions: {
+              selectedCards: [],
+            },
+          });
+        }
+      } else if (gameInput.inputType === GameInputType.SELECT_CARDS) {
+        const selectedCards = gameInput.clientOptions.selectedCards;
+        if (!selectedCards) {
+          throw new Error("invalid input");
+        }
+        if (selectedCards.length > 3) {
+          throw new Error("Too many cards");
+        }
+
+        selectedCards.forEach((cardName) => {
+          const card = Card.fromName(cardName);
+          if (!card.isCritter) {
+            throw new Error("Can only put Critters beneath this event");
+          }
+        });
+
+        const eventInfo = player.getClaimedEvent(
+          EventName.SPECIAL_RIVERSIDE_RESORT
+        );
+        if (!eventInfo) {
+          throw new Error("Cannot find event info");
+        }
+
+        // Remove cards from meadow and put under event
+        selectedCards.forEach((cardName) => {
+          gameState.removeCardFromMeadow(cardName);
+          (eventInfo.storedCards = eventInfo.storedCards || []).push(cardName);
+        });
+
+        gameState.replenishMeadow();
+
+        gameState.addGameLogFromEvent(EventName.SPECIAL_RIVERSIDE_RESORT, [
+          player,
+          " placed ",
+          ...cardListToGameText(selectedCards),
+          " from the meadow beneath this event (worth 2 VP each).",
+        ]);
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
+      }
+    },
+    // 2 points per critter beneath event
+    pointsInner: (gameState: GameState, playerId: string) => {
+      const player = gameState.getPlayer(playerId);
+      const eventInfo = player.getClaimedEvent(
+        EventName.SPECIAL_RIVERSIDE_RESORT
+      );
+      if (!eventInfo) {
+        throw new Error("Cannot find event info");
+      }
+      const storedCards = eventInfo.storedCards || [];
+      if (storedCards.length > 3) {
+        throw new Error("Too many cards stored under event");
+      }
+
+      storedCards.forEach((cardName) => {
+        const card = Card.fromName(cardName as CardName);
+        if (!card.isCritter) {
+          throw new Error("Cannot store critters under this event");
+        }
+      });
+
+      return (eventInfo.storedCards = eventInfo.storedCards || []).length * 2;
     },
   }),
   [EventName.SPECIAL_MASQUERADE_INVITATIONS]: new Event({

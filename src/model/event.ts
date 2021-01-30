@@ -8,6 +8,7 @@ import {
   EventNameToPlayerId,
   GameInput,
   GameInputType,
+  PlayedCardInfo,
   PlayedEventInfo,
   ResourceType,
   GameText,
@@ -1759,7 +1760,123 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     ]),
     expansion: ExpansionType.PEARLBROOK,
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
+      const player = gameState.getActivePlayer();
+      const gainAnyHelper = new GainMoreThan1AnyResource({
+        eventContext: EventName.SPECIAL_RIVER_RACE,
+        skipGameLog: true,
+      });
+
+      if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
+        const cardOptions: PlayedCardInfo[] = [];
+        player.forEachPlayedCard((playedCardInfo) => {
+          const card = Card.fromName(playedCardInfo.cardName);
+          if (
+            card.name === CardName.FERRY_FERRET ||
+            card.name === CardName.TWIG_BARGE
+          ) {
+            cardOptions.push(playedCardInfo);
+          }
+        });
+
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          prevInputType: gameInput.inputType,
+          label:
+            "Place a Ferry Ferret under this card for 2 VP OR a Twig Barge to gain 2 ANY",
+          cardOptions: cardOptions,
+          maxToSelect: 1,
+          minToSelect: 1,
+          eventContext: EventName.SPECIAL_RIVER_RACE,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS) {
+        const selectedCards = gameInput.clientOptions.selectedCards;
+        if (selectedCards.length !== 1) {
+          throw new Error("Must select at least 1 card");
+        }
+        const card = Card.fromName(selectedCards[0].cardName);
+
+        if (
+          card.name !== CardName.FERRY_FERRET &&
+          card.name !== CardName.TWIG_BARGE
+        ) {
+          throw new Error("Must select either Ferry Ferret or Twig Barge");
+        }
+
+        const eventInfo = player.getClaimedEvent(EventName.SPECIAL_RIVER_RACE);
+        if (!eventInfo) {
+          throw new Error("Cannot find event info");
+        }
+
+        // remove selected card from city and put beneath event
+        player.removeCardFromCity(
+          gameState,
+          selectedCards[0],
+          false /* don't send to discard, put under event instead*/
+        );
+        (eventInfo.storedCards = eventInfo.storedCards || []).push(
+          selectedCards[0].cardName
+        );
+
+        // if Twig Barge, let them choose 2 ANY
+        if (card.name === CardName.TWIG_BARGE) {
+          gameState.pendingGameInputs.push(
+            gainAnyHelper.getGameInput(2, {
+              prevInputType: gameInput.inputType,
+            })
+          );
+        } else {
+          gameState.addGameLogFromEvent(EventName.SPECIAL_RIVER_RACE, [
+            player,
+            " removed ",
+            card,
+            " from their city and placed it beneath this event to gain 2 VP.",
+          ]);
+        }
+      } else if (gainAnyHelper.matchesGameInput(gameInput)) {
+        gainAnyHelper.play(gameState, gameInput);
+        gameState.addGameLogFromEvent(EventName.SPECIAL_RIVER_RACE, [
+          player,
+          " removed ",
+          Card.fromName(CardName.TWIG_BARGE),
+          " from their city and placed it beneath this event to gain ",
+          ...resourceMapToGameText({
+            ...gameInput.clientOptions.resources,
+          }),
+        ]);
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
+      }
+    },
+    pointsInner: (gameState: GameState, playerId: string) => {
+      const player = gameState.getPlayer(playerId);
+      const eventInfo = player.getClaimedEvent(EventName.SPECIAL_RIVER_RACE);
+      if (!eventInfo) {
+        throw new Error("Cannot find event info");
+      }
+
+      const storedCards = eventInfo.storedCards;
+
+      if (!storedCards) {
+        throw new Error("Invalid list of paired cards");
+      }
+
+      if (storedCards.length !== 1) {
+        throw new Error("Incorrect number of cards stored here");
+      }
+
+      const card = Card.fromName(storedCards[0] as CardName);
+
+      if (
+        card.name !== CardName.FERRY_FERRET &&
+        card.name !== CardName.TWIG_BARGE
+      ) {
+        throw new Error("May only store Ferry Ferret or Twig Barge here");
+      }
+
+      return card.name === CardName.FERRY_FERRET ? 2 : 0;
     },
   }),
 

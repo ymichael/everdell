@@ -2899,4 +2899,186 @@ describe("Event", () => {
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
     });
   });
+
+  describe(EventName.SPECIAL_RIVER_RACE, () => {
+    it("can claim event and put ferry ferret beneath to gain 2 extra VP", () => {
+      gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
+      player = gameState.getActivePlayer();
+      const event = Event.fromName(EventName.SPECIAL_RIVER_RACE);
+      const gameInput = claimEventInput(event.name);
+
+      gameState.eventsMap[EventName.SPECIAL_RIVER_RACE] = null;
+
+      player.addToCity(gameState, CardName.FERRY_FERRET);
+      player.addToCity(gameState, CardName.TWIG_BARGE);
+
+      expect(player.hasCardInCity(CardName.FERRY_FERRET)).to.be(true);
+      expect(player.hasCardInCity(CardName.TWIG_BARGE)).to.be(true);
+
+      expect(player.getPointsFromCards(gameState)).to.be(2);
+      expect(player.getClaimedEvent(EventName.SPECIAL_RIVER_RACE)).to.be(
+        undefined
+      );
+
+      const selectPlayedCardsInput = {
+        inputType: GameInputType.SELECT_PLAYED_CARDS as const,
+        prevInputType: GameInputType.CLAIM_EVENT,
+        eventContext: EventName.SPECIAL_RIVER_RACE,
+        cardOptions: [
+          ...player.getPlayedCardInfos(CardName.FERRY_FERRET),
+          ...player.getPlayedCardInfos(CardName.TWIG_BARGE),
+        ],
+        maxToSelect: 1,
+        minToSelect: 1,
+        clientOptions: {
+          selectedCards: player.getPlayedCardInfos(CardName.FERRY_FERRET),
+        },
+      };
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        gameInput,
+        selectPlayedCardsInput,
+      ]);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_RIVER_RACE));
+
+      expect(player.getPointsFromEvents(gameState)).to.be(6);
+      expect(player.getPointsFromCards(gameState)).to.be(1);
+      expect(player.hasCardInCity(CardName.FERRY_FERRET)).to.be(false);
+      expect(player.hasCardInCity(CardName.TWIG_BARGE)).to.be(true);
+    });
+
+    it("can claim event and put twig barge beneath to gain 2 ANY", () => {
+      gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
+      player = gameState.getActivePlayer();
+      const event = Event.fromName(EventName.SPECIAL_RIVER_RACE);
+      const gameInput = claimEventInput(event.name);
+
+      gameState.eventsMap[EventName.SPECIAL_RIVER_RACE] = null;
+
+      player.addToCity(gameState, CardName.FERRY_FERRET);
+      player.addToCity(gameState, CardName.TWIG_BARGE);
+
+      expect(player.hasCardInCity(CardName.FERRY_FERRET)).to.be(true);
+      expect(player.hasCardInCity(CardName.TWIG_BARGE)).to.be(true);
+
+      expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
+
+      expect(player.getPointsFromCards(gameState)).to.be(2);
+      expect(player.getClaimedEvent(EventName.SPECIAL_RIVER_RACE)).to.be(
+        undefined
+      );
+
+      const selectPlayedCardsInput = {
+        inputType: GameInputType.SELECT_PLAYED_CARDS as const,
+        prevInputType: GameInputType.CLAIM_EVENT,
+        eventContext: EventName.SPECIAL_RIVER_RACE,
+        cardOptions: [
+          ...player.getPlayedCardInfos(CardName.FERRY_FERRET),
+          ...player.getPlayedCardInfos(CardName.TWIG_BARGE),
+        ],
+        maxToSelect: 1,
+        minToSelect: 1,
+        clientOptions: {
+          selectedCards: player.getPlayedCardInfos(CardName.TWIG_BARGE),
+        },
+      };
+
+      const selectResourcesInput = {
+        inputType: GameInputType.SELECT_RESOURCES as const,
+        toSpend: false,
+        prevInputType: GameInputType.SELECT_PLAYED_CARDS,
+        maxResources: 2,
+        minResources: 2,
+        eventContext: EventName.SPECIAL_RIVER_RACE,
+        clientOptions: {
+          resources: { [ResourceType.TWIG]: 1, [ResourceType.RESIN]: 1 },
+        },
+      };
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        gameInput,
+        selectPlayedCardsInput,
+        selectResourcesInput,
+      ]);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_RIVER_RACE));
+
+      expect(player.getPointsFromEvents(gameState)).to.be(4);
+      expect(player.getPointsFromCards(gameState)).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
+      expect(player.hasCardInCity(CardName.FERRY_FERRET)).to.be(true);
+      expect(player.hasCardInCity(CardName.TWIG_BARGE)).to.be(false);
+    });
+
+    it("handle case where you have multiple ferry ferrets", () => {
+      gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
+      player = gameState.getActivePlayer();
+      const event = Event.fromName(EventName.SPECIAL_RIVER_RACE);
+      const gameInput = claimEventInput(event.name);
+
+      gameState.eventsMap[EventName.SPECIAL_RIVER_RACE] = null;
+
+      player.addToCity(gameState, CardName.FERRY_FERRET);
+      player.addToCity(gameState, CardName.TWIG_BARGE);
+      player.addToCity(gameState, CardName.TWIG_BARGE);
+
+      expect(player.hasCardInCity(CardName.FERRY_FERRET)).to.be(true);
+      expect(player.hasCardInCity(CardName.TWIG_BARGE)).to.be(true);
+      expect(player.getPlayedCardInfos(CardName.TWIG_BARGE).length).to.be(2);
+
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
+
+      expect(player.getPointsFromCards(gameState)).to.be(3);
+      expect(player.getClaimedEvent(EventName.SPECIAL_RIVER_RACE)).to.be(
+        undefined
+      );
+
+      const selectPlayedCardsInput = {
+        inputType: GameInputType.SELECT_PLAYED_CARDS as const,
+        prevInputType: GameInputType.CLAIM_EVENT,
+        eventContext: EventName.SPECIAL_RIVER_RACE,
+        cardOptions: [
+          ...player.getPlayedCardInfos(CardName.FERRY_FERRET),
+          ...player.getPlayedCardInfos(CardName.TWIG_BARGE),
+        ],
+        maxToSelect: 1,
+        minToSelect: 1,
+        clientOptions: {
+          // select the 2nd one in the list
+          selectedCards: [player.getPlayedCardInfos(CardName.TWIG_BARGE)[1]],
+        },
+      };
+
+      const selectResourcesInput = {
+        inputType: GameInputType.SELECT_RESOURCES as const,
+        toSpend: false,
+        prevInputType: GameInputType.SELECT_PLAYED_CARDS,
+        maxResources: 2,
+        minResources: 2,
+        eventContext: EventName.SPECIAL_RIVER_RACE,
+        clientOptions: {
+          resources: { [ResourceType.BERRY]: 1, [ResourceType.RESIN]: 1 },
+        },
+      };
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        gameInput,
+        selectPlayedCardsInput,
+        selectResourcesInput,
+      ]);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_RIVER_RACE));
+
+      expect(player.getPointsFromEvents(gameState)).to.be(4);
+      expect(player.getPointsFromCards(gameState)).to.be(2);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
+      expect(player.hasCardInCity(CardName.FERRY_FERRET)).to.be(true);
+      expect(player.hasCardInCity(CardName.TWIG_BARGE)).to.be(true);
+    });
+  });
 });

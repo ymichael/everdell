@@ -2,6 +2,7 @@ import { GetServerSideProps } from "next";
 
 import { GameJSON, PlayerJSON } from "../../model/jsonTypes";
 import {
+  AdornmentName,
   GameInputType,
   GameInput,
   ResourceType,
@@ -36,12 +37,15 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     player.cardsInHand.push(CardName.RANGER);
     player.cardsInHand.push(CardName.BARD);
 
+    player.playedAdornments.push(AdornmentName.TIARA);
+
     player.gainResources(gameState, {
       [ResourceType.VP]: 12,
       [ResourceType.TWIG]: 4,
       [ResourceType.BERRY]: 7,
       [ResourceType.PEBBLE]: 3,
       [ResourceType.RESIN]: 6,
+      [ResourceType.PEARL]: 2,
     });
 
     // City

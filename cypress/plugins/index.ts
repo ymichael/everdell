@@ -33,6 +33,15 @@ module.exports = (on: any, config: any) => {
     "db:basic-game": async () => {
       return await getTestGameJSON();
     },
+    "db:no-pearlbrook-game": async () => {
+      return await getTestGameJSON({}, (gameState) => {
+        const card = Card.fromName(CardName.MINE);
+        gameState.players.forEach((player) => {
+          player.cardsInHand.push(card.name);
+          player.gainResources(gameState, card.baseCost);
+        });
+      });
+    },
     "db:play-card-game": async () => {
       return await getTestGameJSON({}, (gameState) => {
         const card = Card.fromName(CardName.MINE);

@@ -19,6 +19,7 @@ import GameInputSelectPlayedCards from "./GameInputSelectPlayedCards";
 import GameInputSelectCards from "./GameInputSelectCards";
 import GameInputPlaceWorkerSelector from "./GameInputPlaceWorkerSelector";
 import GameInputClaimEventSelector from "./GameInputClaimEventSelector";
+import GameInputPlaceAmbassadorSelector from "./GameInputPlaceAmbassadorSelector";
 import GameInputPlayAdornmentSelector from "./GameInputPlayAdornmentSelector";
 import GameInputSelectPaymentForCard from "./GameInputSelectPaymentForCard";
 import GameInputSelectWorkerPlacement from "./GameInputSelectWorkerPlacement";
@@ -143,7 +144,12 @@ const GameInputBoxInner = ({
           locations={gameInput.locationOptions}
         />
       ) : gameInput.inputType === GameInputType.PLACE_AMBASSADOR ? (
-        <>TODO</>
+        <GameInputPlaceAmbassadorSelector
+          name={"gameInput.clientOptions.loc"}
+          gameState={gameState}
+          viewingPlayer={viewingPlayer}
+          options={gameState.getPlayableAmbassadorLocations()}
+        />
       ) : gameInput.inputType === GameInputType.PLAY_ADORNMENT ? (
         <GameInputPlayAdornmentSelector
           name={"gameInput.clientOptions.adornment"}

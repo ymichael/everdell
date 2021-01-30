@@ -1,7 +1,12 @@
 /**
  * @type {Cypress.PluginConfig}
  */
-import { AdornmentName, CardName, ResourceType } from "../../src/model/types";
+import {
+  AdornmentName,
+  CardName,
+  ResourceType,
+  RiverDestinationSpotName,
+} from "../../src/model/types";
 import { GameJSON } from "../../src/model/jsonTypes";
 import { Card } from "../../src/model/card";
 import { GameState } from "../../src/model/gameState";
@@ -55,6 +60,25 @@ module.exports = (on: any, config: any) => {
           player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
           player.adornmentsInHand.push(AdornmentName.BELL);
           player.adornmentsInHand.push(AdornmentName.SPYGLASS);
+        }
+      );
+    },
+    "db:place-ambassador-game": async () => {
+      return await getTestGameJSON(
+        { gameOptions: { pearlbrook: true } },
+        (gameState, player) => {
+          player.addToCity(gameState, CardName.WANDERER);
+          player.addToCity(gameState, CardName.RANGER);
+
+          player.addToCity(gameState, CardName.FARM);
+          player.addToCity(gameState, CardName.FARM);
+          player.addToCity(gameState, CardName.FARM);
+
+          gameState.riverDestinationMap!.revealSpot(
+            RiverDestinationSpotName.TWO_GOVERNANCE
+          );
+
+          gameState.players[1].addToCity(gameState, CardName.FERRY);
         }
       );
     },

@@ -241,6 +241,12 @@ export default function TestGameInputPage(props: { game: GameJSON }) {
           },
         },
         {
+          inputType: GameInputType.PLACE_AMBASSADOR,
+          clientOptions: {
+            loc: null,
+          },
+        },
+        {
           inputType: GameInputType.CLAIM_EVENT,
           clientOptions: {
             event: null,

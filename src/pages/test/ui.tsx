@@ -11,7 +11,7 @@ import Adornment from "../../components/Adornment";
 import Location from "../../components/Location";
 import Event from "../../components/Event";
 import RiverDestination, {
-  RiverDestinationSpotName,
+  RiverDestinationSpot,
 } from "../../components/RiverDestination";
 
 import { Card as CardModel } from "../../model/card";
@@ -24,7 +24,7 @@ import {
   EventName,
   AdornmentName,
   RiverDestinationName,
-  RiverDestinationSpotName as TRiverDestinationSpotName,
+  RiverDestinationSpotName,
 } from "../../model/types";
 
 const ItemsList: React.FC<{ title: string; visible: boolean }> = ({
@@ -51,9 +51,9 @@ export default function TestUIPage() {
   const allRiverDestinations: RiverDestinationName[] = Object.values(
     RiverDestinationName
   ) as RiverDestinationName[];
-  const allRiverSpots: TRiverDestinationSpotName[] = Object.values(
-    TRiverDestinationSpotName
-  ) as TRiverDestinationSpotName[];
+  const allRiverSpots: RiverDestinationSpotName[] = Object.values(
+    RiverDestinationSpotName
+  ) as RiverDestinationSpotName[];
   const allAdornments: AdornmentName[] = Object.values(
     AdornmentName
   ) as AdornmentName[];
@@ -218,7 +218,7 @@ export default function TestUIPage() {
             return true;
           })
           .map((name) => {
-            return <RiverDestinationSpotName key={name} name={name} />;
+            return <RiverDestinationSpot key={name} name={name} />;
           })}
       </ItemsList>
     </div>

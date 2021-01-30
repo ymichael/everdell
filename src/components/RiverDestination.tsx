@@ -4,12 +4,12 @@ import styles from "../styles/RiverDestination.module.css";
 
 import {
   RiverDestination as RiverDestinationModel,
-  RiverDestinationSpot,
+  RiverDestinationSpot as RiverDestinationSpotModel,
 } from "../model/riverDestination";
 import {
   ResourceType,
   RiverDestinationName,
-  RiverDestinationSpotName as TRiverDestinationSpotName,
+  RiverDestinationSpotName,
 } from "../model/types";
 
 import { Description, ItemWrapper } from "./common";
@@ -57,15 +57,15 @@ const RiverDestination = ({ name }: { name: RiverDestinationName }) => {
   );
 };
 
-export const RiverDestinationSpotName = ({
+export const RiverDestinationSpot = ({
   name,
   destination = null,
 }: {
-  name: TRiverDestinationSpotName;
+  name: RiverDestinationSpotName;
   destination?: RiverDestinationName | null;
 }) => {
   destination =
-    name == TRiverDestinationSpotName.SHOAL
+    name == RiverDestinationSpotName.SHOAL
       ? RiverDestinationName.SHOAL
       : destination;
   return (
@@ -73,7 +73,7 @@ export const RiverDestinationSpotName = ({
       footerChildren={
         <div className={styles.spot_name}>
           <Description
-            textParts={RiverDestinationSpot.fromName(name).shortName}
+            textParts={RiverDestinationSpotModel.fromName(name).shortName}
           />
         </div>
       }

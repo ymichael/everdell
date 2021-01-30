@@ -72,7 +72,6 @@ const GameInputBoxInner = ({
       ) : gameInput.inputType === GameInputType.CLAIM_EVENT ? (
         <GameInputClaimEventSelector
           name={"gameInput.clientOptions.event"}
-          viewingPlayer={viewingPlayer}
           events={gameState.getClaimableEvents()}
         />
       ) : gameInput.inputType === GameInputType.PREPARE_FOR_SEASON ? (
@@ -109,7 +108,6 @@ const GameInputBoxInner = ({
         <GameInputSelectCards
           name={"gameInput.clientOptions.selectedCards"}
           gameInput={gameInput}
-          viewingPlayer={viewingPlayer}
         />
       ) : gameInput.inputType === GameInputType.SELECT_PAYMENT_FOR_CARD ? (
         <GameInputSelectPaymentForCard

@@ -24,6 +24,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     noForestLocations: true,
     noSpecialEvents: false,
     shuffleDeck: true,
+    gameOptions: {
+      pearlbrook: true,
+    },
   });
   gameState.players.forEach((player, idx) => {
     player.nextSeason();
@@ -42,6 +45,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
     player.gainResources(gameState, {
       [ResourceType.VP]: 12,
+      [ResourceType.PEARL]: 2,
       [ResourceType.TWIG]: 4,
       [ResourceType.BERRY]: 7,
       [ResourceType.PEBBLE]: 3,
@@ -224,6 +228,12 @@ export default function TestGameInputPage(props: { game: GameJSON }) {
           inputType: GameInputType.PLACE_WORKER,
           clientOptions: {
             location: null,
+          },
+        },
+        {
+          inputType: GameInputType.PLAY_ADORNMENT,
+          clientOptions: {
+            adornment: null,
           },
         },
         {

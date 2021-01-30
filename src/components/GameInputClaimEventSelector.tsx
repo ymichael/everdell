@@ -8,7 +8,7 @@ import GameInputSelectItemWrapper from "./GameInputSelectItemWrapper";
 const GameInputClaimEventSelector: React.FC<{
   name: string;
   events: EventName[];
-}> = ({ events = [], name }) => {
+}> = ({ events, name }) => {
   return (
     <GameInputSelectItemWrapper
       name={name}

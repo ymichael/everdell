@@ -5,6 +5,7 @@ import styles from "../styles/ViewerUI.module.css";
 import { ItemWrapper, GameBlock } from "./common";
 import { PlayerCity } from "./gameBoard";
 import Card from "./Card";
+import Adornment from "./Adornment";
 
 const ViewerUI: React.FC<{
   player: Player;
@@ -14,9 +15,12 @@ const ViewerUI: React.FC<{
       <GameBlock title={"Your hand"}>
         <div className={styles.cards}>
           {player.cardsInHand.map((cardName, idx) => (
-            <ItemWrapper key={idx}>
+            <ItemWrapper key={`card=${idx}`}>
               <Card name={cardName} />
             </ItemWrapper>
+          ))}
+          {player.adornmentsInHand.map((name, idx) => (
+            <Adornment key={`adornment-${idx}`} name={name} />
           ))}
         </div>
       </GameBlock>

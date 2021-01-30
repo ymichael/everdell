@@ -20,7 +20,11 @@ const GameInputSelectOptionGeneric: React.FC<{
         <div>
           {gameInput.options.map((option, idx) => {
             return (
-              <label key={idx} className={styles.radio_item}>
+              <label
+                key={idx}
+                className={styles.radio_item}
+                data-cy={`option-generic-item:${option}`}
+              >
                 <Field type="radio" name={name} value={option} />
                 <Description textParts={toGameText(option)} />
               </label>

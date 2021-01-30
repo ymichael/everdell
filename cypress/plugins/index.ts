@@ -1,7 +1,7 @@
 /**
  * @type {Cypress.PluginConfig}
  */
-import { CardName } from "../../src/model/types";
+import { AdornmentName, CardName, ResourceType } from "../../src/model/types";
 import { GameJSON } from "../../src/model/jsonTypes";
 import { Card } from "../../src/model/card";
 import { GameState } from "../../src/model/gameState";
@@ -47,6 +47,16 @@ module.exports = (on: any, config: any) => {
         player.addToCity(gameState, CardName.WANDERER);
         player.addToCity(gameState, CardName.WANDERER);
       });
+    },
+    "db:play-adornment-game": async () => {
+      return await getTestGameJSON(
+        { gameOptions: { pearlbrook: true } },
+        (gameState, player) => {
+          player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
+          player.adornmentsInHand.push(AdornmentName.BELL);
+          player.adornmentsInHand.push(AdornmentName.SPYGLASS);
+        }
+      );
     },
     "db:select-played-card-game": async () => {
       return await getTestGameJSON({}, (gameState, player) => {

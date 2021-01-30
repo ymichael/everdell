@@ -209,6 +209,15 @@ const renderMultiStepGameInputLabel = (
           ]}
         />
       );
+    case GameInputType.SELECT_RIVER_DESTINATION:
+      return (
+        <Description
+          textParts={[
+            ...inputContextPrefix(gameInput),
+            { type: "text", text: `Select River Destination` },
+          ]}
+        />
+      );
     default:
       assertUnreachable(gameInput, gameInput);
   }

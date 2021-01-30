@@ -825,6 +825,7 @@ export class GameState {
       case GameInputType.DISCARD_CARDS:
       case GameInputType.SELECT_OPTION_GENERIC:
       case GameInputType.SELECT_PLAYED_ADORNMENT:
+      case GameInputType.SELECT_RIVER_DESTINATION:
         this.handleMultiStepGameInput(gameInput);
         break;
       case GameInputType.PLAY_CARD:

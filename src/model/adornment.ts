@@ -92,46 +92,7 @@ export class Adornment implements GameStatePlayable, IGameTextEntity {
         return "Must be able to pay 1 PEARL to play an adornment";
       }
       return null;
-    } else if (gameInput.inputType === GameInputType.SELECT_PLAYED_ADORNMENT) {
-      // check to see if adornment has been played
-      const adornment = gameInput.clientOptions.adornment;
-
-      if (adornment.length < gameInput.minToSelect) {
-        return `Did not select enough adornments`;
-      }
-
-      // currently don't have a card that allows you to select multiple
-      // adornments, though technically this game input supports it
-      if (adornment.length > 1) {
-        return `May only select up to 1 adornment`;
-      }
-
-      // MIRROR allows you to select up to 1 to copy, but you can choose 0
-      if (adornment.length === 1) {
-        let players = gameState.players;
-
-        if (gameInput.mustSelectFromOpponents) {
-          players = gameState.players.filter(
-            (p) => p.playerId !== player.playerId
-          );
-        }
-
-        let hasBeenPlayed = false;
-
-        players.forEach((player) => {
-          const playedAdornments = player.playedAdornments;
-          if (playedAdornments.indexOf(adornment[0]) !== -1) {
-            hasBeenPlayed = true;
-          }
-        });
-
-        if (!hasBeenPlayed) {
-          console.log(gameInput);
-          return `Must select an adornment that has been played by an opponent`;
-        }
-      }
     }
-
     return null;
   }
 
@@ -608,9 +569,7 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
         const players = gameState.players.filter(
           (p) => p.playerId !== player.playerId
         );
-
         const adornmentOptions: AdornmentName[] = [];
-
         players.forEach((player) => {
           const playedAdornments = player.playedAdornments;
           adornmentOptions.push(...playedAdornments);
@@ -619,24 +578,25 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
         if (adornmentOptions.length > 0) {
           gameState.pendingGameInputs.push({
             inputType: GameInputType.SELECT_PLAYED_ADORNMENT,
+            label: "Copy the ability from an Adornment",
             prevInputType: GameInputType.PLAY_ADORNMENT,
             adornmentContext: AdornmentName.MIRROR,
             adornmentOptions: adornmentOptions,
-            maxToSelect: 1,
-            minToSelect: 0,
-            mustSelectFromOpponents: true,
             clientOptions: {
-              adornment: [],
+              adornment: null,
             },
           });
         }
       } else if (
-        gameInput.inputType === GameInputType.SELECT_PLAYED_ADORNMENT
+        gameInput.inputType === GameInputType.SELECT_PLAYED_ADORNMENT &&
+        gameInput.adornmentContext === AdornmentName.MIRROR
       ) {
-        const adt = gameInput.clientOptions.adornment;
-
-        if (adt.length === 1) {
-          const adornment = Adornment.fromName(adt[0]);
+        const selectedAdornment = gameInput.clientOptions.adornment;
+        if (selectedAdornment) {
+          if (gameInput.adornmentOptions.indexOf(selectedAdornment) === -1) {
+            throw new Error("Please select one of the Adornments");
+          }
+          const adornment = Adornment.fromName(selectedAdornment);
           adornment.triggerAdornment(gameState);
         }
       }

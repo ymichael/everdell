@@ -20,6 +20,7 @@ export enum GameInputType {
   PLAY_ADORNMENT = "PLAY_ADORNMENT",
   VISIT_RIVER_DESTINATION = "VISIT_RIVER_DESTINATION",
   SELECT_PLAYED_ADORNMENT = "SELECT_PLAYED_ADORNMENT",
+  SELECT_RIVER_DESTINATION = "SELECT_RIVER_DESTINATION",
 }
 
 export type GameInputPlaceWorker = {
@@ -111,11 +112,17 @@ export type GameInputSelectPlayedAdornment = {
   inputType: GameInputType.SELECT_PLAYED_ADORNMENT;
   prevInputType: GameInputType;
   adornmentOptions: AdornmentName[];
-  maxToSelect: number;
-  minToSelect: number;
-  mustSelectFromOpponents: boolean;
   clientOptions: {
-    adornment: AdornmentName[];
+    adornment: AdornmentName | null;
+  };
+};
+
+export type GameInputSelectRiverDestination = {
+  inputType: GameInputType.SELECT_RIVER_DESTINATION;
+  prevInputType: GameInputType;
+  options: RiverDestinationName[];
+  clientOptions: {
+    riverDestination: RiverDestinationName | null;
   };
 };
 
@@ -235,6 +242,7 @@ export type GameInputMultiStep = (
   | GameInputSelectWorkerPlacement
   | GameInputSelectOptionGeneric
   | GameInputSelectPlayedAdornment
+  | GameInputSelectRiverDestination
 ) &
   GameInputMultiStepContext & {
     prevInput?: GameInput;

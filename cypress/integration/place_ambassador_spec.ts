@@ -23,6 +23,10 @@ describe("Place Ambassador", () => {
       });
     });
 
+    cy.get("[data-cy='player-status:Michael']").within(() => {
+      cy.contains("AMBASSADORS1");
+    });
+
     cy.get("#js-game-input-box-form").within(() => {
       cy.get("#js-game-input-type-PLACE_AMBASSADOR").click();
 
@@ -42,6 +46,10 @@ describe("Place Ambassador", () => {
         cy.contains("Great Hall");
         cy.contains("Ambassadors: Michael");
       });
+    });
+
+    cy.get("[data-cy='player-status:Michael']").within(() => {
+      cy.contains("AMBASSADORS0");
     });
 
     cy.get("#js-game-river").within(() => {

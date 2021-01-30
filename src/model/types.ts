@@ -672,7 +672,7 @@ export enum RiverDestinationSpot {
   TWO_TRAVELER = "TWO_TRAVELER",
 }
 
-type RiverDestinationSpotInfo = {
+export type RiverDestinationSpotInfo = {
   name: RiverDestinationName | null;
   ambassadors: string[];
   revealed: boolean;

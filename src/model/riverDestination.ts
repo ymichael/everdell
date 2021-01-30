@@ -8,6 +8,7 @@ import {
   CardName,
   RiverDestinationSpot,
   RiverDestinationMapSpots,
+  RiverDestinationSpotInfo,
   RiverDestinationType,
   RiverDestinationName,
   ResourceType,
@@ -197,6 +198,33 @@ export class RiverDestinationMap {
     }
 
     return null;
+  }
+
+  forEachSpot(
+    fn: (spot: RiverDestinationSpot, spotInfo: RiverDestinationSpotInfo) => void
+  ): void {
+    (Object.keys(this.spots) as RiverDestinationSpot[]).forEach((spotName) => {
+      fn(spotName, this.spots[spotName]);
+    });
+  }
+
+  getRevealedDestinations(): RiverDestinationName[] {
+    const ret: RiverDestinationName[] = [];
+    this.forEachSpot((_, { name, revealed }) => {
+      if (name === RiverDestinationName.SHOAL) {
+        return;
+      }
+      if (revealed) {
+        ret.push(name!);
+      }
+    });
+    return ret;
+  }
+
+  recallAmbassadorForPlayer(playerId: string) {
+    this.forEachSpot((_, spotInfo) => {
+      spotInfo.ambassadors = spotInfo.ambassadors.filter((x) => x !== playerId);
+    });
   }
 
   static getSpotGameText(spot: RiverDestinationSpot): GameText {

@@ -335,7 +335,7 @@ export class Player implements IGameTextEntity {
               gameState,
               gameInput,
               this,
-              this.getFirstPlayedCard(cardName) as PlayedCardInfo
+              this.getFirstPlayedCard(cardName)
             );
           }
         }
@@ -1500,7 +1500,21 @@ export class Player implements IGameTextEntity {
     if (!gameState.gameOptions.pearlbrook) {
       return;
     }
-    // TODO: Update gameState riverDestinationMap & Ferry
+    if (gameState.riverDestinationMap) {
+      gameState.riverDestinationMap.recallAmbassadorForPlayer(this.playerId);
+    }
+
+    gameState.players.forEach((player) => {
+      if (player.hasCardInCity(CardName.FERRY)) {
+        const playedCard = player.getFirstPlayedCard(CardName.FERRY);
+        if (playedCard.ambassador === this.playerId) {
+          player.updatePlayedCard(gameState, playedCard, {
+            ambassador: null,
+          });
+        }
+      }
+    });
+
     this.numAmbassadors = 1;
   }
 

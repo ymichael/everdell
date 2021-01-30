@@ -527,10 +527,10 @@ export class GameState {
   private handleVisitDestinationCardGameInput(
     gameInput: GameInputVisitDestinationCard
   ): void {
-    if (!gameInput.clientOptions?.playedCard) {
+    const playedCard = gameInput.clientOptions.playedCard;
+    if (!playedCard) {
       throw new Error("Please select a card to visit");
     }
-    const playedCard = gameInput.clientOptions.playedCard;
     const cardOwner = this.getPlayer(playedCard.cardOwnerId);
 
     const origPlayedCard = cardOwner.findPlayedCard(playedCard);
@@ -551,9 +551,7 @@ export class GameState {
     this.addGameLog([
       activePlayer,
       " place a worker on ",
-      ...workerPlacementToGameText({
-        playedCard: gameInput.clientOptions.playedCard!,
-      }),
+      ...workerPlacementToGameText({ playedCard }),
       ".",
     ]);
 
@@ -567,9 +565,7 @@ export class GameState {
         " gained 1 VP when ",
         activePlayer,
         " placed a worker on ",
-        ...workerPlacementToGameText({
-          playedCard: gameInput.clientOptions.playedCard!,
-        }),
+        ...workerPlacementToGameText({ playedCard }),
         ".",
       ]);
     }
@@ -615,15 +611,19 @@ export class GameState {
     }
 
     const player = this.getActivePlayer();
+    if (!player.hasUnusedAmbassador()) {
+      throw new Error("No unused ambassador");
+    }
+
     const loc = gameInput.clientOptions.loc;
     if (!loc) {
-      throw new Error("Please select an Ambassadors location");
+      throw new Error("Please select an Ambassador location");
     }
 
     if (loc.type === "spot") {
       const riverDestinationSpot = loc.spot;
       if (!riverDestinationSpot) {
-        throw new Error("Please select an river destination to visit");
+        throw new Error("Please select a river destination to visit");
       }
       const riverDestinationMap = this.riverDestinationMap;
       if (!riverDestinationMap) {
@@ -652,17 +652,18 @@ export class GameState {
       if (canPlayRiverDestinationErr) {
         throw new Error(canPlayRiverDestinationErr);
       }
+      const spotEntity = {
+        type: "entity" as const,
+        entityType: "riverDestinationSpot" as const,
+        spot: riverDestinationSpot,
+      };
       if (!spot.revealed) {
         // Reveal!
         spot.revealed = true;
         this.addGameLog([
           player,
           ` visited `,
-          {
-            type: "entity",
-            entityType: "riverDestinationSpot",
-            spot: riverDestinationSpot,
-          },
+          spotEntity,
           ` and revealed `,
           riverDestination,
           ".",
@@ -671,27 +672,14 @@ export class GameState {
         player.gainResources(this, { [ResourceType.PEARL]: 1 });
       } else {
         if (riverDestinationSpot === RiverDestinationSpot.SHOAL) {
-          this.addGameLog([
-            player,
-            " visited ",
-            {
-              type: "entity",
-              entityType: "riverDestinationSpot",
-              spot: riverDestinationSpot,
-            },
-            `.`,
-          ]);
+          this.addGameLog([player, " visited ", spotEntity, `.`]);
         } else {
           this.addGameLog([
             player,
             " visited ",
             riverDestination,
             ` at `,
-            {
-              type: "entity",
-              entityType: "riverDestinationSpot",
-              spot: riverDestinationSpot,
-            },
+            spotEntity,
             `.`,
           ]);
         }
@@ -700,7 +688,55 @@ export class GameState {
       // Play river destination!
       riverDestination.play(this, gameInput);
     } else if (loc.type === "card") {
-      throw new Error("Not Implemented");
+      const playedCard = loc.playedCard;
+      if (!playedCard) {
+        throw new Error("Please select a card to place your ambassador on");
+      }
+      const cardOwner = this.getPlayer(playedCard.cardOwnerId);
+      const origPlayedCard = cardOwner.findPlayedCard(playedCard);
+      if (!origPlayedCard) {
+        throw new Error(
+          `Could not find played card: ${JSON.stringify(playedCard, null, 2)}`
+        );
+      }
+
+      if (origPlayedCard.ambassador) {
+        throw new Error("Card already has an ambassador on it");
+      }
+
+      const card = Card.fromName(origPlayedCard.cardName);
+      const activePlayer = this.getActivePlayer();
+      const canPlayErr = card.canPlayCheck(this, gameInput);
+      if (canPlayErr) {
+        throw new Error(canPlayErr);
+      }
+
+      this.addGameLog([
+        activePlayer,
+        " place their ambassador on ",
+        ...workerPlacementToGameText({ playedCard }),
+        ".",
+      ]);
+
+      // If card isn't owned by active player, pay the other player a VP
+      if (cardOwner.playerId !== activePlayer.playerId) {
+        cardOwner.gainResources(this, { [ResourceType.VP]: 1 });
+        this.addGameLog([
+          cardOwner,
+          " gained 1 VP when ",
+          activePlayer,
+          " placed their ambassador on ",
+          ...workerPlacementToGameText({ playedCard }),
+          ".",
+        ]);
+      }
+
+      cardOwner.updatePlayedCard(this, origPlayedCard, {
+        ambassador: player.playerId,
+      });
+
+      // Take card's effect
+      card.play(this, gameInput);
     } else {
       assertUnreachable(loc, loc);
     }
@@ -951,6 +987,16 @@ export class GameState {
       return {
         ...pendingInput,
         clientOptions: { selectedCards: pendingInput.cardOptions },
+      };
+    }
+
+    if (
+      pendingInput.inputType === GameInputType.SELECT_RIVER_DESTINATION &&
+      pendingInput.options.length === 1
+    ) {
+      return {
+        ...pendingInput,
+        clientOptions: { riverDestination: pendingInput.options[0] },
       };
     }
 
@@ -1210,13 +1256,11 @@ export class GameState {
       throw new Error("Only playable with Pearlbrook.");
     }
     const ret: AmbassadorPlacementInfo[] = [];
-    (Object.keys(riverDestinationMap.spots) as RiverDestinationSpot[]).forEach(
-      (spot) => {
-        if (!riverDestinationMap.canVisitSpotCheck(this, spot)) {
-          ret.push({ type: "spot", spot });
-        }
+    riverDestinationMap.forEachSpot((spot) => {
+      if (!riverDestinationMap.canVisitSpotCheck(this, spot)) {
+        ret.push({ type: "spot", spot });
       }
-    );
+    });
     return ret;
   }
 

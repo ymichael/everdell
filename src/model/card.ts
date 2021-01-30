@@ -5,6 +5,7 @@ import omit from "lodash/omit";
 import {
   ExpansionType,
   ResourceType,
+  RiverDestinationSpot,
   ProductionResourceMap,
   LocationType,
   CardCost,
@@ -29,6 +30,7 @@ import {
 } from "./gameState";
 import { Location } from "./location";
 import { Event } from "./event";
+import { RiverDestination } from "./riverDestination";
 import { Player } from "./player";
 import {
   sumResources,
@@ -189,7 +191,7 @@ export class Card<TCardType extends CardType = CardType>
     if (this.isConstruction) {
       ret.usedForCritter = false;
     }
-    if (this.cardType == CardType.DESTINATION) {
+    if (this.maxWorkerSpots !== 0) {
       ret.workers = [];
     }
     return {
@@ -3751,9 +3753,62 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       [ResourceType.TWIG]: 2,
       [ResourceType.RESIN]: 2,
     },
+    canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
+      const riverDestinationMap = gameState.riverDestinationMap;
+      if (!riverDestinationMap) {
+        return "No River Destinations in this game.";
+      }
+      const revealedRiverDestinations = riverDestinationMap.getRevealedDestinations();
+      if (revealedRiverDestinations.length === 0) {
+        return "No revealed river destinations to copy.";
+      }
+      return null;
+    },
     playInner: (gameState: GameState, gameInput: GameInput) => {
+      const riverDestinationMap = gameState.riverDestinationMap;
+      if (!riverDestinationMap) {
+        return "No River Destinations in this game.";
+      }
+      const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.PLACE_AMBASSADOR) {
-        throw new Error("Not Implemented");
+        const revealedRiverDestinations = riverDestinationMap.getRevealedDestinations();
+        if (revealedRiverDestinations.length === 0) {
+          return "No revealed river destinations to copy.";
+        }
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_RIVER_DESTINATION,
+          label: "Copy any revealed River Destination",
+          prevInputType: gameInput.inputType,
+          options: revealedRiverDestinations,
+          cardContext: CardName.FERRY,
+          clientOptions: {
+            riverDestination: null,
+          },
+        });
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_RIVER_DESTINATION &&
+        gameInput.cardContext === CardName.FERRY
+      ) {
+        const riverDestinationName = gameInput.clientOptions.riverDestination;
+        if (
+          !riverDestinationName ||
+          gameInput.options.indexOf(riverDestinationName) === -1
+        ) {
+          throw new Error("Please select a river destination");
+        }
+        const riverDestination = RiverDestination.fromName(
+          riverDestinationName
+        );
+        gameState.addGameLogFromCard(CardName.FERRY, [
+          player,
+          " copied ",
+          riverDestination,
+          ".",
+        ]);
+        riverDestination.play(gameState, {
+          inputType: GameInputType.PLACE_AMBASSADOR,
+          clientOptions: { loc: null },
+        });
       }
     },
   }),

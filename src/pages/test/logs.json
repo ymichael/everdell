@@ -5397,6 +5397,110 @@
   ],
   [
     {
+      "type": "text",
+      "text": "Playing with the Pearlbrook expansion."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " place their ambassador on "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Ferry"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Ferry"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " copied "
+    },
+    {
+      "type": "entity",
+      "entityType": "riverDestination",
+      "riverDestination": "Ballroom"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "riverDestination",
+      "riverDestination": "Ballroom"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " spent "
+    },
+    {
+      "type": "resource",
+      "resourceType": "RESIN"
+    },
+    {
+      "type": "text",
+      "text": " and "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": " "
+    },
+    {
+      "type": "text",
+      "text": "to draw 3 "
+    },
+    {
+      "type": "symbol",
+      "symbol": "CARD"
+    },
+    {
+      "type": "text",
+      "text": " and gain 1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "PEARL"
+    }
+  ],
+  [
+    {
       "type": "player",
       "name": "Player #0"
     },
@@ -6736,12 +6840,6 @@
     {
       "type": "text",
       "text": " to here."
-    }
-  ],
-  [
-    {
-      "type": "text",
-      "text": "Playing with the Pearlbrook expansion."
     }
   ],
   [
@@ -8240,57 +8338,6 @@
     {
       "type": "text",
       "text": "."
-    }
-  ],
-  [
-    {
-      "type": "entity",
-      "entityType": "riverDestination",
-      "riverDestination": "Ballroom"
-    },
-    {
-      "type": "text",
-      "text": ": "
-    },
-    {
-      "type": "player",
-      "name": "Player #0"
-    },
-    {
-      "type": "text",
-      "text": " spent "
-    },
-    {
-      "type": "resource",
-      "resourceType": "RESIN"
-    },
-    {
-      "type": "text",
-      "text": " and "
-    },
-    {
-      "type": "resource",
-      "resourceType": "VP"
-    },
-    {
-      "type": "text",
-      "text": " "
-    },
-    {
-      "type": "text",
-      "text": "to draw 3 "
-    },
-    {
-      "type": "symbol",
-      "symbol": "CARD"
-    },
-    {
-      "type": "text",
-      "text": " and gain 1 "
-    },
-    {
-      "type": "resource",
-      "resourceType": "PEARL"
     }
   ],
   [

@@ -17,6 +17,8 @@ import {
   CardName,
   Season,
   LocationName,
+  RiverDestinationName,
+  RiverDestinationSpot,
 } from "./types";
 
 describe("Card", () => {
@@ -5694,6 +5696,224 @@ describe("Card", () => {
           usedForCritter: true,
           workers: [player.playerId],
         });
+      });
+    });
+
+    describe(CardName.FERRY, () => {
+      const card = Card.fromName(CardName.FERRY);
+
+      beforeEach(() => {
+        gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
+        player = gameState.getActivePlayer();
+
+        gameState.riverDestinationMap!.spots[
+          RiverDestinationSpot.TWO_TRAVELER
+        ].name = RiverDestinationName.BALLROOM;
+      });
+
+      it("should not be visitable if there are no revealed river destinations", () => {
+        player.addToCity(gameState, card.name);
+        expect(() => {
+          multiStepGameInputTest(gameState, [
+            {
+              inputType: GameInputType.PLACE_AMBASSADOR,
+              clientOptions: {
+                loc: {
+                  type: "card",
+                  playedCard: player.getFirstPlayedCard(card.name),
+                },
+              },
+            },
+          ]);
+        }).to.throwException(/No revealed river destinations to copy/);
+      });
+
+      it("should be visitable if there are revealed river destinations", () => {
+        player.addToCity(gameState, card.name);
+        gameState.riverDestinationMap!.spots[
+          RiverDestinationSpot.TWO_TRAVELER
+        ].revealed = true;
+
+        expect(player.hasUnusedAmbassador()).to.be(true);
+        expect(player.getFirstPlayedCard(card.name)).to.eql({
+          cardName: card.name,
+          ambassador: null,
+          cardOwnerId: player.playerId,
+          usedForCritter: false,
+        });
+
+        player.gainResources(gameState, {
+          [ResourceType.RESIN]: 1,
+          [ResourceType.VP]: 1,
+        });
+
+        expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(1);
+        expect(player.cardsInHand.length).to.be(0);
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.PLACE_AMBASSADOR,
+            clientOptions: {
+              loc: {
+                type: "card",
+                playedCard: player.getFirstPlayedCard(card.name),
+              },
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_RIVER_DESTINATION,
+            prevInputType: GameInputType.PLACE_AMBASSADOR,
+            options: [RiverDestinationName.BALLROOM],
+            cardContext: CardName.FERRY,
+            clientOptions: { riverDestination: RiverDestinationName.BALLROOM },
+          },
+          {
+            inputType: GameInputType.SELECT_OPTION_GENERIC,
+            prevInputType: GameInputType.PLACE_AMBASSADOR,
+            riverDestinationContext: RiverDestinationName.BALLROOM,
+            options: ["Ok", "Decline"],
+            clientOptions: { selectedOption: "Ok" },
+          },
+        ]);
+        expect(player.hasUnusedAmbassador()).to.be(false);
+        expect(player.getFirstPlayedCard(card.name)).to.eql({
+          cardName: card.name,
+          ambassador: player.playerId,
+          cardOwnerId: player.playerId,
+          usedForCritter: false,
+        });
+        expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
+        expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+        expect(player.cardsInHand.length).to.be(3);
+      });
+
+      it("should auto advance if there's only one option", () => {
+        player.addToCity(gameState, card.name);
+        gameState.riverDestinationMap!.spots[
+          RiverDestinationSpot.TWO_TRAVELER
+        ].revealed = true;
+
+        expect(player.hasUnusedAmbassador()).to.be(true);
+        expect(player.getFirstPlayedCard(card.name)).to.eql({
+          cardName: card.name,
+          ambassador: null,
+          cardOwnerId: player.playerId,
+          usedForCritter: false,
+        });
+
+        player.gainResources(gameState, {
+          [ResourceType.RESIN]: 1,
+          [ResourceType.VP]: 1,
+        });
+
+        expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(1);
+        expect(player.cardsInHand.length).to.be(0);
+
+        [player, gameState] = multiStepGameInputTest(
+          gameState,
+          [
+            {
+              inputType: GameInputType.PLACE_AMBASSADOR,
+              clientOptions: {
+                loc: {
+                  type: "card",
+                  playedCard: player.getFirstPlayedCard(card.name),
+                },
+              },
+            },
+            {
+              inputType: GameInputType.SELECT_OPTION_GENERIC,
+              prevInputType: GameInputType.PLACE_AMBASSADOR,
+              riverDestinationContext: RiverDestinationName.BALLROOM,
+              options: ["Ok", "Decline"],
+              clientOptions: { selectedOption: "Ok" },
+            },
+          ],
+          { autoAdvance: true }
+        );
+        expect(player.hasUnusedAmbassador()).to.be(false);
+        expect(player.getFirstPlayedCard(card.name)).to.eql({
+          cardName: card.name,
+          ambassador: player.playerId,
+          cardOwnerId: player.playerId,
+          usedForCritter: false,
+        });
+        expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
+        expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+        expect(player.cardsInHand.length).to.be(3);
+      });
+
+      it("should recall ambassador properly", () => {
+        player.addToCity(gameState, card.name);
+        gameState.riverDestinationMap!.spots[
+          RiverDestinationSpot.TWO_TRAVELER
+        ].revealed = true;
+
+        expect(player.hasUnusedAmbassador()).to.be(true);
+        expect(player.getFirstPlayedCard(card.name)).to.eql({
+          cardName: card.name,
+          ambassador: null,
+          cardOwnerId: player.playerId,
+          usedForCritter: false,
+        });
+
+        player.gainResources(gameState, {
+          [ResourceType.RESIN]: 1,
+          [ResourceType.VP]: 1,
+        });
+
+        expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(1);
+        expect(player.cardsInHand.length).to.be(0);
+
+        [player, gameState] = multiStepGameInputTest(
+          gameState,
+          [
+            {
+              inputType: GameInputType.PLACE_AMBASSADOR,
+              clientOptions: {
+                loc: {
+                  type: "card",
+                  playedCard: player.getFirstPlayedCard(card.name),
+                },
+              },
+            },
+            {
+              inputType: GameInputType.SELECT_OPTION_GENERIC,
+              prevInputType: GameInputType.PLACE_AMBASSADOR,
+              riverDestinationContext: RiverDestinationName.BALLROOM,
+              options: ["Ok", "Decline"],
+              clientOptions: { selectedOption: "Ok" },
+            },
+          ],
+          { autoAdvance: true }
+        );
+        expect(player.hasUnusedAmbassador()).to.be(false);
+        expect(player.getFirstPlayedCard(card.name)).to.eql({
+          cardName: card.name,
+          ambassador: player.playerId,
+          cardOwnerId: player.playerId,
+          usedForCritter: false,
+        });
+        expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
+        expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+        expect(player.cardsInHand.length).to.be(3);
+
+        player.recallAmbassador(gameState);
+        expect(player.getFirstPlayedCard(card.name)).to.eql({
+          cardName: card.name,
+          ambassador: null,
+          cardOwnerId: player.playerId,
+          usedForCritter: false,
+        });
+        expect(player.hasUnusedAmbassador()).to.be(true);
       });
     });
 

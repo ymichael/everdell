@@ -7137,6 +7137,81 @@
     },
     {
       "type": "text",
+      "text": " claimed the "
+    },
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "Sunken Treasure Discovered"
+    },
+    {
+      "type": "text",
+      "text": " event."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "Sunken Treasure Discovered"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Husband"
+    },
+    {
+      "type": "text",
+      "text": " from the Meadow."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "Sunken Treasure Discovered"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Farm"
+    },
+    {
+      "type": "text",
+      "text": " from the Meadow."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
       "text": " played "
     },
     {

@@ -42,6 +42,10 @@ module.exports = (on: any, config: any) => {
         player.addToCity(gameState, CardName.MINE);
         player.addToCity(gameState, CardName.FARM);
         player.addToCity(gameState, CardName.FARM);
+
+        player.addToCity(gameState, CardName.WANDERER);
+        player.addToCity(gameState, CardName.WANDERER);
+        player.addToCity(gameState, CardName.WANDERER);
       });
     },
     "db:select-played-card-game": async () => {

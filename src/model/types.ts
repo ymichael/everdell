@@ -1,4 +1,20 @@
+// GameInputType represents the type of the transition from gameState ->
+// gameState.
+//
+// We split these into 2 types:
+//
+// **simple**: Actions that players can typically play at the start
+// of their turn (if eligible). Eg. playing a card from their hand.
+//
+// **multi**: Actions that are special and can only be triggered after taking
+// certain actions. Eg. Choosing a wild resource after placing a worker on a
+// location.
+//
+// We use this split to help us:
+// - Present the possible legal transitions available to the active player.
+// - Prevent any out-of-turn/illegal moves from happening.
 export enum GameInputType {
+  // simple
   PLAY_CARD = "PLAY_CARD",
   PLACE_WORKER = "PLACE_WORKER",
   VISIT_DESTINATION_CARD = "VISIT_DESTINATION_CARD",
@@ -6,6 +22,7 @@ export enum GameInputType {
   PREPARE_FOR_SEASON = "PREPARE_FOR_SEASON",
   GAME_END = "GAME_END",
 
+  // multi
   SELECT_CARDS = "SELECT_CARDS",
   SELECT_PLAYED_CARDS = "SELECT_PLAYED_CARDS",
   SELECT_PLAYER = "SELECT_PLAYER",
@@ -16,9 +33,11 @@ export enum GameInputType {
   SELECT_PAYMENT_FOR_CARD = "SELECT_PAYMENT_FOR_CARD",
   SELECT_OPTION_GENERIC = "SELECT_OPTION_GENERIC",
 
-  // Pearlbrook specific
+  // Pearlbrook specific (simple)
   PLAY_ADORNMENT = "PLAY_ADORNMENT",
   PLACE_AMBASSADOR = "PLACE_AMBASSADOR",
+
+  // Pearlbrook specific (multi)
   SELECT_PLAYED_ADORNMENT = "SELECT_PLAYED_ADORNMENT",
   SELECT_RIVER_DESTINATION = "SELECT_RIVER_DESTINATION",
 }

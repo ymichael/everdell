@@ -16,9 +16,14 @@ describe("Claim Event", () => {
     cy.visit(`/game/${gameJSON.gameId}?playerSecret=${player1.playerSecret}`);
     cy.contains("Claim Event");
 
-    // Should be able to visit destination
+    // Should be able to claim event
     cy.get("#js-game-input-box-form").within(() => {
       cy.get("#js-game-input-type-CLAIM_EVENT").click();
+
+      // Make sure clicking on different options work.
+      cy.get("[data-cy='claim-event-item:4 PRODUCTION']").click();
+      cy.get("[data-cy='claim-event-item:3 TRAVELER']").click();
+      cy.get("[data-cy='claim-event-item:4 PRODUCTION']").click();
       cy.contains("Submit").click();
     });
 

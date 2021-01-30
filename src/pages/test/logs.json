@@ -5743,7 +5743,15 @@
   [
     {
       "type": "text",
-      "text": "Playing with the Pearlbrook expansion."
+      "text": "Playing with the "
+    },
+    {
+      "type": "em",
+      "text": "Pearlbrook"
+    },
+    {
+      "type": "text",
+      "text": " expansion."
     }
   ],
   [

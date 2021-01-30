@@ -265,7 +265,7 @@ export const PlayedCard: React.FC<{
           <div>Workers on card: {workers.length}</div>
         )}
         {"ambassador" in playedCard && (
-          <div>Ambassadors on card: {!!playedCard.ambassador ? "1" : "0"}</div>
+          <div>Ambassadors on card: {ambassador ? "1" : "0"}</div>
         )}
         {"pairedCards" in playedCard && (
           <div>

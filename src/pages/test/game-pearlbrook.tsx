@@ -6,7 +6,6 @@ import {
   GameInput,
   ResourceType,
   CardName,
-  EventName,
   LocationName,
 } from "../../model/types";
 import { Game as GameModel } from "../../model/game";

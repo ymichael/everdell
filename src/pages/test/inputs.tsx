@@ -2,6 +2,7 @@ import { GetServerSideProps } from "next";
 
 import { GameJSON } from "../../model/jsonTypes";
 import {
+  AdornmentName,
   CardName,
   LocationName,
   ResourceType,
@@ -42,6 +43,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     player.cardsInHand.push(CardName.BARD);
     player.cardsInHand.push(CardName.MINER_MOLE);
     player.cardsInHand.push(CardName.CHIP_SWEEP);
+
+    player.adornmentsInHand.push(AdornmentName.BELL);
+    player.adornmentsInHand.push(AdornmentName.SPYGLASS);
 
     player.gainResources(gameState, {
       [ResourceType.VP]: 12,
@@ -234,6 +238,12 @@ export default function TestGameInputPage(props: { game: GameJSON }) {
           inputType: GameInputType.PLAY_ADORNMENT,
           clientOptions: {
             adornment: null,
+          },
+        },
+        {
+          inputType: GameInputType.PLACE_AMBASSADOR,
+          clientOptions: {
+            loc: null,
           },
         },
         {

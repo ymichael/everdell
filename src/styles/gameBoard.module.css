@@ -4,6 +4,11 @@
   flex-flow: row wrap;
 }
 
+.river_items {
+  margin-left: -10px;
+  display: flex;
+}
+
 .event_items {
   margin-left: -10px;
   display: flex;

@@ -1570,14 +1570,16 @@ export class Player implements IGameTextEntity {
       placedWorkers: this.placedWorkers,
       playerStatus: this.playerStatus,
       pendingPlayCardGameInput: this.pendingPlayCardGameInput,
+      numAdornmentsInHand: this.adornmentsInHand.length,
+      adornmentsInHand: [],
+      playedAdornments: this.playedAdornments,
       ...(includePrivate
         ? {
             playerSecret: this.playerSecret,
             cardsInHand: this.cardsInHand,
+            adornmentsInHand: this.adornmentsInHand,
           }
         : {}),
-      adornmentsInHand: this.adornmentsInHand,
-      playedAdornments: this.playedAdornments,
     });
   }
 

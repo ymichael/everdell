@@ -15,6 +15,8 @@ import { Location as LocationModel } from "../model/location";
 import GameLog from "./GameLog";
 import Card, { PlayedCard } from "./Card";
 import Location from "./Location";
+import { RiverDestinationSpot } from "./RiverDestination";
+import Adornment from "./Adornment";
 import Event from "./Event";
 import { GameBlock, ItemWrapper } from "./common";
 
@@ -198,6 +200,7 @@ export const PlayerCity: React.FC<{
   viewerId: string | null;
 }> = ({ player, viewerId }) => {
   const playedCards = player.getAllPlayedCards();
+  const playedAdornments = player.playedAdornments;
 
   const labelToCount: [string, number][] = [
     ["Critters", player.getNumPlayedCritters()],
@@ -208,7 +211,7 @@ export const PlayerCity: React.FC<{
     ["Unique Constructions", player.getNumPlayedUniqueConstructions()],
   ];
 
-  return playedCards.length !== 0 ? (
+  return playedCards.length !== 0 || playedAdornments.length !== 0 ? (
     <div data-cy={`player-city:${player.name}`}>
       <div className={styles.city_stats}>
         {labelToCount
@@ -227,13 +230,16 @@ export const PlayerCity: React.FC<{
       </div>
       <div className={styles.items}>
         {playedCards.map((playedCard, idx) => (
-          <ItemWrapper key={idx}>
+          <ItemWrapper key={`card-${idx}`}>
             <PlayedCard
               playedCard={playedCard}
               viewerId={viewerId}
               cardOwner={player}
             />
           </ItemWrapper>
+        ))}
+        {playedAdornments.map((playedAdornment, idx) => (
+          <Adornment key={`adornment-${idx}`} name={playedAdornment} />
         ))}
       </div>
     </div>
@@ -263,5 +269,30 @@ export const GameBoard: React.FC<{
         <Events gameState={gameState} numColumns={2} />
       </div>
     </div>
+  );
+};
+
+export const River: React.FC<{
+  gameState: GameState;
+  viewingPlayer: Player | null;
+}> = ({ gameState, viewingPlayer }) => {
+  return (
+    <GameBlock title={"River"}>
+      <div id={"js-game-river"} className={styles.river_items}>
+        {gameState
+          .riverDestinationMap!.spotEntries()
+          .map(([spotName, spotInfo], idx) => {
+            return (
+              <RiverDestinationSpot
+                name={spotName}
+                destination={spotInfo.name}
+                ambassadors={spotInfo.ambassadors.map(
+                  (playerId) => gameState.getPlayer(playerId).name
+                )}
+              />
+            );
+          })}
+      </div>
+    </GameBlock>
   );
 };

@@ -57,6 +57,7 @@ export type PlayerJSON = {
   claimedEvents: Partial<Record<EventName, PlayedEventInfo>>;
   placedWorkers: WorkerPlacementInfo[];
   playerStatus: PlayerStatus;
+  numAdornmentsInHand: number;
   adornmentsInHand: AdornmentName[];
   playedAdornments: AdornmentName[];
   numAmbassadors: number;

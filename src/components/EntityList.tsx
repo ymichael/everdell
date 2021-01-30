@@ -6,7 +6,7 @@ import Card from "./Card";
 import Adornment from "./Adornment";
 import Location from "./Location";
 import Event from "./Event";
-import RiverDestination, { RiverDestinationSpotName } from "./RiverDestination";
+import RiverDestination, { RiverDestinationSpot } from "./RiverDestination";
 
 import { assertUnreachable } from "../utils";
 
@@ -36,7 +36,7 @@ const EntityList = ({ textParts }: { textParts: GameText }) => {
           return <RiverDestination key={idx} name={part.riverDestination} />;
         }
         if (part.entityType === "riverDestinationSpot") {
-          return <RiverDestinationSpotName key={idx} name={part.spot} />;
+          return <RiverDestinationSpot key={idx} name={part.spot} />;
         }
         assertUnreachable(part, `Unexpected part: ${JSON.stringify(part)}`);
         return null;

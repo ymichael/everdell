@@ -1125,7 +1125,11 @@ export class GameState {
     gameState.addGameLog(`Game created with ${players.length} players.`);
 
     if (gameOptionsWithDefaults.pearlbrook) {
-      gameState.addGameLog(`Playing with the Pearlbrook expansion.`);
+      gameState.addGameLog([
+        `Playing with the `,
+        { type: "em", text: "Pearlbrook" },
+        ` expansion.`,
+      ]);
     }
 
     if (shuffleDeck) {
@@ -1223,6 +1227,22 @@ export class GameState {
         ret.push({ type: "spot", spot });
       }
     });
+
+    const card = Card.fromName(CardName.FERRY);
+    if (
+      card.canPlay(this, {
+        inputType: GameInputType.PLACE_AMBASSADOR,
+        clientOptions: { loc: null },
+      })
+    ) {
+      this.players.forEach((player) => {
+        player.getPlayedCardInfos(card.name).forEach((playedCard) => {
+          if (!playedCard.ambassador) {
+            ret.push({ type: "card", playedCard });
+          }
+        });
+      });
+    }
     return ret;
   }
 

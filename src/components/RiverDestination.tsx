@@ -4,12 +4,12 @@ import styles from "../styles/RiverDestination.module.css";
 
 import {
   RiverDestination as RiverDestinationModel,
-  RiverDestinationSpot,
+  RiverDestinationSpot as RiverDestinationSpotModel,
 } from "../model/riverDestination";
 import {
   ResourceType,
   RiverDestinationName,
-  RiverDestinationSpotName as TRiverDestinationSpotName,
+  RiverDestinationSpotName,
 } from "../model/types";
 
 import { Description, ItemWrapper } from "./common";
@@ -33,7 +33,7 @@ const RiverDestinationInner = ({ name }: { name: RiverDestinationName }) => {
 
 const RiverDestinationHidden = () => {
   return (
-    <div className={styles.hidden_item}>
+    <div data-cy={`river-destination-hidden`} className={styles.hidden_item}>
       <div></div>
       <Description
         textParts={[
@@ -57,35 +57,47 @@ const RiverDestination = ({ name }: { name: RiverDestinationName }) => {
   );
 };
 
-export const RiverDestinationSpotName = ({
+export const RiverDestinationSpot = ({
   name,
   destination = null,
+  ambassadors = null,
 }: {
-  name: TRiverDestinationSpotName;
+  name: RiverDestinationSpotName;
   destination?: RiverDestinationName | null;
+  ambassadors?: string[] | null;
 }) => {
-  destination =
-    name == TRiverDestinationSpotName.SHOAL
-      ? RiverDestinationName.SHOAL
-      : destination;
+  const isShoal = name == RiverDestinationSpotName.SHOAL;
+  destination = isShoal ? RiverDestinationName.SHOAL : destination;
+  const isUnavailable = !!(ambassadors && !isShoal && ambassadors.length !== 0);
   return (
-    <ItemWrapper
-      footerChildren={
-        <div className={styles.spot_name}>
-          <Description
-            textParts={RiverDestinationSpot.fromName(name).shortName}
-          />
+    <div data-cy={`river-destination-spot:${name}`}>
+      <ItemWrapper
+        isHighlighted={isUnavailable}
+        footerChildren={
+          <div className={styles.spot_name}>
+            <Description
+              textParts={RiverDestinationSpotModel.fromName(name).shortName}
+            />
+            {ambassadors && ambassadors.length !== 0 && (
+              <div className={styles.ambassadors}>
+                <span>Ambassadors: </span>
+                <span className={styles.ambassador}>
+                  {ambassadors.join(", ")}
+                </span>
+              </div>
+            )}
+          </div>
+        }
+      >
+        <div className={styles.spot}>
+          {destination ? (
+            <RiverDestinationInner name={destination} />
+          ) : (
+            <RiverDestinationHidden />
+          )}
         </div>
-      }
-    >
-      <div className={styles.spot}>
-        {destination ? (
-          <RiverDestinationInner name={destination} />
-        ) : (
-          <RiverDestinationHidden />
-        )}
-      </div>
-    </ItemWrapper>
+      </ItemWrapper>
+    </div>
   );
 };
 

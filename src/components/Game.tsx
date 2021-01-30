@@ -2,7 +2,7 @@ import * as React from "react";
 import { useState, useCallback } from "react";
 import { unstable_batchedUpdates } from "react-dom";
 
-import { GameBoard, LocationsAndEvents } from "./gameBoard";
+import { GameBoard, LocationsAndEvents, River } from "./gameBoard";
 import Players from "./Players";
 import GamePointsBreakdown from "./GamePointsBreakdown";
 import ViewerUI from "./ViewerUI";
@@ -83,6 +83,9 @@ const Game: React.FC<{
           }
         />
         {viewingPlayerImpl && <ViewerUI player={viewingPlayerImpl} />}
+        {gameStateImpl.gameOptions.pearlbrook && (
+          <River gameState={gameStateImpl} viewingPlayer={viewingPlayerImpl} />
+        )}
         <LocationsAndEvents
           gameState={gameStateImpl}
           viewingPlayer={viewingPlayerImpl}

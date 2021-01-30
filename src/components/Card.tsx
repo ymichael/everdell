@@ -246,6 +246,7 @@ export const PlayedCard: React.FC<{
     resources = {},
     workers = [],
     pairedCards = [],
+    ambassador = null,
   } = playedCard;
   const card = CardModel.fromName(cardName);
   return (
@@ -262,6 +263,9 @@ export const PlayedCard: React.FC<{
         </div>
         {"workers" in playedCard && (
           <div>Workers on card: {workers.length}</div>
+        )}
+        {"ambassador" in playedCard && (
+          <div>Ambassadors on card: {ambassador ? "1" : "0"}</div>
         )}
         {"pairedCards" in playedCard && (
           <div>

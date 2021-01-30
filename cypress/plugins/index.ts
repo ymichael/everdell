@@ -1,7 +1,13 @@
 /**
  * @type {Cypress.PluginConfig}
  */
-import { CardName } from "../../src/model/types";
+import {
+  AdornmentName,
+  CardName,
+  ResourceType,
+  RiverDestinationName,
+  RiverDestinationSpotName,
+} from "../../src/model/types";
 import { GameJSON } from "../../src/model/jsonTypes";
 import { Card } from "../../src/model/card";
 import { GameState } from "../../src/model/gameState";
@@ -47,6 +53,95 @@ module.exports = (on: any, config: any) => {
         player.addToCity(gameState, CardName.WANDERER);
         player.addToCity(gameState, CardName.WANDERER);
       });
+    },
+    "db:play-adornment-game": async () => {
+      return await getTestGameJSON(
+        { gameOptions: { pearlbrook: true } },
+        (gameState, player) => {
+          player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
+          player.adornmentsInHand.push(AdornmentName.BELL);
+          player.adornmentsInHand.push(AdornmentName.SPYGLASS);
+        }
+      );
+    },
+    "db:select-played-adornment-game": async () => {
+      return await getTestGameJSON(
+        { gameOptions: { pearlbrook: true } },
+        (gameState, player) => {
+          player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
+          player.adornmentsInHand.push(AdornmentName.MIRROR);
+
+          player.addToCity(gameState, CardName.WIFE);
+          player.addToCity(gameState, CardName.WIFE);
+          player.addToCity(gameState, CardName.WIFE);
+          player.addToCity(gameState, CardName.WIFE);
+
+          gameState.players[1].playedAdornments.push(AdornmentName.BELL);
+          gameState.players[1].playedAdornments.push(
+            AdornmentName.KEY_TO_THE_CITY
+          );
+        }
+      );
+    },
+    "db:select-river-destination-game": async () => {
+      return await getTestGameJSON(
+        { gameOptions: { pearlbrook: true } },
+        (gameState, player) => {
+          player.addToCity(gameState, CardName.WANDERER);
+          player.addToCity(gameState, CardName.RANGER);
+
+          player.addToCity(gameState, CardName.FARM);
+          player.addToCity(gameState, CardName.FARM);
+          player.addToCity(gameState, CardName.FARM);
+
+          player.gainResources(gameState, {
+            [ResourceType.TWIG]: 5,
+            [ResourceType.VP]: 5,
+          });
+
+          gameState.riverDestinationMap!.spots[
+            RiverDestinationSpotName.TWO_GOVERNANCE
+          ].name = RiverDestinationName.WATERMILL;
+          gameState.riverDestinationMap!.spots[
+            RiverDestinationSpotName.THREE_PRODUCTION
+          ].name = RiverDestinationName.SNOUT_THE_EXPLORER;
+
+          gameState.riverDestinationMap!.revealSpot(
+            RiverDestinationSpotName.TWO_GOVERNANCE
+          );
+          gameState.riverDestinationMap!.revealSpot(
+            RiverDestinationSpotName.THREE_PRODUCTION
+          );
+
+          gameState.players[1].addToCity(gameState, CardName.FERRY);
+        }
+      );
+    },
+    "db:place-ambassador-game": async () => {
+      return await getTestGameJSON(
+        { gameOptions: { pearlbrook: true } },
+        (gameState, player) => {
+          player.addToCity(gameState, CardName.WANDERER);
+          player.addToCity(gameState, CardName.RANGER);
+
+          player.addToCity(gameState, CardName.FARM);
+          player.addToCity(gameState, CardName.FARM);
+          player.addToCity(gameState, CardName.FARM);
+
+          gameState.riverDestinationMap!.spots[
+            RiverDestinationSpotName.TWO_GOVERNANCE
+          ].name = RiverDestinationName.OMICRON_THE_ELDER;
+          gameState.riverDestinationMap!.spots[
+            RiverDestinationSpotName.TWO_TRAVELER
+          ].name = RiverDestinationName.GREAT_HALL;
+
+          gameState.riverDestinationMap!.revealSpot(
+            RiverDestinationSpotName.TWO_GOVERNANCE
+          );
+
+          gameState.players[1].addToCity(gameState, CardName.FERRY);
+        }
+      );
     },
     "db:select-played-card-game": async () => {
       return await getTestGameJSON({}, (gameState, player) => {

@@ -17,6 +17,7 @@ import {
   InfoIconSvg,
   VPIcon,
   CardIcon,
+  AdornmentCardIcon,
   CardTypeSymbol,
   ResourceTypeIcon,
   EmptyCitySpotIcon,
@@ -74,6 +75,7 @@ const PlayerStatus: React.FC<{
   return (
     <>
       <div
+        data-cy={`player-status:${player.name}`}
         className={[styles.status_box, isViewer && styles.viewer_status_box]
           .filter(Boolean)
           .join(" ")}
@@ -193,6 +195,16 @@ const PlayerStatus: React.FC<{
         </div>
         <div className={styles.status_box_item}>
           <div className={styles.status_box_item_resource_list}>
+            {gameStateJSON.gameOptions.pearlbrook && (
+              <div className={styles.status_box_item_resource}>
+                <div className={styles.status_box_item_resource_label}>
+                  <ResourceTypeIcon resourceType={ResourceType.PEARL} />
+                </div>
+                <div className={styles.status_box_item_resource_count}>
+                  {playerImpl.getNumResourcesByType(ResourceType.PEARL)}
+                </div>
+              </div>
+            )}
             <div className={styles.status_box_item_resource}>
               <div className={styles.status_box_item_resource_label}>
                 <VPIcon />
@@ -201,7 +213,10 @@ const PlayerStatus: React.FC<{
                 {playerImpl.getNumResourcesByType(ResourceType.VP)}
               </div>
             </div>
-            <div className={styles.status_box_item_resource}>
+            <div
+              className={styles.status_box_item_resource}
+              title="No. of Cards in hand"
+            >
               <div className={styles.status_box_item_resource_label}>
                 <CardIcon />
               </div>
@@ -209,6 +224,19 @@ const PlayerStatus: React.FC<{
                 {player.numCardsInHand}
               </div>
             </div>
+            {gameStateJSON.gameOptions.pearlbrook && (
+              <div
+                className={styles.status_box_item_resource}
+                title="No. of Adornment cards in hand"
+              >
+                <div className={styles.status_box_item_resource_label}>
+                  <AdornmentCardIcon />
+                </div>
+                <div className={styles.status_box_item_resource_count}>
+                  {player.numAdornmentsInHand}
+                </div>
+              </div>
+            )}
             <div className={styles.status_box_item_resource}>
               <div className={styles.status_box_item_resource_label}>
                 {"WORKERS"}
@@ -217,6 +245,16 @@ const PlayerStatus: React.FC<{
                 {player.numWorkers - player.placedWorkers.length}
               </div>
             </div>
+            {gameStateJSON.gameOptions.pearlbrook && (
+              <div className={styles.status_box_item_resource}>
+                <div className={styles.status_box_item_resource_label}>
+                  {"AMBASSADORS"}
+                </div>
+                <div className={styles.status_box_item_resource_count}>
+                  {player.numAmbassadors}
+                </div>
+              </div>
+            )}
             {showRealtimePoints && (
               <div className={styles.status_box_item_resource}>
                 <div className={styles.status_box_item_resource_label}>

@@ -19,6 +19,9 @@ import GameInputSelectPlayedCards from "./GameInputSelectPlayedCards";
 import GameInputSelectCards from "./GameInputSelectCards";
 import GameInputPlaceWorkerSelector from "./GameInputPlaceWorkerSelector";
 import GameInputClaimEventSelector from "./GameInputClaimEventSelector";
+import GameInputSelectRiverDestinationSelector from "./GameInputSelectRiverDestinationSelector";
+import GameInputPlaceAmbassadorSelector from "./GameInputPlaceAmbassadorSelector";
+import GameInputPlayAdornmentSelector from "./GameInputPlayAdornmentSelector";
 import GameInputSelectPaymentForCard from "./GameInputSelectPaymentForCard";
 import GameInputSelectWorkerPlacement from "./GameInputSelectWorkerPlacement";
 import GameInputVisitDestinationCard from "./GameInputVisitDestinationCard";
@@ -142,13 +145,27 @@ const GameInputBoxInner = ({
           locations={gameInput.locationOptions}
         />
       ) : gameInput.inputType === GameInputType.PLACE_AMBASSADOR ? (
-        <>TODO</>
+        <GameInputPlaceAmbassadorSelector
+          name={"gameInput.clientOptions.loc"}
+          gameState={gameState}
+          viewingPlayer={viewingPlayer}
+          options={gameState.getPlayableAmbassadorLocations()}
+        />
       ) : gameInput.inputType === GameInputType.PLAY_ADORNMENT ? (
-        <>TODO</>
+        <GameInputPlayAdornmentSelector
+          name={"gameInput.clientOptions.adornment"}
+          adornments={gameState.getPlayableAdornments()}
+        />
       ) : gameInput.inputType === GameInputType.SELECT_PLAYED_ADORNMENT ? (
-        <>TODO</>
+        <GameInputPlayAdornmentSelector
+          name={"gameInput.clientOptions.adornment"}
+          adornments={gameInput.adornmentOptions}
+        />
       ) : gameInput.inputType === GameInputType.SELECT_RIVER_DESTINATION ? (
-        <>TODO</>
+        <GameInputSelectRiverDestinationSelector
+          name={"gameInput.clientOptions.riverDestination"}
+          options={gameInput.options}
+        />
       ) : (
         <>
           {assertUnreachable(

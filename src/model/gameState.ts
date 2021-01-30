@@ -1226,6 +1226,16 @@ export class GameState {
     return ret;
   }
 
+  getPlayableAdornments(): AdornmentName[] {
+    const player = this.getActivePlayer();
+    return player.adornmentsInHand.filter((name) => {
+      return Adornment.fromName(name).canPlay(this, {
+        inputType: GameInputType.PLAY_ADORNMENT,
+        clientOptions: { adornment: name },
+      });
+    });
+  }
+
   getVisitableDestinationCards = (): PlayedCardInfo[] => {
     const activePlayer = this.getActivePlayer();
     const ret = [...activePlayer.getAvailableClosedDestinationCards()];
@@ -1338,6 +1348,14 @@ export class GameState {
             },
           });
         }
+      }
+      if (this.getPlayableAdornments().length !== 0) {
+        possibleGameInputs.push({
+          inputType: GameInputType.PLAY_ADORNMENT,
+          clientOptions: {
+            adornment: null,
+          },
+        });
       }
     }
 

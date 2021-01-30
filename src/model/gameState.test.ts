@@ -1,16 +1,17 @@
 import expect from "expect.js";
 import { GameState } from "./gameState";
 import {
-  Season,
+  AdornmentName,
   CardName,
+  EventName,
   GameInput,
   GameInputType,
   LocationName,
-  EventName,
+  LocationType,
   PlayerStatus,
   ResourceType,
   RiverDestinationSpotName,
-  LocationType,
+  Season,
 } from "./types";
 import { Event } from "./event";
 import { Card } from "./card";
@@ -182,6 +183,23 @@ describe("GameState", () => {
         ...Location.byType(LocationType.BASIC),
         ...Location.byType(LocationType.HAVEN),
       ]);
+    });
+  });
+
+  describe("getPlayableAdornments", () => {
+    beforeEach(() => {
+      gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
+      player = gameState.getActivePlayer();
+      player.adornmentsInHand.push(AdornmentName.BELL, AdornmentName.COMPASS);
+    });
+
+    it("should not return if player has no pearls", () => {
+      expect(gameState.getPlayableAdornments()).to.eql([]);
+    });
+
+    it("should return if player has pearls", () => {
+      player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
+      expect(gameState.getPlayableAdornments()).to.eql(player.adornmentsInHand);
     });
   });
 

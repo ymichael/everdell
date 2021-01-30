@@ -57,8 +57,8 @@ export class Player implements IGameTextEntity {
   // before triggering things like HISTORIAN/SHOPKEEPER/COURTHOUSE.
   public pendingPlayCardGameInput: GameInputPlayCard[];
 
-  public adornmentsInHand: AdornmentName[];
-  public playedAdornments: AdornmentName[];
+  readonly adornmentsInHand: AdornmentName[];
+  readonly playedAdornments: AdornmentName[];
 
   constructor({
     name,

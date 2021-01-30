@@ -236,9 +236,7 @@ export const Description = ({ textParts }: { textParts: GameText }) => {
               return (
                 <span key={idx} className={styles.entity_part}>
                   <Description
-                    textParts={
-                      RiverDestination.fromName(part.riverDestination).shortName
-                    }
+                    textParts={[{ type: "text", text: part.riverDestination }]}
                   />
                 </span>
               );

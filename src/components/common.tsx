@@ -70,7 +70,7 @@ export const CardTypeSymbol = ({ cardType }: { cardType: CardType }) => {
 };
 
 export const CardIcon = () => {
-  return <Image src="/images/card.png" layout="fill" />;
+  return <Image alt="Card Icon" src="/images/card.png" layout="fill" />;
 };
 
 export const WorkerSpotIcon = ({ locked = false }: { locked?: boolean }) => {

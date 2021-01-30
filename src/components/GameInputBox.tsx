@@ -19,6 +19,7 @@ import GameInputSelectPlayedCards from "./GameInputSelectPlayedCards";
 import GameInputSelectCards from "./GameInputSelectCards";
 import GameInputPlaceWorkerSelector from "./GameInputPlaceWorkerSelector";
 import GameInputClaimEventSelector from "./GameInputClaimEventSelector";
+import GameInputSelectRiverDestinationSelector from "./GameInputSelectRiverDestinationSelector";
 import GameInputPlaceAmbassadorSelector from "./GameInputPlaceAmbassadorSelector";
 import GameInputPlayAdornmentSelector from "./GameInputPlayAdornmentSelector";
 import GameInputSelectPaymentForCard from "./GameInputSelectPaymentForCard";
@@ -161,7 +162,10 @@ const GameInputBoxInner = ({
           adornments={gameInput.adornmentOptions}
         />
       ) : gameInput.inputType === GameInputType.SELECT_RIVER_DESTINATION ? (
-        <>TODO</>
+        <GameInputSelectRiverDestinationSelector
+          name={"gameInput.clientOptions.riverDestination"}
+          options={gameInput.options}
+        />
       ) : (
         <>
           {assertUnreachable(

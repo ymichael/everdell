@@ -1565,7 +1565,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
         const meadowCards = gameState.meadowCards;
 
-        let crittersInMeadow: CardName[] = [];
+        const crittersInMeadow: CardName[] = [];
 
         // get all the critters
         meadowCards.forEach((meadowCard) => {

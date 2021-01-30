@@ -5,7 +5,6 @@ import omit from "lodash/omit";
 import {
   ExpansionType,
   ResourceType,
-  RiverDestinationSpot,
   ProductionResourceMap,
   LocationType,
   CardCost,

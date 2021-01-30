@@ -3,10 +3,7 @@ import Image from "next/image";
 
 import styles from "../styles/common.module.css";
 import { Event } from "../model/event";
-import {
-  RiverDestination,
-  RiverDestinationMap,
-} from "../model/riverDestination";
+import { RiverDestinationMap } from "../model/riverDestination";
 import { Location } from "../model/location";
 import { GameText, TextPart, ResourceType, CardType } from "../model/types";
 import { assertUnreachable } from "../utils";

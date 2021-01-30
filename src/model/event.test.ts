@@ -2604,7 +2604,7 @@ describe("Event", () => {
       const event = Event.fromName(EventName.SPECIAL_RIVERSIDE_RESORT);
       const gameInput = claimEventInput(event.name);
 
-      let topOfDeck = [
+      const topOfDeck = [
         CardName.HUSBAND,
         CardName.QUEEN,
         CardName.WIFE,

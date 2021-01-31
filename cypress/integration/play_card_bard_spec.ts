@@ -40,7 +40,7 @@ describe("Play Bard and discard some cards", () => {
     });
 
     cy.get("#js-game-input-box-form").within(() => {
-      cy.contains("Bard: Discard up to 5");
+      cy.contains("Bard: Discard up to 5 CARD");
       cy.get("[data-cy='select-card-item:Mine']").click();
       cy.get("[data-cy='select-card-item:Ranger']").click();
       cy.get("[data-cy='select-card-item:Queen']").click();
@@ -48,7 +48,7 @@ describe("Play Bard and discard some cards", () => {
       cy.contains("4 Selected").click();
     });
 
-    cy.contains("Bard: Michael discarded 4");
+    cy.contains("Bard: Michael discarded 4 CARD to gain 4 VP.");
 
     cy.get("#js-player-hand").within(() => {
       cy.contains("Mine").should("not.exist");

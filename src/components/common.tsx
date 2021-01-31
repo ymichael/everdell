@@ -201,13 +201,27 @@ export const Description = ({ textParts }: { textParts: GameText }) => {
           case "HR":
             return <hr key={idx} />;
           case "resource":
-            return <GameIcon key={idx} type={part.resourceType} />;
+            return (
+              <span key={idx}>
+                <span hidden>{part.resourceType}</span>
+                <span aria-hidden={true}>
+                  <GameIcon type={part.resourceType} />
+                </span>
+              </span>
+            );
           case "cardType":
             return <GameIcon key={idx} type={part.cardType} />;
           case "points":
             return <Points key={idx} numPoints={part.value} />;
           case "symbol":
-            return <GameIcon key={idx} type={part.symbol} />;
+            return (
+              <span key={idx}>
+                <span hidden>{part.symbol}</span>
+                <span aria-hidden={true}>
+                  <GameIcon type={part.symbol} />
+                </span>
+              </span>
+            );
           case "player":
             return (
               <span key={idx} className={styles.player_part}>
@@ -227,6 +241,7 @@ export const Description = ({ textParts }: { textParts: GameText }) => {
             if (part.entityType === "location") {
               return (
                 <span key={idx} className={styles.entity_part}>
+                  <span hidden>Location:</span>
                   <Description
                     textParts={Location.fromName(part.location).shortName}
                   />

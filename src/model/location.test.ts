@@ -275,6 +275,57 @@ describe("Location", () => {
     });
   });
 
+  describe(LocationName.FOREST_RESIN_PEBBLE_OR_FOUR_CARDS, () => {
+    const name = LocationName.FOREST_RESIN_PEBBLE_OR_FOUR_CARDS;
+    it("should allow the player to draw 4 CARD", () => {
+      gameState.locationsMap[name] = [];
+      expect(player.cardsInHand.length).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        placeWorkerInput(name),
+        {
+          inputType: GameInputType.SELECT_OPTION_GENERIC,
+          prevInputType: GameInputType.PLACE_WORKER,
+          locationContext: name,
+          options: ["1 RESIN & 1 PEBBLE", "4 CARD"],
+          clientOptions: {
+            selectedOption: "4 CARD",
+          },
+        },
+      ]);
+
+      expect(player.cardsInHand.length).to.be(4);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
+    });
+
+    it("should allow the player to gain 1 RESIN & 1 PEBBLE", () => {
+      gameState.locationsMap[name] = [];
+      expect(player.cardsInHand.length).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        placeWorkerInput(name),
+        {
+          inputType: GameInputType.SELECT_OPTION_GENERIC,
+          prevInputType: GameInputType.PLACE_WORKER,
+          locationContext: name,
+          options: ["1 RESIN & 1 PEBBLE", "4 CARD"],
+          clientOptions: {
+            selectedOption: "1 RESIN & 1 PEBBLE",
+          },
+        },
+      ]);
+
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
+      expect(player.cardsInHand.length).to.be(0);
+    });
+  });
+
   describe("HAVEN", () => {
     it("player can visit the haven", () => {
       const location = Location.fromName(LocationName.HAVEN);

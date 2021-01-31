@@ -908,7 +908,47 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     resourcesToGain: {},
     expansion: ExpansionType.PEARLBROOK,
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.PLACE_WORKER) {
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_OPTION_GENERIC,
+          prevInputType: gameInput.inputType,
+          locationContext: LocationName.FOREST_RESIN_PEBBLE_OR_FOUR_CARDS,
+          label: "Choose one",
+          options: ["1 RESIN & 1 PEBBLE", "4 CARD"],
+          clientOptions: {
+            selectedOption: null,
+          },
+        });
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_OPTION_GENERIC &&
+        gameInput.locationContext ===
+          LocationName.FOREST_RESIN_PEBBLE_OR_FOUR_CARDS
+      ) {
+        const selectedOption = gameInput.clientOptions.selectedOption;
+        if (
+          !selectedOption ||
+          gameInput.options.indexOf(selectedOption) === -1
+        ) {
+          throw new Error("Please selected an option");
+        }
+        if (selectedOption === "4 CARD") {
+          gameState.addGameLogFromLocation(
+            LocationName.FOREST_RESIN_PEBBLE_OR_FOUR_CARDS,
+            [player, ` drew 4 CARD.`]
+          );
+          player.drawCards(gameState, 4);
+        } else if (selectedOption === "1 RESIN & 1 PEBBLE") {
+          player.gainResources(gameState, {
+            [ResourceType.PEBBLE]: 1,
+            [ResourceType.RESIN]: 1,
+          });
+          gameState.addGameLogFromLocation(
+            LocationName.FOREST_RESIN_PEBBLE_OR_FOUR_CARDS,
+            [player, ` gained 1 RESIN & 1 PEBBLE.`]
+          );
+        }
+      }
     },
   }),
   [LocationName.FOREST_ACTIVATE_2_PRODUCTION]: new Location({

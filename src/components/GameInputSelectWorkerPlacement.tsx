@@ -36,6 +36,11 @@ const GameInputSelectWorkerPlacement: React.FC<{
           return (
             <div
               key={idx}
+              data-cy={`select-worker-placement-item:${
+                workerOption.location ||
+                workerOption.event ||
+                workerOption.playedCard?.cardName
+              }`}
               className={styles.clickable}
               onClick={() => {
                 if (!isSelected) {

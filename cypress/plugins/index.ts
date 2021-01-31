@@ -4,6 +4,7 @@
 import {
   AdornmentName,
   CardName,
+  LocationName,
   ResourceType,
   RiverDestinationName,
   RiverDestinationSpotName,
@@ -170,6 +171,29 @@ module.exports = (on: any, config: any) => {
           player.cardsInHand.push(CardName.FARM, CardName.MINE);
         }
       );
+    },
+    "db:play-ranger-game": async () => {
+      return await getTestGameJSON({}, (gameState, player) => {
+        const card = Card.fromName(CardName.RANGER);
+        player.cardsInHand.push(card.name);
+        player.gainResources(gameState, card.baseCost);
+
+        // Claim this event using the ranger.
+        player.addToCity(gameState, CardName.FARM);
+        player.addToCity(gameState, CardName.FARM);
+        player.addToCity(gameState, CardName.FARM);
+        player.addToCity(gameState, CardName.FARM);
+
+        // Place 2 workers.
+        gameState.locationsMap[LocationName.BASIC_ONE_STONE]!.push(
+          player.playerId
+        );
+        gameState.locationsMap[LocationName.BASIC_TWO_TWIGS_AND_ONE_CARD]!.push(
+          player.playerId
+        );
+        player.placeWorkerOnLocation(LocationName.BASIC_ONE_STONE);
+        player.placeWorkerOnLocation(LocationName.BASIC_TWO_TWIGS_AND_ONE_CARD);
+      });
     },
     "db:play-peddler-game": async () => {
       return await getTestGameJSON({}, (gameState, player) => {

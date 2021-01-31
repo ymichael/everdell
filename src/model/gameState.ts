@@ -774,7 +774,7 @@ export class GameState {
         " activated PRODUCTION",
         ...(productionCards.length === 0
           ? []
-          : [" on (", ...cardListToGameText(productionCards), ")"]),
+          : [" on ", ...cardListToGameText(productionCards), ""]),
         ".",
       ]);
       player.activateProduction(this, gameInput);

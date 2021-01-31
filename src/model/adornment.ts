@@ -420,7 +420,7 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
       const player = gameState.getActivePlayer();
       const helper = new GainMoreThan1AnyResource({
         adornmentContext: AdornmentName.KEY_TO_THE_CITY,
-        skipGameLog: false,
+        skipGameLog: true,
       });
       if (gameInput.inputType === GameInputType.PLAY_ADORNMENT) {
         gameState.pendingGameInputs.push(

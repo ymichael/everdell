@@ -1,21 +1,25 @@
 import * as React from "react";
 
+import uniqWith from "lodash/uniqWith";
+import isEqual from "lodash/isEqual";
+
 import { GameText, TextPartEntity } from "../model/types";
 import { ItemWrapper } from "./common";
 import Card from "./Card";
 import Adornment from "./Adornment";
 import Location from "./Location";
 import Event from "./Event";
-import RiverDestination, { RiverDestinationSpot } from "./RiverDestination";
+import RiverDestination from "./RiverDestination";
 
 import { assertUnreachable } from "../utils";
 
 const EntityList = ({ textParts }: { textParts: GameText }) => {
   return textParts ? (
     <>
-      {(textParts.filter(
-        (part) => part.type === "entity"
-      ) as TextPartEntity[]).map((part: TextPartEntity, idx: number) => {
+      {uniqWith(
+        textParts.filter((part) => part.type === "entity") as TextPartEntity[],
+        isEqual
+      ).map((part: TextPartEntity, idx: number) => {
         if (part.entityType === "event") {
           return <Event name={part.event} key={idx} />;
         }
@@ -36,7 +40,7 @@ const EntityList = ({ textParts }: { textParts: GameText }) => {
           return <RiverDestination key={idx} name={part.riverDestination} />;
         }
         if (part.entityType === "riverDestinationSpot") {
-          return <RiverDestinationSpot key={idx} name={part.spot} />;
+          return null;
         }
         assertUnreachable(part, `Unexpected part: ${JSON.stringify(part)}`);
         return null;

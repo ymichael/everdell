@@ -7208,7 +7208,7 @@
     },
     {
       "type": "text",
-      "text": " claimed the "
+      "text": " claimed "
     },
     {
       "type": "entity",
@@ -7217,7 +7217,7 @@
     },
     {
       "type": "text",
-      "text": " wonder."
+      "text": "."
     }
   ],
   [
@@ -7227,7 +7227,7 @@
     },
     {
       "type": "text",
-      "text": " claimed the "
+      "text": " claimed "
     },
     {
       "type": "entity",
@@ -7236,7 +7236,7 @@
     },
     {
       "type": "text",
-      "text": " wonder."
+      "text": "."
     }
   ],
   [
@@ -7246,7 +7246,7 @@
     },
     {
       "type": "text",
-      "text": " claimed the "
+      "text": " claimed "
     },
     {
       "type": "entity",
@@ -7255,7 +7255,7 @@
     },
     {
       "type": "text",
-      "text": " wonder."
+      "text": "."
     }
   ],
   [
@@ -7265,7 +7265,7 @@
     },
     {
       "type": "text",
-      "text": " claimed the "
+      "text": " claimed "
     },
     {
       "type": "entity",
@@ -7274,7 +7274,7 @@
     },
     {
       "type": "text",
-      "text": " wonder."
+      "text": "."
     }
   ],
   [
@@ -7686,6 +7686,100 @@
     {
       "type": "resource",
       "resourceType": "RESIN"
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " claimed the "
+    },
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "Romantic Cruise"
+    },
+    {
+      "type": "text",
+      "text": " event."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "Romantic Cruise"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " chose to search the deck for a "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Wife"
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "Romantic Cruise"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gained 5 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "Romantic Cruise"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " tried to draw a "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Wife"
+    },
+    {
+      "type": "text",
+      "text": " from the deck, but there were none remaining in the deck."
     }
   ],
   [
@@ -9466,8 +9560,8 @@
     },
     {
       "type": "entity",
-      "entityType": "riverDestinationSpot",
-      "spot": "SHOAL"
+      "entityType": "riverDestination",
+      "riverDestination": "Shoal"
     },
     {
       "type": "text",

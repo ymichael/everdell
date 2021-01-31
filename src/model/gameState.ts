@@ -944,18 +944,17 @@ export class GameState {
     }
     if (
       pendingInput.inputType === GameInputType.DISCARD_CARDS &&
-      pendingInput.minCards === 0 &&
-      player.cardsInHand.length === 0
+      pendingInput.minCards === player.cardsInHand.length
     ) {
       return {
         ...pendingInput,
+        clientOptions: { cardsToDiscard: player.cardsInHand },
         isAutoAdvancedInput: true,
       };
     }
 
     if (
       pendingInput.inputType === GameInputType.SELECT_PLAYED_CARDS &&
-      pendingInput.minToSelect === pendingInput.maxToSelect &&
       pendingInput.cardOptions.length === pendingInput.minToSelect
     ) {
       return {
@@ -976,7 +975,6 @@ export class GameState {
 
     if (
       pendingInput.inputType === GameInputType.SELECT_CARDS &&
-      pendingInput.minToSelect === pendingInput.maxToSelect &&
       pendingInput.cardOptions.length === pendingInput.minToSelect
     ) {
       return {

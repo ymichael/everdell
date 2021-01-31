@@ -20,8 +20,8 @@ async function getTestGameJSON(
   gameStateMutationFn = (gameState: GameState, player: Player) => {}
 ): Promise<GameJSON> {
   const gameState = testInitialGameState({
-    ...args,
     playerNames: ["Michael", "Elynn"],
+    ...args,
   });
   gameStateMutationFn(gameState, gameState.getActivePlayer());
   const game = await createGameFromGameState(gameState);
@@ -149,6 +149,25 @@ module.exports = (on: any, config: any) => {
           );
 
           gameState.players[1].addToCity(gameState, CardName.FERRY);
+        }
+      );
+    },
+    "db:play-fool-game": async () => {
+      return await getTestGameJSON(
+        {
+          numPlayers: 4,
+          playerNames: ["Michael", "Elynn", "Chris", "Vanessa"],
+        },
+        (gameState, player) => {
+          const card = Card.fromName(CardName.FOOL);
+          player.gainResources(gameState, {
+            [ResourceType.BERRY]: 5,
+            [ResourceType.RESIN]: 5,
+            [ResourceType.TWIG]: 5,
+            [ResourceType.PEBBLE]: 5,
+          });
+          player.cardsInHand.push(card.name);
+          player.cardsInHand.push(CardName.FARM, CardName.MINE);
         }
       );
     },

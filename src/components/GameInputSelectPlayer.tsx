@@ -17,14 +17,21 @@ const GameInputSelectPlayer: React.FC<{
     <div className={styles.items}>
       {gameInput.playerOptions.map((playerId) => {
         return (
-          <label key={playerId} className={styles.radio_item}>
+          <label
+            data-cy={`select-player-item:${gameState.getPlayer(playerId).name}`}
+            key={playerId}
+            className={styles.radio_item}
+          >
             <Field type="radio" name={name} value={playerId} />
             {gameState.getPlayer(playerId).name}
           </label>
         );
       })}
       {!gameInput.mustSelectOne && (
-        <label className={styles.radio_item}>
+        <label
+          data-cy={`select-player-item:None`}
+          className={styles.radio_item}
+        >
           <Field type="radio" name={name} value={""} />
           {"null"}
         </label>

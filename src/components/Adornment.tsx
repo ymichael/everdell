@@ -29,8 +29,7 @@ export const AdornmentInner = ({ name }: { name: AdornmentName }) => {
             <Description
               textParts={[
                 { type: "HR" },
-                { type: "text", text: "3" },
-                { type: "symbol", symbol: "VP" },
+                { type: "points", value: adornment.baseVP },
               ]}
             />
           </div>

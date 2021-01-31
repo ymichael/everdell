@@ -119,6 +119,14 @@ export const VPIcon = () => {
   return <Image alt="VP Token" src="/images/vp.png" layout="fill" />;
 };
 
+export const Points = ({ numPoints }: { numPoints: number }) => {
+  return (
+    <div className={styles.points}>
+      <span>{numPoints}</span>
+    </div>
+  );
+};
+
 export const WildResourceIcon = () => {
   return (
     <Image alt="WILD Resource" src="/images/wild_resource.png" layout="fill" />
@@ -196,6 +204,8 @@ export const Description = ({ textParts }: { textParts: GameText }) => {
             return <GameIcon key={idx} type={part.resourceType} />;
           case "cardType":
             return <GameIcon key={idx} type={part.cardType} />;
+          case "points":
+            return <Points key={idx} numPoints={part.value} />;
           case "symbol":
             return <GameIcon key={idx} type={part.symbol} />;
           case "player":

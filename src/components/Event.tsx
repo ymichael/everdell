@@ -58,13 +58,7 @@ export const EventInner: React.FC<{
         {event.baseVP ? (
           <div className={styles.base_vp}>
             <Description
-              textParts={[
-                {
-                  type: "text",
-                  text: `${event.baseVP} `,
-                },
-                { type: "symbol", symbol: "VP" },
-              ]}
+              textParts={[{ type: "points", value: event.baseVP }]}
             />
           </div>
         ) : null}

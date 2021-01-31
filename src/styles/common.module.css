@@ -32,6 +32,25 @@
   margin-top: -10px;
 }
 
+.points {
+  background: var(--color-vp);
+  width: 22px;
+  height: 22px;
+  margin-right: 2px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.points span {
+  font-weight: var(--font-bold);
+  color: var(--color-vp-text);
+  display: inline-block;
+  font-size: 12px;
+  text-align: center;
+}
+
 .resource_inner {
   height: 20px;
   width: 20px;

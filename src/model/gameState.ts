@@ -3,6 +3,7 @@ import {
   AmbassadorPlacementInfo,
   CardName,
   EventName,
+  EventType,
   EventNameToPlayerId,
   GameInput,
   GameInputClaimEvent,
@@ -537,7 +538,11 @@ export class GameState {
     }
 
     const player = this.getActivePlayer();
-    this.addGameLog([player, " claimed the ", event, " event."]);
+    if (event.type === EventType.WONDER) {
+      this.addGameLog([player, " claimed ", event, "."]);
+    } else {
+      this.addGameLog([player, " claimed the ", event, " event."]);
+    }
 
     event.play(this, gameInput);
     this.eventsMap[event.name] = this._activePlayerId;

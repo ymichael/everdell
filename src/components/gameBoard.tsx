@@ -181,7 +181,9 @@ export const Events: React.FC<{
   });
 
   return (
-    <GameBlock title={"Events"}>
+    <GameBlock
+      title={gameState.gameOptions.pearlbrook ? "Events & Wonders" : "Events"}
+    >
       <div id={"js-game-events"} className={styles.event_items}>
         {columns.map((events, idx) => {
           return (

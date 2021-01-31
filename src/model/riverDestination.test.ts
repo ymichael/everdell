@@ -512,6 +512,21 @@ describe("RiverDestinationMap", () => {
           },
         ]);
       }).to.throwException(/not enough cards/i);
+
+      player.addCardToHand(gameState, CardName.HUSBAND);
+      player.addCardToHand(gameState, CardName.WIFE);
+      player.spendResources({ [ResourceType.BERRY]: 2 });
+
+      expect(() => {
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.PLACE_AMBASSADOR,
+            clientOptions: {
+              loc: { type: "spot", spot: RiverDestinationSpotName.SHOAL },
+            },
+          },
+        ]);
+      }).to.throwException(/not enough resources/i);
     });
 
     it("should ask the player to spend resources and discard cards", () => {

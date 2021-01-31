@@ -27,7 +27,7 @@ describe("Claim Event", () => {
       cy.contains("Submit").click();
     });
 
-    cy.contains("Michael claimed the 4 event");
+    cy.contains("Michael claimed the Event:4 PRODUCTION event.");
     cy.contains("Waiting for Elynn");
 
     cy.get("#js-game-events").within(() => {

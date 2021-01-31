@@ -20,7 +20,6 @@ describe("Select River Destination to copy", () => {
       cy.get("#js-game-input-type-PLACE_AMBASSADOR").click();
 
       // Make sure clicking on different options work.
-      cy.get("[data-cy='place-ambassador-item-spot:SHOAL']").click();
       cy.get("[data-cy='place-ambassador-item-spot:THREE_PRODUCTION']").click();
       cy.get("[data-cy='place-ambassador-item-spot:TWO_TRAVELER']").click();
       cy.get("[data-cy='place-ambassador-item-card:Ferry']").click();

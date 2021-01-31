@@ -45,8 +45,9 @@ describe("Play Ranger", () => {
       cy.contains("Submit").click();
     });
 
+    cy.contains("Ranger: Place your worker");
+
     cy.get("#js-game-input-box-form").within(() => {
-      cy.contains("Ranger: Place your worker");
       cy.get("[data-cy='select-worker-placement-item:4 PRODUCTION']").click();
       cy.contains("Submit").click();
     });

@@ -19,7 +19,10 @@ const GamePointsBreakdown: React.FC<{
               <th>{"Card Points"}</th>
               <th>{"Event Points"}</th>
               {gameState.gameOptions.pearlbrook && (
-                <th>{"Adornment Points"}</th>
+                <>
+                  <th>{"Adornment Points"}</th>
+                  <th>{"Wonder Points"}</th>
+                </>
               )}
               <th>{"Journey Points"}</th>
               <th>
@@ -47,7 +50,10 @@ const GamePointsBreakdown: React.FC<{
                   <td>{player.getPointsFromCards(gameState)}</td>
                   <td>{player.getPointsFromEvents(gameState)}</td>
                   {gameState.gameOptions.pearlbrook && (
-                    <td>{player.getPointsFromAdornments(gameState)}</td>
+                    <>
+                      <td>{player.getPointsFromAdornments(gameState)}</td>
+                      <td>{player.getPointsFromWonders(gameState)}</td>
+                    </>
                   )}
                   <td>{player.getPointsFromJourney(gameState)}</td>
                   <td>{player.getNumResourcesByType(ResourceType.VP)}</td>

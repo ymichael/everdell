@@ -6,6 +6,7 @@ import {
   CardName,
   CardType,
   EventName,
+  EventType,
   Season,
   ResourceType,
   GameInput,
@@ -495,10 +496,25 @@ export class Player implements IGameTextEntity {
     return points;
   }
 
+  getPointsFromWonders(gameState: GameState): number {
+    let points = 0;
+    Object.keys(this.claimedEvents).forEach((eventName) => {
+      const event = Event.fromName(eventName as EventName);
+      if (event.type === EventType.WONDER) {
+        points += event.getPoints(gameState, this.playerId);
+      }
+    });
+    return points;
+  }
+
   getPointsFromEvents(gameState: GameState): number {
     let points = 0;
     Object.keys(this.claimedEvents).forEach((eventName) => {
       const event = Event.fromName(eventName as EventName);
+      if (event.type === EventType.WONDER) {
+        // Count these separately
+        return;
+      }
       points += event.getPoints(gameState, this.playerId);
       const eventInfo = this.claimedEvents[eventName as EventName];
       if (eventInfo && eventInfo.storedResources) {
@@ -532,6 +548,7 @@ export class Player implements IGameTextEntity {
     let points = 0;
     points += this.getPointsFromCards(gameState);
     points += this.getPointsFromEvents(gameState);
+    points += this.getPointsFromWonders(gameState);
     points += this.getPointsFromJourney(gameState);
     points += this.getNumResourcesByType(ResourceType.VP);
     points += this.getNumResourcesByType(ResourceType.PEARL) * 2;

@@ -7208,7 +7208,7 @@
     },
     {
       "type": "text",
-      "text": " claimed the "
+      "text": " claimed "
     },
     {
       "type": "entity",
@@ -7217,7 +7217,7 @@
     },
     {
       "type": "text",
-      "text": " event."
+      "text": "."
     }
   ],
   [
@@ -7227,7 +7227,7 @@
     },
     {
       "type": "text",
-      "text": " claimed the "
+      "text": " claimed "
     },
     {
       "type": "entity",
@@ -7236,7 +7236,7 @@
     },
     {
       "type": "text",
-      "text": " event."
+      "text": "."
     }
   ],
   [
@@ -7246,7 +7246,7 @@
     },
     {
       "type": "text",
-      "text": " claimed the "
+      "text": " claimed "
     },
     {
       "type": "entity",
@@ -7255,7 +7255,7 @@
     },
     {
       "type": "text",
-      "text": " event."
+      "text": "."
     }
   ],
   [
@@ -7265,7 +7265,7 @@
     },
     {
       "type": "text",
-      "text": " claimed the "
+      "text": " claimed "
     },
     {
       "type": "entity",
@@ -7274,7 +7274,7 @@
     },
     {
       "type": "text",
-      "text": " event."
+      "text": "."
     }
   ],
   [
@@ -9755,8 +9755,8 @@
     },
     {
       "type": "entity",
-      "entityType": "riverDestinationSpot",
-      "spot": "SHOAL"
+      "entityType": "riverDestination",
+      "riverDestination": "Shoal"
     },
     {
       "type": "text",

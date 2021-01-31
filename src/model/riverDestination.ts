@@ -295,7 +295,7 @@ export class RiverDestinationMap {
         gameState.addGameLogFromRiverDestinationSpot(spotName, [
           player,
           " visited ",
-          riverDestinationSpot,
+          riverDestination,
           `.`,
         ]);
       } else {

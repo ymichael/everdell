@@ -3,6 +3,7 @@ import {
   AmbassadorPlacementInfo,
   CardName,
   EventName,
+  EventType,
   EventNameToPlayerId,
   GameInput,
   GameInputClaimEvent,
@@ -537,7 +538,11 @@ export class GameState {
     }
 
     const player = this.getActivePlayer();
-    this.addGameLog([player, " claimed the ", event, " event."]);
+    if (event.type === EventType.WONDER) {
+      this.addGameLog([player, " claimed ", event, "."]);
+    } else {
+      this.addGameLog([player, " claimed the ", event, " event."]);
+    }
 
     event.play(this, gameInput);
     this.eventsMap[event.name] = this._activePlayerId;
@@ -939,18 +944,17 @@ export class GameState {
     }
     if (
       pendingInput.inputType === GameInputType.DISCARD_CARDS &&
-      pendingInput.minCards === 0 &&
-      player.cardsInHand.length === 0
+      pendingInput.minCards === player.cardsInHand.length
     ) {
       return {
         ...pendingInput,
+        clientOptions: { cardsToDiscard: player.cardsInHand },
         isAutoAdvancedInput: true,
       };
     }
 
     if (
       pendingInput.inputType === GameInputType.SELECT_PLAYED_CARDS &&
-      pendingInput.minToSelect === pendingInput.maxToSelect &&
       pendingInput.cardOptions.length === pendingInput.minToSelect
     ) {
       return {
@@ -971,7 +975,6 @@ export class GameState {
 
     if (
       pendingInput.inputType === GameInputType.SELECT_CARDS &&
-      pendingInput.minToSelect === pendingInput.maxToSelect &&
       pendingInput.cardOptions.length === pendingInput.minToSelect
     ) {
       return {

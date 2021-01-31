@@ -5,6 +5,7 @@ import { Formik, FormikProps } from "formik";
 import {
   GameInput,
   GameInputType,
+  GameOptions,
   GameInputMultiStep,
   LocationName,
   CardName,
@@ -225,7 +226,8 @@ const renderMultiStepGameInputLabel = (
 };
 
 export const renderGameInputLabel = (
-  gameInput: GameInput
+  gameInput: GameInput,
+  gameOptions: Pick<GameOptions, "pearlbrook"> = { pearlbrook: false }
 ): React.ReactElement => {
   switch (gameInput.inputType) {
     case GameInputType.PLAY_CARD:
@@ -235,7 +237,11 @@ export const renderGameInputLabel = (
     case GameInputType.VISIT_DESTINATION_CARD:
       return <span>{"Visit Destination Card"}</span>;
     case GameInputType.CLAIM_EVENT:
-      return <span>{"Claim Event"}</span>;
+      return (
+        <span>
+          {gameOptions?.pearlbrook ? "Claim Event / Wonders" : "Claim Event"}
+        </span>
+      );
     case GameInputType.PREPARE_FOR_SEASON:
       return <span>{"Prepare for Season"}</span>;
     case GameInputType.GAME_END:

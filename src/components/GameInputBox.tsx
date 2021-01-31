@@ -305,7 +305,10 @@ const GameInputBox: React.FC<{
                         }}
                       />
                       <span className={styles.input_type_radio_span}>
-                        {renderGameInputLabel(gameInput)}
+                        {renderGameInputLabel(
+                          gameInput,
+                          gameStateImpl.gameOptions
+                        )}
                       </span>
                     </label>
                     {isSelected && (

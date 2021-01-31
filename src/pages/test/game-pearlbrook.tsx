@@ -28,6 +28,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       pearlbrook: true,
     },
   });
+
+  gameState.locationsMap[LocationName.FOREST_TWO_WILD] = [];
+  gameState.locationsMap[LocationName.FOREST_ONE_PEBBLE_THREE_CARD] = [];
+  gameState.locationsMap[
+    LocationName.FOREST_DISCARD_ANY_THEN_DRAW_TWO_PER_CARD
+  ] = [];
+
   gameState.players.forEach((player, idx) => {
     for (let i = 0; i < idx; i++) {
       player.nextSeason();
@@ -58,18 +65,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     player.addToCity(gameState, CardName.FARM);
     player.addToCity(gameState, CardName.MINE).usedForCritter = true;
     player.addToCity(gameState, CardName.CLOCK_TOWER);
-
-    player.placeWorkerOnCard(
-      gameState,
-      player.getFirstPlayedCard(CardName.UNIVERSITY)
-    );
   });
-
-  gameState.locationsMap[LocationName.FOREST_TWO_WILD] = [];
-  gameState.locationsMap[LocationName.FOREST_ONE_PEBBLE_THREE_CARD] = [];
-  gameState.locationsMap[
-    LocationName.FOREST_DISCARD_ANY_THEN_DRAW_TWO_PER_CARD
-  ] = [];
 
   gameState.replenishMeadow();
 

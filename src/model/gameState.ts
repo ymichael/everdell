@@ -337,7 +337,7 @@ export class GameState {
   }
 
   replenishMeadow(): void {
-    while (this.meadowCards.length !== MEADOW_SIZE) {
+    while (this.meadowCards.length < MEADOW_SIZE) {
       this.meadowCards.push(this.drawCard());
     }
   }

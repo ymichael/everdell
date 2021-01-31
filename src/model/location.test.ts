@@ -394,6 +394,72 @@ describe("Location", () => {
     });
   });
 
+  describe(LocationName.FOREST_DISCARD_2_MEADOW_DRAW_2_MEADOW_GAIN_ANY, () => {
+    const name = LocationName.FOREST_DISCARD_2_MEADOW_DRAW_2_MEADOW_GAIN_ANY;
+
+    it("should allow player to discard 2, draw 2 from the Meadow and gain 1 ANY", () => {
+      gameState.locationsMap[name] = [];
+
+      gameState.meadowCards.push(CardName.FARM);
+      gameState.meadowCards.push(CardName.FARM);
+      gameState.meadowCards.push(CardName.FARM);
+      gameState.meadowCards.push(CardName.FARM);
+      gameState.meadowCards.push(CardName.MINE);
+      gameState.meadowCards.push(CardName.MINE);
+      gameState.meadowCards.push(CardName.MINE);
+      gameState.meadowCards.push(CardName.MINE);
+
+      gameState.deck.addToStack(CardName.RANGER);
+      gameState.deck.addToStack(CardName.RANGER);
+
+      expect(player.cardsInHand.length).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        placeWorkerInput(name),
+        {
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: GameInputType.PLACE_WORKER,
+          cardOptions: gameState.meadowCards,
+          maxToSelect: 2,
+          minToSelect: 2,
+          locationContext: name,
+          clientOptions: {
+            selectedCards: [CardName.MINE, CardName.FARM],
+          },
+        },
+        {
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: GameInputType.SELECT_CARDS,
+          cardOptions: [
+            CardName.FARM,
+            CardName.FARM,
+            CardName.FARM,
+            CardName.MINE,
+            CardName.MINE,
+            CardName.MINE,
+            CardName.RANGER,
+            CardName.RANGER,
+          ],
+          maxToSelect: 2,
+          minToSelect: 2,
+          locationContext: name,
+          clientOptions: {
+            selectedCards: [CardName.RANGER, CardName.RANGER],
+          },
+        },
+        {
+          inputType: GameInputType.SELECT_OPTION_GENERIC,
+          prevInputType: GameInputType.SELECT_CARDS,
+          options: ["BERRY", "TWIG", "RESIN", "PEBBLE"],
+          locationContext: name,
+          clientOptions: { selectedOption: "PEBBLE" },
+        },
+      ]);
+      expect(player.cardsInHand.length).to.be(2);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(1);
+    });
+  });
+
   describe("HAVEN", () => {
     it("player can visit the haven", () => {
       const location = Location.fromName(LocationName.HAVEN);

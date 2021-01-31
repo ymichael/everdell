@@ -41,7 +41,7 @@ describe("Play Adornment", () => {
       cy.contains("Spyglass");
     });
 
-    cy.contains("Spyglass: Michael gained 1 , 1 and 1 .");
+    cy.contains("Spyglass: Michael gained 1 BERRY, 1 CARD and 1 PEARL.");
     cy.contains("Waiting for Elynn");
   });
 });

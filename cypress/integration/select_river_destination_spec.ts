@@ -37,7 +37,9 @@ describe("Select River Destination to copy", () => {
     });
 
     cy.contains("Ferry: Michael copied Watermill.");
-    cy.contains("Watermill: Spend 1 and 1 to draw 2 and gain 1 ");
+    cy.contains(
+      "Watermill: Spend 1 TWIG and 1 VP to draw 2 CARD and gain 1 PEARL"
+    );
 
     cy.get("#js-game-input-box-form").within(() => {
       cy.get("#js-game-input-type-SELECT_OPTION_GENERIC").click();
@@ -47,7 +49,9 @@ describe("Select River Destination to copy", () => {
       cy.contains("Submit").click();
     });
 
-    cy.contains("Watermill: Michael spent ");
+    cy.contains(
+      "Watermill: Michael spent 1 TWIG and 1 VP to draw 2 CARD and gain 1 PEARL."
+    );
     cy.contains("Waiting for Elynn");
   });
 });

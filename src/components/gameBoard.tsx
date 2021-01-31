@@ -286,6 +286,7 @@ export const River: React.FC<{
           .map(([spotName, spotInfo], idx) => {
             return (
               <RiverDestinationSpot
+                key={idx}
                 name={spotName}
                 destination={spotInfo.name}
                 ambassadors={spotInfo.ambassadors.map(

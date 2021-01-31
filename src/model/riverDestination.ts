@@ -950,8 +950,8 @@ function payVPResourceToDrawCardAndPearl({
       if (selectedOption === "Ok") {
         gameState.addGameLogFromRiverDestination(name, [
           player,
-          ` spent ${resourceType} and VP `,
-          `to draw ${numCardsToDraw} CARD and gain 1 PEARL`,
+          ` spent 1 ${resourceType} and 1 VP `,
+          `to draw ${numCardsToDraw} CARD and gain 1 PEARL.`,
         ]);
         player.spendResources({ [ResourceType.VP]: 1, [resourceType]: 1 });
         player.gainResources(gameState, { [ResourceType.PEARL]: 1 });

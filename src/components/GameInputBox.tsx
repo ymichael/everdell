@@ -39,13 +39,16 @@ const GameInputBoxText: React.FC<{
   );
 };
 
+const defaultOrder = 10;
 const gameInputSortOrder: Partial<Record<GameInputType, number>> = {
   [GameInputType.CLAIM_EVENT]: 1,
   [GameInputType.PLAY_CARD]: 2,
+  [GameInputType.PLAY_ADORNMENT]: 2.5,
   [GameInputType.PLACE_WORKER]: 3,
+  [GameInputType.PLACE_AMBASSADOR]: 3.5,
   [GameInputType.VISIT_DESTINATION_CARD]: 4,
-  [GameInputType.PREPARE_FOR_SEASON]: 5,
-  [GameInputType.GAME_END]: 6,
+  [GameInputType.PREPARE_FOR_SEASON]: defaultOrder + 1,
+  [GameInputType.GAME_END]: defaultOrder + 2,
 };
 
 const GameInputBoxInner = ({
@@ -233,8 +236,8 @@ const GameInputBox: React.FC<{
   }
 
   gameInputs.sort((a, b) =>
-    (gameInputSortOrder[a.inputType] || 10) <
-    (gameInputSortOrder[b.inputType] || 10)
+    (gameInputSortOrder[a.inputType] || defaultOrder) <
+    (gameInputSortOrder[b.inputType] || defaultOrder)
       ? -1
       : 1
   );

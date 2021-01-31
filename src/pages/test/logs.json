@@ -5756,6 +5756,12 @@
   ],
   [
     {
+      "type": "text",
+      "text": "Dealing 2 adornment cards to each player."
+    }
+  ],
+  [
+    {
       "type": "player",
       "name": "Player #0"
     },
@@ -8335,6 +8341,271 @@
       "type": "entity",
       "entityType": "location",
       "location": "DISCARD_ANY_THEN_DRAW_TWO_PER_CARD"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " placed a worker on "
+    },
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "FOREST_ACTIVATE_2_PRODUCTION"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "FOREST_ACTIVATE_2_PRODUCTION"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " activated "
+    },
+    {
+      "type": "cardType",
+      "cardType": "PRODUCTION"
+    },
+    {
+      "type": "text",
+      "text": " on "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Farm"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Mine"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " placed a worker on "
+    },
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "FOREST_RESIN_PEBBLE_OR_FOUR_CARDS"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "FOREST_RESIN_PEBBLE_OR_FOUR_CARDS"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " drew 4 "
+    },
+    {
+      "type": "symbol",
+      "symbol": "CARD"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "FOREST_RESIN_PEBBLE_OR_FOUR_CARDS"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gained 1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "RESIN"
+    },
+    {
+      "type": "text",
+      "text": " & 1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "PEBBLE"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " placed a worker on "
+    },
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "FOREST_DISCARD_2_MEADOW_DRAW_2_MEADOW_GAIN_ANY"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "FOREST_DISCARD_2_MEADOW_DRAW_2_MEADOW_GAIN_ANY"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " discarded "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Mine"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Farm"
+    },
+    {
+      "type": "text",
+      "text": " from the Meadow."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "FOREST_DISCARD_2_MEADOW_DRAW_2_MEADOW_GAIN_ANY"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " selected "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Ranger"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Ranger"
+    },
+    {
+      "type": "text",
+      "text": " from the Meadow."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "location",
+      "location": "FOREST_DISCARD_2_MEADOW_DRAW_2_MEADOW_GAIN_ANY"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gained "
+    },
+    {
+      "type": "resource",
+      "resourceType": "PEBBLE"
     },
     {
       "type": "text",

@@ -1,18 +1,17 @@
 import * as React from "react";
 
-import { GameInputSelectCards as TGameInputSelectCards } from "../model/types";
-
+import { CardName } from "../model/types";
 import Card from "./Card";
 import GameInputSelectItemWrapper from "./GameInputSelectItemWrapper";
 
-const GameInputSelectCards: React.FC<{
+const GameInputCardsSelector: React.FC<{
   name: string;
-  gameInput: TGameInputSelectCards;
-}> = ({ name, gameInput }) => {
+  options: CardName[];
+}> = ({ name, options }) => {
   return (
     <GameInputSelectItemWrapper
       name={name}
-      items={gameInput.cardOptions}
+      items={options}
       chooseOne={false}
       renderItem={(card) => (
         <div data-cy={`select-card-item:${card}`}>
@@ -23,4 +22,4 @@ const GameInputSelectCards: React.FC<{
   );
 };
 
-export default GameInputSelectCards;
+export default GameInputCardsSelector;

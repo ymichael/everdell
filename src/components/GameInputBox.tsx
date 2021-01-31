@@ -12,11 +12,10 @@ import { Player } from "../model/player";
 import { GameBlock } from "./common";
 
 import { GameInputBoxContainer, renderGameInputLabel } from "./gameInputCommon";
-import GameInputDiscardCards from "./GameInputDiscardCards";
 import GameInputSelectPlayer from "./GameInputSelectPlayer";
 import GameInputSelectResources from "./GameInputSelectResources";
 import GameInputSelectPlayedCards from "./GameInputSelectPlayedCards";
-import GameInputSelectCards from "./GameInputSelectCards";
+import GameInputCardsSelector from "./GameInputCardsSelector";
 import GameInputPlaceWorkerSelector from "./GameInputPlaceWorkerSelector";
 import GameInputClaimEventSelector from "./GameInputClaimEventSelector";
 import GameInputSelectRiverDestinationSelector from "./GameInputSelectRiverDestinationSelector";
@@ -82,10 +81,9 @@ const GameInputBoxInner = ({
       ) : gameInput.inputType === GameInputType.GAME_END ? (
         <></>
       ) : gameInput.inputType === GameInputType.DISCARD_CARDS ? (
-        <GameInputDiscardCards
+        <GameInputCardsSelector
           name={"gameInput.clientOptions.cardsToDiscard"}
-          gameInput={gameInput}
-          viewingPlayer={viewingPlayer}
+          options={viewingPlayer.cardsInHand}
         />
       ) : gameInput.inputType === GameInputType.SELECT_RESOURCES ? (
         <GameInputSelectResources
@@ -108,9 +106,9 @@ const GameInputBoxInner = ({
           viewingPlayer={viewingPlayer}
         />
       ) : gameInput.inputType === GameInputType.SELECT_CARDS ? (
-        <GameInputSelectCards
+        <GameInputCardsSelector
           name={"gameInput.clientOptions.selectedCards"}
-          gameInput={gameInput}
+          options={gameInput.cardOptions}
         />
       ) : gameInput.inputType === GameInputType.SELECT_PAYMENT_FOR_CARD ? (
         <GameInputSelectPaymentForCard

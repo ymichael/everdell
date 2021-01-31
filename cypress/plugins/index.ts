@@ -152,7 +152,27 @@ module.exports = (on: any, config: any) => {
         }
       );
     },
-    "db:select-played-card-game": async () => {
+    "db:play-bard-game": async () => {
+      return await getTestGameJSON({}, (gameState, player) => {
+        const card = Card.fromName(CardName.BARD);
+        player.gainResources(gameState, {
+          [ResourceType.BERRY]: 5,
+          [ResourceType.RESIN]: 5,
+          [ResourceType.TWIG]: 5,
+          [ResourceType.PEBBLE]: 5,
+        });
+        player.cardsInHand.push(card.name);
+        player.cardsInHand.push(
+          CardName.FARM,
+          CardName.MINE,
+          CardName.RANGER,
+          CardName.QUEEN,
+          CardName.KING,
+          CardName.WANDERER
+        );
+      });
+    },
+    "db:play-miner-mole-game": async () => {
       return await getTestGameJSON({}, (gameState, player) => {
         const player2 = gameState.players[1];
         player2.addToCity(gameState, CardName.GENERAL_STORE);
@@ -163,7 +183,7 @@ module.exports = (on: any, config: any) => {
         player.cardsInHand.push(card.name);
       });
     },
-    "db:visit-destination-game": async () => {
+    "db:visit-inn-game": async () => {
       return await getTestGameJSON({}, (gameState, player) => {
         // Visit Inn
         player.addToCity(gameState, CardName.INN);

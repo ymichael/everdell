@@ -1,11 +1,11 @@
 import { GameJSON } from "../../src/model/jsonTypes";
 
-describe("Select Played Card", () => {
+describe("Play Miner Mole and select played card", () => {
   let gameJSON: GameJSON;
 
   beforeEach(async () => {
     gameJSON = await ((cy.task(
-      "db:select-played-card-game"
+      "db:play-miner-mole-game"
     ) as unknown) as Promise<GameJSON>);
   });
 

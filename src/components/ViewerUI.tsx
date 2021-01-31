@@ -13,7 +13,7 @@ const ViewerUI: React.FC<{
   return (
     <>
       <GameBlock title={"Your hand"}>
-        <div className={styles.cards}>
+        <div id={"js-player-hand"} className={styles.cards}>
           {player.cardsInHand.map((cardName, idx) => (
             <ItemWrapper key={`card=${idx}`}>
               <Card name={cardName} />

@@ -184,6 +184,17 @@ export class RiverDestinationMap {
       }
     }
 
+    // player cannot visit shoal if they don't have enough resources or cards
+    if (spotName === RiverDestinationSpotName.SHOAL) {
+      if (player.getNumCardCostResources() < 2) {
+        return `Not enough resources to visit shoal.`;
+      }
+
+      if (player.cardsInHand.length < 2) {
+        return `Not enough cards to visit shoal.`;
+      }
+    }
+
     // Check if player fulfills the criteria of the spot!
     const adjustCountsBy = {
       [CardType.PRODUCTION]: 0,
@@ -452,6 +463,7 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
           return "Not enough cards to discard.";
         }
       }
+
       return null;
     },
     playInner(gameState: GameState, gameInput: GameInput) {

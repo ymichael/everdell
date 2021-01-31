@@ -214,13 +214,54 @@ describe("GameState", () => {
       expect(gameState.getPlayableAmbassadorLocations()).to.eql([]);
     });
 
-    it("should return SHOAL if player has unused ambassador", () => {
+    it("should return SHOAL if player has unused ambassador and can visit", () => {
+      player.addCardToHand(gameState, CardName.HUSBAND);
+      player.addCardToHand(gameState, CardName.WIFE);
+
+      player.gainResources(gameState, { [ResourceType.TWIG]: 2 });
+
       expect(gameState.getPlayableAmbassadorLocations()).to.eql([
         { type: "spot", spot: RiverDestinationSpotName.SHOAL },
       ]);
     });
 
+    it("should not return SHOAL if player doesn't have enough cards", () => {
+      player.gainResources(gameState, { [ResourceType.TWIG]: 2 });
+
+      expect(gameState.getPlayableAmbassadorLocations()).to.eql([]);
+    });
+
+    it("should not return SHOAL if player doesn't have enough resources", () => {
+      player.addCardToHand(gameState, CardName.HUSBAND);
+      player.addCardToHand(gameState, CardName.WIFE);
+
+      expect(gameState.getPlayableAmbassadorLocations()).to.eql([]);
+    });
+
+    it("should not return SHOAL if player doesn't any resources or cards", () => {
+      expect(gameState.getPlayableAmbassadorLocations()).to.eql([]);
+    });
+
     it("should return THREE_PRODUCTION if player has 3 PRODUCTION in city", () => {
+      expect(gameState.getPlayableAmbassadorLocations()).to.eql([]);
+
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
+
+      expect(gameState.getPlayableAmbassadorLocations()).to.eql([
+        { type: "spot", spot: RiverDestinationSpotName.THREE_PRODUCTION },
+      ]);
+    });
+
+    it("should return THREE_PRODUCTION and SHOAL if player has 3 PRODUCTION in city and enough resources and cards to visit SHOAL", () => {
+      expect(gameState.getPlayableAmbassadorLocations()).to.eql([]);
+
+      player.addCardToHand(gameState, CardName.HUSBAND);
+      player.addCardToHand(gameState, CardName.WIFE);
+
+      player.gainResources(gameState, { [ResourceType.TWIG]: 2 });
+
       expect(gameState.getPlayableAmbassadorLocations()).to.eql([
         { type: "spot", spot: RiverDestinationSpotName.SHOAL },
       ]);
@@ -236,15 +277,10 @@ describe("GameState", () => {
     });
 
     it("should return TWO_TRAVELER if player has 2 TRAVELER in city", () => {
-      expect(gameState.getPlayableAmbassadorLocations()).to.eql([
-        { type: "spot", spot: RiverDestinationSpotName.SHOAL },
-      ]);
-
       player.addToCity(gameState, CardName.RANGER);
       player.addToCity(gameState, CardName.WANDERER);
 
       expect(gameState.getPlayableAmbassadorLocations()).to.eql([
-        { type: "spot", spot: RiverDestinationSpotName.SHOAL },
         { type: "spot", spot: RiverDestinationSpotName.TWO_TRAVELER },
       ]);
 
@@ -253,7 +289,6 @@ describe("GameState", () => {
       player.addToCity(gameState, CardName.FARM);
 
       expect(gameState.getPlayableAmbassadorLocations()).to.eql([
-        { type: "spot", spot: RiverDestinationSpotName.SHOAL },
         { type: "spot", spot: RiverDestinationSpotName.THREE_PRODUCTION },
         { type: "spot", spot: RiverDestinationSpotName.TWO_TRAVELER },
       ]);

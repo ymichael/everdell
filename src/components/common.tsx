@@ -280,6 +280,7 @@ export const Description = ({ textParts }: { textParts: GameText }) => {
             if (part.entityType === "riverDestinationSpot") {
               return (
                 <span key={idx} className={styles.entity_part}>
+                  <span hidden>River Destination Spot:</span>
                   <Description
                     textParts={
                       RiverDestinationSpot.fromName(part.spot).shortName

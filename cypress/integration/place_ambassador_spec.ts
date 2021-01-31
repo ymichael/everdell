@@ -31,7 +31,6 @@ describe("Place Ambassador", () => {
       cy.get("#js-game-input-type-PLACE_AMBASSADOR").click();
 
       // Make sure clicking on different options work.
-      cy.get("[data-cy='place-ambassador-item-spot:SHOAL']").click();
       cy.get("[data-cy='place-ambassador-item-spot:THREE_PRODUCTION']").click();
       cy.get("[data-cy='place-ambassador-item-spot:TWO_TRAVELER']").click();
       cy.get("[data-cy='place-ambassador-item-card:Ferry']").click();
@@ -60,7 +59,9 @@ describe("Place Ambassador", () => {
       cy.contains("Submit").click();
     });
 
-    cy.contains("2 : Michael visited 2 and revealed");
+    cy.contains(
+      "River Destination Spot:2 TRAVELER: Michael visited River Destination Spot:2 TRAVELER and revealed Great Hall."
+    );
     cy.get("#js-game-river").within(() => {
       cy.get("[data-cy='river-destination-spot:TWO_TRAVELER']").within(() => {
         cy.contains("Great Hall");
@@ -79,7 +80,7 @@ describe("Place Ambassador", () => {
       });
     });
 
-    cy.contains("2 : Michael gained 1 ");
+    cy.contains("River Destination Spot:2 TRAVELER: Michael gained 1 PEARL.");
     cy.contains("Waiting for Elynn");
   });
 });

@@ -21,16 +21,24 @@ const GameInputPlaceAmbassadorSelector: React.FC<{
       name={name}
       items={options}
       chooseOne={true}
-      renderItem={(spotInfo) => {
-        if (spotInfo.type === "spot") {
+      renderItem={(ambassadorPlacementInfo) => {
+        if (ambassadorPlacementInfo.type === "spot") {
+          const spotName = ambassadorPlacementInfo.spot;
+          const spotInfo = gameState.riverDestinationMap!.spots[spotName];
           return (
-            <div data-cy={`place-ambassador-item-spot:${spotInfo.spot}`}>
-              <RiverDestinationSpot name={spotInfo.spot} />
+            <div data-cy={`place-ambassador-item-spot:${spotName}`}>
+              <RiverDestinationSpot
+                name={spotName}
+                destination={spotInfo.revealed ? spotInfo.name : null}
+                ambassadors={spotInfo.ambassadors.map(
+                  (playerId) => gameState.getPlayer(playerId).name
+                )}
+              />
             </div>
           );
         }
-        if (spotInfo.type === "card") {
-          const cardInfo = spotInfo.playedCard;
+        if (ambassadorPlacementInfo.type === "card") {
+          const cardInfo = ambassadorPlacementInfo.playedCard;
           return (
             <div data-cy={`place-ambassador-item-card:${cardInfo.cardName}`}>
               <PlayedCard
@@ -41,7 +49,7 @@ const GameInputPlaceAmbassadorSelector: React.FC<{
             </div>
           );
         }
-        assertUnreachable(spotInfo, spotInfo);
+        assertUnreachable(ambassadorPlacementInfo, ambassadorPlacementInfo);
       }}
     />
   );

@@ -11,15 +11,15 @@ describe("Place Ambassador", () => {
 
   it("should allow player to place ambassador", () => {
     const player1 = gameJSON.gameState.players[0];
-
-    // Take player 1's turn.
     cy.visit(`/game/${gameJSON.gameId}?playerSecret=${player1.playerSecret}`);
     cy.contains("Place Ambassador");
 
     cy.contains("River");
     cy.get("#js-game-river").within(() => {
       cy.get("[data-cy='river-destination-spot:TWO_TRAVELER']").within(() => {
-        cy.contains("Visit to gain 1 and reveal hidden River Destination.");
+        cy.contains(
+          "Visit to gain 1 PEARL and reveal hidden River Destination."
+        );
       });
     });
 
@@ -35,6 +35,26 @@ describe("Place Ambassador", () => {
       cy.get("[data-cy='place-ambassador-item-spot:THREE_PRODUCTION']").click();
       cy.get("[data-cy='place-ambassador-item-spot:TWO_TRAVELER']").click();
       cy.get("[data-cy='place-ambassador-item-card:Ferry']").click();
+
+      // Should tell you that you can reveal this to gain 1 PEARL
+      cy.get("[data-cy='place-ambassador-item-spot:TWO_TRAVELER']").within(
+        () => {
+          cy.contains(
+            "Visit to gain 1 PEARL and reveal hidden River Destination."
+          );
+          cy.contains("Great Hall").should("not.exist");
+        }
+      );
+
+      // Should NOT tell you that you can reveal this to gain 1 PEARL
+      cy.get("[data-cy='place-ambassador-item-spot:TWO_GOVERNANCE']").within(
+        () => {
+          cy.contains(
+            "Visit to gain 1 PEARL and reveal hidden River Destination."
+          ).should("not.exist");
+          cy.contains("Omicron the Elder");
+        }
+      );
 
       cy.get("[data-cy='place-ambassador-item-spot:TWO_TRAVELER']").click();
       cy.contains("Submit").click();
@@ -53,7 +73,7 @@ describe("Place Ambassador", () => {
     });
 
     cy.get("#js-game-river").within(() => {
-      cy.contains("Visit to gain 1 and reveal hidden River Destination.");
+      cy.contains("Visit to gain 1 PEARL and reveal hidden River Destination.");
       cy.get("[data-cy='river-destination-hidden']").then((ret) => {
         expect(ret.length).to.equal(2);
       });

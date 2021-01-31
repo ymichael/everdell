@@ -134,6 +134,9 @@ module.exports = (on: any, config: any) => {
           player.addToCity(gameState, CardName.WANDERER);
           player.addToCity(gameState, CardName.RANGER);
 
+          player.addToCity(gameState, CardName.SHOPKEEPER);
+          player.addToCity(gameState, CardName.JUDGE);
+
           player.addToCity(gameState, CardName.FARM);
           player.addToCity(gameState, CardName.FARM);
           player.addToCity(gameState, CardName.FARM);

@@ -7984,6 +7984,197 @@
     },
     {
       "type": "text",
+      "text": " claimed the "
+    },
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "Masquerade Invitations"
+    },
+    {
+      "type": "text",
+      "text": " event."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "Masquerade Invitations"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gave 6 "
+    },
+    {
+      "type": "symbol",
+      "symbol": "CARD"
+    },
+    {
+      "type": "text",
+      "text": " to "
+    },
+    {
+      "type": "player",
+      "name": "Player #1"
+    },
+    {
+      "type": "text",
+      "text": " to gain 6 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "Masquerade Invitations"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gave 2 "
+    },
+    {
+      "type": "symbol",
+      "symbol": "CARD"
+    },
+    {
+      "type": "text",
+      "text": " to "
+    },
+    {
+      "type": "player",
+      "name": "Player #1"
+    },
+    {
+      "type": "text",
+      "text": " to gain 2 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "Masquerade Invitations"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gave 3 "
+    },
+    {
+      "type": "symbol",
+      "symbol": "CARD"
+    },
+    {
+      "type": "text",
+      "text": " to "
+    },
+    {
+      "type": "player",
+      "name": "Player #3"
+    },
+    {
+      "type": "text",
+      "text": " to gain 3 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "Masquerade Invitations"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gave 1 "
+    },
+    {
+      "type": "symbol",
+      "symbol": "CARD"
+    },
+    {
+      "type": "text",
+      "text": " to "
+    },
+    {
+      "type": "player",
+      "name": "Player #2"
+    },
+    {
+      "type": "text",
+      "text": " to gain 1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
       "text": " played "
     },
     {

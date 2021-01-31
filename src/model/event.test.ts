@@ -1582,6 +1582,36 @@ describe("Event", () => {
       expect(player4.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
     });
 
+    it("should be able to claim event with 0 resources", () => {
+      const event = Event.fromName(
+        EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN
+      );
+      gameState = testInitialGameState({ numPlayers: 4 });
+      const gameInput = claimEventInput(event.name);
+      let player = gameState.getActivePlayer();
+      let player2 = gameState.players[1];
+      let player3 = gameState.players[2];
+      let player4 = gameState.players[3];
+
+      gameState.eventsMap[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN] = null;
+
+      player.addToCity(gameState, CardName.SHOPKEEPER);
+      player.addToCity(gameState, CardName.POST_OFFICE);
+
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN)
+      ).to.be(undefined);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
+
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN)
+      );
+
+      // shopkeeper is worth 1, post office is worth 2
+      expect(player.getPoints(gameState)).to.be(3);
+    });
+
     it("should be able to give fewer than 3 resources", () => {
       const event = Event.fromName(
         EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN
@@ -3446,6 +3476,499 @@ describe("Event", () => {
         player.getFirstPlayedCard(CardName.STOREHOUSE).resources || {};
 
       expect(resources[ResourceType.VP]).to.be(6);
+    });
+  });
+
+  describe(EventName.SPECIAL_MASQUERADE_INVITATIONS, () => {
+    beforeEach(() => {
+      gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
+      player = gameState.getActivePlayer();
+
+      player.addCardToHand(gameState, CardName.HUSBAND);
+      player.addCardToHand(gameState, CardName.WIFE);
+      player.addCardToHand(gameState, CardName.WIFE);
+      player.addCardToHand(gameState, CardName.QUEEN);
+      player.addCardToHand(gameState, CardName.KING);
+      player.addCardToHand(gameState, CardName.FERRY);
+      player.addCardToHand(gameState, CardName.FERRY_FERRET);
+
+      gameState.eventsMap[EventName.SPECIAL_MASQUERADE_INVITATIONS] = null;
+
+      player.addToCity(gameState, CardName.FAIRGROUNDS);
+      player.addToCity(gameState, CardName.MESSENGER);
+    });
+
+    it("should allow player to give 6 cards to another player for 6 VP", () => {
+      const event = Event.fromName(EventName.SPECIAL_MASQUERADE_INVITATIONS);
+      const gameInput = claimEventInput(event.name);
+      let player2 = gameState.players[1];
+
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_MASQUERADE_INVITATIONS)
+      ).to.be(undefined);
+
+      const selectPlayerInput = {
+        inputType: GameInputType.SELECT_PLAYER as const,
+        prevInput: gameInput,
+        prevInputType: GameInputType.CLAIM_EVENT,
+        playerOptions: gameState.players
+          .filter((p) => {
+            return p.playerId !== player.playerId;
+          })
+          .map((p) => p.playerId),
+        mustSelectOne: false,
+        eventContext: EventName.SPECIAL_MASQUERADE_INVITATIONS,
+        clientOptions: { selectedPlayer: player2.playerId },
+      };
+
+      const selectCardsInput = {
+        inputType: GameInputType.SELECT_CARDS as const,
+        prevInputType: GameInputType.SELECT_PLAYER,
+        prevInput: selectPlayerInput,
+        cardOptions: player.cardsInHand,
+        maxToSelect: 6,
+        minToSelect: 0,
+        eventContext: EventName.SPECIAL_MASQUERADE_INVITATIONS,
+        clientOptions: {
+          selectedCards: [
+            CardName.HUSBAND,
+            CardName.FERRY_FERRET,
+            CardName.WIFE,
+            CardName.WIFE,
+            CardName.QUEEN,
+            CardName.KING,
+          ],
+        },
+      };
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        gameInput,
+        selectPlayerInput,
+        selectCardsInput,
+      ]);
+
+      player2 = gameState.getPlayer(player2.playerId);
+
+      player = gameState.getPlayer(player.playerId);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_MASQUERADE_INVITATIONS));
+
+      expect(player.cardsInHand).to.eql([CardName.FERRY]);
+
+      expect(player2.cardsInHand).to.eql([
+        CardName.HUSBAND,
+        CardName.FERRY_FERRET,
+        CardName.WIFE,
+        CardName.WIFE,
+        CardName.QUEEN,
+        CardName.KING,
+      ]);
+
+      expect(player.getPointsFromEvents(gameState)).to.be(6);
+    });
+
+    it("should allow player to give fewer than 6 cards", () => {
+      const event = Event.fromName(EventName.SPECIAL_MASQUERADE_INVITATIONS);
+      const gameInput = claimEventInput(event.name);
+      let player2 = gameState.players[1];
+
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_MASQUERADE_INVITATIONS)
+      ).to.be(undefined);
+
+      const selectPlayerInput = {
+        inputType: GameInputType.SELECT_PLAYER as const,
+        prevInput: gameInput,
+        prevInputType: GameInputType.CLAIM_EVENT,
+        playerOptions: gameState.players
+          .filter((p) => {
+            return p.playerId !== player.playerId;
+          })
+          .map((p) => p.playerId),
+        mustSelectOne: false,
+        eventContext: EventName.SPECIAL_MASQUERADE_INVITATIONS,
+        clientOptions: { selectedPlayer: player2.playerId },
+      };
+
+      const selectCardsInput = {
+        inputType: GameInputType.SELECT_CARDS as const,
+        prevInputType: GameInputType.SELECT_PLAYER,
+        prevInput: selectPlayerInput,
+        cardOptions: player.cardsInHand,
+        maxToSelect: 6,
+        minToSelect: 0,
+        eventContext: EventName.SPECIAL_MASQUERADE_INVITATIONS,
+        clientOptions: {
+          selectedCards: [CardName.HUSBAND, CardName.FERRY_FERRET],
+        },
+      };
+
+      const selectAnotherPlayerInput = {
+        inputType: GameInputType.SELECT_PLAYER as const,
+        prevInput: selectCardsInput,
+        prevInputType: GameInputType.SELECT_CARDS,
+        playerOptions: gameState.players
+          .filter((p) => {
+            return p.playerId !== player.playerId;
+          })
+          .map((p) => p.playerId),
+        mustSelectOne: false,
+        eventContext: EventName.SPECIAL_MASQUERADE_INVITATIONS,
+        clientOptions: { selectedPlayer: null },
+      };
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        gameInput,
+        selectPlayerInput,
+        selectCardsInput,
+        selectAnotherPlayerInput,
+      ]);
+
+      player2 = gameState.getPlayer(player2.playerId);
+
+      player = gameState.getPlayer(player.playerId);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_MASQUERADE_INVITATIONS));
+
+      expect(player.cardsInHand).to.eql([
+        CardName.WIFE,
+        CardName.WIFE,
+        CardName.QUEEN,
+        CardName.KING,
+        CardName.FERRY,
+      ]);
+
+      expect(player2.cardsInHand).to.eql([
+        CardName.HUSBAND,
+        CardName.FERRY_FERRET,
+      ]);
+
+      expect(player.getPointsFromEvents(gameState)).to.be(2);
+    });
+
+    it("should work with more than 2 players", () => {
+      const event = Event.fromName(EventName.SPECIAL_MASQUERADE_INVITATIONS);
+      gameState = testInitialGameState({
+        numPlayers: 4,
+        gameOptions: { pearlbrook: true },
+      });
+      const gameInput = claimEventInput(event.name);
+      let player = gameState.getActivePlayer();
+      let player2 = gameState.players[1];
+      let player3 = gameState.players[2];
+      let player4 = gameState.players[3];
+
+      player.addCardToHand(gameState, CardName.HUSBAND);
+      player.addCardToHand(gameState, CardName.WIFE);
+      player.addCardToHand(gameState, CardName.WIFE);
+      player.addCardToHand(gameState, CardName.QUEEN);
+      player.addCardToHand(gameState, CardName.KING);
+      player.addCardToHand(gameState, CardName.FERRY);
+      player.addCardToHand(gameState, CardName.FERRY_FERRET);
+
+      gameState.eventsMap[EventName.SPECIAL_MASQUERADE_INVITATIONS] = null;
+
+      player.addToCity(gameState, CardName.FAIRGROUNDS);
+      player.addToCity(gameState, CardName.MESSENGER);
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_MASQUERADE_INVITATIONS)
+      ).to.be(undefined);
+
+      const selectFirstOppo = {
+        inputType: GameInputType.SELECT_PLAYER as const,
+        prevInput: gameInput,
+        prevInputType: GameInputType.CLAIM_EVENT,
+        playerOptions: gameState.players
+          .filter((p) => {
+            return p.playerId !== player.playerId;
+          })
+          .map((p) => p.playerId),
+        mustSelectOne: false,
+        eventContext: EventName.SPECIAL_MASQUERADE_INVITATIONS,
+        clientOptions: { selectedPlayer: player2.playerId },
+      };
+
+      const selectFirstCards = {
+        inputType: GameInputType.SELECT_CARDS as const,
+        prevInputType: GameInputType.SELECT_PLAYER,
+        prevInput: selectFirstOppo,
+        cardOptions: player.cardsInHand,
+        maxToSelect: 6,
+        minToSelect: 0,
+        eventContext: EventName.SPECIAL_MASQUERADE_INVITATIONS,
+        clientOptions: {
+          selectedCards: [CardName.HUSBAND, CardName.FERRY_FERRET],
+        },
+      };
+
+      const selectSecondOppo = {
+        inputType: GameInputType.SELECT_PLAYER as const,
+        prevInput: selectFirstCards,
+        prevInputType: GameInputType.SELECT_CARDS,
+        playerOptions: gameState.players
+          .filter((p) => {
+            return p.playerId !== player.playerId;
+          })
+          .map((p) => p.playerId),
+        mustSelectOne: false,
+        eventContext: EventName.SPECIAL_MASQUERADE_INVITATIONS,
+        clientOptions: { selectedPlayer: player4.playerId },
+      };
+
+      const selectSecondCards = {
+        inputType: GameInputType.SELECT_CARDS as const,
+        prevInputType: GameInputType.SELECT_PLAYER,
+        prevInput: selectSecondOppo,
+        cardOptions: [
+          CardName.WIFE,
+          CardName.WIFE,
+          CardName.QUEEN,
+          CardName.KING,
+          CardName.FERRY,
+        ],
+        maxToSelect: 4,
+        minToSelect: 0,
+        eventContext: EventName.SPECIAL_MASQUERADE_INVITATIONS,
+        clientOptions: {
+          selectedCards: [CardName.QUEEN, CardName.WIFE, CardName.KING],
+        },
+      };
+
+      const selectThirdOppo = {
+        inputType: GameInputType.SELECT_PLAYER as const,
+        prevInput: selectSecondCards,
+        prevInputType: GameInputType.SELECT_CARDS,
+        playerOptions: gameState.players
+          .filter((p) => {
+            return p.playerId !== player.playerId;
+          })
+          .map((p) => p.playerId),
+        mustSelectOne: false,
+        eventContext: EventName.SPECIAL_MASQUERADE_INVITATIONS,
+        clientOptions: { selectedPlayer: player3.playerId },
+      };
+
+      const selectThirdCards = {
+        inputType: GameInputType.SELECT_CARDS as const,
+        prevInputType: GameInputType.SELECT_PLAYER,
+        prevInput: selectThirdOppo,
+        cardOptions: [CardName.WIFE, CardName.FERRY],
+        maxToSelect: 1,
+        minToSelect: 0,
+        eventContext: EventName.SPECIAL_MASQUERADE_INVITATIONS,
+        clientOptions: {
+          selectedCards: [CardName.FERRY],
+        },
+      };
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        gameInput,
+        selectFirstOppo,
+        selectFirstCards,
+        selectSecondOppo,
+        selectSecondCards,
+        selectThirdOppo,
+        selectThirdCards,
+      ]);
+
+      player2 = gameState.getPlayer(player2.playerId);
+      player3 = gameState.getPlayer(player3.playerId);
+      player4 = gameState.getPlayer(player4.playerId);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_MASQUERADE_INVITATIONS));
+      expect(player.cardsInHand).to.eql([CardName.WIFE]);
+      expect(player.getPointsFromEvents(gameState)).to.be(6);
+
+      expect(player2.cardsInHand).to.eql([
+        CardName.HUSBAND,
+        CardName.FERRY_FERRET,
+      ]);
+      expect(player3.cardsInHand).to.eql([CardName.FERRY]);
+      expect(player4.cardsInHand).to.eql([
+        CardName.QUEEN,
+        CardName.WIFE,
+        CardName.KING,
+      ]);
+    });
+
+    it("should be able to claim event with 0 cards in hand", () => {
+      const event = Event.fromName(EventName.SPECIAL_MASQUERADE_INVITATIONS);
+      gameState = testInitialGameState({
+        gameOptions: { pearlbrook: true },
+      });
+      const gameInput = claimEventInput(event.name);
+      let player = gameState.getActivePlayer();
+
+      gameState.eventsMap[EventName.SPECIAL_MASQUERADE_INVITATIONS] = null;
+
+      player.addToCity(gameState, CardName.FAIRGROUNDS);
+      player.addToCity(gameState, CardName.MESSENGER);
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_MASQUERADE_INVITATIONS)
+      ).to.be(undefined);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_MASQUERADE_INVITATIONS));
+      expect(player.cardsInHand).to.eql([]);
+      expect(player.getPointsFromEvents(gameState)).to.be(0);
+    });
+
+    it("should not be able to give mroe than 6 cards to another player", () => {
+      const event = Event.fromName(EventName.SPECIAL_MASQUERADE_INVITATIONS);
+      const gameInput = claimEventInput(event.name);
+      let player2 = gameState.players[1];
+
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_MASQUERADE_INVITATIONS)
+      ).to.be(undefined);
+
+      const selectPlayerInput = {
+        inputType: GameInputType.SELECT_PLAYER as const,
+        prevInput: gameInput,
+        prevInputType: GameInputType.CLAIM_EVENT,
+        playerOptions: gameState.players
+          .filter((p) => {
+            return p.playerId !== player.playerId;
+          })
+          .map((p) => p.playerId),
+        mustSelectOne: false,
+        eventContext: EventName.SPECIAL_MASQUERADE_INVITATIONS,
+        clientOptions: { selectedPlayer: player2.playerId },
+      };
+
+      const selectCardsInput = {
+        inputType: GameInputType.SELECT_CARDS as const,
+        prevInputType: GameInputType.SELECT_PLAYER,
+        prevInput: selectPlayerInput,
+        cardOptions: player.cardsInHand,
+        maxToSelect: 6,
+        minToSelect: 0,
+        eventContext: EventName.SPECIAL_MASQUERADE_INVITATIONS,
+        clientOptions: {
+          selectedCards: [
+            CardName.HUSBAND,
+            CardName.FERRY_FERRET,
+            CardName.WIFE,
+            CardName.WIFE,
+            CardName.QUEEN,
+            CardName.KING,
+            CardName.FERRY,
+          ],
+        },
+      };
+
+      gameState = gameState.next(gameInput);
+
+      gameState = gameState.next(selectPlayerInput);
+
+      expect(() => {
+        gameState.next(selectCardsInput);
+      }).to.throwException(/Cannot give more than/i);
+    });
+
+    it("should not be able to give more than 6 cards across all donations", () => {
+      const event = Event.fromName(EventName.SPECIAL_MASQUERADE_INVITATIONS);
+      gameState = testInitialGameState({
+        numPlayers: 4,
+        gameOptions: { pearlbrook: true },
+      });
+      const gameInput = claimEventInput(event.name);
+      let player = gameState.getActivePlayer();
+      let player2 = gameState.players[1];
+      let player3 = gameState.players[2];
+      let player4 = gameState.players[3];
+
+      player.addCardToHand(gameState, CardName.HUSBAND);
+      player.addCardToHand(gameState, CardName.WIFE);
+      player.addCardToHand(gameState, CardName.WIFE);
+      player.addCardToHand(gameState, CardName.QUEEN);
+      player.addCardToHand(gameState, CardName.KING);
+      player.addCardToHand(gameState, CardName.FERRY);
+      player.addCardToHand(gameState, CardName.FERRY_FERRET);
+
+      gameState.eventsMap[EventName.SPECIAL_MASQUERADE_INVITATIONS] = null;
+
+      player.addToCity(gameState, CardName.FAIRGROUNDS);
+      player.addToCity(gameState, CardName.MESSENGER);
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_MASQUERADE_INVITATIONS)
+      ).to.be(undefined);
+
+      const selectFirstOppo = {
+        inputType: GameInputType.SELECT_PLAYER as const,
+        prevInput: gameInput,
+        prevInputType: GameInputType.CLAIM_EVENT,
+        playerOptions: gameState.players
+          .filter((p) => {
+            return p.playerId !== player.playerId;
+          })
+          .map((p) => p.playerId),
+        mustSelectOne: false,
+        eventContext: EventName.SPECIAL_MASQUERADE_INVITATIONS,
+        clientOptions: { selectedPlayer: player2.playerId },
+      };
+
+      const selectFirstCards = {
+        inputType: GameInputType.SELECT_CARDS as const,
+        prevInputType: GameInputType.SELECT_PLAYER,
+        prevInput: selectFirstOppo,
+        cardOptions: player.cardsInHand,
+        maxToSelect: 6,
+        minToSelect: 0,
+        eventContext: EventName.SPECIAL_MASQUERADE_INVITATIONS,
+        clientOptions: {
+          selectedCards: [CardName.HUSBAND, CardName.FERRY_FERRET],
+        },
+      };
+
+      const selectSecondOppo = {
+        inputType: GameInputType.SELECT_PLAYER as const,
+        prevInput: selectFirstCards,
+        prevInputType: GameInputType.SELECT_CARDS,
+        playerOptions: gameState.players
+          .filter((p) => {
+            return p.playerId !== player.playerId;
+          })
+          .map((p) => p.playerId),
+        mustSelectOne: false,
+        eventContext: EventName.SPECIAL_MASQUERADE_INVITATIONS,
+        clientOptions: { selectedPlayer: player4.playerId },
+      };
+
+      const selectSecondCards = {
+        inputType: GameInputType.SELECT_CARDS as const,
+        prevInputType: GameInputType.SELECT_PLAYER,
+        prevInput: selectSecondOppo,
+        cardOptions: [
+          CardName.WIFE,
+          CardName.WIFE,
+          CardName.QUEEN,
+          CardName.KING,
+          CardName.FERRY,
+        ],
+        maxToSelect: 4,
+        minToSelect: 0,
+        eventContext: EventName.SPECIAL_MASQUERADE_INVITATIONS,
+        clientOptions: {
+          selectedCards: [
+            CardName.QUEEN,
+            CardName.WIFE,
+            CardName.KING,
+            CardName.FERRY,
+            CardName.WIFE,
+          ],
+        },
+      };
+
+      gameState = gameState.next(gameInput);
+      gameState = gameState.next(selectFirstOppo);
+      gameState = gameState.next(selectFirstCards);
+      gameState = gameState.next(selectSecondOppo);
+
+      expect(() => {
+        gameState.next(selectSecondCards);
+      }).to.throwException(/cannot give/i);
     });
   });
 });

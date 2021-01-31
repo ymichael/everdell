@@ -414,7 +414,8 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
 
           maxResources = gameInput.maxResources - numResources;
         }
-        if (maxResources > 0) {
+
+        if (maxResources > 0 && player.getNumCardCostResources() > 0) {
           gameState.pendingGameInputs.push({
             inputType: GameInputType.SELECT_PLAYER,
             prevInput: gameInput,
@@ -1796,7 +1797,130 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     ]),
     expansion: ExpansionType.PEARLBROOK,
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
+      const player = gameState.getActivePlayer();
+      if (
+        gameInput.inputType === GameInputType.CLAIM_EVENT ||
+        (gameInput.inputType === GameInputType.SELECT_CARDS &&
+          gameInput.prevInput &&
+          gameInput.prevInput.inputType === GameInputType.SELECT_PLAYER)
+      ) {
+        let maxToSelect = 6;
+        if (
+          gameInput.inputType === GameInputType.SELECT_CARDS &&
+          gameInput.prevInput &&
+          gameInput.prevInput.inputType === GameInputType.SELECT_PLAYER
+        ) {
+          const cardsToGive = gameInput.clientOptions.selectedCards;
+          if (cardsToGive.length > gameInput.maxToSelect) {
+            throw new Error(
+              "Cannot give more than {gameInput.maxToSelect} cards."
+            );
+          }
+
+          const prevInput = gameInput.prevInput;
+          const selectedPlayerId = prevInput.clientOptions.selectedPlayer;
+
+          // choosing players is optional, but we should be catching this
+          // before you select resources
+          if (!selectedPlayerId) {
+            throw new Error("Selected player cannot be null");
+          }
+
+          const selectedPlayer = gameState.getPlayer(selectedPlayerId);
+
+          gameState.addGameLogFromEvent(
+            EventName.SPECIAL_MASQUERADE_INVITATIONS,
+            [
+              player,
+              ` gave ${cardsToGive.length} CARD to `,
+              selectedPlayer,
+              ` to gain ${cardsToGive.length} VP.`,
+            ]
+          );
+
+          cardsToGive.forEach((cardName) => {
+            selectedPlayer.addCardToHand(gameState, cardName);
+            player.removeCardFromHand(cardName);
+          });
+
+          const eventInfo = player.getClaimedEvent(
+            EventName.SPECIAL_MASQUERADE_INVITATIONS
+          );
+          if (!eventInfo) {
+            throw new Error("Cannot find event info");
+          }
+
+          // Add VP to this event
+          if (eventInfo.storedResources) {
+            const storedVP = eventInfo.storedResources[ResourceType.VP];
+            const vpToStore = storedVP ? storedVP : 0;
+            eventInfo.storedResources = {
+              [ResourceType.VP]: cardsToGive.length + vpToStore,
+            };
+          } else {
+            eventInfo.storedResources = {
+              [ResourceType.VP]: cardsToGive.length,
+            };
+          }
+
+          maxToSelect = gameInput.maxToSelect - cardsToGive.length;
+        }
+        if (maxToSelect > 0 && player.cardsInHand.length > 0) {
+          gameState.pendingGameInputs.push({
+            inputType: GameInputType.SELECT_PLAYER,
+            prevInput: gameInput,
+            label: "You may select a player to give cards to (worth 1 VP each)",
+            prevInputType: gameInput.inputType,
+            playerOptions: gameState.players
+              .filter((p) => {
+                return p.playerId !== player.playerId;
+              })
+              .map((p) => p.playerId),
+            mustSelectOne: false, // you don't have to choose anyone
+            eventContext: EventName.SPECIAL_MASQUERADE_INVITATIONS,
+            clientOptions: { selectedPlayer: null },
+          });
+        }
+      } else if (gameInput.inputType === GameInputType.SELECT_PLAYER) {
+        // only ask active player to choose cards to give if they selected a player.
+        // if selectedPlayer is null, we assume the active player is done choosing players
+        // to give cards to (ie, no more points)
+        if (!gameInput.clientOptions.selectedPlayer) {
+          return;
+        }
+        const selectedPlayer = gameState.getPlayer(
+          gameInput.clientOptions.selectedPlayer
+        );
+        let maxToGive = 6;
+        if (
+          gameInput.prevInput &&
+          gameInput.prevInput.inputType === GameInputType.SELECT_CARDS
+        ) {
+          const prevInput = gameInput.prevInput;
+          const prevMax = prevInput.maxToSelect;
+          const prevCardsGiven = prevInput.clientOptions.selectedCards.length;
+          maxToGive = prevMax - prevCardsGiven;
+        }
+
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_CARDS,
+          label: [
+            `Give up to ${maxToGive} CARD to `,
+            selectedPlayer.getGameTextPart(),
+          ],
+          prevInputType: gameInput.inputType,
+          prevInput: gameInput,
+          cardOptions: player.cardsInHand,
+          maxToSelect: maxToGive,
+          minToSelect: 0,
+          eventContext: EventName.SPECIAL_MASQUERADE_INVITATIONS,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else {
+        throw new Error(`Invalid input type: ${gameInput}`);
+      }
     },
   }),
   [EventName.SPECIAL_SUNKEN_TREASURE_DISCOVERED]: new Event({

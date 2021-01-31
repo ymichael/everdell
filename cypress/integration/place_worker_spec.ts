@@ -28,13 +28,13 @@ describe("Place Worker", () => {
 
     // Take player 2's turn.
     cy.visit(`/game/${gameJSON.gameId}?playerSecret=${player2.playerSecret}`);
-    cy.contains("Michael placed a worker");
+    cy.contains("Michael placed a worker on Location:BERRY.");
     cy.contains("Visit Location");
     cy.get("#js-game-input-box-form").within(() => {
       cy.get("[data-cy='place-worker-item:ONE_STONE']").click();
     });
     cy.contains("Submit").click();
-    cy.contains("Elynn placed a worker");
+    cy.contains("Elynn placed a worker on Location:PEBBLE.");
     cy.contains("Waiting for Michael");
   });
 });

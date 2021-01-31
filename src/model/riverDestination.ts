@@ -1000,7 +1000,7 @@ function discardCardTypeToGainVPAndPearl({
       gameState.pendingGameInputs.push({
         inputType: GameInputType.SELECT_CARDS,
         prevInputType: gameInput.inputType,
-        label: `Select 3 ${cardType} CARD to discard to gain 1 VP and 1 PEARL (or none to skip action)`,
+        label: `Select ${numToDiscard} ${cardType} CARD to discard to gain 1 VP and 1 PEARL (or none to skip action)`,
         cardOptions,
         maxToSelect: numToDiscard,
         minToSelect: 0,
@@ -1018,21 +1018,23 @@ function discardCardTypeToGainVPAndPearl({
       if (selectedCards.length === 0) {
         gameState.addGameLogFromRiverDestination(name, [
           player,
-          " declined to discard any CARD.",
+          ` declined to discard any ${cardType} CARD.`,
         ]);
         return;
       }
       if (
-        selectedCards.length !== 3 ||
+        selectedCards.length !== numToDiscard ||
         selectedCards.filter((cardName) => {
           return Card.fromName(cardName).cardType === cardType;
-        }).length !== 3
+        }).length !== numToDiscard
       ) {
-        throw new Error(`Please select 3 ${cardType} cards to discard`);
+        throw new Error(
+          `Please select ${numToDiscard} ${cardType} cards to discard`
+        );
       }
       gameState.addGameLogFromRiverDestination(name, [
         player,
-        ` discarded 3 ${cardType} cards from their hand (`,
+        ` discarded ${numToDiscard} ${cardType} cards from their hand (`,
         ...cardListToGameText(selectedCards),
         ") to gain 1 VP and 1 PEARL.",
       ]);

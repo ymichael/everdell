@@ -100,9 +100,7 @@ export const gameTextToDebugStr = (gameText: GameText): string => {
             return part.adornment;
           }
           if (part.entityType === "riverDestination") {
-            return gameTextToDebugStr(
-              RiverDestination.fromName(part.riverDestination).shortName
-            );
+            return part.riverDestination;
           }
           if (part.entityType === "riverDestinationSpot") {
             return gameTextToDebugStr(

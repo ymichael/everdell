@@ -26,7 +26,7 @@ describe("Visit Inn Destination & Play card from Meadow", () => {
 
     // Visit Inn
     cy.get("#js-game-input-box-form").within(() => {
-      cy.get("[data-cy='visit-destination-card-item:Inn']").click();
+      cy.get("[data-cy='played-card-item:Inn']").click();
       cy.contains("Submit").click();
     });
 

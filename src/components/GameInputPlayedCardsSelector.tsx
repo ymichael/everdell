@@ -1,24 +1,24 @@
 import * as React from "react";
 
-import { GameInputSelectPlayedCards as TGameInputSelectPlayedCards } from "../model/types";
-
+import { PlayedCardInfo } from "../model/types";
 import { Player } from "../model/player";
 import { GameState } from "../model/gameState";
 import { PlayedCard } from "./Card";
 
 import GameInputSelectItemWrapper from "./GameInputSelectItemWrapper";
 
-const GameInputSelectPlayedCards: React.FC<{
+const GameInputPlayedCardsSelector: React.FC<{
   name: string;
   gameState: GameState;
-  gameInput: TGameInputSelectPlayedCards;
   viewingPlayer: Player;
-}> = ({ name, gameState, gameInput, viewingPlayer }) => {
+  chooseOne: boolean;
+  options: PlayedCardInfo[];
+}> = ({ name, gameState, chooseOne, options, viewingPlayer }) => {
   return (
     <GameInputSelectItemWrapper
       name={name}
-      items={gameInput.cardOptions}
-      chooseOne={false}
+      items={options}
+      chooseOne={chooseOne}
       renderItem={(cardInfo) => (
         <div data-cy={`played-card-item:${cardInfo.cardName}`}>
           <PlayedCard
@@ -32,4 +32,4 @@ const GameInputSelectPlayedCards: React.FC<{
   );
 };
 
-export default GameInputSelectPlayedCards;
+export default GameInputPlayedCardsSelector;

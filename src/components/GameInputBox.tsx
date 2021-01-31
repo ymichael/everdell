@@ -14,7 +14,7 @@ import { GameBlock } from "./common";
 import { GameInputBoxContainer, renderGameInputLabel } from "./gameInputCommon";
 import GameInputSelectPlayer from "./GameInputSelectPlayer";
 import GameInputSelectResources from "./GameInputSelectResources";
-import GameInputSelectPlayedCards from "./GameInputSelectPlayedCards";
+import GameInputPlayedCardsSelector from "./GameInputPlayedCardsSelector";
 import GameInputCardsSelector from "./GameInputCardsSelector";
 import GameInputPlaceWorkerSelector from "./GameInputPlaceWorkerSelector";
 import GameInputClaimEventSelector from "./GameInputClaimEventSelector";
@@ -23,7 +23,6 @@ import GameInputPlaceAmbassadorSelector from "./GameInputPlaceAmbassadorSelector
 import GameInputPlayAdornmentSelector from "./GameInputPlayAdornmentSelector";
 import GameInputSelectPaymentForCard from "./GameInputSelectPaymentForCard";
 import GameInputSelectWorkerPlacement from "./GameInputSelectWorkerPlacement";
-import GameInputVisitDestinationCard from "./GameInputVisitDestinationCard";
 import GameInputSelectOptionGeneric from "./GameInputSelectOptionGeneric";
 import GameInputPlayCard from "./GameInputPlayCard";
 
@@ -99,11 +98,12 @@ const GameInputBoxInner = ({
           viewingPlayer={viewingPlayer}
         />
       ) : gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS ? (
-        <GameInputSelectPlayedCards
+        <GameInputPlayedCardsSelector
           name={"gameInput.clientOptions.selectedCards"}
-          gameInput={gameInput}
           gameState={gameState}
           viewingPlayer={viewingPlayer}
+          chooseOne={false}
+          options={gameInput.cardOptions}
         />
       ) : gameInput.inputType === GameInputType.SELECT_CARDS ? (
         <GameInputCardsSelector
@@ -130,11 +130,12 @@ const GameInputBoxInner = ({
           viewingPlayer={viewingPlayer}
         />
       ) : gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD ? (
-        <GameInputVisitDestinationCard
+        <GameInputPlayedCardsSelector
           name={"gameInput.clientOptions.playedCard"}
           gameState={gameState}
-          destinations={gameState.getVisitableDestinationCards()}
           viewingPlayer={viewingPlayer}
+          chooseOne={true}
+          options={gameState.getVisitableDestinationCards()}
         />
       ) : gameInput.inputType === GameInputType.SELECT_LOCATION ? (
         <GameInputPlaceWorkerSelector

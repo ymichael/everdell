@@ -159,9 +159,14 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
   [AdornmentName.BELL]: new Adornment({
     name: AdornmentName.BELL,
     description: toGameText([
-      "Gain 3 BERRY. Also draw 1 CARD for every Critter in your city.",
+      "Gain 3 BERRY. Also draw 1 CARD for every ",
+      { type: "em", text: "Critter" },
+      " in your city.",
       { type: "HR" },
-      "Worth 1 VP for every 2 Critters in your city.",
+      { type: "points", value: 1 },
+      " for every 2 ",
+      { type: "em", text: "Critters" },
+      " in your city.",
     ]),
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
@@ -189,7 +194,8 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
     description: toGameText([
       "You may reactivate 2 TRAVELER in your city.",
       { type: "HR" },
-      "Worth 1 VP for each TRAVELER in your city.",
+      { type: "points", value: 1 },
+      " for each TRAVELER in your city.",
     ]),
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
@@ -262,7 +268,8 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
     description: toGameText([
       "Gain resources equal to the cost of any GOVERNANCE in your city.",
       { type: "HR" },
-      "Worth 1 VP for each GOVERNANCE in your city.",
+      { type: "points", value: 1 },
+      " for each GOVERNANCE in your city.",
     ]),
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
@@ -321,7 +328,8 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
     description: toGameText([
       "You may take the action of any 1 Forest location, and gain 1 ANY.",
       { type: "HR" },
-      "Worth 1 VP for each DESTINATION in your city.",
+      { type: "points", value: 1 },
+      " for each DESTINATION in your city.",
     ]),
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
@@ -396,9 +404,12 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
   [AdornmentName.KEY_TO_THE_CITY]: new Adornment({
     name: AdornmentName.KEY_TO_THE_CITY,
     description: toGameText([
-      "Gain 2 ANY. Also draw 1 CARD for every Construction in your city.",
+      "Gain 2 ANY. Also draw 1 CARD for every ",
+      { type: "em", text: "Construction" },
+      " in your city.",
       { type: "HR" },
-      "Worth 1 VP for every 2 Constructions in your city.",
+      { type: "points", value: 1 },
+      " for every 2 Constructions in your city.",
     ]),
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
@@ -440,7 +451,8 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
     description: toGameText([
       "You may play 1 CARD worth up to 3 VP for free.",
       { type: "HR" },
-      "Worth 1 VP for every 3 VP tokens you have.",
+      { type: "points", value: 1 },
+      " for every 3 VP tokens you have.",
     ]),
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
@@ -574,9 +586,12 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
   [AdornmentName.MIRROR]: new Adornment({
     name: AdornmentName.MIRROR,
     description: toGameText([
-      "You may copy any ability from an Adornment played by an opponent.",
+      "You may copy any ability from an ",
+      { type: "em", text: "Adornment" },
+      " played by an opponent.",
       { type: "HR" },
-      "Worth 1 VP for each unique colored CARD in your city.",
+      { type: "points", value: 1 },
+      " for each unique colored CARD in your city.",
     ]),
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
@@ -653,7 +668,8 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
     description: toGameText([
       "You may discard up to 4 CARD to gain 1 ANY for each",
       { type: "HR" },
-      "Worth 1 VP for every CARD in your hand, up to 5.",
+      { type: "points", value: 1 },
+      " for every CARD in your hand, up to 5.",
     ]),
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
@@ -751,7 +767,10 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
     description: toGameText([
       "Gain 1 ANY. Draw 1 CARD. Gain 1 PEARL.",
       { type: "HR" },
-      "Worth 3 VP for each Wonder you built.",
+      { type: "points", value: 3 },
+      " for each ",
+      { type: "em", text: "Wonder" },
+      " you built.",
     ]),
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
@@ -795,7 +814,8 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
     description: toGameText([
       "You may activate Production for up to 3 PRODUCTION in your city.",
       { type: "HR" },
-      "Worth 1 VP for every 2 PRODUCTION in your city.",
+      { type: "points", value: 1 },
+      " for every 2 PRODUCTION in your city.",
     ]),
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
@@ -879,7 +899,8 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
     description: toGameText([
       "Gain 1 ANY for each PROSPERITY in your city.",
       { type: "HR" },
-      "Worth 1 VP for each PROSPERITY in your city.",
+      { type: "points", value: 1 },
+      " for each PROSPERITY in your city.",
     ]),
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);

@@ -468,9 +468,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: false,
     associatedCard: CardName.CRANE,
-    cardDescription: toGameText(
-      "VP for each of your unused RESIN and PEBBLE, to a maximum of 6."
-    ),
+    cardDescription: toGameText([
+      { type: "points", value: 1 },
+      " for each of your unused RESIN and PEBBLE, to a maximum of 6.",
+    ]),
     // 1 point per rock and pebble, up to 6 pts
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
@@ -589,7 +590,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: true,
     associatedCard: CardName.KING,
     cardDescription: toGameText([
-      "VP for each ",
+      { type: "points", value: 1 },
+      " for each ",
       { type: "em", text: "Common Construction" },
       " in your city.",
     ]),
@@ -1064,7 +1066,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: true,
     associatedCard: null,
-    cardDescription: toGameText("VP for each PROSPERITY in your city."),
+    cardDescription: toGameText([
+      { type: "points", value: 1 },
+      " for each PROSPERITY in your city.",
+    ]),
     // 1 point per prosperty card
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
@@ -1501,9 +1506,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: false,
     associatedCard: CardName.CASTLE,
     cardDescription: toGameText([
-      "1 VP for each basic event you achieved.",
+      { type: "points", value: 1 },
+      " for each basic event you achieved.",
       { type: "BR" },
-      "2 VP for each special event you achieved.",
+      { type: "points", value: 2 },
+      " for each special event you achieved.",
     ]),
     pointsInner: (gameState: GameState, playerId: string) => {
       let numPoints = 0;
@@ -1967,7 +1974,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: true,
     associatedCard: CardName.QUEEN,
     cardDescription: toGameText([
-      "VP for each ",
+      { type: "points", value: 1 },
+      " for each ",
       { type: "em", text: "Unique Construction" },
       " in your city",
     ]),
@@ -2173,7 +2181,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     associatedCard: CardName.POST_OFFICE,
     cardDescription: toGameText([
       "Reveal 2 CARD. ",
-      "You may play 1 worth up to 3 VP for free. ",
+      "You may play 1 worth up to ",
+      { type: "points", value: 3 },
+      " for free. ",
       "Discard the other.",
     ]),
     playInner: (gameState: GameState, gameInput: GameInput) => {
@@ -2253,7 +2263,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     isConstruction: false,
     associatedCard: CardName.PALACE,
-    cardDescription: toGameText("Play a CARD worth up to 3 VP for free."),
+    cardDescription: toGameText([
+      "Play a CARD worth up to ",
+      { type: "points", value: 3 },
+      " for free.",
+    ]),
     canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
@@ -2641,7 +2655,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: true,
     associatedCard: CardName.TEACHER,
     cardDescription: toGameText([
-      "VP for each ",
+      { type: "points", value: 1 },
+      " for each ",
       { type: "em", text: "Common Critter" },
       " in your city.",
     ]),
@@ -3037,7 +3052,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: true,
     associatedCard: CardName.BARD,
     cardDescription: toGameText([
-      "VP for each ",
+      { type: "points", value: 1 },
+      " for each ",
       { type: "em", text: "Unique Critter" },
       " in your city.",
     ]),
@@ -3271,7 +3287,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: false,
     associatedCard: CardName.FARM,
     cardDescription: toGameText([
-      "3 VP if paired with a ",
+      { type: "points", value: 3 },
+      " if paired with a ",
       { type: "entity", entityType: "card", card: CardName.HUSBAND },
     ]),
     pointsInner: (gameState: GameState, playerId: string) => {
@@ -3473,7 +3490,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     associatedCard: CardName.HARBOR,
     cardType: CardType.PROSPERITY,
     cardDescription: toGameText([
-      "Worth 1 VP for each Pearlbrook card in your city.",
+      { type: "points", value: 1 },
+      " for each Pearlbrook card in your city.",
       { type: "BR" },
       "Do not count ",
       { type: "em", text: "Adornments" },

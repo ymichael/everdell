@@ -78,6 +78,8 @@ export const gameTextToDebugStr = (gameText: GameText): string => {
           return part.cardType;
         case "symbol":
           return part.symbol;
+        case "points":
+          return `${part.value} points`;
         case "player":
           return part.name;
         case "entity":

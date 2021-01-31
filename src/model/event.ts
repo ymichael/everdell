@@ -481,12 +481,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     baseVP: 4,
     requiredCards: [CardName.CHIP_SWEEP, CardName.CLOCK_TOWER],
-    eventDescription: [
-      {
-        type: "text",
-        text: "When achieved, bring back one of your deployed workers",
-      },
-    ],
+    eventDescription: toGameText(
+      "When achieved, bring back one of your deployed workers"
+    ),
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
 
@@ -532,7 +529,8 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     eventDescription: toGameText([
       "When achieved, you may place up to 3 TWIG here.",
       { type: "HR" },
-      "2 VP for each TWIG on this Event.",
+      { type: "points", value: 2 },
+      " for each TWIG on this Event.",
     ]),
     playedEventInfoInner: () => ({
       storedResources: {
@@ -637,7 +635,8 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       { type: "BR" },
       "You may draw any or place any beneath this Event.",
       { type: "HR" },
-      "1 VP for each CARD beneath this Event.",
+      { type: "points", value: 1 },
+      " for each CARD beneath this Event.",
     ]),
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
@@ -749,9 +748,14 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     baseVP: 0,
     requiredCards: [CardName.COURTHOUSE, CardName.RANGER],
     eventDescription: toGameText([
-      "When achieved, place up to 2 Critters from your city beneath this Event.",
+      "When achieved, place up to 2 ",
+      { type: "em", text: "Critters" },
+      " from your city beneath this Event.",
       { type: "HR" },
-      "3 VP for each Critter beneath this Event",
+      { type: "points", value: 3 },
+      " for each ",
+      { type: "em", text: "Critter" },
+      " beneath this Event.",
     ]),
     playedEventInfoInner: () => ({
       storedCards: [],
@@ -942,9 +946,14 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     baseVP: 0,
     requiredCards: [CardName.DOCTOR, CardName.POSTAL_PIGEON],
-    eventDescription: toGameText(
-      "3 VP for each husband/wife pair in every city."
-    ),
+    eventDescription: toGameText([
+      { type: "points", value: 3 },
+      " for each ",
+      { type: "entity", entityType: "card", card: CardName.HUSBAND },
+      "/",
+      { type: "entity", entityType: "card", card: CardName.WIFE },
+      " pair in every city.",
+    ]),
     pointsInner: (gameState: GameState, playerId: string) => {
       let getNumHusbandWifePairs = 0;
       gameState.players.forEach((player) => {
@@ -959,9 +968,14 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     baseVP: 0,
     requiredCards: [CardName.TEACHER, CardName.UNIVERSITY],
     eventDescription: toGameText([
-      "When achieved, you may place up to 3 Critters from your hand beneath this Event.",
+      "When achieved, you may place up to 3 ",
+      { type: "em", text: "Critters" },
+      " from your hand beneath this Event.",
       { type: "HR" },
-      "2 VP for each Critter beneath this Event.",
+      { type: "points", value: 2 },
+      " for each ",
+      { type: "em", text: "Critter" },
+      " beneath this Event.",
     ]),
     playedEventInfoInner: () => ({
       storedCards: [],
@@ -1056,7 +1070,10 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     baseVP: 0,
     requiredCards: [CardName.MONK, CardName.DUNGEON],
-    eventDescription: toGameText("3 VP for each prisoner in your Dungeon."),
+    eventDescription: toGameText([
+      { type: "points", value: 3 },
+      " for each prisoner in your Dungeon.",
+    ]),
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
 
@@ -1087,7 +1104,10 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     baseVP: 0,
     requiredCards: [CardName.MONASTERY, CardName.WANDERER],
-    eventDescription: toGameText("3 VP for each worker in your Monastery."),
+    eventDescription: toGameText([
+      { type: "points", value: 3 },
+      " for each worker in your Monastery.",
+    ]),
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
 
@@ -1130,7 +1150,8 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     eventDescription: toGameText([
       "When achieved, you may place up to 3 BERRY here.",
       { type: "HR" },
-      "2 VP for each BERRY on this Event.",
+      { type: "points", value: 2 },
+      " for each BERRY on this Event.",
     ]),
     // may place up to 3 berries on this card
     playedEventInfoInner: () => ({
@@ -1304,9 +1325,10 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     baseVP: 0,
     requiredCards: [CardName.CEMETARY, CardName.SHEPHERD],
-    eventDescription: toGameText(
-      "3 VP for each buried worker in your Cemetery."
-    ),
+    eventDescription: toGameText([
+      { type: "points", value: 3 },
+      " for each buried worker in your Cemetery.",
+    ]),
     // 3 points for each worker in the cemetary
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
@@ -1409,9 +1431,11 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     eventDescription: toGameText([
       "When achieved, you may place up to 3 ANY here.",
       { type: "HR" },
-      "Each BERRY TWIG = 1 VP",
+      "Each BERRY TWIG = ",
+      { type: "points", value: 1 },
       { type: "BR" },
-      "Each RESIN PEBBLE = 2 VP",
+      "Each RESIN PEBBLE = ",
+      { type: "points", value: 2 },
     ]),
     playedEventInfoInner: () => ({
       storedResources: {
@@ -1681,8 +1705,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       { type: "em", text: "Critters" },
       " from the Meadow facedown beneath this Event.",
       { type: "HR" },
-      "Worth 2 VP for each ",
-      { type: "em", text: "Critters" },
+      { type: "points", value: 2 },
+      " for each ",
+      { type: "em", text: "Critter" },
       " beneath this Event.",
     ]),
     expansion: ExpansionType.PEARLBROOK,
@@ -1929,7 +1954,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     requiredCards: [CardName.PIRATE, CardName.CRANE],
     type: EventType.SPECIAL,
     eventDescription: toGameText([
-      "When achieved, you may play 1 CARD from the Meadow worth up to 3 VP for free.",
+      "When achieved, you may play 1 CARD from the Meadow worth up to ",
+      { type: "points", value: 3 },
+      " for free.",
     ]),
     expansion: ExpansionType.PEARLBROOK,
     playInner: (gameState: GameState, gameInput: GameInput) => {

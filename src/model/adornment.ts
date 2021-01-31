@@ -624,7 +624,10 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
         if (adornmentOptions.length > 0) {
           gameState.pendingGameInputs.push({
             inputType: GameInputType.SELECT_PLAYED_ADORNMENT,
-            label: "Copy the ability from an Adornment",
+            label: [
+              "Copy the ability of an ",
+              { type: "em", text: "Adornment" },
+            ],
             prevInputType: GameInputType.PLAY_ADORNMENT,
             adornmentContext: AdornmentName.MIRROR,
             adornmentOptions: adornmentOptions,
@@ -634,7 +637,9 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
           });
         } else {
           gameState.addGameLogFromAdornment(AdornmentName.MIRROR, [
-            "No played Adornments to copy.",
+            "No played ",
+            { type: "em", text: "Adornments" },
+            " to copy.",
           ]);
         }
       } else if (
@@ -657,7 +662,9 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
         } else {
           gameState.addGameLogFromAdornment(AdornmentName.MIRROR, [
             player,
-            " decline to copy any played Adornments.",
+            " decline to copy any played ",
+            { type: "em", text: "Adornments" },
+            ".",
           ]);
         }
       }

@@ -380,7 +380,15 @@
     },
     {
       "type": "text",
-      "text": "No played Adornments to copy."
+      "text": "No played "
+    },
+    {
+      "type": "em",
+      "text": "Adornments"
+    },
+    {
+      "type": "text",
+      "text": " to copy."
     }
   ],
   [
@@ -399,7 +407,15 @@
     },
     {
       "type": "text",
-      "text": " decline to copy any played Adornments."
+      "text": " decline to copy any played "
+    },
+    {
+      "type": "em",
+      "text": "Adornments"
+    },
+    {
+      "type": "text",
+      "text": "."
     }
   ],
   [
@@ -2251,8 +2267,74 @@
       "text": " is now in "
     },
     {
-      "type": "text",
+      "type": "em",
       "text": "Spring"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "em",
+      "text": "Prepare for season"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " activated "
+    },
+    {
+      "type": "cardType",
+      "cardType": "PRODUCTION"
+    },
+    {
+      "type": "text",
+      "text": " on ("
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Farm"
+    },
+    {
+      "type": "text",
+      "text": ", "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Farm"
+    },
+    {
+      "type": "text",
+      "text": ", "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Mine"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Mine"
+    },
+    {
+      "type": "text",
+      "text": ")"
     },
     {
       "type": "text",
@@ -2356,6 +2438,72 @@
       "type": "entity",
       "entityType": "location",
       "location": "ONE_BERRY"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "em",
+      "text": "Prepare for season"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " activated "
+    },
+    {
+      "type": "cardType",
+      "cardType": "PRODUCTION"
+    },
+    {
+      "type": "text",
+      "text": " on ("
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Teacher"
+    },
+    {
+      "type": "text",
+      "text": ", "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Chip Sweep"
+    },
+    {
+      "type": "text",
+      "text": ", "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Farm"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Husband"
+    },
+    {
+      "type": "text",
+      "text": ")"
     },
     {
       "type": "text",
@@ -4708,6 +4856,63 @@
   ],
   [
     {
+      "type": "em",
+      "text": "Prepare for season"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " activated "
+    },
+    {
+      "type": "cardType",
+      "cardType": "PRODUCTION"
+    },
+    {
+      "type": "text",
+      "text": " on ("
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Chip Sweep"
+    },
+    {
+      "type": "text",
+      "text": ", "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Chip Sweep"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Storehouse"
+    },
+    {
+      "type": "text",
+      "text": ")"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
       "type": "entity",
       "entityType": "card",
       "card": "Chip Sweep"
@@ -5823,7 +6028,7 @@
     },
     {
       "type": "text",
-      "text": " spent "
+      "text": " spent 1 "
     },
     {
       "type": "resource",
@@ -5831,7 +6036,7 @@
     },
     {
       "type": "text",
-      "text": " and "
+      "text": " and 1 "
     },
     {
       "type": "resource",
@@ -5856,6 +6061,10 @@
     {
       "type": "resource",
       "resourceType": "PEARL"
+    },
+    {
+      "type": "text",
+      "text": "."
     }
   ],
   [
@@ -5970,7 +6179,15 @@
     },
     {
       "type": "text",
-      "text": " (12 total base points)."
+      "text": " ("
+    },
+    {
+      "type": "points",
+      "value": 12
+    },
+    {
+      "type": "text",
+      "text": " total)."
     }
   ],
   [
@@ -5989,7 +6206,7 @@
     },
     {
       "type": "text",
-      "text": " gains 1 "
+      "text": " gained 1 "
     },
     {
       "type": "resource",
@@ -6043,7 +6260,15 @@
     },
     {
       "type": "text",
-      "text": " (0 total base points)."
+      "text": " ("
+    },
+    {
+      "type": "points",
+      "value": 0
+    },
+    {
+      "type": "text",
+      "text": " total)."
     }
   ],
   [
@@ -6081,11 +6306,19 @@
     },
     {
       "type": "text",
-      "text": " placed 3 Critters from their hand beneath this event (worth 2 "
+      "text": " placed 3 "
     },
     {
-      "type": "resource",
-      "resourceType": "VP"
+      "type": "em",
+      "text": "Critters"
+    },
+    {
+      "type": "text",
+      "text": " from their hand beneath this event ("
+    },
+    {
+      "type": "points",
+      "value": 2
     },
     {
       "type": "text",
@@ -6228,11 +6461,11 @@
     },
     {
       "type": "text",
-      "text": " from their city beneath this event (worth 3 "
+      "text": " from their city beneath this event ("
     },
     {
-      "type": "resource",
-      "resourceType": "VP"
+      "type": "points",
+      "value": 3
     },
     {
       "type": "text",
@@ -6282,11 +6515,11 @@
     },
     {
       "type": "text",
-      "text": " here (worth 2 "
+      "text": " here ("
     },
     {
-      "type": "resource",
-      "resourceType": "VP"
+      "type": "points",
+      "value": 2
     },
     {
       "type": "text",
@@ -6336,11 +6569,11 @@
     },
     {
       "type": "text",
-      "text": " here (worth 2 "
+      "text": " here ("
     },
     {
-      "type": "resource",
-      "resourceType": "VP"
+      "type": "points",
+      "value": 2
     },
     {
       "type": "text",
@@ -6708,11 +6941,11 @@
     },
     {
       "type": "text",
-      "text": " beneath the event (worth 1 "
+      "text": " beneath the event ("
     },
     {
-      "type": "resource",
-      "resourceType": "VP"
+      "type": "points",
+      "value": 1
     },
     {
       "type": "text",
@@ -6780,11 +7013,11 @@
     },
     {
       "type": "text",
-      "text": " beneath the event (worth 1 "
+      "text": " beneath the event ("
     },
     {
-      "type": "resource",
-      "resourceType": "VP"
+      "type": "points",
+      "value": 1
     },
     {
       "type": "text",
@@ -6856,11 +7089,11 @@
     },
     {
       "type": "text",
-      "text": " beneath the event (worth 1 "
+      "text": " beneath the event ("
     },
     {
-      "type": "resource",
-      "resourceType": "VP"
+      "type": "points",
+      "value": 1
     },
     {
       "type": "text",
@@ -7051,7 +7284,7 @@
     },
     {
       "type": "text",
-      "text": " to here."
+      "text": " here."
     }
   ],
   [
@@ -7104,7 +7337,7 @@
     },
     {
       "type": "text",
-      "text": " to here."
+      "text": " here."
     }
   ],
   [
@@ -7151,7 +7384,7 @@
     },
     {
       "type": "text",
-      "text": " to here."
+      "text": " here."
     }
   ],
   [
@@ -7198,7 +7431,7 @@
     },
     {
       "type": "text",
-      "text": " to here."
+      "text": " here."
     }
   ],
   [
@@ -7639,11 +7872,11 @@
     },
     {
       "type": "text",
-      "text": " from the meadow beneath this event (worth 2 "
+      "text": " from the Meadow beneath this event ("
     },
     {
-      "type": "resource",
-      "resourceType": "VP"
+      "type": "points",
+      "value": 2
     },
     {
       "type": "text",
@@ -7684,11 +7917,11 @@
     },
     {
       "type": "text",
-      "text": " from the meadow beneath this event (worth 2 "
+      "text": " from the Meadow beneath this event ("
     },
     {
-      "type": "resource",
-      "resourceType": "VP"
+      "type": "points",
+      "value": 2
     },
     {
       "type": "text",
@@ -7720,11 +7953,11 @@
     },
     {
       "type": "text",
-      "text": " from the meadow beneath this event (worth 2 "
+      "text": " from the Meadow beneath this event ("
     },
     {
-      "type": "resource",
-      "resourceType": "VP"
+      "type": "points",
+      "value": 2
     },
     {
       "type": "text",
@@ -7747,19 +7980,7 @@
     },
     {
       "type": "text",
-      "text": " placed "
-    },
-    {
-      "type": "text",
-      "text": " from the meadow beneath this event (worth 2 "
-    },
-    {
-      "type": "resource",
-      "resourceType": "VP"
-    },
-    {
-      "type": "text",
-      "text": " each)."
+      "text": " did not place any cards from the Meadow beneath this event."
     }
   ],
   [
@@ -8029,6 +8250,38 @@
       "type": "entity",
       "entityType": "card",
       "card": "Wife"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "Romantic Cruise"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " found a "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Wife"
+    },
+    {
+      "type": "text",
+      "text": " in the deck and played it for free."
     }
   ],
   [
@@ -8052,6 +8305,10 @@
     {
       "type": "resource",
       "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": "."
     }
   ],
   [
@@ -8536,6 +8793,147 @@
   ],
   [
     {
+      "type": "em",
+      "text": "Prepare for season"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " activated "
+    },
+    {
+      "type": "cardType",
+      "cardType": "PRODUCTION"
+    },
+    {
+      "type": "text",
+      "text": " on ("
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Monk"
+    },
+    {
+      "type": "text",
+      "text": ", "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Doctor"
+    },
+    {
+      "type": "text",
+      "text": ", "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Woodcarver"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Peddler"
+    },
+    {
+      "type": "text",
+      "text": ")"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "em",
+      "text": "Prepare for season"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " activated "
+    },
+    {
+      "type": "cardType",
+      "cardType": "PRODUCTION"
+    },
+    {
+      "type": "text",
+      "text": " on ("
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Monk"
+    },
+    {
+      "type": "text",
+      "text": ", "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Doctor"
+    },
+    {
+      "type": "text",
+      "text": ", "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Woodcarver"
+    },
+    {
+      "type": "text",
+      "text": ", "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Peddler"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Farm"
+    },
+    {
+      "type": "text",
+      "text": ")"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
       "type": "entity",
       "entityType": "card",
       "card": "Doctor"
@@ -8563,6 +8961,90 @@
     {
       "type": "resource",
       "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "em",
+      "text": "Prepare for season"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " activated "
+    },
+    {
+      "type": "cardType",
+      "cardType": "PRODUCTION"
+    },
+    {
+      "type": "text",
+      "text": " on ("
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Monk"
+    },
+    {
+      "type": "text",
+      "text": ", "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Doctor"
+    },
+    {
+      "type": "text",
+      "text": ", "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Woodcarver"
+    },
+    {
+      "type": "text",
+      "text": ", "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Peddler"
+    },
+    {
+      "type": "text",
+      "text": ", "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Farm"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Mine"
+    },
+    {
+      "type": "text",
+      "text": ")"
     },
     {
       "type": "text",
@@ -8684,7 +9166,7 @@
       "text": " is now in "
     },
     {
-      "type": "text",
+      "type": "em",
       "text": "Autumn"
     },
     {
@@ -8710,7 +9192,7 @@
       "text": " is now in "
     },
     {
-      "type": "text",
+      "type": "em",
       "text": "Summer"
     },
     {
@@ -10076,6 +10558,14 @@
       "text": " declined to discard any "
     },
     {
+      "type": "cardType",
+      "cardType": "PRODUCTION"
+    },
+    {
+      "type": "text",
+      "text": " "
+    },
+    {
       "type": "symbol",
       "symbol": "CARD"
     },
@@ -10132,6 +10622,139 @@
       "type": "entity",
       "entityType": "card",
       "card": "Mine"
+    },
+    {
+      "type": "text",
+      "text": ") to gain 1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": " and 1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "PEARL"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "riverDestinationSpot",
+      "spot": "TWO_TRAVELER"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " visited "
+    },
+    {
+      "type": "entity",
+      "entityType": "riverDestination",
+      "riverDestination": "Crustina the Constable"
+    },
+    {
+      "type": "text",
+      "text": " at "
+    },
+    {
+      "type": "entity",
+      "entityType": "riverDestinationSpot",
+      "spot": "TWO_TRAVELER"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "riverDestination",
+      "riverDestination": "Crustina the Constable"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " declined to discard any "
+    },
+    {
+      "type": "cardType",
+      "cardType": "GOVERNANCE"
+    },
+    {
+      "type": "text",
+      "text": " "
+    },
+    {
+      "type": "symbol",
+      "symbol": "CARD"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "riverDestination",
+      "riverDestination": "Crustina the Constable"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " discarded 2 "
+    },
+    {
+      "type": "cardType",
+      "cardType": "GOVERNANCE"
+    },
+    {
+      "type": "text",
+      "text": " cards from their hand ("
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Judge"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Shopkeeper"
     },
     {
       "type": "text",

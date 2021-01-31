@@ -387,7 +387,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
               ...resourceMapToGameText(resources),
               " to ",
               selectedPlayer,
-              ` to add ${2 * numResources} VP to here.`,
+              ` to add ${2 * numResources} VP here.`,
             ]
           );
 
@@ -419,8 +419,11 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           gameState.pendingGameInputs.push({
             inputType: GameInputType.SELECT_PLAYER,
             prevInput: gameInput,
-            label:
-              "You may select a player to give resources to (worth 2 VP each)",
+            label: [
+              "You may select a player to give resources to (",
+              { type: "points", value: 2 },
+              " each)",
+            ],
             prevInputType: gameInput.inputType,
             playerOptions: gameState.players
               .filter((p) => {
@@ -546,7 +549,11 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_RESOURCES,
           toSpend: true,
-          label: "Place up to 3 TWIG on this event (worth 2 VP each)",
+          label: [
+            "Place up to 3 TWIG here (",
+            { type: "points", value: 2 },
+            " each)",
+          ],
           prevInputType: GameInputType.CLAIM_EVENT,
           eventContext: EventName.SPECIAL_AN_EVENING_OF_FIREWORKS,
           maxResources: 3,
@@ -588,7 +595,12 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         player.spendResources({ [ResourceType.TWIG]: numTwigs });
         gameState.addGameLogFromEvent(
           EventName.SPECIAL_AN_EVENING_OF_FIREWORKS,
-          [player, ` placed ${numTwigs} TWIG here (worth 2 VP each).`]
+          [
+            player,
+            ` placed ${numTwigs} TWIG here (`,
+            { type: "points", value: 2 },
+            " each).",
+          ]
         );
       } else {
         throw new Error(`Invalid input type ${gameInput.inputType}`);
@@ -659,8 +671,11 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_CARDS,
           prevInputType: GameInputType.CLAIM_EVENT,
-          label:
-            "Select up to 5 CARD to keep. The rest will be placed beneath this Event (worth 1 VP each).",
+          label: [
+            "Select up to 5 CARD to keep. The rest will be placed beneath this Event (",
+            { type: "points", value: 1 },
+            " each).",
+          ],
           eventContext: EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED,
           maxToSelect: 5,
           minToSelect: 0,
@@ -713,7 +728,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
             ...cardListToGameText(selectedCards),
             " and placed ",
             ...cardListToGameText(remainingCards),
-            " beneath the event (worth 1 VP each).",
+            " beneath the event (",
+            { type: "points", value: 1 },
+            " each).",
           ]
         );
       } else {
@@ -773,7 +790,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           label: [
             "Place up to 2 ",
             { type: "em", text: "Critters" },
-            " from your city beneath this Event. (Worth 3 VP each)",
+            " from your city beneath this Event. (",
+            { type: "points", value: 3 },
+            " each)",
           ],
           eventContext: EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES,
           cardOptions: crittersInCity,
@@ -829,7 +848,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
             ...cardListToGameText(
               selectedCards.map(({ cardName }) => cardName)
             ),
-            " from their city beneath this event (worth 3 VP each).",
+            " from their city beneath this event (",
+            { type: "points", value: 3 },
+            " each).",
           ]
         );
       } else {
@@ -1000,7 +1021,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           label: [
             "Place up to 3 ",
             { type: "em", text: "Critters" },
-            " from your hand beneath this Event (worth 2 VP each)",
+            " from your hand beneath this Event (",
+            { type: "points", value: 2 },
+            " each)",
           ],
           eventContext: EventName.SPECIAL_GRADUATION_OF_SCHOLARS,
           cardOptions: critterCardsInHand,
@@ -1045,7 +1068,11 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           EventName.SPECIAL_GRADUATION_OF_SCHOLARS,
           [
             player,
-            ` placed ${cardsToUse.length} Critters from their hand beneath this event (worth 2 VP each).`,
+            ` placed ${cardsToUse.length} `,
+            { type: "em", text: "Critters" },
+            ` from their hand beneath this event (`,
+            { type: "points", value: 2 },
+            ` each).`,
           ]
         );
       } else {
@@ -1168,7 +1195,11 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_RESOURCES,
           toSpend: true,
-          label: "Place up to 3 BERRY here (worth 2 VP each)",
+          label: [
+            "Place up to 3 BERRY here (",
+            { type: "points", value: 2 },
+            " each)",
+          ],
           prevInputType: GameInputType.CLAIM_EVENT,
           eventContext: EventName.SPECIAL_PERFORMER_IN_RESIDENCE,
           specificResource: ResourceType.BERRY,
@@ -1207,7 +1238,12 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
 
         gameState.addGameLogFromEvent(
           EventName.SPECIAL_PERFORMER_IN_RESIDENCE,
-          [player, ` placed ${numBerries} BERRY here (worth 2 VP each).`]
+          [
+            player,
+            ` placed ${numBerries} BERRY here (`,
+            { type: "points", value: 2 },
+            ` each).`,
+          ]
         );
       } else {
         throw new Error(`Invalid input type ${gameInput.inputType}`);
@@ -1453,8 +1489,13 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         // ask player how many resources to add to card
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_RESOURCES,
-          label:
-            "Place up to 3 ANY here (worth 1 VP per BERRY / TWIG & 2 VP per RESIN / PEBBLE)",
+          label: [
+            "Place up to 3 ANY here (",
+            { type: "points", value: 1 },
+            " per BERRY / TWIG & ",
+            { type: "points", value: 2 },
+            " per RESIN / PEBBLE)",
+          ],
           toSpend: true,
           prevInputType: GameInputType.CLAIM_EVENT,
           eventContext: EventName.SPECIAL_UNDER_NEW_MANAGEMENT,
@@ -1577,6 +1618,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
             player,
             " chose to search the deck for a ",
             Card.fromName(CardName.WIFE),
+            ".",
           ]);
 
           const drawnCards: CardName[] = [];
@@ -1588,6 +1630,12 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
             const card = Card.fromName(cardName);
 
             if (card.name === CardName.WIFE) {
+              gameState.addGameLogFromEvent(EventName.SPECIAL_ROMANTIC_CRUISE, [
+                player,
+                " found a ",
+                Card.fromName(CardName.WIFE),
+                " in the deck and played it for free.",
+              ]);
               card.addToCityAndPlay(gameState, gameInput);
               break;
             } else {
@@ -1621,10 +1669,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           eventInfo.storedResources = {
             [ResourceType.VP]: 5,
           };
-
           gameState.addGameLogFromEvent(EventName.SPECIAL_ROMANTIC_CRUISE, [
             player,
-            " gained 5 VP",
+            " gained 5 VP.",
           ]);
         } else {
           throw new Error(
@@ -1734,7 +1781,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
             label: [
               "Place up to 3 ",
               { type: "em", text: "Critters" },
-              " from the meadow beneath this Event. (Worth 2 VP each)",
+              " from the Meadow beneath this Event. (",
+              { type: "points", value: 2 },
+              " each)",
             ],
             eventContext: EventName.SPECIAL_RIVERSIDE_RESORT,
             cardOptions: crittersInMeadow,
@@ -1776,12 +1825,21 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
 
         gameState.replenishMeadow();
 
-        gameState.addGameLogFromEvent(EventName.SPECIAL_RIVERSIDE_RESORT, [
-          player,
-          " placed ",
-          ...cardListToGameText(selectedCards),
-          " from the meadow beneath this event (worth 2 VP each).",
-        ]);
+        if (selectedCards.length === 0) {
+          gameState.addGameLogFromEvent(EventName.SPECIAL_RIVERSIDE_RESORT, [
+            player,
+            " did not place any cards from the Meadow beneath this event.",
+          ]);
+        } else {
+          gameState.addGameLogFromEvent(EventName.SPECIAL_RIVERSIDE_RESORT, [
+            player,
+            " placed ",
+            ...cardListToGameText(selectedCards),
+            " from the Meadow beneath this event (",
+            { type: "points", value: 2 },
+            " each).",
+          ]);
+        }
       } else {
         throw new Error(`Invalid input type ${gameInput.inputType}`);
       }
@@ -1894,7 +1952,11 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           gameState.pendingGameInputs.push({
             inputType: GameInputType.SELECT_PLAYER,
             prevInput: gameInput,
-            label: "You may select a player to give cards to (worth 1 VP each)",
+            label: [
+              "You may select a player to give cards to (",
+              { type: "points", value: 1 },
+              " each)",
+            ],
             prevInputType: gameInput.inputType,
             playerOptions: gameState.players
               .filter((p) => {
@@ -1973,8 +2035,11 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           gameState.pendingGameInputs.push({
             inputType: GameInputType.SELECT_CARDS,
             prevInputType: gameInput.inputType,
-            label:
-              "Select 1 CARD from the Meadow worth up to 3 VP to play for free.",
+            label: [
+              "Select 1 CARD from the Meadow worth up to ",
+              { type: "points", value: 3 },
+              " to play for free.",
+            ],
             cardOptions: meadowOptions,
             maxToSelect: 1,
             minToSelect: 0, // you don't have to select a card

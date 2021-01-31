@@ -3588,13 +3588,15 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           player,
           ` revealed `,
           ...cardListToGameText(revealedCards),
-          ` (${basePoints} total base points).`,
+          ` (`,
+          { type: "points", value: basePoints },
+          ` total).`,
         ]);
         if (basePoints >= 7) {
           player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
           gameState.addGameLogFromCard(CardName.PIRATE, [
             player,
-            ` gains 1 PEARL.`,
+            ` gained 1 PEARL.`,
           ]);
         }
       }

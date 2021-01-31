@@ -2,6 +2,7 @@ import {
   AdornmentName,
   AmbassadorPlacementInfo,
   CardName,
+  CardType,
   EventName,
   EventType,
   EventNameToPlayerId,
@@ -763,11 +764,18 @@ export class GameState {
       player.currentSeason === Season.WINTER ||
       player.currentSeason === Season.SUMMER
     ) {
+      const productionCards = player
+        .getAllPlayedCardsByType(CardType.PRODUCTION)
+        .map(({ cardName }) => cardName);
       this.addGameLog([
         { type: "em", text: "Prepare for season" },
         ": ",
         player,
-        " activated PRODUCTION.",
+        " activated PRODUCTION",
+        ...(productionCards.length === 0
+          ? []
+          : [" on (", ...cardListToGameText(productionCards), ")"]),
+        ".",
       ]);
       player.activateProduction(this, gameInput);
     } else {
@@ -810,7 +818,7 @@ export class GameState {
       ": ",
       player,
       " is now in ",
-      player.currentSeason,
+      { type: "em", text: player.currentSeason },
       ".",
     ]);
   }

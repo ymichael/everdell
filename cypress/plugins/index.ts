@@ -228,6 +228,15 @@ module.exports = (on: any, config: any) => {
         );
       });
     },
+    "db:play-husband-via-farm-game": async () => {
+      return await getTestGameJSON({}, (gameState, player) => {
+        const card = Card.fromName(CardName.HUSBAND);
+        player.cardsInHand.push(card.name);
+
+        player.addToCity(gameState, CardName.GENERAL_STORE);
+        player.addToCity(gameState, CardName.FARM);
+      });
+    },
     "db:play-miner-mole-game": async () => {
       return await getTestGameJSON({}, (gameState, player) => {
         const player2 = gameState.players[1];

@@ -901,7 +901,7 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
       "Pay 1 VP and 1 PEBBLE to draw 4 CARD and gain 1 PEARL."
     ),
     playInner: payVPResourceToDrawCardAndPearl({
-      name: RiverDestinationName.MARKET,
+      name: RiverDestinationName.GREAT_HALL,
       resourceType: ResourceType.PEBBLE,
       numCardsToDraw: 4,
     }),

@@ -29,19 +29,20 @@ export type GameStateJSON = {
   activePlayerId: string;
   players: PlayerJSON[];
   meadowCards: CardName[];
-  discardPile: CardStackJSON;
-  deck: CardStackJSON;
+  discardPile: CardStackJSON<CardName>;
+  deck: CardStackJSON<CardName>;
   locationsMap: LocationNameToPlayerIds;
   eventsMap: EventNameToPlayerId;
   pendingGameInputs: GameInputMultiStep[];
   gameLog: GameLogEntry[];
   riverDestinationMap: RiverDestinationMapJSON | null;
+  adornmentsPile: CardStackJSON<AdornmentName> | null;
 };
 
-export type CardStackJSON = {
+export type CardStackJSON<T> = {
   name: string;
   numCards: number;
-  cards: CardName[];
+  cards: T[];
 };
 
 export type PlayerJSON = {

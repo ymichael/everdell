@@ -31,7 +31,7 @@ import {
 } from "./types";
 import { GameStateJSON } from "./jsonTypes";
 import { Player } from "./player";
-import { Adornment } from "./adornment";
+import { Adornment, allAdornments } from "./adornment";
 import { Card } from "./card";
 import { CardStack, discardPile } from "./cardStack";
 import { Location, initialLocationsMap } from "./location";
@@ -133,13 +133,14 @@ export class GameState {
   private _activePlayerId: Player["playerId"];
   readonly players: Player[];
 
-  readonly discardPile: CardStack;
-  readonly deck: CardStack;
+  readonly discardPile: CardStack<CardName>;
+  readonly deck: CardStack<CardName>;
 
   readonly meadowCards: CardName[];
   readonly locationsMap: LocationNameToPlayerIds;
   readonly eventsMap: EventNameToPlayerId;
 
+  readonly adornmentsPile: CardStack<AdornmentName> | null;
   readonly riverDestinationMap: RiverDestinationMap | null;
 
   constructor({
@@ -151,19 +152,21 @@ export class GameState {
     deck,
     locationsMap,
     eventsMap,
-    riverDestinationMap = null,
     gameLog = [],
     gameOptions = {},
     pendingGameInputs = [],
+    adornmentsPile = null,
+    riverDestinationMap = null,
   }: {
     gameStateId: number;
     activePlayerId?: Player["playerId"];
     players: Player[];
     meadowCards: CardName[];
-    discardPile: CardStack;
-    deck: CardStack;
+    discardPile: CardStack<CardName>;
+    deck: CardStack<CardName>;
     locationsMap: LocationNameToPlayerIds;
     eventsMap: EventNameToPlayerId;
+    adornmentsPile?: CardStack<AdornmentName> | null;
     riverDestinationMap?: RiverDestinationMap | null;
     pendingGameInputs: GameInputMultiStep[];
     gameLog: GameLogEntry[];
@@ -179,6 +182,7 @@ export class GameState {
     this._activePlayerId = activePlayerId || players[0].playerId;
     this.pendingGameInputs = pendingGameInputs;
     this.gameLog = gameLog;
+    this.adornmentsPile = adornmentsPile;
     this.riverDestinationMap = riverDestinationMap;
     this.gameOptions = defaultGameOptions(gameOptions);
   }
@@ -288,6 +292,9 @@ export class GameState {
         gameOptions: this.gameOptions,
         riverDestinationMap: this.riverDestinationMap
           ? this.riverDestinationMap.toJSON(includePrivate)
+          : null,
+        adornmentsPile: this.adornmentsPile
+          ? this.adornmentsPile.toJSON(includePrivate)
           : null,
       },
       ...(includePrivate
@@ -1082,6 +1089,9 @@ export class GameState {
       players: gameStateJSON.players.map((pJSON: any) =>
         Player.fromJSON(pJSON)
       ),
+      adornmentsPile: gameStateJSON.adornmentsPile
+        ? CardStack.fromJSON(gameStateJSON.adornmentsPile)
+        : null,
       riverDestinationMap: gameStateJSON.riverDestinationMap
         ? RiverDestinationMap.fromJSON(gameStateJSON.riverDestinationMap)
         : null,
@@ -1102,7 +1112,7 @@ export class GameState {
     }
 
     const gameOptionsWithDefaults = defaultGameOptions(gameOptions);
-
+    const withPearlbrook = gameOptionsWithDefaults.pearlbrook;
     const gameState = new GameState({
       gameStateId: 1,
       players,
@@ -1113,9 +1123,8 @@ export class GameState {
         players.length,
         gameOptionsWithDefaults
       ),
-      riverDestinationMap: gameOptionsWithDefaults.pearlbrook
-        ? initialRiverDestinationMap()
-        : null,
+      adornmentsPile: withPearlbrook ? allAdornments() : null,
+      riverDestinationMap: withPearlbrook ? initialRiverDestinationMap() : null,
       eventsMap: initialEventMap(gameOptionsWithDefaults),
       gameOptions: gameOptionsWithDefaults,
       gameLog: [],
@@ -1123,8 +1132,7 @@ export class GameState {
     });
 
     gameState.addGameLog(`Game created with ${players.length} players.`);
-
-    if (gameOptionsWithDefaults.pearlbrook) {
+    if (withPearlbrook) {
       gameState.addGameLog([
         `Playing with the `,
         { type: "em", text: "Pearlbrook" },
@@ -1133,21 +1141,30 @@ export class GameState {
     }
 
     if (shuffleDeck) {
+      if (withPearlbrook) {
+        gameState.adornmentsPile!.shuffle();
+      }
       gameState.deck.shuffle();
     }
 
     // Players draw cards
     players.forEach((p, idx) => {
-      if (gameOptionsWithDefaults.pearlbrook) {
+      if (withPearlbrook) {
         p.recallAmbassador(gameState);
+        p.adornmentsInHand.push(
+          gameState.adornmentsPile!.drawInner(),
+          gameState.adornmentsPile!.drawInner()
+        );
       }
       p.drawCards(gameState, STARTING_PLAYER_HAND_SIZE + idx);
     });
-    gameState.addGameLog(`Dealing cards to each player.`);
-
-    // Draw cards onto the meadow
     gameState.replenishMeadow();
+
+    gameState.addGameLog(`Dealing cards to each player.`);
     gameState.addGameLog(`Dealing cards to the Meadow.`);
+    if (withPearlbrook) {
+      gameState.addGameLog(`Dealing 2 adornment cards to each player.`);
+    }
 
     return gameState;
   }

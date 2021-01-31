@@ -66,8 +66,8 @@ const pearlbrookCards: CardName[] = [
 
 export const initialDeck = ({
   pearlbrook,
-}: Pick<GameOptions, "pearlbrook">): CardStack => {
-  const cardStack = new CardStack({ name: "Deck", cards: [] });
+}: Pick<GameOptions, "pearlbrook">): CardStack<CardName> => {
+  const cardStack = new CardStack<CardName>({ name: "Deck", cards: [] });
 
   baseGameCards.forEach((cardName) => {
     const card = Card.fromName(cardName);

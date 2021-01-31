@@ -26,6 +26,7 @@ import {
   GainMoreThan1AnyResource,
 } from "./gameStatePlayHelpers";
 import { Event } from "./event";
+import { CardStack } from "./cardStack";
 import { Location } from "./location";
 import { Card, onlyRelevantProductionCards } from "./card";
 import {
@@ -903,4 +904,11 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
       }
     },
   }),
+};
+
+export const allAdornments = (): CardStack<AdornmentName> => {
+  return new CardStack({
+    name: "Adornments",
+    cards: Object.values(AdornmentName),
+  });
 };

@@ -51,7 +51,8 @@ const GameBuilder: React.FC = () => {
                     name="players"
                     render={(arrayHelpers) => (
                       <div className={styles.game_builder_wrapper}>
-                        <h2>Players</h2>
+                        <h2>New Game</h2>
+                        <h3>Players</h3>
                         {numPlayers > 0 ? (
                           players.map((player, idx) => (
                             <div
@@ -103,23 +104,27 @@ const GameBuilder: React.FC = () => {
                         ) : (
                           <></>
                         )}
-                        <h3>Expansions</h3>
-                        <label className={styles.game_builder_option}>
-                          <Field type="checkbox" name="pearlbrook" />
-                          {"Pearlbrook"}
-                        </label>
-                        <h3>Game Settings</h3>
-                        <label className={styles.game_builder_option}>
-                          <Field
-                            type="checkbox"
-                            name="randomizeStartingPlayer"
-                          />
-                          {"Randomize Player Order"}
-                        </label>
-                        <label className={styles.game_builder_option}>
-                          <Field type="checkbox" name="realtimePoints" />
-                          {"Realtime Points"}
-                        </label>
+                        <div>
+                          <h3>Expansions</h3>
+                          <label className={styles.game_builder_option}>
+                            <Field type="checkbox" name="pearlbrook" />
+                            {"Pearlbrook"}
+                          </label>
+                        </div>
+                        <div>
+                          <h3>Settings</h3>
+                          <label className={styles.game_builder_option}>
+                            <Field
+                              type="checkbox"
+                              name="randomizeStartingPlayer"
+                            />
+                            {"Randomize player order"}
+                          </label>
+                          <label className={styles.game_builder_option}>
+                            <Field type="checkbox" name="realtimePoints" />
+                            {"Show points in realtime"}
+                          </label>
+                        </div>
                       </div>
                     )}
                   />

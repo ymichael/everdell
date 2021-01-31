@@ -1647,7 +1647,51 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     ]),
     expansion: ExpansionType.PEARLBROOK,
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
+      const player = gameState.getActivePlayer();
+
+      if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
+        // get all the player's storehouses
+        const storehouses = player.getPlayedCardInfos(CardName.STOREHOUSE);
+
+        if (storehouses.length >= 1) {
+          let storehouse = storehouses[0];
+
+          storehouses.forEach((playedCardInfo) => {
+            const mostResources = sumResources(storehouse.resources || {});
+            const numResources = sumResources(playedCardInfo.resources || {});
+
+            if (numResources > mostResources) {
+              storehouse = playedCardInfo;
+            }
+          });
+
+          const updatedResources = {
+            ...storehouse.resources,
+          };
+
+          const numResources = sumResources(updatedResources);
+
+          updatedResources[ResourceType.VP] =
+            numResources > 6 ? 6 : numResources;
+
+          player.updatePlayedCard(gameState, storehouse, {
+            resources: updatedResources,
+          });
+
+          gameState.addGameLogFromEvent(EventName.SPECIAL_X_MARKS_THE_SPOT, [
+            player,
+            " placed 1 VP on ",
+            Card.fromName(CardName.STOREHOUSE),
+            " for each resource, up to 6, for a total of ",
+            `${numResources > 6 ? 6 : numResources} VP`,
+          ]);
+        }
+
+        // if there's more than one, find the one with the most resources
+        // store VP on the card
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
+      }
     },
   }),
   [EventName.SPECIAL_RIVERSIDE_RESORT]: new Event({

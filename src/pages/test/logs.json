@@ -7789,6 +7789,201 @@
     },
     {
       "type": "text",
+      "text": " claimed the "
+    },
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "X Marks the Spot"
+    },
+    {
+      "type": "text",
+      "text": " event."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "X Marks the Spot"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " placed 1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": " on "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Storehouse"
+    },
+    {
+      "type": "text",
+      "text": " for each resource, up to 6, for a total of "
+    },
+    {
+      "type": "text",
+      "text": "0 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "X Marks the Spot"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " placed 1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": " on "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Storehouse"
+    },
+    {
+      "type": "text",
+      "text": " for each resource, up to 6, for a total of "
+    },
+    {
+      "type": "text",
+      "text": "3 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "X Marks the Spot"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " placed 1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": " on "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Storehouse"
+    },
+    {
+      "type": "text",
+      "text": " for each resource, up to 6, for a total of "
+    },
+    {
+      "type": "text",
+      "text": "5 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "X Marks the Spot"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " placed 1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": " on "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Storehouse"
+    },
+    {
+      "type": "text",
+      "text": " for each resource, up to 6, for a total of "
+    },
+    {
+      "type": "text",
+      "text": "6 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
       "text": " played "
     },
     {

@@ -3281,4 +3281,171 @@ describe("Event", () => {
       expect(player.hasCardInCity(CardName.WIFE)).to.be(false);
     });
   });
+
+  describe(EventName.SPECIAL_X_MARKS_THE_SPOT, () => {
+    it("can claim event with empty storehouse", () => {
+      gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
+      player = gameState.getActivePlayer();
+      const event = Event.fromName(EventName.SPECIAL_X_MARKS_THE_SPOT);
+      const gameInput = claimEventInput(event.name);
+      const deckLength = gameState.deck.length;
+
+      gameState.eventsMap[EventName.SPECIAL_X_MARKS_THE_SPOT] = null;
+
+      player.addToCity(gameState, CardName.PIRATE_SHIP);
+      player.addToCity(gameState, CardName.STOREHOUSE);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_X_MARKS_THE_SPOT)).to.be(
+        undefined
+      );
+
+      [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_X_MARKS_THE_SPOT));
+
+      expect(player.getPointsFromEvents(gameState)).to.be(0);
+      expect(player.getPointsFromCards(gameState)).to.be(2);
+    });
+
+    it("get correct number of VP tokens on storehouse", () => {
+      gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
+      player = gameState.getActivePlayer();
+      const event = Event.fromName(EventName.SPECIAL_X_MARKS_THE_SPOT);
+      const gameInput = claimEventInput(event.name);
+      const deckLength = gameState.deck.length;
+
+      gameState.eventsMap[EventName.SPECIAL_X_MARKS_THE_SPOT] = null;
+
+      player.addToCity(gameState, CardName.PIRATE_SHIP);
+      player.addToCity(gameState, CardName.STOREHOUSE);
+
+      const playedCard = player.getFirstPlayedCard(CardName.STOREHOUSE);
+      playedCard.resources = {
+        [ResourceType.BERRY]: 0,
+        [ResourceType.TWIG]: 3,
+        [ResourceType.RESIN]: 0,
+        [ResourceType.PEBBLE]: 0,
+      };
+
+      expect(player.getPointsFromCards(gameState)).to.be(2);
+      expect(player.getClaimedEvent(EventName.SPECIAL_X_MARKS_THE_SPOT)).to.be(
+        undefined
+      );
+
+      [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_X_MARKS_THE_SPOT));
+
+      expect(player.getPointsFromEvents(gameState)).to.be(0);
+      expect(player.getPointsFromCards(gameState)).to.be(5);
+
+      const resources =
+        player.getFirstPlayedCard(CardName.STOREHOUSE).resources || {};
+
+      expect(resources[ResourceType.VP]).to.be(3);
+    });
+
+    it("handle multiple storehouses + pick one with most resources", () => {
+      gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
+      player = gameState.getActivePlayer();
+      const event = Event.fromName(EventName.SPECIAL_X_MARKS_THE_SPOT);
+      const gameInput = claimEventInput(event.name);
+      const deckLength = gameState.deck.length;
+
+      gameState.eventsMap[EventName.SPECIAL_X_MARKS_THE_SPOT] = null;
+
+      player.addToCity(gameState, CardName.PIRATE_SHIP);
+      player.addToCity(gameState, CardName.STOREHOUSE);
+      player.addToCity(gameState, CardName.STOREHOUSE);
+      player.addToCity(gameState, CardName.STOREHOUSE);
+
+      let storehouses = player.getPlayedCardInfos(CardName.STOREHOUSE);
+      expect(storehouses.length).to.be(3);
+
+      storehouses[0].resources = {
+        [ResourceType.BERRY]: 0,
+        [ResourceType.TWIG]: 3,
+        [ResourceType.RESIN]: 0,
+        [ResourceType.PEBBLE]: 0,
+      };
+
+      // we should end up picking this storehouse
+      storehouses[1].resources = {
+        [ResourceType.BERRY]: 2,
+        [ResourceType.TWIG]: 3,
+        [ResourceType.RESIN]: 0,
+        [ResourceType.PEBBLE]: 0,
+      };
+
+      storehouses[2].resources = {
+        [ResourceType.BERRY]: 0,
+        [ResourceType.TWIG]: 0,
+        [ResourceType.RESIN]: 4,
+        [ResourceType.PEBBLE]: 0,
+      };
+
+      expect(player.getPointsFromCards(gameState)).to.be(6);
+      expect(player.getClaimedEvent(EventName.SPECIAL_X_MARKS_THE_SPOT)).to.be(
+        undefined
+      );
+
+      [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_X_MARKS_THE_SPOT));
+
+      expect(player.getPointsFromEvents(gameState)).to.be(0);
+      expect(player.getPointsFromCards(gameState)).to.be(11);
+
+      storehouses = player.getPlayedCardInfos(CardName.STOREHOUSE);
+
+      expect(storehouses.length).to.be(3);
+
+      let resources = storehouses[0].resources || {};
+      expect(resources[ResourceType.VP]).to.be(undefined);
+
+      resources = storehouses[1].resources || {};
+      expect(resources[ResourceType.VP]).to.be(5);
+
+      resources = storehouses[2].resources || {};
+      expect(resources[ResourceType.VP]).to.be(undefined);
+    });
+
+    it("max 6 VP tokens on storehouse", () => {
+      gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
+      player = gameState.getActivePlayer();
+      const event = Event.fromName(EventName.SPECIAL_X_MARKS_THE_SPOT);
+      const gameInput = claimEventInput(event.name);
+      const deckLength = gameState.deck.length;
+
+      gameState.eventsMap[EventName.SPECIAL_X_MARKS_THE_SPOT] = null;
+
+      player.addToCity(gameState, CardName.PIRATE_SHIP);
+      player.addToCity(gameState, CardName.STOREHOUSE);
+
+      const playedCard = player.getFirstPlayedCard(CardName.STOREHOUSE);
+      playedCard.resources = {
+        [ResourceType.BERRY]: 2,
+        [ResourceType.TWIG]: 3,
+        [ResourceType.RESIN]: 4,
+        [ResourceType.PEBBLE]: 1,
+      };
+
+      expect(player.getPointsFromCards(gameState)).to.be(2);
+      expect(player.getClaimedEvent(EventName.SPECIAL_X_MARKS_THE_SPOT)).to.be(
+        undefined
+      );
+
+      [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_X_MARKS_THE_SPOT));
+
+      expect(player.getPointsFromEvents(gameState)).to.be(0);
+      expect(player.getPointsFromCards(gameState)).to.be(8);
+
+      const resources =
+        player.getFirstPlayedCard(CardName.STOREHOUSE).resources || {};
+
+      expect(resources[ResourceType.VP]).to.be(6);
+    });
+  });
 });

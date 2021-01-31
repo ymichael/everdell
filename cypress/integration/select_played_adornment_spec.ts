@@ -25,7 +25,7 @@ describe("Select Played Adornment", () => {
     cy.contains("Michael played Mirror.");
 
     // Select resource to gain
-    cy.contains("Mirror: Copy the ability from an Adornment");
+    cy.contains("Mirror: Copy the ability of an Adornment");
 
     cy.get("#js-game-input-box-form").within(() => {
       cy.get("#js-game-input-type-SELECT_PLAYED_ADORNMENT").click();

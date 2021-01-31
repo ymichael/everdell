@@ -1,5 +1,6 @@
 import "../styles/globals.css";
 import Head from "next/head";
+import { useEffect } from "react";
 
 export default function App<T>({
   Component,
@@ -8,6 +9,13 @@ export default function App<T>({
   Component: React.ComponentType<T>;
   pageProps: T;
 }) {
+  useEffect(() => {
+    if (location.href.indexOf("localhost") === -1) {
+      if (location.protocol !== "https:") {
+        location.protocol = "https:";
+      }
+    }
+  }, []);
   return (
     <>
       <Head>

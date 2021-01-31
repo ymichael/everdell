@@ -6,11 +6,16 @@
 
 We highly recommend [purchasing this board game](https://www.starling.games/everdell) for personal use and all of its expansions! This app is useful if you want to play with people online or play test community mods to the game.
 
-Only the base game is currently implemented though we designed it with expansions in mind so it should be possible to add support for the various official expansions.
+Currently supports:
+
+- [Base game](https://boardgamegeek.com/boardgame/199792/everdell)
+- [Pearlbrook Expansion](https://boardgamegeek.com/boardgame/259996/everdell-pearlbrook)
+
+We designed this application with expansions in mind so it should be possible to add support for even more official expansions.
 
 ## Demo
 
-You can demo this web app [here](https://everdell.herokuapp.com/). If you find a bug or have a feature request, please add it as one in issues tab. If you plan on playing long-running games, it is recommended that you host the game locally.
+You can demo this web app [here](https://everdell.herokuapp.com/). If you find a bug or have a feature request, please add it as one in issues tab.
 
 ## Development
 

@@ -948,9 +948,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     eventDescription: toGameText([
       { type: "points", value: 3 },
       " for each ",
-      Card.fromName(CardName.HUSBAND),
+      { type: "entity", entityType: "card", card: CardName.HUSBAND },
       "/",
-      Card.fromName(CardName.WIFE),
+      { type: "entity", entityType: "card", card: CardName.WIFE },
       " pair in every city.",
     ]),
     pointsInner: (gameState: GameState, playerId: string) => {

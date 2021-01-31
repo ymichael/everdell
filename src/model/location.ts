@@ -1051,7 +1051,89 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     resourcesToGain: {},
     expansion: ExpansionType.PEARLBROOK,
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
+      const player = gameState.getActivePlayer();
+      const name = LocationName.FOREST_DISCARD_2_MEADOW_DRAW_2_MEADOW_GAIN_ANY;
+      const gainAnyHelper = new GainAnyResource({ locationContext: name });
+      if (gameInput.inputType === GameInputType.PLACE_WORKER) {
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: gameInput.inputType,
+          label: "Discard 2 CARD from the Meadow",
+          cardOptions: gameState.meadowCards,
+          maxToSelect: 2,
+          minToSelect: 2,
+          locationContext: name,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_CARDS &&
+        gameInput.locationContext === name &&
+        gameInput.prevInputType === GameInputType.PLACE_WORKER
+      ) {
+        // Discard the cards from the meadow + replenish
+        const selectedCards = gameInput.clientOptions.selectedCards;
+        if (selectedCards.length !== gameInput.minToSelect) {
+          throw new Error(
+            "Must choose exactly 2 cards to remove from the Meadow."
+          );
+        }
+        gameState.addGameLogFromLocation(name, [
+          player,
+          " discarded ",
+          ...cardListToGameText(selectedCards),
+          " from the Meadow.",
+        ]);
+
+        selectedCards.forEach((cardName) => {
+          gameState.removeCardFromMeadow(cardName);
+          gameState.discardPile.addToStack(cardName);
+        });
+
+        gameState.replenishMeadow();
+
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: gameInput.inputType,
+          label: "Select 2 CARD from the Meadow to keep",
+          cardOptions: gameState.meadowCards,
+          maxToSelect: 2,
+          minToSelect: 2,
+          locationContext: name,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_CARDS &&
+        gameInput.locationContext === name &&
+        gameInput.prevInputType === GameInputType.SELECT_CARDS
+      ) {
+        // Add selected cards to player's hand + replenish meadow
+        const selectedCards = gameInput.clientOptions.selectedCards;
+        if (selectedCards.length !== 2) {
+          throw new Error("May only choose 2 card from the Meadow");
+        }
+        selectedCards.forEach((card) => {
+          gameState.removeCardFromMeadow(card);
+          player.addCardToHand(gameState, card);
+        });
+
+        gameState.replenishMeadow();
+        gameState.addGameLogFromLocation(name, [
+          player,
+          " selected ",
+          ...cardListToGameText(selectedCards),
+          " from the Meadow.",
+        ]);
+
+        gameState.pendingGameInputs.push(
+          gainAnyHelper.getGameInput({ prevInputType: gameInput.inputType })
+        );
+      } else if (gainAnyHelper.matchesGameInput(gameInput)) {
+        gainAnyHelper.play(gameState, gameInput);
+      }
     },
   }),
 };

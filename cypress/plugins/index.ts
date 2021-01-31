@@ -171,6 +171,19 @@ module.exports = (on: any, config: any) => {
         }
       );
     },
+    "db:play-peddler-game": async () => {
+      return await getTestGameJSON({}, (gameState, player) => {
+        const card = Card.fromName(CardName.PEDDLER);
+        player.gainResources(gameState, {
+          [ResourceType.BERRY]: 5,
+          [ResourceType.RESIN]: 5,
+          [ResourceType.TWIG]: 5,
+          [ResourceType.PEBBLE]: 5,
+        });
+        player.cardsInHand.push(card.name);
+        player.cardsInHand.push(CardName.FARM, CardName.MINE);
+      });
+    },
     "db:play-bard-game": async () => {
       return await getTestGameJSON({}, (gameState, player) => {
         const card = Card.fromName(CardName.BARD);

@@ -20,6 +20,7 @@ const ResourceTypeValueInput: React.FC<{
       </div>
       <input
         type="text"
+        data-cy={`resource-value-input:${resourceType}`}
         value={meta.value}
         onClick={(e) => (e.target as any).select()}
         onBlur={(e) => {

@@ -275,6 +275,74 @@ describe("Location", () => {
     });
   });
 
+  describe(LocationName.FOREST_ACTIVATE_2_PRODUCTION, () => {
+    const name = LocationName.FOREST_ACTIVATE_2_PRODUCTION;
+    it("cannot be played if player has no PRODUCTION", () => {
+      gameState.locationsMap[name] = [];
+      expect(() => {
+        multiStepGameInputTest(gameState, [placeWorkerInput(name)]);
+      }).to.throwException(/no useful production cards to activate/i);
+    });
+
+    it("should allow the player to active 2 PRODUCTION", () => {
+      gameState.locationsMap[name] = [];
+
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.MINE);
+      [player, gameState] = multiStepGameInputTest(
+        gameState,
+        [placeWorkerInput(name)],
+        { autoAdvance: true }
+      );
+
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
+    });
+
+    it("should allow the player to choose which PRODUCTION to activate", () => {
+      gameState.locationsMap[name] = [];
+
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.MINE);
+      player.addToCity(gameState, CardName.CHIP_SWEEP);
+
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+
+      [player, gameState] = multiStepGameInputTest(
+        gameState,
+        [
+          placeWorkerInput(name),
+          {
+            inputType: GameInputType.SELECT_PLAYED_CARDS,
+            prevInputType: GameInputType.PLACE_WORKER,
+            cardOptions: [
+              player.getFirstPlayedCard(CardName.FARM),
+              player.getFirstPlayedCard(CardName.MINE),
+              player.getFirstPlayedCard(CardName.CHIP_SWEEP),
+            ],
+            locationContext: name,
+            maxToSelect: 2,
+            minToSelect: 2,
+            clientOptions: {
+              selectedCards: [
+                player.getFirstPlayedCard(CardName.FARM),
+                player.getFirstPlayedCard(CardName.MINE),
+              ],
+            },
+          },
+        ],
+        { autoAdvance: true }
+      );
+
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
+    });
+  });
+
   describe(LocationName.FOREST_RESIN_PEBBLE_OR_FOUR_CARDS, () => {
     const name = LocationName.FOREST_RESIN_PEBBLE_OR_FOUR_CARDS;
     it("should allow the player to draw 4 CARD", () => {

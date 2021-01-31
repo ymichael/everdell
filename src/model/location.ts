@@ -1,20 +1,22 @@
-import { Card } from "./card";
+import shuffle from "lodash/shuffle";
+import isEqual from "lodash/isEqual";
 import {
-  GameOptions,
   CardName,
+  CardType,
   ExpansionType,
-  ResourceType,
-  LocationName,
-  LocationType,
-  LocationOccupancy,
-  LocationNameToPlayerIds,
   GameInput,
   GameInputType,
-  Season,
-  ProductionResourceMap,
+  GameOptions,
   GameText,
-  TextPartEntity,
   IGameTextEntity,
+  LocationName,
+  LocationNameToPlayerIds,
+  LocationOccupancy,
+  LocationType,
+  ProductionResourceMap,
+  ResourceType,
+  Season,
+  TextPartEntity,
 } from "./types";
 import {
   sumResources,
@@ -27,7 +29,7 @@ import {
   GameStatePlayFn,
   GameStateCanPlayCheckFn,
 } from "./gameState";
-import shuffle from "lodash/shuffle";
+import { Card, onlyRelevantProductionCards } from "./card";
 import { toGameText, cardListToGameText } from "./gameText";
 import { assertUnreachable } from "../utils";
 
@@ -958,8 +960,70 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     shortName: toGameText("Activate 2 PRODUCTION in your city"),
     resourcesToGain: {},
     expansion: ExpansionType.PEARLBROOK,
+    canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.PLACE_WORKER) {
+        const productionCards = onlyRelevantProductionCards(
+          gameState,
+          player.getAllPlayedCardsByType(CardType.PRODUCTION)
+        );
+        if (productionCards.length === 0) {
+          return "No useful production cards to activate.";
+        }
+      }
+      return null;
+    },
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.PLACE_WORKER) {
+        const productionCards = onlyRelevantProductionCards(
+          gameState,
+          player.getAllPlayedCardsByType(CardType.PRODUCTION)
+        );
+        const numToActivate = Math.min(productionCards.length, 2);
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          prevInputType: gameInput.inputType,
+          label: `Select ${numToActivate} PRODUCTION to activate`,
+          cardOptions: productionCards,
+          locationContext: LocationName.FOREST_ACTIVATE_2_PRODUCTION,
+          maxToSelect: numToActivate,
+          minToSelect: numToActivate,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS &&
+        gameInput.locationContext === LocationName.FOREST_ACTIVATE_2_PRODUCTION
+      ) {
+        const selectedCards = gameInput.clientOptions.selectedCards;
+        if (!selectedCards || selectedCards.length !== gameInput.minToSelect) {
+          throw new Error(`Please select ${gameInput.minToSelect} cards`);
+        }
+        gameState.addGameLogFromLocation(
+          LocationName.FOREST_ACTIVATE_2_PRODUCTION,
+          [
+            player,
+            " activated PRODUCTION on ",
+            ...cardListToGameText(
+              selectedCards.map(({ cardName }) => cardName)
+            ),
+            ".",
+          ]
+        );
+        selectedCards.forEach((selectedCard) => {
+          if (!gameInput.cardOptions.find((x) => isEqual(x, selectedCard))) {
+            throw new Error("Could not find selected card.");
+          }
+          Card.fromName(selectedCard.cardName).reactivateCard(
+            gameState,
+            gameInput,
+            gameState.getPlayer(selectedCard.cardOwnerId),
+            selectedCard
+          );
+        });
+      }
     },
   }),
   [LocationName.FOREST_BERRY_PEBBLE_CARD]: new Location({

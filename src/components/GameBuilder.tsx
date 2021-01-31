@@ -109,6 +109,8 @@ const GameBuilder: React.FC = () => {
                           <label className={styles.game_builder_option}>
                             <Field type="checkbox" name="pearlbrook" />
                             {"Pearlbrook"}
+                            &nbsp;
+                            <span className={styles.beta}>beta</span>
                           </label>
                         </div>
                         <div>

@@ -118,3 +118,14 @@
 .game_builder_option input {
   margin-right: 5px;
 }
+
+.beta {
+  padding: 0 3px;
+  border-radius: 5px;
+  background: #2b2c1a;
+  color: #f1e7ad;
+  font-size: 10px;
+  display: inline-block;
+  height: 16px;
+  border: solid 1px black;
+}

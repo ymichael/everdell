@@ -3081,4 +3081,204 @@ describe("Event", () => {
       expect(player.hasCardInCity(CardName.TWIG_BARGE)).to.be(true);
     });
   });
+
+  describe(EventName.SPECIAL_ROMANTIC_CRUISE, () => {
+    it("can claim event and choose the wife", () => {
+      gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
+      player = gameState.getActivePlayer();
+      const event = Event.fromName(EventName.SPECIAL_ROMANTIC_CRUISE);
+      const gameInput = claimEventInput(event.name);
+      const deckLength = gameState.deck.length;
+
+      gameState.eventsMap[EventName.SPECIAL_ROMANTIC_CRUISE] = null;
+
+      player.addToCity(gameState, CardName.HUSBAND);
+      player.addToCity(gameState, CardName.FERRY);
+
+      expect(player.hasCardInCity(CardName.WIFE)).to.be(false);
+
+      expect(player.getPointsFromCards(gameState)).to.be(4);
+      expect(player.getClaimedEvent(EventName.SPECIAL_ROMANTIC_CRUISE)).to.be(
+        undefined
+      );
+
+      const selectGenericInput = {
+        inputType: GameInputType.SELECT_OPTION_GENERIC as const,
+        prevInputType: GameInputType.CLAIM_EVENT,
+        options: ["Search deck for a Wife", "Gain 5 VP"],
+        eventContext: EventName.SPECIAL_ROMANTIC_CRUISE,
+        clientOptions: {
+          selectedOption: "Search deck for a Wife",
+        },
+      };
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        gameInput,
+        selectGenericInput,
+      ]);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_ROMANTIC_CRUISE));
+
+      // check to make sure the card was drawn from the deck
+      expect(gameState.deck.length).to.be(deckLength - 1);
+
+      expect(player.getPointsFromEvents(gameState)).to.be(0);
+      expect(player.getPointsFromCards(gameState)).to.be(9);
+      expect(player.hasCardInCity(CardName.WIFE)).to.be(true);
+    });
+
+    it("can claim event and choose 5 VP", () => {
+      gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
+      player = gameState.getActivePlayer();
+      const event = Event.fromName(EventName.SPECIAL_ROMANTIC_CRUISE);
+      const gameInput = claimEventInput(event.name);
+      const deckLength = gameState.deck.length;
+
+      gameState.eventsMap[EventName.SPECIAL_ROMANTIC_CRUISE] = null;
+
+      player.addToCity(gameState, CardName.HUSBAND);
+      player.addToCity(gameState, CardName.FERRY);
+
+      expect(player.hasCardInCity(CardName.WIFE)).to.be(false);
+
+      expect(player.getPointsFromCards(gameState)).to.be(4);
+      expect(player.getClaimedEvent(EventName.SPECIAL_ROMANTIC_CRUISE)).to.be(
+        undefined
+      );
+
+      const selectGenericInput = {
+        inputType: GameInputType.SELECT_OPTION_GENERIC as const,
+        prevInputType: GameInputType.CLAIM_EVENT,
+        options: ["Search deck for a Wife", "Gain 5 VP"],
+        eventContext: EventName.SPECIAL_ROMANTIC_CRUISE,
+        clientOptions: {
+          selectedOption: "Gain 5 VP",
+        },
+      };
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        gameInput,
+        selectGenericInput,
+      ]);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_ROMANTIC_CRUISE));
+
+      // check to make sure no card was drawn from the deck
+      expect(gameState.deck.length).to.be(deckLength);
+
+      expect(player.getPointsFromEvents(gameState)).to.be(5);
+      expect(player.getPointsFromCards(gameState)).to.be(4);
+      expect(player.hasCardInCity(CardName.WIFE)).to.be(false);
+    });
+
+    it("should be able to search for wife and handle case where there's no Wife cards in deck", () => {
+      gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
+      player = gameState.getActivePlayer();
+      const event = Event.fromName(EventName.SPECIAL_ROMANTIC_CRUISE);
+      const gameInput = claimEventInput(event.name);
+
+      // draw all the cards from the deck
+      while (!gameState.deck.isEmpty) {
+        gameState.deck.drawInner();
+      }
+
+      expect(gameState.deck.length).to.be(0);
+
+      gameState.deck.addToStack(CardName.FARM);
+      gameState.deck.addToStack(CardName.QUEEN);
+      gameState.deck.addToStack(CardName.POSTAL_PIGEON);
+      gameState.deck.addToStack(CardName.RANGER);
+      gameState.deck.addToStack(CardName.DUNGEON);
+      gameState.deck.addToStack(CardName.MINE);
+      gameState.deck.addToStack(CardName.HUSBAND);
+
+      const deckLength = gameState.deck.length;
+
+      gameState.eventsMap[EventName.SPECIAL_ROMANTIC_CRUISE] = null;
+
+      player.addToCity(gameState, CardName.HUSBAND);
+      player.addToCity(gameState, CardName.FERRY);
+
+      expect(player.hasCardInCity(CardName.WIFE)).to.be(false);
+
+      expect(player.getPointsFromCards(gameState)).to.be(4);
+      expect(player.getClaimedEvent(EventName.SPECIAL_ROMANTIC_CRUISE)).to.be(
+        undefined
+      );
+
+      const selectGenericInput = {
+        inputType: GameInputType.SELECT_OPTION_GENERIC as const,
+        prevInputType: GameInputType.CLAIM_EVENT,
+        options: ["Search deck for a Wife", "Gain 5 VP"],
+        eventContext: EventName.SPECIAL_ROMANTIC_CRUISE,
+        clientOptions: {
+          selectedOption: "Search deck for a Wife",
+        },
+      };
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        gameInput,
+        selectGenericInput,
+      ]);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_ROMANTIC_CRUISE));
+
+      // deck is the same length because no wife in the deck
+      expect(gameState.deck.length).to.be(deckLength);
+
+      expect(player.getPointsFromEvents(gameState)).to.be(0);
+      expect(player.getPointsFromCards(gameState)).to.be(4);
+      expect(player.hasCardInCity(CardName.WIFE)).to.be(false);
+    });
+
+    it("should allow player to claim event even if deck is empty", () => {
+      gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
+      player = gameState.getActivePlayer();
+      const event = Event.fromName(EventName.SPECIAL_ROMANTIC_CRUISE);
+      const gameInput = claimEventInput(event.name);
+
+      // draw all the cards from the deck
+      while (!gameState.deck.isEmpty) {
+        gameState.deck.drawInner();
+      }
+
+      expect(gameState.deck.length).to.be(0);
+
+      gameState.eventsMap[EventName.SPECIAL_ROMANTIC_CRUISE] = null;
+
+      player.addToCity(gameState, CardName.HUSBAND);
+      player.addToCity(gameState, CardName.FERRY);
+
+      expect(player.hasCardInCity(CardName.WIFE)).to.be(false);
+
+      expect(player.getPointsFromCards(gameState)).to.be(4);
+      expect(player.getClaimedEvent(EventName.SPECIAL_ROMANTIC_CRUISE)).to.be(
+        undefined
+      );
+
+      const selectGenericInput = {
+        inputType: GameInputType.SELECT_OPTION_GENERIC as const,
+        prevInputType: GameInputType.CLAIM_EVENT,
+        options: ["Search deck for a Wife", "Gain 5 VP"],
+        eventContext: EventName.SPECIAL_ROMANTIC_CRUISE,
+        clientOptions: {
+          selectedOption: "Search deck for a Wife",
+        },
+      };
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        gameInput,
+        selectGenericInput,
+      ]);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_ROMANTIC_CRUISE));
+
+      // deck is the same length because no wife in the deck
+      expect(gameState.deck.length).to.be(0);
+
+      expect(player.getPointsFromEvents(gameState)).to.be(0);
+      expect(player.getPointsFromCards(gameState)).to.be(4);
+      expect(player.hasCardInCity(CardName.WIFE)).to.be(false);
+    });
+  });
 });

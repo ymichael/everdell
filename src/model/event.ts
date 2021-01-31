@@ -1526,8 +1526,89 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       "Or you may gain 5 VP.",
     ]),
     expansion: ExpansionType.PEARLBROOK,
+    playedEventInfoInner: () => ({
+      storedResources: {
+        [ResourceType.VP]: 0,
+      },
+    }),
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
+      const player = gameState.getActivePlayer();
+
+      if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_OPTION_GENERIC,
+          prevInputType: gameInput.inputType,
+          eventContext: EventName.SPECIAL_ROMANTIC_CRUISE,
+          options: ["Search deck for a Wife", "Gain 5 VP"],
+          clientOptions: {
+            selectedOption: null,
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_OPTION_GENERIC) {
+        const selectedOption = gameInput.clientOptions.selectedOption;
+
+        if (selectedOption === "Search deck for a Wife") {
+          gameState.addGameLogFromEvent(EventName.SPECIAL_ROMANTIC_CRUISE, [
+            player,
+            " chose to search the deck for a ",
+            Card.fromName(CardName.WIFE),
+          ]);
+
+          const drawnCards: CardName[] = [];
+          const deck = gameState.deck;
+          const numCardsInDeck = deck.length;
+
+          while (!deck.isEmpty) {
+            const cardName = deck.drawInner();
+            const card = Card.fromName(cardName);
+
+            if (card.name === CardName.WIFE) {
+              card.addToCityAndPlay(gameState, gameInput);
+              break;
+            } else {
+              drawnCards.push(cardName);
+            }
+          }
+
+          if (numCardsInDeck === drawnCards.length) {
+            gameState.addGameLogFromEvent(EventName.SPECIAL_ROMANTIC_CRUISE, [
+              player,
+              " tried to draw a ",
+              Card.fromName(CardName.WIFE),
+              " from the deck, but there were none remaining in the deck.",
+            ]);
+          }
+
+          drawnCards.forEach((cardName) => {
+            deck.addToStack(cardName);
+          });
+
+          deck.shuffle();
+        } else if (selectedOption === "Gain 5 VP") {
+          const eventInfo = player.getClaimedEvent(
+            EventName.SPECIAL_ROMANTIC_CRUISE
+          );
+
+          if (!eventInfo) {
+            throw new Error("Cannot find event info");
+          }
+
+          eventInfo.storedResources = {
+            [ResourceType.VP]: 5,
+          };
+
+          gameState.addGameLogFromEvent(EventName.SPECIAL_ROMANTIC_CRUISE, [
+            player,
+            " gained 5 VP",
+          ]);
+        } else {
+          throw new Error(
+            "Must choose either to either search for a Wife or gain 5 VP"
+          );
+        }
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
+      }
     },
   }),
   [EventName.SPECIAL_X_MARKS_THE_SPOT]: new Event({

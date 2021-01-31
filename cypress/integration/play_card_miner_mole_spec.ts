@@ -29,7 +29,7 @@ describe("Play Miner Mole and select played card", () => {
     });
 
     cy.get("#js-game-input-box-form").within(() => {
-      cy.contains("Miner Mole: Select 1 to activate");
+      cy.contains("Miner Mole: Select 1 PRODUCTION to activate");
       cy.get("[data-cy='played-card-item:General Store']").click();
       cy.contains("1 Selected").click();
     });
@@ -37,6 +37,7 @@ describe("Play Miner Mole and select played card", () => {
     cy.contains(
       "Miner Mole: Michael activated General Store from Elynn's city."
     );
+    cy.contains("General Store: Michael gained 2 BERRY.");
     cy.contains("Waiting for Elynn");
   });
 });

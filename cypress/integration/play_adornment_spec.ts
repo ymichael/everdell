@@ -30,7 +30,6 @@ describe("Play Adornment", () => {
     cy.contains("Michael played Spyglass.");
 
     // Select resource to gain
-    cy.contains("Spyglass: Gain 1");
     cy.get("#js-game-input-box-form").within(() => {
       cy.get("#js-game-input-type-SELECT_OPTION_GENERIC").click();
       cy.get("[data-cy='option-generic-item:BERRY']").click();

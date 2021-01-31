@@ -31,41 +31,44 @@ export const GameBlock: React.FC<{ title: string; id?: string }> = ({
 
 export const CardTypeSymbol = ({ cardType }: { cardType: CardType }) => {
   return (
-    <>
-      {cardType === CardType.PRODUCTION ? (
-        <Image
-          alt="PRODUCTION card type"
-          src="/images/production.png"
-          layout="fill"
-        />
-      ) : cardType === CardType.GOVERNANCE ? (
-        <Image
-          alt="GOVERNANCE card type"
-          src="/images/governance.png"
-          layout="fill"
-        />
-      ) : cardType === CardType.DESTINATION ? (
-        <Image
-          alt="DESTINATION card type"
-          src="/images/destination.png"
-          layout="fill"
-        />
-      ) : cardType === CardType.PROSPERITY ? (
-        <Image
-          alt="PROSPERITY card type"
-          src="/images/prosperity.png"
-          layout="fill"
-        />
-      ) : cardType === CardType.TRAVELER ? (
-        <Image
-          alt="TRAVELER card type"
-          src="/images/traveler.png"
-          layout="fill"
-        />
-      ) : (
-        <>{cardType}</>
-      )}
-    </>
+    <span>
+      <span hidden>{cardType}</span>
+      <span aria-hidden={true}>
+        {cardType === CardType.PRODUCTION ? (
+          <Image
+            alt="PRODUCTION card type"
+            src="/images/production.png"
+            layout="fill"
+          />
+        ) : cardType === CardType.GOVERNANCE ? (
+          <Image
+            alt="GOVERNANCE card type"
+            src="/images/governance.png"
+            layout="fill"
+          />
+        ) : cardType === CardType.DESTINATION ? (
+          <Image
+            alt="DESTINATION card type"
+            src="/images/destination.png"
+            layout="fill"
+          />
+        ) : cardType === CardType.PROSPERITY ? (
+          <Image
+            alt="PROSPERITY card type"
+            src="/images/prosperity.png"
+            layout="fill"
+          />
+        ) : cardType === CardType.TRAVELER ? (
+          <Image
+            alt="TRAVELER card type"
+            src="/images/traveler.png"
+            layout="fill"
+          />
+        ) : (
+          <>{cardType}</>
+        )}
+      </span>
+    </span>
   );
 };
 
@@ -232,6 +235,7 @@ export const Description = ({ textParts }: { textParts: GameText }) => {
             if (part.entityType === "event") {
               return (
                 <span key={idx} className={styles.entity_part}>
+                  <span hidden>Event:</span>
                   <Description
                     textParts={Event.fromName(part.event).getShortName()}
                   />

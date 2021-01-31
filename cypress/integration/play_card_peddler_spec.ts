@@ -39,13 +39,13 @@ describe("Play Peddler", () => {
     });
 
     cy.get("#js-game-input-box-form").within(() => {
-      cy.contains("Peddler: Pay up to 2");
+      cy.contains("Peddler: Pay up to 2 ANY");
       cy.get("[data-cy='resource-value-input:BERRY']").type("1");
       cy.get("[data-cy='resource-value-input:PEBBLE']").type("1");
       cy.contains("Submit").click();
     });
 
-    cy.contains("Peddler: Michael paid ");
+    cy.contains("Peddler: Michael paid 1 BERRY & 1 PEBBLE.");
 
     cy.get("#js-game-input-box-form").within(() => {
       cy.contains("Peddler: Gain 2");
@@ -54,7 +54,7 @@ describe("Play Peddler", () => {
       cy.contains("Submit").click();
     });
 
-    cy.contains("Peddler: Michael gained ");
+    cy.contains("Peddler: Michael gained 1 TWIG & 1 RESIN.");
     cy.contains("Waiting for Elynn");
   });
 });

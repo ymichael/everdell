@@ -37,6 +37,7 @@ describe("Select Played Adornment", () => {
     });
 
     cy.contains("Mirror: Michael copied Bell.");
+    cy.contains("Bell: Michael gained 3 BERRY & 4 CARD.");
 
     cy.get("[data-cy='player-city:Michael']").within(() => {
       cy.contains("Mirror");

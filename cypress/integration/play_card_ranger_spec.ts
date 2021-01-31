@@ -52,8 +52,10 @@ describe("Play Ranger", () => {
       cy.contains("Submit").click();
     });
 
-    cy.contains("Ranger: Michael moved deployed worker on ");
-    cy.contains("Michael claimed the 4");
+    cy.contains(
+      "Ranger: Michael moved deployed worker on Location:PEBBLE to Event:4 PRODUCTION."
+    );
+    cy.contains("Michael claimed the Event:4 PRODUCTION event");
     cy.get("#js-game-events").within(() => {
       cy.get("[data-cy='event:4 PRODUCTION']").within(() => {
         cy.contains("Claimed: Michael");

@@ -7222,6 +7222,81 @@
   ],
   [
     {
+      "type": "entity",
+      "entityType": "event",
+      "event": "Hopewatch Gate"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " spent "
+    },
+    {
+      "type": "text",
+      "text": "1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "TWIG"
+    },
+    {
+      "type": "text",
+      "text": ", "
+    },
+    {
+      "type": "text",
+      "text": "1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "RESIN"
+    },
+    {
+      "type": "text",
+      "text": ", "
+    },
+    {
+      "type": "text",
+      "text": "1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "PEBBLE"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "text",
+      "text": "2 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "PEARL"
+    },
+    {
+      "type": "text",
+      "text": " and discarded 2 "
+    },
+    {
+      "type": "symbol",
+      "symbol": "CARD"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
       "type": "player",
       "name": "Player #0"
     },
@@ -7233,6 +7308,81 @@
       "type": "entity",
       "entityType": "event",
       "event": "Mistrise Fountain"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "Mistrise Fountain"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " spent "
+    },
+    {
+      "type": "text",
+      "text": "2 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "TWIG"
+    },
+    {
+      "type": "text",
+      "text": ", "
+    },
+    {
+      "type": "text",
+      "text": "2 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "RESIN"
+    },
+    {
+      "type": "text",
+      "text": ", "
+    },
+    {
+      "type": "text",
+      "text": "2 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "PEBBLE"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "text",
+      "text": "2 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "PEARL"
+    },
+    {
+      "type": "text",
+      "text": " and discarded 2 "
+    },
+    {
+      "type": "symbol",
+      "symbol": "CARD"
     },
     {
       "type": "text",
@@ -7260,6 +7410,81 @@
   ],
   [
     {
+      "type": "entity",
+      "entityType": "event",
+      "event": "Sunblaze Bridge"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " spent "
+    },
+    {
+      "type": "text",
+      "text": "2 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "TWIG"
+    },
+    {
+      "type": "text",
+      "text": ", "
+    },
+    {
+      "type": "text",
+      "text": "2 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "RESIN"
+    },
+    {
+      "type": "text",
+      "text": ", "
+    },
+    {
+      "type": "text",
+      "text": "2 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "PEBBLE"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "text",
+      "text": "3 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "PEARL"
+    },
+    {
+      "type": "text",
+      "text": " and discarded 3 "
+    },
+    {
+      "type": "symbol",
+      "symbol": "CARD"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
       "type": "player",
       "name": "Player #0"
     },
@@ -7271,6 +7496,81 @@
       "type": "entity",
       "entityType": "event",
       "event": "Starfalls flame"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "Starfalls flame"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " spent "
+    },
+    {
+      "type": "text",
+      "text": "3 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "TWIG"
+    },
+    {
+      "type": "text",
+      "text": ", "
+    },
+    {
+      "type": "text",
+      "text": "3 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "RESIN"
+    },
+    {
+      "type": "text",
+      "text": ", "
+    },
+    {
+      "type": "text",
+      "text": "3 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "PEBBLE"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "text",
+      "text": "3 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "PEARL"
+    },
+    {
+      "type": "text",
+      "text": " and discarded 3 "
+    },
+    {
+      "type": "symbol",
+      "symbol": "CARD"
     },
     {
       "type": "text",

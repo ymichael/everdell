@@ -3610,8 +3610,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       { type: "entity", entityType: "card", card: CardName.PIRATE_SHIP },
       " to an empty space in an opponent's city. ",
       "Then gain 1 ANY and 1 VP per PEARL that opponent has, up to a maximum of 3.",
-      { type: "HR" },
-      "Other players may visit this card.",
     ]),
     isUnique: false,
     isConstruction: true,

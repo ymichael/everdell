@@ -2211,6 +2211,18 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           player.removeCardFromHand(cardName as CardName);
           gameState.discardPile.addToStack(cardName);
         });
+
+        gameState.addGameLogFromEvent(EventName.WONDER_HOPEWATCH_GATE, [
+          player,
+          " spent ",
+          ...resourceMapToGameText({
+            [ResourceType.TWIG]: 1,
+            [ResourceType.RESIN]: 1,
+            [ResourceType.PEBBLE]: 1,
+            [ResourceType.PEARL]: 2,
+          }),
+          " and discarded 2 CARD.",
+        ]);
       } else {
         throw new Error(`Invalid input type ${gameInput.inputType}`);
       }
@@ -2270,6 +2282,18 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           player.removeCardFromHand(cardName as CardName);
           gameState.discardPile.addToStack(cardName);
         });
+
+        gameState.addGameLogFromEvent(EventName.WONDER_MISTRISE_FOUNTAIN, [
+          player,
+          " spent ",
+          ...resourceMapToGameText({
+            [ResourceType.TWIG]: 2,
+            [ResourceType.RESIN]: 2,
+            [ResourceType.PEBBLE]: 2,
+            [ResourceType.PEARL]: 2,
+          }),
+          " and discarded 2 CARD.",
+        ]);
       } else {
         throw new Error(`Invalid input type ${gameInput.inputType}`);
       }
@@ -2329,6 +2353,18 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           player.removeCardFromHand(cardName as CardName);
           gameState.discardPile.addToStack(cardName);
         });
+
+        gameState.addGameLogFromEvent(EventName.WONDER_SUNBLAZE_BRIDGE, [
+          player,
+          " spent ",
+          ...resourceMapToGameText({
+            [ResourceType.TWIG]: 2,
+            [ResourceType.RESIN]: 2,
+            [ResourceType.PEBBLE]: 2,
+            [ResourceType.PEARL]: 3,
+          }),
+          " and discarded 3 CARD.",
+        ]);
       } else {
         throw new Error(`Invalid input type ${gameInput.inputType}`);
       }
@@ -2388,6 +2424,18 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           player.removeCardFromHand(cardName as CardName);
           gameState.discardPile.addToStack(cardName);
         });
+
+        gameState.addGameLogFromEvent(EventName.WONDER_STARFALLS_FLAME, [
+          player,
+          " spent ",
+          ...resourceMapToGameText({
+            [ResourceType.TWIG]: 3,
+            [ResourceType.RESIN]: 3,
+            [ResourceType.PEBBLE]: 3,
+            [ResourceType.PEARL]: 3,
+          }),
+          " and discarded 3 CARD.",
+        ]);
       } else {
         throw new Error(`Invalid input type ${gameInput.inputType}`);
       }

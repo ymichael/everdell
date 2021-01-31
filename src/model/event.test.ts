@@ -1589,9 +1589,9 @@ describe("Event", () => {
       gameState = testInitialGameState({ numPlayers: 4 });
       const gameInput = claimEventInput(event.name);
       let player = gameState.getActivePlayer();
-      let player2 = gameState.players[1];
-      let player3 = gameState.players[2];
-      let player4 = gameState.players[3];
+      const player2 = gameState.players[1];
+      const player3 = gameState.players[2];
+      const player4 = gameState.players[3];
 
       gameState.eventsMap[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN] = null;
 
@@ -3817,7 +3817,7 @@ describe("Event", () => {
     it("should not be able to give mroe than 6 cards to another player", () => {
       const event = Event.fromName(EventName.SPECIAL_MASQUERADE_INVITATIONS);
       const gameInput = claimEventInput(event.name);
-      let player2 = gameState.players[1];
+      const player2 = gameState.players[1];
 
       expect(
         player.getClaimedEvent(EventName.SPECIAL_MASQUERADE_INVITATIONS)
@@ -3874,10 +3874,10 @@ describe("Event", () => {
         gameOptions: { pearlbrook: true },
       });
       const gameInput = claimEventInput(event.name);
-      let player = gameState.getActivePlayer();
-      let player2 = gameState.players[1];
-      let player3 = gameState.players[2];
-      let player4 = gameState.players[3];
+      const player = gameState.getActivePlayer();
+      const player2 = gameState.players[1];
+      const player3 = gameState.players[2];
+      const player4 = gameState.players[3];
 
       player.addCardToHand(gameState, CardName.HUSBAND);
       player.addCardToHand(gameState, CardName.WIFE);

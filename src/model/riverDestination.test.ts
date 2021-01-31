@@ -280,10 +280,10 @@ describe("RiverDestinationMap", () => {
   });
 
   describe(RiverDestinationName.GUS_THE_GARDENER, () => {
+    const name = RiverDestinationName.GUS_THE_GARDENER;
     beforeEach(() => {
       const spot = RiverDestinationSpotName.TWO_TRAVELER;
-      gameState.riverDestinationMap!.spots[spot]!.name =
-        RiverDestinationName.GUS_THE_GARDENER;
+      gameState.riverDestinationMap!.spots[spot]!.name = name;
       gameState.riverDestinationMap!.spots[spot]!.revealed = true;
       player.addToCity(gameState, CardName.WANDERER);
       player.addToCity(gameState, CardName.RANGER);
@@ -325,9 +325,9 @@ describe("RiverDestinationMap", () => {
           inputType: GameInputType.SELECT_CARDS,
           prevInputType: GameInputType.PLACE_AMBASSADOR,
           cardOptions: [CardName.FARM, CardName.FARM, CardName.MINE],
+          riverDestinationContext: name,
           maxToSelect: 3,
           minToSelect: 0,
-          riverDestinationContext: RiverDestinationName.GUS_THE_GARDENER,
           clientOptions: {
             selectedCards: [],
           },
@@ -369,9 +369,9 @@ describe("RiverDestinationMap", () => {
           inputType: GameInputType.SELECT_CARDS,
           prevInputType: GameInputType.PLACE_AMBASSADOR,
           cardOptions: [CardName.FARM, CardName.FARM, CardName.MINE],
+          riverDestinationContext: name,
           maxToSelect: 3,
           minToSelect: 0,
-          riverDestinationContext: RiverDestinationName.GUS_THE_GARDENER,
           clientOptions: {
             selectedCards: [CardName.FARM, CardName.FARM, CardName.MINE],
           },
@@ -380,6 +380,117 @@ describe("RiverDestinationMap", () => {
 
       expect(player.hasUnusedAmbassador()).to.be(false);
       expect(player.cardsInHand).to.eql([CardName.QUEEN, CardName.JUDGE]);
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(1);
+    });
+  });
+
+  describe(RiverDestinationName.CRUSTINA_THE_CONSTABLE, () => {
+    const name = RiverDestinationName.CRUSTINA_THE_CONSTABLE;
+
+    beforeEach(() => {
+      const spot = RiverDestinationSpotName.TWO_TRAVELER;
+      gameState.riverDestinationMap!.spots[spot]!.name = name;
+      gameState.riverDestinationMap!.spots[spot]!.revealed = true;
+      player.addToCity(gameState, CardName.WANDERER);
+      player.addToCity(gameState, CardName.RANGER);
+    });
+
+    it("should do nothing if player doesn't have 2 GOVERNANCE cards", () => {
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        {
+          inputType: GameInputType.PLACE_AMBASSADOR,
+          clientOptions: {
+            loc: { type: "spot", spot: RiverDestinationSpotName.TWO_TRAVELER },
+          },
+        },
+      ]);
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+    });
+
+    it("should allow player to NOT discard 2 GOVERNANCE cards", () => {
+      player.cardsInHand.push(CardName.FARM);
+      player.cardsInHand.push(CardName.FARM);
+      player.cardsInHand.push(CardName.QUEEN);
+      player.cardsInHand.push(CardName.JUDGE);
+      player.cardsInHand.push(CardName.SHOPKEEPER);
+
+      expect(player.hasUnusedAmbassador()).to.be(true);
+      expect(player.cardsInHand).to.not.eql([]);
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        {
+          inputType: GameInputType.PLACE_AMBASSADOR,
+          clientOptions: {
+            loc: { type: "spot", spot: RiverDestinationSpotName.TWO_TRAVELER },
+          },
+        },
+        {
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: GameInputType.PLACE_AMBASSADOR,
+          cardOptions: [CardName.JUDGE, CardName.SHOPKEEPER],
+          maxToSelect: 2,
+          minToSelect: 0,
+          riverDestinationContext: name,
+          clientOptions: {
+            selectedCards: [],
+          },
+        },
+      ]);
+
+      expect(player.hasUnusedAmbassador()).to.be(false);
+      expect(player.cardsInHand).to.eql([
+        CardName.FARM,
+        CardName.FARM,
+        CardName.QUEEN,
+        CardName.JUDGE,
+        CardName.SHOPKEEPER,
+      ]);
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+    });
+
+    it("should allow player to discard 2 GOVERNANCE cards", () => {
+      player.cardsInHand.push(CardName.FARM);
+      player.cardsInHand.push(CardName.FARM);
+      player.cardsInHand.push(CardName.QUEEN);
+      player.cardsInHand.push(CardName.JUDGE);
+      player.cardsInHand.push(CardName.SHOPKEEPER);
+
+      expect(player.hasUnusedAmbassador()).to.be(true);
+      expect(player.cardsInHand).to.not.eql([]);
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        {
+          inputType: GameInputType.PLACE_AMBASSADOR,
+          clientOptions: {
+            loc: { type: "spot", spot: RiverDestinationSpotName.TWO_TRAVELER },
+          },
+        },
+        {
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: GameInputType.PLACE_AMBASSADOR,
+          cardOptions: [CardName.JUDGE, CardName.SHOPKEEPER],
+          maxToSelect: 2,
+          minToSelect: 0,
+          riverDestinationContext: name,
+          clientOptions: {
+            selectedCards: [CardName.JUDGE, CardName.SHOPKEEPER],
+          },
+        },
+      ]);
+
+      expect(player.hasUnusedAmbassador()).to.be(false);
+      expect(player.cardsInHand).to.eql([
+        CardName.FARM,
+        CardName.FARM,
+        CardName.QUEEN,
+      ]);
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
       expect(player.getNumResourcesByType(ResourceType.VP)).to.be(1);
     });

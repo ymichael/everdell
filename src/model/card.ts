@@ -3409,6 +3409,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     numInDeck: 3,
     isConstruction: false,
     isUnique: false,
+    resourcesToGain: { CARD: 1, [ResourceType.VP]: 1 },
     baseCost: { [ResourceType.BERRY]: 2 },
     playedCardInfoDefault: { shareSpaceWith: null },
     canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {

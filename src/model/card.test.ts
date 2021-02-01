@@ -5146,12 +5146,14 @@ describe("Card", () => {
         player.addToCity(gameState, CardName.FARM);
         player.cardsInHand = [card.name];
         player.gainResources(gameState, card.baseCost);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
         [player, gameState] = multiStepGameInputTest(
           gameState,
           [playCardInput(card.name)],
           { autoAdvance: true }
         );
         expect(player.hasCardInCity(card.name)).to.be(true);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(1);
         expect(player.getFirstPlayedCard(CardName.FARM)).to.eql({
           cardName: CardName.FARM,
           cardOwnerId: player.playerId,

@@ -28,7 +28,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     props: {
       isGameAdmin,
       devDebugMode: process.env.NODE_ENV === "development" && !!debug,
-      game: game && game.toJSON(isGameAdmin /* includePrivate */),
+      game:
+        game &&
+        game.toJSON(isGameAdmin || game.isGameOver() /* includePrivate */),
       viewingPlayer: player && player.toJSON(true /* includePrivate */),
       gameInputs: isActivePlayer ? game.getGameInputs() : [],
     },

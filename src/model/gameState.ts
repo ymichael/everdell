@@ -531,9 +531,20 @@ export class GameState {
           throw new Error("Invalid player selected");
         }
         break;
-      // case GameInputType.SELECT_LOCATION:
-      // case GameInputType.SELECT_PAYMENT_FOR_CARD:
+      case GameInputType.SELECT_LOCATION:
+        if (!gameInput.clientOptions.selectedLocation) {
+          throw new Error("Please select a Location");
+        }
+        if (
+          gameInput.locationOptions.indexOf(
+            gameInput.clientOptions.selectedLocation
+          ) === -1
+        ) {
+          throw new Error("Invalid Location selected");
+        }
+        break;
       // case GameInputType.SELECT_WORKER_PLACEMENT:
+      // case GameInputType.SELECT_PAYMENT_FOR_CARD:
       // case GameInputType.SELECT_RESOURCES:
       // case GameInputType.DISCARD_CARDS:
       // case GameInputType.SELECT_PLAYED_ADORNMENT:

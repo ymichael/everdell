@@ -308,10 +308,10 @@ export class Card<TCardType extends CardType = CardType>
 
     const playCardGameInput = this.getPlayCardInput(gameInput, playedCard);
 
-    // Track that the player played a card.
-    // Before we go to the next player, make sure we trigger things like
-    // SHOPKEEPER/HISTORIAN/COURTHOUSE.
-    player.pendingPlayCardGameInput.push(playCardGameInput);
+    // If called directly, add to game state
+    if (!isEqual(playCardGameInput, gameInput)) {
+      gameState.addPlayedGameInput(playCardGameInput);
+    }
 
     if (
       this.cardType === CardType.PRODUCTION ||

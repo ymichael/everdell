@@ -53,11 +53,6 @@ export class Player implements IGameTextEntity {
 
   public playerStatus: PlayerStatus;
 
-  // Keep track of PLAY_CARD game inputs that have yet to completely resolve.
-  // We need this because we want to fully resolve a card's effects
-  // before triggering things like HISTORIAN/SHOPKEEPER/COURTHOUSE.
-  public pendingPlayCardGameInput: GameInputPlayCard[];
-
   readonly adornmentsInHand: AdornmentName[];
   readonly playedAdornments: AdornmentName[];
 
@@ -83,7 +78,6 @@ export class Player implements IGameTextEntity {
     playerStatus = PlayerStatus.DURING_SEASON,
     adornmentsInHand = [],
     playedAdornments = [],
-    pendingPlayCardGameInput = [],
   }: {
     name: string;
     playerSecret?: string;
@@ -99,7 +93,6 @@ export class Player implements IGameTextEntity {
     playerStatus?: PlayerStatus;
     adornmentsInHand?: AdornmentName[];
     playedAdornments?: AdornmentName[];
-    pendingPlayCardGameInput?: GameInputPlayCard[];
   }) {
     this.playerId = playerId;
     this.playerSecret = playerSecret;
@@ -112,7 +105,6 @@ export class Player implements IGameTextEntity {
     this.claimedEvents = claimedEvents;
     this.placedWorkers = placedWorkers;
     this.playerStatus = playerStatus;
-    this.pendingPlayCardGameInput = pendingPlayCardGameInput;
 
     // pearlbrook only
     this.numAmbassadors = numAmbassadors;
@@ -305,10 +297,10 @@ export class Player implements IGameTextEntity {
     return removedCards;
   }
 
-  triggerPendingPlayCardEffects(gameState: GameState): void {
-    // Reset the pending play card game inputs
-    const pendingPlayCardGameInput = [...this.pendingPlayCardGameInput];
-    this.pendingPlayCardGameInput = [];
+  handlePlayedGameInputs(gameState: GameState, gameInputs: GameInput[]): void {
+    const pendingPlayCardGameInput = gameInputs.filter(
+      (x) => x.inputType === GameInputType.PLAY_CARD
+    ) as GameInputPlayCard[];
 
     // Reverse array so we can process from back to front.
     pendingPlayCardGameInput.reverse();
@@ -1596,7 +1588,6 @@ export class Player implements IGameTextEntity {
       cardsInHand: [],
       placedWorkers: this.placedWorkers,
       playerStatus: this.playerStatus,
-      pendingPlayCardGameInput: this.pendingPlayCardGameInput,
       numAdornmentsInHand: this.adornmentsInHand.length,
       adornmentsInHand: [],
       playedAdornments: this.playedAdornments,

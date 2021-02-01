@@ -129,7 +129,13 @@ export class GameState {
   readonly gameStateId: number;
   readonly gameOptions: GameOptions;
   readonly gameLog: GameLogEntry[];
+
+  // GameInputs that need to be shown to the user.
   readonly pendingGameInputs: GameInputMultiStep[];
+
+  // List of game inputs that have been played since the
+  // start of the active player's turn.
+  private playedGameInputs: GameInput[];
 
   // Player & Active Player
   private _activePlayerId: Player["playerId"];
@@ -157,6 +163,7 @@ export class GameState {
     gameLog = [],
     gameOptions = {},
     pendingGameInputs = [],
+    playedGameInputs = [],
     adornmentsPile = null,
     riverDestinationMap = null,
   }: {
@@ -171,6 +178,7 @@ export class GameState {
     adornmentsPile?: CardStack<AdornmentName> | null;
     riverDestinationMap?: RiverDestinationMap | null;
     pendingGameInputs: GameInputMultiStep[];
+    playedGameInputs?: GameInput[];
     gameLog: GameLogEntry[];
     gameOptions?: Partial<GameOptions>;
   }) {
@@ -183,6 +191,7 @@ export class GameState {
     this.eventsMap = eventsMap;
     this._activePlayerId = activePlayerId || players[0].playerId;
     this.pendingGameInputs = pendingGameInputs;
+    this.playedGameInputs = playedGameInputs;
     this.gameLog = gameLog;
     this.adornmentsPile = adornmentsPile;
     this.riverDestinationMap = riverDestinationMap;
@@ -288,6 +297,7 @@ export class GameState {
         locationsMap: this.locationsMap,
         eventsMap: this.eventsMap,
         pendingGameInputs: [],
+        playedGameInputs: [],
         deck: this.deck.toJSON(includePrivate),
         discardPile: this.discardPile.toJSON(includePrivate),
         gameLog: this.gameLog,
@@ -302,6 +312,7 @@ export class GameState {
       ...(includePrivate
         ? {
             pendingGameInputs: this.pendingGameInputs,
+            playedGameInputs: this.playedGameInputs,
           }
         : {}),
     });
@@ -941,10 +952,17 @@ export class GameState {
     return this.clone().nextInner(gameInput, autoAdvance);
   }
 
+  addPlayedGameInput(gameInput: GameInput): void {
+    this.playedGameInputs.push(gameInput);
+  }
+
   private nextInner(gameInput: GameInput, autoAdvance = true): GameState {
     if (this.pendingGameInputs.length !== 0) {
       this.removeMultiStepGameInput(gameInput as any);
     }
+
+    this.addPlayedGameInput(gameInput);
+
     switch (gameInput.inputType) {
       case GameInputType.SELECT_CARDS:
       case GameInputType.SELECT_PLAYED_CARDS:
@@ -999,9 +1017,11 @@ export class GameState {
     // A player played a card, resolve triggered effects
     if (
       this.pendingGameInputs.length === 0 &&
-      player.pendingPlayCardGameInput.length !== 0
+      this.playedGameInputs.length !== 0
     ) {
-      player.triggerPendingPlayCardEffects(this);
+      const playedGameInputs = [...this.playedGameInputs];
+      this.playedGameInputs = [];
+      player.handlePlayedGameInputs(this, playedGameInputs);
     }
 
     // If there are no more pending game inputs go to the next player.

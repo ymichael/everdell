@@ -7,6 +7,7 @@ import {
   GameInput,
   ResourceType,
   CardName,
+  EventName,
   LocationName,
 } from "../../model/types";
 import { Game as GameModel } from "../../model/game";
@@ -21,8 +22,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const gameState = testInitialGameState({
     numPlayers,
     playerNames,
-    noForestLocations: true,
-    noSpecialEvents: false,
+    specialEvents: [
+      EventName.SPECIAL_GRADUATION_OF_SCHOLARS,
+      EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN,
+      EventName.SPECIAL_PERFORMER_IN_RESIDENCE,
+      EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES,
+    ],
     shuffleDeck: true,
     gameOptions: {
       pearlbrook: true,

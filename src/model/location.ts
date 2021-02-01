@@ -182,13 +182,19 @@ export class Location implements GameStatePlayable, IGameTextEntity {
 
   triggerLocation(
     gameState: GameState,
-    gameInput: GameInput = {
+    gameInputFromCaller: GameInput | null = null
+  ): void {
+    const gameInput: GameInput = gameInputFromCaller || {
       inputType: GameInputType.PLACE_WORKER,
       clientOptions: {
         location: this.name,
       },
+    };
+
+    if (!gameInputFromCaller) {
+      gameState.addPlayedGameInput(gameInput);
     }
-  ): void {
+
     if (this.playInner) {
       if (this.canPlayCheckInner) {
         const errorMsg = this.canPlayCheckInner(gameState, gameInput);

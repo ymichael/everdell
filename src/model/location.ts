@@ -1,5 +1,6 @@
 import shuffle from "lodash/shuffle";
 import isEqual from "lodash/isEqual";
+import omit from "lodash/omit";
 import {
   CardName,
   CardType,
@@ -199,7 +200,7 @@ export class Location implements GameStatePlayable, IGameTextEntity {
     }
     if (this.resourcesToGain && sumResources(this.resourcesToGain)) {
       const player = gameState.getActivePlayer();
-      player.gainResources(gameState, this.resourcesToGain);
+      player.gainResources(gameState, omit(this.resourcesToGain, ["CARD"]));
       if (this.resourcesToGain.CARD) {
         player.drawCards(gameState, this.resourcesToGain.CARD);
       }

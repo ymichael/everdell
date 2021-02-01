@@ -389,7 +389,7 @@ export class Card<TCardType extends CardType = CardType>
   ): void {
     const player = gameState.getActivePlayer();
     if (this.resourcesToGain && sumResources(this.resourcesToGain)) {
-      player.gainResources(gameState, this.resourcesToGain);
+      player.gainResources(gameState, omit(this.resourcesToGain, ["CARD"]));
       if (this.resourcesToGain.CARD) {
         player.drawCards(gameState, this.resourcesToGain.CARD);
       }

@@ -450,7 +450,34 @@ export class GameState {
     this.pendingGameInputs.splice(idx, 1);
   }
 
+  private validateMultiStepGameInput(gameInput: GameInputMultiStep): void {
+    switch (gameInput.inputType) {
+      case GameInputType.SELECT_OPTION_GENERIC:
+        if (
+          !gameInput.clientOptions.selectedOption ||
+          gameInput.options.indexOf(gameInput.clientOptions.selectedOption) ===
+            -1
+        ) {
+          throw new Error("Please select one of the options.");
+        }
+        break;
+      // case GameInputType.SELECT_CARDS:
+      // case GameInputType.SELECT_PLAYED_CARDS:
+      // case GameInputType.SELECT_LOCATION:
+      // case GameInputType.SELECT_PAYMENT_FOR_CARD:
+      // case GameInputType.SELECT_WORKER_PLACEMENT:
+      // case GameInputType.SELECT_PLAYER:
+      // case GameInputType.SELECT_RESOURCES:
+      // case GameInputType.DISCARD_CARDS:
+      // case GameInputType.SELECT_PLAYED_ADORNMENT:
+      // case GameInputType.SELECT_RIVER_DESTINATION:
+      default:
+        break;
+    }
+  }
+
   private handleMultiStepGameInput(gameInput: GameInputMultiStep): void {
+    this.validateMultiStepGameInput(gameInput);
     if (gameInput.cardContext) {
       const card = Card.fromName(gameInput.cardContext);
       const canPlayCardErr = card.canPlayCheck(this, gameInput);

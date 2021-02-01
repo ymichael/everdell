@@ -521,7 +521,7 @@ describe("Card", () => {
               },
             },
           ]);
-        }).to.throwException(/unable to draw card from discard/i);
+        }).to.throwException(/Please select one of the options/i);
       });
     });
 

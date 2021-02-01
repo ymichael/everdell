@@ -1294,14 +1294,7 @@ export class Player implements IGameTextEntity {
     return this.validatePaidResources(paymentResources, cardToPlay.baseCost);
   }
 
-  spendResources({
-    VP = 0,
-    TWIG = 0,
-    BERRY = 0,
-    PEBBLE = 0,
-    RESIN = 0,
-    PEARL = 0,
-  }: {
+  spendResources(toSpend: {
     [ResourceType.VP]?: number;
     [ResourceType.TWIG]?: number;
     [ResourceType.BERRY]?: number;
@@ -1309,6 +1302,19 @@ export class Player implements IGameTextEntity {
     [ResourceType.RESIN]?: number;
     [ResourceType.PEARL]?: number;
   }): void {
+    if (!Object.keys(toSpend).every((k) => k in this.resources)) {
+      throw new Error(`Unexpected resources: ${JSON.stringify(toSpend)}`);
+    }
+
+    const {
+      VP = 0,
+      TWIG = 0,
+      BERRY = 0,
+      PEBBLE = 0,
+      RESIN = 0,
+      PEARL = 0,
+    } = toSpend;
+
     if (VP) {
       if (this.resources[ResourceType.VP] < VP) {
         throw new Error(
@@ -1373,14 +1379,7 @@ export class Player implements IGameTextEntity {
 
   gainResources(
     gameState: GameState,
-    {
-      VP = 0,
-      TWIG = 0,
-      BERRY = 0,
-      PEBBLE = 0,
-      RESIN = 0,
-      PEARL = 0,
-    }: {
+    toGain: {
       [ResourceType.VP]?: number;
       [ResourceType.TWIG]?: number;
       [ResourceType.BERRY]?: number;
@@ -1389,6 +1388,17 @@ export class Player implements IGameTextEntity {
       [ResourceType.PEARL]?: number;
     }
   ): void {
+    if (!Object.keys(toGain).every((k) => k in this.resources)) {
+      throw new Error(`Unexpected resources: ${JSON.stringify(toGain)}`);
+    }
+    const {
+      VP = 0,
+      TWIG = 0,
+      BERRY = 0,
+      PEBBLE = 0,
+      RESIN = 0,
+      PEARL = 0,
+    } = toGain;
     if (VP) {
       this.resources[ResourceType.VP] += VP;
     }

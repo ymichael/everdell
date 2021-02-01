@@ -5,7 +5,6 @@ import {
   EventNameToPlayerId,
   GameInput,
   GameInputMultiStep,
-  GameInputPlayCard,
   GameLogEntry,
   GameOptions,
   LocationNameToPlayerIds,

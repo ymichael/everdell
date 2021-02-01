@@ -268,7 +268,7 @@ export const PlayedCard: React.FC<{
         {"ambassador" in playedCard && (
           <div>Ambassadors on card: {ambassador ? "1" : "0"}</div>
         )}
-        {"shareSpaceWith" in playedCard && (
+        {"shareSpaceWith" in playedCard && shareSpaceWith && (
           <div>Share space: {shareSpaceWith}</div>
         )}
         {"pairedCards" in playedCard && (

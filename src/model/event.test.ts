@@ -2397,7 +2397,7 @@ describe("Event", () => {
 
       expect(() => {
         gameState.next(selectCardsInput);
-      }).to.throwException(/only put critters/i);
+      }).to.throwException(/Selected card is not a valid option/i);
     });
 
     it("calculate points correctly if putting 3 Critters beneath event", () => {
@@ -2842,7 +2842,7 @@ describe("Event", () => {
       gameState = gameState.next(gameInput);
 
       expect(() => gameState.next(selectCardsInput)).to.throwException(
-        /worth more than 3 VP/i
+        /Selected card is not a valid option/i
       );
     });
 
@@ -3814,7 +3814,7 @@ describe("Event", () => {
       expect(player.getPointsFromEvents(gameState)).to.be(0);
     });
 
-    it("should not be able to give mroe than 6 cards to another player", () => {
+    it("should not be able to give more than 6 cards to another player", () => {
       const event = Event.fromName(EventName.SPECIAL_MASQUERADE_INVITATIONS);
       const gameInput = claimEventInput(event.name);
       const player2 = gameState.players[1];
@@ -3864,7 +3864,7 @@ describe("Event", () => {
 
       expect(() => {
         gameState.next(selectCardsInput);
-      }).to.throwException(/Cannot give more than/i);
+      }).to.throwException(/Please select a max of 6 cards/i);
     });
 
     it("should not be able to give more than 6 cards across all donations", () => {
@@ -3968,7 +3968,7 @@ describe("Event", () => {
 
       expect(() => {
         gameState.next(selectSecondCards);
-      }).to.throwException(/cannot give/i);
+      }).to.throwException(/Please select a max of 4 cards/i);
     });
   });
 });

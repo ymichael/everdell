@@ -461,12 +461,79 @@ export class GameState {
           throw new Error("Please select one of the options.");
         }
         break;
-      // case GameInputType.SELECT_CARDS:
-      // case GameInputType.SELECT_PLAYED_CARDS:
+      case GameInputType.SELECT_CARDS:
+        if (
+          gameInput.minToSelect === gameInput.maxToSelect &&
+          gameInput.clientOptions.selectedCards.length !== gameInput.minToSelect
+        ) {
+          throw new Error(`Please select ${gameInput.minToSelect} cards.`);
+        }
+        if (
+          gameInput.clientOptions.selectedCards.length < gameInput.minToSelect
+        ) {
+          throw new Error(
+            `Please select at least ${gameInput.minToSelect} cards.`
+          );
+        }
+        if (
+          gameInput.clientOptions.selectedCards.length > gameInput.maxToSelect
+        ) {
+          throw new Error(
+            `Please select a max of ${gameInput.maxToSelect} cards.`
+          );
+        }
+        gameInput.clientOptions.selectedCards.forEach((a) => {
+          if (!gameInput.cardOptions.find((b) => isEqual(a, b))) {
+            throw new Error("Selected card is not a valid option.");
+          }
+        });
+        break;
+      case GameInputType.SELECT_PLAYED_CARDS:
+        if (
+          gameInput.minToSelect === gameInput.maxToSelect &&
+          gameInput.clientOptions.selectedCards.length !== gameInput.minToSelect
+        ) {
+          throw new Error(`Please select ${gameInput.minToSelect} cards.`);
+        }
+        if (
+          gameInput.clientOptions.selectedCards.length < gameInput.minToSelect
+        ) {
+          throw new Error(
+            `Please select at least ${gameInput.minToSelect} cards.`
+          );
+        }
+        if (
+          gameInput.clientOptions.selectedCards.length > gameInput.maxToSelect
+        ) {
+          throw new Error(
+            `Please select a max of ${gameInput.maxToSelect} cards.`
+          );
+        }
+        gameInput.clientOptions.selectedCards.forEach((a) => {
+          if (!gameInput.cardOptions.find((b) => isEqual(a, b))) {
+            throw new Error("Selected card is not a valid option.");
+          }
+        });
+        break;
+      case GameInputType.SELECT_PLAYER:
+        if (
+          gameInput.mustSelectOne &&
+          !gameInput.clientOptions.selectedPlayer
+        ) {
+          throw new Error("Please select a player");
+        }
+        if (
+          gameInput.clientOptions.selectedPlayer &&
+          gameInput.playerOptions.indexOf(
+            gameInput.clientOptions.selectedPlayer
+          ) === -1
+        ) {
+          throw new Error("Invalid player selected");
+        }
+        break;
       // case GameInputType.SELECT_LOCATION:
       // case GameInputType.SELECT_PAYMENT_FOR_CARD:
       // case GameInputType.SELECT_WORKER_PLACEMENT:
-      // case GameInputType.SELECT_PLAYER:
       // case GameInputType.SELECT_RESOURCES:
       // case GameInputType.DISCARD_CARDS:
       // case GameInputType.SELECT_PLAYED_ADORNMENT:

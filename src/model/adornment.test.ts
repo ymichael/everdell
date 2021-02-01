@@ -1069,7 +1069,7 @@ describe("Adornment", () => {
             selectedCards: [CardName.KING],
           },
         });
-      }).to.throwException(/cannot/i);
+      }).to.throwException(/Selected card is not a valid option/i);
     });
   });
 

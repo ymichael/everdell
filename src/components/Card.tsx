@@ -247,6 +247,7 @@ export const PlayedCard: React.FC<{
     workers = [],
     pairedCards = [],
     ambassador = null,
+    shareSpaceWith = null,
   } = playedCard;
   const card = CardModel.fromName(cardName);
   return (
@@ -266,6 +267,9 @@ export const PlayedCard: React.FC<{
         )}
         {"ambassador" in playedCard && (
           <div>Ambassadors on card: {ambassador ? "1" : "0"}</div>
+        )}
+        {"shareSpaceWith" in playedCard && (
+          <div>Share space: {shareSpaceWith}</div>
         )}
         {"pairedCards" in playedCard && (
           <div>

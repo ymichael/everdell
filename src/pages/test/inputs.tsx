@@ -4,10 +4,11 @@ import { GameJSON } from "../../model/jsonTypes";
 import {
   AdornmentName,
   CardName,
+  EventName,
+  GameInput,
+  GameInputType,
   LocationName,
   ResourceType,
-  GameInputType,
-  GameInput,
 } from "../../model/types";
 import { Game as GameModel } from "../../model/game";
 import { Card } from "../../model/card";
@@ -22,8 +23,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const gameState = testInitialGameState({
     numPlayers,
     playerNames,
-    noForestLocations: true,
-    noSpecialEvents: false,
+    specialEvents: [
+      EventName.SPECIAL_GRADUATION_OF_SCHOLARS,
+      EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN,
+      EventName.SPECIAL_PERFORMER_IN_RESIDENCE,
+      EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES,
+    ],
     shuffleDeck: true,
     gameOptions: {
       pearlbrook: true,

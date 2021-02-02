@@ -54,7 +54,7 @@ export default async (
   const isActivePlayer =
     player && player.playerId === game.getActivePlayer().playerId;
   res.json({
-    game: game && game.toJSON(false /* includePrivate */),
+    game: game && game.toJSON(game.isGameOver() /* includePrivate */),
     viewingPlayer: player && player.toJSON(true /* includePrivate */),
     gameInputs: isActivePlayer ? game.getGameInputs() : [],
   });

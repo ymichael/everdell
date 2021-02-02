@@ -16,7 +16,7 @@ describe("Play Husband via Farm", () => {
 
     cy.get("#js-game-input-box-form").within(() => {
       cy.get("#js-game-input-type-PLAY_CARD").click();
-      cy.get("[data-cy='play-card-item:Husband']").click();
+      cy.get("[data-cy='play-card-item:Husband']").first().click();
 
       // Uncheck it.
       cy.contains("Use Farm to play Husband").click();

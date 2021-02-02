@@ -308,10 +308,10 @@ export class Card<TCardType extends CardType = CardType>
 
     const playCardGameInput = this.getPlayCardInput(gameInput, playedCard);
 
-    // Track that the player played a card.
-    // Before we go to the next player, make sure we trigger things like
-    // SHOPKEEPER/HISTORIAN/COURTHOUSE.
-    player.pendingPlayCardGameInput.push(playCardGameInput);
+    // If called directly, add to game state
+    if (!isEqual(playCardGameInput, gameInput)) {
+      gameState.addPlayedGameInput(playCardGameInput);
+    }
 
     if (
       this.cardType === CardType.PRODUCTION ||
@@ -389,7 +389,7 @@ export class Card<TCardType extends CardType = CardType>
   ): void {
     const player = gameState.getActivePlayer();
     if (this.resourcesToGain && sumResources(this.resourcesToGain)) {
-      player.gainResources(gameState, this.resourcesToGain);
+      player.gainResources(gameState, omit(this.resourcesToGain, ["CARD"]));
       if (this.resourcesToGain.CARD) {
         player.drawCards(gameState, this.resourcesToGain.CARD);
       }
@@ -3409,6 +3409,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     numInDeck: 3,
     isConstruction: false,
     isUnique: false,
+    resourcesToGain: { CARD: 1, [ResourceType.VP]: 1 },
     baseCost: { [ResourceType.BERRY]: 2 },
     playedCardInfoDefault: { shareSpaceWith: null },
     canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {

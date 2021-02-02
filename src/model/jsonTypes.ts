@@ -1,20 +1,20 @@
 import {
-  RiverDestinationMapSpots,
   AdornmentName,
-  GameOptions,
   CardName,
   EventName,
-  Season,
-  ResourceType,
+  EventNameToPlayerId,
+  GameInput,
+  GameInputMultiStep,
+  GameLogEntry,
+  GameOptions,
+  LocationNameToPlayerIds,
   PlayedCardInfo,
   PlayedEventInfo,
   PlayerStatus,
+  ResourceType,
+  RiverDestinationMapSpots,
+  Season,
   WorkerPlacementInfo,
-  GameInputMultiStep,
-  GameInputPlayCard,
-  EventNameToPlayerId,
-  GameLogEntry,
-  LocationNameToPlayerIds,
 } from "./types";
 
 export type GameJSON = {
@@ -34,6 +34,7 @@ export type GameStateJSON = {
   locationsMap: LocationNameToPlayerIds;
   eventsMap: EventNameToPlayerId;
   pendingGameInputs: GameInputMultiStep[];
+  playedGameInputs: GameInput[];
   gameLog: GameLogEntry[];
   riverDestinationMap: RiverDestinationMapJSON | null;
   adornmentsPile: CardStackJSON<AdornmentName> | null;
@@ -62,7 +63,6 @@ export type PlayerJSON = {
   adornmentsInHand: AdornmentName[];
   playedAdornments: AdornmentName[];
   numAmbassadors: number;
-  pendingPlayCardGameInput: GameInputPlayCard[];
 };
 
 export type RiverDestinationMapJSON = {

@@ -129,7 +129,13 @@ export class GameState {
   readonly gameStateId: number;
   readonly gameOptions: GameOptions;
   readonly gameLog: GameLogEntry[];
+
+  // GameInputs that need to be shown to the user.
   readonly pendingGameInputs: GameInputMultiStep[];
+
+  // List of game inputs that have been played since the
+  // start of the active player's turn.
+  private playedGameInputs: GameInput[];
 
   // Player & Active Player
   private _activePlayerId: Player["playerId"];
@@ -157,6 +163,7 @@ export class GameState {
     gameLog = [],
     gameOptions = {},
     pendingGameInputs = [],
+    playedGameInputs = [],
     adornmentsPile = null,
     riverDestinationMap = null,
   }: {
@@ -171,6 +178,7 @@ export class GameState {
     adornmentsPile?: CardStack<AdornmentName> | null;
     riverDestinationMap?: RiverDestinationMap | null;
     pendingGameInputs: GameInputMultiStep[];
+    playedGameInputs?: GameInput[];
     gameLog: GameLogEntry[];
     gameOptions?: Partial<GameOptions>;
   }) {
@@ -183,6 +191,7 @@ export class GameState {
     this.eventsMap = eventsMap;
     this._activePlayerId = activePlayerId || players[0].playerId;
     this.pendingGameInputs = pendingGameInputs;
+    this.playedGameInputs = playedGameInputs;
     this.gameLog = gameLog;
     this.adornmentsPile = adornmentsPile;
     this.riverDestinationMap = riverDestinationMap;
@@ -288,6 +297,7 @@ export class GameState {
         locationsMap: this.locationsMap,
         eventsMap: this.eventsMap,
         pendingGameInputs: [],
+        playedGameInputs: [],
         deck: this.deck.toJSON(includePrivate),
         discardPile: this.discardPile.toJSON(includePrivate),
         gameLog: this.gameLog,
@@ -302,6 +312,7 @@ export class GameState {
       ...(includePrivate
         ? {
             pendingGameInputs: this.pendingGameInputs,
+            playedGameInputs: this.playedGameInputs,
           }
         : {}),
     });
@@ -450,7 +461,112 @@ export class GameState {
     this.pendingGameInputs.splice(idx, 1);
   }
 
+  private validateMultiStepGameInput(gameInput: GameInputMultiStep): void {
+    switch (gameInput.inputType) {
+      case GameInputType.SELECT_OPTION_GENERIC:
+        if (
+          !gameInput.clientOptions.selectedOption ||
+          gameInput.options.indexOf(gameInput.clientOptions.selectedOption) ===
+            -1
+        ) {
+          throw new Error("Please select one of the options.");
+        }
+        break;
+      case GameInputType.SELECT_CARDS:
+        if (
+          gameInput.minToSelect === gameInput.maxToSelect &&
+          gameInput.clientOptions.selectedCards.length !== gameInput.minToSelect
+        ) {
+          throw new Error(`Please select ${gameInput.minToSelect} cards.`);
+        }
+        if (
+          gameInput.clientOptions.selectedCards.length < gameInput.minToSelect
+        ) {
+          throw new Error(
+            `Please select at least ${gameInput.minToSelect} cards.`
+          );
+        }
+        if (
+          gameInput.clientOptions.selectedCards.length > gameInput.maxToSelect
+        ) {
+          throw new Error(
+            `Please select a max of ${gameInput.maxToSelect} cards.`
+          );
+        }
+        gameInput.clientOptions.selectedCards.forEach((a) => {
+          if (!gameInput.cardOptions.find((b) => isEqual(a, b))) {
+            throw new Error("Selected card is not a valid option.");
+          }
+        });
+        break;
+      case GameInputType.SELECT_PLAYED_CARDS:
+        if (
+          gameInput.minToSelect === gameInput.maxToSelect &&
+          gameInput.clientOptions.selectedCards.length !== gameInput.minToSelect
+        ) {
+          throw new Error(`Please select ${gameInput.minToSelect} cards.`);
+        }
+        if (
+          gameInput.clientOptions.selectedCards.length < gameInput.minToSelect
+        ) {
+          throw new Error(
+            `Please select at least ${gameInput.minToSelect} cards.`
+          );
+        }
+        if (
+          gameInput.clientOptions.selectedCards.length > gameInput.maxToSelect
+        ) {
+          throw new Error(
+            `Please select a max of ${gameInput.maxToSelect} cards.`
+          );
+        }
+        gameInput.clientOptions.selectedCards.forEach((a) => {
+          if (!gameInput.cardOptions.find((b) => isEqual(a, b))) {
+            throw new Error("Selected card is not a valid option.");
+          }
+        });
+        break;
+      case GameInputType.SELECT_PLAYER:
+        if (
+          gameInput.mustSelectOne &&
+          !gameInput.clientOptions.selectedPlayer
+        ) {
+          throw new Error("Please select a player");
+        }
+        if (
+          gameInput.clientOptions.selectedPlayer &&
+          gameInput.playerOptions.indexOf(
+            gameInput.clientOptions.selectedPlayer
+          ) === -1
+        ) {
+          throw new Error("Invalid player selected");
+        }
+        break;
+      case GameInputType.SELECT_LOCATION:
+        if (!gameInput.clientOptions.selectedLocation) {
+          throw new Error("Please select a Location");
+        }
+        if (
+          gameInput.locationOptions.indexOf(
+            gameInput.clientOptions.selectedLocation
+          ) === -1
+        ) {
+          throw new Error("Invalid Location selected");
+        }
+        break;
+      // case GameInputType.SELECT_WORKER_PLACEMENT:
+      // case GameInputType.SELECT_PAYMENT_FOR_CARD:
+      // case GameInputType.SELECT_RESOURCES:
+      // case GameInputType.DISCARD_CARDS:
+      // case GameInputType.SELECT_PLAYED_ADORNMENT:
+      // case GameInputType.SELECT_RIVER_DESTINATION:
+      default:
+        break;
+    }
+  }
+
   private handleMultiStepGameInput(gameInput: GameInputMultiStep): void {
+    this.validateMultiStepGameInput(gameInput);
     if (gameInput.cardContext) {
       const card = Card.fromName(gameInput.cardContext);
       const canPlayCardErr = card.canPlayCheck(this, gameInput);
@@ -836,10 +952,17 @@ export class GameState {
     return this.clone().nextInner(gameInput, autoAdvance);
   }
 
+  addPlayedGameInput(gameInput: GameInput): void {
+    this.playedGameInputs.push(gameInput);
+  }
+
   private nextInner(gameInput: GameInput, autoAdvance = true): GameState {
     if (this.pendingGameInputs.length !== 0) {
       this.removeMultiStepGameInput(gameInput as any);
     }
+
+    this.addPlayedGameInput(gameInput);
+
     switch (gameInput.inputType) {
       case GameInputType.SELECT_CARDS:
       case GameInputType.SELECT_PLAYED_CARDS:
@@ -894,9 +1017,11 @@ export class GameState {
     // A player played a card, resolve triggered effects
     if (
       this.pendingGameInputs.length === 0 &&
-      player.pendingPlayCardGameInput.length !== 0
+      this.playedGameInputs.length !== 0
     ) {
-      player.triggerPendingPlayCardEffects(this);
+      const playedGameInputs = [...this.playedGameInputs];
+      this.playedGameInputs = [];
+      player.handlePlayedGameInputs(this, playedGameInputs);
     }
 
     // If there are no more pending game inputs go to the next player.

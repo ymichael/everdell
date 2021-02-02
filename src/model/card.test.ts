@@ -521,7 +521,7 @@ describe("Card", () => {
               },
             },
           ]);
-        }).to.throwException(/unable to draw card from discard/i);
+        }).to.throwException(/Please select one of the options/i);
       });
     });
 
@@ -1714,7 +1714,7 @@ describe("Card", () => {
               },
             },
           ]);
-        }).to.throwException(/unable to play queen/i);
+        }).to.throwException(/Selected card is not a valid option/i);
       });
 
       it("should allow player buy card using another player's inn", () => {
@@ -1828,7 +1828,7 @@ describe("Card", () => {
               selectedCards: [CardName.WIFE],
             },
           });
-        }).to.throwException(/cannot find selected card/i);
+        }).to.throwException(/Selected card is not a valid option/i);
       });
 
       it("should allow player to buy card that exists in hand and meadow", () => {
@@ -3575,7 +3575,7 @@ describe("Card", () => {
               selectedCards: [CardName.KING],
             },
           });
-        }).to.throwException(/cannot use Queen/i);
+        }).to.throwException(/Selected card is not a valid option/i);
       });
 
       it("should not allow player to visit the queen if there are no applicable cards", () => {
@@ -5146,12 +5146,14 @@ describe("Card", () => {
         player.addToCity(gameState, CardName.FARM);
         player.cardsInHand = [card.name];
         player.gainResources(gameState, card.baseCost);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
         [player, gameState] = multiStepGameInputTest(
           gameState,
           [playCardInput(card.name)],
           { autoAdvance: true }
         );
         expect(player.hasCardInCity(card.name)).to.be(true);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(1);
         expect(player.getFirstPlayedCard(CardName.FARM)).to.eql({
           cardName: CardName.FARM,
           cardOwnerId: player.playerId,

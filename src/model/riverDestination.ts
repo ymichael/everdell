@@ -768,7 +768,7 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
           RiverDestinationName.OBSERVATORY,
           [
             player,
-            " spent",
+            " spent ",
             ...resourceMapToGameText({
               [selectedOption]: 1,
               [ResourceType.VP]: 1,
@@ -876,7 +876,7 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
         player.spendResources({ [selectedOption]: 1, [ResourceType.VP]: 1 });
         gameState.addGameLogFromRiverDestination(RiverDestinationName.MARKET, [
           player,
-          " spent",
+          " spent ",
           ...resourceMapToGameText({
             [selectedOption]: 1,
             [ResourceType.VP]: 1,

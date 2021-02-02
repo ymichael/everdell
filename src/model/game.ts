@@ -33,6 +33,10 @@ export class Game {
     return this.gameSecret;
   }
 
+  isGameOver(): boolean {
+    return this.gameState.isGameOver();
+  }
+
   getPlayer(playerId: string): Player {
     return this.gameState.getPlayer(playerId);
   }

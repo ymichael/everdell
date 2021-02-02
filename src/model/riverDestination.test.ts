@@ -385,6 +385,62 @@ describe("RiverDestinationMap", () => {
     });
   });
 
+  describe(RiverDestinationName.GREAT_HALL, () => {
+    const name = RiverDestinationName.GREAT_HALL;
+
+    beforeEach(() => {
+      const spot = RiverDestinationSpotName.TWO_TRAVELER;
+      gameState.riverDestinationMap!.spots[spot]!.name = name;
+      gameState.riverDestinationMap!.spots[spot]!.revealed = true;
+      player.addToCity(gameState, CardName.WANDERER);
+      player.addToCity(gameState, CardName.RANGER);
+    });
+
+    it("should do nothing if player doesn't have VP or PEBBLE", () => {
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        {
+          inputType: GameInputType.PLACE_AMBASSADOR,
+          clientOptions: {
+            loc: { type: "spot", spot: RiverDestinationSpotName.TWO_TRAVELER },
+          },
+        },
+      ]);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+    });
+
+    it("should ask the player if they want to spend VP & PEBBLE", () => {
+      player.gainResources(gameState, {
+        [ResourceType.PEBBLE]: 1,
+        [ResourceType.VP]: 1,
+      });
+      expect(player.cardsInHand.length).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        {
+          inputType: GameInputType.PLACE_AMBASSADOR,
+          clientOptions: {
+            loc: { type: "spot", spot: RiverDestinationSpotName.TWO_TRAVELER },
+          },
+        },
+        {
+          inputType: GameInputType.SELECT_OPTION_GENERIC,
+          prevInputType: GameInputType.PLACE_AMBASSADOR,
+          riverDestinationContext: RiverDestinationName.GREAT_HALL,
+          options: ["Ok", "Decline"],
+          clientOptions: { selectedOption: "Ok" },
+        },
+      ]);
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
+      expect(player.cardsInHand.length).to.be(4);
+    });
+  });
+
   describe(RiverDestinationName.CRUSTINA_THE_CONSTABLE, () => {
     const name = RiverDestinationName.CRUSTINA_THE_CONSTABLE;
 

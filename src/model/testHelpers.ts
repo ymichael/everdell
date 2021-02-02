@@ -24,8 +24,8 @@ export function testInitialGameState(
     numPlayers?: number;
     playerNames?: string[];
     cardsInHand?: CardName[];
-    noForestLocations?: boolean;
-    noSpecialEvents?: boolean;
+    forestLocations?: LocationName[];
+    specialEvents?: EventName[];
     gameOptions?: Partial<GameOptions>;
     meadowCards?: CardName[];
     shuffleDeck?: boolean;
@@ -36,8 +36,8 @@ export function testInitialGameState(
     playerNames = [],
     cardsInHand = [],
     meadowCards = [],
-    noForestLocations = true,
-    noSpecialEvents = true,
+    forestLocations = [],
+    specialEvents = [],
     shuffleDeck = false,
     gameOptions = {},
   } = opts;
@@ -57,24 +57,23 @@ export function testInitialGameState(
   gameState.players.forEach((player) => {
     player.cardsInHand = [...cardsInHand];
   });
-  if (noForestLocations) {
-    (Object.keys(gameState.locationsMap) as LocationName[]).forEach(
-      (locationName) => {
-        const location = Location.fromName(locationName);
-        if (location.type === LocationType.FOREST) {
-          delete gameState.locationsMap[locationName];
-        }
+  (Object.keys(gameState.locationsMap) as LocationName[]).forEach(
+    (locationName) => {
+      const location = Location.fromName(locationName);
+      if (location.type === LocationType.FOREST) {
+        delete gameState.locationsMap[locationName];
       }
-    );
-  }
-  if (noSpecialEvents) {
-    (Object.keys(gameState.eventsMap) as EventName[]).forEach((eventName) => {
-      const event = Event.fromName(eventName);
-      if (event.type === EventType.SPECIAL) {
-        delete gameState.eventsMap[eventName];
-      }
-    });
-  }
+    }
+  );
+  (Object.keys(gameState.eventsMap) as EventName[]).forEach((eventName) => {
+    const event = Event.fromName(eventName);
+    if (event.type === EventType.SPECIAL) {
+      delete gameState.eventsMap[eventName];
+    }
+  });
+
+  forestLocations.forEach((x) => (gameState.locationsMap[x] = []));
+  specialEvents.forEach((x) => (gameState.eventsMap[x] = null));
   return gameState;
 }
 

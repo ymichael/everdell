@@ -4,6 +4,7 @@
 import {
   AdornmentName,
   CardName,
+  EventName,
   LocationName,
   ResourceType,
   RiverDestinationName,
@@ -22,6 +23,27 @@ async function getTestGameJSON(
 ): Promise<GameJSON> {
   const gameState = testInitialGameState({
     playerNames: ["Michael", "Elynn"],
+    specialEvents: [
+      EventName.SPECIAL_GRADUATION_OF_SCHOLARS,
+      EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN,
+      EventName.SPECIAL_PERFORMER_IN_RESIDENCE,
+      EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES,
+    ],
+    forestLocations: [
+      LocationName.FOREST_TWO_BERRY_ONE_CARD,
+      LocationName.FOREST_TWO_WILD,
+      LocationName.FOREST_DISCARD_ANY_THEN_DRAW_TWO_PER_CARD,
+    ],
+    meadowCards: [
+      CardName.KING,
+      CardName.QUEEN,
+      CardName.POSTAL_PIGEON,
+      CardName.INNKEEPER,
+      CardName.FARM,
+      CardName.HUSBAND,
+      CardName.CHAPEL,
+      CardName.MONK,
+    ],
     ...args,
   });
   gameStateMutationFn(gameState, gameState.getActivePlayer());
@@ -252,24 +274,27 @@ module.exports = (on: any, config: any) => {
       });
     },
     "db:visit-inn-game": async () => {
-      return await getTestGameJSON({}, (gameState, player) => {
-        // Visit Inn
-        player.addToCity(gameState, CardName.INN);
+      return await getTestGameJSON(
+        {
+          meadowCards: [
+            CardName.KING,
+            CardName.QUEEN,
+            CardName.POSTAL_PIGEON,
+            CardName.POSTAL_PIGEON,
+            CardName.FARM,
+            CardName.HUSBAND,
+            CardName.CHAPEL,
+            CardName.MONK,
+          ],
+        },
+        (gameState, player) => {
+          // Visit Inn
+          player.addToCity(gameState, CardName.INN);
 
-        // To reveal after we play a card from the Meadow
-        gameState.deck.addToStack(CardName.DOCTOR);
-
-        gameState.meadowCards.push(
-          CardName.KING,
-          CardName.QUEEN,
-          CardName.POSTAL_PIGEON,
-          CardName.POSTAL_PIGEON,
-          CardName.FARM,
-          CardName.HUSBAND,
-          CardName.CHAPEL,
-          CardName.MONK
-        );
-      });
+          // To reveal after we play a card from the Meadow
+          gameState.deck.addToStack(CardName.DOCTOR);
+        }
+      );
     },
   });
 };

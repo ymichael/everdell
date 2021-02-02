@@ -1,5 +1,6 @@
 import shuffle from "lodash/shuffle";
 import isEqual from "lodash/isEqual";
+import omit from "lodash/omit";
 import {
   CardName,
   CardType,
@@ -181,13 +182,19 @@ export class Location implements GameStatePlayable, IGameTextEntity {
 
   triggerLocation(
     gameState: GameState,
-    gameInput: GameInput = {
+    gameInputFromCaller: GameInput | null = null
+  ): void {
+    const gameInput: GameInput = gameInputFromCaller || {
       inputType: GameInputType.PLACE_WORKER,
       clientOptions: {
         location: this.name,
       },
+    };
+
+    if (!gameInputFromCaller) {
+      gameState.addPlayedGameInput(gameInput);
     }
-  ): void {
+
     if (this.playInner) {
       if (this.canPlayCheckInner) {
         const errorMsg = this.canPlayCheckInner(gameState, gameInput);
@@ -199,7 +206,7 @@ export class Location implements GameStatePlayable, IGameTextEntity {
     }
     if (this.resourcesToGain && sumResources(this.resourcesToGain)) {
       const player = gameState.getActivePlayer();
-      player.gainResources(gameState, this.resourcesToGain);
+      player.gainResources(gameState, omit(this.resourcesToGain, ["CARD"]));
       if (this.resourcesToGain.CARD) {
         player.drawCards(gameState, this.resourcesToGain.CARD);
       }

@@ -2100,6 +2100,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       ", gain 2 ANY",
     ]),
     expansion: ExpansionType.PEARLBROOK,
+    playedEventInfoInner: () => ({
+      storedCards: [],
+    }),
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       const gainAnyHelper = new GainMoreThan1AnyResource({

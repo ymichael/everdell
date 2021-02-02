@@ -2249,7 +2249,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_CARDS,
           prevInputType: GameInputType.CLAIM_EVENT,
-          label: `Select 3 CARD to discard`,
+          label: `Select 2 CARD to discard`,
           eventContext: EventName.WONDER_HOPEWATCH_GATE,
           maxToSelect: 2,
           minToSelect: 2,
@@ -2320,7 +2320,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_CARDS,
           prevInputType: GameInputType.CLAIM_EVENT,
-          label: `Select 3 CARD to discard`,
+          label: `Select 2 CARD to discard`,
           eventContext: EventName.WONDER_MISTRISE_FOUNTAIN,
           maxToSelect: 2,
           minToSelect: 2,

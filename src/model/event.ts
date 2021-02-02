@@ -2203,24 +2203,24 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
 
       const storedCards = eventInfo.storedCards;
 
-      if (!storedCards) {
-        throw new Error("Invalid list of paired cards");
+      if (storedCards) {
+        if (storedCards.length !== 1) {
+          throw new Error("Incorrect number of cards stored here");
+        }
+
+        const card = Card.fromName(storedCards[0] as CardName);
+
+        if (
+          card.name !== CardName.FERRY_FERRET &&
+          card.name !== CardName.TWIG_BARGE
+        ) {
+          throw new Error("May only store Ferry Ferret or Twig Barge here");
+        }
+
+        return card.name === CardName.FERRY_FERRET ? 2 : 0;
       }
 
-      if (storedCards.length !== 1) {
-        throw new Error("Incorrect number of cards stored here");
-      }
-
-      const card = Card.fromName(storedCards[0] as CardName);
-
-      if (
-        card.name !== CardName.FERRY_FERRET &&
-        card.name !== CardName.TWIG_BARGE
-      ) {
-        throw new Error("May only store Ferry Ferret or Twig Barge here");
-      }
-
-      return card.name === CardName.FERRY_FERRET ? 2 : 0;
+      return 0;
     },
   }),
 

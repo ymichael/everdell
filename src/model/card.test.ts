@@ -1527,6 +1527,7 @@ describe("Card", () => {
 
         const idx = gameState.meadowCards.indexOf(CardName.WIFE);
         expect(idx).to.be(-1);
+        expect(gameState.meadowCards.length).to.be(8);
 
         let player = gameState.getActivePlayer();
 
@@ -1576,6 +1577,8 @@ describe("Card", () => {
         expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
         expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
 
+        // Meadow should be replenished
+        expect(gameState.meadowCards.length).to.be(8);
         const wifeInMeadow = gameState.meadowCards.indexOf(CardName.WIFE) >= 0;
         expect(wifeInMeadow).to.be(true);
       });
@@ -3316,7 +3319,16 @@ describe("Card", () => {
     describe(CardName.QUEEN, () => {
       it("should allow player to choose to play card from meadow OR hand", () => {
         gameState = testInitialGameState({
-          meadowCards: [CardName.FARM],
+          meadowCards: [
+            CardName.FARM,
+            CardName.KING,
+            CardName.KING,
+            CardName.KING,
+            CardName.KING,
+            CardName.KING,
+            CardName.KING,
+            CardName.KING,
+          ],
         });
         player = gameState.getActivePlayer();
 
@@ -3325,6 +3337,7 @@ describe("Card", () => {
         player.cardsInHand.push(CardName.FARM);
 
         expect(player.numAvailableWorkers).to.be(2);
+        expect(gameState.meadowCards.length).to.be(8);
         expect(player.hasCardInCity(CardName.FARM)).to.be(false);
 
         const selectCardInput = {
@@ -3369,6 +3382,7 @@ describe("Card", () => {
         ]);
 
         expect(gameState2.meadowCards.indexOf(CardName.FARM)).to.be(-1);
+        expect(gameState2.meadowCards.length).to.be(8);
         expect(playerMeadow.cardsInHand.indexOf(CardName.FARM)).to.be(0);
         expect(playerMeadow.numAvailableWorkers).to.be(1);
         expect(playerMeadow.hasCardInCity(CardName.FARM)).to.be(true);
@@ -3385,6 +3399,7 @@ describe("Card", () => {
         ]);
 
         expect(gameState3.meadowCards.indexOf(CardName.FARM)).to.be(0);
+        expect(gameState3.meadowCards.length).to.be(8);
         expect(playerHand.cardsInHand.indexOf(CardName.FARM)).to.be(-1);
         expect(playerHand.numAvailableWorkers).to.be(1);
         expect(playerHand.hasCardInCity(CardName.FARM)).to.be(true);

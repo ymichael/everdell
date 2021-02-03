@@ -355,7 +355,10 @@ export class GameState {
     }
   }
 
-  removeCardFromMeadow(cardName: CardName): void {
+  removeCardFromMeadow(
+    cardName: CardName,
+    replenishMeadow: boolean = true
+  ): void {
     const idx = this.meadowCards.indexOf(cardName);
     if (idx === -1) {
       throw new Error(
@@ -367,6 +370,9 @@ export class GameState {
       );
     } else {
       this.meadowCards.splice(idx, 1);
+    }
+    if (replenishMeadow) {
+      this.replenishMeadow();
     }
   }
 
@@ -398,7 +404,6 @@ export class GameState {
     player.payForCard(this, gameInput);
     if (gameInput.clientOptions.fromMeadow) {
       this.removeCardFromMeadow(card.name);
-      this.replenishMeadow();
     } else {
       player.removeCardFromHand(card.name);
     }
@@ -636,7 +641,6 @@ export class GameState {
         ...cardListToGameText(selectedCards),
         " from the Meadow.",
       ]);
-      this.replenishMeadow();
       return;
     }
 
@@ -1294,8 +1298,8 @@ export class GameState {
       }
       p.drawCards(gameState, STARTING_PLAYER_HAND_SIZE + idx);
     });
-    gameState.replenishMeadow();
 
+    gameState.replenishMeadow();
     gameState.addGameLog(`Dealing cards to each player.`);
     gameState.addGameLog(`Dealing cards to the Meadow.`);
     if (withPearlbrook) {

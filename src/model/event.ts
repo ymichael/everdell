@@ -1823,8 +1823,6 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           (eventInfo.storedCards = eventInfo.storedCards || []).push(cardName);
         });
 
-        gameState.replenishMeadow();
-
         if (selectedCards.length === 0) {
           gameState.addGameLogFromEvent(EventName.SPECIAL_RIVERSIDE_RESORT, [
             player,
@@ -2072,7 +2070,6 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           );
 
           card.addToCityAndPlay(gameState, gameInput);
-          gameState.replenishMeadow();
         }
       } else {
         throw new Error(`Invalid input type ${gameInput.inputType}`);

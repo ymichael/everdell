@@ -1409,7 +1409,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
 
         if (sumResources(selectedCard.baseCost) <= 3) {
           gameState.removeCardFromMeadow(selectedCard.name);
-          gameState.replenishMeadow();
           selectedCard.addToCityAndPlay(gameState, gameInput);
           gameState.addGameLogFromCard(CardName.INN, [
             player,
@@ -1451,7 +1450,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         card.addToCityAndPlay(gameState, gameInput);
 
         gameState.removeCardFromMeadow(card.name);
-        gameState.replenishMeadow();
 
         gameState.addGameLogFromCard(CardName.INN, [
           player,
@@ -3128,8 +3126,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           gameState.discardPile.addToStack(cardName);
         });
 
-        gameState.replenishMeadow();
-
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_CARDS,
           prevInputType: gameInput.inputType,
@@ -3155,7 +3151,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
 
         const card = selectedCards[0];
         gameState.removeCardFromMeadow(card);
-        gameState.replenishMeadow();
         player.addCardToHand(gameState, card);
 
         gameState.addGameLogFromCard(CardName.UNDERTAKER, [

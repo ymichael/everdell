@@ -3573,7 +3573,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           basePoints += revealedCard.baseVP;
           revealedCards.push(revealedCard.name);
           player.removeCardFromHand(cardName);
-          gameState.discardPile.addToStack(cardName);
+          player.addCardToHand(gameState, revealedCard.name);
         });
 
         gameState.addGameLogFromCard(CardName.PIRATE, [

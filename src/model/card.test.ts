@@ -5995,9 +5995,9 @@ describe("Card", () => {
         player.gainResources(gameState, card.baseCost);
 
         gameState.deck.addToStack(CardName.KING);
-        gameState.deck.addToStack(CardName.KING);
-        gameState.deck.addToStack(CardName.KING);
-        gameState.deck.addToStack(CardName.KING);
+        gameState.deck.addToStack(CardName.QUEEN);
+        gameState.deck.addToStack(CardName.MINE);
+        gameState.deck.addToStack(CardName.BARGE_TOAD);
 
         expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
         [player, gameState] = multiStepGameInputTest(gameState, [
@@ -6014,7 +6014,12 @@ describe("Card", () => {
           },
         ]);
         expect(player.hasCardInCity(card.name));
-        expect(player.cardsInHand).to.eql([CardName.FARM]);
+        expect(player.cardsInHand).to.eql([
+          CardName.FARM,
+          CardName.BARGE_TOAD,
+          CardName.MINE,
+          CardName.QUEEN,
+        ]);
         expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
       });
 
@@ -6048,7 +6053,12 @@ describe("Card", () => {
           },
         ]);
         expect(player.hasCardInCity(card.name));
-        expect(player.cardsInHand).to.eql([CardName.FARM]);
+        expect(player.cardsInHand).to.eql([
+          CardName.FARM,
+          CardName.RUINS,
+          CardName.RUINS,
+          CardName.RUINS,
+        ]);
         expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
       });
     });

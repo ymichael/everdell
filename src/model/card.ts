@@ -3616,15 +3616,17 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     baseCost: {},
     canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
       const activePlayer = gameState.getActivePlayer();
-      if (
-        !gameState.players.find((player) => {
-          if (player.playerId === activePlayer.playerId) {
-            return false;
-          }
-          return player.canAddToCity(CardName.PIRATE_SHIP, true /* strict */);
-        })
-      ) {
-        return "No space in any opponent's city.";
+      if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
+        if (
+          !gameState.players.find((player) => {
+            if (player.playerId === activePlayer.playerId) {
+              return false;
+            }
+            return player.canAddToCity(CardName.PIRATE_SHIP, true /* strict */);
+          })
+        ) {
+          return "No space in any opponent's city.";
+        }
       }
       return null;
     },

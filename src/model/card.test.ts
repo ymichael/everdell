@@ -5615,6 +5615,56 @@ describe("Card", () => {
         expect(targetPlayer.hasCardInCity(card.name)).to.be(true);
       });
 
+      it("should be able to take the last spot in the opponent city", () => {
+        let targetPlayer = gameState.players[1];
+        for (let i = 0; i < 14; i++) {
+          targetPlayer.addToCity(gameState, CardName.FARM);
+        }
+
+        player.addToCity(gameState, card.name);
+        targetPlayer.gainResources(gameState, { [ResourceType.PEARL]: 2 });
+
+        expect(player.hasCardInCity(card.name)).to.be(true);
+        expect(targetPlayer.hasCardInCity(card.name)).to.be(false);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+
+        [player, gameState] = multiStepGameInputTest(
+          gameState,
+          [
+            {
+              inputType: GameInputType.VISIT_DESTINATION_CARD,
+              clientOptions: {
+                playedCard: player.getFirstPlayedCard(card.name),
+              },
+            },
+            {
+              inputType: GameInputType.SELECT_RESOURCES,
+              prevInputType: GameInputType.SELECT_PLAYER,
+              toSpend: false,
+              maxResources: 2,
+              minResources: 2,
+              clientOptions: {
+                resources: {
+                  [ResourceType.BERRY]: 1,
+                  [ResourceType.PEBBLE]: 1,
+                },
+              },
+              cardContext: card.name,
+            },
+          ],
+          { autoAdvance: true }
+        );
+
+        targetPlayer = gameState.getPlayer(targetPlayer.playerId);
+        expect(player.hasCardInCity(card.name)).to.be(false);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(2);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
+        expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(1);
+        expect(targetPlayer.hasCardInCity(card.name)).to.be(true);
+      });
+
       it("should gain up to 3 resources if opponent has pearls city", () => {
         let targetPlayer = gameState.players[1];
 

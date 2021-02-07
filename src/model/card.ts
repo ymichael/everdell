@@ -3844,16 +3844,21 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     baseCost: {
       [ResourceType.BERRY]: 3,
     },
-    productionInner: (gameState: GameState, gameInput: GameInput): void => {
+    productionWillActivateInner: (gameState: GameState, cardOwner: Player) => {
+      return cardOwner.getNumResourcesByType(ResourceType.PEARL) >= 2;
+    },
+    productionInner: (
+      gameState: GameState,
+      gameInput: GameInput,
+      cardOwner: Player
+    ): void => {
       const player = gameState.getActivePlayer();
-      if (gameInput.inputType === GameInputType.PLAY_CARD) {
-        if (player.getNumResourcesByType(ResourceType.PEARL) >= 2) {
-          player.gainResources(gameState, { [ResourceType.VP]: 2 });
-          gameState.addGameLogFromCard(CardName.FERRY_FERRET, [
-            player,
-            " gained 2 VP.",
-          ]);
-        }
+      if (cardOwner.getNumResourcesByType(ResourceType.PEARL) >= 2) {
+        player.gainResources(gameState, { [ResourceType.VP]: 2 });
+        gameState.addGameLogFromCard(CardName.FERRY_FERRET, [
+          player,
+          " gained 2 VP.",
+        ]);
       }
     },
   }),

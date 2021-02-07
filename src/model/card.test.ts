@@ -5124,6 +5124,17 @@ describe("Card", () => {
         expect(player.hasCardInCity(card.name)).to.be(true);
         expect(player.getNumResourcesByType(ResourceType.VP)).to.be(2);
       });
+
+      it("should gain 2 VP if at least 2 PEARL when prepare for season", () => {
+        player.gainResources(gameState, { [ResourceType.PEARL]: 2 });
+        player.addToCity(gameState, card.name);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+
+        player.activateProduction(gameState, {
+          inputType: GameInputType.PREPARE_FOR_SEASON,
+        });
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(2);
+      });
     });
 
     describe(CardName.SHIPWRIGHT, () => {

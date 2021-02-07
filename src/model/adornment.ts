@@ -680,7 +680,7 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
     ]),
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
-      const numCards = player.cardsInHand.length;
+      const numCards = player.numCardsInHand;
 
       return numCards > 5 ? 5 : numCards;
     },

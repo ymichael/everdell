@@ -41,6 +41,7 @@ export class Player implements IGameTextEntity {
   public cardsInHand: CardName[];
 
   private _currentSeason: Season;
+  private _numCardsInHand: number | null;
 
   private resources: Record<ResourceType, number>;
   readonly playedCards: Partial<Record<CardName, PlayedCardInfo[]>>;
@@ -62,6 +63,7 @@ export class Player implements IGameTextEntity {
     playerId = uuid(),
     playedCards = {},
     cardsInHand = [],
+    numCardsInHand = null,
     resources = {
       [ResourceType.VP]: 0,
       [ResourceType.TWIG]: 0,
@@ -84,6 +86,7 @@ export class Player implements IGameTextEntity {
     playerId?: string;
     playedCards?: Partial<Record<CardName, PlayedCardInfo[]>>;
     cardsInHand?: CardName[];
+    numCardsInHand?: number | null;
     resources?: Record<ResourceType, number>;
     currentSeason?: Season;
     numWorkers?: number;
@@ -110,6 +113,8 @@ export class Player implements IGameTextEntity {
     this.numAmbassadors = numAmbassadors;
     this.adornmentsInHand = adornmentsInHand;
     this.playedAdornments = playedAdornments;
+
+    this._numCardsInHand = numCardsInHand;
   }
 
   get playerSecretUNSAFE(): string {
@@ -144,6 +149,9 @@ export class Player implements IGameTextEntity {
   addCardToHand(gameState: GameState, cardName: CardName): void {
     if (this.cardsInHand.length < this.maxHandSize) {
       this.cardsInHand.push(cardName);
+      if (this._numCardsInHand !== null) {
+        this._numCardsInHand++;
+      }
     } else {
       gameState.discardPile.addToStack(cardName);
     }
@@ -154,6 +162,9 @@ export class Player implements IGameTextEntity {
     if (idx === -1) {
       throw new Error(`Unable to discard ${cardName}`);
     } else {
+      if (this._numCardsInHand !== null) {
+        this._numCardsInHand--;
+      }
       this.cardsInHand.splice(idx, 1);
     }
   }
@@ -1555,6 +1566,12 @@ export class Player implements IGameTextEntity {
     });
   }
 
+  get numCardsInHand(): number {
+    return this._numCardsInHand
+      ? this._numCardsInHand
+      : this.cardsInHand.length;
+  }
+
   get currentSeason(): Season {
     return this._currentSeason;
   }
@@ -1579,16 +1596,16 @@ export class Player implements IGameTextEntity {
       name: this.name,
       playerId: this.playerId,
       playedCards: this.playedCards,
-      numCardsInHand: this.cardsInHand.length,
+      numCardsInHand: this.numCardsInHand,
       resources: this.resources,
       numWorkers: this.numWorkers,
       currentSeason: this.currentSeason,
       claimedEvents: this.claimedEvents,
       numAmbassadors: this.numAmbassadors,
-      cardsInHand: [],
       placedWorkers: this.placedWorkers,
       playerStatus: this.playerStatus,
       numAdornmentsInHand: this.adornmentsInHand.length,
+      cardsInHand: null,
       adornmentsInHand: [],
       playedAdornments: this.playedAdornments,
       ...(includePrivate
@@ -1602,7 +1619,16 @@ export class Player implements IGameTextEntity {
   }
 
   static fromJSON(playerJSON: PlayerJSON): Player {
-    const player = new Player(playerJSON);
+    const args: ConstructorParameters<typeof Player>[0] = {
+      ...playerJSON,
+      cardsInHand:
+        playerJSON.cardsInHand === null ? undefined : playerJSON.cardsInHand,
+      numCardsInHand:
+        playerJSON.numCardsInHand === null
+          ? undefined
+          : playerJSON.numCardsInHand,
+    };
+    const player = new Player(args);
     return player;
   }
 }

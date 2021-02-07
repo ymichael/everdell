@@ -3422,6 +3422,13 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.PLAY_CARD) {
+        // We're just re-activating, do nothing.
+        if (
+          gameInput.playedCardContext &&
+          gameInput.playedCardContext.shareSpaceWith
+        ) {
+          return;
+        }
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_PLAYED_CARDS,
           prevInputType: gameInput.inputType,

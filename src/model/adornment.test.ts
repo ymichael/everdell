@@ -1350,6 +1350,50 @@ describe("Adornment", () => {
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
     });
 
+    it("should work for MESSENGER", () => {
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.MESSENGER);
+      player.updatePlayedCard(
+        gameState,
+        player.getFirstPlayedCard(CardName.FARM),
+        { shareSpaceWith: CardName.MESSENGER }
+      );
+      player.updatePlayedCard(
+        gameState,
+        player.getFirstPlayedCard(CardName.MESSENGER),
+        { shareSpaceWith: CardName.FARM }
+      );
+
+      player.addToCity(gameState, CardName.MINE);
+
+      [player, gameState] = multiStepGameInputTest(
+        gameState,
+        [
+          playAdornmentInput(name),
+          {
+            inputType: GameInputType.SELECT_PLAYED_CARDS,
+            prevInputType: GameInputType.PLAY_ADORNMENT,
+            cardOptions: player.getPlayedCardInfos(CardName.MESSENGER),
+            adornmentContext: name,
+            maxToSelect: 2,
+            minToSelect: 0,
+            clientOptions: {
+              selectedCards: player.getPlayedCardInfos(CardName.MESSENGER),
+            },
+          },
+        ]
+        // { autoAdvance: true }
+      );
+
+      expect(player.getFirstPlayedCard(CardName.MESSENGER)).to.eql({
+        cardName: CardName.MESSENGER,
+        cardOwnerId: player.playerId,
+        shareSpaceWith: CardName.FARM,
+      });
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+    });
+
     it("should work for RANGER", () => {
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
       player.addToCity(gameState, CardName.RANGER);

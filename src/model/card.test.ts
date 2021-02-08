@@ -5267,6 +5267,50 @@ describe("Card", () => {
         });
       });
 
+      it("should be relocated if Construction is moved", () => {
+        player.addToCity(gameState, CardName.PIRATE_SHIP);
+        player.addToCity(gameState, CardName.MESSENGER);
+
+        player.updatePlayedCard(
+          gameState,
+          player.getFirstPlayedCard(CardName.PIRATE_SHIP),
+          { shareSpaceWith: CardName.MESSENGER }
+        );
+        player.updatePlayedCard(
+          gameState,
+          player.getFirstPlayedCard(CardName.MESSENGER),
+          { shareSpaceWith: CardName.PIRATE_SHIP }
+        );
+
+        [player, gameState] = multiStepGameInputTest(
+          gameState,
+          [
+            {
+              inputType: GameInputType.VISIT_DESTINATION_CARD,
+              clientOptions: {
+                playedCard: player.getFirstPlayedCard(CardName.PIRATE_SHIP),
+              },
+            },
+          ],
+          { autoAdvance: true }
+        );
+
+        expect(player.getFirstPlayedCard(CardName.MESSENGER)).to.eql({
+          cardName: CardName.MESSENGER,
+          cardOwnerId: player.playerId,
+          shareSpaceWith: undefined,
+        });
+
+        let targetPlayer = gameState.players[1];
+        expect(targetPlayer.getFirstPlayedCard(CardName.PIRATE_SHIP)).to.eql({
+          cardName: CardName.PIRATE_SHIP,
+          cardOwnerId: targetPlayer.playerId,
+          usedForCritter: false,
+          workers: [player.playerId],
+          shareSpaceWith: undefined,
+        });
+      });
+
       it("should remove from Construction if MESSENGER is removed from city", () => {
         player.addToCity(gameState, CardName.FARM);
         player.cardsInHand = [card.name];

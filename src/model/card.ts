@@ -3718,14 +3718,27 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         // Update the cardOwnerId on the WorkerPlacementInfo.
         placedWorker.playedCard.cardOwnerId = targetPlayer.playerId;
 
-        const newPlayedCard = targetPlayer.addToCity(
+        let newPlayedCard = targetPlayer.addToCity(
           gameState,
           CardName.PIRATE_SHIP
         );
-        targetPlayer.updatePlayedCard(gameState, newPlayedCard, {
-          ...origPlayedCard,
-          cardOwnerId: targetPlayerId,
-        });
+        newPlayedCard = targetPlayer.updatePlayedCard(
+          gameState,
+          newPlayedCard,
+          {
+            ...origPlayedCard,
+            cardOwnerId: targetPlayerId,
+          }
+        );
+        if ("shareSpaceWith" in origPlayedCard) {
+          newPlayedCard = targetPlayer.updatePlayedCard(
+            gameState,
+            newPlayedCard,
+            {
+              shareSpaceWith: undefined,
+            }
+          );
+        }
 
         const numPearls = targetPlayer.getNumResourcesByType(
           ResourceType.PEARL

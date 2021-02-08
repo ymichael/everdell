@@ -3731,13 +3731,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           }
         );
         if ("shareSpaceWith" in origPlayedCard) {
-          targetPlayer.updatePlayedCard(
-            gameState,
-            newPlayedCard,
-            {
-              shareSpaceWith: undefined,
-            }
-          );
+          targetPlayer.updatePlayedCard(gameState, newPlayedCard, {
+            shareSpaceWith: undefined,
+          });
         }
 
         const numPearls = targetPlayer.getNumResourcesByType(

@@ -58,7 +58,7 @@ import omit from "lodash/omit";
 
 const MEADOW_SIZE = 8;
 const STARTING_PLAYER_HAND_SIZE = 5;
-const MAX_GAME_LOG_BUFFER = 100;
+const MAX_GAME_LOG_BUFFER = 500;
 
 const PRINT_GAME_LOGS = false;
 

@@ -3731,7 +3731,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           }
         );
         if ("shareSpaceWith" in origPlayedCard) {
-          newPlayedCard = targetPlayer.updatePlayedCard(
+          targetPlayer.updatePlayedCard(
             gameState,
             newPlayedCard,
             {

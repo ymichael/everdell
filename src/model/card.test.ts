@@ -5301,7 +5301,7 @@ describe("Card", () => {
           shareSpaceWith: undefined,
         });
 
-        let targetPlayer = gameState.players[1];
+        const targetPlayer = gameState.players[1];
         expect(targetPlayer.getFirstPlayedCard(CardName.PIRATE_SHIP)).to.eql({
           cardName: CardName.PIRATE_SHIP,
           cardOwnerId: targetPlayer.playerId,

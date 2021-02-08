@@ -1326,7 +1326,7 @@ export class Player implements IGameTextEntity {
           }`
         );
       }
-      this.resources[ResourceType.VP] -= VP;
+      this.resources[ResourceType.VP] -= +VP;
     }
     if (TWIG) {
       if (this.resources[ResourceType.TWIG] < TWIG) {
@@ -1336,7 +1336,7 @@ export class Player implements IGameTextEntity {
           } TWIG`
         );
       }
-      this.resources[ResourceType.TWIG] -= TWIG;
+      this.resources[ResourceType.TWIG] -= +TWIG;
     }
     if (BERRY) {
       if (this.resources[ResourceType.BERRY] < BERRY) {
@@ -1346,7 +1346,7 @@ export class Player implements IGameTextEntity {
           } BERRY`
         );
       }
-      this.resources[ResourceType.BERRY] -= BERRY;
+      this.resources[ResourceType.BERRY] -= +BERRY;
     }
     if (PEBBLE) {
       if (this.resources[ResourceType.PEBBLE] < PEBBLE) {
@@ -1356,7 +1356,7 @@ export class Player implements IGameTextEntity {
           } PEBBLE`
         );
       }
-      this.resources[ResourceType.PEBBLE] -= PEBBLE;
+      this.resources[ResourceType.PEBBLE] -= +PEBBLE;
     }
     if (RESIN) {
       if (this.resources[ResourceType.RESIN] < RESIN) {
@@ -1366,7 +1366,7 @@ export class Player implements IGameTextEntity {
           } RESIN`
         );
       }
-      this.resources[ResourceType.RESIN] -= RESIN;
+      this.resources[ResourceType.RESIN] -= +RESIN;
     }
     if (PEARL) {
       if (this.resources[ResourceType.PEARL] < PEARL) {
@@ -1376,7 +1376,7 @@ export class Player implements IGameTextEntity {
           } PEARL`
         );
       }
-      this.resources[ResourceType.PEARL] -= PEARL;
+      this.resources[ResourceType.PEARL] -= +PEARL;
     }
   }
 
@@ -1403,22 +1403,22 @@ export class Player implements IGameTextEntity {
       PEARL = 0,
     } = toGain;
     if (VP) {
-      this.resources[ResourceType.VP] += VP;
+      this.resources[ResourceType.VP] += +VP;
     }
     if (TWIG) {
-      this.resources[ResourceType.TWIG] += TWIG;
+      this.resources[ResourceType.TWIG] += +TWIG;
     }
     if (BERRY) {
-      this.resources[ResourceType.BERRY] += BERRY;
+      this.resources[ResourceType.BERRY] += +BERRY;
     }
     if (PEBBLE) {
-      this.resources[ResourceType.PEBBLE] += PEBBLE;
+      this.resources[ResourceType.PEBBLE] += +PEBBLE;
     }
     if (RESIN) {
-      this.resources[ResourceType.RESIN] += RESIN;
+      this.resources[ResourceType.RESIN] += +RESIN;
     }
     if (PEARL) {
-      this.resources[ResourceType.PEARL] += PEARL;
+      this.resources[ResourceType.PEARL] += +PEARL;
       if (this.hasCardInCity(CardName.BRIDGE)) {
         this.drawCards(gameState, 2 * PEARL);
         gameState.addGameLogFromCard(CardName.BRIDGE, [

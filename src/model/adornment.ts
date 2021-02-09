@@ -216,7 +216,7 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_PLAYED_CARDS,
           prevInputType: gameInput.inputType,
-          label: "Select up to TRAVELER to reactivate",
+          label: "Select up to 2 TRAVELER to reactivate",
           cardOptions,
           adornmentContext: AdornmentName.COMPASS,
           maxToSelect: 2,

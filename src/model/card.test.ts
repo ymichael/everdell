@@ -1165,6 +1165,61 @@ describe("Card", () => {
           ]);
         }).to.throwException(/unable to add Farm/i);
       });
+
+      it("should allow player to use DUNGEON with RANGER if first spot", () => {
+        const card = Card.fromName(CardName.DUNGEON);
+        player.addToCity(gameState, card.name);
+        player.addToCity(gameState, CardName.RANGER);
+        player.cardsInHand.push(CardName.FARM);
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(CardName.FARM, {
+            paymentOptions: {
+              resources: {
+                [ResourceType.TWIG]: 0,
+                [ResourceType.RESIN]: 0,
+              },
+              cardToDungeon: CardName.RANGER,
+            },
+          }),
+        ]);
+
+        expect(player.hasCardInCity(CardName.RANGER)).to.be(false);
+        expect(player.hasCardInCity(CardName.FARM)).to.be(true);
+        expect(player.getFirstPlayedCard(card.name)).to.eql({
+          cardName: card.name,
+          cardOwnerId: player.playerId,
+          pairedCards: [CardName.RANGER],
+          usedForCritter: false,
+        });
+      });
+
+      it("should NOT allow player to use DUNGEON with RANGER if second spot", () => {
+        const card = Card.fromName(CardName.DUNGEON);
+        player.addToCity(gameState, card.name);
+        player.updatePlayedCard(
+          gameState,
+          player.getFirstPlayedCard(card.name),
+          {
+            pairedCards: [CardName.WIFE],
+          }
+        );
+
+        player.addToCity(gameState, CardName.RANGER);
+        player.cardsInHand.push(CardName.FARM);
+        expect(() => {
+          [player, gameState] = multiStepGameInputTest(gameState, [
+            playCardInput(CardName.FARM, {
+              paymentOptions: {
+                resources: {
+                  [ResourceType.TWIG]: 0,
+                  [ResourceType.RESIN]: 0,
+                },
+                cardToDungeon: CardName.RANGER,
+              },
+            }),
+          ]);
+        }).to.throwException(/Unable to invoke Dungeon/);
+      });
     });
 
     describe(CardName.EVERTREE, () => {

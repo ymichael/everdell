@@ -843,7 +843,8 @@ export class Player implements IGameTextEntity {
     const playedCritters = this.getPlayedCritters();
     if (
       playedCritters.length === 0 ||
-      (playedCritters.length === 1 &&
+      (numDungeoned === 1 &&
+        playedCritters.length === 1 &&
         playedCritters[0].cardName === CardName.RANGER)
     ) {
       return false;

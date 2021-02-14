@@ -9,8 +9,8 @@
     "dev": "DB_PATH=./db/game.sqlite next dev",
     "dev:pg": "DATABASE_URL=postgresql://localhost next dev",
     "collect_test_data": "DUMP_GAME_TEST_DATA=1 npm run test -- -r src/model/testHooks.ts",
-    "test": "rm -rf ./db/test.sqlite && DB_PATH=./db/test.sqlite mocha -r ts-node/register src/**/*.test.ts",
-    "test:watch": "npm run test -- --watch --extension ts",
+    "test": "rm -rf ./db/test.sqlite && DB_PATH=./db/test.sqlite mocha -r ts-eager/register src/**/*.test.ts",
+    "test:watch": "nodemon -e ts,tsx -w src -x 'npm run test'",
     "test-cypress": "DB_PATH=./db/game.sqlite cypress open",
     "typecheck": "tsc",
     "typecheck:watch": "tsc --watch",
@@ -28,12 +28,12 @@
     "lodash": "^4.17.20",
     "mocha": "^8.2.1",
     "next": "10.0.4",
+    "nodemon": "^2.0.7",
     "pg": "^8.5.1",
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "short-uuid": "^4.1.0",
-    "sqlite3": "^5.0.0",
-    "ts-node": "^9.1.1"
+    "sqlite3": "^5.0.0"
   },
   "devDependencies": {
     "@types/expect.js": "^0.3.29",
@@ -49,6 +49,7 @@
     "@typescript-eslint/parser": "^4.11.0",
     "eslint": "^7.16.0",
     "prettier": "2.2.1",
+    "ts-eager": "^1.1.3",
     "typescript": "^4.1.3"
   }
 }

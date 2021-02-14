@@ -880,6 +880,36 @@ describe("Adornment", () => {
       expect(adornment.getPoints(gameState, playerId)).to.be(1 + 7);
     });
 
+    it("should account for VP on cards", () => {
+      const adornment = Adornment.fromName(name);
+      const playerId = player.playerId;
+      expect(adornment.getPoints(gameState, playerId)).to.be(0);
+
+      player.gainResources(gameState, { [ResourceType.VP]: 1 });
+      expect(adornment.getPoints(gameState, playerId)).to.be(0);
+
+      player.gainResources(gameState, { [ResourceType.VP]: 1 });
+      expect(adornment.getPoints(gameState, playerId)).to.be(0);
+
+      player.gainResources(gameState, { [ResourceType.VP]: 1 });
+      expect(adornment.getPoints(gameState, playerId)).to.be(1);
+
+      player.addToCity(gameState, CardName.CLOCK_TOWER);
+      expect(adornment.getPoints(gameState, playerId)).to.be(2);
+
+      player.addToCity(gameState, CardName.STOREHOUSE);
+      player.updatePlayedCard(
+        gameState,
+        player.getFirstPlayedCard(CardName.STOREHOUSE),
+        { resources: { [ResourceType.VP]: 10 } }
+      );
+      expect(adornment.getPoints(gameState, playerId)).to.be(2 + 3);
+
+      // Rounding happens after totalling.
+      player.gainResources(gameState, { [ResourceType.VP]: 2 });
+      expect(adornment.getPoints(gameState, playerId)).to.be(2 + 3 + 1);
+    });
+
     it("should allow player to choose to play card from meadow OR hand", () => {
       gameState.meadowCards.push(CardName.FARM);
       player.cardsInHand.push(CardName.FARM);

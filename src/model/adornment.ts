@@ -456,7 +456,14 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
     ]),
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
-      return Math.floor(player.getNumResourcesByType(ResourceType.VP) / 3);
+      let numVP = player.getNumResourcesByType(ResourceType.VP);
+      player.forEachPlayedCard(({ cardName, resources = {} }) => {
+        if (ResourceType.VP in resources) {
+          numVP +=
+            parseInt((resources[ResourceType.VP] as unknown) as string) || 0;
+        }
+      });
+      return Math.floor(numVP / 3);
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();

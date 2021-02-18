@@ -494,49 +494,6 @@
   ],
   [
     {
-      "type": "entity",
-      "entityType": "adornment",
-      "adornment": "Key to the City"
-    },
-    {
-      "type": "text",
-      "text": ": "
-    },
-    {
-      "type": "player",
-      "name": "Player #0"
-    },
-    {
-      "type": "text",
-      "text": " gained "
-    },
-    {
-      "type": "text",
-      "text": "1 "
-    },
-    {
-      "type": "resource",
-      "resourceType": "BERRY"
-    },
-    {
-      "type": "text",
-      "text": " & "
-    },
-    {
-      "type": "text",
-      "text": "1 "
-    },
-    {
-      "type": "resource",
-      "resourceType": "TWIG"
-    },
-    {
-      "type": "text",
-      "text": "."
-    }
-  ],
-  [
-    {
       "type": "player",
       "name": "Player #0"
     },
@@ -1587,6 +1544,77 @@
     {
       "type": "entity",
       "entityType": "card",
+      "card": "Messenger"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Messenger"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gained "
+    },
+    {
+      "type": "text",
+      "text": "1 "
+    },
+    {
+      "type": "symbol",
+      "symbol": "CARD"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "text",
+      "text": "1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "adornment",
+      "adornment": "Compass"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " reactivated "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
       "card": "Ranger"
     },
     {
@@ -2298,7 +2326,7 @@
     },
     {
       "type": "text",
-      "text": " on ("
+      "text": " on "
     },
     {
       "type": "entity",
@@ -2334,7 +2362,7 @@
     },
     {
       "type": "text",
-      "text": ")"
+      "text": ""
     },
     {
       "type": "text",
@@ -2467,7 +2495,7 @@
     },
     {
       "type": "text",
-      "text": " on ("
+      "text": " on "
     },
     {
       "type": "entity",
@@ -2503,7 +2531,7 @@
     },
     {
       "type": "text",
-      "text": ")"
+      "text": ""
     },
     {
       "type": "text",
@@ -2778,6 +2806,43 @@
       "type": "entity",
       "entityType": "card",
       "card": "Wanderer"
+    },
+    {
+      "type": "text",
+      "text": " to "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Dungeon"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " played "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Farm"
+    },
+    {
+      "type": "text",
+      "text": " by adding "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Ranger"
     },
     {
       "type": "text",
@@ -4877,7 +4942,7 @@
     },
     {
       "type": "text",
-      "text": " on ("
+      "text": " on "
     },
     {
       "type": "entity",
@@ -4904,7 +4969,7 @@
     },
     {
       "type": "text",
-      "text": ")"
+      "text": ""
     },
     {
       "type": "text",
@@ -5648,6 +5713,85 @@
   ],
   [
     {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " place a worker on "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Pirate Ship"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Pirate Ship"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " moved their "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Pirate Ship"
+    },
+    {
+      "type": "text",
+      "text": " to "
+    },
+    {
+      "type": "player",
+      "name": "Player #1"
+    },
+    {
+      "type": "text",
+      "text": "'s city."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Messenger"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Messenger"
+    },
+    {
+      "type": "text",
+      "text": " doesn't have a Construction to share a space with. "
+    },
+    {
+      "type": "text",
+      "text": "It'll share a space with the next played Construction."
+    }
+  ],
+  [
+    {
       "type": "entity",
       "entityType": "card",
       "card": "Messenger"
@@ -5734,30 +5878,6 @@
       "text": ": "
     },
     {
-      "type": "entity",
-      "entityType": "card",
-      "card": "Messenger"
-    },
-    {
-      "type": "text",
-      "text": " doesn't have a Construction to share a space with. "
-    },
-    {
-      "type": "text",
-      "text": "It'll share a space with the next played Construction."
-    }
-  ],
-  [
-    {
-      "type": "entity",
-      "entityType": "card",
-      "card": "Messenger"
-    },
-    {
-      "type": "text",
-      "text": ": "
-    },
-    {
       "type": "text",
       "text": "Unpaired "
     },
@@ -5778,61 +5898,6 @@
     {
       "type": "text",
       "text": "."
-    }
-  ],
-  [
-    {
-      "type": "player",
-      "name": "Player #0"
-    },
-    {
-      "type": "text",
-      "text": " place a worker on "
-    },
-    {
-      "type": "entity",
-      "entityType": "card",
-      "card": "Pirate Ship"
-    },
-    {
-      "type": "text",
-      "text": "."
-    }
-  ],
-  [
-    {
-      "type": "entity",
-      "entityType": "card",
-      "card": "Pirate Ship"
-    },
-    {
-      "type": "text",
-      "text": ": "
-    },
-    {
-      "type": "player",
-      "name": "Player #0"
-    },
-    {
-      "type": "text",
-      "text": " moved their "
-    },
-    {
-      "type": "entity",
-      "entityType": "card",
-      "card": "Pirate Ship"
-    },
-    {
-      "type": "text",
-      "text": " to "
-    },
-    {
-      "type": "player",
-      "name": "Player #1"
-    },
-    {
-      "type": "text",
-      "text": "'s city."
     }
   ],
   [
@@ -6157,7 +6222,7 @@
     {
       "type": "entity",
       "entityType": "card",
-      "card": "King"
+      "card": "Barge Toad"
     },
     {
       "type": "text",
@@ -6166,7 +6231,7 @@
     {
       "type": "entity",
       "entityType": "card",
-      "card": "King"
+      "card": "Mine"
     },
     {
       "type": "text",
@@ -6175,7 +6240,7 @@
     {
       "type": "entity",
       "entityType": "card",
-      "card": "King"
+      "card": "Queen"
     },
     {
       "type": "text",
@@ -6183,7 +6248,7 @@
     },
     {
       "type": "points",
-      "value": 12
+      "value": 7
     },
     {
       "type": "text",
@@ -6269,6 +6334,44 @@
     {
       "type": "text",
       "text": " total)."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " claimed the "
+    },
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "4 PRODUCTION"
+    },
+    {
+      "type": "text",
+      "text": " event."
+    }
+  ],
+  [
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " claimed the "
+    },
+    {
+      "type": "entity",
+      "entityType": "event",
+      "event": "3 DESTINATION"
+    },
+    {
+      "type": "text",
+      "text": " event."
     }
   ],
   [
@@ -8774,25 +8877,6 @@
   ],
   [
     {
-      "type": "player",
-      "name": "Player #0"
-    },
-    {
-      "type": "text",
-      "text": " claimed the "
-    },
-    {
-      "type": "entity",
-      "entityType": "event",
-      "event": "4 PRODUCTION"
-    },
-    {
-      "type": "text",
-      "text": " event."
-    }
-  ],
-  [
-    {
       "type": "em",
       "text": "Prepare for season"
     },
@@ -8814,7 +8898,7 @@
     },
     {
       "type": "text",
-      "text": " on ("
+      "text": " on "
     },
     {
       "type": "entity",
@@ -8850,7 +8934,7 @@
     },
     {
       "type": "text",
-      "text": ")"
+      "text": ""
     },
     {
       "type": "text",
@@ -8880,7 +8964,7 @@
     },
     {
       "type": "text",
-      "text": " on ("
+      "text": " on "
     },
     {
       "type": "entity",
@@ -8925,7 +9009,7 @@
     },
     {
       "type": "text",
-      "text": ")"
+      "text": ""
     },
     {
       "type": "text",
@@ -8990,7 +9074,7 @@
     },
     {
       "type": "text",
-      "text": " on ("
+      "text": " on "
     },
     {
       "type": "entity",
@@ -9044,7 +9128,7 @@
     },
     {
       "type": "text",
-      "text": ")"
+      "text": ""
     },
     {
       "type": "text",
@@ -10634,6 +10718,242 @@
     {
       "type": "text",
       "text": " and 1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "PEARL"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "riverDestinationSpot",
+      "spot": "TWO_TRAVELER"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " visited "
+    },
+    {
+      "type": "entity",
+      "entityType": "riverDestination",
+      "riverDestination": "Great Hall"
+    },
+    {
+      "type": "text",
+      "text": " at "
+    },
+    {
+      "type": "entity",
+      "entityType": "riverDestinationSpot",
+      "spot": "TWO_TRAVELER"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "riverDestination",
+      "riverDestination": "Great Hall"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " spent 1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "PEBBLE"
+    },
+    {
+      "type": "text",
+      "text": " and 1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": " "
+    },
+    {
+      "type": "text",
+      "text": "to draw 4 "
+    },
+    {
+      "type": "symbol",
+      "symbol": "CARD"
+    },
+    {
+      "type": "text",
+      "text": " and gain 1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "PEARL"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "riverDestinationSpot",
+      "spot": "TWO_TRAVELER"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " visited "
+    },
+    {
+      "type": "entity",
+      "entityType": "riverDestination",
+      "riverDestination": "Observatory"
+    },
+    {
+      "type": "text",
+      "text": " at "
+    },
+    {
+      "type": "entity",
+      "entityType": "riverDestinationSpot",
+      "spot": "TWO_TRAVELER"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "riverDestination",
+      "riverDestination": "Observatory"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " spent "
+    },
+    {
+      "type": "text",
+      "text": "1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "PEBBLE"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "text",
+      "text": "1 "
+    },
+    {
+      "type": "resource",
+      "resourceType": "VP"
+    },
+    {
+      "type": "text",
+      "text": "."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "riverDestination",
+      "riverDestination": "Observatory"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " drew "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Bridge"
+    },
+    {
+      "type": "text",
+      "text": " & "
+    },
+    {
+      "type": "entity",
+      "entityType": "card",
+      "card": "Woodcarver"
+    },
+    {
+      "type": "text",
+      "text": " from the Meadow."
+    }
+  ],
+  [
+    {
+      "type": "entity",
+      "entityType": "riverDestination",
+      "riverDestination": "Observatory"
+    },
+    {
+      "type": "text",
+      "text": ": "
+    },
+    {
+      "type": "player",
+      "name": "Player #0"
+    },
+    {
+      "type": "text",
+      "text": " gained 1 "
     },
     {
       "type": "resource",

@@ -441,6 +441,84 @@ describe("RiverDestinationMap", () => {
     });
   });
 
+  describe(RiverDestinationName.OBSERVATORY, () => {
+    const name = RiverDestinationName.OBSERVATORY;
+
+    beforeEach(() => {
+      const spot = RiverDestinationSpotName.TWO_TRAVELER;
+      gameState.riverDestinationMap!.spots[spot]!.name = name;
+      gameState.riverDestinationMap!.spots[spot]!.revealed = true;
+      player.addToCity(gameState, CardName.WANDERER);
+      player.addToCity(gameState, CardName.RANGER);
+    });
+
+    it("should do nothing if player doesn't have VP or ANY", () => {
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        {
+          inputType: GameInputType.PLACE_AMBASSADOR,
+          clientOptions: {
+            loc: { type: "spot", spot: RiverDestinationSpotName.TWO_TRAVELER },
+          },
+        },
+      ]);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+    });
+
+    it("should ask the player if they want to spend VP & ANY", () => {
+      player.gainResources(gameState, {
+        [ResourceType.PEBBLE]: 1,
+        [ResourceType.VP]: 1,
+      });
+      expect(player.cardsInHand.length).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+
+      gameState.replenishMeadow();
+
+      [player, gameState] = multiStepGameInputTest(
+        gameState,
+        [
+          {
+            inputType: GameInputType.PLACE_AMBASSADOR,
+            clientOptions: {
+              loc: {
+                type: "spot",
+                spot: RiverDestinationSpotName.TWO_TRAVELER,
+              },
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_OPTION_GENERIC,
+            prevInputType: GameInputType.PLACE_AMBASSADOR,
+            riverDestinationContext: name,
+            options: ["PEBBLE", "Decline"],
+            clientOptions: { selectedOption: "PEBBLE" },
+          },
+          {
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: GameInputType.SELECT_OPTION_GENERIC,
+            riverDestinationContext: name,
+            cardOptions: gameState.meadowCards,
+            maxToSelect: 2,
+            minToSelect: 2,
+            clientOptions: { selectedCards: gameState.meadowCards.slice(0, 2) },
+          },
+        ],
+        { autoAdvance: true }
+      );
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
+      expect(player.cardsInHand.length).to.be(2);
+    });
+  });
+
   describe(RiverDestinationName.CRUSTINA_THE_CONSTABLE, () => {
     const name = RiverDestinationName.CRUSTINA_THE_CONSTABLE;
 

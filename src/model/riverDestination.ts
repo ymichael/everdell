@@ -790,7 +790,7 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
         });
       } else if (
         gameInput.inputType === GameInputType.SELECT_CARDS &&
-        gameInput.prevInputType === GameInputType.SELECT_RESOURCES &&
+        gameInput.prevInputType === GameInputType.SELECT_OPTION_GENERIC &&
         gameInput.riverDestinationContext === RiverDestinationName.OBSERVATORY
       ) {
         const selectedCards = gameInput.clientOptions.selectedCards;

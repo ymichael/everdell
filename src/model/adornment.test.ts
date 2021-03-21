@@ -880,6 +880,36 @@ describe("Adornment", () => {
       expect(adornment.getPoints(gameState, playerId)).to.be(1 + 7);
     });
 
+    it("should account for VP on cards", () => {
+      const adornment = Adornment.fromName(name);
+      const playerId = player.playerId;
+      expect(adornment.getPoints(gameState, playerId)).to.be(0);
+
+      player.gainResources(gameState, { [ResourceType.VP]: 1 });
+      expect(adornment.getPoints(gameState, playerId)).to.be(0);
+
+      player.gainResources(gameState, { [ResourceType.VP]: 1 });
+      expect(adornment.getPoints(gameState, playerId)).to.be(0);
+
+      player.gainResources(gameState, { [ResourceType.VP]: 1 });
+      expect(adornment.getPoints(gameState, playerId)).to.be(1);
+
+      player.addToCity(gameState, CardName.CLOCK_TOWER);
+      expect(adornment.getPoints(gameState, playerId)).to.be(2);
+
+      player.addToCity(gameState, CardName.STOREHOUSE);
+      player.updatePlayedCard(
+        gameState,
+        player.getFirstPlayedCard(CardName.STOREHOUSE),
+        { resources: { [ResourceType.VP]: 10 } }
+      );
+      expect(adornment.getPoints(gameState, playerId)).to.be(2 + 3);
+
+      // Rounding happens after totalling.
+      player.gainResources(gameState, { [ResourceType.VP]: 2 });
+      expect(adornment.getPoints(gameState, playerId)).to.be(2 + 3 + 1);
+    });
+
     it("should allow player to choose to play card from meadow OR hand", () => {
       gameState.meadowCards.push(CardName.FARM);
       player.cardsInHand.push(CardName.FARM);
@@ -1347,6 +1377,50 @@ describe("Adornment", () => {
       expect(gameState.discardPile.length).to.be(0);
       expect(player.hasCardInCity(CardName.FOOL)).to.be(false);
       expect(targetPlayer.hasCardInCity(CardName.FOOL)).to.be(true);
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
+    });
+
+    it("should work for MESSENGER", () => {
+      expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.MESSENGER);
+      player.updatePlayedCard(
+        gameState,
+        player.getFirstPlayedCard(CardName.FARM),
+        { shareSpaceWith: CardName.MESSENGER }
+      );
+      player.updatePlayedCard(
+        gameState,
+        player.getFirstPlayedCard(CardName.MESSENGER),
+        { shareSpaceWith: CardName.FARM }
+      );
+
+      player.addToCity(gameState, CardName.MINE);
+
+      [player, gameState] = multiStepGameInputTest(
+        gameState,
+        [
+          playAdornmentInput(name),
+          {
+            inputType: GameInputType.SELECT_PLAYED_CARDS,
+            prevInputType: GameInputType.PLAY_ADORNMENT,
+            cardOptions: player.getPlayedCardInfos(CardName.MESSENGER),
+            adornmentContext: name,
+            maxToSelect: 2,
+            minToSelect: 0,
+            clientOptions: {
+              selectedCards: player.getPlayedCardInfos(CardName.MESSENGER),
+            },
+          },
+        ]
+        // { autoAdvance: true }
+      );
+
+      expect(player.getFirstPlayedCard(CardName.MESSENGER)).to.eql({
+        cardName: CardName.MESSENGER,
+        cardOwnerId: player.playerId,
+        shareSpaceWith: CardName.FARM,
+      });
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
     });
 

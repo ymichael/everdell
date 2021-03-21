@@ -1165,6 +1165,61 @@ describe("Card", () => {
           ]);
         }).to.throwException(/unable to add Farm/i);
       });
+
+      it("should allow player to use DUNGEON with RANGER if first spot", () => {
+        const card = Card.fromName(CardName.DUNGEON);
+        player.addToCity(gameState, card.name);
+        player.addToCity(gameState, CardName.RANGER);
+        player.cardsInHand.push(CardName.FARM);
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(CardName.FARM, {
+            paymentOptions: {
+              resources: {
+                [ResourceType.TWIG]: 0,
+                [ResourceType.RESIN]: 0,
+              },
+              cardToDungeon: CardName.RANGER,
+            },
+          }),
+        ]);
+
+        expect(player.hasCardInCity(CardName.RANGER)).to.be(false);
+        expect(player.hasCardInCity(CardName.FARM)).to.be(true);
+        expect(player.getFirstPlayedCard(card.name)).to.eql({
+          cardName: card.name,
+          cardOwnerId: player.playerId,
+          pairedCards: [CardName.RANGER],
+          usedForCritter: false,
+        });
+      });
+
+      it("should NOT allow player to use DUNGEON with RANGER if second spot", () => {
+        const card = Card.fromName(CardName.DUNGEON);
+        player.addToCity(gameState, card.name);
+        player.updatePlayedCard(
+          gameState,
+          player.getFirstPlayedCard(card.name),
+          {
+            pairedCards: [CardName.WIFE],
+          }
+        );
+
+        player.addToCity(gameState, CardName.RANGER);
+        player.cardsInHand.push(CardName.FARM);
+        expect(() => {
+          [player, gameState] = multiStepGameInputTest(gameState, [
+            playCardInput(CardName.FARM, {
+              paymentOptions: {
+                resources: {
+                  [ResourceType.TWIG]: 0,
+                  [ResourceType.RESIN]: 0,
+                },
+                cardToDungeon: CardName.RANGER,
+              },
+            }),
+          ]);
+        }).to.throwException(/Unable to invoke Dungeon/);
+      });
     });
 
     describe(CardName.EVERTREE, () => {
@@ -1527,6 +1582,7 @@ describe("Card", () => {
 
         const idx = gameState.meadowCards.indexOf(CardName.WIFE);
         expect(idx).to.be(-1);
+        expect(gameState.meadowCards.length).to.be(8);
 
         let player = gameState.getActivePlayer();
 
@@ -1576,6 +1632,8 @@ describe("Card", () => {
         expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
         expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
 
+        // Meadow should be replenished
+        expect(gameState.meadowCards.length).to.be(8);
         const wifeInMeadow = gameState.meadowCards.indexOf(CardName.WIFE) >= 0;
         expect(wifeInMeadow).to.be(true);
       });
@@ -3316,7 +3374,16 @@ describe("Card", () => {
     describe(CardName.QUEEN, () => {
       it("should allow player to choose to play card from meadow OR hand", () => {
         gameState = testInitialGameState({
-          meadowCards: [CardName.FARM],
+          meadowCards: [
+            CardName.FARM,
+            CardName.KING,
+            CardName.KING,
+            CardName.KING,
+            CardName.KING,
+            CardName.KING,
+            CardName.KING,
+            CardName.KING,
+          ],
         });
         player = gameState.getActivePlayer();
 
@@ -3325,6 +3392,7 @@ describe("Card", () => {
         player.cardsInHand.push(CardName.FARM);
 
         expect(player.numAvailableWorkers).to.be(2);
+        expect(gameState.meadowCards.length).to.be(8);
         expect(player.hasCardInCity(CardName.FARM)).to.be(false);
 
         const selectCardInput = {
@@ -3369,6 +3437,7 @@ describe("Card", () => {
         ]);
 
         expect(gameState2.meadowCards.indexOf(CardName.FARM)).to.be(-1);
+        expect(gameState2.meadowCards.length).to.be(8);
         expect(playerMeadow.cardsInHand.indexOf(CardName.FARM)).to.be(0);
         expect(playerMeadow.numAvailableWorkers).to.be(1);
         expect(playerMeadow.hasCardInCity(CardName.FARM)).to.be(true);
@@ -3385,6 +3454,7 @@ describe("Card", () => {
         ]);
 
         expect(gameState3.meadowCards.indexOf(CardName.FARM)).to.be(0);
+        expect(gameState3.meadowCards.length).to.be(8);
         expect(playerHand.cardsInHand.indexOf(CardName.FARM)).to.be(-1);
         expect(playerHand.numAvailableWorkers).to.be(1);
         expect(playerHand.hasCardInCity(CardName.FARM)).to.be(true);
@@ -4460,6 +4530,117 @@ describe("Card", () => {
           ]);
         }).to.throwException(/cannot place worker on card/i);
       });
+
+      it("should give player resources from the correct storehouse", () => {
+        const card = Card.fromName(CardName.STOREHOUSE);
+        const storehouseA = player.addToCity(gameState, card.name);
+        const storehouseB = player.addToCity(gameState, card.name);
+
+        storehouseA.resources![ResourceType.BERRY]! = 5;
+        storehouseB.resources![ResourceType.PEBBLE]! = 5;
+
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+
+        expect(player.getPlayedCardInfos(card.name)[0]).to.eql({
+          cardName: card.name,
+          workers: [],
+          cardOwnerId: player.playerId,
+          resources: {
+            BERRY: 5,
+            PEBBLE: 0,
+            RESIN: 0,
+            TWIG: 0,
+          },
+          usedForCritter: false,
+        });
+        expect(player.getPlayedCardInfos(card.name)[1]).to.eql({
+          cardName: card.name,
+          workers: [],
+          cardOwnerId: player.playerId,
+          resources: {
+            BERRY: 0,
+            PEBBLE: 5,
+            RESIN: 0,
+            TWIG: 0,
+          },
+          usedForCritter: false,
+        });
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD as const,
+            clientOptions: {
+              playedCard: player.getFirstPlayedCard(card.name),
+            },
+          },
+        ]);
+
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(5);
+        expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+
+        expect(player.getPlayedCardInfos(card.name)[0]).to.eql({
+          cardName: card.name,
+          workers: [player.playerId],
+          cardOwnerId: player.playerId,
+          resources: {
+            BERRY: 0,
+            PEBBLE: 0,
+            RESIN: 0,
+            TWIG: 0,
+          },
+          usedForCritter: false,
+        });
+        expect(player.getPlayedCardInfos(card.name)[1]).to.eql({
+          cardName: card.name,
+          workers: [],
+          cardOwnerId: player.playerId,
+          resources: {
+            BERRY: 0,
+            PEBBLE: 5,
+            RESIN: 0,
+            TWIG: 0,
+          },
+          usedForCritter: false,
+        });
+
+        gameState.nextPlayer();
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD as const,
+            clientOptions: {
+              playedCard: player.getPlayedCardInfos(card.name)[1],
+            },
+          },
+        ]);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(5);
+        expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(5);
+
+        expect(player.getPlayedCardInfos(card.name)[0]).to.eql({
+          cardName: card.name,
+          workers: [player.playerId],
+          cardOwnerId: player.playerId,
+          resources: {
+            BERRY: 0,
+            PEBBLE: 0,
+            RESIN: 0,
+            TWIG: 0,
+          },
+          usedForCritter: false,
+        });
+        expect(player.getPlayedCardInfos(card.name)[1]).to.eql({
+          cardName: card.name,
+          workers: [player.playerId],
+          cardOwnerId: player.playerId,
+          resources: {
+            BERRY: 0,
+            PEBBLE: 0,
+            RESIN: 0,
+            TWIG: 0,
+          },
+          usedForCritter: false,
+        });
+      });
     });
 
     describe(CardName.TEACHER, () => {
@@ -5109,6 +5290,17 @@ describe("Card", () => {
         expect(player.hasCardInCity(card.name)).to.be(true);
         expect(player.getNumResourcesByType(ResourceType.VP)).to.be(2);
       });
+
+      it("should gain 2 VP if at least 2 PEARL when prepare for season", () => {
+        player.gainResources(gameState, { [ResourceType.PEARL]: 2 });
+        player.addToCity(gameState, card.name);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+
+        player.activateProduction(gameState, {
+          inputType: GameInputType.PREPARE_FOR_SEASON,
+        });
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(2);
+      });
     });
 
     describe(CardName.SHIPWRIGHT, () => {
@@ -5238,6 +5430,50 @@ describe("Card", () => {
           usedForCritter: false,
           workers: [player.playerId],
           shareSpaceWith: CardName.MESSENGER,
+        });
+      });
+
+      it("should be relocated if Construction is moved", () => {
+        player.addToCity(gameState, CardName.PIRATE_SHIP);
+        player.addToCity(gameState, CardName.MESSENGER);
+
+        player.updatePlayedCard(
+          gameState,
+          player.getFirstPlayedCard(CardName.PIRATE_SHIP),
+          { shareSpaceWith: CardName.MESSENGER }
+        );
+        player.updatePlayedCard(
+          gameState,
+          player.getFirstPlayedCard(CardName.MESSENGER),
+          { shareSpaceWith: CardName.PIRATE_SHIP }
+        );
+
+        [player, gameState] = multiStepGameInputTest(
+          gameState,
+          [
+            {
+              inputType: GameInputType.VISIT_DESTINATION_CARD,
+              clientOptions: {
+                playedCard: player.getFirstPlayedCard(CardName.PIRATE_SHIP),
+              },
+            },
+          ],
+          { autoAdvance: true }
+        );
+
+        expect(player.getFirstPlayedCard(CardName.MESSENGER)).to.eql({
+          cardName: CardName.MESSENGER,
+          cardOwnerId: player.playerId,
+          shareSpaceWith: undefined,
+        });
+
+        const targetPlayer = gameState.players[1];
+        expect(targetPlayer.getFirstPlayedCard(CardName.PIRATE_SHIP)).to.eql({
+          cardName: CardName.PIRATE_SHIP,
+          cardOwnerId: targetPlayer.playerId,
+          usedForCritter: false,
+          workers: [player.playerId],
+          shareSpaceWith: undefined,
         });
       });
 
@@ -5555,6 +5791,56 @@ describe("Card", () => {
 
       it("should gain resources if opponent has pearls city", () => {
         let targetPlayer = gameState.players[1];
+
+        player.addToCity(gameState, card.name);
+        targetPlayer.gainResources(gameState, { [ResourceType.PEARL]: 2 });
+
+        expect(player.hasCardInCity(card.name)).to.be(true);
+        expect(targetPlayer.hasCardInCity(card.name)).to.be(false);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+
+        [player, gameState] = multiStepGameInputTest(
+          gameState,
+          [
+            {
+              inputType: GameInputType.VISIT_DESTINATION_CARD,
+              clientOptions: {
+                playedCard: player.getFirstPlayedCard(card.name),
+              },
+            },
+            {
+              inputType: GameInputType.SELECT_RESOURCES,
+              prevInputType: GameInputType.SELECT_PLAYER,
+              toSpend: false,
+              maxResources: 2,
+              minResources: 2,
+              clientOptions: {
+                resources: {
+                  [ResourceType.BERRY]: 1,
+                  [ResourceType.PEBBLE]: 1,
+                },
+              },
+              cardContext: card.name,
+            },
+          ],
+          { autoAdvance: true }
+        );
+
+        targetPlayer = gameState.getPlayer(targetPlayer.playerId);
+        expect(player.hasCardInCity(card.name)).to.be(false);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(2);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
+        expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(1);
+        expect(targetPlayer.hasCardInCity(card.name)).to.be(true);
+      });
+
+      it("should be able to take the last spot in the opponent city", () => {
+        let targetPlayer = gameState.players[1];
+        for (let i = 0; i < 14; i++) {
+          targetPlayer.addToCity(gameState, CardName.FARM);
+        }
 
         player.addToCity(gameState, card.name);
         targetPlayer.gainResources(gameState, { [ResourceType.PEARL]: 2 });
@@ -5980,9 +6266,9 @@ describe("Card", () => {
         player.gainResources(gameState, card.baseCost);
 
         gameState.deck.addToStack(CardName.KING);
-        gameState.deck.addToStack(CardName.KING);
-        gameState.deck.addToStack(CardName.KING);
-        gameState.deck.addToStack(CardName.KING);
+        gameState.deck.addToStack(CardName.QUEEN);
+        gameState.deck.addToStack(CardName.MINE);
+        gameState.deck.addToStack(CardName.BARGE_TOAD);
 
         expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
         [player, gameState] = multiStepGameInputTest(gameState, [
@@ -5999,7 +6285,12 @@ describe("Card", () => {
           },
         ]);
         expect(player.hasCardInCity(card.name));
-        expect(player.cardsInHand).to.eql([CardName.FARM]);
+        expect(player.cardsInHand).to.eql([
+          CardName.FARM,
+          CardName.BARGE_TOAD,
+          CardName.MINE,
+          CardName.QUEEN,
+        ]);
         expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
       });
 
@@ -6033,7 +6324,12 @@ describe("Card", () => {
           },
         ]);
         expect(player.hasCardInCity(card.name));
-        expect(player.cardsInHand).to.eql([CardName.FARM]);
+        expect(player.cardsInHand).to.eql([
+          CardName.FARM,
+          CardName.RUINS,
+          CardName.RUINS,
+          CardName.RUINS,
+        ]);
         expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
       });
     });

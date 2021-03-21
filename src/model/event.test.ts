@@ -65,6 +65,30 @@ describe("Event", () => {
     });
   });
 
+  it("should be able to claim 2 events in one season", () => {
+    player.addToCity(gameState, CardName.MINE);
+    player.addToCity(gameState, CardName.GENERAL_STORE);
+    player.addToCity(gameState, CardName.FARM);
+    player.addToCity(gameState, CardName.FARM);
+
+    [player, gameState] = multiStepGameInputTest(gameState, [
+      claimEventInput(EventName.BASIC_FOUR_PRODUCTION),
+    ]);
+
+    expect(player.getNumClaimedEvents() == 1).to.be(true);
+
+    player.addToCity(gameState, CardName.UNIVERSITY);
+    player.addToCity(gameState, CardName.QUEEN);
+    player.addToCity(gameState, CardName.LOOKOUT);
+    gameState.nextPlayer();
+
+    [player, gameState] = multiStepGameInputTest(gameState, [
+      claimEventInput(EventName.BASIC_THREE_DESTINATION),
+    ]);
+
+    expect(player.getNumClaimedEvents() == 2).to.be(true);
+  });
+
   describe(EventName.BASIC_FOUR_PRODUCTION, () => {
     it("should only be playable with four production tags", () => {
       const event = Event.fromName(EventName.BASIC_FOUR_PRODUCTION);

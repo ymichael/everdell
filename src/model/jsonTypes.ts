@@ -52,7 +52,7 @@ export type PlayerJSON = {
   playerId: string;
   playedCards: Partial<Record<CardName, PlayedCardInfo[]>>;
   numCardsInHand: number;
-  cardsInHand: CardName[];
+  cardsInHand: CardName[] | null;
   resources: Record<ResourceType, number>;
   currentSeason: Season;
   numWorkers: number;

@@ -46,6 +46,7 @@ describe("GameState", () => {
         CardName.MINER_MOLE,
         CardName.MINE,
         CardName.FARM,
+        CardName.SHOPKEEPER,
       ];
       topOfDeck.reverse();
       topOfDeck.forEach((cardName) => {
@@ -65,7 +66,7 @@ describe("GameState", () => {
         CardName.MINE,
       ]);
 
-      gameState.removeCardFromMeadow(CardName.FARM);
+      gameState.removeCardFromMeadow(CardName.FARM, false);
       expect(gameState.meadowCards.length).to.be(7);
       expect(gameState.meadowCards).to.eql([
         CardName.QUEEN,
@@ -77,17 +78,17 @@ describe("GameState", () => {
         CardName.MINE,
       ]);
 
-      gameState.replenishMeadow();
+      gameState.removeCardFromMeadow(CardName.FARM, true);
       expect(gameState.meadowCards.length).to.be(8);
       expect(gameState.meadowCards).to.eql([
         CardName.QUEEN,
         CardName.MINER_MOLE,
         CardName.MINE,
-        CardName.FARM,
         CardName.QUEEN,
         CardName.MINER_MOLE,
         CardName.MINE,
         CardName.FARM,
+        CardName.SHOPKEEPER,
       ]);
     });
   });

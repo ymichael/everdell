@@ -216,7 +216,7 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_PLAYED_CARDS,
           prevInputType: gameInput.inputType,
-          label: "Select up to TRAVELER to reactivate",
+          label: "Select up to 2 TRAVELER to reactivate",
           cardOptions,
           adornmentContext: AdornmentName.COMPASS,
           maxToSelect: 2,
@@ -456,7 +456,14 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
     ]),
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
-      return Math.floor(player.getNumResourcesByType(ResourceType.VP) / 3);
+      let numVP = player.getNumResourcesByType(ResourceType.VP);
+      player.forEachPlayedCard(({ cardName, resources = {} }) => {
+        if (ResourceType.VP in resources) {
+          numVP +=
+            parseInt((resources[ResourceType.VP] as unknown) as string) || 0;
+        }
+      });
+      return Math.floor(numVP / 3);
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
@@ -680,7 +687,7 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
     ]),
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
-      const numCards = player.cardsInHand.length;
+      const numCards = player.numCardsInHand;
 
       return numCards > 5 ? 5 : numCards;
     },

@@ -1409,7 +1409,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
 
         if (sumResources(selectedCard.baseCost) <= 3) {
           gameState.removeCardFromMeadow(selectedCard.name);
-          gameState.replenishMeadow();
           selectedCard.addToCityAndPlay(gameState, gameInput);
           gameState.addGameLogFromCard(CardName.INN, [
             player,
@@ -1451,7 +1450,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         card.addToCityAndPlay(gameState, gameInput);
 
         gameState.removeCardFromMeadow(card.name);
-        gameState.replenishMeadow();
 
         gameState.addGameLogFromCard(CardName.INN, [
           player,
@@ -3128,8 +3126,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           gameState.discardPile.addToStack(cardName);
         });
 
-        gameState.replenishMeadow();
-
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_CARDS,
           prevInputType: gameInput.inputType,
@@ -3155,7 +3151,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
 
         const card = selectedCards[0];
         gameState.removeCardFromMeadow(card);
-        gameState.replenishMeadow();
         player.addCardToHand(gameState, card);
 
         gameState.addGameLogFromCard(CardName.UNDERTAKER, [
@@ -3427,6 +3422,13 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.PLAY_CARD) {
+        // We're just re-activating, do nothing.
+        if (
+          gameInput.playedCardContext &&
+          gameInput.playedCardContext.shareSpaceWith
+        ) {
+          return;
+        }
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_PLAYED_CARDS,
           prevInputType: gameInput.inputType,
@@ -3578,7 +3580,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           basePoints += revealedCard.baseVP;
           revealedCards.push(revealedCard.name);
           player.removeCardFromHand(cardName);
-          gameState.discardPile.addToStack(cardName);
+          player.addCardToHand(gameState, revealedCard.name);
         });
 
         gameState.addGameLogFromCard(CardName.PIRATE, [
@@ -3621,15 +3623,17 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     baseCost: {},
     canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
       const activePlayer = gameState.getActivePlayer();
-      if (
-        !gameState.players.find((player) => {
-          if (player.playerId === activePlayer.playerId) {
-            return false;
-          }
-          return player.canAddToCity(CardName.PIRATE_SHIP, true /* strict */);
-        })
-      ) {
-        return "No space in any opponent's city.";
+      if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
+        if (
+          !gameState.players.find((player) => {
+            if (player.playerId === activePlayer.playerId) {
+              return false;
+            }
+            return player.canAddToCity(CardName.PIRATE_SHIP, true /* strict */);
+          })
+        ) {
+          return "No space in any opponent's city.";
+        }
       }
       return null;
     },
@@ -3714,14 +3718,23 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         // Update the cardOwnerId on the WorkerPlacementInfo.
         placedWorker.playedCard.cardOwnerId = targetPlayer.playerId;
 
-        const newPlayedCard = targetPlayer.addToCity(
+        let newPlayedCard = targetPlayer.addToCity(
           gameState,
           CardName.PIRATE_SHIP
         );
-        targetPlayer.updatePlayedCard(gameState, newPlayedCard, {
-          ...origPlayedCard,
-          cardOwnerId: targetPlayerId,
-        });
+        newPlayedCard = targetPlayer.updatePlayedCard(
+          gameState,
+          newPlayedCard,
+          {
+            ...origPlayedCard,
+            cardOwnerId: targetPlayerId,
+          }
+        );
+        if ("shareSpaceWith" in origPlayedCard) {
+          targetPlayer.updatePlayedCard(gameState, newPlayedCard, {
+            shareSpaceWith: undefined,
+          });
+        }
 
         const numPearls = targetPlayer.getNumResourcesByType(
           ResourceType.PEARL
@@ -3847,16 +3860,21 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     baseCost: {
       [ResourceType.BERRY]: 3,
     },
-    productionInner: (gameState: GameState, gameInput: GameInput): void => {
+    productionWillActivateInner: (gameState: GameState, cardOwner: Player) => {
+      return cardOwner.getNumResourcesByType(ResourceType.PEARL) >= 2;
+    },
+    productionInner: (
+      gameState: GameState,
+      gameInput: GameInput,
+      cardOwner: Player
+    ): void => {
       const player = gameState.getActivePlayer();
-      if (gameInput.inputType === GameInputType.PLAY_CARD) {
-        if (player.getNumResourcesByType(ResourceType.PEARL) >= 2) {
-          player.gainResources(gameState, { [ResourceType.VP]: 2 });
-          gameState.addGameLogFromCard(CardName.FERRY_FERRET, [
-            player,
-            " gained 2 VP.",
-          ]);
-        }
+      if (cardOwner.getNumResourcesByType(ResourceType.PEARL) >= 2) {
+        player.gainResources(gameState, { [ResourceType.VP]: 2 });
+        gameState.addGameLogFromCard(CardName.FERRY_FERRET, [
+          player,
+          " gained 2 VP.",
+        ]);
       }
     },
   }),

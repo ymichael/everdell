@@ -839,8 +839,6 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
         // Add kept card to player's hand
         player.addCardToHand(gameState, keptedCardName);
 
-        gameState.replenishMeadow();
-
         if (sumResources(selectedCard.baseCost) <= 1) {
           gameState.addGameLogFromLocation(
             LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS,
@@ -1098,8 +1096,6 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
           gameState.discardPile.addToStack(cardName);
         });
 
-        gameState.replenishMeadow();
-
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_CARDS,
           prevInputType: gameInput.inputType,
@@ -1127,7 +1123,6 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
           player.addCardToHand(gameState, card);
         });
 
-        gameState.replenishMeadow();
         gameState.addGameLogFromLocation(name, [
           player,
           " selected ",

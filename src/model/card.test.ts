@@ -4530,6 +4530,117 @@ describe("Card", () => {
           ]);
         }).to.throwException(/cannot place worker on card/i);
       });
+
+      it("should give player resources from the correct storehouse", () => {
+        const card = Card.fromName(CardName.STOREHOUSE);
+        const storehouseA = player.addToCity(gameState, card.name);
+        const storehouseB = player.addToCity(gameState, card.name);
+
+        storehouseA.resources![ResourceType.BERRY]! = 5;
+        storehouseB.resources![ResourceType.PEBBLE]! = 5;
+
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+
+        expect(player.getPlayedCardInfos(card.name)[0]).to.eql({
+          cardName: card.name,
+          workers: [],
+          cardOwnerId: player.playerId,
+          resources: {
+            BERRY: 5,
+            PEBBLE: 0,
+            RESIN: 0,
+            TWIG: 0,
+          },
+          usedForCritter: false,
+        });
+        expect(player.getPlayedCardInfos(card.name)[1]).to.eql({
+          cardName: card.name,
+          workers: [],
+          cardOwnerId: player.playerId,
+          resources: {
+            BERRY: 0,
+            PEBBLE: 5,
+            RESIN: 0,
+            TWIG: 0,
+          },
+          usedForCritter: false,
+        });
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD as const,
+            clientOptions: {
+              playedCard: player.getFirstPlayedCard(card.name),
+            },
+          },
+        ]);
+
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(5);
+        expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+
+        expect(player.getPlayedCardInfos(card.name)[0]).to.eql({
+          cardName: card.name,
+          workers: [player.playerId],
+          cardOwnerId: player.playerId,
+          resources: {
+            BERRY: 0,
+            PEBBLE: 0,
+            RESIN: 0,
+            TWIG: 0,
+          },
+          usedForCritter: false,
+        });
+        expect(player.getPlayedCardInfos(card.name)[1]).to.eql({
+          cardName: card.name,
+          workers: [],
+          cardOwnerId: player.playerId,
+          resources: {
+            BERRY: 0,
+            PEBBLE: 5,
+            RESIN: 0,
+            TWIG: 0,
+          },
+          usedForCritter: false,
+        });
+
+        gameState.nextPlayer();
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD as const,
+            clientOptions: {
+              playedCard: player.getPlayedCardInfos(card.name)[1],
+            },
+          },
+        ]);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(5);
+        expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(5);
+
+        expect(player.getPlayedCardInfos(card.name)[0]).to.eql({
+          cardName: card.name,
+          workers: [player.playerId],
+          cardOwnerId: player.playerId,
+          resources: {
+            BERRY: 0,
+            PEBBLE: 0,
+            RESIN: 0,
+            TWIG: 0,
+          },
+          usedForCritter: false,
+        });
+        expect(player.getPlayedCardInfos(card.name)[1]).to.eql({
+          cardName: card.name,
+          workers: [player.playerId],
+          cardOwnerId: player.playerId,
+          resources: {
+            BERRY: 0,
+            PEBBLE: 0,
+            RESIN: 0,
+            TWIG: 0,
+          },
+          usedForCritter: false,
+        });
+      });
     });
 
     describe(CardName.TEACHER, () => {

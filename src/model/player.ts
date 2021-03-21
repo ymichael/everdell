@@ -1,5 +1,6 @@
 import isEqual from "lodash/isEqual";
 import cloneDeep from "lodash/cloneDeep";
+import omit from "lodash/omit";
 import {
   AdornmentName,
   CardCost,
@@ -813,14 +814,25 @@ export class Player implements IGameTextEntity {
   findPlayedCard(
     playedCard: PlayedCardInfo
   ): Readonly<PlayedCardInfo> | undefined {
-    const ret = this.getPlayedCardInfos(playedCard.cardName).find((x) => {
+    let ret: PlayedCardInfo | undefined;
+    ret = this.getPlayedCardInfos(playedCard.cardName).find((x) => {
       return isEqual(x, playedCard);
     });
+    if (!ret) {
+      const toOmit = ["workers"];
+      const playedCardWoWorkers = omit(playedCard, toOmit);
+      // Omit workers from comparison because we might have placed a worker.
+      ret =
+        this.getPlayedCardInfos(playedCard.cardName).find((x) => {
+          return isEqual(omit(x, toOmit), playedCardWoWorkers);
+        }) ||
+        // Be a little forgiving here because we might have stale references in
+        // pending gameInput.
+        this.getPlayedCardInfos(playedCard.cardName)[0];
+    }
     if (ret) {
       return Object.freeze(ret);
     }
-    // Be a little forgiving here because we might have stale references in pending gameInput.
-    return this.getPlayedCardInfos(playedCard.cardName)[0];
   }
 
   hasUnusedByCritterConstruction(cardName: CardName): boolean {

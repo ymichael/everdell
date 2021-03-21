@@ -677,7 +677,6 @@ export class GameState {
       throw new Error("Please select a card to visit");
     }
     const cardOwner = this.getPlayer(playedCard.cardOwnerId);
-
     const origPlayedCard = cardOwner.findPlayedCard(playedCard);
     if (!origPlayedCard) {
       throw new Error(

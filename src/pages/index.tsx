@@ -48,6 +48,13 @@ const Main: React.FC = () => {
           >
             Github Source
           </a>
+          <a
+            target="_blank"
+            href="https://forms.gle/uQFqZnprsjonfRG69"
+            className={styles.link}
+          >
+            Share Feedback
+          </a>
         </div>
       )}
     </div>

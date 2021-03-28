@@ -10,13 +10,16 @@ export default function App<T>({
   pageProps: T;
 }) {
   useEffect(() => {
-    if (location.href.indexOf("localhost") === -1) {
-      // Redirect the heroku apps to vercel
+    const href = location.href;
+    if (href.indexOf("localhost") === -1) {
+      // Redirect the heroku apps to vercel, but only on the home page!
       if (
-        location.href.indexOf("everdell.herokuapp.com") !== -1 ||
-        location.href.indexOf("everdell-canary.herokuapp.com") !== -1
+        href === "http://everdell.herokuapp.com/" ||
+        href === "https://everdell.herokuapp.com/" ||
+        href === "http://everdell-canary.herokuapp.com/" ||
+        href === "https://everdell-canary.herokuapp.com/"
       ) {
-        location.href = location.href
+        location.href = href
           .replace(".herokuapp.com", ".vercel.app")
           .replace("http://", "https://");
       } else if (location.protocol !== "https:") {

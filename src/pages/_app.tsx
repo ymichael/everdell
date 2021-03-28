@@ -11,7 +11,13 @@ export default function App<T>({
 }) {
   useEffect(() => {
     if (location.href.indexOf("localhost") === -1) {
-      if (location.protocol !== "https:") {
+      // Redirect the heroku apps to vercel
+      if (
+        location.href.indexOf("everdell.herokuapp.com") !== -1 ||
+        location.href.indexOf("everdell-canary.herokuapp.com") !== -1
+      ) {
+        location.href = "https://everdell.vercel.app/";
+      } else if (location.protocol !== "https:") {
         location.protocol = "https:";
       }
     }

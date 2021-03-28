@@ -15,9 +15,7 @@ export default function App<T>({
       // Redirect the heroku apps to vercel, but only on the home page!
       if (
         href === "http://everdell.herokuapp.com/" ||
-        href === "https://everdell.herokuapp.com/" ||
-        href === "http://everdell-canary.herokuapp.com/" ||
-        href === "https://everdell-canary.herokuapp.com/"
+        href === "https://everdell.herokuapp.com/"
       ) {
         location.href = href
           .replace(".herokuapp.com", ".vercel.app")

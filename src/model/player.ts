@@ -812,15 +812,26 @@ export class Player implements IGameTextEntity {
   }
 
   findPlayedCard(
-    playedCard: PlayedCardInfo
+    playedCard: PlayedCardInfo,
+    withWorker: boolean = true
   ): Readonly<PlayedCardInfo> | undefined {
+    const toOmit = ["workers"];
+    const playedCardWoWorkers = omit(playedCard, toOmit);
+
     let ret: PlayedCardInfo | undefined;
     ret = this.getPlayedCardInfos(playedCard.cardName).find((x) => {
-      return isEqual(x, playedCard);
+      // If withWorker is specified, don't rely on the given playedCard's worker field.
+      // Instead make sure the card we're selecting has workers on it.
+      if (withWorker) {
+        return (
+          isEqual(omit(x, toOmit), playedCardWoWorkers) &&
+          x?.workers?.length !== 0
+        );
+      } else {
+        return isEqual(x, playedCard);
+      }
     });
     if (!ret) {
-      const toOmit = ["workers"];
-      const playedCardWoWorkers = omit(playedCard, toOmit);
       // Omit workers from comparison because we might have placed a worker.
       ret =
         this.getPlayedCardInfos(playedCard.cardName).find((x) => {
@@ -893,7 +904,10 @@ export class Player implements IGameTextEntity {
     const cardOwner = gameState.getPlayer(cardOwnerId);
     const card = Card.fromName(cardName);
 
-    const origPlayedCard = cardOwner.findPlayedCard(playedCard);
+    const origPlayedCard = cardOwner.findPlayedCard(
+      playedCard,
+      false /* withWorker */
+    );
     if (!origPlayedCard) {
       throw new Error(
         `Could not find played card: ${JSON.stringify(playedCard, null, 2)}`

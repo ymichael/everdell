@@ -16,7 +16,9 @@ export default function App<T>({
         location.href.indexOf("everdell.herokuapp.com") !== -1 ||
         location.href.indexOf("everdell-canary.herokuapp.com") !== -1
       ) {
-        location.href = "https://everdell.vercel.app/";
+        location.href = location.href
+          .replace(".herokuapp.com", ".vercel.app")
+          .replace("http://", "https://");
       } else if (location.protocol !== "https:") {
         location.protocol = "https:";
       }

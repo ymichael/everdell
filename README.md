@@ -15,7 +15,7 @@ We designed this application with expansions in mind so it should be possible to
 
 ## Demo
 
-You can demo this web app [here](https://everdell.herokuapp.com/). If you find a bug or have a feature request, please add it as one in issues tab.
+You can demo this web app [here](https://everdell.vercel.app/). If you find a bug or have a feature request, please add it as one in issues tab.
 
 ## Development
 

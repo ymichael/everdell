@@ -157,20 +157,19 @@ export class GainMoreThan1AnyResource extends GameInputMultiStepHelperBase {
     if (!resources) {
       throw new Error("Invalid input");
     }
+
+    // TODO(michael): for some reason it is possible to get strings here.
+    // Cast them into numbers to the comparisons below work as expected
+    const maxResources = +gameInput.maxResources;
+    const minResources = +gameInput.minResources;
     const numResources = sumResources(resources);
-    if (
-      gameInput.maxResources === gameInput.minResources &&
-      numResources !== gameInput.minResources
-    ) {
-      throw new Error(`Can only gain ${gameInput.maxResources} resources`);
-    } else if (numResources > gameInput.maxResources) {
-      throw new Error(
-        `Can't gain more than ${gameInput.maxResources} resources`
-      );
-    } else if (numResources < gameInput.minResources) {
-      throw new Error(
-        `Can't gain less than ${gameInput.minResources} resources`
-      );
+
+    if (maxResources === minResources && numResources !== minResources) {
+      throw new Error(`Can only gain ${maxResources} resources`);
+    } else if (numResources > maxResources) {
+      throw new Error(`Can't gain more than ${maxResources} resources`);
+    } else if (numResources < minResources) {
+      throw new Error(`Can't gain less than ${minResources} resources`);
     }
 
     player.gainResources(gameState, resources);

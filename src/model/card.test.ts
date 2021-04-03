@@ -4062,7 +4062,9 @@ describe("Card", () => {
         player1 = gameState.getPlayer(player1.playerId);
         player2 = gameState.getPlayer(player2.playerId);
 
-        expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+        // shepherd's power is to gain 3 berries + 1 VP per VP on chapel
+        expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(3);
+        expect(player1.getNumResourcesByType(ResourceType.VP)).to.be(0);
         expect(player2.getNumResourcesByType(ResourceType.BERRY)).to.be(3);
       });
 
@@ -4124,8 +4126,9 @@ describe("Card", () => {
         player1 = gameState.getPlayer(player1.playerId);
         player2 = gameState.getPlayer(player2.playerId);
 
-        expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+        expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(3);
         expect(player1.getNumResourcesByType(ResourceType.TWIG)).to.be(2);
+        expect(player1.getNumResourcesByType(ResourceType.VP)).to.be(0);
         expect(player2.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
         expect(player2.getNumResourcesByType(ResourceType.TWIG)).to.be(1);
       });
@@ -4172,8 +4175,88 @@ describe("Card", () => {
         expect(player1.hasCardInCity(CardName.SHEPHERD));
         expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(5);
         expect(player1.getNumResourcesByType(ResourceType.TWIG)).to.be(3);
+        expect(player1.getNumResourcesByType(ResourceType.VP)).to.be(0);
         expect(player2.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
         expect(player2.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+      });
+
+      it("playing shepherd by occupying should not cost resources", () => {
+        let player1 = gameState.players[0];
+        let player2 = gameState.players[1];
+        const card = Card.fromName(CardName.SHEPHERD);
+
+        // Make sure we can play this card
+
+        player1.gainResources(gameState, {
+          [ResourceType.TWIG]: 3,
+          [ResourceType.BERRY]: 0,
+        });
+        player1.addCardToHand(gameState, card.name);
+        player.addToCity(gameState, CardName.CHAPEL);
+        expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+        expect(player2.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.PLAY_CARD,
+            clientOptions: {
+              card: CardName.SHEPHERD,
+              paymentOptions: {
+                useAssociatedCard: true,
+                resources: {},
+              },
+            },
+          },
+        ]);
+
+        player1 = gameState.getPlayer(player1.playerId);
+        player2 = gameState.getPlayer(player2.playerId);
+
+        expect(player1.hasCardInCity(CardName.SHEPHERD));
+        expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(3);
+        expect(player1.getNumResourcesByType(ResourceType.TWIG)).to.be(3);
+        expect(player2.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+        expect(player2.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+      });
+
+      it("Give correct num of VP when playing Shepherd", () => {
+        let player1 = gameState.players[0];
+        let player2 = gameState.players[1];
+        const card = Card.fromName(CardName.SHEPHERD);
+
+        player.addToCity(gameState, CardName.CHAPEL);
+        let chapelInfo = player.getFirstPlayedCard(CardName.CHAPEL);
+        let chapelResources = chapelInfo.resources || { [ResourceType.VP]: 0 };
+        chapelResources[ResourceType.VP] = 2;
+
+        // Make sure we can play this card
+        player1.gainResources(gameState, card.baseCost);
+        player1.addCardToHand(gameState, card.name);
+        expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(3);
+        expect(player2.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+          {
+            inputType: GameInputType.SELECT_PLAYER,
+            prevInputType: GameInputType.PLAY_CARD,
+            prevInput: playCardInput(card.name),
+            cardContext: CardName.SHEPHERD,
+            playerOptions: [player2.playerId],
+            mustSelectOne: true,
+            clientOptions: {
+              selectedPlayer: player2.playerId,
+            },
+          },
+        ]);
+
+        player1 = gameState.getPlayer(player1.playerId);
+        player2 = gameState.getPlayer(player2.playerId);
+
+        // shepherd's power is to gain 3 berries + 1 VP per VP on chapel
+        expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(3);
+        expect(player1.getNumResourcesByType(ResourceType.VP)).to.be(2);
+        expect(player2.getNumResourcesByType(ResourceType.BERRY)).to.be(3);
       });
     });
 

@@ -2735,6 +2735,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         !!gameInput.prevInput &&
         gameInput.prevInput.inputType === GameInputType.PLAY_CARD
       ) {
+        // pay the selected player
         const selectedPlayer = gameInput.clientOptions.selectedPlayer;
         if (!selectedPlayer) {
           throw new Error("Must select a player");
@@ -2754,6 +2755,28 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           ...resourceMapToGameText(resourcesToGive),
           ".",
         ]);
+
+        // give the card owner their berries + VP
+        player.gainResources(gameState, { [ResourceType.BERRY]: 3 });
+        const chapelInfo = player.getPlayedCardInfos(CardName.CHAPEL);
+        if (chapelInfo.length > 0) {
+          const chapel = chapelInfo[0].resources;
+          if (!chapel) {
+            throw new Error("invalid chapel card info");
+          }
+
+          const numVP = chapel[ResourceType.VP] || 0;
+          player.gainResources(gameState, { [ResourceType.VP]: numVP });
+          gameState.addGameLogFromCard(CardName.SHEPHERD, [
+            player,
+            ` gained 3 BERRY and ${numVP} VP.`,
+          ]);
+        } else {
+          gameState.addGameLogFromCard(CardName.SHEPHERD, [
+            player,
+            ` gained 3 BERRY.`,
+          ]);
+        }
       } else if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
         // give the player their berries + VP, don't ask them to select a player
 

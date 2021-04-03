@@ -611,7 +611,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       "Reveal 4 CARD from the deck or discard pile and play 1 for free. ",
       "Discard the others.",
       { type: "HR" },
-      "Worker stays here permanently. ",
+      "Worker stays here permanently. Unlock second ",
+      { type: "entity", entityType: "card", card: CardName.CEMETARY },
+      " spot by playing ",
+      { type: "entity", entityType: "card", card: CardName.UNDERTAKER },
     ]),
     maxWorkerSpots: 2,
     numWorkersForPlayerInner: (cardOwner: Player) => {
@@ -1048,6 +1051,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       " from your city beneath this ",
       { type: "entity", entityType: "card", card: CardName.DUNGEON },
       " to decrease the cost by 3 ANY.",
+      { type: "HR" },
+      " Unlock second ",
+      { type: "entity", entityType: "card", card: CardName.DUNGEON },
+      " spot by playing ",
+      { type: "entity", entityType: "card", card: CardName.RANGER },
     ]),
     playedCardInfoDefault: {
       pairedCards: [],
@@ -1752,7 +1760,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     cardDescription: toGameText([
       "Give 2 ANY to an opponent and gain 4 VP.",
       { type: "HR" },
-      "Worker stays here permanently.",
+      "Worker stays here permanently. Unlock second ",
+      { type: "entity", entityType: "card", card: CardName.MONASTERY },
+      " spot by playing ",
+      { type: "entity", entityType: "card", card: CardName.MONK },
     ]),
     maxWorkerSpots: 2,
     numWorkersForPlayerInner: (cardOwner: Player) => {
@@ -3106,7 +3117,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     cardDescription: toGameText([
       "Discard 3 CARD from the Meadow, replenish, then draw 1 CARD from the Meadow.",
       { type: "HR" },
-      "Unlocks second Cemetary.",
+      "Unlocks second ",
+      { type: "entity", entityType: "card", card: CardName.CEMETARY },
+      ".",
     ]),
     // Discard 3 meadow, replace, draw 1 meadow
     playInner: (gameState: GameState, gameInput: GameInput) => {

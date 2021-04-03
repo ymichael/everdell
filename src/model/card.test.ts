@@ -4201,6 +4201,7 @@ describe("Card", () => {
             inputType: GameInputType.PLAY_CARD,
             clientOptions: {
               card: CardName.SHEPHERD,
+              fromMeadow: false,
               paymentOptions: {
                 useAssociatedCard: true,
                 resources: {},

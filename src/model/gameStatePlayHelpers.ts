@@ -17,7 +17,15 @@ import { GameState } from "./gameState";
 import { toGameText, resourceMapToGameText } from "./gameText";
 
 export function sumResources(resourceMap: ResourceMap): number {
-  return (Object.values(resourceMap) as number[]).reduce((a, b) => a + b, 0);
+  let ret = 0;
+  Object.values(resourceMap).forEach((val) => {
+    if (val) {
+      // It is possible that val here is a string, eg: ""
+      // if so we need to cast it to a number first.
+      ret += +val;
+    }
+  });
+  return ret;
 }
 
 class GameInputMultiStepHelperBase {

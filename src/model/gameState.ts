@@ -629,16 +629,66 @@ export class GameState {
         throw new Error("Invalid input");
       }
       const player = this.getActivePlayer();
-      selectedCards.forEach((cardName) => {
+
+      // if you can only take 1 card, ask you which one you want to keep
+      if (player.cardsInHand.length === player.maxHandSize - 1) {
+        // add pending input to select one of the two cards
+        this.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_CARDS,
+          label: "Choose which card to keep",
+          prevInputType: GameInputType.SELECT_CARDS,
+          prevInput: gameInput,
+          cardOptions: selectedCards,
+          maxToSelect: 1,
+          minToSelect: 1,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else {
+        selectedCards.forEach((cardName) => {
+          this.removeCardFromMeadow(cardName);
+          player.addCardToHand(this, cardName);
+        });
+        this.addGameLog([
+          { type: "em", text: "Prepare for season" },
+          ": ",
+          player,
+          " selected ",
+          ...cardListToGameText(selectedCards),
+          " from the Meadow.",
+        ]);
+      }
+      return;
+    }
+
+    if (
+      gameInput.inputType === GameInputType.SELECT_CARDS &&
+      gameInput.prevInput &&
+      gameInput.prevInput.inputType === GameInputType.SELECT_CARDS &&
+      gameInput.prevInput.prevInputType === GameInputType.PREPARE_FOR_SEASON
+    ) {
+      const selectedCards = gameInput.clientOptions.selectedCards;
+      const cardOptions = gameInput.cardOptions;
+      if (selectedCards.length !== 1) {
+        throw new Error("Must select exactly 1 card to keep");
+      }
+      if (cardOptions.length !== 2) {
+        throw new Error("Invalid input");
+      }
+      const player = this.getActivePlayer();
+
+      player.addCardToHand(this, selectedCards[0]);
+
+      cardOptions.forEach((cardName) => {
         this.removeCardFromMeadow(cardName);
-        player.addCardToHand(this, cardName);
       });
       this.addGameLog([
         { type: "em", text: "Prepare for season" },
         ": ",
         player,
         " selected ",
-        ...cardListToGameText(selectedCards),
+        ...cardListToGameText(cardOptions),
         " from the Meadow.",
       ]);
       return;

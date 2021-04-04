@@ -296,5 +296,42 @@ module.exports = (on: any, config: any) => {
         }
       );
     },
+    "db:prepare-for-season-spring": async () => {
+      return await getTestGameJSON(
+        {
+          meadowCards: [
+            CardName.FARM,
+            CardName.MINE,
+            CardName.QUEEN,
+            CardName.KING,
+            CardName.CASTLE,
+            CardName.TEACHER,
+            CardName.HISTORIAN,
+            CardName.INN,
+            CardName.LOOKOUT,
+            CardName.POST_OFFICE,
+          ],
+        },
+        (gameState, player) => {
+          player.nextSeason();
+          gameState.locationsMap[LocationName.BASIC_ONE_BERRY]!.push(
+            player.playerId,
+            player.playerId,
+            player.playerId
+          );
+          player.placeWorkerOnLocation(LocationName.BASIC_ONE_BERRY);
+          player.placeWorkerOnLocation(LocationName.BASIC_ONE_BERRY);
+          player.placeWorkerOnLocation(LocationName.BASIC_ONE_BERRY);
+
+          player.addCardToHand(gameState, CardName.FARM);
+          player.addCardToHand(gameState, CardName.FARM);
+          player.addCardToHand(gameState, CardName.FARM);
+          player.addCardToHand(gameState, CardName.FARM);
+          player.addCardToHand(gameState, CardName.FARM);
+          player.addCardToHand(gameState, CardName.FARM);
+          player.addCardToHand(gameState, CardName.FARM);
+        }
+      );
+    },
   });
 };

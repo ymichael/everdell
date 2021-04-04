@@ -1014,6 +1014,238 @@ describe("GameState", () => {
         CardName.POST_OFFICE,
       ]);
     });
+
+    it("SPRING: should only keep 1 card if at max hand size - 1", () => {
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.MINE);
+      player.addToCity(gameState, CardName.MINE);
+
+      player.nextSeason();
+
+      // Use up all workers
+      gameState.locationsMap[LocationName.BASIC_ONE_BERRY]!.push(
+        player.playerId,
+        player.playerId,
+        player.playerId
+      );
+      player.placeWorkerOnLocation(LocationName.BASIC_ONE_BERRY);
+      player.placeWorkerOnLocation(LocationName.BASIC_ONE_BERRY);
+      player.placeWorkerOnLocation(LocationName.BASIC_ONE_BERRY);
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.HUSBAND);
+      player.addCardToHand(gameState, CardName.WIFE);
+      player.addCardToHand(gameState, CardName.CASTLE);
+      player.addCardToHand(gameState, CardName.PALACE);
+      player.addCardToHand(gameState, CardName.KING);
+      player.addCardToHand(gameState, CardName.EVERTREE);
+
+      const topOfDeck = [
+        CardName.FARM,
+        CardName.MINE,
+        CardName.QUEEN,
+        CardName.KING,
+        CardName.CASTLE,
+        CardName.TEACHER,
+        CardName.HISTORIAN,
+        CardName.INN,
+        CardName.LOOKOUT,
+        CardName.POST_OFFICE,
+      ];
+      topOfDeck.reverse();
+      topOfDeck.forEach((x) => gameState.deck.addToStack(x));
+
+      expect(player.currentSeason).to.be(Season.SPRING);
+      expect(player.cardsInHand).to.eql([
+        CardName.FARM,
+        CardName.HUSBAND,
+        CardName.WIFE,
+        CardName.CASTLE,
+        CardName.PALACE,
+        CardName.KING,
+        CardName.EVERTREE,
+      ]);
+
+      gameState.replenishMeadow();
+      expect(gameState.meadowCards).to.eql([
+        CardName.FARM,
+        CardName.MINE,
+        CardName.QUEEN,
+        CardName.KING,
+        CardName.CASTLE,
+        CardName.TEACHER,
+        CardName.HISTORIAN,
+        CardName.INN,
+      ]);
+
+      const prevInput = {
+        inputType: GameInputType.SELECT_CARDS as const,
+        prevInputType: GameInputType.PREPARE_FOR_SEASON,
+        cardOptions: gameState.meadowCards,
+        maxToSelect: 2,
+        minToSelect: 2,
+        clientOptions: {
+          selectedCards: [CardName.MINE, CardName.QUEEN],
+        },
+      };
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        {
+          inputType: GameInputType.PREPARE_FOR_SEASON,
+        },
+        prevInput,
+        {
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: GameInputType.SELECT_CARDS,
+          prevInput: prevInput,
+          maxToSelect: 1,
+          minToSelect: 1,
+          cardOptions: [CardName.MINE, CardName.QUEEN],
+          clientOptions: {
+            selectedCards: [CardName.QUEEN],
+          },
+        },
+      ]);
+
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+      expect(player.numAvailableWorkers).to.be(4);
+      expect(player.cardsInHand).to.eql([
+        CardName.FARM,
+        CardName.HUSBAND,
+        CardName.WIFE,
+        CardName.CASTLE,
+        CardName.PALACE,
+        CardName.KING,
+        CardName.EVERTREE,
+        CardName.QUEEN,
+      ]);
+      expect(gameState.meadowCards).to.eql([
+        CardName.FARM,
+        CardName.KING,
+        CardName.CASTLE,
+        CardName.TEACHER,
+        CardName.HISTORIAN,
+        CardName.INN,
+        CardName.LOOKOUT,
+        CardName.POST_OFFICE,
+      ]);
+    });
+
+    it("SPRING: should only keep 0 card if already at max hand size", () => {
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.MINE);
+      player.addToCity(gameState, CardName.MINE);
+
+      player.nextSeason();
+
+      // Use up all workers
+      gameState.locationsMap[LocationName.BASIC_ONE_BERRY]!.push(
+        player.playerId,
+        player.playerId,
+        player.playerId
+      );
+      player.placeWorkerOnLocation(LocationName.BASIC_ONE_BERRY);
+      player.placeWorkerOnLocation(LocationName.BASIC_ONE_BERRY);
+      player.placeWorkerOnLocation(LocationName.BASIC_ONE_BERRY);
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.FARM);
+
+      const topOfDeck = [
+        CardName.FARM,
+        CardName.MINE,
+        CardName.QUEEN,
+        CardName.KING,
+        CardName.CASTLE,
+        CardName.TEACHER,
+        CardName.HISTORIAN,
+        CardName.INN,
+        CardName.LOOKOUT,
+        CardName.POST_OFFICE,
+      ];
+      topOfDeck.reverse();
+      topOfDeck.forEach((x) => gameState.deck.addToStack(x));
+
+      expect(player.currentSeason).to.be(Season.SPRING);
+      expect(player.cardsInHand).to.eql([
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+      ]);
+
+      gameState.replenishMeadow();
+      expect(gameState.meadowCards).to.eql([
+        CardName.FARM,
+        CardName.MINE,
+        CardName.QUEEN,
+        CardName.KING,
+        CardName.CASTLE,
+        CardName.TEACHER,
+        CardName.HISTORIAN,
+        CardName.INN,
+      ]);
+
+      const prevInput = {
+        inputType: GameInputType.SELECT_CARDS as const,
+        prevInputType: GameInputType.PREPARE_FOR_SEASON,
+        cardOptions: gameState.meadowCards,
+        maxToSelect: 2,
+        minToSelect: 2,
+        clientOptions: {
+          selectedCards: [CardName.MINE, CardName.QUEEN],
+        },
+      };
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        {
+          inputType: GameInputType.PREPARE_FOR_SEASON,
+        },
+        {
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: GameInputType.PREPARE_FOR_SEASON,
+          cardOptions: gameState.meadowCards,
+          maxToSelect: 2,
+          minToSelect: 2,
+          clientOptions: {
+            selectedCards: [CardName.MINE, CardName.QUEEN],
+          },
+        },
+      ]);
+
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+      expect(player.numAvailableWorkers).to.be(4);
+      expect(player.cardsInHand).to.eql([
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+      ]);
+      expect(gameState.meadowCards).to.eql([
+        CardName.FARM,
+        CardName.KING,
+        CardName.CASTLE,
+        CardName.TEACHER,
+        CardName.HISTORIAN,
+        CardName.INN,
+        CardName.LOOKOUT,
+        CardName.POST_OFFICE,
+      ]);
+    });
   });
 
   describe("GAME_END", () => {

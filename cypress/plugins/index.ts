@@ -296,29 +296,29 @@ module.exports = (on: any, config: any) => {
         }
       );
     },
-    "db:prepare-for-season-spring": async () => {
+    "db:prepare-for-season-spring-pick-one": async () => {
       return await getTestGameJSON(
         {
           meadowCards: [
-            CardName.FARM,
+            CardName.MINE,
             CardName.MINE,
             CardName.QUEEN,
-            CardName.KING,
-            CardName.CASTLE,
-            CardName.TEACHER,
-            CardName.HISTORIAN,
-            CardName.INN,
-            CardName.LOOKOUT,
-            CardName.POST_OFFICE,
+            CardName.MINE,
+            CardName.MINE,
+            CardName.MINE,
+            CardName.MINE,
+            CardName.MINE,
           ],
         },
         (gameState, player) => {
           player.nextSeason();
+
           gameState.locationsMap[LocationName.BASIC_ONE_BERRY]!.push(
             player.playerId,
             player.playerId,
             player.playerId
           );
+
           player.placeWorkerOnLocation(LocationName.BASIC_ONE_BERRY);
           player.placeWorkerOnLocation(LocationName.BASIC_ONE_BERRY);
           player.placeWorkerOnLocation(LocationName.BASIC_ONE_BERRY);
@@ -330,6 +330,49 @@ module.exports = (on: any, config: any) => {
           player.addCardToHand(gameState, CardName.FARM);
           player.addCardToHand(gameState, CardName.FARM);
           player.addCardToHand(gameState, CardName.FARM);
+
+          gameState.deck.addToStack(CardName.KING);
+        }
+      );
+    },
+
+    "db:prepare-for-season-spring-full-hand": async () => {
+      return await getTestGameJSON(
+        {
+          meadowCards: [
+            CardName.MINE,
+            CardName.MINE,
+            CardName.QUEEN,
+            CardName.MINE,
+            CardName.MINE,
+            CardName.MINE,
+            CardName.MINE,
+            CardName.MINE,
+          ],
+        },
+        (gameState, player) => {
+          player.nextSeason();
+
+          gameState.locationsMap[LocationName.BASIC_ONE_BERRY]!.push(
+            player.playerId,
+            player.playerId,
+            player.playerId
+          );
+
+          player.placeWorkerOnLocation(LocationName.BASIC_ONE_BERRY);
+          player.placeWorkerOnLocation(LocationName.BASIC_ONE_BERRY);
+          player.placeWorkerOnLocation(LocationName.BASIC_ONE_BERRY);
+
+          player.addCardToHand(gameState, CardName.FARM);
+          player.addCardToHand(gameState, CardName.FARM);
+          player.addCardToHand(gameState, CardName.FARM);
+          player.addCardToHand(gameState, CardName.FARM);
+          player.addCardToHand(gameState, CardName.FARM);
+          player.addCardToHand(gameState, CardName.FARM);
+          player.addCardToHand(gameState, CardName.FARM);
+          player.addCardToHand(gameState, CardName.FARM);
+
+          gameState.deck.addToStack(CardName.KING);
         }
       );
     },

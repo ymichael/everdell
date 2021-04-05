@@ -5,38 +5,34 @@ describe("Select cards from meadow", () => {
 
   beforeEach(async () => {
     gameJSON = await ((cy.task(
-      "db:prepare-for-season-spring"
+      "db:prepare-for-season-spring-full-hand"
     ) as unknown) as Promise<GameJSON>);
   });
 
-  it("should allow player to choose 2 cards from the meadow", () => {
+  it("SPRING: player should not draw/discard from meadow if they have a full hand", () => {
     const player1 = gameJSON.gameState.players[0];
     const player2 = gameJSON.gameState.players[1];
 
     // Take player 1's turn.
     cy.visit(`/game/${gameJSON.gameId}?playerSecret=${player1.playerSecret}`);
+    cy.get("#js-meadow-cards").within(() => {
+      cy.contains("Queen");
+      cy.contains("King").should("not.exist");
+    });
+
     cy.contains("Prepare for Season");
     cy.contains("Submit").click();
 
     cy.contains("Michael took the prepare for season action.");
     cy.contains("Michael recalled their workers.");
-
-    cy.get("#js-game-input-box-form").within(() => {
-      cy.get("[data-cy='select-card-item:Mine']").click();
-      cy.get("[data-cy='select-card-item:Queen']").click();
-      cy.contains("2 Selected").click();
-    });
-
-    cy.contains("Choose which card to keep");
-
-    cy.get("#js-game-input-box-form").within(() => {
-      cy.get("[data-cy='select-card-item:Queen']").click();
-      cy.contains("1 Selected").click();
-    });
-
-    cy.contains("Michael selected Mine & Queen from the Meadow.");
+    cy.contains("Michael did not select any cards from the Meadow.");
 
     cy.get("#js-player-hand").within(() => {
+      cy.contains("Queen").should("not.exist");
+    });
+
+    cy.get("#js-meadow-cards").within(() => {
+      cy.contains("King").should("not.exist");
       cy.contains("Queen");
     });
   });

@@ -936,7 +936,7 @@ describe("GameState", () => {
       expect(player.numAvailableWorkers).to.be(6);
     });
 
-    it("should draw 2 cards from the meadow in SPRING", () => {
+    it("SPRING: should draw 2 cards from the meadow", () => {
       player.addToCity(gameState, CardName.FARM);
       player.addToCity(gameState, CardName.FARM);
       player.addToCity(gameState, CardName.MINE);
@@ -1015,7 +1015,7 @@ describe("GameState", () => {
       ]);
     });
 
-    it("SPRING: should only keep 1 card if at max hand size - 1", () => {
+    it("SPRING: should only pick and keep 1 card if at max hand size - 1", () => {
       player.addToCity(gameState, CardName.FARM);
       player.addToCity(gameState, CardName.FARM);
       player.addToCity(gameState, CardName.MINE);
@@ -1078,29 +1078,16 @@ describe("GameState", () => {
         CardName.INN,
       ]);
 
-      const prevInput = {
-        inputType: GameInputType.SELECT_CARDS as const,
-        prevInputType: GameInputType.PREPARE_FOR_SEASON,
-        cardOptions: gameState.meadowCards,
-        maxToSelect: 2,
-        minToSelect: 2,
-        clientOptions: {
-          selectedCards: [CardName.MINE, CardName.QUEEN],
-        },
-      };
-
       [player, gameState] = multiStepGameInputTest(gameState, [
         {
           inputType: GameInputType.PREPARE_FOR_SEASON,
         },
-        prevInput,
         {
           inputType: GameInputType.SELECT_CARDS,
-          prevInputType: GameInputType.SELECT_CARDS,
-          prevInput: prevInput,
+          prevInputType: GameInputType.PREPARE_FOR_SEASON,
+          cardOptions: gameState.meadowCards,
           maxToSelect: 1,
           minToSelect: 1,
-          cardOptions: [CardName.MINE, CardName.QUEEN],
           clientOptions: {
             selectedCards: [CardName.QUEEN],
           },
@@ -1121,17 +1108,17 @@ describe("GameState", () => {
       ]);
       expect(gameState.meadowCards).to.eql([
         CardName.FARM,
+        CardName.MINE,
         CardName.KING,
         CardName.CASTLE,
         CardName.TEACHER,
         CardName.HISTORIAN,
         CardName.INN,
         CardName.LOOKOUT,
-        CardName.POST_OFFICE,
       ]);
     });
 
-    it("SPRING: should only keep 0 card if already at max hand size", () => {
+    it("SPRING: should not take cards from meadow if already at max hand size", () => {
       player.addToCity(gameState, CardName.FARM);
       player.addToCity(gameState, CardName.FARM);
       player.addToCity(gameState, CardName.MINE);
@@ -1196,30 +1183,9 @@ describe("GameState", () => {
         CardName.INN,
       ]);
 
-      const prevInput = {
-        inputType: GameInputType.SELECT_CARDS as const,
-        prevInputType: GameInputType.PREPARE_FOR_SEASON,
-        cardOptions: gameState.meadowCards,
-        maxToSelect: 2,
-        minToSelect: 2,
-        clientOptions: {
-          selectedCards: [CardName.MINE, CardName.QUEEN],
-        },
-      };
-
       [player, gameState] = multiStepGameInputTest(gameState, [
         {
           inputType: GameInputType.PREPARE_FOR_SEASON,
-        },
-        {
-          inputType: GameInputType.SELECT_CARDS,
-          prevInputType: GameInputType.PREPARE_FOR_SEASON,
-          cardOptions: gameState.meadowCards,
-          maxToSelect: 2,
-          minToSelect: 2,
-          clientOptions: {
-            selectedCards: [CardName.MINE, CardName.QUEEN],
-          },
         },
       ]);
 
@@ -1237,13 +1203,13 @@ describe("GameState", () => {
       ]);
       expect(gameState.meadowCards).to.eql([
         CardName.FARM,
+        CardName.MINE,
+        CardName.QUEEN,
         CardName.KING,
         CardName.CASTLE,
         CardName.TEACHER,
         CardName.HISTORIAN,
         CardName.INN,
-        CardName.LOOKOUT,
-        CardName.POST_OFFICE,
       ]);
     });
   });

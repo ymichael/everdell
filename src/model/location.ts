@@ -118,6 +118,7 @@ export class Location implements GameStatePlayable, IGameTextEntity {
     if (!workersOnLocation) {
       return `Cannot find location ${this.name} in game`;
     }
+    const numPlayers = gameState.players.length;
     switch (this.occupancy) {
       case LocationOccupancy.EXCLUSIVE:
         if (workersOnLocation.length !== 0) {
@@ -131,7 +132,6 @@ export class Location implements GameStatePlayable, IGameTextEntity {
         }
         break;
       case LocationOccupancy.EXCLUSIVE_FOUR:
-        const numPlayers = gameState.players.length;
         if (workersOnLocation.length === 0) {
           break;
         }

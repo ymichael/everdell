@@ -114,9 +114,13 @@ export class Location implements GameStatePlayable, IGameTextEntity {
     if (player.numAvailableWorkers <= 0) {
       return `Active player (${player.name}) doesn't have any workers to place.`;
     }
+    const workersOnLocation = gameState.locationsMap[this.name];
+    if (!workersOnLocation) {
+      return `Cannot find location ${this.name} in game`;
+    }
     switch (this.occupancy) {
       case LocationOccupancy.EXCLUSIVE:
-        if (gameState.locationsMap[this.name]!.length !== 0) {
+        if (workersOnLocation.length !== 0) {
           return `Location ${
             this.name
           } is occupied. \nGame Locations: ${JSON.stringify(
@@ -127,20 +131,29 @@ export class Location implements GameStatePlayable, IGameTextEntity {
         }
         break;
       case LocationOccupancy.EXCLUSIVE_FOUR:
-        if (
-          !(
-            gameState.locationsMap[this.name]!.length <
-            (gameState.players.length < 4 ? 1 : 2)
-          )
-        ) {
-          return `Location ${
-            this.name
-          } is occupied. \nGame Locations: ${JSON.stringify(
-            gameState.locationsMap,
-            null,
-            2
-          )}`;
+        const numPlayers = gameState.players.length;
+        if (workersOnLocation.length === 0) {
+          break;
         }
+        if (numPlayers >= 4 && workersOnLocation.length === 1) {
+          if (gameState.getActivePlayer().playerId === workersOnLocation[0]) {
+            return `Cannot visit the same forest location twice.\nLocation ${
+              this.name
+            } is occupied. \nGame Locations: ${JSON.stringify(
+              gameState.locationsMap,
+              null,
+              2
+            )}`;
+          }
+          break;
+        }
+        return `Location ${
+          this.name
+        } is fully occupied. \nGame Locations: ${JSON.stringify(
+          gameState.locationsMap,
+          null,
+          2
+        )}`;
         break;
       case LocationOccupancy.UNLIMITED:
         break;

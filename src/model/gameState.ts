@@ -414,8 +414,14 @@ export class GameState {
     if (!gameInput.clientOptions?.location) {
       throw new Error("Please select a location to visit");
     }
-
     const location = Location.fromName(gameInput.clientOptions.location);
+    const canPlaceWorkerCheckErr = location.canPlaceWorkerCheck(
+      this,
+      gameInput
+    );
+    if (canPlaceWorkerCheckErr) {
+      throw new Error(canPlaceWorkerCheckErr);
+    }
     const canPlayErr = location.canPlayCheck(this, gameInput);
     if (canPlayErr) {
       throw new Error(canPlayErr);

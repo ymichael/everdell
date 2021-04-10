@@ -58,9 +58,11 @@ describe("Location", () => {
     it("should allow unlimited workers on BASIC_ONE_BERRY", () => {
       const location = Location.fromName(LocationName.BASIC_ONE_BERRY);
       const gameInput = placeWorkerInput(location.name);
+
       expect(location.canPlay(gameState, gameInput)).to.be(true);
-      const nextGameState = gameState.next(gameInput);
-      expect(location.canPlay(nextGameState, gameInput)).to.be(true);
+
+      [, gameState] = multiStepGameInputTest(gameState, [gameInput]);
+      expect(location.canPlay(gameState, gameInput)).to.be(true);
     });
 
     it("should not allow unlimited workers on BASIC_ONE_BERRY_AND_ONE_CARD", () => {
@@ -68,23 +70,58 @@ describe("Location", () => {
         LocationName.BASIC_ONE_BERRY_AND_ONE_CARD
       );
       const gameInput = placeWorkerInput(location.name);
+
       expect(location.canPlay(gameState, gameInput)).to.be(true);
-      const nextGameState = gameState.next(gameInput);
-      expect(location.canPlay(nextGameState, gameInput)).to.be(false);
+
+      [, gameState] = multiStepGameInputTest(gameState, [gameInput]);
+      expect(location.canPlay(gameState, gameInput)).to.be(false);
     });
 
     it("should allow 2 workers on FOREST_TWO_BERRY_ONE_CARD if 4+ players", () => {
-      const gameState = testInitialGameState({ numPlayers: 4 });
       const location = Location.fromName(
         LocationName.FOREST_TWO_BERRY_ONE_CARD
       );
       const gameInput = placeWorkerInput(location.name);
+
+      gameState = testInitialGameState({ numPlayers: 4 });
       gameState.locationsMap[LocationName.FOREST_TWO_BERRY_ONE_CARD] = [];
+
       expect(location.canPlay(gameState, gameInput)).to.be(true);
-      const gameState2 = gameState.next(gameInput);
-      expect(location.canPlay(gameState2, gameInput)).to.be(true);
-      const gameState3 = gameState2.next(gameInput);
-      expect(location.canPlay(gameState3, gameInput)).to.be(false);
+
+      [, gameState] = multiStepGameInputTest(gameState, [gameInput]);
+      expect(location.canPlay(gameState, gameInput)).to.be(true);
+
+      [, gameState] = multiStepGameInputTest(gameState, [gameInput]);
+      expect(location.canPlay(gameState, gameInput)).to.be(false);
+    });
+
+    it("should NOT allow 2 workers from the same player on FOREST_TWO_BERRY_ONE_CARD if 4+ players", () => {
+      const location = Location.fromName(
+        LocationName.FOREST_TWO_BERRY_ONE_CARD
+      );
+      const gameInput = placeWorkerInput(location.name);
+
+      gameState = testInitialGameState({ numPlayers: 4 });
+      gameState.locationsMap[LocationName.FOREST_TWO_BERRY_ONE_CARD] = [];
+
+      player = gameState.getActivePlayer();
+
+      expect(location.canPlay(gameState, gameInput)).to.be(true);
+      [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
+
+      // Next player can visit location
+      expect(location.canPlay(gameState, gameInput)).to.be(true);
+
+      gameState.nextPlayer();
+      gameState.nextPlayer();
+      gameState.nextPlayer();
+      expect(gameState.getActivePlayer().playerId).to.be(player.playerId);
+
+      // Same player cannot
+      expect(location.canPlay(gameState, gameInput)).to.be(false);
+      expect(() => {
+        [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
+      }).to.throwException(/Cannot visit the same forest location twice/);
     });
   });
 

@@ -171,7 +171,6 @@ describe("GameState", () => {
       expect(gameState.getPlayableLocations()).to.eql([
         ...Location.byType(LocationType.BASIC),
         ...Location.byType(LocationType.HAVEN),
-        LocationName.FOREST_TWO_WILD,
       ]);
 
       // Put another one worker on exclusive forest location

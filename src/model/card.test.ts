@@ -2334,6 +2334,55 @@ describe("Card", () => {
         expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
         expect(player1.cardsInHand.length).to.be(1);
       });
+
+      it("should allow player to copy a location with their worker on it (in a 4 player game)", () => {
+        gameState = testInitialGameState({ numPlayers: 4 });
+        gameState.locationsMap[LocationName.FOREST_TWO_BERRY_ONE_CARD] = [];
+
+        let player1 = gameState.getActivePlayer();
+        player1.addToCity(gameState, CardName.LOOKOUT);
+
+        expect(player1.numAvailableWorkers).to.be(2);
+        expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+        expect(player1.cardsInHand.length).to.be(0);
+
+        // note: placeWorkerOnLocation doesn't gain the placement bonus
+        player1.placeWorkerOnLocation(LocationName.FOREST_TWO_BERRY_ONE_CARD);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            clientOptions: {
+              playedCard: player1.getFirstPlayedCard(CardName.LOOKOUT),
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_LOCATION,
+            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardContext: CardName.LOOKOUT,
+            locationOptions: gameState
+              .getPlayableLocations({
+                checkCanPlaceWorker: false,
+              })
+              .filter((name) => {
+                const location = Location.fromName(name);
+                return (
+                  location.type === LocationType.BASIC ||
+                  location.type === LocationType.FOREST
+                );
+              }),
+            clientOptions: {
+              selectedLocation: LocationName.FOREST_TWO_BERRY_ONE_CARD,
+            },
+          },
+        ]);
+
+        player1 = gameState.getPlayer(player1.playerId);
+
+        expect(player1.numAvailableWorkers).to.be(0);
+        expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
+        expect(player1.cardsInHand.length).to.be(1);
+      });
     });
 
     describe(CardName.MINE, () => {

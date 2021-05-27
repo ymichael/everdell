@@ -1480,7 +1480,7 @@ export class GameState {
   }
 
   getPossibleGameInputs(): GameInput[] {
-    if (this.getRemainingPlayers().length === 0) {
+    if (this.isGameOver()) {
       return [];
     }
 

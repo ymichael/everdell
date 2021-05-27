@@ -6,12 +6,15 @@ import styles from "../styles/GameLog.module.css";
 
 import EntityList from "./EntityList";
 import { GameLogEntry } from "../model/types";
+import { GameState } from "../model/gameState";
+import { GameStateJSON } from "../model/jsonTypes";
 import { Description, GameBlock } from "./common";
 
-const GameLog: React.FC<{ logs: GameLogEntry[]; fixedHeight?: boolean }> = ({
-  logs,
-  fixedHeight = true,
-}) => {
+const GameLog: React.FC<{
+  logs: GameLogEntry[];
+  gameStateJSON?: GameStateJSON | null;
+  fixedHeight?: boolean;
+}> = ({ gameStateJSON = null, logs, fixedHeight = true }) => {
   const [selectedEntry, setSelectedEntry] = useState<
     GameLogEntry["entry"] | null
   >(null);
@@ -22,8 +25,44 @@ const GameLog: React.FC<{ logs: GameLogEntry[]; fixedHeight?: boolean }> = ({
       logsElRef.current.scrollTop = lastLogElRef.current.offsetTop;
     }
   }, [logs.length]);
+
+  let activePlayerEl = null;
+  if (gameStateJSON) {
+    const gameStateImpl = GameState.fromJSON(gameStateJSON);
+    const activePlayerImpl = gameStateImpl.getActivePlayer();
+    activePlayerEl = (
+      <>
+        <div className={styles.log_stat}>
+          {gameStateImpl.isGameOver() ? (
+            <span>Game Over</span>
+          ) : (
+            <>
+              <span>Active: </span>
+              <span>{activePlayerImpl.name}</span>
+            </>
+          )}
+        </div>
+        {" / "}
+      </>
+    );
+  }
+
   return (
     <GameBlock title={"Game Log"}>
+      {gameStateJSON && (
+        <div className={styles.log_stats}>
+          {activePlayerEl}
+          <div className={styles.log_stat}>
+            <span>Deck: </span>
+            <span>{gameStateJSON.deck.numCards}</span>
+          </div>
+          {" / "}
+          <div className={styles.log_stat}>
+            <span>Discard: </span>
+            <span>{gameStateJSON.discardPile.numCards}</span>
+          </div>
+        </div>
+      )}
       <div
         className={[styles.logs, fixedHeight && styles.logs_height]
           .filter(Boolean)

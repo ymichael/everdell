@@ -37,3 +37,15 @@
   display: flex;
   flex-flow: row wrap;
 }
+
+.log_stats {
+  font-size: 14px;
+  padding-top: 5px;
+  margin-left: -5px;
+  color: #999;
+}
+
+.log_stat {
+  display: inline-block;
+  padding: 0 5px;
+}

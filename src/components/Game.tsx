@@ -59,6 +59,7 @@ const Game: React.FC<{
         onUpdate={updateGameAndViewingPlayer}
       >
         <GameBoard
+          gameStateJSON={gameState}
           gameState={gameStateImpl}
           viewingPlayer={viewingPlayerImpl}
         />

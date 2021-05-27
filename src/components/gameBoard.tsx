@@ -9,6 +9,7 @@ import {
 } from "../model/types";
 import { Player } from "../model/player";
 import { GameState } from "../model/gameState";
+import { GameStateJSON } from "../model/jsonTypes";
 import { Event as EventModel, oldEventEnums } from "../model/event";
 import { Location as LocationModel } from "../model/location";
 
@@ -254,15 +255,16 @@ export const PlayerCity: React.FC<{
 
 export const GameBoard: React.FC<{
   gameState: GameState;
+  gameStateJSON: GameStateJSON;
   viewingPlayer: Player | null;
-}> = ({ gameState, viewingPlayer }) => {
+}> = ({ gameState, gameStateJSON, viewingPlayer }) => {
   return (
     <div className={styles.game_board}>
       <div>
         <div className={styles.game_board_meadow}>
           <Meadow meadowCards={gameState.meadowCards} />
         </div>
-        <GameLog logs={gameState.gameLog} />
+        <GameLog logs={gameState.gameLog} gameStateJSON={gameStateJSON} />
       </div>
       <div>
         <ForestLocations gameState={gameState} viewingPlayer={viewingPlayer} />

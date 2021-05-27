@@ -215,7 +215,7 @@ const GameInputBox: React.FC<{
 }) => {
   const gameStateImpl = GameState.fromJSON(gameState);
   const activePlayerImpl = gameStateImpl.getActivePlayer();
-  if (gameStateImpl.getRemainingPlayers().length === 0) {
+  if (gameStateImpl.isGameOver()) {
     return <GameInputBoxText title={title} text={`Game Over!`} />;
   }
   if (!viewingPlayer) {

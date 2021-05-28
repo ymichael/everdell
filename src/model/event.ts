@@ -1286,7 +1286,13 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     requiredCards: [CardName.WOODCARVER, CardName.CHAPEL],
     eventDescription: toGameText([
       "When achieved, draw 1 CARD and receive 1 ANY ",
-      "for each VP on your Chapel.",
+      "for each VP on your ",
+      { type: "entity", entityType: "card", card: CardName.CHAPEL },
+      ".",
+      { type: "HR" },
+      { type: "points", value: 2 },
+      " for each VP on your ",
+      { type: "entity", entityType: "card", card: CardName.CHAPEL },
     ]),
     // draw 1 card and receive 1 resource for each VP on your chapel
     playInner: (gameState: GameState, gameInput: GameInput) => {

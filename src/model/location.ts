@@ -780,6 +780,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
         // Make sure player can play at least one of the chosen cards
         const canPlayAtLeastOne =
           isCardPlayable(cardOptions[0]) || isCardPlayable(cardOptions[1]);
+
         if (!canPlayAtLeastOne) {
           throw new Error(
             "Must choose at least 1 card that can be played with 1 ANY discount"
@@ -802,11 +803,15 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
           prevInputType: gameInput.inputType,
           prevInput: gameInput,
           label: "Select CARD to play for one less ANY",
-          cardOptions: cardOptions,
+          cardOptions: cardOptions.filter((cardName) => {
+            const cardOption = Card.fromName(cardName);
+            return isCardPlayable(cardOption.name);
+          }),
           maxToSelect: 1,
           minToSelect: 1,
           locationContext:
             LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS,
+          cardOptionsUnfiltered: cardOptions,
           clientOptions: {
             selectedCards: [],
           },
@@ -815,7 +820,8 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
         gameInput.inputType === GameInputType.SELECT_CARDS &&
         gameInput.prevInputType === GameInputType.SELECT_CARDS &&
         gameInput.locationContext ===
-          LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS
+          LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS &&
+        gameInput.cardOptionsUnfiltered
       ) {
         // make sure they could play card if discounted
         const cardOptions = gameInput.cardOptions;
@@ -842,11 +848,13 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
         }
 
         const keptedCardName =
-          cardOptions[0] === selectedCardName ? cardOptions[1] : cardOptions[0];
+          gameInput.cardOptionsUnfiltered[0] === selectedCardName
+            ? gameInput.cardOptionsUnfiltered[1]
+            : gameInput.cardOptionsUnfiltered[0];
 
         // Remove the cards from meadow + replenish
-        gameState.removeCardFromMeadow(cardOptions[0]);
-        gameState.removeCardFromMeadow(cardOptions[1]);
+        gameState.removeCardFromMeadow(gameInput.cardOptionsUnfiltered[0]);
+        gameState.removeCardFromMeadow(gameInput.cardOptionsUnfiltered[1]);
 
         // Add kept card to player's hand
         player.addCardToHand(gameState, keptedCardName);

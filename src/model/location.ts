@@ -301,8 +301,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
 
         // remove cards from hand + put them on the discard pile
         cardsToDiscard.forEach((cardName) => {
-          player.removeCardFromHand(cardName);
-          gameState.discardPile.addToStack(cardName);
+          player.removeCardFromHand(gameState, cardName);
         });
 
         const numDiscarded = cardsToDiscard.length;
@@ -512,7 +511,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
 
         // discard the cards
         cardsToDiscard.forEach((cardName) => {
-          player.removeCardFromHand(cardName);
+          player.removeCardFromHand(gameState, cardName);
         });
 
         // draw 2 cards per card discarded
@@ -700,7 +699,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
 
           // Discard the cards
           cardsToDiscard.forEach((cardName) => {
-            player.removeCardFromHand(cardName);
+            player.removeCardFromHand(gameState, cardName);
           });
 
           gameState.addGameLogFromLocation(
@@ -1229,8 +1228,7 @@ function playInnerJourneyFactory(
       }
       const player = gameState.getActivePlayer();
       cardsToDiscard.forEach((card: CardName) => {
-        player.removeCardFromHand(card);
-        gameState.discardPile.addToStack(card);
+        player.removeCardFromHand(gameState, card);
       });
       gameState.addGameLogFromLocation(location, [
         player,

@@ -521,8 +521,7 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
           throw new Error(`Please select ${gameInput.minToSelect} to discard`);
         }
         selectedCards.forEach((cardName) => {
-          player.removeCardFromHand(cardName);
-          gameState.discardPile.addToStack(cardName);
+          player.removeCardFromHand(gameState, cardName);
         });
         gameState.addGameLogFromRiverDestination(RiverDestinationName.SHOAL, [
           player,
@@ -619,8 +618,7 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
           ]
         );
         selectedCards.forEach((cardName) => {
-          player.removeCardFromHand(cardName);
-          gameState.discardPile.addToStack(cardName);
+          player.removeCardFromHand(gameState, cardName);
         });
         player.gainResources(gameState, {
           [ResourceType.PEARL]: 1,
@@ -1039,8 +1037,7 @@ function discardCardTypeToGainVPAndPearl({
         ") to gain 1 VP and 1 PEARL.",
       ]);
       selectedCards.forEach((cardName) => {
-        player.removeCardFromHand(cardName);
-        gameState.discardPile.addToStack(cardName);
+        player.removeCardFromHand(gameState, cardName);
       });
       player.gainResources(gameState, {
         [ResourceType.PEARL]: 1,

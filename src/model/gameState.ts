@@ -405,7 +405,7 @@ export class GameState {
     if (gameInput.clientOptions.fromMeadow) {
       this.removeCardFromMeadow(card.name);
     } else {
-      player.removeCardFromHand(card.name);
+      player.removeCardFromHand(this, card.name, false /* addToDiscardPile */);
     }
     card.play(this, gameInput);
   }

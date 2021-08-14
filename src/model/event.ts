@@ -1060,7 +1060,11 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
 
         // remove cards from hand
         cardsToUse.forEach((cardName) => {
-          player.removeCardFromHand(cardName as CardName);
+          player.removeCardFromHand(
+            gameState,
+            cardName,
+            false /* addToDiscardPile */
+          );
           (eventInfo.storedCards = eventInfo.storedCards || []).push(cardName);
         });
 
@@ -1926,8 +1930,12 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           );
 
           cardsToGive.forEach((cardName) => {
+            player.removeCardFromHand(
+              gameState,
+              cardName,
+              false /* addToDiscardPile */
+            );
             selectedPlayer.addCardToHand(gameState, cardName);
-            player.removeCardFromHand(cardName);
           });
 
           const eventInfo = player.getClaimedEvent(
@@ -2273,8 +2281,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
 
         // remove the cards from player's hand
         selectedCards.forEach((cardName) => {
-          player.removeCardFromHand(cardName as CardName);
-          gameState.discardPile.addToStack(cardName);
+          player.removeCardFromHand(gameState, cardName);
         });
 
         gameState.addGameLogFromEvent(EventName.WONDER_HOPEWATCH_GATE, [
@@ -2344,8 +2351,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
 
         // remove the cards from player's hand
         selectedCards.forEach((cardName) => {
-          player.removeCardFromHand(cardName as CardName);
-          gameState.discardPile.addToStack(cardName);
+          player.removeCardFromHand(gameState, cardName);
         });
 
         gameState.addGameLogFromEvent(EventName.WONDER_MISTRISE_FOUNTAIN, [
@@ -2415,8 +2421,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
 
         // remove the cards from player's hand
         selectedCards.forEach((cardName) => {
-          player.removeCardFromHand(cardName as CardName);
-          gameState.discardPile.addToStack(cardName);
+          player.removeCardFromHand(gameState, cardName);
         });
 
         gameState.addGameLogFromEvent(EventName.WONDER_SUNBLAZE_BRIDGE, [
@@ -2486,8 +2491,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
 
         // remove the cards from player's hand
         selectedCards.forEach((cardName) => {
-          player.removeCardFromHand(cardName as CardName);
-          gameState.discardPile.addToStack(cardName);
+          player.removeCardFromHand(gameState, cardName);
         });
 
         gameState.addGameLogFromEvent(EventName.WONDER_STARFALLS_FLAME, [

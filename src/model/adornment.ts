@@ -536,7 +536,11 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
               " from the Meadow.",
             ]);
           } else {
-            player.removeCardFromHand(card.name);
+            player.removeCardFromHand(
+              gameState,
+              card.name,
+              false /* addToDiscardPile */
+            );
             gameState.addGameLogFromAdornment(AdornmentName.MASQUE, [
               player,
               " played ",
@@ -576,7 +580,11 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
             " from the Meadow.",
           ]);
         } else if (gameInput.clientOptions.selectedOption === "Hand") {
-          player.removeCardFromHand(card.name);
+          player.removeCardFromHand(
+            gameState,
+            card.name,
+            false /* addToDiscardPile */
+          );
           gameState.addGameLogFromAdornment(AdornmentName.MASQUE, [
             player,
             " played ",
@@ -715,8 +723,7 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
 
         if (cardsToDiscard.length > 0) {
           cardsToDiscard.forEach((cardName) => {
-            player.removeCardFromHand(cardName);
-            gameState.discardPile.addToStack(cardName);
+            player.removeCardFromHand(gameState, cardName);
           });
 
           gameState.addGameLogFromAdornment(AdornmentName.SCALES, [

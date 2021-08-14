@@ -534,8 +534,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             ]);
           }
           gameInput.clientOptions.cardsToDiscard.forEach((cardName) => {
-            player.removeCardFromHand(cardName);
-            gameState.discardPile.addToStack(cardName);
+            player.removeCardFromHand(gameState, cardName);
           });
           player.gainResources(gameState, {
             [ResourceType.VP]: numDiscarded,
@@ -2149,7 +2148,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             gameInput.prevInput.clientOptions.selectedPlayer
           );
           gameInput.clientOptions.selectedCards.forEach((cardName) => {
-            player.removeCardFromHand(cardName);
+            player.removeCardFromHand(
+              gameState,
+              cardName,
+              false /* addToDiscardPile */
+            );
             selectedPlayer.addCardToHand(gameState, cardName);
           });
           gameState.addGameLogFromCard(CardName.POST_OFFICE, [
@@ -2172,8 +2175,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           });
         } else {
           gameInput.clientOptions.selectedCards.forEach((cardName) => {
-            player.removeCardFromHand(cardName);
-            gameState.discardPile.addToStack(cardName);
+            player.removeCardFromHand(gameState, cardName);
           });
           const numDiscarded = gameInput.clientOptions.selectedCards.length;
           const numDrawn = player.drawMaxCards(gameState);
@@ -2373,7 +2375,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
               " from the Meadow.",
             ]);
           } else {
-            player.removeCardFromHand(card.name);
+            player.removeCardFromHand(
+              gameState,
+              card.name,
+              false /* addToDiscardPile */
+            );
             gameState.addGameLogFromCard(CardName.QUEEN, [
               player,
               " played ",
@@ -2415,7 +2421,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             " from the Meadow.",
           ]);
         } else if (gameInput.clientOptions.selectedOption === "Hand") {
-          player.removeCardFromHand(card.name);
+          player.removeCardFromHand(
+            gameState,
+            card.name,
+            false /* addToDiscardPile */
+          );
           gameState.addGameLogFromCard(CardName.QUEEN, [
             player,
             " played ",
@@ -3621,7 +3631,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           const revealedCard = Card.fromName(gameState.drawCard());
           basePoints += revealedCard.baseVP;
           revealedCards.push(revealedCard.name);
-          player.removeCardFromHand(cardName);
+          player.removeCardFromHand(gameState, cardName);
           player.addCardToHand(gameState, revealedCard.name);
         });
 

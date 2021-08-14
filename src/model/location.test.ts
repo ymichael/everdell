@@ -231,6 +231,7 @@ describe("Location", () => {
 
       expect(location.canPlay(gameState, gameInput)).to.be(true);
       expect(player.cardsInHand.length).to.be(4);
+      expect(gameState.discardPile.length).to.be(0);
 
       [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
@@ -262,6 +263,12 @@ describe("Location", () => {
         },
       ]);
 
+      expect(gameState.discardPile.length).to.be(3);
+      expect([CardName.WIFE, CardName.WIFE, CardName.FARM]).to.eql([
+        gameState.discardPile.drawInner(),
+        gameState.discardPile.drawInner(),
+        gameState.discardPile.drawInner(),
+      ]);
       expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(1);
       expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(2);
       expect(player.cardsInHand.length).to.be(1);

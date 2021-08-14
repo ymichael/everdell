@@ -158,7 +158,11 @@ export class Player implements IGameTextEntity {
     }
   }
 
-  removeCardFromHand(cardName: CardName): void {
+  removeCardFromHand(
+    gameState: GameState,
+    cardName: CardName,
+    addToDiscardPile: boolean = true
+  ): void {
     const idx = this.cardsInHand.indexOf(cardName);
     if (idx === -1) {
       throw new Error(`Unable to discard ${cardName}`);
@@ -167,6 +171,9 @@ export class Player implements IGameTextEntity {
         this._numCardsInHand--;
       }
       this.cardsInHand.splice(idx, 1);
+    }
+    if (addToDiscardPile) {
+      gameState.discardPile.addToStack(cardName);
     }
   }
 

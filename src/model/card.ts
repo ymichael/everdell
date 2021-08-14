@@ -57,6 +57,12 @@ type ProductionWillActivateInnerFn = (
   playedCard: PlayedCardInfo
 ) => boolean;
 
+const openDestinationGameText: GameText = toGameText([
+  "Other players may visit this card. Owner gains ",
+  { type: "points", value: 1 },
+  " when other players visit this card.",
+]);
+
 export class Card<TCardType extends CardType = CardType>
   implements GameStatePlayable, IGameTextEntity {
   readonly cardDescription: GameText | undefined;
@@ -1335,7 +1341,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       { type: "em", text: "Construction" },
       " from the Meadow for 3 fewer ANY.",
       { type: "HR" },
-      "Other players may visit this card.",
+      ...openDestinationGameText,
     ]),
     canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
@@ -2069,7 +2075,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       "Give an opponent 2 CARD, then discard any number of CARD ",
       "and draw up to your hand limit.",
       { type: "HR" },
-      "Other players may visit this card.",
+      ...openDestinationGameText,
     ]),
     canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
       if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
@@ -3813,7 +3819,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       { type: "em", text: "River Destination" },
       ".",
       { type: "HR" },
-      "Other players may visit this card.",
+      ...openDestinationGameText,
     ]),
     isConstruction: true,
     isUnique: true,

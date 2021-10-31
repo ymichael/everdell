@@ -288,7 +288,7 @@ describe("Card", () => {
     });
 
     describe(CardName.CEMETARY, () => {
-      it("allow player to play one revealed card", () => {
+      it("allow player to play one revealed card from deck", () => {
         player.addToCity(gameState, CardName.CEMETARY);
 
         // Add some cards to make sure we only give player valid options.
@@ -522,6 +522,73 @@ describe("Card", () => {
             },
           ]);
         }).to.throwException(/Please select one of the options/i);
+      });
+
+      it("should choose top 4 cards from discard", () => {
+        player.addToCity(gameState, CardName.CEMETARY);
+
+        // Add some cards to make sure we only give player valid options.
+        player.addToCity(gameState, CardName.UNIVERSITY);
+        player.addToCity(gameState, CardName.KING);
+        player.addToCity(gameState, CardName.FARM);
+
+        // Add some cards to the discard pile. Adding 5th card to ensure we pick
+        // the top 4 cards
+        gameState.discardPile.addToStack(CardName.HUSBAND);
+        gameState.discardPile.addToStack(CardName.WIFE);
+        gameState.discardPile.addToStack(CardName.DUNGEON);
+        gameState.discardPile.addToStack(CardName.RANGER);
+        gameState.discardPile.addToStack(CardName.FARM);
+
+        gameState.deck.addToStack(CardName.KING);
+        gameState.deck.addToStack(CardName.QUEEN);
+        gameState.deck.addToStack(CardName.FARM);
+        gameState.deck.addToStack(CardName.UNIVERSITY);
+
+        expect(player.numAvailableWorkers).to.be(2);
+        expect(player.hasCardInCity(CardName.QUEEN)).to.be(false);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            clientOptions: {
+              playedCard: player.getFirstPlayedCard(CardName.CEMETARY),
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_OPTION_GENERIC,
+            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+            options: ["Deck", "Discard Pile"],
+            cardContext: CardName.CEMETARY,
+            clientOptions: {
+              selectedOption: "Discard Pile",
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: GameInputType.SELECT_OPTION_GENERIC,
+            cardContext: CardName.CEMETARY,
+            cardOptions: [
+              CardName.FARM,
+              CardName.RANGER,
+              CardName.DUNGEON,
+              CardName.WIFE,
+            ],
+            cardOptionsUnfiltered: [
+              CardName.FARM,
+              CardName.RANGER,
+              CardName.DUNGEON,
+              CardName.WIFE,
+            ],
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              selectedCards: [CardName.WIFE],
+            },
+          },
+        ]);
+
+        expect(player.hasCardInCity(CardName.WIFE)).to.be(true);
       });
     });
 
@@ -5836,6 +5903,68 @@ describe("Card", () => {
           },
         ]);
         expect(player.getPlayedCardInfos(CardName.MESSENGER).length).to.be(2);
+      });
+
+      it("should  be relocated when attached to Crane and Crane is used", () => {
+        player.addToCity(gameState, CardName.CRANE);
+        player.addToCity(gameState, CardName.MESSENGER);
+        player.gainResources(gameState, { [ResourceType.TWIG]: 1 });
+
+        player.updatePlayedCard(
+          gameState,
+          player.getFirstPlayedCard(CardName.CRANE),
+          { shareSpaceWith: CardName.MESSENGER }
+        );
+        player.updatePlayedCard(
+          gameState,
+          player.getFirstPlayedCard(CardName.MESSENGER),
+          { shareSpaceWith: CardName.CRANE }
+        );
+        player.cardsInHand.push(CardName.FAIRGROUNDS);
+
+        expect(player.getFirstPlayedCard(CardName.MESSENGER)).to.eql({
+          cardName: CardName.MESSENGER,
+          cardOwnerId: player.playerId,
+          shareSpaceWith: CardName.CRANE,
+        });
+
+        expect(player.hasCardInCity(CardName.CRANE)).to.be(true);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(CardName.FAIRGROUNDS, {
+            paymentOptions: {
+              cardToUse: CardName.CRANE,
+              resources: {
+                [ResourceType.TWIG]: 1,
+                [ResourceType.RESIN]: 0,
+                [ResourceType.PEBBLE]: 0,
+              },
+            },
+          }),
+        ]);
+
+        expect(player.hasCardInCity(CardName.CRANE)).to.be(false);
+        expect(player.hasCardInCity(CardName.FAIRGROUNDS)).to.be(true);
+        expect(player.hasCardInCity(CardName.MESSENGER)).to.be(true);
+
+        expect(player.getFirstPlayedCard(CardName.MESSENGER)).to.eql({
+          cardName: CardName.MESSENGER,
+          cardOwnerId: player.playerId,
+          shareSpaceWith: CardName.FAIRGROUNDS,
+        });
+
+        expect(player.getFirstPlayedCard(CardName.FAIRGROUNDS)).to.eql({
+          cardName: CardName.FAIRGROUNDS,
+          cardOwnerId: player.playerId,
+          usedForCritter: false,
+          shareSpaceWith: CardName.MESSENGER,
+        });
+
+        // expect that active player is now the next player, since
+        // the messenger moved automatically
+        expect(gameState.getActivePlayer().playerId).to.not.eql(
+          player.playerId
+        );
       });
     });
 

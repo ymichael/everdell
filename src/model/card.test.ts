@@ -2789,8 +2789,7 @@ describe("Card", () => {
         expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
         expect(targetPlayer.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
       });
-
-      it("should not be able to visit if no players to give resources to", () => {
+      it("should discard resources if no remaining players give resources to", () => {
         player.addToCity(gameState, CardName.MONASTERY);
         player.gainResources(gameState, {
           [ResourceType.BERRY]: 2,
@@ -2801,16 +2800,39 @@ describe("Card", () => {
         // put other player in the ended state
         gameState.getPlayer(player1Id).playerStatus = PlayerStatus.GAME_ENDED;
 
-        expect(() => {
-          multiStepGameInputTest(gameState, [
-            {
-              inputType: GameInputType.VISIT_DESTINATION_CARD,
-              clientOptions: {
-                playedCard: player.getFirstPlayedCard(CardName.MONASTERY),
-              },
+        // no available players to give resources to
+        expect(gameState.getRemainingPlayersExceptActivePlayer().length).to.be(
+          0
+        );
+
+        const selectResourcesInput = {
+          inputType: GameInputType.SELECT_RESOURCES as const,
+          prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+          cardContext: CardName.MONASTERY,
+          toSpend: true,
+          clientOptions: {
+            resources: {
+              [ResourceType.BERRY]: 2,
             },
-          ]);
-        }).to.throwException(/Need at least/i);
+          },
+          maxResources: 2,
+          minResources: 2,
+        };
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            clientOptions: {
+              playedCard: player.getFirstPlayedCard(CardName.MONASTERY),
+            },
+          },
+          selectResourcesInput,
+        ]);
+
+        const targetPlayer = gameState.getPlayer(player1Id);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(4);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+        expect(targetPlayer.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
       });
     });
 

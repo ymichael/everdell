@@ -108,9 +108,14 @@ export const multiStepGameInputTest = (
       expect(player.playerId).to.be(currGameState.getActivePlayer().playerId);
     } else {
       expect(currGameState.pendingGameInputs).to.eql([]);
-      expect(player.playerId).to.not.be(
-        currGameState.getActivePlayer().playerId
-      );
+
+      // check to see if there's more than one remaining player
+      const remainingPlayers = gameState.getRemainingPlayers();
+      if (remainingPlayers.length > 1) {
+        expect(player.playerId).to.not.be(
+          currGameState.getActivePlayer().playerId
+        );
+      }
     }
   });
 

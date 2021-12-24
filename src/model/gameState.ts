@@ -345,6 +345,13 @@ export class GameState {
     });
   }
 
+  // returns list of players who have space in their hands
+  getPlayersWithHandSpace(): Player[] {
+    return this.players.filter((player) => {
+      return player.cardsInHand.length < player.maxHandSize;
+    });
+  }
+
   isGameOver(): boolean {
     return this.getRemainingPlayers().length === 0;
   }

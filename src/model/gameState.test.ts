@@ -381,6 +381,48 @@ describe("GameState", () => {
     });
   });
 
+  describe("getRemainingPlayers", () => {
+    it("Should return all players not in GAME_ENDED state", () => {
+      gameState = testInitialGameState({ numPlayers: 4 });
+      const player0 = gameState.players[0];
+      const player1 = gameState.players[1];
+      const player2 = gameState.players[2];
+      const player3 = gameState.players[3];
+
+      let remainingPlayers = gameState.getRemainingPlayers();
+      expect(remainingPlayers.length).to.be(4);
+      expect(remainingPlayers).to.eql([player0, player1, player2, player3]);
+
+      // player1 has ended
+      gameState.getPlayer(player1.playerId).playerStatus =
+        PlayerStatus.GAME_ENDED;
+      remainingPlayers = gameState.getRemainingPlayers();
+      expect(remainingPlayers.length).to.be(3);
+      expect(remainingPlayers).to.eql([player0, player2, player3]);
+
+      // player3 has ended
+      gameState.getPlayer(player3.playerId).playerStatus =
+        PlayerStatus.GAME_ENDED;
+      remainingPlayers = gameState.getRemainingPlayers();
+      expect(remainingPlayers.length).to.be(2);
+      expect(remainingPlayers).to.eql([player0, player2]);
+
+      // player0 has ended
+      gameState.getPlayer(player0.playerId).playerStatus =
+        PlayerStatus.GAME_ENDED;
+      remainingPlayers = gameState.getRemainingPlayers();
+      expect(remainingPlayers.length).to.be(1);
+      expect(remainingPlayers).to.eql([player2]);
+
+      // player2 has ended, no remaining players
+      gameState.getPlayer(player2.playerId).playerStatus =
+        PlayerStatus.GAME_ENDED;
+      remainingPlayers = gameState.getRemainingPlayers();
+      expect(remainingPlayers.length).to.be(0);
+      expect(remainingPlayers).to.eql([]);
+    });
+  });
+
   describe("PLAY_CARD", () => {
     it("should be able to pay for the card to play it", () => {
       const card = Card.fromName(CardName.FARM);

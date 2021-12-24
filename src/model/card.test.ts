@@ -19,6 +19,7 @@ import {
   LocationName,
   RiverDestinationName,
   RiverDestinationSpotName,
+  PlayerStatus,
 } from "./types";
 
 describe("Card", () => {
@@ -2671,7 +2672,7 @@ describe("Card", () => {
     });
 
     describe(CardName.MONASTERY, () => {
-      it("work", () => {
+      it("can give 2 resources to another player", () => {
         player.addToCity(gameState, CardName.MONASTERY);
         expect(() => {
           multiStepGameInputTest(gameState, [
@@ -2731,6 +2732,85 @@ describe("Card", () => {
         expect(player.getNumResourcesByType(ResourceType.VP)).to.be(4);
         expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
         expect(targetPlayer.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
+      });
+      it("cannot give resources to player who has ended", () => {
+        gameState = testInitialGameState({ numPlayers: 3 });
+        player = gameState.getActivePlayer()
+        player.addToCity(gameState, CardName.MONASTERY);
+        player.gainResources(gameState, {
+          [ResourceType.BERRY]: 2,
+        });
+
+        const player0Id = gameState.players[0].playerId;
+        const player1Id = gameState.players[1].playerId;
+        const player2Id = gameState.players[2].playerId;
+
+        // put player1 in the ended state
+        gameState.getPlayer(player1Id).playerStatus = PlayerStatus.GAME_ENDED;
+
+        const selectResourcesInput = {
+          inputType: GameInputType.SELECT_RESOURCES as const,
+          prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+          cardContext: CardName.MONASTERY,
+          toSpend: true,
+          clientOptions: {
+            resources: {
+              [ResourceType.BERRY]: 2,
+            },
+          },
+          maxResources: 2,
+          minResources: 2,
+        };
+
+        const selectPlayerInput = {
+          inputType: GameInputType.SELECT_PLAYER as const,
+          prevInputType: GameInputType.SELECT_RESOURCES,
+          prevInput: selectResourcesInput,
+          cardContext: CardName.MONASTERY,
+          playerOptions: [player2Id],
+          mustSelectOne: true,
+          clientOptions: {
+            selectedPlayer: player2Id,
+          },
+        };
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            clientOptions: {
+              playedCard: player.getFirstPlayedCard(CardName.MONASTERY),
+            },
+          },
+          selectResourcesInput,
+          selectPlayerInput,
+        ]);
+
+        const targetPlayer = gameState.getPlayer(player2Id);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(4);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+        expect(targetPlayer.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
+      });
+
+      it("should not be able to visit if no players to give resources to", () => {
+        player.addToCity(gameState, CardName.MONASTERY);
+        player.gainResources(gameState, {
+          [ResourceType.BERRY]: 2,
+        });
+
+        const player1Id = gameState.players[1].playerId;
+
+        // put other player in the ended state
+        gameState.getPlayer(player1Id).playerStatus = PlayerStatus.GAME_ENDED;
+
+        expect(() => {
+          multiStepGameInputTest(gameState, [
+            {
+              inputType: GameInputType.VISIT_DESTINATION_CARD,
+              clientOptions: {
+                playedCard: player.getFirstPlayedCard(CardName.MONASTERY),
+              },
+            }
+          ]);
+        }).to.throwException(/Need at least/i);
       });
     });
 

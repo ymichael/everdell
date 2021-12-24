@@ -49,7 +49,7 @@
     "@typescript-eslint/parser": "^4.11.0",
     "eslint": "^7.16.0",
     "prettier": "2.2.1",
-    "ts-eager": "^1.1.3",
+    "ts-eager": "^2.0.2",
     "typescript": "^4.1.3"
   }
 }

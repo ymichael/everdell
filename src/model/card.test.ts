@@ -2735,7 +2735,7 @@ describe("Card", () => {
       });
       it("cannot give resources to player who has ended", () => {
         gameState = testInitialGameState({ numPlayers: 3 });
-        player = gameState.getActivePlayer()
+        player = gameState.getActivePlayer();
         player.addToCity(gameState, CardName.MONASTERY);
         player.gainResources(gameState, {
           [ResourceType.BERRY]: 2,
@@ -2808,7 +2808,7 @@ describe("Card", () => {
               clientOptions: {
                 playedCard: player.getFirstPlayedCard(CardName.MONASTERY),
               },
-            }
+            },
           ]);
         }).to.throwException(/Need at least/i);
       });

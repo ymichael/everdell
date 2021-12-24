@@ -345,6 +345,16 @@ export class GameState {
     });
   }
 
+  // returns list of players who do not have the GAME_END playerStatus
+  getRemainingPlayersExceptActivePlayer(): Player[] {
+    return this.players.filter((player) => {
+      return (
+        player.playerStatus !== PlayerStatus.GAME_ENDED &&
+        player.playerId !== this.activePlayerId
+      );
+    });
+  }
+
   // returns list of players who have space in their hands
   getPlayersWithHandSpace(): Player[] {
     return this.players.filter((player) => {

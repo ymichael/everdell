@@ -1785,24 +1785,25 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         if (numResources < 2) {
           return "Need at least 2 resources to visit the Monastery";
         }
-        const playerOptions = gameState.getRemainingPlayers()
-        .filter((p) => p.playerId !== player.playerId)
-        .map((p) => p.playerId);
+        const playerOptions = gameState
+          .getRemainingPlayers()
+          .filter((p) => p.playerId !== player.playerId)
+          .map((p) => p.playerId);
 
         if (playerOptions.length === 0) {
-          return "Need at least 1 player not in GAME_END state"
+          return "Need at least 1 player not in GAME_END state";
         }
-        
       }
       return null;
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
-      
+
       if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
-        const playerOptions = gameState.getRemainingPlayers()
-        .filter((p) => p.playerId !== player.playerId)
-        .map((p) => p.playerId);
+        const playerOptions = gameState
+          .getRemainingPlayers()
+          .filter((p) => p.playerId !== player.playerId)
+          .map((p) => p.playerId);
 
         if (playerOptions.length === 0) {
           throw new Error(
@@ -1842,7 +1843,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           ],
           prevInput: gameInput,
           cardContext: CardName.MONASTERY,
-          playerOptions: gameState.getRemainingPlayers()
+          playerOptions: gameState
+            .getRemainingPlayers()
             .filter((p) => p.playerId !== player.playerId)
             .map((p) => p.playerId),
           mustSelectOne: true,
@@ -1934,7 +1936,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           label: `Select player to give ${numBerries} BERRY`,
           prevInput: gameInput,
           cardContext: CardName.MONK,
-          playerOptions: gameState.getRemainingPlayers()
+          playerOptions: gameState
+            .getRemainingPlayers()
             .filter((p) => p.playerId !== player.playerId)
             .map((p) => p.playerId),
           mustSelectOne: true,

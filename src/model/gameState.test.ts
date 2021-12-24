@@ -423,6 +423,82 @@ describe("GameState", () => {
     });
   });
 
+  describe("getRemainingPlayersExceptActivePlayer", () => {
+    it("Should return all players not in GAME_ENDED state, excluding active player", () => {
+      gameState = testInitialGameState({ numPlayers: 4 });
+      const player0 = gameState.players[0];
+      const player1 = gameState.players[1];
+      const player2 = gameState.players[2];
+      const player3 = gameState.players[3];
+
+      // active player is player0
+      let remainingPlayersExceptActivePlayer = gameState.getRemainingPlayersExceptActivePlayer();
+      expect(remainingPlayersExceptActivePlayer.length).to.be(3);
+      expect(remainingPlayersExceptActivePlayer).to.eql([
+        player1,
+        player2,
+        player3,
+      ]);
+
+      // next player
+      gameState.nextPlayer();
+      remainingPlayersExceptActivePlayer = gameState.getRemainingPlayersExceptActivePlayer();
+      expect(remainingPlayersExceptActivePlayer.length).to.be(3);
+      expect(remainingPlayersExceptActivePlayer).to.eql([
+        player0,
+        player2,
+        player3,
+      ]);
+
+      // put player2 in end state
+      gameState.getPlayer(player2.playerId).playerStatus =
+        PlayerStatus.GAME_ENDED;
+      remainingPlayersExceptActivePlayer = gameState.getRemainingPlayersExceptActivePlayer();
+      expect(remainingPlayersExceptActivePlayer.length).to.be(2);
+      expect(remainingPlayersExceptActivePlayer).to.eql([player0, player3]);
+
+      // next player
+      gameState.nextPlayer();
+      remainingPlayersExceptActivePlayer = gameState.getRemainingPlayersExceptActivePlayer();
+      expect(remainingPlayersExceptActivePlayer.length).to.be(2);
+      expect(remainingPlayersExceptActivePlayer).to.eql([player0, player1]);
+
+      // put active player in end state
+      gameState.getPlayer(player3.playerId).playerStatus =
+        PlayerStatus.GAME_ENDED;
+      remainingPlayersExceptActivePlayer = gameState.getRemainingPlayersExceptActivePlayer();
+      expect(remainingPlayersExceptActivePlayer.length).to.be(2);
+      expect(remainingPlayersExceptActivePlayer).to.eql([player0, player1]);
+    });
+    it("Should return empty list of only remaining player is the active player", () => {
+      gameState = testInitialGameState({ numPlayers: 4 });
+      const player0 = gameState.players[0];
+      const player1 = gameState.players[1];
+      const player2 = gameState.players[2];
+      const player3 = gameState.players[3];
+
+      // active player is player0
+      let remainingPlayersExceptActivePlayer = gameState.getRemainingPlayersExceptActivePlayer();
+      expect(remainingPlayersExceptActivePlayer.length).to.be(3);
+      expect(remainingPlayersExceptActivePlayer).to.eql([
+        player1,
+        player2,
+        player3,
+      ]);
+
+      // put player2 in end state
+      gameState.getPlayer(player1.playerId).playerStatus =
+        PlayerStatus.GAME_ENDED;
+      gameState.getPlayer(player2.playerId).playerStatus =
+        PlayerStatus.GAME_ENDED;
+      gameState.getPlayer(player3.playerId).playerStatus =
+        PlayerStatus.GAME_ENDED;
+      remainingPlayersExceptActivePlayer = gameState.getRemainingPlayersExceptActivePlayer();
+      expect(remainingPlayersExceptActivePlayer.length).to.be(0);
+      expect(remainingPlayersExceptActivePlayer).to.eql([]);
+    });
+  });
+
   describe("PLAY_CARD", () => {
     it("should be able to pay for the card to play it", () => {
       const card = Card.fromName(CardName.FARM);

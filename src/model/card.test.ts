@@ -2020,6 +2020,110 @@ describe("Card", () => {
           gameState.meadowCards.indexOf(CardName.LOOKOUT) >= 0;
         expect(lookoutInMeadow).to.be(true);
       });
+
+      it("should allow player to use both their inns", () => {
+        const cards = [
+          CardName.FARM,
+          CardName.FARM,
+          CardName.FARM,
+          CardName.FARM,
+          CardName.FARM,
+          CardName.FARM,
+          CardName.FARM,
+          CardName.FARM,
+        ];
+
+        gameState = testInitialGameState({ meadowCards: cards });
+        gameState.deck.addToStack(CardName.QUEEN);
+        gameState.deck.addToStack(CardName.QUEEN);
+        expect(gameState.meadowCards.length).to.be(8);
+
+        let player = gameState.getActivePlayer();
+
+        const card = Card.fromName(CardName.INN);
+        player.addToCity(gameState, CardName.INN);
+        player.addToCity(gameState, CardName.INN);
+
+        expect(player.numAvailableWorkers).to.be(2);
+        expect(player.getFirstPlayedCard(CardName.INN)).to.eql({
+          cardName: CardName.INN,
+          cardOwnerId: player.playerId,
+          usedForCritter: false,
+          workers: [],
+        });
+        expect(player.hasCardInCity(CardName.FARM)).to.be(false);
+        expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            clientOptions: {
+              playedCard: player.getFirstPlayedCard(CardName.INN),
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardContext: CardName.INN,
+            cardOptions: [
+              CardName.FARM,
+              CardName.FARM,
+              CardName.FARM,
+              CardName.FARM,
+              CardName.FARM,
+              CardName.FARM,
+              CardName.FARM,
+              CardName.FARM,
+            ],
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              selectedCards: [CardName.FARM],
+            },
+          },
+        ]);
+
+        expect(player.numAvailableWorkers).to.be(1);
+        expect(player.getPlayedCardInfos(CardName.FARM).length).to.be(1);
+        expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
+
+        // Back to the same player's turn
+        gameState.nextPlayer();
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            clientOptions: {
+              playedCard: player.getPlayedCardInfos(CardName.INN)[1],
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardContext: CardName.INN,
+            cardOptions: [
+              CardName.FARM,
+              CardName.FARM,
+              CardName.FARM,
+              CardName.FARM,
+              CardName.FARM,
+              CardName.FARM,
+              CardName.FARM,
+            ],
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              selectedCards: [CardName.FARM],
+            },
+          },
+        ]);
+
+        expect(player.numAvailableWorkers).to.be(0);
+        expect(player.getPlayedCardInfos(CardName.FARM).length).to.be(2);
+        expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
+      });
     });
 
     describe(CardName.INNKEEPER, () => {

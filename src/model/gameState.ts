@@ -704,7 +704,10 @@ export class GameState {
       throw new Error("Please select a card to visit");
     }
     const cardOwner = this.getPlayer(playedCard.cardOwnerId);
-    const origPlayedCard = cardOwner.findPlayedCard(playedCard);
+    const origPlayedCard = cardOwner.findPlayedCard(
+      playedCard,
+      false /* withWorker */
+    );
     if (!origPlayedCard) {
       throw new Error(
         `Could not find played card: ${JSON.stringify(playedCard, null, 2)}`

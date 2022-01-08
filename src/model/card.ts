@@ -1785,6 +1785,14 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         if (numResources < 2) {
           return "Need at least 2 resources to visit the Monastery";
         }
+        const playerOptions = gameState
+          .getRemainingPlayers()
+          .filter((p) => p.playerId !== player.playerId)
+          .map((p) => p.playerId);
+
+        if (playerOptions.length === 0) {
+          return "Need at least 1 player not in GAME_END state";
+        }
       }
       return null;
     },
@@ -1792,6 +1800,17 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       const player = gameState.getActivePlayer();
 
       if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
+        const playerOptions = gameState
+          .getRemainingPlayers()
+          .filter((p) => p.playerId !== player.playerId)
+          .map((p) => p.playerId);
+
+        if (playerOptions.length === 0) {
+          throw new Error(
+            `No available players -- you may only give resources to players who have not ended.`
+          );
+        }
+
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_RESOURCES,
           toSpend: true,
@@ -1815,43 +1834,24 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             )}`
           );
         }
-        const playerOptions = gameState
-          .getRemainingPlayersExceptActivePlayer()
-          .map((p) => p.playerId);
-
-        if (playerOptions.length > 0) {
-          gameState.pendingGameInputs.push({
-            inputType: GameInputType.SELECT_PLAYER,
-            prevInputType: gameInput.inputType,
-            label: [
-              "Select player to give ",
-              ...resourceMapToGameText(gameInput.clientOptions.resources),
-            ],
-            prevInput: gameInput,
-            cardContext: CardName.MONASTERY,
-            playerOptions: gameState
-              .getRemainingPlayers()
-              .filter((p) => p.playerId !== player.playerId)
-              .map((p) => p.playerId),
-            mustSelectOne: true,
-            clientOptions: {
-              selectedPlayer: null,
-            },
-          });
-        } else {
-          //  If cards or resources have to be given to a player and all other players have passed, discard instead
-          player.spendResources(gameInput.clientOptions.resources);
-          player.gainResources(gameState, {
-            [ResourceType.VP]: 4,
-          });
-          gameState.addGameLogFromCard(CardName.MONASTERY, [
-            "All other players have ended their games. ",
-            player,
-            " discarded ",
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_PLAYER,
+          prevInputType: gameInput.inputType,
+          label: [
+            "Select player to give ",
             ...resourceMapToGameText(gameInput.clientOptions.resources),
-            " to gain 4 VP.",
-          ]);
-        }
+          ],
+          prevInput: gameInput,
+          cardContext: CardName.MONASTERY,
+          playerOptions: gameState
+            .getRemainingPlayers()
+            .filter((p) => p.playerId !== player.playerId)
+            .map((p) => p.playerId),
+          mustSelectOne: true,
+          clientOptions: {
+            selectedPlayer: null,
+          },
+        });
       } else if (
         gameInput.inputType === GameInputType.SELECT_PLAYER &&
         gameInput.cardContext === CardName.MONASTERY
@@ -1919,20 +1919,13 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           if (!gameInput.isAutoAdvancedInput) {
             gameState.addGameLogFromCard(CardName.MONK, [
               player,
-              " declined to give up any BERRY.",
+              " decline to give up any BERRY.",
             ]);
           }
           return;
         }
         if (numBerries > 2) {
           throw new Error("Too many berries");
-        }
-        if (gameState.getRemainingPlayersExceptActivePlayer().length === 0) {
-          gameState.addGameLogFromCard(CardName.MONK, [
-            player,
-            " declined to give up any BERRY.",
-          ]);
-          return;
         }
         player.spendResources({
           [ResourceType.BERRY]: numBerries,
@@ -1944,7 +1937,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           prevInput: gameInput,
           cardContext: CardName.MONK,
           playerOptions: gameState
-            .getRemainingPlayersExceptActivePlayer()
+            .getRemainingPlayers()
+            .filter((p) => p.playerId !== player.playerId)
             .map((p) => p.playerId),
           mustSelectOne: true,
           clientOptions: {

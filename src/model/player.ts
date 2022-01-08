@@ -820,19 +820,20 @@ export class Player implements IGameTextEntity {
 
   findPlayedCard(
     playedCard: PlayedCardInfo,
-    withWorker: boolean = true
+    withOwnWorker: boolean = true
   ): Readonly<PlayedCardInfo> | undefined {
     const toOmit = ["workers"];
     const playedCardWoWorkers = omit(playedCard, toOmit);
 
     let ret: PlayedCardInfo | undefined;
     ret = this.getPlayedCardInfos(playedCard.cardName).find((x) => {
-      // If withWorker is specified, don't rely on the given playedCard's worker field.
-      // Instead make sure the card we're selecting has workers on it.
-      if (withWorker) {
+      // If withOwnWorker is specified, don't rely on the given playedCard's worker field.
+      // Instead make sure the card we're selecting has the player's own worker on it.
+      if (withOwnWorker) {
         return (
           isEqual(omit(x, toOmit), playedCardWoWorkers) &&
-          x?.workers?.length !== 0
+          x?.workers?.length !== 0 &&
+          x?.workers?.indexOf(this.playerId) !== -1
         );
       } else {
         return isEqual(x, playedCard);

@@ -6212,6 +6212,62 @@ describe("Card", () => {
         expect(targetPlayer.hasCardInCity(card.name)).to.be(true);
       });
 
+      it("should be able to exchange pirate ships", () => {
+        gameState = testInitialGameState({ numPlayers: 2 });
+
+        let player1 = gameState.players[0];
+        let player2 = gameState.players[1];
+
+        player1.addToCity(gameState, card.name);
+        player2.addToCity(gameState, card.name);
+        expect(player1.hasCardInCity(card.name)).to.be(true);
+        expect(player2.hasCardInCity(card.name)).to.be(true);
+        expect(player1.getPlayedCardInfos(card.name).length).to.be(1);
+        expect(player2.getPlayedCardInfos(card.name).length).to.be(1);
+
+        // Player 1 moves pirate ship to Player 2
+        [, gameState] = multiStepGameInputTest(
+          gameState,
+          [
+            {
+              inputType: GameInputType.VISIT_DESTINATION_CARD,
+              clientOptions: {
+                playedCard: player1.getFirstPlayedCard(card.name),
+              },
+            },
+          ],
+          { autoAdvance: true }
+        );
+
+        player1 = gameState.players[0];
+        player2 = gameState.players[1];
+        expect(player1.hasCardInCity(card.name)).to.be(false);
+        expect(player2.hasCardInCity(card.name)).to.be(true);
+        expect(player1.getPlayedCardInfos(card.name).length).to.be(0);
+        expect(player2.getPlayedCardInfos(card.name).length).to.be(2);
+
+        // Player 2 moves pirate ship to Player 1
+        [, gameState] = multiStepGameInputTest(
+          gameState,
+          [
+            {
+              inputType: GameInputType.VISIT_DESTINATION_CARD,
+              clientOptions: {
+                playedCard: player2.getPlayedCardInfos(card.name)[1],
+              },
+            },
+          ],
+          { autoAdvance: true }
+        );
+
+        player1 = gameState.players[0];
+        player2 = gameState.players[1];
+        expect(player1.hasCardInCity(card.name)).to.be(true);
+        expect(player2.hasCardInCity(card.name)).to.be(true);
+        expect(player1.getPlayedCardInfos(card.name).length).to.be(1);
+        expect(player2.getPlayedCardInfos(card.name).length).to.be(1);
+      });
+
       it("should auto advance moving to an opponent's city", () => {
         let targetPlayer = gameState.players[1];
 

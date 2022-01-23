@@ -1155,8 +1155,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       }
 
       const monestary = playedCards[CardName.MONASTERY];
-      if (!monestary) {
-        throw new Error("No monestary in city");
+      if (!monestary || monestary.length === 0) {
+        // if you don't have a monestery in your city, award 0 points
+        return 0;
       }
 
       if (monestary.length > 1) {
@@ -1167,7 +1168,8 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       const workersInMonestary = monestary[0].workers;
 
       if (!workersInMonestary) {
-        throw new Error("Invalid monestary worker list");
+        // if no workers in monestary, don't give points
+        return 0;
       }
 
       return workersInMonestary.length * 3;
@@ -1392,8 +1394,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       }
 
       const cemetary = playedCards[CardName.CEMETARY];
-      if (!cemetary) {
-        throw new Error("No cemetary in city");
+      if (!cemetary || cemetary.length === 0) {
+        // if no cemetary, we should not award any points for this event
+        return 0;
       }
 
       if (cemetary.length > 1) {
@@ -1404,7 +1407,8 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       const workersInCemetary = cemetary[0].workers;
 
       if (!workersInCemetary) {
-        throw new Error("Invalid cemetary worker list");
+        // similarly, we should just not award any points
+        return 0;
       }
 
       return workersInCemetary.length * 3;

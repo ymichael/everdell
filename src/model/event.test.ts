@@ -1003,6 +1003,220 @@ describe("Event", () => {
     });
   });
 
+  describe(EventName.SPECIAL_REMEMBERING_THE_FALLEN, () => {
+    it("should be able to claim event", () => {
+      const event = Event.fromName(EventName.SPECIAL_REMEMBERING_THE_FALLEN);
+      const gameInput = claimEventInput(event.name);
+
+      gameState.eventsMap[EventName.SPECIAL_REMEMBERING_THE_FALLEN] = null;
+
+      player.addToCity(gameState, CardName.CEMETARY);
+      player.addToCity(gameState, CardName.SHEPHERD);
+
+      // check if the player can claim the event
+      expect(event.canPlay(gameState, gameInput)).to.be(true);
+
+      // try to claim the event + check that you get the correct game state back
+      expect(gameState.pendingGameInputs).to.eql([]);
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_REMEMBERING_THE_FALLEN)
+      ).to.be(undefined);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
+
+      expect(event.getPoints(gameState, player.playerId)).to.be(0);
+    });
+    it("should calculate points correctly", () => {
+      const event = Event.fromName(EventName.SPECIAL_REMEMBERING_THE_FALLEN);
+      const gameInput = claimEventInput(event.name);
+
+      gameState.eventsMap[EventName.SPECIAL_REMEMBERING_THE_FALLEN] = null;
+
+      player.addToCity(gameState, CardName.CEMETARY);
+      player.addToCity(gameState, CardName.SHEPHERD);
+
+      // check if the player can claim the event
+      expect(event.canPlay(gameState, gameInput)).to.be(true);
+
+      // try to claim the event + check that you get the correct game state back
+      expect(gameState.pendingGameInputs).to.eql([]);
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_REMEMBERING_THE_FALLEN)
+      ).to.be(undefined);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
+
+      // no workers on cards = 0 points
+      expect(event.getPoints(gameState, player.playerId)).to.be(0);
+
+      // place 1st worker on card
+      player.placeWorkerOnCard(
+        gameState,
+        player.getFirstPlayedCard(CardName.CEMETARY)
+      );
+      expect(event.getPoints(gameState, player.playerId)).to.be(3);
+      expect(player.numAvailableWorkers).to.be(0);
+
+      // take back worker so we can test case where cemetary has 2 workers
+      let recallableWorkers = player.getRecallableWorkers();
+      player.recallWorker(gameState, recallableWorkers[0]);
+
+      // place a 2nd worker on card; requires having undertaker in city
+      player.addToCity(gameState, CardName.UNDERTAKER);
+      player.placeWorkerOnCard(
+        gameState,
+        player.getFirstPlayedCard(CardName.CEMETARY)
+      );
+      expect(event.getPoints(gameState, player.playerId)).to.be(6);
+    });
+    it("should handle case when no cemetery in city", () => {
+      const event = Event.fromName(EventName.SPECIAL_REMEMBERING_THE_FALLEN);
+      const gameInput = claimEventInput(event.name);
+
+      gameState.eventsMap[EventName.SPECIAL_REMEMBERING_THE_FALLEN] = null;
+
+      player.addToCity(gameState, CardName.CEMETARY);
+      player.addToCity(gameState, CardName.SHEPHERD);
+
+      // check if the player can claim the event
+      expect(event.canPlay(gameState, gameInput)).to.be(true);
+
+      // try to claim the event + check that you get the correct game state back
+      expect(gameState.pendingGameInputs).to.eql([]);
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_REMEMBERING_THE_FALLEN)
+      ).to.be(undefined);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
+
+      // no workers on cards = 0 points
+      expect(event.getPoints(gameState, player.playerId)).to.be(0);
+
+      // place 1st worker on card
+      player.placeWorkerOnCard(
+        gameState,
+        player.getFirstPlayedCard(CardName.CEMETARY)
+      );
+      expect(event.getPoints(gameState, player.playerId)).to.be(3);
+      expect(player.numAvailableWorkers).to.be(0);
+
+      player.removeCardFromCity(
+        gameState,
+        player.getFirstPlayedCard(CardName.CEMETARY)
+      );
+
+      expect(event.getPoints(gameState, player.playerId)).to.be(0);
+    });
+  });
+
+  describe(EventName.SPECIAL_PATH_OF_THE_PILGRIMS, () => {
+    it("should be able to claim event", () => {
+      const event = Event.fromName(EventName.SPECIAL_PATH_OF_THE_PILGRIMS);
+      const gameInput = claimEventInput(event.name);
+
+      gameState.eventsMap[EventName.SPECIAL_PATH_OF_THE_PILGRIMS] = null;
+
+      expect(event.canPlay(gameState, gameInput)).to.be(false);
+
+      player.addToCity(gameState, CardName.MONASTERY);
+      player.addToCity(gameState, CardName.WANDERER);
+
+      // check if the player can claim the event
+      expect(event.canPlay(gameState, gameInput)).to.be(true);
+
+      // try to claim the event + check that you get the correct game state back
+      expect(gameState.pendingGameInputs).to.eql([]);
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_PATH_OF_THE_PILGRIMS)
+      ).to.be(undefined);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
+
+      expect(event.getPoints(gameState, player.playerId)).to.be(0);
+    });
+    it("should calculate points correctly", () => {
+      const event = Event.fromName(EventName.SPECIAL_PATH_OF_THE_PILGRIMS);
+      const gameInput = claimEventInput(event.name);
+
+      gameState.eventsMap[EventName.SPECIAL_PATH_OF_THE_PILGRIMS] = null;
+
+      player.addToCity(gameState, CardName.WANDERER);
+      player.addToCity(gameState, CardName.MONASTERY);
+
+      // check if the player can claim the event
+      expect(event.canPlay(gameState, gameInput)).to.be(true);
+
+      // try to claim the event + check that you get the correct game state back
+      expect(gameState.pendingGameInputs).to.eql([]);
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_PATH_OF_THE_PILGRIMS)
+      ).to.be(undefined);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
+
+      // no workers on cards = 0 points
+      expect(event.getPoints(gameState, player.playerId)).to.be(0);
+
+      // place 1st worker on card
+      player.placeWorkerOnCard(
+        gameState,
+        player.getFirstPlayedCard(CardName.MONASTERY)
+      );
+      expect(event.getPoints(gameState, player.playerId)).to.be(3);
+      expect(player.numAvailableWorkers).to.be(0);
+
+      // take back worker so we can test case where monastery has 2 workers
+      let recallableWorkers = player.getRecallableWorkers();
+      player.recallWorker(gameState, recallableWorkers[0]);
+
+      // place a 2nd worker on card; requires having monk in city
+      player.addToCity(gameState, CardName.MONK);
+      player.placeWorkerOnCard(
+        gameState,
+        player.getFirstPlayedCard(CardName.MONASTERY)
+      );
+      expect(event.getPoints(gameState, player.playerId)).to.be(6);
+    });
+    it("should handle case when no monastery in city", () => {
+      const event = Event.fromName(EventName.SPECIAL_PATH_OF_THE_PILGRIMS);
+      const gameInput = claimEventInput(event.name);
+
+      gameState.eventsMap[EventName.SPECIAL_PATH_OF_THE_PILGRIMS] = null;
+
+      player.addToCity(gameState, CardName.WANDERER);
+      player.addToCity(gameState, CardName.MONASTERY);
+
+      // check if the player can claim the event
+      expect(event.canPlay(gameState, gameInput)).to.be(true);
+
+      // try to claim the event + check that you get the correct game state back
+      expect(gameState.pendingGameInputs).to.eql([]);
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_PATH_OF_THE_PILGRIMS)
+      ).to.be(undefined);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
+
+      // no workers on cards = 0 points
+      expect(event.getPoints(gameState, player.playerId)).to.be(0);
+
+      // place 1st worker on card
+      player.placeWorkerOnCard(
+        gameState,
+        player.getFirstPlayedCard(CardName.MONASTERY)
+      );
+      expect(event.getPoints(gameState, player.playerId)).to.be(3);
+      expect(player.numAvailableWorkers).to.be(0);
+
+      player.removeCardFromCity(
+        gameState,
+        player.getFirstPlayedCard(CardName.MONASTERY)
+      );
+
+      expect(event.getPoints(gameState, player.playerId)).to.be(0);
+    });
+  });
+
   describe(EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED, () => {
     it("should be able to claim event and store 5/5 revealed cards", () => {
       const event = Event.fromName(

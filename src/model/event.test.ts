@@ -1058,7 +1058,7 @@ describe("Event", () => {
       expect(player.numAvailableWorkers).to.be(0);
 
       // take back worker so we can test case where cemetary has 2 workers
-      let recallableWorkers = player.getRecallableWorkers();
+      const recallableWorkers = player.getRecallableWorkers();
       player.recallWorker(gameState, recallableWorkers[0]);
 
       // place a 2nd worker on card; requires having undertaker in city
@@ -1166,7 +1166,7 @@ describe("Event", () => {
       expect(player.numAvailableWorkers).to.be(0);
 
       // take back worker so we can test case where monastery has 2 workers
-      let recallableWorkers = player.getRecallableWorkers();
+      const recallableWorkers = player.getRecallableWorkers();
       player.recallWorker(gameState, recallableWorkers[0]);
 
       // place a 2nd worker on card; requires having monk in city

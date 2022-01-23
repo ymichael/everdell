@@ -1001,6 +1001,60 @@ describe("Event", () => {
       // 2pts per VP on Chapel -> if no VP on chapel, then no points
       expect(event.getPoints(gameState, player.playerId)).to.be(0);
     });
+
+    it("should handle case where there is no chapel in city", () => {
+      const event = Event.fromName(EventName.SPECIAL_PRISTINE_CHAPEL_CEILING);
+      const gameInput = claimEventInput(event.name);
+
+      gameState.eventsMap[EventName.SPECIAL_PRISTINE_CHAPEL_CEILING] = null;
+
+      player.addToCity(gameState, CardName.WOODCARVER);
+      player.addToCity(gameState, CardName.CHAPEL);
+      player.getPlayedCardInfos(CardName.CHAPEL).forEach((info) => {
+        info.resources = { [ResourceType.VP]: 2 };
+      });
+
+      // check if the player can claim the event
+      expect(event.canPlay(gameState, gameInput)).to.be(true);
+
+      // try to claim the event + check that you get the correct game state back
+      expect(gameState.pendingGameInputs).to.eql([]);
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_PRISTINE_CHAPEL_CEILING)
+      ).to.be(undefined);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        gameInput,
+        {
+          inputType: GameInputType.SELECT_RESOURCES,
+          toSpend: false,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          eventContext: EventName.SPECIAL_PRISTINE_CHAPEL_CEILING,
+          maxResources: 2,
+          minResources: 2,
+          clientOptions: {
+            resources: {
+              [ResourceType.TWIG]: 1,
+              [ResourceType.RESIN]: 1,
+            },
+          },
+        },
+      ]);
+
+      // check to make sure the right cards are still in the city
+      expect(player.hasCardInCity(CardName.CHAPEL)).to.eql(true);
+
+      expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
+      expect(event.getPoints(gameState, player.playerId)).to.be(4);
+
+      player.removeCardFromCity(
+        gameState,
+        player.getFirstPlayedCard(CardName.CHAPEL)
+      );
+
+      expect(event.getPoints(gameState, player.playerId)).to.be(0);
+    });
   });
 
   describe(EventName.SPECIAL_REMEMBERING_THE_FALLEN, () => {

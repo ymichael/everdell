@@ -1351,8 +1351,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       }
 
       const chapel = playedCards[CardName.CHAPEL];
-      if (!chapel) {
-        throw new Error("No chapel in city");
+      if (!chapel || chapel.length === 0) {
+        // if no chapel in city, should reward 0 points
+        return 0;
       }
 
       if (chapel.length > 1) {

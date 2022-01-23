@@ -1217,6 +1217,117 @@ describe("Event", () => {
     });
   });
 
+  describe(EventName.SPECIAL_MINISTERING_TO_MISCREANTS, () => {
+    it("should be able to claim event", () => {
+      const event = Event.fromName(EventName.SPECIAL_MINISTERING_TO_MISCREANTS);
+      const gameInput = claimEventInput(event.name);
+
+      gameState.eventsMap[EventName.SPECIAL_MINISTERING_TO_MISCREANTS] = null;
+
+      expect(event.canPlay(gameState, gameInput)).to.be(false);
+
+      player.addToCity(gameState, CardName.MONK);
+      player.addToCity(gameState, CardName.DUNGEON);
+
+      // check if the player can claim the event
+      expect(event.canPlay(gameState, gameInput)).to.be(true);
+
+      // try to claim the event + check that you get the correct game state back
+      expect(gameState.pendingGameInputs).to.eql([]);
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_MINISTERING_TO_MISCREANTS)
+      ).to.be(undefined);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
+
+      expect(event.getPoints(gameState, player.playerId)).to.be(0);
+    });
+    it("should calculate points correctly", () => {
+      const event = Event.fromName(EventName.SPECIAL_MINISTERING_TO_MISCREANTS);
+      const gameInput = claimEventInput(event.name);
+
+      gameState.eventsMap[EventName.SPECIAL_MINISTERING_TO_MISCREANTS] = null;
+
+      player.addToCity(gameState, CardName.DUNGEON);
+      player.addToCity(gameState, CardName.MONK);
+
+      // check if the player can claim the event
+      expect(event.canPlay(gameState, gameInput)).to.be(true);
+
+      // try to claim the event + check that you get the correct game state back
+      expect(gameState.pendingGameInputs).to.eql([]);
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_PATH_OF_THE_PILGRIMS)
+      ).to.be(undefined);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
+
+      // no workers on cards = 0 points
+      expect(event.getPoints(gameState, player.playerId)).to.be(0);
+
+      // add card to dungeon
+      player.updatePlayedCard(
+        gameState,
+        player.getFirstPlayedCard(CardName.DUNGEON),
+        {
+          pairedCards: [CardName.WIFE],
+        }
+      );
+      expect(event.getPoints(gameState, player.playerId)).to.be(3);
+
+      // add 2nd card to Dungeon; requires having ranger in city
+      player.addToCity(gameState, CardName.RANGER);
+      player.updatePlayedCard(
+        gameState,
+        player.getFirstPlayedCard(CardName.DUNGEON),
+        {
+          pairedCards: [CardName.WIFE, CardName.HUSBAND],
+        }
+      );
+      expect(event.getPoints(gameState, player.playerId)).to.be(6);
+    });
+    it("should give 0 points when no dungeon in city", () => {
+      const event = Event.fromName(EventName.SPECIAL_MINISTERING_TO_MISCREANTS);
+      const gameInput = claimEventInput(event.name);
+
+      gameState.eventsMap[EventName.SPECIAL_MINISTERING_TO_MISCREANTS] = null;
+
+      player.addToCity(gameState, CardName.DUNGEON);
+      player.addToCity(gameState, CardName.MONK);
+
+      // check if the player can claim the event
+      expect(event.canPlay(gameState, gameInput)).to.be(true);
+
+      // try to claim the event + check that you get the correct game state back
+      expect(gameState.pendingGameInputs).to.eql([]);
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_MINISTERING_TO_MISCREANTS)
+      ).to.be(undefined);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
+
+      // no critters in dungeon = 0 points
+      expect(event.getPoints(gameState, player.playerId)).to.be(0);
+
+      // put one card under dungeon
+      player.updatePlayedCard(
+        gameState,
+        player.getFirstPlayedCard(CardName.DUNGEON),
+        {
+          pairedCards: [CardName.WIFE],
+        }
+      );
+      expect(event.getPoints(gameState, player.playerId)).to.be(3);
+
+      player.removeCardFromCity(
+        gameState,
+        player.getFirstPlayedCard(CardName.DUNGEON)
+      );
+
+      expect(event.getPoints(gameState, player.playerId)).to.be(0);
+    });
+  });
+
   describe(EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED, () => {
     it("should be able to claim event and store 5/5 revealed cards", () => {
       const event = Event.fromName(

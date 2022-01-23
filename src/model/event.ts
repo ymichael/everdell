@@ -1119,7 +1119,8 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       }
       const playedDungeons = player.getPlayedCardInfos(CardName.DUNGEON);
       if (playedDungeons.length === 0) {
-        throw new Error("No dungeon in city");
+        // should return 0, not throw an error
+        return 0;
       }
       // you can only have one dungeon in your city
       const cardsInDungeon = playedDungeons[0].pairedCards;

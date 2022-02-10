@@ -273,6 +273,46 @@ describe("Location", () => {
       expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(2);
       expect(player.cardsInHand.length).to.be(1);
     });
+
+    it("player cannot discard more than 3 cards to get resources", () => {
+      const location = Location.fromName(
+        LocationName.FOREST_DISCARD_UP_TO_THREE_CARDS_TO_GAIN_WILD_PER_CARD
+      );
+      const gameInput = placeWorkerInput(location.name);
+      gameState.locationsMap[
+        LocationName.FOREST_DISCARD_UP_TO_THREE_CARDS_TO_GAIN_WILD_PER_CARD
+      ] = [];
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.HUSBAND);
+      player.addCardToHand(gameState, CardName.WIFE);
+      player.addCardToHand(gameState, CardName.WIFE);
+
+      expect(location.canPlay(gameState, gameInput)).to.be(true);
+      expect(player.cardsInHand.length).to.be(4);
+      expect(gameState.discardPile.length).to.be(0);
+
+      expect(() => {
+        multiStepGameInputTest(gameState, [
+          gameInput,
+          {
+            inputType: GameInputType.DISCARD_CARDS,
+            prevInputType: GameInputType.PLACE_WORKER,
+            locationContext:
+              LocationName.FOREST_DISCARD_UP_TO_THREE_CARDS_TO_GAIN_WILD_PER_CARD,
+            minCards: 0,
+            maxCards: 3,
+            clientOptions: {
+              cardsToDiscard: [
+                CardName.FARM,
+                CardName.WIFE,
+                CardName.WIFE,
+                CardName.HUSBAND,
+              ],
+            },
+          },
+        ]);
+      }).to.throwException(/not discard more than 3 cards/i);
+    });
   });
 
   describe("FOREST_DISCARD_ANY_THEN_DRAW_TWO_PER_CARD", () => {

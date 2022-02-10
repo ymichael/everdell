@@ -50,7 +50,7 @@ const Main: React.FC = () => {
           </a>
           <a
             target="_blank"
-            href="https://forms.gle/uQFqZnprsjonfRG69"
+            href="https://forms.gle/YYZmW3yDNaFnfSJC6"
             className={styles.link}
           >
             Share Feedback

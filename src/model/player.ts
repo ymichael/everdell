@@ -1190,11 +1190,8 @@ export class Player implements IGameTextEntity {
 
       // check if dungeon already has a card under it
       const pairedCards = playedDungeon.pairedCards;
-      console.log(pairedCards);
       if (pairedCards && pairedCards.length === 1) {
         // if so, check that player is not trying to dungeon a ranger
-        console.log("one paired card");
-        console.log(paymentOptions.cardToDungeon);
         if (paymentOptions.cardToDungeon === CardName.RANGER) {
           throw new Error(`Cannot use Ranger in second spot of the Dungeon`);
         }

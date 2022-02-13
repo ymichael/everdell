@@ -873,7 +873,9 @@ export class Player implements IGameTextEntity {
     // Need to have a critter to dungeon
     const playedCritters = this.getPlayedCritters();
     if (
+      // there are no played critters
       playedCritters.length === 0 ||
+      // dungeon has 1 and the only critter in your city is a ranger
       (numDungeoned === 1 &&
         playedCritters.length === 1 &&
         playedCritters[0].cardName === CardName.RANGER)
@@ -1185,6 +1187,19 @@ export class Player implements IGameTextEntity {
 
     if (paymentOptions.cardToDungeon) {
       const playedDungeon = this.getFirstPlayedCard(CardName.DUNGEON);
+
+      // check if dungeon already has a card under it
+      const pairedCards = playedDungeon.pairedCards;
+      console.log(pairedCards);
+      if (pairedCards && pairedCards.length === 1) {
+        // if so, check that player is not trying to dungeon a ranger
+        console.log("one paired card");
+        console.log(paymentOptions.cardToDungeon);
+        if (paymentOptions.cardToDungeon === CardName.RANGER) {
+          throw new Error(`Cannot use Ranger in second spot of the Dungeon`);
+        }
+      }
+
       this.removeCardFromCity(
         gameState,
         this.getFirstPlayedCard(paymentOptions.cardToDungeon)

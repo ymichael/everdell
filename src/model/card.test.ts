@@ -1273,6 +1273,7 @@ describe("Card", () => {
         );
 
         player.addToCity(gameState, CardName.RANGER);
+        player.addToCity(gameState, CardName.BARGE_TOAD);
         player.cardsInHand.push(CardName.FARM);
         expect(() => {
           [player, gameState] = multiStepGameInputTest(gameState, [
@@ -1283,6 +1284,63 @@ describe("Card", () => {
                   [ResourceType.RESIN]: 0,
                 },
                 cardToDungeon: CardName.RANGER,
+              },
+            }),
+          ]);
+        }).to.throwException(/Cannot use Ranger in second spot of the Dungeon/);
+      });
+
+      it("should NOT allow player to use 2nd spot in DUNGEON if only critter in city is RANGER", () => {
+        const card = Card.fromName(CardName.DUNGEON);
+        player.addToCity(gameState, card.name);
+        player.updatePlayedCard(
+          gameState,
+          player.getFirstPlayedCard(card.name),
+          {
+            pairedCards: [CardName.WIFE],
+          }
+        );
+
+        player.addToCity(gameState, CardName.RANGER);
+        player.cardsInHand.push(CardName.FARM);
+        expect(() => {
+          [player, gameState] = multiStepGameInputTest(gameState, [
+            playCardInput(CardName.FARM, {
+              paymentOptions: {
+                resources: {
+                  [ResourceType.TWIG]: 0,
+                  [ResourceType.RESIN]: 0,
+                },
+                cardToDungeon: CardName.RANGER,
+              },
+            }),
+          ]);
+        }).to.throwException(/Unable to invoke Dungeon/);
+      });
+
+      it("should NOT allow player to use DUNGEON more than twice", () => {
+        const card = Card.fromName(CardName.DUNGEON);
+        player.addToCity(gameState, card.name);
+        player.addToCity(gameState, CardName.RANGER);
+        player.addToCity(gameState, CardName.BARGE_TOAD);
+        player.updatePlayedCard(
+          gameState,
+          player.getFirstPlayedCard(card.name),
+          {
+            pairedCards: [CardName.WIFE, CardName.HUSBAND],
+          }
+        );
+
+        player.cardsInHand.push(CardName.FARM);
+        expect(() => {
+          [player, gameState] = multiStepGameInputTest(gameState, [
+            playCardInput(CardName.FARM, {
+              paymentOptions: {
+                resources: {
+                  [ResourceType.TWIG]: 0,
+                  [ResourceType.RESIN]: 0,
+                },
+                cardToDungeon: CardName.BARGE_TOAD,
               },
             }),
           ]);

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Card as CardModel } from "../model/card";
 import styles from "../styles/card.module.css";
-import { ResourceType, CardName, PlayedCardInfo } from "../model/types";
+import { ResourceType, CardName, PlayedCardInfo, ExpansionType } from "../model/types";
 import { Player } from "../model/player";
 import { resourceMapToGameText, toGameText } from "../model/gameText";
 import {
@@ -65,7 +65,7 @@ function romanize(num: number): string {
 // determine rarity label, which is unique vs. common and
 // critter vs. construction
 const getRarityLabel = (card: CardModel) => {
-  const rarity = card.isUnique ? "Unique" : "Common";
+  const rarity = card.expansion === ExpansionType.LEGENDS ? "Legendary" : card.isUnique ? "Unique" : "Common";
   const category = card.isCritter ? "Critter" : "Construction";
   return rarity + " " + category;
 };

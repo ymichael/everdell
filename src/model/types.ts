@@ -74,6 +74,7 @@ export type GameInputPlayCard = {
 
 export type GameInputClaimEvent = {
   inputType: GameInputType.CLAIM_EVENT;
+  prevInputType?: GameInputType;
   clientOptions: {
     event: EventName | null;
   };
@@ -262,6 +263,7 @@ export type GameInputMultiStep = (
   | GameInputSelectOptionGeneric
   | GameInputSelectPlayedAdornment
   | GameInputSelectRiverDestination
+  | GameInputClaimEvent
 ) &
   GameInputMultiStepContext & {
     prevInput?: GameInput;
@@ -515,6 +517,18 @@ export enum CardName {
   PIRATE = "Pirate",
   PIRATE_SHIP = "Pirate Ship",
   SHIPWRIGHT = "Shipwright",
+
+  // Legends
+  AMILLA_GLISTENDEW = "Amilla Glistendew",
+  BRIDGE_OF_THE_SKY = "Bridge of the Sky",
+  CIRRUS_WINDFALL = "Cirrus Windfall",
+  FORESIGHT = "Foresight",
+  FYNN_NOBLETAIL = "Fynn Nobletail",
+  MCGREGORS_MARKET = "McGregor's Market",
+  OLEANDERS_OPERA_HOUSE = "Oleadner's Opera House",
+  POE = "Poe",
+  SILVER_SCALE_SPRING = "Silver Scale Spring",
+  THE_GREEN_ACORN = "The Green Acorn",
 }
 
 export enum ResourceType {
@@ -641,6 +655,7 @@ export interface IGameTextEntity {
 export type GameOptions = {
   realtimePoints: boolean;
   pearlbrook: boolean;
+  legends: boolean;
 };
 
 export enum RiverDestinationType {
@@ -667,6 +682,7 @@ export enum RiverDestinationName {
 
 export enum ExpansionType {
   PEARLBROOK = "PEARLBROOK",
+  LEGENDS = "LEGENDS",
 }
 
 export enum AdornmentName {

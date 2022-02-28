@@ -109,7 +109,6 @@ export const gameTextToDebugStr = (gameText: GameText): string => {
             );
           }
           assertUnreachable(part, `Unexpected part: ${JSON.stringify(part)}`);
-          break;
         default:
           assertUnreachable(part, `Unexpected part: ${JSON.stringify(part)}`);
       }
@@ -121,6 +120,7 @@ const defaultGameOptions = (gameOptions: Partial<GameOptions>): GameOptions => {
   return {
     realtimePoints: false,
     pearlbrook: false,
+    legends: false,
     ...gameOptions,
   };
 };

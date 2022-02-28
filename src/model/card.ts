@@ -44,6 +44,8 @@ import {
 } from "./gameText";
 import { assertUnreachable } from "../utils";
 
+import amilla from "./cards/legends/amilla-glistendew";
+
 type NumWorkersInnerFn = (cardOwner: Player) => number;
 type ProductionInnerFn = (
   gameState: GameState,
@@ -3952,6 +3954,20 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       }
     },
   }),
+
+  /**
+   * WIP: Legends Cards
+   */
+  [CardName.AMILLA_GLISTENDEW]: amilla(),
+  [CardName.BRIDGE_OF_THE_SKY]: amilla(),
+  [CardName.CIRRUS_WINDFALL]: amilla(),
+  [CardName.FORESIGHT]: amilla(),
+  [CardName.FYNN_NOBLETAIL]: amilla(),
+  [CardName.MCGREGORS_MARKET]: amilla(),
+  [CardName.OLEANDERS_OPERA_HOUSE]: amilla(),
+  [CardName.POE]: amilla(),
+  [CardName.SILVER_SCALE_SPRING]: amilla(),
+  [CardName.THE_GREEN_ACORN]: amilla(),
 };
 
 function getPointsPerRarityLabel({

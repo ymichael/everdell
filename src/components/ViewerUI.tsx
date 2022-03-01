@@ -22,6 +22,11 @@ const ViewerUI: React.FC<{
           {player.adornmentsInHand.map((name, idx) => (
             <Adornment key={`adornment-${idx}`} name={name} />
           ))}
+          {player.legendsInHand.map((name, idx) => (
+            <ItemWrapper key={`legend-${idx}`}>
+              <Card name={name} />
+            </ItemWrapper>
+          ))}
         </div>
       </GameBlock>
       <GameBlock title={"Your City"}>

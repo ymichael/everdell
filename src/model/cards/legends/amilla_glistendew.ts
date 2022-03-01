@@ -1,17 +1,25 @@
 import { Card } from "../../card";
 import { GameState } from "../../gameState";
 import { toGameText } from "../../gameText";
-import { Player } from "../../player";
-import { CardName, CardType, ExpansionType, GameInput, GameInputType, ResourceType } from "../../types";
+import {
+  CardName,
+  CardType,
+  ExpansionType,
+  GameInput,
+  GameInputType,
+  ResourceType,
+} from "../../types";
 
-export default (): Card => new Card({
+export const amilla_glistendew: ConstructorParameters<typeof Card>[0] = {
   expansion: ExpansionType.LEGENDS,
   name: CardName.AMILLA_GLISTENDEW,
   associatedCard: CardName.QUEEN,
   cardType: CardType.DESTINATION,
-  cardDescription: toGameText("Achieve an Event, even if you don't meet the listed requirements."),
+  cardDescription: toGameText(
+    "Achieve an Event, even if you don't meet the listed requirements."
+  ),
   isConstruction: false,
-  isUnique: true,
+  isUnique: false,
   baseVP: 5,
   numInDeck: 1,
   resourcesToGain: {},
@@ -20,7 +28,11 @@ export default (): Card => new Card({
   },
   canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
     if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
-      if (Object.entries(gameState.eventsMap).every(([eventName, playerId]) => playerId !== null)) {
+      if (
+        Object.entries(gameState.eventsMap).every(
+          ([eventName, playerId]) => playerId !== null
+        )
+      ) {
         return "No playable events";
       }
     }
@@ -38,5 +50,5 @@ export default (): Card => new Card({
         },
       });
     }
-  }
-});
+  },
+};

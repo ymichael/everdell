@@ -58,6 +58,8 @@ export class Player implements IGameTextEntity {
   readonly adornmentsInHand: AdornmentName[];
   readonly playedAdornments: AdornmentName[];
 
+  readonly legendsInHand: CardName[];
+
   constructor({
     name,
     playerSecret = uuid(),
@@ -81,6 +83,7 @@ export class Player implements IGameTextEntity {
     playerStatus = PlayerStatus.DURING_SEASON,
     adornmentsInHand = [],
     playedAdornments = [],
+    legendsInHand = [],
   }: {
     name: string;
     playerSecret?: string;
@@ -97,6 +100,7 @@ export class Player implements IGameTextEntity {
     playerStatus?: PlayerStatus;
     adornmentsInHand?: AdornmentName[];
     playedAdornments?: AdornmentName[];
+    legendsInHand?: CardName[];
   }) {
     this.playerId = playerId;
     this.playerSecret = playerSecret;
@@ -114,6 +118,9 @@ export class Player implements IGameTextEntity {
     this.numAmbassadors = numAmbassadors;
     this.adornmentsInHand = adornmentsInHand;
     this.playedAdornments = playedAdornments;
+
+    // legends only
+    this.legendsInHand = legendsInHand;
 
     this._numCardsInHand = numCardsInHand;
   }
@@ -1654,12 +1661,15 @@ export class Player implements IGameTextEntity {
       numAdornmentsInHand: this.adornmentsInHand.length,
       cardsInHand: null,
       adornmentsInHand: [],
+      legendsInHand: [],
       playedAdornments: this.playedAdornments,
+      numLegendsInHand: this.legendsInHand.length,
       ...(includePrivate
         ? {
             playerSecret: this.playerSecret,
             cardsInHand: this.cardsInHand,
             adornmentsInHand: this.adornmentsInHand,
+            legendsInHand: this.legendsInHand,
           }
         : {}),
     });

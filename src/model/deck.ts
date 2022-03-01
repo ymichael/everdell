@@ -87,3 +87,29 @@ export const initialDeck = ({
 
   return cardStack;
 };
+
+export const legendaryCritters = (): CardStack<CardName> => {
+  return new CardStack<CardName>({
+    name: "Legendary Critters",
+    cards: [
+      CardName.AMILLA_GLISTENDEW,
+      CardName.CIRRUS_WINDFALL,
+      CardName.FORESIGHT,
+      CardName.FYNN_NOBLETAIL,
+      CardName.POE,
+    ],
+  });
+};
+
+export const legendaryConstructions = (): CardStack<CardName> => {
+  return new CardStack<CardName>({
+    name: "Legendary Constructions",
+    cards: [
+      CardName.BRIDGE_OF_THE_SKY,
+      CardName.MCGREGORS_MARKET,
+      CardName.OLEANDERS_OPERA_HOUSE,
+      CardName.SILVER_SCALE_SPRING,
+      CardName.THE_GREEN_ACORN,
+    ],
+  });
+};

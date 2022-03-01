@@ -31,7 +31,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     player.nextSeason();
 
     player.drawCards(gameState, idx);
-    player.addToCity(gameState, CardName.AMILLA_GLISTENDEW);
   });
 
   const game = new GameModel({
@@ -64,14 +63,14 @@ async function createGame(router: NextRouter, game: GameJSON) {
   }
 }
 
-const AmillaGlistendew: FunctionComponent<{ game: GameJSON }> = (props)=> {
+const AmillaGlistendew: FunctionComponent<{ game: GameJSON }> = (props) => {
   const router = useRouter();
 
   useEffect(() => {
     createGame(router, props.game);
-  }, [])
+  }, []);
 
-  return null
-}
+  return null;
+};
 
-export default AmillaGlistendew
+export default AmillaGlistendew;

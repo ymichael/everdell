@@ -44,7 +44,18 @@ import {
 } from "./gameText";
 import { assertUnreachable } from "../utils";
 
-import amilla from "./cards/legends/amilla-glistendew";
+import {
+  amilla_glistendew,
+  bridge_of_the_sky,
+  cirrus_windfall,
+  foresight,
+  fynn_nobletail,
+  mcgregors_market,
+  oleanders_opera_house,
+  poe,
+  silver_scale_spring,
+  the_green_acorn,
+} from "./cards/legends";
 
 type NumWorkersInnerFn = (cardOwner: Player) => number;
 type ProductionInnerFn = (
@@ -3958,16 +3969,16 @@ const CARD_REGISTRY: Record<CardName, Card> = {
   /**
    * WIP: Legends Cards
    */
-  [CardName.AMILLA_GLISTENDEW]: amilla(),
-  [CardName.BRIDGE_OF_THE_SKY]: amilla(),
-  [CardName.CIRRUS_WINDFALL]: amilla(),
-  [CardName.FORESIGHT]: amilla(),
-  [CardName.FYNN_NOBLETAIL]: amilla(),
-  [CardName.MCGREGORS_MARKET]: amilla(),
-  [CardName.OLEANDERS_OPERA_HOUSE]: amilla(),
-  [CardName.POE]: amilla(),
-  [CardName.SILVER_SCALE_SPRING]: amilla(),
-  [CardName.THE_GREEN_ACORN]: amilla(),
+  [CardName.AMILLA_GLISTENDEW]: new Card(amilla_glistendew),
+  [CardName.BRIDGE_OF_THE_SKY]: new Card(bridge_of_the_sky),
+  [CardName.CIRRUS_WINDFALL]: new Card(cirrus_windfall),
+  [CardName.FORESIGHT]: new Card(foresight),
+  [CardName.FYNN_NOBLETAIL]: new Card(fynn_nobletail),
+  [CardName.MCGREGORS_MARKET]: new Card(mcgregors_market),
+  [CardName.OLEANDERS_OPERA_HOUSE]: new Card(oleanders_opera_house),
+  [CardName.POE]: new Card(poe),
+  [CardName.SILVER_SCALE_SPRING]: new Card(silver_scale_spring),
+  [CardName.THE_GREEN_ACORN]: new Card(the_green_acorn),
 };
 
 function getPointsPerRarityLabel({

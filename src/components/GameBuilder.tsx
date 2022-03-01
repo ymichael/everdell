@@ -110,6 +110,10 @@ const GameBuilder: React.FC = () => {
                             <Field type="checkbox" name="pearlbrook" />
                             {"Pearlbrook"}
                           </label>
+                          <label className={styles.game_builder_option}>
+                            <Field type="checkbox" name="legends" />
+                            {"Legends"}
+                          </label>
                         </div>
                         <div>
                           <h3>Settings</h3>

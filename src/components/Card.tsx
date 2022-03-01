@@ -1,7 +1,12 @@
 import * as React from "react";
 import { Card as CardModel } from "../model/card";
 import styles from "../styles/card.module.css";
-import { ResourceType, CardName, PlayedCardInfo, ExpansionType } from "../model/types";
+import {
+  ResourceType,
+  CardName,
+  PlayedCardInfo,
+  ExpansionType,
+} from "../model/types";
 import { Player } from "../model/player";
 import { resourceMapToGameText, toGameText } from "../model/gameText";
 import {
@@ -65,7 +70,12 @@ function romanize(num: number): string {
 // determine rarity label, which is unique vs. common and
 // critter vs. construction
 const getRarityLabel = (card: CardModel) => {
-  const rarity = card.expansion === ExpansionType.LEGENDS ? "Legendary" : card.isUnique ? "Unique" : "Common";
+  const rarity =
+    card.expansion === ExpansionType.LEGENDS
+      ? "Legendary"
+      : card.isUnique
+      ? "Unique"
+      : "Common";
   const category = card.isCritter ? "Critter" : "Construction";
   return rarity + " " + category;
 };
@@ -75,13 +85,13 @@ const getAssociatedCard = (card: CardModel) => {
   if (card.associatedCard) {
     return card.associatedCard;
   } else {
-    if (card.name == CardName.FARM) {
+    if (card.name == CardName.FARM || card.name == CardName.MCGREGORS_MARKET) {
       return "Husband / Wife";
     } else if (card.name == CardName.EVERTREE) {
       return "Any";
     } else {
       throw new Error(
-        "Associated card is null and card is not Farm or Evertree"
+        "Associated card is null and card is not Farm, MgGregors Market, or Evertree"
       );
     }
   }

@@ -38,7 +38,11 @@
   display: flex;
   color: var(--text-color);
   text-transform: uppercase;
-  text-align: right;
+}
+
+.upgradeable_card {
+  display: flex;
+  text-transform: uppercase;
 }
 
 .associated_card_used {
@@ -46,13 +50,19 @@
   opacity: 0.3;
 }
 
-.associated_card > span {
+.associated_card > span,
+.upgradeable_card > span {
   border-radius: 5px 0 0 0;
   font-weight: var(--font-bold);
   color: var(--text-color-inv);
   padding: 5px;
   font-size: 10px;
   align-self: flex-end;
+}
+
+.upgradeable_card > span {
+  background: var(--color-legend);
+  border-radius: 0 5px 0 0;
 }
 
 .info_row {
@@ -90,6 +100,7 @@
   font-size: 10px;
   font-weight: var(--font-bold);
   color: var(--text-color-light);
+  text-align: center;
 }
 
 .circle {

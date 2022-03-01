@@ -13,7 +13,7 @@ import {
 export const amilla_glistendew: ConstructorParameters<typeof Card>[0] = {
   expansion: ExpansionType.LEGENDS,
   name: CardName.AMILLA_GLISTENDEW,
-  associatedCard: CardName.QUEEN,
+  upgradeableCard: CardName.QUEEN,
   cardType: CardType.DESTINATION,
   cardDescription: toGameText(
     "Achieve an Event, even if you don't meet the listed requirements."

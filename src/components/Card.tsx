@@ -24,6 +24,7 @@ const colorClassMap = {
   PRODUCTION: styles.color_production,
   DESTINATION: styles.color_destination,
   TRAVELER: styles.color_traveler,
+  LEGEND: styles.color_legend,
 };
 
 function romanize(num: number): string {
@@ -90,9 +91,7 @@ const getAssociatedCard = (card: CardModel) => {
     } else if (card.name == CardName.EVERTREE) {
       return "Any";
     } else {
-      throw new Error(
-        "Associated card is null and card is not Farm, MgGregors Market, or Evertree"
-      );
+      <>&nbsp;</>;
     }
   }
 };
@@ -166,6 +165,18 @@ const AssociatedCard = ({
   );
 };
 
+const UpgradeableCard = ({ card }: { card: CardModel }) => {
+  if (!card.upgradeableCard) {
+    return <>&nbsp;</>;
+  }
+
+  return (
+    <div className={styles.upgradeable_card}>
+      <span>{card.upgradeableCard}</span>
+    </div>
+  );
+};
+
 const Card: React.FC<{ name: CardName; usedForCritter?: boolean }> = ({
   name,
   usedForCritter = false,
@@ -195,6 +206,10 @@ const Card: React.FC<{ name: CardName; usedForCritter?: boolean }> = ({
               <span className={styles.expansion}>{card.expansion}</span>
             )}
           </div>
+        </div>
+        <div className={styles.rarity_label}>
+          {rarityLabel}
+          &nbsp;&middot;&nbsp;{romanize(card.numInDeck)}
         </div>
         <div className={styles.info_row}>
           <div className={styles.card_cost}>
@@ -231,10 +246,7 @@ const Card: React.FC<{ name: CardName; usedForCritter?: boolean }> = ({
           </div>
         </div>
         <div className={styles.card_bottom_row}>
-          <div className={styles.rarity_label}>
-            {rarityLabel}
-            &nbsp;&middot;&nbsp;{romanize(card.numInDeck)}
-          </div>
+          <UpgradeableCard card={card} />
           <AssociatedCard card={card} usedForCritter={usedForCritter} />
         </div>
       </div>

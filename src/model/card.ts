@@ -96,6 +96,7 @@ export class Card<TCardType extends CardType = CardType>
   readonly expansion: ExpansionType | null;
   readonly isConstruction: boolean;
   readonly associatedCard: CardName | null;
+  readonly upgradeableCard: CardName | null;
   readonly isOpenDestination: boolean;
 
   readonly productionInner: ProductionInnerFn | undefined;
@@ -115,6 +116,7 @@ export class Card<TCardType extends CardType = CardType>
     isUnique,
     isConstruction,
     associatedCard,
+    upgradeableCard,
     resourcesToGain,
     productionInner,
     productionWillActivateInner,
@@ -135,7 +137,8 @@ export class Card<TCardType extends CardType = CardType>
     isUnique: boolean;
     numInDeck: number;
     isConstruction: boolean;
-    associatedCard: CardName | null;
+    associatedCard?: CardName | null;
+    upgradeableCard?: CardName | null;
     isOpenDestination?: boolean;
     expansion?: ExpansionType | null;
     playInner?: GameStatePlayFn;
@@ -170,7 +173,8 @@ export class Card<TCardType extends CardType = CardType>
     this.isUnique = isUnique;
     this.isCritter = !isConstruction;
     this.isConstruction = isConstruction;
-    this.associatedCard = associatedCard;
+    this.associatedCard = associatedCard || null;
+    this.upgradeableCard = upgradeableCard || null;
     this.isOpenDestination = isOpenDestination;
     this.playInner = playInner;
     this.canPlayCheckInner = canPlayCheckInner;
@@ -267,7 +271,8 @@ export class Card<TCardType extends CardType = CardType>
       }
       if (
         !gameInput.clientOptions.fromMeadow &&
-        player.cardsInHand.indexOf(this.name) === -1
+        player.cardsInHand.indexOf(this.name) === -1 &&
+        player.legendsInHand.indexOf(this.name) === -1
       ) {
         return `Card ${
           this.name

@@ -1299,6 +1299,12 @@ export class GameState {
       riverDestinationMap: gameStateJSON.riverDestinationMap
         ? RiverDestinationMap.fromJSON(gameStateJSON.riverDestinationMap)
         : null,
+      legendaryCritters: gameStateJSON.legendaryCritters
+        ? CardStack.fromJSON(gameStateJSON.legendaryCritters)
+        : null,
+      legendaryConstructions: gameStateJSON.legendaryConstructions
+        ? CardStack.fromJSON(gameStateJSON.legendaryConstructions)
+        : null,
     });
   }
 
@@ -1536,6 +1542,15 @@ export class GameState {
       const card = Card.fromName(cardName);
       if (
         player.canAffordCard(card.name, true) &&
+        card.canPlayIgnoreCostAndSource(this, false /* strict */)
+      ) {
+        ret.push({ card: cardName, fromMeadow: false });
+      }
+    });
+    player.legendsInHand.forEach((cardName) => {
+      const card = Card.fromName(cardName);
+      if (
+        player.canAffordCard(card.name, false) &&
         card.canPlayIgnoreCostAndSource(this, false /* strict */)
       ) {
         ret.push({ card: cardName, fromMeadow: false });

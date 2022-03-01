@@ -21,6 +21,7 @@ import {
   LocationType,
   PlayerStatus,
   IGameTextEntity,
+  ExpansionType,
 } from "./types";
 import { PlayerJSON } from "./jsonTypes";
 import { GameState } from "./gameState";
@@ -1003,6 +1004,13 @@ export class Player implements IGameTextEntity {
       }
     }
 
+    // Check if you have the associated card if card is legendary
+    if (card.expansion === ExpansionType.LEGENDS) {
+      if (this.hasCardInCity(card.upgradeableCard!)) {
+        return true;
+      }
+    }
+
     // Queen (below 3 vp free)
     if (
       card.baseVP <= 3 &&
@@ -1238,6 +1246,8 @@ export class Player implements IGameTextEntity {
             `Unexpected card: ${paymentOptions.cardToUse}`
           );
       }
+    } else if (paymentOptions.cardToUpgrade) {
+      // Do something?
     }
   }
 

@@ -13,6 +13,7 @@ export const silver_scale_spring: ConstructorParameters<typeof Card>[0] = {
   expansion: ExpansionType.LEGENDS,
   name: CardName.OLEANDERS_OPERA_HOUSE,
   associatedCard: CardName.PEDDLER,
+  upgradeableCard: CardName.RUINS,
   cardType: CardType.TRAVELER,
   isConstruction: true,
   isUnique: false,

@@ -13,6 +13,7 @@ export const bridge_of_the_sky: ConstructorParameters<typeof Card>[0] = {
   expansion: ExpansionType.LEGENDS,
   name: CardName.BRIDGE_OF_THE_SKY,
   associatedCard: CardName.ARCHITECT,
+  upgradeableCard: CardName.CRANE,
   cardType: CardType.GOVERNANCE,
   cardDescription: toGameText([
     "You may play 1 ",

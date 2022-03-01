@@ -24,12 +24,14 @@
 
   --color-vp: #e3b117;
   --color-vp-text: #3c1346;
-  --color-dest: #943032;
+  --color-dest: #79191d;
   --color-prod: #88a55e;
   --color-pros: #534279;
   --color-trav: #796a53;
   --color-gov: #476f80;
   --color-loc: #13463c;
+  --color-sign: sienna;
+  --color-legend: #b94147;
 
   --color-loc-basic: #88a55e;
   --color-loc-forest: #4e5627;

@@ -13,6 +13,7 @@ export const the_green_acorn: ConstructorParameters<typeof Card>[0] = {
   expansion: ExpansionType.LEGENDS,
   name: CardName.THE_GREEN_ACORN,
   associatedCard: CardName.INNKEEPER,
+  upgradeableCard: CardName.INN,
   cardType: CardType.DESTINATION,
   isConstruction: true,
   isUnique: false,

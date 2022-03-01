@@ -6,14 +6,13 @@ import {
   CardType,
   ExpansionType,
   GameInput,
-  GameInputType,
   ResourceType,
 } from "../../types";
 
 export const cirrus_windfall: ConstructorParameters<typeof Card>[0] = {
   expansion: ExpansionType.LEGENDS,
   name: CardName.CIRRUS_WINDFALL,
-  associatedCard: CardName.POSTAL_PIGEON,
+  upgradeableCard: CardName.POSTAL_PIGEON,
   cardType: CardType.TRAVELER,
   cardDescription: toGameText(
     "You may play 1 CARD worth up to 3 POINT for free."

@@ -586,6 +586,19 @@ export type CardPaymentOptions = {
     | CardName.INN
     | null;
 
+  // Eg. farm, ruins, queen
+  cardToUpgrade?:
+    | CardName.QUEEN
+    | CardName.CRANE
+    | CardName.POSTAL_PIGEON
+    | CardName.HISTORIAN
+    | CardName.KING
+    | CardName.FARM
+    | CardName.THEATRE
+    | CardName.TEACHER
+    | CardName.RUINS
+    | CardName.INN;
+
   resources: {
     [ResourceType.TWIG]?: number;
     [ResourceType.BERRY]?: number;

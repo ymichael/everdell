@@ -12,7 +12,7 @@ import {
 export const fynn_nobletail: ConstructorParameters<typeof Card>[0] = {
   expansion: ExpansionType.LEGENDS,
   name: CardName.FYNN_NOBLETAIL,
-  associatedCard: CardName.KING,
+  upgradeableCard: CardName.KING,
   cardType: CardType.PROSPERITY,
   cardDescription: toGameText([
     "2 POINTS for each basic Event you achieved.",

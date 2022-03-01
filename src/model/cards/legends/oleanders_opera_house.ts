@@ -13,6 +13,7 @@ export const oleanders_opera_house: ConstructorParameters<typeof Card>[0] = {
   expansion: ExpansionType.LEGENDS,
   name: CardName.OLEANDERS_OPERA_HOUSE,
   associatedCard: CardName.BARD,
+  upgradeableCard: CardName.THEATRE,
   cardType: CardType.PROSPERITY,
   isConstruction: true,
   isUnique: false,

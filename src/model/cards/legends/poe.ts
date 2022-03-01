@@ -12,7 +12,7 @@ import {
 export const poe: ConstructorParameters<typeof Card>[0] = {
   expansion: ExpansionType.LEGENDS,
   name: CardName.POE,
-  associatedCard: CardName.TEACHER,
+  upgradeableCard: CardName.TEACHER,
   cardType: CardType.PRODUCTION,
   cardDescription: toGameText(
     "Discard any number of CARD, then draw up to your hand limit."

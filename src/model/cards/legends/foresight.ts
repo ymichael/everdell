@@ -12,7 +12,7 @@ import {
 export const foresight: ConstructorParameters<typeof Card>[0] = {
   expansion: ExpansionType.LEGENDS,
   name: CardName.FORESIGHT,
-  associatedCard: CardName.HISTORIAN,
+  upgradeableCard: CardName.HISTORIAN,
   cardType: CardType.TRAVELER,
   cardDescription: toGameText([
     "Draw 2 CARD after you play a ",

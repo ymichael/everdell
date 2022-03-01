@@ -3,7 +3,12 @@ import { Field, useField } from "formik";
 
 import { Card as CardModel } from "../model/card";
 import { Player } from "../model/player";
-import { ResourceType, CardName, GameInputPlayCard } from "../model/types";
+import {
+  ResourceType,
+  CardName,
+  GameInputPlayCard,
+  ExpansionType,
+} from "../model/types";
 import { ResourceTypeIcon, Description } from "./common";
 
 import styles from "../styles/CardPayment.module.css";
@@ -97,13 +102,17 @@ const OptionToUseAssociatedCard: React.FC<{
   const hasUnusedAssociatedCard =
     card.associatedCard &&
     viewingPlayer.hasUnusedByCritterConstruction(card.associatedCard);
+  const canUseCardForLegendary =
+    card.associatedCard &&
+    card.expansion == ExpansionType.LEGENDS &&
+    viewingPlayer.hasCardInCity(card.associatedCard!);
   const hasUnusedEvertree = viewingPlayer.hasUnusedByCritterConstruction(
     CardName.EVERTREE
   );
   const canUseAssociatedCard =
     card.isCritter && (hasUnusedAssociatedCard || hasUnusedEvertree);
-  if (!canUseAssociatedCard) {
-    return <></>;
+  if (!canUseAssociatedCard && !canUseCardForLegendary) {
+    return null;
   }
 
   const isChecked = !!meta.value;
@@ -231,6 +240,32 @@ const CardToDungeonForm: React.FC<{
   ) : null;
 };
 
+const CardToUpgradeForm: React.FC<{
+  name: string;
+  cardName: CardName;
+  viewingPlayer: Player;
+}> = ({ name, cardName, viewingPlayer }) => {
+  const card = CardModel.fromName(cardName);
+  if (!card.upgradeableCard) {
+    return null;
+  }
+
+  return (
+    <div className={styles.associated_card}>
+      <label>
+        <Description
+          textParts={[
+            { type: "text", text: "Use " },
+            CardModel.fromName(card.upgradeableCard!).getGameTextPart(),
+            { type: "text", text: " to play " },
+            CardModel.fromName(card.name).getGameTextPart(),
+          ]}
+        />
+      </label>
+    </div>
+  );
+};
+
 const CardPayment: React.FC<{
   name: string;
   resetPaymentOptions: (state: "DEFAULT" | "COST" | "ZERO") => void;
@@ -247,7 +282,9 @@ const CardPayment: React.FC<{
           resetPaymentOptions={resetPaymentOptions}
         />
       )}
-      <ResourcesForm name={`${name}.resources`} />
+      {clientOptions.paymentOptions.resources && (
+        <ResourcesForm name={`${name}.resources`} />
+      )}
       {clientOptions.card && (
         <CardToUseForm
           name={`${name}.cardToUse`}
@@ -260,6 +297,11 @@ const CardPayment: React.FC<{
         name={`${name}.cardToDungeon`}
         viewingPlayer={viewingPlayer}
         resetPaymentOptions={resetPaymentOptions}
+      />
+      <CardToUpgradeForm
+        name={`${name}.cardToUpgrade`}
+        cardName={clientOptions.card!}
+        viewingPlayer={viewingPlayer}
       />
     </div>
   );

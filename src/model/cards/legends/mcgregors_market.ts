@@ -1,5 +1,6 @@
 import { Card } from "../../card";
 import { GameState } from "../../gameState";
+import { GainMoreThan1AnyResource } from "../../gameStatePlayHelpers";
 import { toGameText } from "../../gameText";
 import {
   CardName,
@@ -13,6 +14,7 @@ export const mcgregors_market: ConstructorParameters<typeof Card>[0] = {
   expansion: ExpansionType.LEGENDS,
   name: CardName.MCGREGORS_MARKET,
   associatedCard: null,
+  upgradeableCard: CardName.FARM,
   cardType: CardType.PRODUCTION,
   isConstruction: true,
   isUnique: false,
@@ -24,11 +26,12 @@ export const mcgregors_market: ConstructorParameters<typeof Card>[0] = {
     [ResourceType.RESIN]: 2,
     [ResourceType.PEBBLE]: 1,
   },
-  canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
-    // TODO: Implement this
-    return null;
-  },
   playInner: (gameState: GameState, gameInput: GameInput) => {
-    // TODO: Implement this
+    const gainAnyHelper = new GainMoreThan1AnyResource({
+      cardContext: CardName.MCGREGORS_MARKET,
+    });
+    if (gainAnyHelper.matchesGameInput(gameInput)) {
+      gainAnyHelper.play(gameState, gameInput);
+    }
   },
 };

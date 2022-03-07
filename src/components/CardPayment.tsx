@@ -100,18 +100,16 @@ const OptionToUseAssociatedCard: React.FC<{
   const [_field, meta, helpers] = useField(name);
   const card = CardModel.fromName(cardName);
   const hasUnusedAssociatedCard =
+    card.expansion !== ExpansionType.LEGENDS &&
     card.associatedCard &&
     viewingPlayer.hasUnusedByCritterConstruction(card.associatedCard);
-  const canUseCardForLegendary =
-    card.associatedCard &&
-    card.expansion == ExpansionType.LEGENDS &&
-    viewingPlayer.hasCardInCity(card.associatedCard!);
   const hasUnusedEvertree = viewingPlayer.hasUnusedByCritterConstruction(
     CardName.EVERTREE
   );
   const canUseAssociatedCard =
     card.isCritter && (hasUnusedAssociatedCard || hasUnusedEvertree);
-  if (!canUseAssociatedCard && !canUseCardForLegendary) {
+
+  if (!canUseAssociatedCard) {
     return null;
   }
 
@@ -244,9 +242,9 @@ const CardToUpgradeForm: React.FC<{
   name: string;
   cardName: CardName;
   viewingPlayer: Player;
-}> = ({ name, cardName, viewingPlayer }) => {
+}> = ({ name, cardName }) => {
   const card = CardModel.fromName(cardName);
-  if (!card.upgradeableCard) {
+  if (card.expansion !== ExpansionType.LEGENDS || !card.upgradeableCard) {
     return null;
   }
 
@@ -255,7 +253,7 @@ const CardToUpgradeForm: React.FC<{
       <label>
         <Description
           textParts={[
-            { type: "text", text: "Use " },
+            { type: "text", text: "Upgrade " },
             CardModel.fromName(card.upgradeableCard!).getGameTextPart(),
             { type: "text", text: " to play " },
             CardModel.fromName(card.name).getGameTextPart(),
@@ -298,11 +296,13 @@ const CardPayment: React.FC<{
         viewingPlayer={viewingPlayer}
         resetPaymentOptions={resetPaymentOptions}
       />
-      <CardToUpgradeForm
-        name={`${name}.cardToUpgrade`}
-        cardName={clientOptions.card!}
-        viewingPlayer={viewingPlayer}
-      />
+      {clientOptions.card && (
+        <CardToUpgradeForm
+          name={`${name}.cardToUpgrade`}
+          cardName={clientOptions.card}
+          viewingPlayer={viewingPlayer}
+        />
+      )}
     </div>
   );
 };

@@ -10,7 +10,7 @@ import {
   ResourceType,
 } from "../../types";
 
-export const mcgregors_market: ConstructorParameters<typeof Card>[0] = {
+export const mcgregorsMarket: ConstructorParameters<typeof Card>[0] = {
   expansion: ExpansionType.LEGENDS,
   name: CardName.MCGREGORS_MARKET,
   associatedCard: null,

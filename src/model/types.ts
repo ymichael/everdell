@@ -525,7 +525,7 @@ export enum CardName {
   FORESIGHT = "Foresight",
   FYNN_NOBLETAIL = "Fynn Nobletail",
   MCGREGORS_MARKET = "McGregor's Market",
-  OLEANDERS_OPERA_HOUSE = "Oleadner's Opera House",
+  OLEANDERS_OPERA_HOUSE = "Oleander's Opera House",
   POE = "Poe",
   SILVER_SCALE_SPRING = "Silver Scale Spring",
   THE_GREEN_ACORN = "The Green Acorn",

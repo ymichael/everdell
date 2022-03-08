@@ -45,16 +45,16 @@ import {
 import { assertUnreachable } from "../utils";
 
 import {
-  amilla_glistendew,
-  bridge_of_the_sky,
-  cirrus_windfall,
+  amillaGlistendew,
+  bridgeOfTheSky,
+  cirrusWindfall,
   foresight,
-  fynn_nobletail,
-  mcgregors_market,
-  oleanders_opera_house,
+  fynnNobletail,
+  mcgregorsMarket,
+  oleandersOperaHouse,
   poe,
-  silver_scale_spring,
-  the_green_acorn,
+  silverScaleSpring,
+  theGreenAcorn,
 } from "./cards/legends";
 
 type NumWorkersInnerFn = (cardOwner: Player) => number;
@@ -619,7 +619,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       " in your city.",
     ]),
     // 1 point per common construction
-    pointsInner: getPointsPerRarityLabel({ isCritter: false, isUnique: false }),
+    pointsInner: getPointsPerRarityLabel({
+      isCritter: false,
+      isUnique: false,
+      pointsEach: 1,
+    }),
   }),
   [CardName.CEMETARY]: new Card({
     name: CardName.CEMETARY,
@@ -2034,7 +2038,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       " in your city",
     ]),
     // 1 point per unique construction
-    pointsInner: getPointsPerRarityLabel({ isCritter: false, isUnique: true }),
+    pointsInner: getPointsPerRarityLabel({
+      isCritter: false,
+      isUnique: true,
+      pointsEach: 1,
+    }),
   }),
   [CardName.PEDDLER]: new Card({
     name: CardName.PEDDLER,
@@ -2726,7 +2734,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       " in your city.",
     ]),
     // 1 point per common critter
-    pointsInner: getPointsPerRarityLabel({ isCritter: true, isUnique: false }),
+    pointsInner: getPointsPerRarityLabel({
+      isCritter: true,
+      isUnique: false,
+      pointsEach: 1,
+    }),
   }),
   [CardName.SHEPHERD]: new Card({
     name: CardName.SHEPHERD,
@@ -3146,7 +3158,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       " in your city.",
     ]),
     // 1 point per unique critter
-    pointsInner: getPointsPerRarityLabel({ isCritter: true, isUnique: true }),
+    pointsInner: getPointsPerRarityLabel({
+      isCritter: true,
+      isUnique: true,
+      pointsEach: 1,
+    }),
   }),
   [CardName.TWIG_BARGE]: new Card({
     name: CardName.TWIG_BARGE,
@@ -3974,35 +3990,37 @@ const CARD_REGISTRY: Record<CardName, Card> = {
   /**
    * WIP: Legends Cards
    */
-  [CardName.AMILLA_GLISTENDEW]: new Card(amilla_glistendew),
-  [CardName.BRIDGE_OF_THE_SKY]: new Card(bridge_of_the_sky),
-  [CardName.CIRRUS_WINDFALL]: new Card(cirrus_windfall),
+  [CardName.AMILLA_GLISTENDEW]: new Card(amillaGlistendew),
+  [CardName.BRIDGE_OF_THE_SKY]: new Card(bridgeOfTheSky),
+  [CardName.CIRRUS_WINDFALL]: new Card(cirrusWindfall),
   [CardName.FORESIGHT]: new Card(foresight),
-  [CardName.FYNN_NOBLETAIL]: new Card(fynn_nobletail),
-  [CardName.MCGREGORS_MARKET]: new Card(mcgregors_market),
-  [CardName.OLEANDERS_OPERA_HOUSE]: new Card(oleanders_opera_house),
+  [CardName.FYNN_NOBLETAIL]: new Card(fynnNobletail),
+  [CardName.MCGREGORS_MARKET]: new Card(mcgregorsMarket),
+  [CardName.OLEANDERS_OPERA_HOUSE]: new Card(oleandersOperaHouse),
   [CardName.POE]: new Card(poe),
-  [CardName.SILVER_SCALE_SPRING]: new Card(silver_scale_spring),
-  [CardName.THE_GREEN_ACORN]: new Card(the_green_acorn),
+  [CardName.SILVER_SCALE_SPRING]: new Card(silverScaleSpring),
+  [CardName.THE_GREEN_ACORN]: new Card(theGreenAcorn),
 };
 
-function getPointsPerRarityLabel({
+export function getPointsPerRarityLabel({
   isCritter,
   isUnique,
+  pointsEach,
 }: {
   isCritter: boolean;
   isUnique: boolean;
+  pointsEach: number;
 }): GameStateCountPointsFn {
   return (gameState: GameState, playerId: string) => {
     const player = gameState.getPlayer(playerId);
-    let numCardsToCount = 0;
+    let numPoints = 0;
     player.forEachPlayedCard(({ cardName }) => {
       const card = Card.fromName(cardName as CardName);
       if (card.isCritter === isCritter && card.isUnique === isUnique) {
-        numCardsToCount++;
+        numPoints += pointsEach;
       }
     });
-    return numCardsToCount;
+    return numPoints;
   };
 }
 

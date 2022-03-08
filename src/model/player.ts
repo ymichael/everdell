@@ -1052,7 +1052,7 @@ export class Player implements IGameTextEntity {
     paidResources: CardCost,
     cardCost: CardCost,
     // Discounts are exclusive so we use a single argument to represent them
-    discount: ResourceType.BERRY | "ANY 3" | "ANY 1" | null = null,
+    discount: ResourceType.BERRY | "ANY 4" | "ANY 3" | "ANY 1" | null = null,
     errorIfOverpay = true
   ): string | null {
     const needToPay = {
@@ -1101,6 +1101,17 @@ export class Player implements IGameTextEntity {
     const payingWithRemainerSum = sumResources(payingWith);
 
     // With wild discount, should have outstandingOwedSum left
+    if (discount === "ANY 4" && outstandingOwedSum <= 4) {
+      if (
+        errorIfOverpay &&
+        payingWithSum !== 0 &&
+        payingWithSum + 4 > needToPaySum
+      ) {
+        return "Cannot overpay for cards";
+      }
+      return null;
+    }
+
     if (discount === "ANY 3" && outstandingOwedSum <= 3) {
       if (
         errorIfOverpay &&
@@ -1153,7 +1164,7 @@ export class Player implements IGameTextEntity {
     paidResources: CardCost,
     cardCost: CardCost,
     // Discounts are exclusive so we use a single argument to represent them
-    discount: ResourceType.BERRY | "ANY 3" | "ANY 1" | null = null,
+    discount: ResourceType.BERRY | "ANY 4" | "ANY 3" | "ANY 1" | null = null,
     errorIfOverpay = true
   ): boolean {
     return !this.validatePaidResources(

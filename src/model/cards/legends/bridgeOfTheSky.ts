@@ -9,7 +9,7 @@ import {
   ResourceType,
 } from "../../types";
 
-export const bridge_of_the_sky: ConstructorParameters<typeof Card>[0] = {
+export const bridgeOfTheSky: ConstructorParameters<typeof Card>[0] = {
   expansion: ExpansionType.LEGENDS,
   name: CardName.BRIDGE_OF_THE_SKY,
   associatedCard: CardName.ARCHITECT,
@@ -17,11 +17,14 @@ export const bridge_of_the_sky: ConstructorParameters<typeof Card>[0] = {
   cardType: CardType.GOVERNANCE,
   cardDescription: toGameText([
     "You may play 1 ",
+    { type: "em", text: "Construction " },
+    "for -3 ANY, then place it on top of this card. ",
+    { type: "HR" },
+    "PLUS is equal to the ",
+    { type: "points", value: 0 },
+    " value of the ",
     { type: "em", text: "Construction" },
-    "for -3 ANY, then place it on top of this card.",
-    "PLUS is equal to the POINT value of the ",
-    { type: "em", text: "Construction" },
-    "on top of this card.",
+    " on top of this card.",
   ]),
   isConstruction: true,
   isUnique: false,

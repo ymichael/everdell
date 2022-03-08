@@ -1,15 +1,8 @@
-import { Card } from "../../card";
-import { GameState } from "../../gameState";
+import { Card, getPointsPerRarityLabel } from "../../card";
 import { toGameText } from "../../gameText";
-import {
-  CardName,
-  CardType,
-  ExpansionType,
-  GameInput,
-  ResourceType,
-} from "../../types";
+import { CardName, CardType, ExpansionType, ResourceType } from "../../types";
 
-export const oleanders_opera_house: ConstructorParameters<typeof Card>[0] = {
+export const oleandersOperaHouse: ConstructorParameters<typeof Card>[0] = {
   expansion: ExpansionType.LEGENDS,
   name: CardName.OLEANDERS_OPERA_HOUSE,
   associatedCard: CardName.BARD,
@@ -21,7 +14,7 @@ export const oleanders_opera_house: ConstructorParameters<typeof Card>[0] = {
   numInDeck: 1,
   cardDescription: toGameText([
     { type: "points", value: 2 },
-    "for each ",
+    " for each ",
     { type: "em", text: "Unique Critter" },
     " in your city.",
   ]),
@@ -30,11 +23,9 @@ export const oleanders_opera_house: ConstructorParameters<typeof Card>[0] = {
     [ResourceType.RESIN]: 2,
     [ResourceType.PEBBLE]: 2,
   },
-  canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
-    // TODO: Implement this
-    return null;
-  },
-  playInner: (gameState: GameState, gameInput: GameInput) => {
-    // TODO: Implement this
-  },
+  pointsInner: getPointsPerRarityLabel({
+    isCritter: true,
+    isUnique: true,
+    pointsEach: 2,
+  }),
 };

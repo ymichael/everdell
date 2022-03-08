@@ -10,7 +10,7 @@ import {
   ResourceType,
 } from "../../types";
 
-export const amilla_glistendew: ConstructorParameters<typeof Card>[0] = {
+export const amillaGlistendew: ConstructorParameters<typeof Card>[0] = {
   expansion: ExpansionType.LEGENDS,
   name: CardName.AMILLA_GLISTENDEW,
   upgradeableCard: CardName.QUEEN,

@@ -9,26 +9,23 @@ import {
   ResourceType,
 } from "../../types";
 
-export const silver_scale_spring: ConstructorParameters<typeof Card>[0] = {
+export const cirrusWindfall: ConstructorParameters<typeof Card>[0] = {
   expansion: ExpansionType.LEGENDS,
-  name: CardName.OLEANDERS_OPERA_HOUSE,
-  associatedCard: CardName.PEDDLER,
-  upgradeableCard: CardName.RUINS,
+  name: CardName.CIRRUS_WINDFALL,
+  upgradeableCard: CardName.POSTAL_PIGEON,
   cardType: CardType.TRAVELER,
-  isConstruction: true,
-  isUnique: false,
-  baseVP: 2,
-  numInDeck: 1,
   cardDescription: toGameText([
-    "Play this card under a ",
-    { type: "em", text: "Construction" },
-    " in your city.",
-    "Gain that ",
-    { type: "em", text: "Construction" },
-    "'s resources and draw 2 CARD",
+    "You may play 1 CARD worth up to ",
+    { type: "points", value: 3 },
+    " for free.",
   ]),
+  isConstruction: false,
+  isUnique: false,
+  baseVP: 4,
+  numInDeck: 1,
+  resourcesToGain: {},
   baseCost: {
-    [ResourceType.PEBBLE]: 1,
+    [ResourceType.BERRY]: 4,
   },
   canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
     // TODO: Implement this

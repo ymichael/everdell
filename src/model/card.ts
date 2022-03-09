@@ -1785,14 +1785,15 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         if (numResources < 2) {
           return "Need at least 2 resources to visit the Monastery";
         }
-        const playerOptions = gameState
-          .getRemainingPlayers()
-          .filter((p) => p.playerId !== player.playerId)
-          .map((p) => p.playerId);
+        // TODO: decide if we want to implement this rule
+        // const playerOptions = gameState
+        //   .getRemainingPlayers()
+        //   .filter((p) => p.playerId !== player.playerId)
+        //   .map((p) => p.playerId);
 
-        if (playerOptions.length === 0) {
-          return "Need at least 1 player not in GAME_END state";
-        }
+        // if (playerOptions.length === 0) {
+        //   return "Need at least 1 player not in GAME_END state";
+        // }
       }
       return null;
     },
@@ -1800,16 +1801,20 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       const player = gameState.getActivePlayer();
 
       if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
-        const playerOptions = gameState
-          .getRemainingPlayers()
+        const playerOptions = gameState.players
           .filter((p) => p.playerId !== player.playerId)
           .map((p) => p.playerId);
+        // TODO: decide if we want to implement this rule
+        // const playerOptions = gameState
+        //   .getRemainingPlayers()
+        //   .filter((p) => p.playerId !== player.playerId)
+        //   .map((p) => p.playerId);
 
-        if (playerOptions.length === 0) {
-          throw new Error(
-            `No available players -- you may only give resources to players who have not ended.`
-          );
-        }
+        // if (playerOptions.length === 0) {
+        //   throw new Error(
+        //     `No available players -- you may only give resources to players who have not ended.`
+        //   );
+        // }
 
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_RESOURCES,
@@ -1843,8 +1848,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           ],
           prevInput: gameInput,
           cardContext: CardName.MONASTERY,
-          playerOptions: gameState
-            .getRemainingPlayers()
+          playerOptions: gameState.players
+            // TODO: decide if we want to implement this rule
+            // .getRemainingPlayers()
             .filter((p) => p.playerId !== player.playerId)
             .map((p) => p.playerId),
           mustSelectOne: true,
@@ -1936,8 +1942,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           label: `Select player to give ${numBerries} BERRY`,
           prevInput: gameInput,
           cardContext: CardName.MONK,
-          playerOptions: gameState
-            .getRemainingPlayers()
+          playerOptions: gameState.players
+            // TODO: decide if we want to implement this rule
+            // .getRemainingPlayers()
             .filter((p) => p.playerId !== player.playerId)
             .map((p) => p.playerId),
           mustSelectOne: true,

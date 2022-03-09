@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Textfit } from "react-textfit";
 import { Card as CardModel } from "../model/card";
 import styles from "../styles/card.module.css";
 import {
@@ -187,24 +188,24 @@ const Card: React.FC<{ name: CardName; usedForCritter?: boolean }> = ({
   return (
     <>
       <div className={styles.card}>
-        <div className={styles.card_header_row}>
-          <div className={[styles.circle, styles.card_header_symbol].join(" ")}>
+        <div className={[styles.card_header_row, colorClass].join(" ")}>
+          <div className={[styles.circle].join(" ")}>
             <CardTypeSymbol cardType={card.cardType} />
           </div>
-          <div
-            className={[
-              styles.circle,
-              styles.color_victory_point,
-              styles.card_header_vp,
-            ].join(" ")}
-          >
-            <span className={styles.card_header_vp_number}>{card.baseVP}</span>
-          </div>
-          <div className={[styles.card_header, colorClass].join(" ")}>
-            <span>{name}</span>
+          <div className={styles.card_header}>
+            <span>
+              <Textfit min={1} max={12} mode="single">
+                {name}
+              </Textfit>
+            </span>
             {card.expansion && (
               <span className={styles.expansion}>{card.expansion}</span>
             )}
+          </div>
+          <div
+            className={[styles.circle, styles.color_victory_point].join(" ")}
+          >
+            <span className={styles.card_header_vp_number}>{card.baseVP}</span>
           </div>
         </div>
         <div className={styles.rarity_label}>

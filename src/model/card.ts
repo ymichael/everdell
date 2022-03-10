@@ -1801,9 +1801,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       const player = gameState.getActivePlayer();
 
       if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
-        const playerOptions = gameState.players
-          .filter((p) => p.playerId !== player.playerId)
-          .map((p) => p.playerId);
         // TODO: decide if we want to implement this rule
         // const playerOptions = gameState
         //   .getRemainingPlayers()

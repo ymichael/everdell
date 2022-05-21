@@ -23,10 +23,38 @@ class MyDocument extends Document<{
         <body>
           <Main />
           <NextScript />
+          <Analytics />
         </body>
       </Html>
     );
   }
+}
+
+function Analytics() {
+  const gtagId = process.env.NEXT_PUBLIC_GTAG_ID;
+  return gtagId ? (
+    <>
+      {/* Global Site Tag (gtag.js) - Google Analytics */}
+      <script
+        async
+        src={`https://www.googletagmanager.com/gtag/js?id=${gtagId}`}
+      />
+      <script
+        id="gtag-init"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: `
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag("js", new Date());
+          gtag("config", ${JSON.stringify(gtagId)});
+        `,
+        }}
+      />
+    </>
+  ) : null;
 }
 
 export default MyDocument;

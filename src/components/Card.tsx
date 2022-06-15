@@ -1,7 +1,13 @@
 import * as React from "react";
+import { Textfit } from "react-textfit";
 import { Card as CardModel } from "../model/card";
 import styles from "../styles/card.module.css";
-import { ResourceType, CardName, PlayedCardInfo } from "../model/types";
+import {
+  ResourceType,
+  CardName,
+  PlayedCardInfo,
+  ExpansionType,
+} from "../model/types";
 import { Player } from "../model/player";
 import { resourceMapToGameText, toGameText } from "../model/gameText";
 import {
@@ -19,6 +25,7 @@ const colorClassMap = {
   PRODUCTION: styles.color_production,
   DESTINATION: styles.color_destination,
   TRAVELER: styles.color_traveler,
+  LEGEND: styles.color_legend,
 };
 
 function romanize(num: number): string {
@@ -65,7 +72,12 @@ function romanize(num: number): string {
 // determine rarity label, which is unique vs. common and
 // critter vs. construction
 const getRarityLabel = (card: CardModel) => {
-  const rarity = card.isUnique ? "Unique" : "Common";
+  const rarity =
+    card.expansion === ExpansionType.LEGENDS
+      ? "Legendary"
+      : card.isUnique
+      ? "Unique"
+      : "Common";
   const category = card.isCritter ? "Critter" : "Construction";
   return rarity + " " + category;
 };
@@ -75,14 +87,12 @@ const getAssociatedCard = (card: CardModel) => {
   if (card.associatedCard) {
     return card.associatedCard;
   } else {
-    if (card.name == CardName.FARM) {
+    if (card.name == CardName.FARM || card.name == CardName.MCGREGORS_MARKET) {
       return "Husband / Wife";
     } else if (card.name == CardName.EVERTREE) {
       return "Any";
     } else {
-      throw new Error(
-        "Associated card is null and card is not Farm or Evertree"
-      );
+      <>&nbsp;</>;
     }
   }
 };
@@ -156,6 +166,18 @@ const AssociatedCard = ({
   );
 };
 
+const UpgradeableCard = ({ card }: { card: CardModel }) => {
+  if (!card.upgradeableCard) {
+    return <>&nbsp;</>;
+  }
+
+  return (
+    <div className={styles.upgradeable_card}>
+      <span>{card.upgradeableCard}</span>
+    </div>
+  );
+};
+
 const Card: React.FC<{ name: CardName; usedForCritter?: boolean }> = ({
   name,
   usedForCritter = false,
@@ -166,25 +188,29 @@ const Card: React.FC<{ name: CardName; usedForCritter?: boolean }> = ({
   return (
     <>
       <div className={styles.card}>
-        <div className={styles.card_header_row}>
-          <div className={[styles.circle, styles.card_header_symbol].join(" ")}>
+        <div className={[styles.card_header_row, colorClass].join(" ")}>
+          <div className={[styles.circle].join(" ")}>
             <CardTypeSymbol cardType={card.cardType} />
           </div>
-          <div
-            className={[
-              styles.circle,
-              styles.color_victory_point,
-              styles.card_header_vp,
-            ].join(" ")}
-          >
-            <span className={styles.card_header_vp_number}>{card.baseVP}</span>
-          </div>
-          <div className={[styles.card_header, colorClass].join(" ")}>
-            <span>{name}</span>
+          <div className={styles.card_header}>
+            <span>
+              <Textfit min={1} max={12} mode="single">
+                {name}
+              </Textfit>
+            </span>
             {card.expansion && (
               <span className={styles.expansion}>{card.expansion}</span>
             )}
           </div>
+          <div
+            className={[styles.circle, styles.color_victory_point].join(" ")}
+          >
+            <span className={styles.card_header_vp_number}>{card.baseVP}</span>
+          </div>
+        </div>
+        <div className={styles.rarity_label}>
+          {rarityLabel}
+          &nbsp;&middot;&nbsp;{romanize(card.numInDeck)}
         </div>
         <div className={styles.info_row}>
           <div className={styles.card_cost}>
@@ -221,10 +247,7 @@ const Card: React.FC<{ name: CardName; usedForCritter?: boolean }> = ({
           </div>
         </div>
         <div className={styles.card_bottom_row}>
-          <div className={styles.rarity_label}>
-            {rarityLabel}
-            &nbsp;&middot;&nbsp;{romanize(card.numInDeck)}
-          </div>
+          <UpgradeableCard card={card} />
           <AssociatedCard card={card} usedForCritter={usedForCritter} />
         </div>
       </div>

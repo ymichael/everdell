@@ -11,7 +11,7 @@ import {
 import { PlayerJSON, GameStateJSON } from "../model/jsonTypes";
 import { Player } from "../model/player";
 import { GameState } from "../model/gameState";
-import { GameBlock } from "./common";
+import { GameBlock, LegendaryCardIcon } from "./common";
 import { PlayerCity } from "./gameBoard";
 import {
   InfoIconSvg,
@@ -234,6 +234,19 @@ const PlayerStatus: React.FC<{
                 </div>
                 <div className={styles.status_box_item_resource_count}>
                   {player.numAdornmentsInHand}
+                </div>
+              </div>
+            )}
+            {gameStateJSON.gameOptions.legends && (
+              <div
+                className={styles.status_box_item_resource}
+                title="No. of Legendary cards in hand"
+              >
+                <div className={styles.status_box_item_resource_label}>
+                  <LegendaryCardIcon />
+                </div>
+                <div className={styles.status_box_item_resource_count}>
+                  {player.numLegendsInHand}
                 </div>
               </div>
             )}

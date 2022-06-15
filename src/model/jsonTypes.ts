@@ -38,6 +38,8 @@ export type GameStateJSON = {
   gameLog: GameLogEntry[];
   riverDestinationMap: RiverDestinationMapJSON | null;
   adornmentsPile: CardStackJSON<AdornmentName> | null;
+  legendaryCritters: CardStackJSON<CardName> | null;
+  legendaryConstructions: CardStackJSON<CardName> | null;
 };
 
 export type CardStackJSON<T> = {
@@ -63,6 +65,8 @@ export type PlayerJSON = {
   adornmentsInHand: AdornmentName[];
   playedAdornments: AdornmentName[];
   numAmbassadors: number;
+  legendsInHand: CardName[];
+  numLegendsInHand: number;
 };
 
 export type RiverDestinationMapJSON = {

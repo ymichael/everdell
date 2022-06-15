@@ -64,6 +64,7 @@ export default function TestUIPage() {
   ) as LocationName[];
 
   const [showPearlbrookOnly, setShowPearlbrookOnly] = useState(false);
+  const [showLegendsOnly, setShowLegendsOnly] = useState(false);
   const [showCards, setShowCards] = useState(true);
   const [showAdornments, setShowAdornments] = useState(true);
   const [showRiver, setShowRiver] = useState(true);
@@ -111,6 +112,16 @@ export default function TestUIPage() {
           />
           Pearlbrook only
         </label>
+        <label>
+          <input
+            type="checkbox"
+            checked={showLegendsOnly}
+            onChange={() => {
+              setShowLegendsOnly(!showLegendsOnly);
+            }}
+          />
+          Legends only
+        </label>
       </div>
       <ItemsList title={"Cards"} visible={showCards}>
         {allCards
@@ -124,6 +135,11 @@ export default function TestUIPage() {
               if (
                 CardModel.fromName(x).expansion !== ExpansionType.PEARLBROOK
               ) {
+                return false;
+              }
+            }
+            if (showLegendsOnly) {
+              if (CardModel.fromName(x).expansion !== ExpansionType.LEGENDS) {
                 return false;
               }
             }

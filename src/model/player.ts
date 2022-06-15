@@ -21,6 +21,7 @@ import {
   LocationType,
   PlayerStatus,
   IGameTextEntity,
+  ExpansionType,
 } from "./types";
 import { PlayerJSON } from "./jsonTypes";
 import { GameState } from "./gameState";
@@ -58,6 +59,8 @@ export class Player implements IGameTextEntity {
   readonly adornmentsInHand: AdornmentName[];
   readonly playedAdornments: AdornmentName[];
 
+  readonly legendsInHand: CardName[];
+
   constructor({
     name,
     playerSecret = uuid(),
@@ -81,6 +84,7 @@ export class Player implements IGameTextEntity {
     playerStatus = PlayerStatus.DURING_SEASON,
     adornmentsInHand = [],
     playedAdornments = [],
+    legendsInHand = [],
   }: {
     name: string;
     playerSecret?: string;
@@ -97,6 +101,7 @@ export class Player implements IGameTextEntity {
     playerStatus?: PlayerStatus;
     adornmentsInHand?: AdornmentName[];
     playedAdornments?: AdornmentName[];
+    legendsInHand?: CardName[];
   }) {
     this.playerId = playerId;
     this.playerSecret = playerSecret;
@@ -114,6 +119,9 @@ export class Player implements IGameTextEntity {
     this.numAmbassadors = numAmbassadors;
     this.adornmentsInHand = adornmentsInHand;
     this.playedAdornments = playedAdornments;
+
+    // legends only
+    this.legendsInHand = legendsInHand;
 
     this._numCardsInHand = numCardsInHand;
   }
@@ -332,26 +340,29 @@ export class Player implements IGameTextEntity {
     while (pendingPlayCardGameInput.length !== 0) {
       const gameInput = pendingPlayCardGameInput.pop() as GameInputPlayCard;
       pendingCardNames.pop();
-      [CardName.HISTORIAN, CardName.SHOPKEEPER, CardName.COURTHOUSE].forEach(
-        (cardName) => {
-          // Don't trigger if we just played this card and we haven't gotten to it yet.
-          // Eg. We played POSTAL_PIGEON -> SHOPKEEPER. We shouldn't activate SHOPKEEPER
-          // on the POSTAL_PIGEON.
-          if (pendingCardNames.indexOf(cardName) !== -1) {
-            return;
-          }
-
-          if (this.hasCardInCity(cardName)) {
-            const card = Card.fromName(cardName);
-            card.activateCard(
-              gameState,
-              gameInput,
-              this,
-              this.getFirstPlayedCard(cardName)
-            );
-          }
+      [
+        CardName.HISTORIAN,
+        CardName.SHOPKEEPER,
+        CardName.COURTHOUSE,
+        CardName.FORESIGHT,
+      ].forEach((cardName) => {
+        // Don't trigger if we just played this card and we haven't gotten to it yet.
+        // Eg. We played POSTAL_PIGEON -> SHOPKEEPER. We shouldn't activate SHOPKEEPER
+        // on the POSTAL_PIGEON.
+        if (pendingCardNames.indexOf(cardName) !== -1) {
+          return;
         }
-      );
+
+        if (this.hasCardInCity(cardName)) {
+          const card = Card.fromName(cardName);
+          card.activateCard(
+            gameState,
+            gameInput,
+            this,
+            this.getFirstPlayedCard(cardName)
+          );
+        }
+      });
     }
   }
 
@@ -996,6 +1007,13 @@ export class Player implements IGameTextEntity {
       }
     }
 
+    // Check if you have the associated card if card is legendary
+    if (card.expansion === ExpansionType.LEGENDS) {
+      if (this.hasCardInCity(card.upgradeableCard!)) {
+        return true;
+      }
+    }
+
     // Queen (below 3 vp free)
     if (
       card.baseVP <= 3 &&
@@ -1037,7 +1055,7 @@ export class Player implements IGameTextEntity {
     paidResources: CardCost,
     cardCost: CardCost,
     // Discounts are exclusive so we use a single argument to represent them
-    discount: ResourceType.BERRY | "ANY 3" | "ANY 1" | null = null,
+    discount: ResourceType.BERRY | "ANY 4" | "ANY 3" | "ANY 1" | null = null,
     errorIfOverpay = true
   ): string | null {
     const needToPay = {
@@ -1086,6 +1104,17 @@ export class Player implements IGameTextEntity {
     const payingWithRemainerSum = sumResources(payingWith);
 
     // With wild discount, should have outstandingOwedSum left
+    if (discount === "ANY 4" && outstandingOwedSum <= 4) {
+      if (
+        errorIfOverpay &&
+        payingWithSum !== 0 &&
+        payingWithSum + 4 > needToPaySum
+      ) {
+        return "Cannot overpay for cards";
+      }
+      return null;
+    }
+
     if (discount === "ANY 3" && outstandingOwedSum <= 3) {
       if (
         errorIfOverpay &&
@@ -1138,7 +1167,7 @@ export class Player implements IGameTextEntity {
     paidResources: CardCost,
     cardCost: CardCost,
     // Discounts are exclusive so we use a single argument to represent them
-    discount: ResourceType.BERRY | "ANY 3" | "ANY 1" | null = null,
+    discount: ResourceType.BERRY | "ANY 4" | "ANY 3" | "ANY 1" | null = null,
     errorIfOverpay = true
   ): boolean {
     return !this.validatePaidResources(
@@ -1231,6 +1260,8 @@ export class Player implements IGameTextEntity {
             `Unexpected card: ${paymentOptions.cardToUse}`
           );
       }
+    } else if (paymentOptions.cardToUpgrade) {
+      // Do something?
     }
   }
 
@@ -1654,12 +1685,15 @@ export class Player implements IGameTextEntity {
       numAdornmentsInHand: this.adornmentsInHand.length,
       cardsInHand: null,
       adornmentsInHand: [],
+      legendsInHand: [],
       playedAdornments: this.playedAdornments,
+      numLegendsInHand: this.legendsInHand.length,
       ...(includePrivate
         ? {
             playerSecret: this.playerSecret,
             cardsInHand: this.cardsInHand,
             adornmentsInHand: this.adornmentsInHand,
+            legendsInHand: this.legendsInHand,
           }
         : {}),
     });

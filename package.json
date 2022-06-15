@@ -2,7 +2,7 @@
   "name": "everdell",
   "version": "0.1.0",
   "engines": {
-    "node": "12.x"
+    "node": ">=12.x"
   },
   "private": true,
   "scripts": {
@@ -32,6 +32,7 @@
     "pg": "^8.5.1",
     "react": "17.0.1",
     "react-dom": "17.0.1",
+    "react-textfit": "^1.1.1",
     "short-uuid": "^4.1.0",
     "sqlite3": "^5.0.0"
   },
@@ -44,6 +45,7 @@
     "@types/puppeteer": "^5.4.2",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
+    "@types/react-textfit": "^1.1.0",
     "@types/sqlite3": "^3.1.6",
     "@typescript-eslint/eslint-plugin": "^4.11.0",
     "@typescript-eslint/parser": "^4.11.0",

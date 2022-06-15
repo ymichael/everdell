@@ -86,6 +86,16 @@ export const AdornmentCardIcon = () => {
   );
 };
 
+export const LegendaryCardIcon = () => {
+  return (
+    <Image
+      alt="Legendary Card Icon"
+      src="/images/legendary_card.png"
+      layout="fill"
+    />
+  );
+};
+
 export const WorkerSpotIcon = ({ locked = false }: { locked?: boolean }) => {
   if (locked) {
     return (
@@ -290,7 +300,6 @@ export const Description = ({ textParts }: { textParts: GameText }) => {
               );
             }
             assertUnreachable(part, `Unexpected part: ${JSON.stringify(part)}`);
-            break;
           default:
             assertUnreachable(part, `Unexpected part: ${JSON.stringify(part)}`);
         }

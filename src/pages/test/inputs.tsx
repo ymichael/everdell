@@ -73,6 +73,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     player.addToCity(gameState, CardName.LOOKOUT);
     player.addToCity(gameState, CardName.CHIP_SWEEP);
     player.addToCity(gameState, CardName.MINER_MOLE);
+    player.addToCity(gameState, CardName.AMILLA_GLISTENDEW);
 
     player.placeWorkerOnCard(
       gameState,

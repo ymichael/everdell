@@ -3,7 +3,7 @@ import { useField } from "formik";
 
 import styles from "../styles/gameBoard.module.css";
 
-import { CardName, ResourceType } from "../model/types";
+import { CardName, ExpansionType, ResourceType } from "../model/types";
 import { Player } from "../model/player";
 import { Card as CardModel } from "../model/card";
 
@@ -22,6 +22,9 @@ const GameInputPlayCard: React.FC<{
     overrides: any = {}
   ) => {
     const card = CardModel.fromName(cardName);
+    const canUpgradeCard =
+      card.expansion == ExpansionType.LEGENDS &&
+      viewingPlayer.hasCardInCity(card.upgradeableCard!);
     const canUseAssociatedCard =
       card.isCritter &&
       card.associatedCard &&
@@ -34,16 +37,20 @@ const GameInputPlayCard: React.FC<{
       paymentOptions: {
         cardToUse: null,
         cardToDungeon: null,
+        cardToUpgrade: canUpgradeCard ? card.upgradeableCard : null,
         useAssociatedCard: state === "DEFAULT" ? canUseAssociatedCard : false,
-        resources: {
-          [ResourceType.BERRY]: 0,
-          [ResourceType.TWIG]: 0,
-          [ResourceType.RESIN]: 0,
-          [ResourceType.PEBBLE]: 0,
-          ...((state === "DEFAULT" && !canUseAssociatedCard) || state === "COST"
-            ? card.baseCost
-            : {}),
-        },
+        resources: canUpgradeCard
+          ? null
+          : {
+              [ResourceType.BERRY]: 0,
+              [ResourceType.TWIG]: 0,
+              [ResourceType.RESIN]: 0,
+              [ResourceType.PEBBLE]: 0,
+              ...((state === "DEFAULT" && !canUseAssociatedCard) ||
+              state === "COST"
+                ? card.baseCost
+                : {}),
+            },
       },
     });
   };

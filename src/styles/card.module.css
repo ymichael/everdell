@@ -1,5 +1,5 @@
 .card {
-  min-height: 180px;
+  min-height: 200px;
   width: 200px;
   border-radius: 5px;
   position: relative;
@@ -12,6 +12,14 @@
   justify-content: space-between;
 }
 
+.card_header_row {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  width: 100%;
+  overflow: hidden;
+}
+
 .card_header {
   height: 35px;
   font-weight: var(--font-bold);
@@ -22,6 +30,8 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  flex: 1 1 auto;
+  overflow: hidden;
 }
 
 .expansion {
@@ -38,7 +48,11 @@
   display: flex;
   color: var(--text-color);
   text-transform: uppercase;
-  text-align: right;
+}
+
+.upgradeable_card {
+  display: flex;
+  text-transform: uppercase;
 }
 
 .associated_card_used {
@@ -46,13 +60,19 @@
   opacity: 0.3;
 }
 
-.associated_card > span {
+.associated_card > span,
+.upgradeable_card > span {
   border-radius: 5px 0 0 0;
   font-weight: var(--font-bold);
   color: var(--text-color-inv);
   padding: 5px;
   font-size: 10px;
   align-self: flex-end;
+}
+
+.upgradeable_card > span {
+  background: var(--color-legend);
+  border-radius: 0 5px 0 0;
 }
 
 .info_row {
@@ -90,6 +110,7 @@
   font-size: 10px;
   font-weight: var(--font-bold);
   color: var(--text-color-light);
+  text-align: center;
 }
 
 .circle {
@@ -97,16 +118,10 @@
   width: 24px;
   height: 24px;
   margin: 6px;
-
   text-align: center;
   font-size: 27px;
-}
-
-.card_header_vp {
-  position: absolute;
-  top: 0;
-  right: 0;
-  z-index: 10;
+  position: relative;
+  flex: 0 0 auto;
 }
 
 .card_header_vp_number {
@@ -116,12 +131,7 @@
   margin-top: -14px;
   vertical-align: middle;
   color: var(--color-vp-text);
-}
-
-.card_header_symbol {
-  position: absolute;
-  top: 0;
-  z-index: 10;
+  flex: 0 0 auto;
 }
 
 .color_victory_point {

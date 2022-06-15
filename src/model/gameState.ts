@@ -44,7 +44,7 @@ import {
   RiverDestinationSpot,
 } from "./riverDestination";
 import { Event, initialEventMap } from "./event";
-import { initialDeck } from "./deck";
+import { initialDeck, legendaryCritters, legendaryConstructions } from "./deck";
 import { assertUnreachable } from "../utils";
 import {
   toGameText,
@@ -109,7 +109,6 @@ export const gameTextToDebugStr = (gameText: GameText): string => {
             );
           }
           assertUnreachable(part, `Unexpected part: ${JSON.stringify(part)}`);
-          break;
         default:
           assertUnreachable(part, `Unexpected part: ${JSON.stringify(part)}`);
       }
@@ -121,6 +120,7 @@ const defaultGameOptions = (gameOptions: Partial<GameOptions>): GameOptions => {
   return {
     realtimePoints: false,
     pearlbrook: false,
+    legends: false,
     ...gameOptions,
   };
 };
@@ -151,6 +151,9 @@ export class GameState {
   readonly adornmentsPile: CardStack<AdornmentName> | null;
   readonly riverDestinationMap: RiverDestinationMap | null;
 
+  readonly legendaryCritters: CardStack<CardName> | null;
+  readonly legendaryConstructions: CardStack<CardName> | null;
+
   constructor({
     gameStateId,
     activePlayerId,
@@ -166,6 +169,8 @@ export class GameState {
     playedGameInputs = [],
     adornmentsPile = null,
     riverDestinationMap = null,
+    legendaryCritters = null,
+    legendaryConstructions = null,
   }: {
     gameStateId: number;
     activePlayerId?: Player["playerId"];
@@ -177,6 +182,8 @@ export class GameState {
     eventsMap: EventNameToPlayerId;
     adornmentsPile?: CardStack<AdornmentName> | null;
     riverDestinationMap?: RiverDestinationMap | null;
+    legendaryCritters?: CardStack<CardName> | null;
+    legendaryConstructions?: CardStack<CardName> | null;
     pendingGameInputs: GameInputMultiStep[];
     playedGameInputs?: GameInput[];
     gameLog: GameLogEntry[];
@@ -193,8 +200,15 @@ export class GameState {
     this.pendingGameInputs = pendingGameInputs;
     this.playedGameInputs = playedGameInputs;
     this.gameLog = gameLog;
+
+    // Pearlbrook
     this.adornmentsPile = adornmentsPile;
     this.riverDestinationMap = riverDestinationMap;
+
+    // Legends
+    this.legendaryCritters = legendaryCritters;
+    this.legendaryConstructions = legendaryConstructions;
+
     this.gameOptions = defaultGameOptions(gameOptions);
   }
 
@@ -307,6 +321,12 @@ export class GameState {
           : null,
         adornmentsPile: this.adornmentsPile
           ? this.adornmentsPile.toJSON(includePrivate)
+          : null,
+        legendaryCritters: this.legendaryCritters
+          ? this.legendaryCritters.toJSON(includePrivate)
+          : null,
+        legendaryConstructions: this.legendaryConstructions
+          ? this.legendaryConstructions.toJSON(includePrivate)
           : null,
       },
       ...(includePrivate
@@ -1279,6 +1299,12 @@ export class GameState {
       riverDestinationMap: gameStateJSON.riverDestinationMap
         ? RiverDestinationMap.fromJSON(gameStateJSON.riverDestinationMap)
         : null,
+      legendaryCritters: gameStateJSON.legendaryCritters
+        ? CardStack.fromJSON(gameStateJSON.legendaryCritters)
+        : null,
+      legendaryConstructions: gameStateJSON.legendaryConstructions
+        ? CardStack.fromJSON(gameStateJSON.legendaryConstructions)
+        : null,
     });
   }
 
@@ -1297,6 +1323,7 @@ export class GameState {
 
     const gameOptionsWithDefaults = defaultGameOptions(gameOptions);
     const withPearlbrook = gameOptionsWithDefaults.pearlbrook;
+    const withLegends = gameOptionsWithDefaults.legends;
     const gameState = new GameState({
       gameStateId: 1,
       players,
@@ -1309,6 +1336,8 @@ export class GameState {
       ),
       adornmentsPile: withPearlbrook ? allAdornments() : null,
       riverDestinationMap: withPearlbrook ? initialRiverDestinationMap() : null,
+      legendaryCritters: withLegends ? legendaryCritters() : null,
+      legendaryConstructions: withLegends ? legendaryConstructions() : null,
       eventsMap: initialEventMap(gameOptionsWithDefaults),
       gameOptions: gameOptionsWithDefaults,
       gameLog: [],
@@ -1323,10 +1352,21 @@ export class GameState {
         ` expansion.`,
       ]);
     }
+    if (withLegends) {
+      gameState.addGameLog([
+        `Playing with the `,
+        { type: "em", text: "Legends" },
+        ` expansion.`,
+      ]);
+    }
 
     if (shuffleDeck) {
       if (withPearlbrook) {
         gameState.adornmentsPile!.shuffle();
+      }
+      if (withLegends) {
+        gameState.legendaryCritters!.shuffle();
+        gameState.legendaryConstructions!.shuffle();
       }
       gameState.deck.shuffle();
     }
@@ -1340,6 +1380,12 @@ export class GameState {
           gameState.adornmentsPile!.drawInner()
         );
       }
+      if (withLegends) {
+        p.legendsInHand.push(
+          gameState.legendaryCritters!.drawInner(),
+          gameState.legendaryConstructions!.drawInner()
+        );
+      }
       p.drawCards(gameState, STARTING_PLAYER_HAND_SIZE + idx);
     });
 
@@ -1348,6 +1394,11 @@ export class GameState {
     gameState.addGameLog(`Dealing cards to the Meadow.`);
     if (withPearlbrook) {
       gameState.addGameLog(`Dealing 2 adornment cards to each player.`);
+    }
+    if (withLegends) {
+      gameState.addGameLog(
+        `Dealing 1 legendary critter and 1 legendary construction to each player.`
+      );
     }
 
     return gameState;
@@ -1491,6 +1542,15 @@ export class GameState {
       const card = Card.fromName(cardName);
       if (
         player.canAffordCard(card.name, true) &&
+        card.canPlayIgnoreCostAndSource(this, false /* strict */)
+      ) {
+        ret.push({ card: cardName, fromMeadow: false });
+      }
+    });
+    player.legendsInHand.forEach((cardName) => {
+      const card = Card.fromName(cardName);
+      if (
+        player.canAffordCard(card.name, false) &&
         card.canPlayIgnoreCostAndSource(this, false /* strict */)
       ) {
         ret.push({ card: cardName, fromMeadow: false });

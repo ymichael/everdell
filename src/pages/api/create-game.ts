@@ -33,9 +33,10 @@ export default async (
     : [...body.players];
   const realtimePoints = !!body.realtimePoints;
   const pearlbrook = !!body.pearlbrook;
+  const legends = !!body.legends;
   const game = await createGame(
     players.map((p: any) => p.name),
-    { realtimePoints, pearlbrook }
+    { realtimePoints, pearlbrook, legends }
   );
   res.json({
     success: "ok",

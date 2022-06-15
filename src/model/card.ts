@@ -44,6 +44,19 @@ import {
 } from "./gameText";
 import { assertUnreachable } from "../utils";
 
+import {
+  amillaGlistendew,
+  bridgeOfTheSky,
+  cirrusWindfall,
+  foresight,
+  fynnNobletail,
+  mcgregorsMarket,
+  oleandersOperaHouse,
+  poe,
+  silverScaleSpring,
+  theGreenAcorn,
+} from "./cards/legends";
+
 type NumWorkersInnerFn = (cardOwner: Player) => number;
 type ProductionInnerFn = (
   gameState: GameState,
@@ -83,6 +96,7 @@ export class Card<TCardType extends CardType = CardType>
   readonly expansion: ExpansionType | null;
   readonly isConstruction: boolean;
   readonly associatedCard: CardName | null;
+  readonly upgradeableCard: CardName | null;
   readonly isOpenDestination: boolean;
 
   readonly productionInner: ProductionInnerFn | undefined;
@@ -102,6 +116,7 @@ export class Card<TCardType extends CardType = CardType>
     isUnique,
     isConstruction,
     associatedCard,
+    upgradeableCard,
     resourcesToGain,
     productionInner,
     productionWillActivateInner,
@@ -122,7 +137,8 @@ export class Card<TCardType extends CardType = CardType>
     isUnique: boolean;
     numInDeck: number;
     isConstruction: boolean;
-    associatedCard: CardName | null;
+    associatedCard?: CardName | null;
+    upgradeableCard?: CardName | null;
     isOpenDestination?: boolean;
     expansion?: ExpansionType | null;
     playInner?: GameStatePlayFn;
@@ -157,7 +173,8 @@ export class Card<TCardType extends CardType = CardType>
     this.isUnique = isUnique;
     this.isCritter = !isConstruction;
     this.isConstruction = isConstruction;
-    this.associatedCard = associatedCard;
+    this.associatedCard = associatedCard || null;
+    this.upgradeableCard = upgradeableCard || null;
     this.isOpenDestination = isOpenDestination;
     this.playInner = playInner;
     this.canPlayCheckInner = canPlayCheckInner;
@@ -254,7 +271,8 @@ export class Card<TCardType extends CardType = CardType>
       }
       if (
         !gameInput.clientOptions.fromMeadow &&
-        player.cardsInHand.indexOf(this.name) === -1
+        player.cardsInHand.indexOf(this.name) === -1 &&
+        player.legendsInHand.indexOf(this.name) === -1
       ) {
         return `Card ${
           this.name
@@ -601,7 +619,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       " in your city.",
     ]),
     // 1 point per common construction
-    pointsInner: getPointsPerRarityLabel({ isCritter: false, isUnique: false }),
+    pointsInner: getPointsPerRarityLabel({
+      isCritter: false,
+      isUnique: false,
+      pointsEach: 1,
+    }),
   }),
   [CardName.CEMETARY]: new Card({
     name: CardName.CEMETARY,
@@ -2020,7 +2042,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       " in your city",
     ]),
     // 1 point per unique construction
-    pointsInner: getPointsPerRarityLabel({ isCritter: false, isUnique: true }),
+    pointsInner: getPointsPerRarityLabel({
+      isCritter: false,
+      isUnique: true,
+      pointsEach: 1,
+    }),
   }),
   [CardName.PEDDLER]: new Card({
     name: CardName.PEDDLER,
@@ -2712,7 +2738,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       " in your city.",
     ]),
     // 1 point per common critter
-    pointsInner: getPointsPerRarityLabel({ isCritter: true, isUnique: false }),
+    pointsInner: getPointsPerRarityLabel({
+      isCritter: true,
+      isUnique: false,
+      pointsEach: 1,
+    }),
   }),
   [CardName.SHEPHERD]: new Card({
     name: CardName.SHEPHERD,
@@ -3132,7 +3162,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       " in your city.",
     ]),
     // 1 point per unique critter
-    pointsInner: getPointsPerRarityLabel({ isCritter: true, isUnique: true }),
+    pointsInner: getPointsPerRarityLabel({
+      isCritter: true,
+      isUnique: true,
+      pointsEach: 1,
+    }),
   }),
   [CardName.TWIG_BARGE]: new Card({
     name: CardName.TWIG_BARGE,
@@ -3956,25 +3990,41 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       }
     },
   }),
+
+  /**
+   * WIP: Legends Cards
+   */
+  [CardName.AMILLA_GLISTENDEW]: new Card(amillaGlistendew),
+  [CardName.BRIDGE_OF_THE_SKY]: new Card(bridgeOfTheSky),
+  [CardName.CIRRUS_WINDFALL]: new Card(cirrusWindfall),
+  [CardName.FORESIGHT]: new Card(foresight),
+  [CardName.FYNN_NOBLETAIL]: new Card(fynnNobletail),
+  [CardName.MCGREGORS_MARKET]: new Card(mcgregorsMarket),
+  [CardName.OLEANDERS_OPERA_HOUSE]: new Card(oleandersOperaHouse),
+  [CardName.POE]: new Card(poe),
+  [CardName.SILVER_SCALE_SPRING]: new Card(silverScaleSpring),
+  [CardName.THE_GREEN_ACORN]: new Card(theGreenAcorn),
 };
 
-function getPointsPerRarityLabel({
+export function getPointsPerRarityLabel({
   isCritter,
   isUnique,
+  pointsEach,
 }: {
   isCritter: boolean;
   isUnique: boolean;
+  pointsEach: number;
 }): GameStateCountPointsFn {
   return (gameState: GameState, playerId: string) => {
     const player = gameState.getPlayer(playerId);
-    let numCardsToCount = 0;
+    let numPoints = 0;
     player.forEachPlayedCard(({ cardName }) => {
       const card = Card.fromName(cardName as CardName);
       if (card.isCritter === isCritter && card.isUnique === isUnique) {
-        numCardsToCount++;
+        numPoints += pointsEach;
       }
     });
-    return numCardsToCount;
+    return numPoints;
   };
 }
 

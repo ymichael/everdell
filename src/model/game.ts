@@ -90,11 +90,15 @@ export class Game {
   }
 }
 
+function generateNewGameId(): string {
+  return `v2:${uuid()}`;
+}
+
 export const createGameFromGameState = async (
   gameState: GameState
 ): Promise<Game> => {
   const game = new Game({
-    gameId: uuid(),
+    gameId: generateNewGameId(),
     gameSecret: uuid(),
     gameState,
   });

@@ -6,30 +6,62 @@ import { Pool } from "pg";
 
 import { GameJSON } from "./jsonTypes";
 
-const pgUrl = process.env.DATABASE_URL;
-// fallback sqlite db path.
-const dbPath = process.env.DB_PATH;
-
-if (!pgUrl && !dbPath) {
-  console.error("Must specify either DATABASE_URL or DB_PATH env variable.");
+type StoreType = "pg" | "pg-deprecated" | "local";
+const storeUrlForType: Record<StoreType, string | undefined> = {
+  pg: process.env.DATABASE_URL_SUPABASE,
+  "pg-deprecated": process.env.DATABASE_URL_HEROKU,
+  local: process.env.DB_PATH,
+};
+if (Object.values(storeUrlForType).filter((x) => !!x).length === 0) {
+  console.error("Must specify a DB env variable.");
   process.exit(-1);
 }
+const _instanceCache: Record<StoreType, IDb | null> = {
+  pg: null,
+  "pg-deprecated": null,
+  local: null,
+};
 
-let _instance: IDb | null = null;
-
-const getDbInstance = (): IDb => {
-  if (!_instance) {
-    if (dbPath) {
-      _instance = new SqliteDb(dbPath);
-    }
-    if (pgUrl) {
-      _instance = new PgDb(pgUrl);
-    }
-    if (!_instance) {
-      throw new Error("Unable to instantiate DB instance.");
+const getOrCreateDbInstance = (storeType: StoreType): IDb => {
+  if (!_instanceCache[storeType]) {
+    switch (storeType) {
+      case "local": {
+        const url = storeUrlForType[storeType];
+        if (url) {
+          _instanceCache[storeType] = new SqliteDb(url);
+        }
+        break;
+      }
+      default: {
+        const url = storeUrlForType[storeType];
+        if (url) {
+          _instanceCache[storeType] = new PgDb(url);
+        }
+        break;
+      }
     }
   }
-  return _instance;
+  const instance = _instanceCache[storeType];
+  if (!instance) {
+    throw new Error("Unable to instantiate DB instance.");
+  }
+  return instance;
+};
+
+const getDbInstance = (preferredOrder: StoreType[]): IDb => {
+  for (let i = 0; i < preferredOrder.length; i++) {
+    const storeType = preferredOrder[i];
+    if (storeUrlForType[storeType]) {
+      return getOrCreateDbInstance(storeType);
+    }
+  }
+  throw new Error("Unable to instantiate DB instance.");
+};
+
+const getDbForGameId = (gameId: string): IDb => {
+  return gameId.startsWith("v2:")
+    ? getDbInstance(["pg", "local"])
+    : getDbInstance(["pg-deprecated", "local"]);
 };
 
 interface IDb {
@@ -225,7 +257,7 @@ class SqliteDb implements IDb {
 export const getGameJSONById = async (
   gameId: string
 ): Promise<GameJSON | null> => {
-  const db = getDbInstance();
+  const db = getDbForGameId(gameId);
   await db.createGamesTableIfNotExists();
   return db.getGameJSONById(gameId);
 };
@@ -234,7 +266,7 @@ export const saveGameJSONById = async (
   gameId: string,
   gameJSON: GameJSON
 ): Promise<void> => {
-  const db = getDbInstance();
+  const db = getDbForGameId(gameId);
   await db.createGamesTableIfNotExists();
   return db.saveGame(gameId, JSON.stringify(gameJSON));
 };

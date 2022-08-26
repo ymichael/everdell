@@ -7,7 +7,7 @@
   "private": true,
   "scripts": {
     "dev": "DB_PATH=./db/game.sqlite next dev",
-    "dev:pg": "DATABASE_URL=postgresql://localhost next dev",
+    "dev:pg": "DATABASE_URL_SUPABASE=postgresql://localhost next dev",
     "collect_test_data": "DUMP_GAME_TEST_DATA=1 npm run test -- -r src/model/testHooks.ts",
     "test": "rm -rf ./db/test.sqlite && DB_PATH=./db/test.sqlite mocha -r ts-eager/register src/**/*.test.ts",
     "test:watch": "nodemon -e ts,tsx -w src -x 'npm run test'",

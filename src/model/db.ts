@@ -58,10 +58,8 @@ const getDbInstance = (preferredOrder: StoreType[]): IDb => {
   throw new Error("Unable to instantiate DB instance.");
 };
 
-const getDbForGameId = (gameId: string): IDb => {
-  return gameId.startsWith("v2:")
-    ? getDbInstance(["pg", "local"])
-    : getDbInstance(["pg-deprecated", "local"]);
+const getDb = (): IDb => {
+  return getDbInstance(["pg", "local"]);
 };
 
 interface IDb {
@@ -257,7 +255,7 @@ class SqliteDb implements IDb {
 export const getGameJSONById = async (
   gameId: string
 ): Promise<GameJSON | null> => {
-  const db = getDbForGameId(gameId);
+  const db = getDb();
   await db.createGamesTableIfNotExists();
   return db.getGameJSONById(gameId);
 };
@@ -266,7 +264,7 @@ export const saveGameJSONById = async (
   gameId: string,
   gameJSON: GameJSON
 ): Promise<void> => {
-  const db = getDbForGameId(gameId);
+  const db = getDb();
   await db.createGamesTableIfNotExists();
   return db.saveGame(gameId, JSON.stringify(gameJSON));
 };

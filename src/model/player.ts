@@ -307,8 +307,8 @@ export class Player implements IGameTextEntity {
           });
 
           // find first messenger that doesn't share a space with a construction
-          // I think this is a safe assumption because we just need to reassign 1 messenger,
-          // doesn't matter which one
+          // I think this is a safe assumption because we just need to
+          // reassign 1 messenger and it doesn't matter which one
 
           const newMessenger = (
             this.playedCards[CardName.MESSENGER] || []

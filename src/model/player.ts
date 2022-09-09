@@ -188,21 +188,40 @@ export class Player implements IGameTextEntity {
 
     // If there's an unoccupied Messenger, and this card is a construction, pair them!
     const unpairedMessengers = this.getUnpairedMessengers();
+
     if (unpairedMessengers.length !== 0 && card.isConstruction) {
-      const unpairedMessenger = unpairedMessengers[0];
-      this.updatePlayedCard(gameState, playedCard, {
-        shareSpaceWith: CardName.MESSENGER,
+      // eligible constructions = played and doesn't have a messenger
+
+      let numConstructionsWithMessengers = 0;
+      this.getPlayedConstructions().forEach((playedCardInfo) => {
+        const shareSpaceWith = playedCardInfo.shareSpaceWith;
+        if (shareSpaceWith && shareSpaceWith === CardName.MESSENGER) {
+          numConstructionsWithMessengers += 1;
+        }
       });
-      this.updatePlayedCard(gameState, unpairedMessenger, {
-        shareSpaceWith: cardName,
-      });
-      gameState.addGameLogFromCard(CardName.MESSENGER, [
-        "Unpaired ",
-        Card.fromName(CardName.MESSENGER),
-        " now shares the same space as ",
-        Card.fromName(cardName),
-        ".",
-      ]);
+
+      const numEligibleConstructions =
+        this.getNumPlayedConstructions() - numConstructionsWithMessengers;
+
+      if (cardName === CardName.RUINS && numEligibleConstructions > 1) {
+        // If playing the Ruins card, we don't want to pair unpaired messengers unless
+        // it's the only option. Let the player choose which construction to pair with
+      } else {
+        const unpairedMessenger = unpairedMessengers[0];
+        this.updatePlayedCard(gameState, playedCard, {
+          shareSpaceWith: CardName.MESSENGER,
+        });
+        this.updatePlayedCard(gameState, unpairedMessenger, {
+          shareSpaceWith: cardName,
+        });
+        gameState.addGameLogFromCard(CardName.MESSENGER, [
+          "Unpaired ",
+          Card.fromName(CardName.MESSENGER),
+          " now shares the same space as ",
+          Card.fromName(cardName),
+          ".",
+        ]);
+      }
     }
 
     return playedCard;
@@ -286,13 +305,24 @@ export class Player implements IGameTextEntity {
           player.updatePlayedCard(gameState, sharedMesenger, {
             shareSpaceWith: undefined,
           });
+
+          // find first messenger that doesn't share a space with a construction
+          // I think this is a safe assumption because we just need to reassign 1 messenger,
+          // doesn't matter which one
+
+          const newMessenger = (
+            this.playedCards[CardName.MESSENGER] || []
+          ).find(({ shareSpaceWith }) => {
+            return shareSpaceWith === undefined;
+          });
+
           gameState.pendingGameInputs.push({
             inputType: GameInputType.SELECT_PLAYED_CARDS,
             prevInputType: GameInputType.PLAY_CARD,
             label: "Select a new Construction to share a space with",
             cardOptions,
             cardContext: CardName.MESSENGER,
-            playedCardContext: sharedMesenger,
+            playedCardContext: newMessenger,
             maxToSelect: 1,
             minToSelect: 1,
             clientOptions: {

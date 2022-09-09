@@ -2711,7 +2711,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       { type: "em", text: "Common Critter" },
       " in your city.",
     ]),
-    // 1 point per common critter
+    // 1 point per common critterx
     pointsInner: getPointsPerRarityLabel({ isCritter: true, isUnique: false }),
   }),
   [CardName.SHEPHERD]: new Card({

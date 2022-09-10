@@ -272,12 +272,12 @@ export class Player implements IGameTextEntity {
           shareSpaceWith: undefined,
         });
       } else {
-        const sharedMesenger = (
-          this.playedCards[CardName.MESSENGER] || []
-        ).find(({ shareSpaceWith }) => {
-          return shareSpaceWith === playedCardInfo.cardName;
-        });
-        if (!sharedMesenger) {
+        let sharedMessenger = (this.playedCards[CardName.MESSENGER] || []).find(
+          ({ shareSpaceWith }) => {
+            return shareSpaceWith === playedCardInfo.cardName;
+          }
+        );
+        if (!sharedMessenger) {
           throw new Error(
             "Couldn't find the Messenger shared by the Construction."
           );
@@ -290,9 +290,13 @@ export class Player implements IGameTextEntity {
         if (cardOptions.length === 0) {
           // NOTE: Messenger stays in the city!
           // See: https://boardgamegeek.com/thread/2261133/article/32762766#32762766
-          player.updatePlayedCard(gameState, sharedMesenger, {
-            shareSpaceWith: undefined,
-          });
+          sharedMessenger = player.updatePlayedCard(
+            gameState,
+            sharedMessenger,
+            {
+              shareSpaceWith: undefined,
+            }
+          );
           gameState.addGameLogFromCard(CardName.MESSENGER, [
             Card.fromName(CardName.MESSENGER),
             " doesn't have a Construction to share a space with. ",
@@ -302,19 +306,13 @@ export class Player implements IGameTextEntity {
           gameState.addGameLogFromCard(CardName.MESSENGER, [
             "Needs a new space.",
           ]);
-          player.updatePlayedCard(gameState, sharedMesenger, {
-            shareSpaceWith: undefined,
-          });
-
-          // find first messenger that doesn't share a space with a construction
-          // I think this is a safe assumption because we just need to
-          // reassign 1 messenger and it doesn't matter which one
-
-          const newMessenger = (
-            this.playedCards[CardName.MESSENGER] || []
-          ).find(({ shareSpaceWith }) => {
-            return shareSpaceWith === undefined;
-          });
+          sharedMessenger = player.updatePlayedCard(
+            gameState,
+            sharedMessenger,
+            {
+              shareSpaceWith: undefined,
+            }
+          );
 
           gameState.pendingGameInputs.push({
             inputType: GameInputType.SELECT_PLAYED_CARDS,
@@ -322,7 +320,7 @@ export class Player implements IGameTextEntity {
             label: "Select a new Construction to share a space with",
             cardOptions,
             cardContext: CardName.MESSENGER,
-            playedCardContext: newMessenger,
+            playedCardContext: sharedMessenger,
             maxToSelect: 1,
             minToSelect: 1,
             clientOptions: {

@@ -6027,11 +6027,7 @@ describe("Card", () => {
         player.addToCity(gameState, CardName.FARM);
         player.addToCity(gameState, CardName.TWIG_BARGE);
         player.addToCity(gameState, CardName.MESSENGER);
-        player.addToCity(
-          gameState,
-          CardName.UNIVERSITY,
-          false /* shouldRelocateMessengers */
-        );
+        player.addToCity(gameState, CardName.UNIVERSITY);
 
         player.updatePlayedCard(
           gameState,
@@ -6065,26 +6061,23 @@ describe("Card", () => {
           shareSpaceWith: CardName.MESSENGER,
         });
 
-        const cardOwnerId = player.getPlayedCardInfos(CardName.MESSENGER)[0]
-          .cardOwnerId;
-
         // gameinput asking player to choose card
         const selectPlayedCardInputMessenger = {
           inputType: GameInputType.SELECT_PLAYED_CARDS as const,
           prevInputType: GameInputType.PLAY_CARD,
           cardContext: CardName.MESSENGER,
           playedCardContext: {
-            cardOwnerId: cardOwnerId,
+            cardOwnerId: player.playerId,
             cardName: CardName.MESSENGER,
             shareSpaceWith: undefined,
           },
           cardOptions: [
             ...player.getPlayedCardInfos(CardName.TWIG_BARGE),
             {
-              cardOwnerId: cardOwnerId,
+              cardOwnerId: player.playerId,
               cardName: CardName.UNIVERSITY,
               usedForCritter: false,
-              workers: [cardOwnerId],
+              workers: [player.playerId],
             },
           ],
           maxToSelect: 1,
@@ -6207,23 +6200,20 @@ describe("Card", () => {
           },
         };
 
-        const cardOwnerId = player.getPlayedCardInfos(CardName.MESSENGER)[0]
-          .cardOwnerId;
-
         // gameinput asking player to choose card
         const selectPlayedCardInputMessenger = {
           inputType: GameInputType.SELECT_PLAYED_CARDS as const,
           prevInputType: GameInputType.PLAY_CARD,
           cardContext: CardName.MESSENGER,
           playedCardContext: {
-            cardOwnerId: cardOwnerId,
+            cardOwnerId: player.playerId,
             cardName: CardName.MESSENGER,
             shareSpaceWith: undefined,
           },
           cardOptions: [
             ...player.getPlayedCardInfos(CardName.TWIG_BARGE),
             {
-              cardOwnerId: cardOwnerId,
+              cardOwnerId: player.playerId,
               cardName: CardName.RUINS,
               usedForCritter: false,
             },

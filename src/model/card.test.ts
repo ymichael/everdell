@@ -6333,7 +6333,7 @@ describe("Card", () => {
         expect(player.getPlayedCardInfos(CardName.MESSENGER).length).to.be(2);
       });
 
-      it("should  be relocated when attached to Crane and Crane is used", () => {
+      it("should be relocated when attached to Crane and Crane is used", () => {
         player.addToCity(gameState, CardName.CRANE);
         player.addToCity(gameState, CardName.MESSENGER);
         player.gainResources(gameState, { [ResourceType.TWIG]: 1 });
@@ -6490,6 +6490,46 @@ describe("Card", () => {
           cardOwnerId: player.playerId,
           usedForCritter: false,
           shareSpaceWith: CardName.MESSENGER,
+        });
+      });
+
+      it("should pair unpaired messengers with newly added constructions", () => {
+        player.addToCity(gameState, CardName.FARM);
+        player.addToCity(gameState, CardName.MESSENGER);
+        player.removeCardFromCity(
+          gameState,
+          player.getFirstPlayedCard(CardName.FARM)
+        );
+
+        player.addCardToHand(gameState, CardName.TWIG_BARGE);
+        player.gainResources(gameState, { TWIG: 1, PEBBLE: 1 });
+
+        [player, gameState] = multiStepGameInputTest(
+          gameState,
+          [playCardInput(CardName.TWIG_BARGE)],
+          { autoAdvance: true }
+        );
+
+        let playedMessengers = player.getPlayedCardInfos(CardName.MESSENGER);
+
+        expect(playedMessengers[0]).to.eql({
+          cardName: CardName.MESSENGER,
+          cardOwnerId: player.playerId,
+          shareSpaceWith: CardName.TWIG_BARGE,
+        });
+
+        expect(player.hasCardInCity(CardName.MESSENGER)).to.be(true);
+        expect(player.hasCardInCity(CardName.TWIG_BARGE)).to.be(true);
+        expect(player.getFirstPlayedCard(CardName.TWIG_BARGE)).to.eql({
+          cardName: CardName.TWIG_BARGE,
+          cardOwnerId: player.playerId,
+          usedForCritter: false,
+          shareSpaceWith: CardName.MESSENGER,
+        });
+        expect(player.getFirstPlayedCard(CardName.MESSENGER)).to.eql({
+          cardName: CardName.MESSENGER,
+          cardOwnerId: player.playerId,
+          shareSpaceWith: CardName.TWIG_BARGE,
         });
       });
     });

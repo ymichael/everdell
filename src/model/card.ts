@@ -1199,7 +1199,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         const selectedPlayer = gameState.getPlayer(
           gameInput.clientOptions.selectedPlayer
         );
-        selectedPlayer.addToCity(gameState, CardName.FOOL);
+        selectedPlayer.addToCity(
+          gameState,
+          CardName.FOOL,
+          true /* shouldRelocateMessengers */
+        );
         gameState.addGameLogFromCard(CardName.FOOL, [
           player,
           " added the ",
@@ -3825,7 +3829,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
 
         let newPlayedCard = targetPlayer.addToCity(
           gameState,
-          CardName.PIRATE_SHIP
+          CardName.PIRATE_SHIP,
+          true /* shouldRelocateMessengers */
         );
         newPlayedCard = targetPlayer.updatePlayedCard(
           gameState,

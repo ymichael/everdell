@@ -5806,6 +5806,7 @@ describe("Card", () => {
       it("should be relocated if Construction is destroyed", () => {
         player.addToCity(gameState, CardName.FARM);
         player.addToCity(gameState, CardName.MESSENGER);
+        player.addToCity(gameState, CardName.UNIVERSITY);
 
         player.updatePlayedCard(
           gameState,
@@ -5817,8 +5818,6 @@ describe("Card", () => {
           player.getFirstPlayedCard(CardName.MESSENGER),
           { shareSpaceWith: CardName.FARM }
         );
-
-        player.addToCity(gameState, CardName.UNIVERSITY);
 
         const selectPlayedCardInput = {
           inputType: GameInputType.SELECT_PLAYED_CARDS as const,
@@ -5944,7 +5943,7 @@ describe("Card", () => {
         });
       });
 
-      it("should be relocated if Construction is destroyed", () => {
+      it("should remove from Construction if MESSENGER removed by UNIVERSITY", () => {
         player.addToCity(gameState, CardName.FARM);
         player.addToCity(gameState, CardName.MESSENGER);
         player.addToCity(gameState, CardName.UNIVERSITY);
@@ -5954,6 +5953,7 @@ describe("Card", () => {
           player.getFirstPlayedCard(CardName.FARM),
           { shareSpaceWith: CardName.MESSENGER }
         );
+
         player.updatePlayedCard(
           gameState,
           player.getFirstPlayedCard(CardName.MESSENGER),
@@ -5979,6 +5979,12 @@ describe("Card", () => {
           cardOwnerId: player.playerId,
           usedForCritter: false,
           shareSpaceWith: CardName.MESSENGER,
+        });
+
+        expect(player.getFirstPlayedCard(CardName.MESSENGER)).to.eql({
+          cardName: CardName.MESSENGER,
+          cardOwnerId: player.playerId,
+          shareSpaceWith: CardName.FARM,
         });
 
         [player, gameState] = multiStepGameInputTest(
@@ -6017,7 +6023,102 @@ describe("Card", () => {
         });
       });
 
-      it("should be relocated if Construction is destroyed via played RUINS", () => {
+      it("should be relocated to Player's chosen card if shared construction is removed by UNIVERSITY", () => {
+        player.addToCity(gameState, CardName.FARM);
+        player.addToCity(gameState, CardName.TWIG_BARGE);
+        player.addToCity(gameState, CardName.MESSENGER);
+        player.addToCity(gameState, CardName.UNIVERSITY);
+
+        player.updatePlayedCard(
+          gameState,
+          player.getFirstPlayedCard(CardName.FARM),
+          { shareSpaceWith: CardName.MESSENGER }
+        );
+        player.updatePlayedCard(
+          gameState,
+          player.getFirstPlayedCard(CardName.MESSENGER),
+          { shareSpaceWith: CardName.FARM }
+        );
+
+        const selectPlayedCardInput = {
+          inputType: GameInputType.SELECT_PLAYED_CARDS as const,
+          prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+          cardContext: CardName.UNIVERSITY,
+          cardOptions: player
+            .getAllPlayedCards()
+            .filter(({ cardName }) => cardName !== CardName.UNIVERSITY),
+          maxToSelect: 1,
+          minToSelect: 1,
+          clientOptions: {
+            selectedCards: [player.getFirstPlayedCard(CardName.FARM)],
+          },
+        };
+
+        expect(player.getFirstPlayedCard(CardName.FARM)).to.eql({
+          cardName: CardName.FARM,
+          cardOwnerId: player.playerId,
+          usedForCritter: false,
+          shareSpaceWith: CardName.MESSENGER,
+        });
+
+        // gameinput asking player to choose card
+        const selectPlayedCardInputMessenger = {
+          inputType: GameInputType.SELECT_PLAYED_CARDS as const,
+          prevInputType: GameInputType.PLAY_CARD,
+          cardContext: CardName.MESSENGER,
+          playedCardContext: {
+            cardOwnerId: player.playerId,
+            cardName: CardName.MESSENGER,
+            shareSpaceWith: undefined,
+          },
+          cardOptions: [
+            ...player.getPlayedCardInfos(CardName.TWIG_BARGE),
+            {
+              cardOwnerId: player.playerId,
+              cardName: CardName.UNIVERSITY,
+              usedForCritter: false,
+              workers: [player.playerId],
+            },
+          ],
+          maxToSelect: 1,
+          minToSelect: 1,
+          clientOptions: {
+            selectedCards: [player.getFirstPlayedCard(CardName.TWIG_BARGE)],
+          },
+        };
+
+        [player, gameState] = multiStepGameInputTest(
+          gameState,
+          [
+            {
+              inputType: GameInputType.VISIT_DESTINATION_CARD,
+              clientOptions: {
+                playedCard: player.getFirstPlayedCard(CardName.UNIVERSITY),
+              },
+            },
+            selectPlayedCardInput,
+            {
+              inputType: GameInputType.SELECT_OPTION_GENERIC,
+              prevInputType: GameInputType.SELECT_PLAYED_CARDS,
+              prevInput: selectPlayedCardInput,
+              cardContext: CardName.UNIVERSITY,
+              options: [
+                ResourceType.BERRY,
+                ResourceType.TWIG,
+                ResourceType.RESIN,
+                ResourceType.PEBBLE,
+              ],
+              clientOptions: {
+                selectedOption: ResourceType.BERRY,
+              },
+            },
+            selectPlayedCardInputMessenger,
+          ],
+          { autoAdvance: true }
+        );
+      });
+
+      it("should be relocated to RUINS if Construction is destroyed via played RUINS", () => {
         player.addToCity(gameState, CardName.FARM);
         player.addToCity(gameState, CardName.MESSENGER);
 
@@ -6057,6 +6158,91 @@ describe("Card", () => {
           cardOwnerId: player.playerId,
           usedForCritter: false,
           shareSpaceWith: CardName.MESSENGER,
+        });
+      });
+
+      it("should be relocated to Player's chosen card if Construction is destroyed via played RUINS", () => {
+        player.addToCity(gameState, CardName.FARM);
+        player.addToCity(gameState, CardName.TWIG_BARGE);
+        player.addToCity(gameState, CardName.MESSENGER);
+
+        player.updatePlayedCard(
+          gameState,
+          player.getFirstPlayedCard(CardName.FARM),
+          { shareSpaceWith: CardName.MESSENGER }
+        );
+        player.updatePlayedCard(
+          gameState,
+          player.getFirstPlayedCard(CardName.MESSENGER),
+          { shareSpaceWith: CardName.FARM }
+        );
+        player.cardsInHand.push(CardName.RUINS);
+
+        expect(player.getFirstPlayedCard(CardName.MESSENGER)).to.eql({
+          cardName: CardName.MESSENGER,
+          cardOwnerId: player.playerId,
+          shareSpaceWith: CardName.FARM,
+        });
+
+        const selectPlayedCardInputRuins = {
+          inputType: GameInputType.SELECT_PLAYED_CARDS as const,
+          prevInputType: GameInputType.PLAY_CARD,
+          cardOptions: [
+            ...player.getPlayedCardInfos(CardName.FARM),
+            ...player.getPlayedCardInfos(CardName.TWIG_BARGE),
+          ],
+          cardContext: CardName.RUINS,
+          playedCardContext: undefined,
+          maxToSelect: 1,
+          minToSelect: 1,
+          clientOptions: {
+            selectedCards: [player.getFirstPlayedCard(CardName.FARM)],
+          },
+        };
+
+        // gameinput asking player to choose card
+        const selectPlayedCardInputMessenger = {
+          inputType: GameInputType.SELECT_PLAYED_CARDS as const,
+          prevInputType: GameInputType.PLAY_CARD,
+          cardContext: CardName.MESSENGER,
+          playedCardContext: {
+            cardOwnerId: player.playerId,
+            cardName: CardName.MESSENGER,
+            shareSpaceWith: undefined,
+          },
+          cardOptions: [
+            ...player.getPlayedCardInfos(CardName.TWIG_BARGE),
+            {
+              cardOwnerId: player.playerId,
+              cardName: CardName.RUINS,
+              usedForCritter: false,
+            },
+          ],
+          maxToSelect: 1,
+          minToSelect: 1,
+          clientOptions: {
+            selectedCards: [player.getFirstPlayedCard(CardName.TWIG_BARGE)],
+          },
+        };
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(CardName.RUINS),
+          selectPlayedCardInputRuins,
+          selectPlayedCardInputMessenger,
+        ]);
+
+        expect(player.hasCardInCity(CardName.MESSENGER)).to.be(true);
+
+        expect(player.getFirstPlayedCard(CardName.MESSENGER)).to.eql({
+          cardName: CardName.MESSENGER,
+          cardOwnerId: player.playerId,
+          shareSpaceWith: CardName.TWIG_BARGE,
+        });
+        expect(player.hasCardInCity(CardName.RUINS)).to.be(true);
+        expect(player.getFirstPlayedCard(CardName.RUINS)).to.eql({
+          cardName: CardName.RUINS,
+          cardOwnerId: player.playerId,
+          usedForCritter: false,
         });
       });
 
@@ -6147,11 +6333,12 @@ describe("Card", () => {
         expect(player.getPlayedCardInfos(CardName.MESSENGER).length).to.be(2);
       });
 
-      it("should  be relocated when attached to Crane and Crane is used", () => {
+      it("should be relocated when attached to Crane and Crane is used", () => {
         player.addToCity(gameState, CardName.CRANE);
         player.addToCity(gameState, CardName.MESSENGER);
         player.gainResources(gameState, { [ResourceType.TWIG]: 1 });
 
+        // attach the Messenger to the Crane
         player.updatePlayedCard(
           gameState,
           player.getFirstPlayedCard(CardName.CRANE),
@@ -6172,18 +6359,22 @@ describe("Card", () => {
 
         expect(player.hasCardInCity(CardName.CRANE)).to.be(true);
 
-        [player, gameState] = multiStepGameInputTest(gameState, [
-          playCardInput(CardName.FAIRGROUNDS, {
-            paymentOptions: {
-              cardToUse: CardName.CRANE,
-              resources: {
-                [ResourceType.TWIG]: 1,
-                [ResourceType.RESIN]: 0,
-                [ResourceType.PEBBLE]: 0,
+        [player, gameState] = multiStepGameInputTest(
+          gameState,
+          [
+            playCardInput(CardName.FAIRGROUNDS, {
+              paymentOptions: {
+                cardToUse: CardName.CRANE,
+                resources: {
+                  [ResourceType.TWIG]: 1,
+                  [ResourceType.RESIN]: 0,
+                  [ResourceType.PEBBLE]: 0,
+                },
               },
-            },
-          }),
-        ]);
+            }),
+          ],
+          { autoAdvance: true }
+        );
 
         expect(player.hasCardInCity(CardName.CRANE)).to.be(false);
         expect(player.hasCardInCity(CardName.FAIRGROUNDS)).to.be(true);
@@ -6207,6 +6398,139 @@ describe("Card", () => {
         expect(gameState.getActivePlayer().playerId).to.not.eql(
           player.playerId
         );
+      });
+
+      // multiple messengers
+      it("should handle unpaired messengers and RUINS", () => {
+        player.addToCity(gameState, CardName.FARM);
+        player.addToCity(gameState, CardName.TWIG_BARGE);
+        player.addToCity(gameState, CardName.MESSENGER);
+        player.addToCity(gameState, CardName.MESSENGER);
+
+        let playedMessengers = player.getPlayedCardInfos(CardName.MESSENGER);
+        expect(player.getPlayedCardInfos(CardName.MESSENGER).length).to.be(2);
+
+        player.updatePlayedCard(
+          gameState,
+          player.getFirstPlayedCard(CardName.FARM),
+          { shareSpaceWith: CardName.MESSENGER }
+        );
+        player.updatePlayedCard(gameState, playedMessengers[0], {
+          shareSpaceWith: CardName.FARM,
+        });
+
+        player.updatePlayedCard(
+          gameState,
+          player.getFirstPlayedCard(CardName.TWIG_BARGE),
+          { shareSpaceWith: CardName.MESSENGER }
+        );
+        player.updatePlayedCard(gameState, playedMessengers[1], {
+          shareSpaceWith: CardName.TWIG_BARGE,
+        });
+
+        player.cardsInHand.push(CardName.RUINS);
+
+        playedMessengers = player.getPlayedCardInfos(CardName.MESSENGER);
+
+        expect(playedMessengers[0]).to.eql({
+          cardName: CardName.MESSENGER,
+          cardOwnerId: player.playerId,
+          shareSpaceWith: CardName.FARM,
+        });
+
+        expect(playedMessengers[1]).to.eql({
+          cardName: CardName.MESSENGER,
+          cardOwnerId: player.playerId,
+          shareSpaceWith: CardName.TWIG_BARGE,
+        });
+
+        const selectPlayedCardInputRuins = {
+          inputType: GameInputType.SELECT_PLAYED_CARDS as const,
+          prevInputType: GameInputType.PLAY_CARD,
+          cardOptions: [
+            ...player.getPlayedCardInfos(CardName.FARM),
+            ...player.getPlayedCardInfos(CardName.TWIG_BARGE),
+          ],
+          cardContext: CardName.RUINS,
+          playedCardContext: undefined,
+          maxToSelect: 1,
+          minToSelect: 1,
+          clientOptions: {
+            selectedCards: [player.getFirstPlayedCard(CardName.FARM)],
+          },
+        };
+
+        [player, gameState] = multiStepGameInputTest(
+          gameState,
+          [playCardInput(CardName.RUINS), selectPlayedCardInputRuins],
+          { autoAdvance: true }
+        );
+
+        expect(player.hasCardInCity(CardName.MESSENGER)).to.be(true);
+
+        playedMessengers = player.getPlayedCardInfos(CardName.MESSENGER);
+        expect(playedMessengers.length).to.be(2);
+
+        // if we destroy one of the constructions, the messenger should stick to the RUINS
+        // because the other card already has a messenger on it
+        expect(playedMessengers[0]).to.eql({
+          cardName: CardName.MESSENGER,
+          cardOwnerId: player.playerId,
+          shareSpaceWith: CardName.RUINS,
+        });
+
+        expect(playedMessengers[1]).to.eql({
+          cardName: CardName.MESSENGER,
+          cardOwnerId: player.playerId,
+          shareSpaceWith: CardName.TWIG_BARGE,
+        });
+        expect(player.hasCardInCity(CardName.RUINS)).to.be(true);
+        expect(player.getFirstPlayedCard(CardName.RUINS)).to.eql({
+          cardName: CardName.RUINS,
+          cardOwnerId: player.playerId,
+          usedForCritter: false,
+          shareSpaceWith: CardName.MESSENGER,
+        });
+      });
+
+      it("should pair unpaired messengers with newly added constructions", () => {
+        player.addToCity(gameState, CardName.FARM);
+        player.addToCity(gameState, CardName.MESSENGER);
+        player.removeCardFromCity(
+          gameState,
+          player.getFirstPlayedCard(CardName.FARM)
+        );
+
+        player.addCardToHand(gameState, CardName.TWIG_BARGE);
+        player.gainResources(gameState, { TWIG: 1, PEBBLE: 1 });
+
+        [player, gameState] = multiStepGameInputTest(
+          gameState,
+          [playCardInput(CardName.TWIG_BARGE)],
+          { autoAdvance: true }
+        );
+
+        const playedMessengers = player.getPlayedCardInfos(CardName.MESSENGER);
+
+        expect(playedMessengers[0]).to.eql({
+          cardName: CardName.MESSENGER,
+          cardOwnerId: player.playerId,
+          shareSpaceWith: CardName.TWIG_BARGE,
+        });
+
+        expect(player.hasCardInCity(CardName.MESSENGER)).to.be(true);
+        expect(player.hasCardInCity(CardName.TWIG_BARGE)).to.be(true);
+        expect(player.getFirstPlayedCard(CardName.TWIG_BARGE)).to.eql({
+          cardName: CardName.TWIG_BARGE,
+          cardOwnerId: player.playerId,
+          usedForCritter: false,
+          shareSpaceWith: CardName.MESSENGER,
+        });
+        expect(player.getFirstPlayedCard(CardName.MESSENGER)).to.eql({
+          cardName: CardName.MESSENGER,
+          cardOwnerId: player.playerId,
+          shareSpaceWith: CardName.TWIG_BARGE,
+        });
       });
     });
 

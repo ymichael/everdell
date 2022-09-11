@@ -177,7 +177,11 @@ export class Player implements IGameTextEntity {
     }
   }
 
-  addToCity(gameState: GameState, cardName: CardName): PlayedCardInfo {
+  addToCity(
+    gameState: GameState,
+    cardName: CardName,
+    shouldRelocateMessengers = false
+  ): PlayedCardInfo {
     if (!this.canAddToCity(cardName, true /* strict */)) {
       throw new Error(`Unable to add ${cardName} to city`);
     }
@@ -188,21 +192,14 @@ export class Player implements IGameTextEntity {
 
     // If there's an unoccupied Messenger, and this card is a construction, pair them!
     const unpairedMessengers = this.getUnpairedMessengers();
-    if (unpairedMessengers.length !== 0 && card.isConstruction) {
+
+    if (
+      unpairedMessengers.length !== 0 &&
+      card.isConstruction &&
+      shouldRelocateMessengers
+    ) {
       const unpairedMessenger = unpairedMessengers[0];
-      this.updatePlayedCard(gameState, playedCard, {
-        shareSpaceWith: CardName.MESSENGER,
-      });
-      this.updatePlayedCard(gameState, unpairedMessenger, {
-        shareSpaceWith: cardName,
-      });
-      gameState.addGameLogFromCard(CardName.MESSENGER, [
-        "Unpaired ",
-        Card.fromName(CardName.MESSENGER),
-        " now shares the same space as ",
-        Card.fromName(cardName),
-        ".",
-      ]);
+      this.relocateMessenger(gameState, this, unpairedMessenger, false);
     }
 
     return playedCard;
@@ -215,7 +212,8 @@ export class Player implements IGameTextEntity {
   removeCardFromCity(
     gameState: GameState,
     playedCardInfo: PlayedCardInfo,
-    addToDiscardPile = true
+    addToDiscardPile = true,
+    shouldRelocateMessengers = true
   ): CardName[] {
     const player = gameState.getActivePlayer();
     const { cardName, pairedCards = [] } = playedCardInfo;
@@ -235,7 +233,7 @@ export class Player implements IGameTextEntity {
       throw new Error(`Unable to find ${JSON.stringify(playedCardInfo)}`);
     }
 
-    // Messenger.
+    // Messenger
     if (playedCardInfo.shareSpaceWith) {
       // Removing a messenger, unset the corresponding construction.
       if (playedCardInfo.cardName === CardName.MESSENGER) {
@@ -253,12 +251,12 @@ export class Player implements IGameTextEntity {
           shareSpaceWith: undefined,
         });
       } else {
-        const sharedMesenger = (
-          this.playedCards[CardName.MESSENGER] || []
-        ).find(({ shareSpaceWith }) => {
-          return shareSpaceWith === playedCardInfo.cardName;
-        });
-        if (!sharedMesenger) {
+        let sharedMessenger = (this.playedCards[CardName.MESSENGER] || []).find(
+          ({ shareSpaceWith }) => {
+            return shareSpaceWith === playedCardInfo.cardName;
+          }
+        );
+        if (!sharedMessenger) {
           throw new Error(
             "Couldn't find the Messenger shared by the Construction."
           );
@@ -268,37 +266,33 @@ export class Player implements IGameTextEntity {
           .filter((playedCard) => {
             return !playedCard.shareSpaceWith;
           });
+
         if (cardOptions.length === 0) {
           // NOTE: Messenger stays in the city!
           // See: https://boardgamegeek.com/thread/2261133/article/32762766#32762766
-          player.updatePlayedCard(gameState, sharedMesenger, {
-            shareSpaceWith: undefined,
-          });
+          sharedMessenger = player.updatePlayedCard(
+            gameState,
+            sharedMessenger,
+            {
+              shareSpaceWith: undefined,
+            }
+          );
           gameState.addGameLogFromCard(CardName.MESSENGER, [
             Card.fromName(CardName.MESSENGER),
             " doesn't have a Construction to share a space with. ",
             "It'll share a space with the next played Construction.",
           ]);
         } else {
-          gameState.addGameLogFromCard(CardName.MESSENGER, [
-            "Needs a new space.",
-          ]);
-          player.updatePlayedCard(gameState, sharedMesenger, {
-            shareSpaceWith: undefined,
-          });
-          gameState.pendingGameInputs.push({
-            inputType: GameInputType.SELECT_PLAYED_CARDS,
-            prevInputType: GameInputType.PLAY_CARD,
-            label: "Select a new Construction to share a space with",
-            cardOptions,
-            cardContext: CardName.MESSENGER,
-            playedCardContext: sharedMesenger,
-            maxToSelect: 1,
-            minToSelect: 1,
-            clientOptions: {
-              selectedCards: [],
-            },
-          });
+          sharedMessenger = player.updatePlayedCard(
+            gameState,
+            sharedMessenger,
+            {
+              shareSpaceWith: undefined,
+            }
+          );
+          if (shouldRelocateMessengers) {
+            this.relocateMessenger(gameState, player, sharedMessenger);
+          }
         }
       }
     }
@@ -353,6 +347,44 @@ export class Player implements IGameTextEntity {
         }
       );
     }
+  }
+
+  relocateMessenger(
+    gameState: GameState,
+    player: Player,
+    messenger: PlayedCardInfo,
+    // whether or not we're relocating as result of construction being destroyed
+    constructionDestroyed = true
+  ): void {
+    // get all constructions that messenger could share space with
+    const cardOptions = player.getPlayedConstructions().filter((playedCard) => {
+      return !playedCard.shareSpaceWith;
+    });
+
+    if (constructionDestroyed) {
+      gameState.addGameLogFromCard(CardName.MESSENGER, ["needs a new space."]);
+    } else {
+      gameState.addGameLogFromCard(CardName.MESSENGER, [
+        "Unpaired ",
+        Card.fromName(CardName.MESSENGER),
+        " needs a new space.",
+      ]);
+    }
+
+    // allow player to select card for messenger to share space with
+    gameState.pendingGameInputs.push({
+      inputType: GameInputType.SELECT_PLAYED_CARDS,
+      prevInputType: GameInputType.PLAY_CARD,
+      label: "Select a new Construction to share a space with",
+      cardOptions,
+      cardContext: CardName.MESSENGER,
+      playedCardContext: messenger,
+      maxToSelect: 1,
+      minToSelect: 1,
+      clientOptions: {
+        selectedCards: [],
+      },
+    });
   }
 
   getUnpairedMessengers(): PlayedCardInfo[] {

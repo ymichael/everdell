@@ -309,7 +309,11 @@ export class Card<TCardType extends CardType = CardType>
 
     let playedCard: PlayedCardInfo | undefined = undefined;
     if (this.name !== CardName.FOOL && this.name !== CardName.RUINS) {
-      playedCard = player.addToCity(gameState, this.name);
+      playedCard = player.addToCity(
+        gameState,
+        this.name,
+        true /* shouldRelocateMessengers */
+      );
     }
 
     const playCardGameInput = this.getPlayCardInput(gameInput, playedCard);
@@ -1195,7 +1199,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         const selectedPlayer = gameState.getPlayer(
           gameInput.clientOptions.selectedPlayer
         );
-        selectedPlayer.addToCity(gameState, CardName.FOOL);
+        selectedPlayer.addToCity(
+          gameState,
+          CardName.FOOL,
+          true /* shouldRelocateMessengers */
+        );
         gameState.addGameLogFromCard(CardName.FOOL, [
           player,
           " added the ",
@@ -2678,13 +2686,32 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         if (!targetCard.isConstruction) {
           throw new Error("Cannot ruins non-construction");
         }
-        player.removeCardFromCity(gameState, selectedCards[0]);
-        player.gainResources(gameState, targetCard.baseCost);
-        // This doesn't if we're reactiving a played RUINS
-        if (!gameInput.playedCardContext) {
-          player.addToCity(gameState, CardName.RUINS);
+
+        // keep track of whether we are re-activating a RUINS or
+        // playing a RUINS card
+        const playedRuinsCard = gameInput.playedCardContext;
+
+        // don't relocate messengers until we've added RUINS to city
+        player.removeCardFromCity(
+          gameState,
+          selectedCards[0],
+          true /* addToDiscardPile */,
+          !!playedRuinsCard /* shouldRelocateMessengers */
+        );
+
+        if (!playedRuinsCard) {
+          // we should relocate any unpaired messengers if we are
+          // adding RUINS to city
+          player.addToCity(
+            gameState,
+            CardName.RUINS,
+            true /* shouldRelocateMessengers */
+          );
         }
+
+        player.gainResources(gameState, targetCard.baseCost);
         player.drawCards(gameState, 2);
+
         gameState.addGameLogFromCard(CardName.RUINS, [
           player,
           " ruined ",
@@ -3533,11 +3560,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         if (!gameInput.cardOptions.find((x) => isEqual(x, selectedCards[0]))) {
           throw new Error("Please select an option");
         }
-        const selectedPlayedCard = player.findPlayedCard(selectedCards[0]);
+        let selectedPlayedCard = player.findPlayedCard(selectedCards[0]);
         if (!selectedPlayedCard) {
           throw new Error("Could not find selected card in your city.");
         }
-        const playedMessenger =
+        let playedMessenger =
           gameInput.playedCardContext &&
           player.findPlayedCard(gameInput.playedCardContext);
         if (!playedMessenger) {
@@ -3556,10 +3583,14 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           Card.fromName(selectedPlayedCard.cardName),
           ".",
         ]);
-        player.updatePlayedCard(gameState, selectedPlayedCard, {
-          shareSpaceWith: CardName.MESSENGER,
-        });
-        player.updatePlayedCard(gameState, playedMessenger, {
+        selectedPlayedCard = player.updatePlayedCard(
+          gameState,
+          selectedPlayedCard,
+          {
+            shareSpaceWith: CardName.MESSENGER,
+          }
+        );
+        playedMessenger = player.updatePlayedCard(gameState, playedMessenger, {
           shareSpaceWith: selectedPlayedCard.cardName,
         });
       }
@@ -3798,7 +3829,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
 
         let newPlayedCard = targetPlayer.addToCity(
           gameState,
-          CardName.PIRATE_SHIP
+          CardName.PIRATE_SHIP,
+          true /* shouldRelocateMessengers */
         );
         newPlayedCard = targetPlayer.updatePlayedCard(
           gameState,

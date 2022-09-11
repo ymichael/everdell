@@ -6510,7 +6510,7 @@ describe("Card", () => {
           { autoAdvance: true }
         );
 
-        let playedMessengers = player.getPlayedCardInfos(CardName.MESSENGER);
+        const playedMessengers = player.getPlayedCardInfos(CardName.MESSENGER);
 
         expect(playedMessengers[0]).to.eql({
           cardName: CardName.MESSENGER,

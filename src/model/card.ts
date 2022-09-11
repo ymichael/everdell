@@ -2683,25 +2683,31 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           throw new Error("Cannot ruins non-construction");
         }
 
+        // keep track of whether we are re-activating a RUINS or
+        // playing a RUINS card
+        const playedRuinsCard = gameInput.playedCardContext;
+
         // don't relocate messengers until we've added RUINS to city
         player.removeCardFromCity(
           gameState,
           selectedCards[0],
           true /* addToDiscardPile */,
-          !!gameInput.playedCardContext /* shouldRelocateMessengers */
+          !!playedRuinsCard /* shouldRelocateMessengers */
         );
 
-        player.gainResources(gameState, targetCard.baseCost);
-        // This doesn't if we're reactiving a played RUINS
-        if (!gameInput.playedCardContext) {
-          // we should relocate any unpaired messengers
+        if (!playedRuinsCard) {
+          // we should relocate any unpaired messengers if we are
+          // adding RUINS to city
           player.addToCity(
             gameState,
             CardName.RUINS,
             true /* shouldRelocateMessengers */
           );
         }
+
+        player.gainResources(gameState, targetCard.baseCost);
         player.drawCards(gameState, 2);
+
         gameState.addGameLogFromCard(CardName.RUINS, [
           player,
           " ruined ",

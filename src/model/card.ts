@@ -451,15 +451,6 @@ export class Card<TCardType extends CardType = CardType>
     return this.maxWorkerSpots;
   }
 
-  getNumResourcesInCost(): number {
-    return (
-      (this.baseCost[ResourceType.BERRY] || 0) +
-      (this.baseCost[ResourceType.TWIG] || 0) +
-      (this.baseCost[ResourceType.RESIN] || 0) +
-      (this.baseCost[ResourceType.PEBBLE] || 0)
-    );
-  }
-
   static fromName(name: CardName): Card {
     if (!CARD_REGISTRY[name]) {
       throw new Error(`Invalid Card name: ${JSON.stringify(name)}`);

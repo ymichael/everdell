@@ -52,7 +52,7 @@ describe("Player", () => {
       expect(p.getNumOccupiedSpacesInCity()).to.be(2);
       p.addToCity(gameState, CardName.HUSBAND);
       expect(p.getNumOccupiedSpacesInCity()).to.be(2);
-      expect(p.getAllPlayedCards().length).to.be(4);
+      expect(p.getPlayedCards().length).to.be(4);
     });
 
     [CardName.WANDERER, CardName.PIRATE].forEach((cardName) => {
@@ -63,7 +63,7 @@ describe("Player", () => {
         expect(p.getNumOccupiedSpacesInCity()).to.be(0);
         p.addToCity(gameState, cardName);
         expect(p.getNumOccupiedSpacesInCity()).to.be(0);
-        expect(p.getAllPlayedCards().length).to.be(2);
+        expect(p.getPlayedCards().length).to.be(2);
       });
     });
   });
@@ -1010,7 +1010,9 @@ describe("Player", () => {
           true
         );
         expect(player.hasCardInCity(CardName.HUSBAND)).to.be(true);
-        expect(player.getPlayedCardInfos(CardName.HUSBAND).length).to.be(1);
+        expect(player.getPlayedCardForCardName(CardName.HUSBAND).length).to.be(
+          1
+        );
 
         // Back to the prev player
         gameState.nextPlayer();
@@ -1020,7 +1022,9 @@ describe("Player", () => {
         expect(player.hasUnusedByCritterConstruction(CardName.FARM)).to.be(
           false
         );
-        expect(player.getPlayedCardInfos(CardName.HUSBAND).length).to.be(2);
+        expect(player.getPlayedCardForCardName(CardName.HUSBAND).length).to.be(
+          2
+        );
 
         // Back to the prev player
         gameState.nextPlayer();
@@ -1066,7 +1070,9 @@ describe("Player", () => {
           true
         );
         expect(player.hasCardInCity(CardName.HUSBAND)).to.be(true);
-        expect(player.getPlayedCardInfos(CardName.HUSBAND).length).to.be(1);
+        expect(player.getPlayedCardForCardName(CardName.HUSBAND).length).to.be(
+          1
+        );
 
         // Back to the prev player
         gameState.nextPlayer();
@@ -1080,7 +1086,9 @@ describe("Player", () => {
         expect(player.hasUnusedByCritterConstruction(CardName.EVERTREE)).to.be(
           false
         );
-        expect(player.getPlayedCardInfos(CardName.HUSBAND).length).to.be(2);
+        expect(player.getPlayedCardForCardName(CardName.HUSBAND).length).to.be(
+          2
+        );
 
         // Back to the prev player
         gameState.nextPlayer();

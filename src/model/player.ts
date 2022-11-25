@@ -388,7 +388,7 @@ export class Player implements IGameTextEntity {
   }
 
   getUnpairedMessengers(): PlayedCardInfo[] {
-    return this.getPlayedCardInfos(CardName.MESSENGER).filter(
+    return this.getPlayedCardForCardName(CardName.MESSENGER).filter(
       ({ shareSpaceWith }) => {
         return !shareSpaceWith;
       }
@@ -431,7 +431,7 @@ export class Player implements IGameTextEntity {
       // Must have more Constructions than Messengers.
       return (
         this.getPlayedConstructions().length -
-          this.getPlayedCardInfos(CardName.MESSENGER).length >
+          this.getPlayedCardForCardName(CardName.MESSENGER).length >
         0
       );
     }
@@ -477,7 +477,7 @@ export class Player implements IGameTextEntity {
   }
 
   hasCardInCity(cardName: CardName): boolean {
-    return this.getPlayedCardInfos(cardName).length !== 0;
+    return this.getPlayedCardForCardName(cardName).length !== 0;
   }
 
   useConstructionToPlayCritter(cardName: CardName): void {
@@ -486,7 +486,7 @@ export class Player implements IGameTextEntity {
       throw new Error("Can only occupy construction");
     }
     let didOccupy = false;
-    this.getPlayedCardInfos(cardName).forEach((playedCardInfo) => {
+    this.getPlayedCardForCardName(cardName).forEach((playedCardInfo) => {
       if (!didOccupy && !playedCardInfo.usedForCritter) {
         playedCardInfo.usedForCritter = true;
         didOccupy = true;
@@ -629,107 +629,74 @@ export class Player implements IGameTextEntity {
     return this.resources[resourceType] || 0;
   }
 
+  getPlayedConstructions(): PlayedCardInfo[] {
+    return this.getPlayedCards((card) => card.isConstruction);
+  }
+
   getNumPlayedConstructions(): number {
     return this.getPlayedConstructions().length;
   }
 
   getNumPlayedUniqueConstructions(): number {
-    return this.getPlayedConstructions().filter((playedCardInfo) => {
-      const card = Card.fromName(playedCardInfo.cardName);
-      return card.isUnique;
-    }).length;
+    return this.getPlayedCards((card) => card.isConstruction && card.isUnique)
+      .length;
   }
 
   getNumPlayedCommonConstructions(): number {
-    return this.getPlayedConstructions().filter((playedCardInfo) => {
-      const card = Card.fromName(playedCardInfo.cardName);
-      return !card.isUnique;
-    }).length;
+    return this.getPlayedCards((card) => card.isConstruction && !card.isUnique)
+      .length;
   }
 
   getNumPlayedUniqueCritters(): number {
-    return this.getPlayedCritters().filter((playedCardInfo) => {
-      const card = Card.fromName(playedCardInfo.cardName);
-      return card.isUnique;
-    }).length;
+    return this.getPlayedCards((card) => card.isCritter && card.isUnique)
+      .length;
   }
 
   getNumPlayedCommonCritters(): number {
-    return this.getPlayedCritters().filter((playedCardInfo) => {
-      const card = Card.fromName(playedCardInfo.cardName);
-      return !card.isUnique;
-    }).length;
+    return this.getPlayedCards((card) => card.isCritter && !card.isUnique)
+      .length;
   }
 
   getNumPlayedCritters(): number {
     return this.getPlayedCritters().length;
   }
 
-  getPlayedConstructions(): PlayedCardInfo[] {
-    const constructionsInCity: PlayedCardInfo[] = [];
-    this.forEachPlayedCard((playedCardInfo) => {
-      const card = Card.fromName(playedCardInfo.cardName);
-      if (card.isConstruction) {
-        constructionsInCity.push(playedCardInfo);
-      }
-    });
-    return constructionsInCity;
-  }
-
   getPlayedCritters(): PlayedCardInfo[] {
-    const crittersInCity: PlayedCardInfo[] = [];
-    this.forEachPlayedCard((playedCardInfo) => {
-      const card = Card.fromName(playedCardInfo.cardName);
-      if (card.isCritter) {
-        crittersInCity.push(playedCardInfo);
-      }
-    });
-    return crittersInCity;
-  }
-
-  getPlayedCardNamesByType(cardType: CardType): CardName[] {
-    const cards: CardName[] = [];
-    this.forEachPlayedCard(({ cardName }) => {
-      const card = Card.fromName(cardName);
-      if (card.cardType == cardType) {
-        cards.push(cardName);
-      }
-    });
-    return cards;
+    return this.getPlayedCards((card) => card.isCritter);
   }
 
   forEachPlayedCard(callback: (playedCardInfo: PlayedCardInfo) => void): void {
-    (Object.values(this.playedCards) as PlayedCardInfo[][]).forEach(
-      (playedCards) => {
-        playedCards.forEach(callback);
+    for (const [_, playedCards] of Object.entries(this.playedCards)) {
+      playedCards?.forEach(callback);
+    }
+  }
+
+  getPlayedCards(
+    filter?: (card: Card, x: PlayedCardInfo) => boolean
+  ): PlayedCardInfo[] {
+    const ret: PlayedCardInfo[] = [];
+    this.forEachPlayedCard((x) => {
+      if (!filter || filter(Card.fromName(x.cardName), x)) {
+        ret.push(x);
       }
-    );
+    });
+    return ret;
   }
 
   getNumCardsInCity(): number {
-    let total = 0;
-    this.forEachPlayedCard(() => {
-      total += 1;
-    });
-    return total;
+    return this.getPlayedCards().length;
   }
 
   getNumCardType(cardType: CardType): number {
-    return this.getPlayedCardNamesByType(cardType).length;
+    return this.getAllPlayedCardsByType(cardType).length;
   }
 
   // Returns all played destination cards that a player has played that have
   // room for another worker
   getAllAvailableDestinationCards(): PlayedCardInfo[] {
-    const ret: PlayedCardInfo[] = [];
-    this.forEachPlayedCard((playedCard) => {
-      const { cardName, workers = [] } = playedCard;
-      const card = Card.fromName(cardName);
-      if (card.getNumWorkerSpotsForPlayer(this) > workers.length) {
-        ret.push(playedCard);
-      }
+    return this.getPlayedCards((card, { workers = [] }) => {
+      return card.getNumWorkerSpotsForPlayer(this) > workers.length;
     });
-    return ret;
   }
 
   // returns all non-Open destination or storehouse cards that were played by player and
@@ -750,30 +717,17 @@ export class Player implements IGameTextEntity {
     });
   }
 
-  getAllPlayedCards(): PlayedCardInfo[] {
-    const ret: PlayedCardInfo[] = [];
-    this.forEachPlayedCard((x) => ret.push(x));
-    return ret;
-  }
-
   getAllPlayedCardsByType(cardType: CardType): PlayedCardInfo[] {
-    const ret: PlayedCardInfo[] = [];
-    this.forEachPlayedCard((playedCardInfo) => {
-      const card = Card.fromName(playedCardInfo.cardName);
-      if (card.cardType === cardType) {
-        ret.push(playedCardInfo);
-      }
-    });
-    return ret;
+    return this.getPlayedCards((card) => card.cardType === cardType);
   }
 
-  getPlayedCardInfos(cardName: CardName): PlayedCardInfo[] {
+  getPlayedCardForCardName(cardName: CardName): PlayedCardInfo[] {
     const playedCardInfos = this.playedCards[cardName];
     return playedCardInfos || [];
   }
 
   getFirstPlayedCard(cardName: CardName): PlayedCardInfo {
-    const playedCards = this.getPlayedCardInfos(cardName);
+    const playedCards = this.getPlayedCardForCardName(cardName);
     if (playedCards.length === 0) {
       throw new Error(`Cannot find played card for: ${cardName}`);
     }
@@ -792,14 +746,16 @@ export class Player implements IGameTextEntity {
     const newPlayedCard = {} as PlayedCardInfo;
     Object.assign(newPlayedCard, origPlayedCard, playedCardChanges);
 
-    this.playedCards[cardName] = this.getPlayedCardInfos(cardName).map((x) => {
-      if (!found && isEqual(x, origPlayedCardCopy)) {
-        found = true;
-        return newPlayedCard;
-      } else {
-        return x;
+    this.playedCards[cardName] = this.getPlayedCardForCardName(cardName).map(
+      (x) => {
+        if (!found && isEqual(x, origPlayedCardCopy)) {
+          found = true;
+          return newPlayedCard;
+        } else {
+          return x;
+        }
       }
-    });
+    );
 
     // Make sure we update all existing playedCardInfo references.
     gameState.updatePendingGameInputs((gameInput) => {
@@ -858,7 +814,7 @@ export class Player implements IGameTextEntity {
     const playedCardWoWorkers = omit(playedCard, toOmit);
 
     let ret: PlayedCardInfo | undefined;
-    ret = this.getPlayedCardInfos(playedCard.cardName).find((x) => {
+    ret = this.getPlayedCardForCardName(playedCard.cardName).find((x) => {
       // If withOwnWorker is specified, don't rely on the given playedCard's worker field.
       // Instead make sure the card we're selecting has the player's own worker on it.
       if (withOwnWorker) {
@@ -874,12 +830,12 @@ export class Player implements IGameTextEntity {
     if (!ret) {
       // Omit workers from comparison because we might have placed a worker.
       ret =
-        this.getPlayedCardInfos(playedCard.cardName).find((x) => {
+        this.getPlayedCardForCardName(playedCard.cardName).find((x) => {
           return isEqual(omit(x, toOmit), playedCardWoWorkers);
         }) ||
         // Be a little forgiving here because we might have stale references in
         // pending gameInput.
-        this.getPlayedCardInfos(playedCard.cardName)[0];
+        this.getPlayedCardForCardName(playedCard.cardName)[0];
     }
     if (ret) {
       return Object.freeze(ret);
@@ -1203,10 +1159,12 @@ export class Player implements IGameTextEntity {
       const playedCardsToCheck: PlayedCardInfo[] = [];
       if (card.associatedCard) {
         playedCardsToCheck.push(
-          ...this.getPlayedCardInfos(card.associatedCard)
+          ...this.getPlayedCardForCardName(card.associatedCard)
         );
       }
-      playedCardsToCheck.push(...this.getPlayedCardInfos(CardName.EVERTREE));
+      playedCardsToCheck.push(
+        ...this.getPlayedCardForCardName(CardName.EVERTREE)
+      );
       playedCardsToCheck.forEach((playedCard) => {
         if (!hasUsed) {
           if (!playedCard.usedForCritter) {
@@ -1577,7 +1535,7 @@ export class Player implements IGameTextEntity {
         const cardOwner = gameState.getPlayer(playedCard.cardOwnerId);
         let removedWorker = false;
         cardOwner
-          .getPlayedCardInfos(playedCard.cardName)
+          .getPlayedCardForCardName(playedCard.cardName)
           .forEach(({ workers = [] }) => {
             if (!removedWorker) {
               const idx = workers.indexOf(this.playerId);

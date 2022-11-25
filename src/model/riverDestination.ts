@@ -204,18 +204,22 @@ export class RiverDestinationMap {
       [CardType.PROSPERITY]: 0,
     };
     const messenger = Card.fromName(CardName.MESSENGER);
-    player.getPlayedCardInfos(messenger.name).forEach(({ shareSpaceWith }) => {
-      if (!shareSpaceWith) {
-        throw new Error("Messenger not sharing a space with any Construction.");
-      }
-      const card = Card.fromName(shareSpaceWith);
-      adjustCountsBy[messenger.cardType] -= 1;
-      adjustCountsBy[card.cardType] += 1;
-    });
+    player
+      .getPlayedCardForCardName(messenger.name)
+      .forEach(({ shareSpaceWith }) => {
+        if (!shareSpaceWith) {
+          throw new Error(
+            "Messenger not sharing a space with any Construction."
+          );
+        }
+        const card = Card.fromName(shareSpaceWith);
+        adjustCountsBy[messenger.cardType] -= 1;
+        adjustCountsBy[card.cardType] += 1;
+      });
 
     const getNumByCardType = (cardType: CardType): number => {
       return (
-        player.getPlayedCardNamesByType(cardType).length +
+        player.getAllPlayedCardsByType(cardType).length +
         adjustCountsBy[cardType]
       );
     };

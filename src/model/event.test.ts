@@ -300,15 +300,15 @@ describe("Event", () => {
           inputType: GameInputType.SELECT_PLAYED_CARDS,
           prevInputType: GameInputType.CLAIM_EVENT,
           eventContext: EventName.SPECIAL_CROAK_WART_CURE,
-          cardOptions: player.getAllPlayedCards(),
+          cardOptions: player.getPlayedCards(),
           maxToSelect: 2,
           minToSelect: 2,
           clientOptions: {
             // these are the cards the player wants to remove
             // from their city
             selectedCards: [
-              ...player.getPlayedCardInfos(CardName.UNDERTAKER),
-              ...player.getPlayedCardInfos(CardName.FARM),
+              ...player.getPlayedCardForCardName(CardName.UNDERTAKER),
+              ...player.getPlayedCardForCardName(CardName.FARM),
             ],
           },
         },
@@ -364,8 +364,8 @@ describe("Event", () => {
           clientOptions: {
             // These are the cards the player wants to remove from their city
             selectedCards: [
-              ...player.getPlayedCardInfos(CardName.POSTAL_PIGEON),
-              ...player.getPlayedCardInfos(CardName.RANGER),
+              ...player.getPlayedCardForCardName(CardName.POSTAL_PIGEON),
+              ...player.getPlayedCardForCardName(CardName.RANGER),
             ],
           },
         },
@@ -936,7 +936,7 @@ describe("Event", () => {
 
       player.addToCity(gameState, CardName.WOODCARVER);
       player.addToCity(gameState, CardName.CHAPEL);
-      player.getPlayedCardInfos(CardName.CHAPEL).forEach((info) => {
+      player.getPlayedCardForCardName(CardName.CHAPEL).forEach((info) => {
         info.resources = { [ResourceType.VP]: 2 };
       });
 
@@ -1010,7 +1010,7 @@ describe("Event", () => {
 
       player.addToCity(gameState, CardName.WOODCARVER);
       player.addToCity(gameState, CardName.CHAPEL);
-      player.getPlayedCardInfos(CardName.CHAPEL).forEach((info) => {
+      player.getPlayedCardForCardName(CardName.CHAPEL).forEach((info) => {
         info.resources = { [ResourceType.VP]: 2 };
       });
 
@@ -3358,13 +3358,13 @@ describe("Event", () => {
         prevInputType: GameInputType.CLAIM_EVENT,
         eventContext: EventName.SPECIAL_RIVER_RACE,
         cardOptions: [
-          ...player.getPlayedCardInfos(CardName.FERRY_FERRET),
-          ...player.getPlayedCardInfos(CardName.TWIG_BARGE),
+          ...player.getPlayedCardForCardName(CardName.FERRY_FERRET),
+          ...player.getPlayedCardForCardName(CardName.TWIG_BARGE),
         ],
         maxToSelect: 1,
         minToSelect: 1,
         clientOptions: {
-          selectedCards: player.getPlayedCardInfos(CardName.FERRY_FERRET),
+          selectedCards: player.getPlayedCardForCardName(CardName.FERRY_FERRET),
         },
       };
 
@@ -3408,13 +3408,13 @@ describe("Event", () => {
         prevInputType: GameInputType.CLAIM_EVENT,
         eventContext: EventName.SPECIAL_RIVER_RACE,
         cardOptions: [
-          ...player.getPlayedCardInfos(CardName.FERRY_FERRET),
-          ...player.getPlayedCardInfos(CardName.TWIG_BARGE),
+          ...player.getPlayedCardForCardName(CardName.FERRY_FERRET),
+          ...player.getPlayedCardForCardName(CardName.TWIG_BARGE),
         ],
         maxToSelect: 1,
         minToSelect: 1,
         clientOptions: {
-          selectedCards: player.getPlayedCardInfos(CardName.TWIG_BARGE),
+          selectedCards: player.getPlayedCardForCardName(CardName.TWIG_BARGE),
         },
       };
 
@@ -3460,7 +3460,9 @@ describe("Event", () => {
 
       expect(player.hasCardInCity(CardName.FERRY_FERRET)).to.be(true);
       expect(player.hasCardInCity(CardName.TWIG_BARGE)).to.be(true);
-      expect(player.getPlayedCardInfos(CardName.TWIG_BARGE).length).to.be(2);
+      expect(player.getPlayedCardForCardName(CardName.TWIG_BARGE).length).to.be(
+        2
+      );
 
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
       expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
@@ -3475,14 +3477,16 @@ describe("Event", () => {
         prevInputType: GameInputType.CLAIM_EVENT,
         eventContext: EventName.SPECIAL_RIVER_RACE,
         cardOptions: [
-          ...player.getPlayedCardInfos(CardName.FERRY_FERRET),
-          ...player.getPlayedCardInfos(CardName.TWIG_BARGE),
+          ...player.getPlayedCardForCardName(CardName.FERRY_FERRET),
+          ...player.getPlayedCardForCardName(CardName.TWIG_BARGE),
         ],
         maxToSelect: 1,
         minToSelect: 1,
         clientOptions: {
           // select the 2nd one in the list
-          selectedCards: [player.getPlayedCardInfos(CardName.TWIG_BARGE)[1]],
+          selectedCards: [
+            player.getPlayedCardForCardName(CardName.TWIG_BARGE)[1],
+          ],
         },
       };
 
@@ -3792,7 +3796,7 @@ describe("Event", () => {
       player.addToCity(gameState, CardName.STOREHOUSE);
       player.addToCity(gameState, CardName.STOREHOUSE);
 
-      let storehouses = player.getPlayedCardInfos(CardName.STOREHOUSE);
+      let storehouses = player.getPlayedCardForCardName(CardName.STOREHOUSE);
       expect(storehouses.length).to.be(3);
 
       storehouses[0].resources = {
@@ -3829,7 +3833,7 @@ describe("Event", () => {
       expect(player.getPointsFromEvents(gameState)).to.be(0);
       expect(player.getPointsFromCards(gameState)).to.be(11);
 
-      storehouses = player.getPlayedCardInfos(CardName.STOREHOUSE);
+      storehouses = player.getPlayedCardForCardName(CardName.STOREHOUSE);
 
       expect(storehouses.length).to.be(3);
 

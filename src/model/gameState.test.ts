@@ -681,13 +681,13 @@ describe("GameState", () => {
         {
           inputType: GameInputType.SELECT_PLAYED_CARDS,
           prevInputType: GameInputType.PLAY_CARD,
-          cardOptions: player.getPlayedCardInfos(CardName.FARM),
+          cardOptions: player.getPlayedCardForCardName(CardName.FARM),
           cardContext: CardName.RUINS,
           playedCardContext: undefined,
           maxToSelect: 1,
           minToSelect: 1,
           clientOptions: {
-            selectedCards: [player.getPlayedCardInfos(CardName.FARM)[0]],
+            selectedCards: [player.getPlayedCardForCardName(CardName.FARM)[0]],
           },
         },
       ]);

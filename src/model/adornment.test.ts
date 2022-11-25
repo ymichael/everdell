@@ -634,7 +634,7 @@ describe("Adornment", () => {
           clientOptions: {
             selectedCards: [
               player.getFirstPlayedCard(CardName.MINE),
-              ...player.getPlayedCardInfos(CardName.FARM).slice(0, 2),
+              ...player.getPlayedCardForCardName(CardName.FARM).slice(0, 2),
             ],
           },
         },
@@ -665,7 +665,7 @@ describe("Adornment", () => {
           maxToSelect: 3,
           minToSelect: 3,
           clientOptions: {
-            selectedCards: [...player.getPlayedCardInfos(CardName.FARM)],
+            selectedCards: [...player.getPlayedCardForCardName(CardName.FARM)],
           },
         },
       ]);
@@ -1266,7 +1266,7 @@ describe("Adornment", () => {
         {
           inputType: GameInputType.SELECT_PLAYED_CARDS,
           prevInputType: GameInputType.PLAY_ADORNMENT,
-          cardOptions: player.getPlayedCardInfos(CardName.WANDERER),
+          cardOptions: player.getPlayedCardForCardName(CardName.WANDERER),
           adornmentContext: name,
           maxToSelect: 2,
           minToSelect: 0,
@@ -1290,12 +1290,12 @@ describe("Adornment", () => {
         {
           inputType: GameInputType.SELECT_PLAYED_CARDS,
           prevInputType: GameInputType.PLAY_ADORNMENT,
-          cardOptions: player.getPlayedCardInfos(CardName.WANDERER),
+          cardOptions: player.getPlayedCardForCardName(CardName.WANDERER),
           adornmentContext: name,
           maxToSelect: 2,
           minToSelect: 0,
           clientOptions: {
-            selectedCards: player.getPlayedCardInfos(CardName.WANDERER),
+            selectedCards: player.getPlayedCardForCardName(CardName.WANDERER),
           },
         },
       ]);
@@ -1310,7 +1310,7 @@ describe("Adornment", () => {
       player.addToCity(gameState, CardName.FARM);
 
       expect(player.hasCardInCity(CardName.FARM)).to.be(true);
-      expect(player.getPlayedCardInfos(CardName.RUINS).length).to.be(1);
+      expect(player.getPlayedCardForCardName(CardName.RUINS).length).to.be(1);
       expect(player.cardsInHand.length).to.be(0);
 
       [player, gameState] = multiStepGameInputTest(gameState, [
@@ -1318,31 +1318,31 @@ describe("Adornment", () => {
         {
           inputType: GameInputType.SELECT_PLAYED_CARDS,
           prevInputType: GameInputType.PLAY_ADORNMENT,
-          cardOptions: player.getPlayedCardInfos(CardName.RUINS),
+          cardOptions: player.getPlayedCardForCardName(CardName.RUINS),
           adornmentContext: name,
           maxToSelect: 2,
           minToSelect: 0,
           clientOptions: {
-            selectedCards: player.getPlayedCardInfos(CardName.RUINS),
+            selectedCards: player.getPlayedCardForCardName(CardName.RUINS),
           },
         },
         {
           inputType: GameInputType.SELECT_PLAYED_CARDS,
           prevInputType: GameInputType.PLAY_CARD,
-          cardOptions: player.getPlayedCardInfos(CardName.FARM),
+          cardOptions: player.getPlayedCardForCardName(CardName.FARM),
           playedCardContext: player.getFirstPlayedCard(CardName.RUINS),
           cardContext: CardName.RUINS,
           maxToSelect: 1,
           minToSelect: 1,
           clientOptions: {
-            selectedCards: player.getPlayedCardInfos(CardName.FARM),
+            selectedCards: player.getPlayedCardForCardName(CardName.FARM),
           },
         },
       ]);
 
       expect(player.hasCardInCity(CardName.FARM)).to.be(false);
       expect(player.cardsInHand.length).to.be(2);
-      expect(player.getPlayedCardInfos(CardName.RUINS).length).to.be(1);
+      expect(player.getPlayedCardForCardName(CardName.RUINS).length).to.be(1);
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
     });
 
@@ -1361,12 +1361,12 @@ describe("Adornment", () => {
           {
             inputType: GameInputType.SELECT_PLAYED_CARDS,
             prevInputType: GameInputType.PLAY_ADORNMENT,
-            cardOptions: player.getPlayedCardInfos(CardName.FOOL),
+            cardOptions: player.getPlayedCardForCardName(CardName.FOOL),
             adornmentContext: name,
             maxToSelect: 2,
             minToSelect: 0,
             clientOptions: {
-              selectedCards: player.getPlayedCardInfos(CardName.FOOL),
+              selectedCards: player.getPlayedCardForCardName(CardName.FOOL),
             },
           },
         ],
@@ -1404,12 +1404,14 @@ describe("Adornment", () => {
           {
             inputType: GameInputType.SELECT_PLAYED_CARDS,
             prevInputType: GameInputType.PLAY_ADORNMENT,
-            cardOptions: player.getPlayedCardInfos(CardName.MESSENGER),
+            cardOptions: player.getPlayedCardForCardName(CardName.MESSENGER),
             adornmentContext: name,
             maxToSelect: 2,
             minToSelect: 0,
             clientOptions: {
-              selectedCards: player.getPlayedCardInfos(CardName.MESSENGER),
+              selectedCards: player.getPlayedCardForCardName(
+                CardName.MESSENGER
+              ),
             },
           },
         ]
@@ -1440,12 +1442,12 @@ describe("Adornment", () => {
           {
             inputType: GameInputType.SELECT_PLAYED_CARDS,
             prevInputType: GameInputType.PLAY_ADORNMENT,
-            cardOptions: player.getPlayedCardInfos(CardName.RANGER),
+            cardOptions: player.getPlayedCardForCardName(CardName.RANGER),
             adornmentContext: name,
             maxToSelect: 2,
             minToSelect: 0,
             clientOptions: {
-              selectedCards: player.getPlayedCardInfos(CardName.RANGER),
+              selectedCards: player.getPlayedCardForCardName(CardName.RANGER),
             },
           },
           {

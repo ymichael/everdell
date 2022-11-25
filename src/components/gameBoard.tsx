@@ -202,7 +202,7 @@ export const PlayerCity: React.FC<{
   player: Player;
   viewerId: string | null;
 }> = ({ player, viewerId }) => {
-  const playedCards = player.getAllPlayedCards();
+  const playedCards = player.getPlayedCards();
   const playedAdornments = player.playedAdornments;
 
   const labelToCount: [string, number][] = [

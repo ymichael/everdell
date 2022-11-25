@@ -12,7 +12,7 @@ import {
 } from "./gameState";
 import { Card } from "./card";
 
-export function getPointsPerRarityLabel({
+export function countCardsByAttribute({
   isCritter,
   isUnique,
 }: {
@@ -21,14 +21,9 @@ export function getPointsPerRarityLabel({
 }): GameStateCountPointsFn {
   return (gameState: GameState, playerId: string) => {
     const player = gameState.getPlayer(playerId);
-    let numCardsToCount = 0;
-    player.forEachPlayedCard(({ cardName }) => {
-      const card = Card.fromName(cardName as CardName);
-      if (card.isCritter === isCritter && card.isUnique === isUnique) {
-        numCardsToCount++;
-      }
-    });
-    return numCardsToCount;
+    return player.getPlayedCards(
+      (card) => card.isCritter === isCritter && card.isUnique === isUnique
+    ).length;
   };
 }
 export function playSpendResourceToGetVPFactory({

@@ -43,7 +43,12 @@ import {
   workerPlacementToGameText,
 } from "./gameText";
 import { assertUnreachable } from "../utils";
-import { getPointsPerRarityLabel, onlyRelevantProductionCards, activateCardSpendResourceToGetVPFactory, playSpendResourceToGetVPFactory } from "./cardHelpers";
+import {
+  countCardsByAttribute,
+  onlyRelevantProductionCards,
+  activateCardSpendResourceToGetVPFactory,
+  playSpendResourceToGetVPFactory,
+} from "./cardHelpers";
 
 type NumWorkersInnerFn = (cardOwner: Player) => number;
 type ProductionInnerFn = (
@@ -557,7 +562,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       " in your city.",
     ]),
     productionWillActivateInner: (gameState: GameState, cardOwner: Player) => {
-      return cardOwner.getPlayedCardInfos(CardName.FARM).length !== 0;
+      return cardOwner.getPlayedCardForCardName(CardName.FARM).length !== 0;
     },
     productionInner: (
       gameState: GameState,
@@ -565,7 +570,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       cardOwner: Player
     ) => {
       const player = gameState.getActivePlayer();
-      const playedFarms = cardOwner.getPlayedCardInfos(CardName.FARM);
+      const playedFarms = cardOwner.getPlayedCardForCardName(CardName.FARM);
       if (playedFarms.length !== 0) {
         player.gainResources(gameState, {
           [ResourceType.TWIG]: 2 * playedFarms.length,
@@ -597,7 +602,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       " in your city.",
     ]),
     // 1 point per common construction
-    pointsInner: getPointsPerRarityLabel({ isCritter: false, isUnique: false }),
+    pointsInner: countCardsByAttribute({ isCritter: false, isUnique: false }),
   }),
   [CardName.CEMETARY]: new Card({
     name: CardName.CEMETARY,
@@ -759,7 +764,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         throw new Error("Invalid input type");
       }
       const player = gameState.getActivePlayer();
-      const chapelInfo = player.getPlayedCardInfos(CardName.CHAPEL);
+      const chapelInfo = player.getPlayedCardForCardName(CardName.CHAPEL);
       if (chapelInfo.length === 0) {
         throw new Error("Invalid action");
       }
@@ -870,7 +875,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
-      const playedClockTower = player.getPlayedCardInfos(
+      const playedClockTower = player.getPlayedCardForCardName(
         CardName.CLOCK_TOWER
       )?.[0];
       if (!playedClockTower || !playedClockTower.resources?.[ResourceType.VP]) {
@@ -1296,8 +1301,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       }
     },
     productionWillActivateInner: (gameState: GameState, cardOwner: Player) => {
-      const playedHusbands = cardOwner.getPlayedCardInfos(CardName.HUSBAND);
-      const playedWifes = cardOwner.getPlayedCardInfos(CardName.WIFE);
+      const playedHusbands = cardOwner.getPlayedCardForCardName(
+        CardName.HUSBAND
+      );
+      const playedWifes = cardOwner.getPlayedCardForCardName(CardName.WIFE);
       return (
         cardOwner.hasCardInCity(CardName.FARM) &&
         playedHusbands.length <= playedWifes.length
@@ -1308,8 +1315,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       gameInput: GameInput,
       cardOwner: Player
     ) => {
-      const playedHusbands = cardOwner.getPlayedCardInfos(CardName.HUSBAND);
-      const playedWifes = cardOwner.getPlayedCardInfos(CardName.WIFE);
+      const playedHusbands = cardOwner.getPlayedCardForCardName(
+        CardName.HUSBAND
+      );
+      const playedWifes = cardOwner.getPlayedCardForCardName(CardName.WIFE);
       if (
         cardOwner.hasCardInCity(CardName.FARM) &&
         playedHusbands.length <= playedWifes.length
@@ -2020,7 +2029,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       " in your city",
     ]),
     // 1 point per unique construction
-    pointsInner: getPointsPerRarityLabel({ isCritter: false, isUnique: true }),
+    pointsInner: countCardsByAttribute({ isCritter: false, isUnique: true }),
   }),
   [CardName.PEDDLER]: new Card({
     name: CardName.PEDDLER,
@@ -2618,14 +2627,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
       // Need to be able to ruin an existing construction.
       const player = gameState.getActivePlayer();
-      let hasConstruction = false;
-      player.forEachPlayedCard(({ cardName }) => {
-        if (!hasConstruction) {
-          const card = Card.fromName(cardName);
-          hasConstruction = card.isConstruction;
-        }
-      });
-      if (!hasConstruction) {
+      if (player.getPlayedConstructions().length === 0) {
         return `Require an existing construction to play ${CardName.RUINS}`;
       }
       return null;
@@ -2633,19 +2635,20 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.PLAY_CARD) {
-        const cardOptions: PlayedCardInfo[] = [];
-        player.forEachPlayedCard((playedCardInfo) => {
-          const card = Card.fromName(playedCardInfo.cardName);
-          if (
-            gameInput.playedCardContext &&
-            isEqual(gameInput.playedCardContext, playedCardInfo)
-          ) {
-            return;
+        const cardOptions: PlayedCardInfo[] = player.getPlayedCards(
+          (card, cardInfo) => {
+            if (!card.isConstruction) {
+              return false;
+            }
+            if (
+              gameInput.playedCardContext &&
+              isEqual(gameInput.playedCardContext, cardInfo)
+            ) {
+              return false;
+            }
+            return true;
           }
-          if (card.isConstruction) {
-            cardOptions.push(playedCardInfo);
-          }
-        });
+        );
         if (cardOptions.length !== 0) {
           gameState.pendingGameInputs.push({
             inputType: GameInputType.SELECT_PLAYED_CARDS,
@@ -2731,7 +2734,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       " in your city.",
     ]),
     // 1 point per common critter
-    pointsInner: getPointsPerRarityLabel({ isCritter: true, isUnique: false }),
+    pointsInner: countCardsByAttribute({ isCritter: true, isUnique: false }),
   }),
   [CardName.SHEPHERD]: new Card({
     name: CardName.SHEPHERD,
@@ -2780,7 +2783,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           });
         } else {
           player.gainResources(gameState, { [ResourceType.BERRY]: 3 });
-          const chapelInfo = player.getPlayedCardInfos(CardName.CHAPEL);
+          const chapelInfo = player.getPlayedCardForCardName(CardName.CHAPEL);
           if (chapelInfo.length > 0) {
             const chapel = chapelInfo[0].resources;
             if (!chapel) {
@@ -2830,7 +2833,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
 
         // give the card owner their berries + VP
         player.gainResources(gameState, { [ResourceType.BERRY]: 3 });
-        const chapelInfo = player.getPlayedCardInfos(CardName.CHAPEL);
+        const chapelInfo = player.getPlayedCardForCardName(CardName.CHAPEL);
         if (chapelInfo.length > 0) {
           const chapel = chapelInfo[0].resources;
           if (!chapel) {
@@ -2853,7 +2856,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         // give the player their berries + VP, don't ask them to select a player
 
         player.gainResources(gameState, { [ResourceType.BERRY]: 3 });
-        const chapelInfo = player.getPlayedCardInfos(CardName.CHAPEL);
+        const chapelInfo = player.getPlayedCardForCardName(CardName.CHAPEL);
 
         if (chapelInfo.length > 0) {
           const chapel = chapelInfo[0].resources;
@@ -3151,7 +3154,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       " in your city.",
     ]),
     // 1 point per unique critter
-    pointsInner: getPointsPerRarityLabel({ isCritter: true, isUnique: true }),
+    pointsInner: countCardsByAttribute({ isCritter: true, isUnique: true }),
   }),
   [CardName.TWIG_BARGE]: new Card({
     name: CardName.TWIG_BARGE,
@@ -3303,7 +3306,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           label: "Select 1 CARD to discard from your city",
           prevInputType: gameInput.inputType,
           cardOptions: player
-            .getAllPlayedCards()
+            .getPlayedCards()
             .filter(({ cardName }) => cardName !== CardName.UNIVERSITY),
           maxToSelect: 1,
           minToSelect: 1,
@@ -3508,8 +3511,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.PLAY_CARD) {
         const numConstructions = player.getPlayedConstructions().length;
-        const numMessengers = player.getPlayedCardInfos(CardName.MESSENGER)
-          .length;
+        const numMessengers = player.getPlayedCardForCardName(
+          CardName.MESSENGER
+        ).length;
         if (numConstructions - numMessengers < 1) {
           return "No Construction to share a space with.";
         }
@@ -3610,7 +3614,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     },
     pointsInner: (gameState: GameState, playerId: string) => {
       const player = gameState.getPlayer(playerId);
-      return player.getAllPlayedCards().filter(({ cardName }) => {
+      return player.getPlayedCards().filter(({ cardName }) => {
         return Card.fromName(cardName).expansion === ExpansionType.PEARLBROOK;
       }).length;
     },

@@ -711,11 +711,11 @@ describe("Card", () => {
             maxToSelect: 1,
             minToSelect: 1,
             cardOptions: [
-              ...player.getPlayedCardInfos(CardName.MINE),
-              ...player.getPlayedCardInfos(CardName.FARM),
+              ...player.getPlayedCardForCardName(CardName.MINE),
+              ...player.getPlayedCardForCardName(CardName.FARM),
             ],
             clientOptions: {
-              selectedCards: player.getPlayedCardInfos(CardName.MINE),
+              selectedCards: player.getPlayedCardForCardName(CardName.MINE),
             },
           },
         ]);
@@ -742,9 +742,9 @@ describe("Card", () => {
             cardContext: CardName.CHIP_SWEEP,
             maxToSelect: 1,
             minToSelect: 1,
-            cardOptions: [...player.getPlayedCardInfos(CardName.FARM)],
+            cardOptions: [...player.getPlayedCardForCardName(CardName.FARM)],
             clientOptions: {
-              selectedCards: player.getPlayedCardInfos(CardName.FARM),
+              selectedCards: player.getPlayedCardForCardName(CardName.FARM),
             },
           },
         ]);
@@ -836,7 +836,7 @@ describe("Card", () => {
         ).to.be(2);
         expect(playerNoActivate.numAvailableWorkers).to.be(3);
         expect(
-          playerNoActivate.getPlayedCardInfos(CardName.CLOCK_TOWER)?.[0]
+          playerNoActivate.getPlayedCardForCardName(CardName.CLOCK_TOWER)?.[0]
         ).to.eql({
           cardName: CardName.CLOCK_TOWER,
           cardOwnerId: playerNoActivate.playerId,
@@ -894,7 +894,7 @@ describe("Card", () => {
         ).to.be(2);
         expect(playerWithActivate.numAvailableWorkers).to.be(3);
         expect(
-          playerWithActivate.getPlayedCardInfos(CardName.CLOCK_TOWER)?.[0]
+          playerWithActivate.getPlayedCardForCardName(CardName.CLOCK_TOWER)?.[0]
         ).to.eql({
           cardName: CardName.CLOCK_TOWER,
           cardOwnerId: playerWithActivate.playerId,
@@ -970,12 +970,12 @@ describe("Card", () => {
           maxToSelect: 1,
           minToSelect: 1,
           cardOptions: [
-            ...player.getPlayedCardInfos(CardName.TEACHER),
-            ...player.getPlayedCardInfos(CardName.FARM),
-            ...player.getPlayedCardInfos(CardName.HUSBAND),
+            ...player.getPlayedCardForCardName(CardName.TEACHER),
+            ...player.getPlayedCardForCardName(CardName.FARM),
+            ...player.getPlayedCardForCardName(CardName.HUSBAND),
           ],
           clientOptions: {
-            selectedCards: player.getPlayedCardInfos(CardName.FARM),
+            selectedCards: player.getPlayedCardForCardName(CardName.FARM),
           },
         };
 
@@ -1018,7 +1018,9 @@ describe("Card", () => {
         expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(4);
         expect(player.numAvailableWorkers).to.be(3);
         expect(player.cardsInHand).to.eql([CardName.TEACHER]);
-        expect(player.getPlayedCardInfos(CardName.CLOCK_TOWER)?.[0]).to.eql({
+        expect(
+          player.getPlayedCardForCardName(CardName.CLOCK_TOWER)?.[0]
+        ).to.eql({
           cardName: CardName.CLOCK_TOWER,
           cardOwnerId: player.playerId,
           resources: {
@@ -2142,7 +2144,7 @@ describe("Card", () => {
         ]);
 
         expect(player.numAvailableWorkers).to.be(1);
-        expect(player.getPlayedCardInfos(CardName.FARM).length).to.be(1);
+        expect(player.getPlayedCardForCardName(CardName.FARM).length).to.be(1);
         expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
         expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
 
@@ -2153,7 +2155,7 @@ describe("Card", () => {
           {
             inputType: GameInputType.VISIT_DESTINATION_CARD,
             clientOptions: {
-              playedCard: player.getPlayedCardInfos(CardName.INN)[1],
+              playedCard: player.getPlayedCardForCardName(CardName.INN)[1],
             },
           },
           {
@@ -2178,7 +2180,7 @@ describe("Card", () => {
         ]);
 
         expect(player.numAvailableWorkers).to.be(0);
-        expect(player.getPlayedCardInfos(CardName.FARM).length).to.be(2);
+        expect(player.getPlayedCardForCardName(CardName.FARM).length).to.be(2);
         expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
         expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
       });
@@ -2655,11 +2657,13 @@ describe("Card", () => {
             maxToSelect: 1,
             minToSelect: 1,
             cardOptions: [
-              ...player2.getPlayedCardInfos(CardName.GENERAL_STORE),
-              ...player2.getPlayedCardInfos(CardName.FARM),
+              ...player2.getPlayedCardForCardName(CardName.GENERAL_STORE),
+              ...player2.getPlayedCardForCardName(CardName.FARM),
             ],
             clientOptions: {
-              selectedCards: player2.getPlayedCardInfos(CardName.GENERAL_STORE),
+              selectedCards: player2.getPlayedCardForCardName(
+                CardName.GENERAL_STORE
+              ),
             },
           },
         ]);
@@ -2692,11 +2696,13 @@ describe("Card", () => {
             maxToSelect: 1,
             minToSelect: 1,
             cardOptions: [
-              ...player2.getPlayedCardInfos(CardName.BARGE_TOAD),
-              ...player2.getPlayedCardInfos(CardName.FARM),
+              ...player2.getPlayedCardForCardName(CardName.BARGE_TOAD),
+              ...player2.getPlayedCardForCardName(CardName.FARM),
             ],
             clientOptions: {
-              selectedCards: player2.getPlayedCardInfos(CardName.BARGE_TOAD),
+              selectedCards: player2.getPlayedCardForCardName(
+                CardName.BARGE_TOAD
+              ),
             },
           },
         ]);
@@ -2730,11 +2736,11 @@ describe("Card", () => {
             maxToSelect: 1,
             minToSelect: 1,
             cardOptions: [
-              ...player2.getPlayedCardInfos(CardName.HUSBAND),
-              ...player2.getPlayedCardInfos(CardName.FARM),
+              ...player2.getPlayedCardForCardName(CardName.HUSBAND),
+              ...player2.getPlayedCardForCardName(CardName.FARM),
             ],
             clientOptions: {
-              selectedCards: player2.getPlayedCardInfos(CardName.HUSBAND),
+              selectedCards: player2.getPlayedCardForCardName(CardName.HUSBAND),
             },
           },
           {
@@ -2779,9 +2785,9 @@ describe("Card", () => {
             cardContext: CardName.MINER_MOLE,
             maxToSelect: 1,
             minToSelect: 1,
-            cardOptions: [...player2.getPlayedCardInfos(CardName.FARM)],
+            cardOptions: [...player2.getPlayedCardForCardName(CardName.FARM)],
             clientOptions: {
-              selectedCards: player2.getPlayedCardInfos(CardName.FARM),
+              selectedCards: player2.getPlayedCardForCardName(CardName.FARM),
             },
           },
         ]);
@@ -2818,12 +2824,14 @@ describe("Card", () => {
             maxToSelect: 1,
             minToSelect: 1,
             cardOptions: [
-              ...player1.getPlayedCardInfos(CardName.FARM),
-              ...player1.getPlayedCardInfos(CardName.GENERAL_STORE),
-              ...player2.getPlayedCardInfos(CardName.GENERAL_STORE),
+              ...player1.getPlayedCardForCardName(CardName.FARM),
+              ...player1.getPlayedCardForCardName(CardName.GENERAL_STORE),
+              ...player2.getPlayedCardForCardName(CardName.GENERAL_STORE),
             ],
             clientOptions: {
-              selectedCards: player1.getPlayedCardInfos(CardName.GENERAL_STORE),
+              selectedCards: player1.getPlayedCardForCardName(
+                CardName.GENERAL_STORE
+              ),
             },
           },
         ]);
@@ -3639,7 +3647,7 @@ describe("Card", () => {
         player.addToCity(gameState, CardName.POST_OFFICE);
 
         expect(player.numAvailableWorkers).to.be(2);
-        expect(player.getPlayedCardInfos(CardName.POST_OFFICE)).to.eql([
+        expect(player.getPlayedCardForCardName(CardName.POST_OFFICE)).to.eql([
           {
             cardOwnerId: player.playerId,
             cardName: CardName.POST_OFFICE,
@@ -3704,7 +3712,7 @@ describe("Card", () => {
 
         targetPlayer = gameState.getPlayer(targetPlayer.playerId);
         expect(player.numAvailableWorkers).to.be(1);
-        expect(player.getPlayedCardInfos(CardName.POST_OFFICE)).to.eql([
+        expect(player.getPlayedCardForCardName(CardName.POST_OFFICE)).to.eql([
           {
             cardOwnerId: player.playerId,
             cardName: CardName.POST_OFFICE,
@@ -4127,7 +4135,7 @@ describe("Card", () => {
           {
             inputType: GameInputType.SELECT_PLAYED_CARDS,
             prevInputType: GameInputType.PLAY_CARD,
-            cardOptions: player.getPlayedCardInfos(CardName.FARM),
+            cardOptions: player.getPlayedCardForCardName(CardName.FARM),
             cardContext: CardName.RUINS,
             playedCardContext: undefined,
             maxToSelect: 1,
@@ -4324,7 +4332,7 @@ describe("Card", () => {
           {
             inputType: GameInputType.SELECT_PLAYED_CARDS,
             prevInputType: GameInputType.PLAY_CARD,
-            cardOptions: player.getPlayedCardInfos(CardName.FARM),
+            cardOptions: player.getPlayedCardForCardName(CardName.FARM),
             cardContext: CardName.RUINS,
             playedCardContext: undefined,
             maxToSelect: 1,
@@ -4350,7 +4358,7 @@ describe("Card", () => {
           {
             inputType: GameInputType.SELECT_PLAYED_CARDS,
             prevInputType: GameInputType.PLAY_CARD,
-            cardOptions: player.getPlayedCardInfos(CardName.FARM),
+            cardOptions: player.getPlayedCardForCardName(CardName.FARM),
             cardContext: CardName.RUINS,
             playedCardContext: undefined,
             maxToSelect: 1,
@@ -4748,7 +4756,7 @@ describe("Card", () => {
           },
         ]);
 
-        expect(player.getPlayedCardInfos(card.name)).to.eql([
+        expect(player.getPlayedCardForCardName(card.name)).to.eql([
           {
             cardName: card.name,
             cardOwnerId: player.playerId,
@@ -4986,7 +4994,7 @@ describe("Card", () => {
         expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
         expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
 
-        expect(player.getPlayedCardInfos(card.name)[0]).to.eql({
+        expect(player.getPlayedCardForCardName(card.name)[0]).to.eql({
           cardName: card.name,
           workers: [],
           cardOwnerId: player.playerId,
@@ -4998,7 +5006,7 @@ describe("Card", () => {
           },
           usedForCritter: false,
         });
-        expect(player.getPlayedCardInfos(card.name)[1]).to.eql({
+        expect(player.getPlayedCardForCardName(card.name)[1]).to.eql({
           cardName: card.name,
           workers: [],
           cardOwnerId: player.playerId,
@@ -5023,7 +5031,7 @@ describe("Card", () => {
         expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(5);
         expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
 
-        expect(player.getPlayedCardInfos(card.name)[0]).to.eql({
+        expect(player.getPlayedCardForCardName(card.name)[0]).to.eql({
           cardName: card.name,
           workers: [player.playerId],
           cardOwnerId: player.playerId,
@@ -5035,7 +5043,7 @@ describe("Card", () => {
           },
           usedForCritter: false,
         });
-        expect(player.getPlayedCardInfos(card.name)[1]).to.eql({
+        expect(player.getPlayedCardForCardName(card.name)[1]).to.eql({
           cardName: card.name,
           workers: [],
           cardOwnerId: player.playerId,
@@ -5053,14 +5061,14 @@ describe("Card", () => {
           {
             inputType: GameInputType.VISIT_DESTINATION_CARD as const,
             clientOptions: {
-              playedCard: player.getPlayedCardInfos(card.name)[1],
+              playedCard: player.getPlayedCardForCardName(card.name)[1],
             },
           },
         ]);
         expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(5);
         expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(5);
 
-        expect(player.getPlayedCardInfos(card.name)[0]).to.eql({
+        expect(player.getPlayedCardForCardName(card.name)[0]).to.eql({
           cardName: card.name,
           workers: [player.playerId],
           cardOwnerId: player.playerId,
@@ -5072,7 +5080,7 @@ describe("Card", () => {
           },
           usedForCritter: false,
         });
-        expect(player.getPlayedCardInfos(card.name)[1]).to.eql({
+        expect(player.getPlayedCardForCardName(card.name)[1]).to.eql({
           cardName: card.name,
           workers: [player.playerId],
           cardOwnerId: player.playerId,
@@ -5289,7 +5297,7 @@ describe("Card", () => {
           prevInputType: GameInputType.VISIT_DESTINATION_CARD,
           cardContext: CardName.UNIVERSITY,
           cardOptions: player
-            .getAllPlayedCards()
+            .getPlayedCards()
             .filter(({ cardName }) => cardName !== CardName.UNIVERSITY),
           maxToSelect: 1,
           minToSelect: 1,
@@ -5348,14 +5356,16 @@ describe("Card", () => {
           prevInputType: GameInputType.VISIT_DESTINATION_CARD,
           cardContext: CardName.UNIVERSITY,
           cardOptions: player
-            .getAllPlayedCards()
+            .getPlayedCards()
             .filter(({ cardName }) => cardName !== CardName.UNIVERSITY),
           maxToSelect: 1,
           minToSelect: 1,
           clientOptions: {
             // these are the cards the player wants to remove
             // from their city
-            selectedCards: [...player.getPlayedCardInfos(CardName.LOOKOUT)],
+            selectedCards: [
+              ...player.getPlayedCardForCardName(CardName.LOOKOUT),
+            ],
           },
         };
 
@@ -5424,12 +5434,12 @@ describe("Card", () => {
           prevInputType: GameInputType.VISIT_DESTINATION_CARD,
           cardContext: CardName.UNIVERSITY,
           cardOptions: player1
-            .getAllPlayedCards()
+            .getPlayedCards()
             .filter(({ cardName }) => cardName !== CardName.UNIVERSITY),
           maxToSelect: 1,
           minToSelect: 1,
           clientOptions: {
-            selectedCards: [...player1.getPlayedCardInfos(CardName.INN)],
+            selectedCards: [...player1.getPlayedCardForCardName(CardName.INN)],
           },
         };
 
@@ -5481,14 +5491,16 @@ describe("Card", () => {
           prevInputType: GameInputType.VISIT_DESTINATION_CARD,
           cardContext: CardName.UNIVERSITY,
           cardOptions: player
-            .getAllPlayedCards()
+            .getPlayedCards()
             .filter(({ cardName }) => cardName !== CardName.UNIVERSITY),
           maxToSelect: 1,
           minToSelect: 1,
           clientOptions: {
             // these are the cards the player wants to remove
             // from their city
-            selectedCards: [...player.getPlayedCardInfos(CardName.MONASTERY)],
+            selectedCards: [
+              ...player.getPlayedCardForCardName(CardName.MONASTERY),
+            ],
           },
         };
 
@@ -5824,7 +5836,7 @@ describe("Card", () => {
           prevInputType: GameInputType.VISIT_DESTINATION_CARD,
           cardContext: CardName.UNIVERSITY,
           cardOptions: player
-            .getAllPlayedCards()
+            .getPlayedCards()
             .filter(({ cardName }) => cardName !== CardName.UNIVERSITY),
           maxToSelect: 1,
           minToSelect: 1,
@@ -5965,7 +5977,7 @@ describe("Card", () => {
           prevInputType: GameInputType.VISIT_DESTINATION_CARD,
           cardContext: CardName.UNIVERSITY,
           cardOptions: player
-            .getAllPlayedCards()
+            .getPlayedCards()
             .filter(({ cardName }) => cardName !== CardName.UNIVERSITY),
           maxToSelect: 1,
           minToSelect: 1,
@@ -6045,7 +6057,7 @@ describe("Card", () => {
           prevInputType: GameInputType.VISIT_DESTINATION_CARD,
           cardContext: CardName.UNIVERSITY,
           cardOptions: player
-            .getAllPlayedCards()
+            .getPlayedCards()
             .filter(({ cardName }) => cardName !== CardName.UNIVERSITY),
           maxToSelect: 1,
           minToSelect: 1,
@@ -6072,7 +6084,7 @@ describe("Card", () => {
             shareSpaceWith: undefined,
           },
           cardOptions: [
-            ...player.getPlayedCardInfos(CardName.TWIG_BARGE),
+            ...player.getPlayedCardForCardName(CardName.TWIG_BARGE),
             {
               cardOwnerId: player.playerId,
               cardName: CardName.UNIVERSITY,
@@ -6188,8 +6200,8 @@ describe("Card", () => {
           inputType: GameInputType.SELECT_PLAYED_CARDS as const,
           prevInputType: GameInputType.PLAY_CARD,
           cardOptions: [
-            ...player.getPlayedCardInfos(CardName.FARM),
-            ...player.getPlayedCardInfos(CardName.TWIG_BARGE),
+            ...player.getPlayedCardForCardName(CardName.FARM),
+            ...player.getPlayedCardForCardName(CardName.TWIG_BARGE),
           ],
           cardContext: CardName.RUINS,
           playedCardContext: undefined,
@@ -6211,7 +6223,7 @@ describe("Card", () => {
             shareSpaceWith: undefined,
           },
           cardOptions: [
-            ...player.getPlayedCardInfos(CardName.TWIG_BARGE),
+            ...player.getPlayedCardForCardName(CardName.TWIG_BARGE),
             {
               cardOwnerId: player.playerId,
               cardName: CardName.RUINS,
@@ -6270,7 +6282,7 @@ describe("Card", () => {
         );
         player.updatePlayedCard(
           gameState,
-          player.getPlayedCardInfos(CardName.MESSENGER)[1],
+          player.getPlayedCardForCardName(CardName.MESSENGER)[1],
           { shareSpaceWith: CardName.UNIVERSITY }
         );
 
@@ -6279,7 +6291,7 @@ describe("Card", () => {
           prevInputType: GameInputType.VISIT_DESTINATION_CARD,
           cardContext: CardName.UNIVERSITY,
           cardOptions: player
-            .getAllPlayedCards()
+            .getPlayedCards()
             .filter(({ cardName }) => cardName !== CardName.UNIVERSITY),
           maxToSelect: 1,
           minToSelect: 1,
@@ -6288,7 +6300,9 @@ describe("Card", () => {
           },
         };
 
-        expect(player.getPlayedCardInfos(CardName.MESSENGER).length).to.be(2);
+        expect(
+          player.getPlayedCardForCardName(CardName.MESSENGER).length
+        ).to.be(2);
 
         [player, gameState] = multiStepGameInputTest(
           gameState,
@@ -6318,7 +6332,7 @@ describe("Card", () => {
           ],
           { autoAdvance: true }
         );
-        expect(player.getPlayedCardInfos(CardName.MESSENGER)).to.eql([
+        expect(player.getPlayedCardForCardName(CardName.MESSENGER)).to.eql([
           {
             cardName: CardName.MESSENGER,
             cardOwnerId: player.playerId,
@@ -6330,7 +6344,9 @@ describe("Card", () => {
             shareSpaceWith: CardName.UNIVERSITY,
           },
         ]);
-        expect(player.getPlayedCardInfos(CardName.MESSENGER).length).to.be(2);
+        expect(
+          player.getPlayedCardForCardName(CardName.MESSENGER).length
+        ).to.be(2);
       });
 
       it("should be relocated when attached to Crane and Crane is used", () => {
@@ -6407,8 +6423,12 @@ describe("Card", () => {
         player.addToCity(gameState, CardName.MESSENGER);
         player.addToCity(gameState, CardName.MESSENGER);
 
-        let playedMessengers = player.getPlayedCardInfos(CardName.MESSENGER);
-        expect(player.getPlayedCardInfos(CardName.MESSENGER).length).to.be(2);
+        let playedMessengers = player.getPlayedCardForCardName(
+          CardName.MESSENGER
+        );
+        expect(
+          player.getPlayedCardForCardName(CardName.MESSENGER).length
+        ).to.be(2);
 
         player.updatePlayedCard(
           gameState,
@@ -6430,7 +6450,7 @@ describe("Card", () => {
 
         player.cardsInHand.push(CardName.RUINS);
 
-        playedMessengers = player.getPlayedCardInfos(CardName.MESSENGER);
+        playedMessengers = player.getPlayedCardForCardName(CardName.MESSENGER);
 
         expect(playedMessengers[0]).to.eql({
           cardName: CardName.MESSENGER,
@@ -6448,8 +6468,8 @@ describe("Card", () => {
           inputType: GameInputType.SELECT_PLAYED_CARDS as const,
           prevInputType: GameInputType.PLAY_CARD,
           cardOptions: [
-            ...player.getPlayedCardInfos(CardName.FARM),
-            ...player.getPlayedCardInfos(CardName.TWIG_BARGE),
+            ...player.getPlayedCardForCardName(CardName.FARM),
+            ...player.getPlayedCardForCardName(CardName.TWIG_BARGE),
           ],
           cardContext: CardName.RUINS,
           playedCardContext: undefined,
@@ -6468,7 +6488,7 @@ describe("Card", () => {
 
         expect(player.hasCardInCity(CardName.MESSENGER)).to.be(true);
 
-        playedMessengers = player.getPlayedCardInfos(CardName.MESSENGER);
+        playedMessengers = player.getPlayedCardForCardName(CardName.MESSENGER);
         expect(playedMessengers.length).to.be(2);
 
         // if we destroy one of the constructions, the messenger should stick to the RUINS
@@ -6510,7 +6530,9 @@ describe("Card", () => {
           { autoAdvance: true }
         );
 
-        const playedMessengers = player.getPlayedCardInfos(CardName.MESSENGER);
+        const playedMessengers = player.getPlayedCardForCardName(
+          CardName.MESSENGER
+        );
 
         expect(playedMessengers[0]).to.eql({
           cardName: CardName.MESSENGER,
@@ -6604,8 +6626,8 @@ describe("Card", () => {
         player2.addToCity(gameState, card.name);
         expect(player1.hasCardInCity(card.name)).to.be(true);
         expect(player2.hasCardInCity(card.name)).to.be(true);
-        expect(player1.getPlayedCardInfos(card.name).length).to.be(1);
-        expect(player2.getPlayedCardInfos(card.name).length).to.be(1);
+        expect(player1.getPlayedCardForCardName(card.name).length).to.be(1);
+        expect(player2.getPlayedCardForCardName(card.name).length).to.be(1);
 
         // Player 1 moves pirate ship to Player 2
         [, gameState] = multiStepGameInputTest(
@@ -6625,8 +6647,8 @@ describe("Card", () => {
         player2 = gameState.players[1];
         expect(player1.hasCardInCity(card.name)).to.be(false);
         expect(player2.hasCardInCity(card.name)).to.be(true);
-        expect(player1.getPlayedCardInfos(card.name).length).to.be(0);
-        expect(player2.getPlayedCardInfos(card.name).length).to.be(2);
+        expect(player1.getPlayedCardForCardName(card.name).length).to.be(0);
+        expect(player2.getPlayedCardForCardName(card.name).length).to.be(2);
 
         // Player 2 moves pirate ship to Player 1
         [, gameState] = multiStepGameInputTest(
@@ -6635,7 +6657,7 @@ describe("Card", () => {
             {
               inputType: GameInputType.VISIT_DESTINATION_CARD,
               clientOptions: {
-                playedCard: player2.getPlayedCardInfos(card.name)[1],
+                playedCard: player2.getPlayedCardForCardName(card.name)[1],
               },
             },
           ],
@@ -6646,8 +6668,8 @@ describe("Card", () => {
         player2 = gameState.players[1];
         expect(player1.hasCardInCity(card.name)).to.be(true);
         expect(player2.hasCardInCity(card.name)).to.be(true);
-        expect(player1.getPlayedCardInfos(card.name).length).to.be(1);
-        expect(player2.getPlayedCardInfos(card.name).length).to.be(1);
+        expect(player1.getPlayedCardForCardName(card.name).length).to.be(1);
+        expect(player2.getPlayedCardForCardName(card.name).length).to.be(1);
       });
 
       it("should auto advance moving to an opponent's city", () => {

@@ -1437,7 +1437,7 @@ export class GameState {
       })
     ) {
       this.players.forEach((player) => {
-        player.getPlayedCardInfos(card.name).forEach((playedCard) => {
+        player.getPlayedCardForCardName(card.name).forEach((playedCard) => {
           if (!playedCard.ambassador) {
             ret.push({ type: "card", playedCard });
           }

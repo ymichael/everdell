@@ -922,7 +922,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           prevInputType: GameInputType.CLAIM_EVENT,
           label: "Discard 2 CARD from your city",
           eventContext: EventName.SPECIAL_CROAK_WART_CURE,
-          cardOptions: player.getAllPlayedCards(),
+          cardOptions: player.getPlayedCards(),
           maxToSelect: 2,
           minToSelect: 2,
           clientOptions: {
@@ -1117,7 +1117,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       if (player.getNumCardsInCity() === 0) {
         throw new Error("No cards in city");
       }
-      const playedDungeons = player.getPlayedCardInfos(CardName.DUNGEON);
+      const playedDungeons = player.getPlayedCardForCardName(CardName.DUNGEON);
       if (playedDungeons.length === 0) {
         // should return 0, not throw an error
         return 0;
@@ -1715,7 +1715,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
 
       if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
         // get all the player's storehouses
-        const storehouses = player.getPlayedCardInfos(CardName.STOREHOUSE);
+        const storehouses = player.getPlayedCardForCardName(
+          CardName.STOREHOUSE
+        );
 
         if (storehouses.length >= 1) {
           let storehouse = storehouses[0];
@@ -2128,17 +2130,10 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       });
 
       if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
-        const cardOptions: PlayedCardInfo[] = [];
-        player.forEachPlayedCard((playedCardInfo) => {
-          const card = Card.fromName(playedCardInfo.cardName);
-          if (
-            card.name === CardName.FERRY_FERRET ||
-            card.name === CardName.TWIG_BARGE
-          ) {
-            cardOptions.push(playedCardInfo);
-          }
-        });
-
+        const cardOptions: PlayedCardInfo[] = [
+          ...player.getPlayedCardForCardName(CardName.FERRY_FERRET),
+          ...player.getPlayedCardForCardName(CardName.TWIG_BARGE),
+        ];
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_PLAYED_CARDS,
           prevInputType: gameInput.inputType,

@@ -281,9 +281,9 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
 
       if (gameInput.inputType === GameInputType.PLAY_ADORNMENT) {
         // Get all the governance cards in player's city
-        const playedGovCards = player.getPlayedCardNamesByType(
-          CardType.GOVERNANCE
-        );
+        const playedGovCards = player
+          .getAllPlayedCardsByType(CardType.GOVERNANCE)
+          .map((x) => x.cardName);
         if (playedGovCards.length !== 0) {
           gameState.pendingGameInputs.push({
             inputType: GameInputType.SELECT_CARDS,

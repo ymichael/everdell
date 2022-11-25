@@ -641,7 +641,42 @@ export interface IGameTextEntity {
 export type GameOptions = {
   realtimePoints: boolean;
   pearlbrook: boolean;
+
+  // NOT IMPLEMENTED YET
+  spirecrest?: {
+    expedition?: boolean;
+  };
+  bellfaire?: {
+    market?: boolean;
+    garlandAward?: boolean;
+    flowerFestival?: boolean;
+    forestLocations?: boolean;
+    specialEvents?: boolean;
+    playerPowers?: boolean;
+  };
+  newLeaf?: {
+    cards?: boolean;
+    forestLocations?: boolean;
+    specialEvents?: boolean;
+    reserving?: boolean;
+    station?: boolean;
+    visitors?: boolean;
+  };
+  mistwood?: {
+    throughTheSeasons?: boolean;
+    corinneCards?: boolean;
+  };
+  hunterGatherer?: boolean;
+  legendaryCards?: boolean;
 };
+
+export enum ExpansionType {
+  PEARLBROOK = "PEARLBROOK",
+  NEWLEAF = "NEWLEAF",
+  BELLFAIRE = "BELLFAIRE",
+  SPIRECREST = "SPIRECREST",
+  MISTWOOD = "MISTWOOD",
+}
 
 export enum RiverDestinationType {
   SHOAL = "SHOAL",
@@ -663,10 +698,6 @@ export enum RiverDestinationName {
   MARKET = "Market",
   GREAT_HALL = "Great Hall",
   GARDENS = "Gardens",
-}
-
-export enum ExpansionType {
-  PEARLBROOK = "PEARLBROOK",
 }
 
 export enum AdornmentName {

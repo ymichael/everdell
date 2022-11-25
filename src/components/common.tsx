@@ -35,7 +35,7 @@ export const CardTypeSymbol = ({ cardType }: { cardType: CardType }) => {
       <span hidden>{cardType}</span>
       <span aria-hidden={true}>
         {cardType === CardType.PRODUCTION ? (
-          <k
+          <Image
             alt="PRODUCTION card type"
             src="/images/production.png"
             layout="fill"

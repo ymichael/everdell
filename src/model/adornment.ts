@@ -17,7 +17,7 @@ import {
 } from "./types";
 import {
   GameState,
-  GameStateCountPointsFn,
+  GameStatePointsFn,
   GameStatePlayFn,
   GameStatePlayable,
 } from "./gameState";
@@ -29,6 +29,7 @@ import { Event } from "./event";
 import { CardStack } from "./cardStack";
 import { Location } from "./location";
 import { Card } from "./card";
+import { Player } from "./player";
 import { onlyRelevantProductionCards } from "./cardHelpers";
 import {
   toGameText,
@@ -42,7 +43,7 @@ export class Adornment implements GameStatePlayable, IGameTextEntity {
   readonly description: GameText;
   readonly baseVP: number;
   readonly playInner: GameStatePlayFn;
-  readonly pointsInner: GameStateCountPointsFn | undefined;
+  readonly pointsInner: GameStatePointsFn | undefined;
 
   constructor({
     name,
@@ -54,7 +55,7 @@ export class Adornment implements GameStatePlayable, IGameTextEntity {
     name: AdornmentName;
     description: GameText;
     baseVP?: number;
-    pointsInner?: GameStateCountPointsFn;
+    pointsInner?: GameStatePointsFn;
     playInner: GameStatePlayFn;
   }) {
     this.name = name;
@@ -144,10 +145,10 @@ export class Adornment implements GameStatePlayable, IGameTextEntity {
     }
   }
 
-  getPoints(gameState: GameState, playerId: string): number {
+  getPoints(player: Player, gameState: GameState): number {
     return (
       this.baseVP +
-      (this.pointsInner ? this.pointsInner(gameState, playerId) : 0)
+      (this.pointsInner?.(player.getPlayerForPoints(), gameState) ?? 0)
     );
   }
 
@@ -169,8 +170,7 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
       { type: "em", text: "Critters" },
       " in your city.",
     ]),
-    pointsInner: (gameState: GameState, playerId: string) => {
-      const player = gameState.getPlayer(playerId);
+    pointsInner: (player) => {
       const numPlayedCritters = player.getNumPlayedCritters();
       return Math.floor(numPlayedCritters / 2);
     },
@@ -198,8 +198,7 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
       { type: "points", value: 1 },
       " for each TRAVELER in your city.",
     ]),
-    pointsInner: (gameState: GameState, playerId: string) => {
-      const player = gameState.getPlayer(playerId);
+    pointsInner: (player) => {
       return player.getNumCardType(CardType.TRAVELER);
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
@@ -272,8 +271,7 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
       { type: "points", value: 1 },
       " for each GOVERNANCE in your city.",
     ]),
-    pointsInner: (gameState: GameState, playerId: string) => {
-      const player = gameState.getPlayer(playerId);
+    pointsInner: (player) => {
       return player.getNumCardType(CardType.GOVERNANCE);
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
@@ -332,8 +330,7 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
       { type: "points", value: 1 },
       " for each DESTINATION in your city.",
     ]),
-    pointsInner: (gameState: GameState, playerId: string) => {
-      const player = gameState.getPlayer(playerId);
+    pointsInner: (player) => {
       return player.getNumCardType(CardType.DESTINATION);
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
@@ -412,8 +409,7 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
       { type: "points", value: 1 },
       " for every 2 Constructions in your city.",
     ]),
-    pointsInner: (gameState: GameState, playerId: string) => {
-      const player = gameState.getPlayer(playerId);
+    pointsInner: (player) => {
       const numPlayedCritters = player.getNumPlayedConstructions();
       return Math.floor(numPlayedCritters / 2);
     },
@@ -455,8 +451,7 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
       { type: "points", value: 1 },
       " for every 3 VP tokens you have.",
     ]),
-    pointsInner: (gameState: GameState, playerId: string) => {
-      const player = gameState.getPlayer(playerId);
+    pointsInner: (player) => {
       let numVP = player.getNumResourcesByType(ResourceType.VP);
       player.forEachPlayedCard(({ cardName, resources = {} }) => {
         if (ResourceType.VP in resources) {
@@ -609,14 +604,12 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
       { type: "points", value: 1 },
       " for each unique colored CARD in your city.",
     ]),
-    pointsInner: (gameState: GameState, playerId: string) => {
-      const player = gameState.getPlayer(playerId);
+    pointsInner: (player) => {
       const numProduction = player.getNumCardType(CardType.PRODUCTION);
       const numGovernance = player.getNumCardType(CardType.GOVERNANCE);
       const numDestination = player.getNumCardType(CardType.DESTINATION);
       const numTraveler = player.getNumCardType(CardType.TRAVELER);
       const numProsperity = player.getNumCardType(CardType.PROSPERITY);
-
       return (
         (numProduction > 0 ? 1 : 0) +
         (numGovernance > 0 ? 1 : 0) +
@@ -694,10 +687,8 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
       { type: "points", value: 1 },
       " for every CARD in your hand, up to 5.",
     ]),
-    pointsInner: (gameState: GameState, playerId: string) => {
-      const player = gameState.getPlayer(playerId);
+    pointsInner: (player) => {
       const numCards = player.numCardsInHand;
-
       return numCards > 5 ? 5 : numCards;
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
@@ -794,12 +785,10 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
       { type: "em", text: "Wonder" },
       " you built.",
     ]),
-    pointsInner: (gameState: GameState, playerId: string) => {
-      const player = gameState.getPlayer(playerId);
+    pointsInner: (player) => {
       const claimedEvents = player.claimedEvents;
 
       let numWonders = 0;
-
       Object.keys(claimedEvents).forEach((eventName) => {
         const event = Event.fromName(eventName as EventName);
         if (event.type === EventType.WONDER) {
@@ -839,8 +828,7 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
       { type: "points", value: 1 },
       " for every 2 PRODUCTION in your city.",
     ]),
-    pointsInner: (gameState: GameState, playerId: string) => {
-      const player = gameState.getPlayer(playerId);
+    pointsInner: (player) => {
       return Math.floor(player.getNumCardType(CardType.PRODUCTION) / 2);
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
@@ -924,10 +912,7 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
       { type: "points", value: 1 },
       " for each PROSPERITY in your city.",
     ]),
-    pointsInner: (gameState: GameState, playerId: string) => {
-      const player = gameState.getPlayer(playerId);
-      return player.getNumCardType(CardType.PROSPERITY);
-    },
+    pointsInner: (player) => player.getNumCardType(CardType.PROSPERITY),
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const gainAnyHelper = new GainMoreThan1AnyResource({
         adornmentContext: AdornmentName.TIARA,

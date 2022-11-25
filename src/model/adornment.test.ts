@@ -566,25 +566,25 @@ describe("Adornment", () => {
     it("should be worth 2 point for every 2 PRODUCTION", () => {
       const adornment = Adornment.fromName(name);
       const playerId = player.playerId;
-      expect(adornment.getPoints(gameState, playerId)).to.be(0);
+      expect(adornment.getPoints(player, gameState)).to.be(0);
 
       player.addToCity(gameState, CardName.FARM);
-      expect(adornment.getPoints(gameState, playerId)).to.be(0);
+      expect(adornment.getPoints(player, gameState)).to.be(0);
 
       player.addToCity(gameState, CardName.FARM);
-      expect(adornment.getPoints(gameState, playerId)).to.be(1);
+      expect(adornment.getPoints(player, gameState)).to.be(1);
 
       player.addToCity(gameState, CardName.QUEEN);
-      expect(adornment.getPoints(gameState, playerId)).to.be(1);
+      expect(adornment.getPoints(player, gameState)).to.be(1);
 
       player.addToCity(gameState, CardName.KING);
-      expect(adornment.getPoints(gameState, playerId)).to.be(1);
+      expect(adornment.getPoints(player, gameState)).to.be(1);
 
       player.addToCity(gameState, CardName.MINE);
-      expect(adornment.getPoints(gameState, playerId)).to.be(1);
+      expect(adornment.getPoints(player, gameState)).to.be(1);
 
       player.addToCity(gameState, CardName.MINER_MOLE);
-      expect(adornment.getPoints(gameState, playerId)).to.be(2);
+      expect(adornment.getPoints(player, gameState)).to.be(2);
     });
 
     it("should do nothing if player has no production cards", () => {
@@ -859,43 +859,43 @@ describe("Adornment", () => {
     it("should be worth 1 point for every 3 VP you have", () => {
       const adornment = Adornment.fromName(name);
       const playerId = player.playerId;
-      expect(adornment.getPoints(gameState, playerId)).to.be(0);
+      expect(adornment.getPoints(player, gameState)).to.be(0);
 
       player.gainResources(gameState, { [ResourceType.VP]: 1 });
-      expect(adornment.getPoints(gameState, playerId)).to.be(0);
+      expect(adornment.getPoints(player, gameState)).to.be(0);
 
       player.gainResources(gameState, { [ResourceType.VP]: 1 });
-      expect(adornment.getPoints(gameState, playerId)).to.be(0);
+      expect(adornment.getPoints(player, gameState)).to.be(0);
 
       player.gainResources(gameState, { [ResourceType.VP]: 1 });
-      expect(adornment.getPoints(gameState, playerId)).to.be(1);
+      expect(adornment.getPoints(player, gameState)).to.be(1);
 
       player.gainResources(gameState, { [ResourceType.VP]: 7 });
-      expect(adornment.getPoints(gameState, playerId)).to.be(1 + 2);
+      expect(adornment.getPoints(player, gameState)).to.be(1 + 2);
 
       player.gainResources(gameState, { [ResourceType.VP]: 7 });
-      expect(adornment.getPoints(gameState, playerId)).to.be(1 + 4);
+      expect(adornment.getPoints(player, gameState)).to.be(1 + 4);
 
       player.gainResources(gameState, { [ResourceType.VP]: 7 });
-      expect(adornment.getPoints(gameState, playerId)).to.be(1 + 7);
+      expect(adornment.getPoints(player, gameState)).to.be(1 + 7);
     });
 
     it("should account for VP on cards", () => {
       const adornment = Adornment.fromName(name);
       const playerId = player.playerId;
-      expect(adornment.getPoints(gameState, playerId)).to.be(0);
+      expect(adornment.getPoints(player, gameState)).to.be(0);
 
       player.gainResources(gameState, { [ResourceType.VP]: 1 });
-      expect(adornment.getPoints(gameState, playerId)).to.be(0);
+      expect(adornment.getPoints(player, gameState)).to.be(0);
 
       player.gainResources(gameState, { [ResourceType.VP]: 1 });
-      expect(adornment.getPoints(gameState, playerId)).to.be(0);
+      expect(adornment.getPoints(player, gameState)).to.be(0);
 
       player.gainResources(gameState, { [ResourceType.VP]: 1 });
-      expect(adornment.getPoints(gameState, playerId)).to.be(1);
+      expect(adornment.getPoints(player, gameState)).to.be(1);
 
       player.addToCity(gameState, CardName.CLOCK_TOWER);
-      expect(adornment.getPoints(gameState, playerId)).to.be(2);
+      expect(adornment.getPoints(player, gameState)).to.be(2);
 
       player.addToCity(gameState, CardName.STOREHOUSE);
       player.updatePlayedCard(
@@ -903,11 +903,11 @@ describe("Adornment", () => {
         player.getFirstPlayedCard(CardName.STOREHOUSE),
         { resources: { [ResourceType.VP]: 10 } }
       );
-      expect(adornment.getPoints(gameState, playerId)).to.be(2 + 3);
+      expect(adornment.getPoints(player, gameState)).to.be(2 + 3);
 
       // Rounding happens after totalling.
       player.gainResources(gameState, { [ResourceType.VP]: 2 });
-      expect(adornment.getPoints(gameState, playerId)).to.be(2 + 3 + 1);
+      expect(adornment.getPoints(player, gameState)).to.be(2 + 3 + 1);
     });
 
     it("should allow player to choose to play card from meadow OR hand", () => {
@@ -1173,22 +1173,22 @@ describe("Adornment", () => {
     it("should be worth 1 point for every 1 DESTINATION", () => {
       const adornment = Adornment.fromName(name);
       const playerId = player.playerId;
-      expect(adornment.getPoints(gameState, playerId)).to.be(0);
+      expect(adornment.getPoints(player, gameState)).to.be(0);
 
       player.addToCity(gameState, CardName.FARM);
-      expect(adornment.getPoints(gameState, playerId)).to.be(0);
+      expect(adornment.getPoints(player, gameState)).to.be(0);
 
       player.addToCity(gameState, CardName.QUEEN);
-      expect(adornment.getPoints(gameState, playerId)).to.be(1);
+      expect(adornment.getPoints(player, gameState)).to.be(1);
 
       player.addToCity(gameState, CardName.KING);
-      expect(adornment.getPoints(gameState, playerId)).to.be(1);
+      expect(adornment.getPoints(player, gameState)).to.be(1);
 
       player.addToCity(gameState, CardName.UNIVERSITY);
-      expect(adornment.getPoints(gameState, playerId)).to.be(2);
+      expect(adornment.getPoints(player, gameState)).to.be(2);
 
       player.addToCity(gameState, CardName.CASTLE);
-      expect(adornment.getPoints(gameState, playerId)).to.be(2);
+      expect(adornment.getPoints(player, gameState)).to.be(2);
     });
 
     it("should allow the player to copy a forest location and gain 1 ANY", () => {
@@ -1523,22 +1523,22 @@ describe("Adornment", () => {
     it("should be worth 1 point for every 1 PROSPERITY", () => {
       const adornment = Adornment.fromName(name);
       const playerId = player.playerId;
-      expect(adornment.getPoints(gameState, playerId)).to.be(0);
+      expect(adornment.getPoints(player, gameState)).to.be(0);
 
       player.addToCity(gameState, CardName.FARM);
-      expect(adornment.getPoints(gameState, playerId)).to.be(0);
+      expect(adornment.getPoints(player, gameState)).to.be(0);
 
       player.addToCity(gameState, CardName.QUEEN);
-      expect(adornment.getPoints(gameState, playerId)).to.be(0);
+      expect(adornment.getPoints(player, gameState)).to.be(0);
 
       player.addToCity(gameState, CardName.KING);
-      expect(adornment.getPoints(gameState, playerId)).to.be(1);
+      expect(adornment.getPoints(player, gameState)).to.be(1);
 
       player.addToCity(gameState, CardName.MINE);
-      expect(adornment.getPoints(gameState, playerId)).to.be(1);
+      expect(adornment.getPoints(player, gameState)).to.be(1);
 
       player.addToCity(gameState, CardName.CASTLE);
-      expect(adornment.getPoints(gameState, playerId)).to.be(2);
+      expect(adornment.getPoints(player, gameState)).to.be(2);
     });
 
     it("should do nothing if no PROSPERITY", () => {

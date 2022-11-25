@@ -101,7 +101,7 @@ export class RiverDestination implements GameStatePlayable, IGameTextEntity {
     this.playInner(gameState, gameInput);
   }
 
-  getPoints(gameState: GameState, playerId: string): number {
+  getPoints(): number {
     return 0;
   }
 

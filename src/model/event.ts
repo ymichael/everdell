@@ -17,10 +17,12 @@ import {
   WonderCost,
 } from "./types";
 import { Card } from "./card";
+import { Player } from "./player";
 import {
   GameState,
   GameStatePlayable,
   GameStatePlayFn,
+  GameStatePointsFn,
   GameStateCanPlayCheckFn,
 } from "./gameState";
 import { sumResources, GainMoreThan1AnyResource } from "./gameStatePlayHelpers";
@@ -35,9 +37,7 @@ import {
 export class Event implements GameStatePlayable, IGameTextEntity {
   readonly playInner: GameStatePlayFn | undefined;
   readonly playedEventInfoInner: (() => PlayedEventInfo) | undefined;
-  readonly pointsInner:
-    | ((gameState: GameState, playerId: string) => number)
-    | undefined;
+  readonly pointsInner: GameStatePointsFn | undefined;
 
   readonly name: EventName;
   readonly shortName: GameText | undefined;
@@ -79,7 +79,7 @@ export class Event implements GameStatePlayable, IGameTextEntity {
     canPlayCheckInner?: GameStateCanPlayCheckFn;
     playInner?: GameStatePlayFn;
     playedEventInfoInner?: () => PlayedEventInfo;
-    pointsInner?: (gameState: GameState, playerId: string) => number;
+    pointsInner?: GameStatePointsFn;
     wonderCost?: WonderCost;
   }) {
     this.name = name;
@@ -222,10 +222,10 @@ export class Event implements GameStatePlayable, IGameTextEntity {
     return this.playedEventInfoInner ? this.playedEventInfoInner() : {};
   }
 
-  getPoints(gameState: GameState, playerId: string): number {
+  getPoints(player: Player, gameState: GameState): number {
     return (
       this.baseVP +
-      (this.pointsInner ? this.pointsInner(gameState, playerId) : 0)
+      (this.pointsInner?.(player.getPlayerForPoints(), gameState) ?? 0)
     );
   }
 
@@ -607,9 +607,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       }
     },
     // 2 points per twig on event
-    pointsInner: (gameState: GameState, playerId: string) => {
-      const player = gameState.getPlayer(playerId);
-
+    pointsInner: (player) => {
       const eventInfo = player.getClaimedEvent(
         EventName.SPECIAL_AN_EVENING_OF_FIREWORKS
       );
@@ -741,8 +739,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       storedCards: [],
     }),
     // Reveal 5 cards. You may draw any or place any beneath this event
-    pointsInner: (gameState: GameState, playerId: string) => {
-      const player = gameState.getPlayer(playerId);
+    pointsInner: (player) => {
       const eventInfo = player.getClaimedEvent(
         EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED
       );
@@ -858,8 +855,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       }
     },
     // 3 points per critter beneath event
-    pointsInner: (gameState: GameState, playerId: string) => {
-      const player = gameState.getPlayer(playerId);
+    pointsInner: (player) => {
       const eventInfo = player.getClaimedEvent(
         EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES
       );
@@ -975,7 +971,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       { type: "entity", entityType: "card", card: CardName.WIFE },
       " pair in every city.",
     ]),
-    pointsInner: (gameState: GameState, playerId: string) => {
+    pointsInner: (player, gameState) => {
       let getNumHusbandWifePairs = 0;
       gameState.players.forEach((player) => {
         getNumHusbandWifePairs += player.getNumHusbandWifePairs();
@@ -1084,9 +1080,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       }
     },
     // 2 points per critter beneath event
-    pointsInner: (gameState: GameState, playerId: string) => {
-      const player = gameState.getPlayer(playerId);
-
+    pointsInner: (player) => {
       const eventInfo = player.getClaimedEvent(
         EventName.SPECIAL_GRADUATION_OF_SCHOLARS
       );
@@ -1105,9 +1099,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       { type: "points", value: 3 },
       " for each prisoner in your Dungeon.",
     ]),
-    pointsInner: (gameState: GameState, playerId: string) => {
-      const player = gameState.getPlayer(playerId);
-
+    pointsInner: (player) => {
       const eventInfo = player.getClaimedEvent(
         EventName.SPECIAL_MINISTERING_TO_MISCREANTS
       );
@@ -1140,9 +1132,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       { type: "points", value: 3 },
       " for each worker in your Monastery.",
     ]),
-    pointsInner: (gameState: GameState, playerId: string) => {
-      const player = gameState.getPlayer(playerId);
-
+    pointsInner: (player) => {
       const eventInfo = player.getClaimedEvent(
         EventName.SPECIAL_PATH_OF_THE_PILGRIMS
       );
@@ -1257,9 +1247,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       }
     },
     // 2 points per berry on event
-    pointsInner: (gameState: GameState, playerId: string) => {
-      const player = gameState.getPlayer(playerId);
-
+    pointsInner: (player) => {
       const eventInfo = player.getClaimedEvent(
         EventName.SPECIAL_PERFORMER_IN_RESIDENCE
       );
@@ -1335,9 +1323,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       }
     },
     // 2 points for VP on the chapel
-    pointsInner: (gameState: GameState, playerId: string) => {
-      const player = gameState.getPlayer(playerId);
-
+    pointsInner: (player) => {
       const eventInfo = player.getClaimedEvent(
         EventName.SPECIAL_PRISTINE_CHAPEL_CEILING
       );
@@ -1380,9 +1366,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       " for each buried worker in your Cemetery.",
     ]),
     // 3 points for each worker in the cemetary
-    pointsInner: (gameState: GameState, playerId: string) => {
-      const player = gameState.getPlayer(playerId);
-
+    pointsInner: (player) => {
       const eventInfo = player.getClaimedEvent(
         EventName.SPECIAL_REMEMBERING_THE_FALLEN
       );
@@ -1569,9 +1553,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       }
     },
     // 1 pt per twig and berry, 2 pt per resin and pebble
-    pointsInner: (gameState: GameState, playerId: string) => {
-      const player = gameState.getPlayer(playerId);
-
+    pointsInner: (player) => {
       const eventInfo = player.getClaimedEvent(
         EventName.SPECIAL_UNDER_NEW_MANAGEMENT
       );
@@ -1861,8 +1843,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       }
     },
     // 2 points per critter beneath event
-    pointsInner: (gameState: GameState, playerId: string) => {
-      const player = gameState.getPlayer(playerId);
+    pointsInner: (player) => {
       const eventInfo = player.getClaimedEvent(
         EventName.SPECIAL_RIVERSIDE_RESORT
       );
@@ -2206,8 +2187,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         throw new Error(`Invalid input type ${gameInput.inputType}`);
       }
     },
-    pointsInner: (gameState: GameState, playerId: string) => {
-      const player = gameState.getPlayer(playerId);
+    pointsInner: (player) => {
       const eventInfo = player.getClaimedEvent(EventName.SPECIAL_RIVER_RACE);
       if (!eventInfo) {
         throw new Error("Cannot find event info");

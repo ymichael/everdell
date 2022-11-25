@@ -1359,7 +1359,6 @@ export class GameState {
 
   getPlayer(playerId: string): Player {
     const ret = this.players.find((player) => player.playerId === playerId);
-
     if (!ret) {
       throw new Error(`Unable to find player: ${playerId}`);
     }
@@ -1600,8 +1599,8 @@ export type GameStateCanPlayFn = (
 ) => boolean;
 
 export type GameStatePointsFn = (
-  gameState: GameState,
-  playerId: string
+  player: Player,
+  gameState: GameState
 ) => number;
 
 export interface GameStatePlayable {
@@ -1610,8 +1609,3 @@ export interface GameStatePlayable {
   play: GameStatePlayFn;
   getPoints: GameStatePointsFn;
 }
-
-export type GameStateCountPointsFn = (
-  gameState: GameState,
-  playerId: string
-) => number;

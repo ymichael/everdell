@@ -1,6 +1,7 @@
 import expect from "expect.js";
 import { Event, initialEventMap } from "./event";
 import { Player } from "./player";
+import { Card } from "./card";
 import { GameState } from "./gameState";
 import { testInitialGameState, multiStepGameInputTest } from "./testHelpers";
 import {
@@ -267,6 +268,50 @@ describe("Event", () => {
     });
   });
 
+  describe(EventName.SPECIAL_FLYING_DOCTOR_SERVICE, () => {
+    it("should score based on number of HUSBAND/WIFE pairs in the game", () => {
+      const event = Event.fromName(EventName.SPECIAL_FLYING_DOCTOR_SERVICE);
+      const gameInput = claimEventInput(event.name);
+
+      expect(event.canPlay(gameState, gameInput)).to.be(false);
+
+      gameState.eventsMap[EventName.SPECIAL_FLYING_DOCTOR_SERVICE] = null;
+      player.addToCity(gameState, CardName.DOCTOR);
+      player.addToCity(gameState, CardName.POSTAL_PIGEON);
+
+      // Check if the player can claim the event
+      expect(event.canPlay(gameState, gameInput)).to.be(true);
+
+      // Try to claim the event + check that you get the correct game state back
+      expect(gameState.pendingGameInputs).to.eql([]);
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_FLYING_DOCTOR_SERVICE)
+      ).to.be(undefined);
+      expect(event.canPlay(gameState, gameInput)).to.be(true);
+      [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_FLYING_DOCTOR_SERVICE)
+      ).to.eql({});
+
+      expect(event.getPoints(player, gameState)).to.be(0);
+      gameState.players.forEach((p) => {
+        p.addToCity(gameState, CardName.WIFE);
+        p.addToCity(gameState, CardName.HUSBAND);
+      });
+      expect(event.getPoints(player, gameState)).to.be(
+        gameState.players.length * 3
+      );
+      expect(player.getPoints(gameState)).to.be(
+        gameState.players.length * 3 + // event
+          Card.fromName(CardName.DOCTOR).baseVP +
+          Card.fromName(CardName.POSTAL_PIGEON).baseVP +
+          Card.fromName(CardName.HUSBAND).baseVP +
+          Card.fromName(CardName.WIFE).baseVP +
+          3 // bonus from HUSBAND + WIFE
+      );
+    });
+  });
+
   describe(EventName.SPECIAL_CROAK_WART_CURE, () => {
     it("game state", () => {
       const event = Event.fromName(EventName.SPECIAL_CROAK_WART_CURE);
@@ -378,7 +423,7 @@ describe("Event", () => {
       expect(player.hasCardInCity(CardName.QUEEN)).to.eql(true);
       expect(player.hasCardInCity(CardName.COURTHOUSE)).to.eql(true);
 
-      expect(event.getPoints(gameState, player.playerId)).to.be(6);
+      expect(event.getPoints(player, gameState)).to.be(6);
     });
   });
 
@@ -440,7 +485,7 @@ describe("Event", () => {
         [ResourceType.TWIG]: 3,
       });
 
-      expect(event.getPoints(gameState, player.playerId)).to.be(6);
+      expect(event.getPoints(player, gameState)).to.be(6);
     });
 
     it("should calculate points correctly", () => {
@@ -451,39 +496,39 @@ describe("Event", () => {
       };
 
       expect(() => {
-        event.getPoints(gameState, player.playerId);
+        event.getPoints(player, gameState);
       }).to.throwException(/invalid number of/i);
 
       player.claimedEvents[event.name] = {
         storedResources: { [ResourceType.TWIG]: 0 },
       };
 
-      expect(event.getPoints(gameState, player.playerId)).to.be(0);
+      expect(event.getPoints(player, gameState)).to.be(0);
 
       player.claimedEvents[event.name] = {
         storedResources: { [ResourceType.TWIG]: 1 },
       };
 
-      expect(event.getPoints(gameState, player.playerId)).to.be(2);
+      expect(event.getPoints(player, gameState)).to.be(2);
 
       player.claimedEvents[event.name] = {
         storedResources: { [ResourceType.TWIG]: 2 },
       };
 
-      expect(event.getPoints(gameState, player.playerId)).to.be(4);
+      expect(event.getPoints(player, gameState)).to.be(4);
 
       player.claimedEvents[event.name] = {
         storedResources: { [ResourceType.TWIG]: 3 },
       };
 
-      expect(event.getPoints(gameState, player.playerId)).to.be(6);
+      expect(event.getPoints(player, gameState)).to.be(6);
 
       player.claimedEvents[event.name] = {
         storedResources: { [ResourceType.TWIG]: 4 },
       };
 
       expect(() => {
-        event.getPoints(gameState, player.playerId);
+        event.getPoints(player, gameState);
       }).to.throwException(/invalid number of/i);
     });
 
@@ -596,7 +641,7 @@ describe("Event", () => {
       expect(storedResources).to.eql({
         [ResourceType.BERRY]: 3,
       });
-      expect(event.getPoints(gameState, player.playerId)).to.be(6);
+      expect(event.getPoints(player, gameState)).to.be(6);
     });
 
     it("should calculate points correctly", () => {
@@ -607,39 +652,39 @@ describe("Event", () => {
       };
 
       expect(() => {
-        event.getPoints(gameState, player.playerId);
+        event.getPoints(player, gameState);
       }).to.throwException(/invalid number of/i);
 
       player.claimedEvents[event.name] = {
         storedResources: { [ResourceType.BERRY]: 0 },
       };
 
-      expect(event.getPoints(gameState, player.playerId)).to.be(0);
+      expect(event.getPoints(player, gameState)).to.be(0);
 
       player.claimedEvents[event.name] = {
         storedResources: { [ResourceType.BERRY]: 1 },
       };
 
-      expect(event.getPoints(gameState, player.playerId)).to.be(2);
+      expect(event.getPoints(player, gameState)).to.be(2);
 
       player.claimedEvents[event.name] = {
         storedResources: { [ResourceType.BERRY]: 2 },
       };
 
-      expect(event.getPoints(gameState, player.playerId)).to.be(4);
+      expect(event.getPoints(player, gameState)).to.be(4);
 
       player.claimedEvents[event.name] = {
         storedResources: { [ResourceType.BERRY]: 3 },
       };
 
-      expect(event.getPoints(gameState, player.playerId)).to.be(6);
+      expect(event.getPoints(player, gameState)).to.be(6);
 
       player.claimedEvents[event.name] = {
         storedResources: { [ResourceType.BERRY]: 4 },
       };
 
       expect(() => {
-        event.getPoints(gameState, player.playerId);
+        event.getPoints(player, gameState);
       }).to.throwException(/invalid number of/i);
     });
 
@@ -765,7 +810,7 @@ describe("Event", () => {
       });
 
       // 1 pt per twig and berry, 2 pts per resin and pebble
-      expect(event.getPoints(gameState, player.playerId)).to.be(5);
+      expect(event.getPoints(player, gameState)).to.be(5);
     });
 
     it("can claim event without having resources", () => {
@@ -820,7 +865,7 @@ describe("Event", () => {
       expect(storedResources).to.eql({});
 
       // 1 pt per twig and berry, 2 pts per resin and pebble
-      expect(event.getPoints(gameState, player.playerId)).to.be(0);
+      expect(event.getPoints(player, gameState)).to.be(0);
     });
 
     it("can claim event without placing resources", () => {
@@ -884,7 +929,7 @@ describe("Event", () => {
       expect(storedResources).to.eql({});
 
       // 1 pt per twig and berry, 2 pts per resin and pebble
-      expect(event.getPoints(gameState, player.playerId)).to.be(0);
+      expect(event.getPoints(player, gameState)).to.be(0);
     });
 
     it("should calculate points correctly", () => {
@@ -895,35 +940,35 @@ describe("Event", () => {
       };
 
       // 1 pt per twig and berry, 2 pts per resin and pebble
-      expect(event.getPoints(gameState, player.playerId)).to.be(0);
+      expect(event.getPoints(player, gameState)).to.be(0);
 
       player.claimedEvents[event.name] = {
         storedResources: { [ResourceType.TWIG]: 1, [ResourceType.BERRY]: 1 },
       };
 
       // 1 pt per twig and berry, 2 pts per resin and pebble
-      expect(event.getPoints(gameState, player.playerId)).to.be(2);
+      expect(event.getPoints(player, gameState)).to.be(2);
 
       player.claimedEvents[event.name] = {
         storedResources: { [ResourceType.RESIN]: 1, [ResourceType.BERRY]: 1 },
       };
 
       // 1 pt per twig and berry, 2 pts per resin and pebble
-      expect(event.getPoints(gameState, player.playerId)).to.be(3);
+      expect(event.getPoints(player, gameState)).to.be(3);
 
       player.claimedEvents[event.name] = {
         storedResources: { [ResourceType.TWIG]: 1, [ResourceType.BERRY]: 2 },
       };
 
       // 1 pt per twig and berry, 2 pts per resin and pebble
-      expect(event.getPoints(gameState, player.playerId)).to.be(3);
+      expect(event.getPoints(player, gameState)).to.be(3);
 
       player.claimedEvents[event.name] = {
         storedResources: {},
       };
 
       // 1 pt per twig and berry, 2 pts per resin and pebble
-      expect(event.getPoints(gameState, player.playerId)).to.be(0);
+      expect(event.getPoints(player, gameState)).to.be(0);
     });
   });
 
@@ -972,7 +1017,7 @@ describe("Event", () => {
 
       expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(1);
       expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
-      expect(event.getPoints(gameState, player.playerId)).to.be(4);
+      expect(event.getPoints(player, gameState)).to.be(4);
     });
 
     it("if no resources on chapel, claim event but don't get points or resources", () => {
@@ -999,7 +1044,7 @@ describe("Event", () => {
       expect(player.hasCardInCity(CardName.CHAPEL)).to.eql(true);
 
       // 2pts per VP on Chapel -> if no VP on chapel, then no points
-      expect(event.getPoints(gameState, player.playerId)).to.be(0);
+      expect(event.getPoints(player, gameState)).to.be(0);
     });
 
     it("should handle case where there is no chapel in city", () => {
@@ -1046,14 +1091,14 @@ describe("Event", () => {
 
       expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(1);
       expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
-      expect(event.getPoints(gameState, player.playerId)).to.be(4);
+      expect(event.getPoints(player, gameState)).to.be(4);
 
       player.removeCardFromCity(
         gameState,
         player.getFirstPlayedCard(CardName.CHAPEL)
       );
 
-      expect(event.getPoints(gameState, player.playerId)).to.be(0);
+      expect(event.getPoints(player, gameState)).to.be(0);
     });
   });
 
@@ -1078,7 +1123,7 @@ describe("Event", () => {
 
       [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
 
-      expect(event.getPoints(gameState, player.playerId)).to.be(0);
+      expect(event.getPoints(player, gameState)).to.be(0);
     });
     it("should calculate points correctly", () => {
       const event = Event.fromName(EventName.SPECIAL_REMEMBERING_THE_FALLEN);
@@ -1101,14 +1146,14 @@ describe("Event", () => {
       [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
 
       // no workers on cards = 0 points
-      expect(event.getPoints(gameState, player.playerId)).to.be(0);
+      expect(event.getPoints(player, gameState)).to.be(0);
 
       // place 1st worker on card
       player.placeWorkerOnCard(
         gameState,
         player.getFirstPlayedCard(CardName.CEMETARY)
       );
-      expect(event.getPoints(gameState, player.playerId)).to.be(3);
+      expect(event.getPoints(player, gameState)).to.be(3);
       expect(player.numAvailableWorkers).to.be(0);
 
       // take back worker so we can test case where cemetary has 2 workers
@@ -1121,7 +1166,7 @@ describe("Event", () => {
         gameState,
         player.getFirstPlayedCard(CardName.CEMETARY)
       );
-      expect(event.getPoints(gameState, player.playerId)).to.be(6);
+      expect(event.getPoints(player, gameState)).to.be(6);
     });
     it("should handle case when no cemetery in city", () => {
       const event = Event.fromName(EventName.SPECIAL_REMEMBERING_THE_FALLEN);
@@ -1144,14 +1189,14 @@ describe("Event", () => {
       [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
 
       // no workers on cards = 0 points
-      expect(event.getPoints(gameState, player.playerId)).to.be(0);
+      expect(event.getPoints(player, gameState)).to.be(0);
 
       // place 1st worker on card
       player.placeWorkerOnCard(
         gameState,
         player.getFirstPlayedCard(CardName.CEMETARY)
       );
-      expect(event.getPoints(gameState, player.playerId)).to.be(3);
+      expect(event.getPoints(player, gameState)).to.be(3);
       expect(player.numAvailableWorkers).to.be(0);
 
       player.removeCardFromCity(
@@ -1159,7 +1204,7 @@ describe("Event", () => {
         player.getFirstPlayedCard(CardName.CEMETARY)
       );
 
-      expect(event.getPoints(gameState, player.playerId)).to.be(0);
+      expect(event.getPoints(player, gameState)).to.be(0);
     });
   });
 
@@ -1186,7 +1231,7 @@ describe("Event", () => {
 
       [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
 
-      expect(event.getPoints(gameState, player.playerId)).to.be(0);
+      expect(event.getPoints(player, gameState)).to.be(0);
     });
     it("should calculate points correctly", () => {
       const event = Event.fromName(EventName.SPECIAL_PATH_OF_THE_PILGRIMS);
@@ -1209,14 +1254,14 @@ describe("Event", () => {
       [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
 
       // no workers on cards = 0 points
-      expect(event.getPoints(gameState, player.playerId)).to.be(0);
+      expect(event.getPoints(player, gameState)).to.be(0);
 
       // place 1st worker on card
       player.placeWorkerOnCard(
         gameState,
         player.getFirstPlayedCard(CardName.MONASTERY)
       );
-      expect(event.getPoints(gameState, player.playerId)).to.be(3);
+      expect(event.getPoints(player, gameState)).to.be(3);
       expect(player.numAvailableWorkers).to.be(0);
 
       // take back worker so we can test case where monastery has 2 workers
@@ -1229,7 +1274,7 @@ describe("Event", () => {
         gameState,
         player.getFirstPlayedCard(CardName.MONASTERY)
       );
-      expect(event.getPoints(gameState, player.playerId)).to.be(6);
+      expect(event.getPoints(player, gameState)).to.be(6);
     });
     it("should handle case when no monastery in city", () => {
       const event = Event.fromName(EventName.SPECIAL_PATH_OF_THE_PILGRIMS);
@@ -1252,14 +1297,14 @@ describe("Event", () => {
       [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
 
       // no workers on cards = 0 points
-      expect(event.getPoints(gameState, player.playerId)).to.be(0);
+      expect(event.getPoints(player, gameState)).to.be(0);
 
       // place 1st worker on card
       player.placeWorkerOnCard(
         gameState,
         player.getFirstPlayedCard(CardName.MONASTERY)
       );
-      expect(event.getPoints(gameState, player.playerId)).to.be(3);
+      expect(event.getPoints(player, gameState)).to.be(3);
       expect(player.numAvailableWorkers).to.be(0);
 
       player.removeCardFromCity(
@@ -1267,7 +1312,7 @@ describe("Event", () => {
         player.getFirstPlayedCard(CardName.MONASTERY)
       );
 
-      expect(event.getPoints(gameState, player.playerId)).to.be(0);
+      expect(event.getPoints(player, gameState)).to.be(0);
     });
   });
 
@@ -1294,7 +1339,7 @@ describe("Event", () => {
 
       [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
 
-      expect(event.getPoints(gameState, player.playerId)).to.be(0);
+      expect(event.getPoints(player, gameState)).to.be(0);
     });
     it("should calculate points correctly", () => {
       const event = Event.fromName(EventName.SPECIAL_MINISTERING_TO_MISCREANTS);
@@ -1317,7 +1362,7 @@ describe("Event", () => {
       [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
 
       // no workers on cards = 0 points
-      expect(event.getPoints(gameState, player.playerId)).to.be(0);
+      expect(event.getPoints(player, gameState)).to.be(0);
 
       // add card to dungeon
       player.updatePlayedCard(
@@ -1327,7 +1372,7 @@ describe("Event", () => {
           pairedCards: [CardName.WIFE],
         }
       );
-      expect(event.getPoints(gameState, player.playerId)).to.be(3);
+      expect(event.getPoints(player, gameState)).to.be(3);
 
       // add 2nd card to Dungeon; requires having ranger in city
       player.addToCity(gameState, CardName.RANGER);
@@ -1338,7 +1383,7 @@ describe("Event", () => {
           pairedCards: [CardName.WIFE, CardName.HUSBAND],
         }
       );
-      expect(event.getPoints(gameState, player.playerId)).to.be(6);
+      expect(event.getPoints(player, gameState)).to.be(6);
     });
     it("should give 0 points when no dungeon in city", () => {
       const event = Event.fromName(EventName.SPECIAL_MINISTERING_TO_MISCREANTS);
@@ -1361,7 +1406,7 @@ describe("Event", () => {
       [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
 
       // no critters in dungeon = 0 points
-      expect(event.getPoints(gameState, player.playerId)).to.be(0);
+      expect(event.getPoints(player, gameState)).to.be(0);
 
       // put one card under dungeon
       player.updatePlayedCard(
@@ -1371,14 +1416,14 @@ describe("Event", () => {
           pairedCards: [CardName.WIFE],
         }
       );
-      expect(event.getPoints(gameState, player.playerId)).to.be(3);
+      expect(event.getPoints(player, gameState)).to.be(3);
 
       player.removeCardFromCity(
         gameState,
         player.getFirstPlayedCard(CardName.DUNGEON)
       );
 
-      expect(event.getPoints(gameState, player.playerId)).to.be(0);
+      expect(event.getPoints(player, gameState)).to.be(0);
     });
   });
 
@@ -1453,7 +1498,7 @@ describe("Event", () => {
         CardName.QUEEN,
         CardName.KING,
       ]);
-      expect(event.getPoints(gameState, player.playerId)).to.be(5);
+      expect(event.getPoints(player, gameState)).to.be(5);
     });
 
     it("should be able to claim event and store subset of revealed cards", () => {
@@ -1525,7 +1570,7 @@ describe("Event", () => {
         CardName.QUEEN,
       ]);
 
-      expect(event.getPoints(gameState, player.playerId)).to.be(3);
+      expect(event.getPoints(player, gameState)).to.be(3);
     });
 
     it("should be able to claim event and take all revealed cards into hand", () => {
@@ -1605,7 +1650,7 @@ describe("Event", () => {
       }
       expect(storedCards).to.eql([]);
 
-      expect(event.getPoints(gameState, player.playerId)).to.be(0);
+      expect(event.getPoints(player, gameState)).to.be(0);
     });
 
     it("should not be able to claim event if missing cards", () => {
@@ -1651,7 +1696,7 @@ describe("Event", () => {
       gameState = gameState.next(gameInput);
 
       expect(player.getClaimedEvent(EventName.SPECIAL_TAX_RELIEF));
-      expect(event.getPoints(gameState, player.playerId)).to.be(3);
+      expect(event.getPoints(player, gameState)).to.be(3);
     });
 
     it("should activate production when claimed", () => {
@@ -1672,7 +1717,7 @@ describe("Event", () => {
       [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
 
       expect(player.getClaimedEvent(EventName.SPECIAL_TAX_RELIEF));
-      expect(event.getPoints(gameState, player.playerId)).to.be(3);
+      expect(event.getPoints(player, gameState)).to.be(3);
 
       // indicates that production was activated
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
@@ -1715,7 +1760,7 @@ describe("Event", () => {
         },
       ]);
       expect(player.numAvailableWorkers).to.be(1);
-      expect(event.getPoints(gameState, player.playerId)).to.be(4);
+      expect(event.getPoints(player, gameState)).to.be(4);
     });
 
     it("should allow player to reclaim worker on event", () => {
@@ -1752,7 +1797,7 @@ describe("Event", () => {
 
       // should still be 1 because one worker is still on the basic location
       expect(player.numAvailableWorkers).to.be(1);
-      expect(event.getPoints(gameState, player.playerId)).to.be(4);
+      expect(event.getPoints(player, gameState)).to.be(4);
     });
 
     it("should be claimable even if player hadn't yet placed workers", () => {
@@ -1782,7 +1827,7 @@ describe("Event", () => {
 
       // should still be 1 because one worker is still on the basic location
       expect(player.numAvailableWorkers).to.be(2);
-      expect(event.getPoints(gameState, player.playerId)).to.be(4);
+      expect(event.getPoints(player, gameState)).to.be(4);
     });
   });
 
@@ -2736,7 +2781,7 @@ describe("Event", () => {
         CardName.MINE,
         CardName.MINER_MOLE,
       ]);
-      expect(event.getPoints(gameState, player.playerId)).to.be(6);
+      expect(event.getPoints(player, gameState)).to.be(6);
       expect(player.getPointsFromEvents(gameState)).to.be(6);
     });
 
@@ -2875,7 +2920,7 @@ describe("Event", () => {
         CardName.MINE,
         CardName.MINER_MOLE,
       ]);
-      expect(event.getPoints(gameState, player.playerId)).to.be(6);
+      expect(event.getPoints(player, gameState)).to.be(6);
       expect(player.getPointsFromEvents(gameState)).to.be(6);
     });
 
@@ -2951,7 +2996,7 @@ describe("Event", () => {
         CardName.WOODCARVER,
         CardName.MINE,
       ]);
-      expect(event.getPoints(gameState, player.playerId)).to.be(4);
+      expect(event.getPoints(player, gameState)).to.be(4);
       expect(player.getPointsFromEvents(gameState)).to.be(4);
     });
 
@@ -3027,7 +3072,7 @@ describe("Event", () => {
         CardName.RANGER,
         CardName.WOODCARVER,
       ]);
-      expect(event.getPoints(gameState, player.playerId)).to.be(2);
+      expect(event.getPoints(player, gameState)).to.be(2);
       expect(player.getPointsFromEvents(gameState)).to.be(2);
     });
 
@@ -3097,7 +3142,7 @@ describe("Event", () => {
         CardName.POSTAL_PIGEON,
         CardName.RANGER,
       ]);
-      expect(event.getPoints(gameState, player.playerId)).to.be(0);
+      expect(event.getPoints(player, gameState)).to.be(0);
       expect(player.getPointsFromEvents(gameState)).to.be(0);
     });
   });

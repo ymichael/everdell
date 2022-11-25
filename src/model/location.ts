@@ -31,6 +31,7 @@ import {
   GameStateCanPlayCheckFn,
 } from "./gameState";
 import { Card } from "./card";
+import { Player } from "./player";
 import { onlyRelevantProductionCards } from "./cardHelpers";
 import { toGameText, cardListToGameText } from "./gameText";
 import { assertUnreachable } from "../utils";
@@ -90,7 +91,7 @@ export class Location implements GameStatePlayable, IGameTextEntity {
     };
   }
 
-  getPoints(gameState: GameState, playerId: string): number {
+  getPoints(player: Player, gameState: GameState): number {
     return this.baseVP;
   }
 

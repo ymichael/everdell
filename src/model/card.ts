@@ -25,7 +25,7 @@ import {
   GameStatePlayable,
   GameStatePlayFn,
   GameStateCanPlayCheckFn,
-  GameStateCountPointsFn,
+  GameStatePointsFn,
 } from "./gameState";
 import { Location } from "./location";
 import { Event } from "./event";
@@ -77,7 +77,7 @@ export class Card<TCardType extends CardType = CardType>
   readonly playedCardInfoDefault:
     | Partial<Omit<PlayedCardInfo, "playerId">>
     | undefined;
-  readonly pointsInner: GameStateCountPointsFn | undefined;
+  readonly pointsInner: GameStatePointsFn | undefined;
 
   readonly name: CardName;
   readonly baseCost: CardCost;
@@ -149,12 +149,8 @@ export class Card<TCardType extends CardType = CardType>
         productionWillActivateInner?: undefined;
       }) &
     (TCardType extends CardType.PROSPERITY
-      ? {
-          pointsInner: (gameState: GameState, playerId: string) => number;
-        }
-      : {
-          pointsInner?: (gameState: GameState, playerId: string) => number;
-        })) {
+      ? { pointsInner: GameStatePointsFn }
+      : { pointsInner?: GameStatePointsFn })) {
     this.name = name;
     this.baseCost = Object.freeze(baseCost);
     this.baseVP = baseVP;
@@ -443,10 +439,10 @@ export class Card<TCardType extends CardType = CardType>
     return true;
   }
 
-  getPoints(gameState: GameState, playerId: string): number {
+  getPoints(player: Player, gameState: GameState): number {
     return (
       this.baseVP +
-      (this.pointsInner ? this.pointsInner(gameState, playerId) : 0)
+      (this.pointsInner?.(player.getPlayerForPoints(), gameState) ?? 0)
     );
   }
 
@@ -480,8 +476,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       " for each of your unused RESIN and PEBBLE, to a maximum of 6.",
     ]),
     // 1 point per rock and pebble, up to 6 pts
-    pointsInner: (gameState: GameState, playerId: string) => {
-      const player = gameState.getPlayer(playerId);
+    pointsInner: (player) => {
       const numPebblesAndResin =
         player.getNumResourcesByType(ResourceType.PEBBLE) +
         player.getNumResourcesByType(ResourceType.RESIN);
@@ -1085,8 +1080,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       " for each PROSPERITY in your city.",
     ]),
     // 1 point per prosperty card
-    pointsInner: (gameState: GameState, playerId: string) => {
-      const player = gameState.getPlayer(playerId);
+    pointsInner: (player) => {
       return player.getNumCardType(CardType.PROSPERITY);
     },
   }),
@@ -1532,9 +1526,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       { type: "points", value: 2 },
       " for each special event you achieved.",
     ]),
-    pointsInner: (gameState: GameState, playerId: string) => {
+    pointsInner: (player) => {
       let numPoints = 0;
-      const player = gameState.getPlayer(playerId);
       Object.keys(player.claimedEvents).forEach((eventName) => {
         const event = Event.fromName(eventName as EventName);
         if (event.type === EventType.BASIC) {
@@ -3386,8 +3379,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       " if paired with a ",
       { type: "entity", entityType: "card", card: CardName.HUSBAND },
     ]),
-    pointsInner: (gameState: GameState, playerId: string) => {
-      // NOTE: this is implemented in player!
+    pointsInner: (player) => {
+      // NOTE: this is implemented in player because if you have multiple
+      // of each card, we only want to count each pair once!
       return 0;
     },
   }),
@@ -3612,10 +3606,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     baseCost: {
       [ResourceType.BERRY]: 4,
     },
-    pointsInner: (gameState: GameState, playerId: string) => {
-      const player = gameState.getPlayer(playerId);
-      return player.getPlayedCards().filter(({ cardName }) => {
-        return Card.fromName(cardName).expansion === ExpansionType.PEARLBROOK;
+    pointsInner: (player) => {
+      return player.getPlayedCards((card) => {
+        return card.expansion === ExpansionType.PEARLBROOK;
       }).length;
     },
   }),

@@ -537,7 +537,7 @@ export class Player implements IGameTextEntity {
     let points = 0;
     this.forEachPlayedCard(({ cardName, resources = {} }) => {
       const card = Card.fromName(cardName);
-      points += card.getPoints(gameState, this.playerId);
+      points += card.getPoints(this, gameState);
       points += resources[ResourceType.VP] || 0;
     });
     points += 3 * this.getNumHusbandWifePairs();
@@ -549,7 +549,7 @@ export class Player implements IGameTextEntity {
     Object.keys(this.claimedEvents).forEach((eventName) => {
       const event = Event.fromName(eventName as EventName);
       if (event.type === EventType.WONDER) {
-        points += event.getPoints(gameState, this.playerId);
+        points += event.getPoints(this, gameState);
       }
     });
     return points;
@@ -563,7 +563,7 @@ export class Player implements IGameTextEntity {
         // Count these separately
         return;
       }
-      points += event.getPoints(gameState, this.playerId);
+      points += event.getPoints(this, gameState);
       const eventInfo = this.claimedEvents[eventName as EventName];
       if (eventInfo && eventInfo.storedResources) {
         points += eventInfo.storedResources[ResourceType.VP] || 0;
@@ -577,7 +577,7 @@ export class Player implements IGameTextEntity {
     this.placedWorkers.forEach((placeWorker) => {
       if (placeWorker.location) {
         const location = Location.fromName(placeWorker.location);
-        points += location.getPoints(gameState, this.playerId);
+        points += location.getPoints(this, gameState);
       }
     });
     return points;
@@ -587,20 +587,29 @@ export class Player implements IGameTextEntity {
     let points = 0;
     this.playedAdornments.forEach((adornmentName) => {
       const adornment = Adornment.fromName(adornmentName as AdornmentName);
-      points += adornment.getPoints(gameState, this.playerId);
+      points += adornment.getPoints(this, gameState);
     });
     return points;
   }
 
+  getPlayerForPoints(): Player {
+    if (process.env.NODE_ENV !== "production") {
+      return Player.fromJSON(this.toJSON(false /* includePrivate */));
+    }
+    return this;
+  }
+
   getPoints(gameState: GameState): number {
+    const player = this.getPlayerForPoints();
+
     let points = 0;
-    points += this.getPointsFromCards(gameState);
-    points += this.getPointsFromEvents(gameState);
-    points += this.getPointsFromWonders(gameState);
-    points += this.getPointsFromJourney(gameState);
-    points += this.getNumResourcesByType(ResourceType.VP);
-    points += this.getNumResourcesByType(ResourceType.PEARL) * 2;
-    points += this.getPointsFromAdornments(gameState);
+    points += player.getPointsFromCards(gameState);
+    points += player.getPointsFromEvents(gameState);
+    points += player.getPointsFromWonders(gameState);
+    points += player.getPointsFromJourney(gameState);
+    points += player.getPointsFromAdornments(gameState);
+    points += player.getNumResourcesByType(ResourceType.VP);
+    points += player.getNumResourcesByType(ResourceType.PEARL) * 2;
     return points;
   }
 

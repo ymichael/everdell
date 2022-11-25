@@ -80,24 +80,22 @@ describe("Card", () => {
     describe(CardName.ARCHITECT, () => {
       it("should be worth 1 VP per unused RESIN/PEBBLE", () => {
         const card = Card.fromName(CardName.ARCHITECT);
-
-        expect(card.getPoints(gameState, player.playerId)).to.be(2);
+        expect(card.getPoints(player, gameState)).to.be(2);
 
         player.gainResources(gameState, { [ResourceType.PEBBLE]: 1 });
-        expect(card.getPoints(gameState, player.playerId)).to.be(3);
+        expect(card.getPoints(player, gameState)).to.be(3);
 
         player.gainResources(gameState, { [ResourceType.RESIN]: 2 });
-        expect(card.getPoints(gameState, player.playerId)).to.be(5);
+        expect(card.getPoints(player, gameState)).to.be(5);
       });
 
       it("should be worth 1 VP per unused RESIN/PEBBLE up to 6 MAX", () => {
         const card = Card.fromName(CardName.ARCHITECT);
-
-        expect(card.getPoints(gameState, player.playerId)).to.be(2);
+        expect(card.getPoints(player, gameState)).to.be(2);
 
         player.gainResources(gameState, { [ResourceType.PEBBLE]: 10 });
         player.gainResources(gameState, { [ResourceType.RESIN]: 10 });
-        expect(card.getPoints(gameState, player.playerId)).to.be(2 + 6);
+        expect(card.getPoints(player, gameState)).to.be(2 + 6);
       });
     });
 
@@ -261,30 +259,28 @@ describe("Card", () => {
       it("should be worth 1 VP per common construction", () => {
         const card = Card.fromName(CardName.CASTLE);
         player.addToCity(gameState, card.name);
+        expect(card.getPoints(player, gameState)).to.be(4);
 
-        expect(card.getPoints(gameState, player.playerId)).to.be(4);
-
         player.addToCity(gameState, CardName.FARM);
         player.addToCity(gameState, CardName.FARM);
         player.addToCity(gameState, CardName.FARM);
-        expect(card.getPoints(gameState, player.playerId)).to.be(4 + 3);
+        expect(card.getPoints(player, gameState)).to.be(4 + 3);
       });
 
       it("does not count unique constructions / critters", () => {
         const card = Card.fromName(CardName.CASTLE);
         player.addToCity(gameState, card.name);
-
-        expect(card.getPoints(gameState, player.playerId)).to.be(4);
+        expect(card.getPoints(player, gameState)).to.be(4);
 
         player.addToCity(gameState, CardName.EVERTREE);
         player.addToCity(gameState, CardName.PALACE);
         player.addToCity(gameState, CardName.DUNGEON);
-        expect(card.getPoints(gameState, player.playerId)).to.be(4);
+        expect(card.getPoints(player, gameState)).to.be(4);
 
         player.addToCity(gameState, CardName.WIFE);
         player.addToCity(gameState, CardName.RANGER);
         player.addToCity(gameState, CardName.QUEEN);
-        expect(card.getPoints(gameState, player.playerId)).to.be(4);
+        expect(card.getPoints(player, gameState)).to.be(4);
       });
     });
 
@@ -1353,20 +1349,17 @@ describe("Card", () => {
     describe(CardName.EVERTREE, () => {
       it("should be worth 1 extra point per purple card", () => {
         player.addToCity(gameState, CardName.EVERTREE);
-
         const card = Card.fromName(CardName.EVERTREE);
-        const playerId = player.playerId;
-
-        expect(card.getPoints(gameState, playerId)).to.be(5 + 1);
+        expect(card.getPoints(player, gameState)).to.be(5 + 1);
 
         player.addToCity(gameState, CardName.WIFE);
-        expect(card.getPoints(gameState, playerId)).to.be(5 + 2);
+        expect(card.getPoints(player, gameState)).to.be(5 + 2);
 
         player.addToCity(gameState, CardName.PALACE);
-        expect(card.getPoints(gameState, playerId)).to.be(5 + 3);
+        expect(card.getPoints(player, gameState)).to.be(5 + 3);
 
         player.addToCity(gameState, CardName.UNIVERSITY);
-        expect(card.getPoints(gameState, playerId)).to.be(5 + 3);
+        expect(card.getPoints(player, gameState)).to.be(5 + 3);
       });
     });
 
@@ -2295,13 +2288,13 @@ describe("Card", () => {
     describe(CardName.KING, () => {
       it("should calculate the points correctly", () => {
         const card = Card.fromName(CardName.KING);
-        expect(card.getPoints(gameState, player.playerId)).to.be(4);
+        expect(card.getPoints(player, gameState)).to.be(4);
 
         player.placeWorkerOnEvent(EventName.BASIC_FOUR_PRODUCTION);
-        expect(card.getPoints(gameState, player.playerId)).to.be(4 + 1);
+        expect(card.getPoints(player, gameState)).to.be(4 + 1);
 
         player.placeWorkerOnEvent(EventName.SPECIAL_GRADUATION_OF_SCHOLARS);
-        expect(card.getPoints(gameState, player.playerId)).to.be(4 + 1 + 2);
+        expect(card.getPoints(player, gameState)).to.be(4 + 1 + 2);
       });
     });
 
@@ -3192,24 +3185,22 @@ describe("Card", () => {
       it("worth 1 vp more per unique construction", () => {
         const card = Card.fromName(CardName.PALACE);
         player.addToCity(gameState, card.name);
-        const playerId = player.playerId;
-
-        expect(card.getPoints(gameState, playerId)).to.be(4 + 1);
+        expect(card.getPoints(player, gameState)).to.be(4 + 1);
 
         player.addToCity(gameState, CardName.DUNGEON);
-        expect(card.getPoints(gameState, playerId)).to.be(4 + 2);
+        expect(card.getPoints(player, gameState)).to.be(4 + 2);
 
         player.addToCity(gameState, CardName.THEATRE);
-        expect(card.getPoints(gameState, playerId)).to.be(4 + 3);
+        expect(card.getPoints(player, gameState)).to.be(4 + 3);
 
         player.addToCity(gameState, CardName.UNIVERSITY);
-        expect(card.getPoints(gameState, playerId)).to.be(4 + 4);
+        expect(card.getPoints(player, gameState)).to.be(4 + 4);
 
         player.addToCity(gameState, CardName.FARM);
-        expect(card.getPoints(gameState, playerId)).to.be(4 + 4);
+        expect(card.getPoints(player, gameState)).to.be(4 + 4);
 
         player.addToCity(gameState, CardName.RANGER);
-        expect(card.getPoints(gameState, playerId)).to.be(4 + 4);
+        expect(card.getPoints(player, gameState)).to.be(4 + 4);
       });
     });
 
@@ -4379,22 +4370,22 @@ describe("Card", () => {
         player.addToCity(gameState, card.name);
         const playerId = player.playerId;
 
-        expect(card.getPoints(gameState, playerId)).to.be(2 + 0);
+        expect(card.getPoints(player, gameState)).to.be(2 + 0);
 
         player.addToCity(gameState, CardName.DUNGEON);
-        expect(card.getPoints(gameState, playerId)).to.be(2 + 0);
+        expect(card.getPoints(player, gameState)).to.be(2 + 0);
 
         player.addToCity(gameState, CardName.RANGER);
-        expect(card.getPoints(gameState, playerId)).to.be(2 + 0);
+        expect(card.getPoints(player, gameState)).to.be(2 + 0);
 
         player.addToCity(gameState, CardName.HUSBAND);
-        expect(card.getPoints(gameState, playerId)).to.be(2 + 1);
+        expect(card.getPoints(player, gameState)).to.be(2 + 1);
 
         player.addToCity(gameState, CardName.WANDERER);
-        expect(card.getPoints(gameState, playerId)).to.be(2 + 2);
+        expect(card.getPoints(player, gameState)).to.be(2 + 2);
 
         player.addToCity(gameState, CardName.WANDERER);
-        expect(card.getPoints(gameState, playerId)).to.be(2 + 3);
+        expect(card.getPoints(player, gameState)).to.be(2 + 3);
       });
     });
 
@@ -5157,22 +5148,22 @@ describe("Card", () => {
         player.addToCity(gameState, card.name);
         const playerId = player.playerId;
 
-        expect(card.getPoints(gameState, playerId)).to.be(3 + 0);
+        expect(card.getPoints(player, gameState)).to.be(3 + 0);
 
         player.addToCity(gameState, CardName.DUNGEON);
-        expect(card.getPoints(gameState, playerId)).to.be(3 + 0);
+        expect(card.getPoints(player, gameState)).to.be(3 + 0);
 
         player.addToCity(gameState, CardName.RANGER);
-        expect(card.getPoints(gameState, playerId)).to.be(3 + 1);
+        expect(card.getPoints(player, gameState)).to.be(3 + 1);
 
         player.addToCity(gameState, CardName.HUSBAND);
-        expect(card.getPoints(gameState, playerId)).to.be(3 + 1);
+        expect(card.getPoints(player, gameState)).to.be(3 + 1);
 
         player.addToCity(gameState, CardName.WANDERER);
-        expect(card.getPoints(gameState, playerId)).to.be(3 + 1);
+        expect(card.getPoints(player, gameState)).to.be(3 + 1);
 
         player.addToCity(gameState, CardName.BARD);
-        expect(card.getPoints(gameState, playerId)).to.be(3 + 2);
+        expect(card.getPoints(player, gameState)).to.be(3 + 2);
       });
     });
 
@@ -5766,16 +5757,16 @@ describe("Card", () => {
         const playerId = player.playerId;
         player.addToCity(gameState, card.name);
 
-        expect(card.getPoints(gameState, playerId)).to.be(2 + 1 /* itself */);
+        expect(card.getPoints(player, gameState)).to.be(2 + 1 /* itself */);
 
         player.addToCity(gameState, CardName.PIRATE);
-        expect(card.getPoints(gameState, playerId)).to.be(2 + 2);
+        expect(card.getPoints(player, gameState)).to.be(2 + 2);
 
         player.addToCity(gameState, CardName.WIFE);
-        expect(card.getPoints(gameState, playerId)).to.be(2 + 2);
+        expect(card.getPoints(player, gameState)).to.be(2 + 2);
 
         player.addToCity(gameState, CardName.HARBOR);
-        expect(card.getPoints(gameState, playerId)).to.be(2 + 3);
+        expect(card.getPoints(player, gameState)).to.be(2 + 3);
       });
     });
 

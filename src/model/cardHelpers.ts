@@ -5,11 +5,7 @@ import {
   GameInputType,
   PlayedCardInfo,
 } from "./types";
-import {
-  GameState,
-  GameStatePlayFn,
-  GameStateCountPointsFn,
-} from "./gameState";
+import { GameState, GameStatePlayFn, GameStatePointsFn } from "./gameState";
 import { Card } from "./card";
 
 export function countCardsByAttribute({
@@ -18,9 +14,8 @@ export function countCardsByAttribute({
 }: {
   isCritter: boolean;
   isUnique: boolean;
-}): GameStateCountPointsFn {
-  return (gameState: GameState, playerId: string) => {
-    const player = gameState.getPlayer(playerId);
+}): GameStatePointsFn {
+  return (player) => {
     return player.getPlayedCards(
       (card) => card.isCritter === isCritter && card.isUnique === isUnique
     ).length;

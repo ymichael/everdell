@@ -847,7 +847,7 @@ export class Player implements IGameTextEntity {
     }
   }
 
-  hasUnusedByCritterConstruction(cardName: CardName): boolean {
+  hasUnoccupiedConstruction(cardName: CardName): boolean {
     return !!(
       Card.fromName(cardName).isConstruction &&
       this.playedCards[cardName]?.some(
@@ -978,12 +978,12 @@ export class Player implements IGameTextEntity {
 
     // Check if you have the associated construction if card is a critter
     if (card.isCritter) {
-      if (this.hasUnusedByCritterConstruction(CardName.EVERTREE)) {
+      if (this.hasUnoccupiedConstruction(CardName.EVERTREE)) {
         return true;
       }
       if (
         card.associatedCard &&
-        this.hasUnusedByCritterConstruction(card.associatedCard)
+        this.hasUnoccupiedConstruction(card.associatedCard)
       ) {
         return true;
       }
@@ -1270,8 +1270,8 @@ export class Player implements IGameTextEntity {
       }
 
       if (
-        !this.hasUnusedByCritterConstruction(CardName.EVERTREE) &&
-        !this.hasUnusedByCritterConstruction(cardToPlay.associatedCard)
+        !this.hasUnoccupiedConstruction(CardName.EVERTREE) &&
+        !this.hasUnoccupiedConstruction(cardToPlay.associatedCard)
       ) {
         return `Cannot find associated card to play ${cardToPlay.name}`;
       }

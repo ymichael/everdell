@@ -96,8 +96,8 @@ const OptionToUseAssociatedCard: React.FC<{
   const card = CardModel.fromName(cardName);
   const hasUnusedAssociatedCard =
     card.associatedCard &&
-    viewingPlayer.hasUnusedByCritterConstruction(card.associatedCard);
-  const hasUnusedEvertree = viewingPlayer.hasUnusedByCritterConstruction(
+    viewingPlayer.hasUnoccupiedConstruction(card.associatedCard);
+  const hasUnusedEvertree = viewingPlayer.hasUnoccupiedConstruction(
     CardName.EVERTREE
   );
   const canUseAssociatedCard =

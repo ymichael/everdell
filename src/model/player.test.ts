@@ -938,7 +938,7 @@ describe("Player", () => {
 
         let player = gameState.getActivePlayer();
         player.addToCity(gameState, CardName.INN);
-        expect(player.hasUnusedByCritterConstruction(CardName.INN)).to.be(true);
+        expect(player.hasUnoccupiedConstruction(CardName.INN)).to.be(true);
         player.cardsInHand = [card.name];
 
         expect(player.hasCardInCity(CardName.INN)).to.be(true);
@@ -949,9 +949,7 @@ describe("Player", () => {
         player = gameState.getPlayer(player.playerId);
 
         expect(player.cardsInHand).to.eql([]);
-        expect(player.hasUnusedByCritterConstruction(CardName.INN)).to.be(
-          false
-        );
+        expect(player.hasUnoccupiedConstruction(CardName.INN)).to.be(false);
         expect(player.hasCardInCity(CardName.INN)).to.be(true);
         expect(player.hasCardInCity(CardName.INNKEEPER)).to.be(true);
 
@@ -997,18 +995,14 @@ describe("Player", () => {
         player.addToCity(gameState, CardName.FARM);
         player.addToCity(gameState, CardName.FARM);
 
-        expect(player.hasUnusedByCritterConstruction(CardName.FARM)).to.be(
-          true
-        );
+        expect(player.hasUnoccupiedConstruction(CardName.FARM)).to.be(true);
 
         expect(player.hasCardInCity(CardName.FARM)).to.be(true);
         expect(card.canPlay(gameState, gameInput)).to.be(true);
 
         gameState = gameState.next(gameInput);
         player = gameState.getPlayer(player.playerId);
-        expect(player.hasUnusedByCritterConstruction(CardName.FARM)).to.be(
-          true
-        );
+        expect(player.hasUnoccupiedConstruction(CardName.FARM)).to.be(true);
         expect(player.hasCardInCity(CardName.HUSBAND)).to.be(true);
         expect(player.getPlayedCardForCardName(CardName.HUSBAND).length).to.be(
           1
@@ -1019,9 +1013,7 @@ describe("Player", () => {
 
         gameState = gameState.next(gameInput);
         player = gameState.getPlayer(player.playerId);
-        expect(player.hasUnusedByCritterConstruction(CardName.FARM)).to.be(
-          false
-        );
+        expect(player.hasUnoccupiedConstruction(CardName.FARM)).to.be(false);
         expect(player.getPlayedCardForCardName(CardName.HUSBAND).length).to.be(
           2
         );
@@ -1051,24 +1043,16 @@ describe("Player", () => {
         player.addToCity(gameState, CardName.FARM);
         player.addToCity(gameState, CardName.EVERTREE);
 
-        expect(player.hasUnusedByCritterConstruction(CardName.FARM)).to.be(
-          true
-        );
-        expect(player.hasUnusedByCritterConstruction(CardName.EVERTREE)).to.be(
-          true
-        );
+        expect(player.hasUnoccupiedConstruction(CardName.FARM)).to.be(true);
+        expect(player.hasUnoccupiedConstruction(CardName.EVERTREE)).to.be(true);
 
         expect(player.hasCardInCity(CardName.FARM)).to.be(true);
         expect(card.canPlay(gameState, gameInput)).to.be(true);
 
         gameState = gameState.next(gameInput);
         player = gameState.getPlayer(player.playerId);
-        expect(player.hasUnusedByCritterConstruction(CardName.FARM)).to.be(
-          false
-        );
-        expect(player.hasUnusedByCritterConstruction(CardName.EVERTREE)).to.be(
-          true
-        );
+        expect(player.hasUnoccupiedConstruction(CardName.FARM)).to.be(false);
+        expect(player.hasUnoccupiedConstruction(CardName.EVERTREE)).to.be(true);
         expect(player.hasCardInCity(CardName.HUSBAND)).to.be(true);
         expect(player.getPlayedCardForCardName(CardName.HUSBAND).length).to.be(
           1
@@ -1080,10 +1064,8 @@ describe("Player", () => {
         // use evertree this time.
         gameState = gameState.next(gameInput);
         player = gameState.getPlayer(player.playerId);
-        expect(player.hasUnusedByCritterConstruction(CardName.FARM)).to.be(
-          false
-        );
-        expect(player.hasUnusedByCritterConstruction(CardName.EVERTREE)).to.be(
+        expect(player.hasUnoccupiedConstruction(CardName.FARM)).to.be(false);
+        expect(player.hasUnoccupiedConstruction(CardName.EVERTREE)).to.be(
           false
         );
         expect(player.getPlayedCardForCardName(CardName.HUSBAND).length).to.be(

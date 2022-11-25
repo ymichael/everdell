@@ -1245,9 +1245,9 @@ export class GameState {
       ret.push(
         " by occupying ",
         card.associatedCard &&
-          player.hasUnusedByCritterConstruction(card.associatedCard)
+          player.hasUnoccupiedConstruction(card.associatedCard)
           ? Card.fromName(card.associatedCard)
-          : player.hasUnusedByCritterConstruction(CardName.EVERTREE)
+          : player.hasUnoccupiedConstruction(CardName.EVERTREE)
           ? Card.fromName(CardName.EVERTREE)
           : "??"
       );

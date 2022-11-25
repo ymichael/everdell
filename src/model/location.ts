@@ -30,7 +30,8 @@ import {
   GameStatePlayFn,
   GameStateCanPlayCheckFn,
 } from "./gameState";
-import { Card, onlyRelevantProductionCards } from "./card";
+import { Card } from "./card";
+import { onlyRelevantProductionCards } from "./cardHelpers";
 import { toGameText, cardListToGameText } from "./gameText";
 import { assertUnreachable } from "../utils";
 

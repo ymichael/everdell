@@ -28,7 +28,8 @@ import {
 import { Event } from "./event";
 import { CardStack } from "./cardStack";
 import { Location } from "./location";
-import { Card, onlyRelevantProductionCards } from "./card";
+import { Card } from "./card";
+import { onlyRelevantProductionCards } from "./cardHelpers";
 import {
   toGameText,
   cardListToGameText,

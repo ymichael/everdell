@@ -35,7 +35,7 @@ export const CardTypeSymbol = ({ cardType }: { cardType: CardType }) => {
       <span hidden>{cardType}</span>
       <span aria-hidden={true}>
         {cardType === CardType.PRODUCTION ? (
-          <Image
+          <k
             alt="PRODUCTION card type"
             src="/images/production.png"
             layout="fill"
@@ -144,15 +144,40 @@ export const ResourceTypeIcon = ({
   return (
     <>
       {resourceType === ResourceType.BERRY ? (
-        <Image alt="BERRY Resource" src="/images/berry.png" layout="fill" />
+        <Image
+          alt="BERRY Resource"
+          src="/images/berry.png"
+          layout="fill"
+          priority
+        />
       ) : resourceType === ResourceType.TWIG ? (
-        <Image alt="TWIG Resource" src="/images/twig.png" layout="fill" />
+        <Image
+          alt="TWIG Resource"
+          src="/images/twig.png"
+          layout="fill"
+          priority
+        />
       ) : resourceType === ResourceType.PEBBLE ? (
-        <Image alt="PEBBLE Resource" src="/images/pebble.png" layout="fill" />
+        <Image
+          alt="PEBBLE Resource"
+          src="/images/pebble.png"
+          layout="fill"
+          priority
+        />
       ) : resourceType === ResourceType.RESIN ? (
-        <Image alt="RESIN Resource" src="/images/resin.png" layout="fill" />
+        <Image
+          alt="RESIN Resource"
+          src="/images/resin.png"
+          layout="fill"
+          priority
+        />
       ) : resourceType === ResourceType.PEARL ? (
-        <Image alt="PEARL Resource" src="/images/pearl.png" layout="fill" />
+        <Image
+          alt="PEARL Resource"
+          src="/images/pearl.png"
+          layout="fill"
+          priority
+        />
       ) : (
         <>{resourceType}</>
       )}

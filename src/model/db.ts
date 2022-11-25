@@ -69,6 +69,7 @@ interface IDb {
   updateGame(gameId: string, gameJSON: string): Promise<void>;
   hasSavedGame(gameId: string): Promise<boolean>;
   getGameJSONById(gameId: string): Promise<GameJSON | null>;
+  getAllGameIds(): Promise<string[]>;
 }
 
 class PgDb implements IDb {
@@ -139,6 +140,11 @@ class PgDb implements IDb {
       [gameId]
     );
     return result.rows.length === 1 ? JSON.parse(result.rows[0].game) : null;
+  }
+
+  async getAllGameIds(): Promise<string[]> {
+    const result = await this.pool.query("SELECT game_id game_id FROM games");
+    return result.rows.map((x) => x.game_id);
   }
 }
 
@@ -250,6 +256,21 @@ class SqliteDb implements IDb {
       );
     });
   }
+
+  async getAllGameIds(): Promise<string[]> {
+    return new Promise((resolve, reject) => {
+      this.db.all(
+        "SELECT game_id game_id FROM games",
+        (err: { message: any }, rows: { game_id: string }[]) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(rows.map((x) => x.game_id));
+          }
+        }
+      );
+    });
+  }
 }
 
 export const getGameJSONById = async (
@@ -258,6 +279,12 @@ export const getGameJSONById = async (
   const db = getDb();
   await db.createGamesTableIfNotExists();
   return db.getGameJSONById(gameId);
+};
+
+export const getAllGameIds = async (): Promise<string[]> => {
+  const db = getDb();
+  await db.createGamesTableIfNotExists();
+  return db.getAllGameIds();
 };
 
 export const saveGameJSONById = async (

@@ -15,6 +15,7 @@ describe("Place Ambassador", () => {
     cy.contains("Place Ambassador");
 
     cy.contains("River");
+    cy.scrollTo("bottom");
     cy.get("#js-game-river").within(() => {
       cy.get("[data-cy='river-destination-spot:TWO_TRAVELER']").within(() => {
         cy.contains(

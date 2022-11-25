@@ -2,7 +2,7 @@ import "../styles/globals.css";
 import Head from "next/head";
 import { useEffect } from "react";
 
-export default function App<T>({
+export default function App<T extends JSX.IntrinsicAttributes>({
   Component,
   pageProps,
 }: {

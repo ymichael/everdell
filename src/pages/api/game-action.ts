@@ -51,7 +51,7 @@ export default async (
   try {
     game.applyGameInput(gameInput);
     await game.save();
-  } catch (e) {
+  } catch (e: any) {
     console.error(
       `Ran into error with the following gameInput: \n${JSON.stringify(
         gameInput,
@@ -62,7 +62,7 @@ export default async (
     console.error(e);
     res.status(500).json({
       success: false,
-      error: e.toString().split("\n")[0],
+      error: e.toString?.().split("\n")[0],
     });
     return;
   }

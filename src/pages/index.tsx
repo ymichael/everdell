@@ -38,8 +38,8 @@ const Main: React.FC = () => {
           >
             About the Game
           </a>
-          <Link href="/test/ui">
-            <a className={styles.link}>Game Cards</a>
+          <Link href="/test/ui" className={styles.link}>
+            Game Cards
           </Link>
           <a
             target="_blank"

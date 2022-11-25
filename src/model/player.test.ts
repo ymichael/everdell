@@ -31,6 +31,43 @@ describe("Player", () => {
     gameState = testInitialGameState();
   });
 
+  describe("getNumOccupiedSpacesInCity", () => {
+    it("playing regular cards occupy spaces", () => {
+      const p = gameState.getActivePlayer();
+      expect(p.getNumOccupiedSpacesInCity()).to.be(0);
+      p.addToCity(gameState, CardName.FARM);
+      expect(p.getNumOccupiedSpacesInCity()).to.be(1);
+      p.addToCity(gameState, CardName.MINE);
+      expect(p.getNumOccupiedSpacesInCity()).to.be(2);
+    });
+
+    it("playing Husband & Wife cards share spaces", () => {
+      const p = gameState.getActivePlayer();
+      expect(p.getNumOccupiedSpacesInCity()).to.be(0);
+      p.addToCity(gameState, CardName.HUSBAND);
+      expect(p.getNumOccupiedSpacesInCity()).to.be(1);
+      p.addToCity(gameState, CardName.WIFE);
+      expect(p.getNumOccupiedSpacesInCity()).to.be(1);
+      p.addToCity(gameState, CardName.WIFE);
+      expect(p.getNumOccupiedSpacesInCity()).to.be(2);
+      p.addToCity(gameState, CardName.HUSBAND);
+      expect(p.getNumOccupiedSpacesInCity()).to.be(2);
+      expect(p.getAllPlayedCards().length).to.be(4);
+    });
+
+    [CardName.WANDERER, CardName.PIRATE].forEach((cardName) => {
+      it(`playing Card:${cardName} does not occupy spaces`, () => {
+        const p = gameState.getActivePlayer();
+        expect(p.getNumOccupiedSpacesInCity()).to.be(0);
+        p.addToCity(gameState, cardName);
+        expect(p.getNumOccupiedSpacesInCity()).to.be(0);
+        p.addToCity(gameState, cardName);
+        expect(p.getNumOccupiedSpacesInCity()).to.be(0);
+        expect(p.getAllPlayedCards().length).to.be(2);
+      });
+    });
+  });
+
   describe("canAddToCity", () => {
     it("should account for unique cards", () => {
       const p = gameState.getActivePlayer();

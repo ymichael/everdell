@@ -32,8 +32,6 @@ import { generate as uuid } from "short-uuid";
 import { sumResources } from "./gameStatePlayHelpers";
 import { assertUnreachable } from "../utils";
 
-const MAX_CITY_SIZE = 15;
-
 export class Player implements IGameTextEntity {
   private playerSecret: string;
 
@@ -131,6 +129,13 @@ export class Player implements IGameTextEntity {
       const drawnCard = gameState.drawCard();
       this.addCardToHand(gameState, drawnCard);
     }
+  }
+
+  get maxCitySize(): number {
+    const MAX_CITY_SIZE = 15;
+
+    // TODO some cards might affect city size
+    return MAX_CITY_SIZE;
   }
 
   get maxHandSize(): number {
@@ -473,7 +478,7 @@ export class Player implements IGameTextEntity {
     }
 
     const numOccupiedSpacesInCity = this.getNumOccupiedSpacesInCity();
-    return numOccupiedSpacesInCity < MAX_CITY_SIZE;
+    return numOccupiedSpacesInCity < this.maxCitySize;
   }
 
   hasCardInCity(cardName: CardName): boolean {

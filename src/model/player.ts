@@ -21,7 +21,6 @@ import {
   LocationType,
   PlayerStatus,
   IGameTextEntity,
-  TAssociatedCard,
 } from "./types";
 import { PlayerJSON } from "./jsonTypes";
 import { GameState } from "./gameState";

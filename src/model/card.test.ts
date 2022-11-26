@@ -7237,7 +7237,7 @@ describe("Card", () => {
      */
     describe(CardName.AIR_BALLOON, () => {
       it("should allow you to copy a TRAVELLER from an opponent's city", () => {
-        let player2 = gameState.players[1];
+        const player2 = gameState.players[1];
         player2.addToCity(gameState, CardName.WANDERER);
 
         const card = Card.fromName(CardName.AIR_BALLOON);
@@ -7254,7 +7254,7 @@ describe("Card", () => {
       });
 
       it("should not allow you to copy certain cards", () => {
-        let player2 = gameState.players[1];
+        const player2 = gameState.players[1];
         player2.addToCity(gameState, CardName.WANDERER);
         player2.addToCity(gameState, CardName.FOOL);
         player2.addToCity(gameState, CardName.MAIN_ROAD);
@@ -7274,7 +7274,7 @@ describe("Card", () => {
       });
 
       it("should allow you to select which TRAVELLER to copy from an opponent's city", () => {
-        let player2 = gameState.players[1];
+        const player2 = gameState.players[1];
         player2.addToCity(gameState, CardName.WANDERER);
         player2.addToCity(gameState, CardName.POSTAL_PIGEON);
 

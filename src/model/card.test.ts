@@ -20,6 +20,7 @@ import {
   RiverDestinationName,
   RiverDestinationSpotName,
   PlayerStatus,
+  GameInput,
 } from "./types";
 
 describe("Card", () => {
@@ -7371,7 +7372,113 @@ describe("Card", () => {
 
     describe(CardName.CHIPSMITH, () => {});
 
-    describe(CardName.CITY_HALL, () => {});
+    describe(CardName.CITY_HALL, () => {
+      it("should do nothing is player plays a critter", () => {
+        player.addToCity(gameState, CardName.CITY_HALL);
+
+        const cardToPlay = Card.fromName(CardName.HUSBAND);
+        player.addCardToHand(gameState, cardToPlay.name);
+        player.gainResources(gameState, cardToPlay.baseCost);
+        multiStepGameInputTest(gameState, [playCardInput(cardToPlay.name)]);
+      });
+
+      it("should allow player to give opponent a card after playing a construction", () => {
+        let player2 = gameState.players[1];
+
+        player.addToCity(gameState, CardName.CITY_HALL);
+
+        const cardToPlay = Card.fromName(CardName.FARM);
+        player.addCardToHand(gameState, cardToPlay.name);
+        player.gainResources(gameState, cardToPlay.baseCost);
+
+        player.addCardToHand(gameState, CardName.WIFE);
+        player.addCardToHand(gameState, CardName.HUSBAND);
+
+        gameState.deck.addToStack(CardName.PALACE);
+
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+        expect(player.cardsInHand.length).to.be(3);
+
+        const selectCardInput = {
+          inputType: GameInputType.SELECT_CARDS as const,
+          prevInputType: GameInputType.PLAY_CARD,
+          cardContext: CardName.CITY_HALL,
+          cardOptions: [CardName.WIFE, CardName.HUSBAND],
+          maxToSelect: 1,
+          minToSelect: 0,
+          clientOptions: {
+            selectedCards: [CardName.HUSBAND],
+          },
+        };
+
+        const selectPlayerInput = {
+          inputType: GameInputType.SELECT_PLAYER as const,
+          prevInputType: GameInputType.SELECT_CARDS,
+          prevInput: selectCardInput,
+          playerOptions: [player2.playerId],
+          mustSelectOne: true,
+          cardContext: CardName.CITY_HALL,
+          clientOptions: {
+            selectedPlayer: player2.playerId,
+          },
+        };
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(cardToPlay.name),
+          selectCardInput,
+          selectPlayerInput,
+        ]);
+
+        player2 = gameState.getPlayer(player2.playerId);
+
+        expect(player.numCardsInHand).to.be(2);
+        expect(player.cardsInHand).to.eql([CardName.WIFE, CardName.PALACE]);
+        expect(player2.cardsInHand).to.eql([CardName.HUSBAND]);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(1);
+      });
+
+      it("should allow player to give 0 cards", () => {
+        let player2 = gameState.players[1];
+
+        player.addToCity(gameState, CardName.CITY_HALL);
+
+        const cardToPlay = Card.fromName(CardName.FARM);
+        player.addCardToHand(gameState, cardToPlay.name);
+        player.gainResources(gameState, cardToPlay.baseCost);
+
+        player.addCardToHand(gameState, CardName.WIFE);
+        player.addCardToHand(gameState, CardName.HUSBAND);
+
+        gameState.deck.addToStack(CardName.PALACE);
+
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+        expect(player.cardsInHand.length).to.be(3);
+
+        const selectCardInput = {
+          inputType: GameInputType.SELECT_CARDS as const,
+          prevInputType: GameInputType.PLAY_CARD,
+          cardContext: CardName.CITY_HALL,
+          cardOptions: [CardName.WIFE, CardName.HUSBAND],
+          maxToSelect: 1,
+          minToSelect: 0,
+          clientOptions: {
+            selectedCards: [],
+          },
+        };
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(cardToPlay.name),
+          selectCardInput,
+        ]);
+
+        player2 = gameState.getPlayer(player2.playerId);
+
+        expect(player.numCardsInHand).to.be(2);
+        expect(player.cardsInHand).to.eql([CardName.WIFE, CardName.HUSBAND]);
+        expect(player2.cardsInHand).to.eql([]);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+      });
+    });
 
     describe(CardName.CONDUCTOR, () => {});
 
@@ -8015,7 +8122,7 @@ describe("Card", () => {
         };
 
         const selectPlayerInput = {
-          inputType: GameInputType.SELECT_PLAYER,
+          inputType: GameInputType.SELECT_PLAYER as const,
           prevInputType: GameInputType.SELECT_CARDS,
           prevInput: selectCardInput,
           playerOptions: [player2.playerId],

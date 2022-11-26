@@ -343,6 +343,7 @@ export class Player implements IGameTextEntity {
         CardName.SHOPKEEPER,
         CardName.COURTHOUSE,
         CardName.MUSEUM,
+        CardName.CITY_HALL,
       ].forEach((cardName) => {
         // Don't trigger if we just played this card and we haven't gotten to it yet.
         // Eg. We played POSTAL_PIGEON -> SHOPKEEPER. We shouldn't activate SHOPKEEPER

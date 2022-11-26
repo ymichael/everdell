@@ -7614,6 +7614,147 @@ describe("Card", () => {
 
     describe(CardName.POET, () => {});
 
-    describe(CardName.TEA_HOUSE, () => {});
+    describe(CardName.TEA_HOUSE, () => {
+      it("allow player to give cards to other player using Tea House", () => {
+        let player1 = gameState.players[0];
+        let player2 = gameState.players[1];
+        const card = Card.fromName(CardName.TEA_HOUSE);
+
+        player1.addCardToHand(gameState, CardName.KING);
+        player1.addCardToHand(gameState, CardName.QUEEN);
+
+        // Make sure we can play this card
+        player1.gainResources(gameState, card.baseCost);
+        player1.addCardToHand(gameState, card.name);
+
+        expect(player1.cardsInHand.length).to.be(3);
+        expect(player2.cardsInHand.length).to.be(0);
+
+        gameState.deck.addToStack(CardName.FARM);
+
+        const selectCardInput = {
+          inputType: GameInputType.SELECT_CARDS as const,
+          prevInputType: GameInputType.PLAY_CARD,
+          cardContext: CardName.TEA_HOUSE,
+          cardOptions: [CardName.KING, CardName.QUEEN],
+          maxToSelect: 1,
+          minToSelect: 0,
+          clientOptions: {
+            selectedCards: [CardName.KING],
+          },
+        };
+
+        const selectPlayerInput = {
+          inputType: GameInputType.SELECT_PLAYER,
+          prevInputType: GameInputType.SELECT_CARDS,
+          prevInput: selectCardInput,
+          playerOptions: [player2.playerId],
+          mustSelectOne: true,
+          cardContext: CardName.TEA_HOUSE,
+          clientOptions: {
+            selectedPlayer: player2.playerId,
+          },
+        };
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+          selectCardInput,
+          selectPlayerInput,
+          {
+            inputType: GameInputType.SELECT_OPTION_GENERIC,
+            prevInputType: GameInputType.SELECT_PLAYER,
+            prevInput: selectPlayerInput,
+            cardContext: CardName.TEA_HOUSE,
+            options: [
+              ResourceType.BERRY,
+              ResourceType.TWIG,
+              ResourceType.RESIN,
+              ResourceType.PEBBLE,
+            ],
+            clientOptions: {
+              selectedOption: ResourceType.BERRY,
+            },
+          },
+        ]);
+
+        player1 = gameState.getPlayer(player1.playerId);
+        player2 = gameState.getPlayer(player2.playerId);
+
+        expect(player1.cardsInHand).to.eql([CardName.QUEEN, CardName.FARM]);
+        expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
+
+        expect(player2.cardsInHand).to.eql([CardName.KING]);
+      });
+      it("allow player to select 0 cards to give", () => {
+        let player1 = gameState.players[0];
+        let player2 = gameState.players[1];
+        const card = Card.fromName(CardName.TEA_HOUSE);
+
+        player1.addCardToHand(gameState, CardName.KING);
+        player1.addCardToHand(gameState, CardName.QUEEN);
+
+        // Make sure we can play this card
+        player1.gainResources(gameState, card.baseCost);
+        player1.addCardToHand(gameState, card.name);
+
+        expect(player1.cardsInHand.length).to.be(3);
+        expect(player2.cardsInHand.length).to.be(0);
+
+        const selectCardInput = {
+          inputType: GameInputType.SELECT_CARDS as const,
+          prevInputType: GameInputType.PLAY_CARD,
+          cardContext: CardName.TEA_HOUSE,
+          cardOptions: [CardName.KING, CardName.QUEEN],
+          maxToSelect: 1,
+          minToSelect: 0,
+          clientOptions: {
+            selectedCards: [],
+          },
+        };
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+          selectCardInput,
+        ]);
+
+        player1 = gameState.getPlayer(player1.playerId);
+        player2 = gameState.getPlayer(player2.playerId);
+
+        expect(player1.cardsInHand).to.eql([CardName.KING, CardName.QUEEN]);
+        expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+        expect(player1.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+        expect(player1.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
+        expect(player1.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+
+        expect(player2.cardsInHand).to.eql([]);
+      });
+      it("handle case where player has 0 cards in hand", () => {
+        let player1 = gameState.players[0];
+        let player2 = gameState.players[1];
+        const card = Card.fromName(CardName.TEA_HOUSE);
+
+        // Make sure we can play this card
+        player1.gainResources(gameState, card.baseCost);
+        player1.addCardToHand(gameState, card.name);
+
+        expect(player1.cardsInHand.length).to.be(1);
+        expect(player2.cardsInHand.length).to.be(0);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+        ]);
+
+        player1 = gameState.getPlayer(player1.playerId);
+        player2 = gameState.getPlayer(player2.playerId);
+
+        expect(player1.cardsInHand.length).to.be(0);
+        expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+        expect(player1.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+        expect(player1.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
+        expect(player1.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+
+        expect(player2.cardsInHand).to.eql([]);
+      });
+    });
   });
 });

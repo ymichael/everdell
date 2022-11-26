@@ -4708,8 +4708,108 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       [ResourceType.TWIG]: 2,
       [ResourceType.RESIN]: 2,
     },
+    productionInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+
+      if (player.cardsInHand.length === 0) {
+        gameState.addGameLogFromCard(CardName.TEA_HOUSE, [
+          player,
+          " did not give any CARD to opponents.",
+        ]);
+        return;
+      }
+
+      gameState.pendingGameInputs.push({
+        inputType: GameInputType.SELECT_CARDS,
+        label:
+          "You may give 1 CARD to an opponent to gain 1 ANY and draw 1 CARD",
+        prevInputType: gameInput.inputType,
+        cardOptions: player.cardsInHand,
+        maxToSelect: 1,
+        minToSelect: 0,
+        cardContext: CardName.TEA_HOUSE,
+        clientOptions: {
+          selectedCards: [],
+        },
+      });
+    },
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
+      const player = gameState.getActivePlayer();
+      const gainAnyHelper = new GainAnyResource({
+        cardContext: CardName.TEA_HOUSE,
+        skipGameLog: true,
+      });
+      if (
+        gameInput.inputType === GameInputType.SELECT_CARDS &&
+        gameInput.cardContext === CardName.TEA_HOUSE
+      ) {
+        if (!gameInput.clientOptions.selectedCards) {
+          throw new Error("Invalid selected cards");
+        }
+        if (gameInput.clientOptions.selectedCards.length === 0) {
+          gameState.addGameLogFromCard(CardName.TEA_HOUSE, [
+            player,
+            " did not give any CARD to opponents.",
+          ]);
+          return;
+        }
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_PLAYER,
+          label: "Select player to give a CARD to",
+          prevInputType: gameInput.inputType,
+          prevInput: gameInput,
+          playerOptions: gameState.players
+            .filter((p) => p.playerId !== player.playerId)
+            .map((p) => p.playerId),
+          mustSelectOne: true,
+          cardContext: CardName.TEA_HOUSE,
+          clientOptions: {
+            selectedPlayer: null,
+          },
+        });
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_PLAYER &&
+        gameInput.cardContext === CardName.TEA_HOUSE
+      ) {
+        if (
+          !gameInput.prevInput ||
+          gameInput.prevInput.inputType !== GameInputType.SELECT_CARDS
+        ) {
+          throw new Error("Invalid input");
+        }
+        const selectedPlayerId = gameInput.clientOptions.selectedPlayer;
+        if (!selectedPlayerId) {
+          throw new Error("Must select a player");
+        }
+        const selectedPlayer = gameState.getPlayer(selectedPlayerId);
+        if (!selectedPlayer || selectedPlayer.playerId === player.playerId) {
+          throw new Error("Must select a different player");
+        }
+
+        const cardToGive = gameInput.prevInput.clientOptions.selectedCards[0];
+        player.removeCardFromHand(gameState, cardToGive, false);
+        selectedPlayer.addCardToHand(gameState, cardToGive);
+
+        gameState.addGameLogFromCard(CardName.TEACHER, [
+          player,
+          " gave 1 CARD to ",
+          selectedPlayer,
+          ".",
+        ]);
+
+        gameState.pendingGameInputs.push(
+          gainAnyHelper.getGameInput({
+            prevInputType: gameInput.inputType,
+            prevInput: gameInput,
+          })
+        );
+      } else if (
+        gainAnyHelper.matchesGameInput(gameInput) &&
+        gameInput.prevInputType === GameInputType.SELECT_PLAYER
+      ) {
+        gainAnyHelper.play(gameState, gameInput);
+        player.drawCards(gameState, 1);
+      }
     },
   }),
 };

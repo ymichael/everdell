@@ -32,6 +32,7 @@ import {
   TextPart,
   TrainCarTileName,
 } from "./types";
+import { defaultGameOptions } from "./gameOptions";
 import { GameStateJSON } from "./jsonTypes";
 import { Player } from "./player";
 import {
@@ -127,14 +128,6 @@ export const gameTextToDebugStr = (gameText: GameText): string => {
       }
     })
     .join("");
-};
-
-const defaultGameOptions = (gameOptions: Partial<GameOptions>): GameOptions => {
-  return {
-    realtimePoints: false,
-    pearlbrook: false,
-    ...gameOptions,
-  };
 };
 
 export class GameState {

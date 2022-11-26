@@ -1326,19 +1326,22 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
 
 export const initialLocationsMap = (
   numPlayers: number,
-  { pearlbrook }: Pick<GameOptions, "pearlbrook">
+  opt: GameOptions
 ): LocationNameToPlayerIds => {
   const forestLocations = Location.byType(LocationType.FOREST).filter(
     (locationName) => {
       const location = Location.fromName(locationName);
       switch (location.expansion) {
         case ExpansionType.NEWLEAF:
+          return opt.newleaf?.forestLocations;
         case ExpansionType.BELLFAIRE:
+          return opt.bellfaire?.forestLocations;
+
         case ExpansionType.SPIRECREST:
         case ExpansionType.MISTWOOD:
           return false;
         case ExpansionType.PEARLBROOK:
-          return pearlbrook;
+          return opt.pearlbrook;
         default:
           return true;
       }

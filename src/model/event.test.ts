@@ -3,6 +3,7 @@ import { Event, initialEventMap } from "./event";
 import { Player } from "./player";
 import { Card } from "./card";
 import { GameState } from "./gameState";
+import { defaultGameOptions } from "./gameOptions";
 import { testInitialGameState, multiStepGameInputTest } from "./testHelpers";
 import {
   ExpansionType,
@@ -44,7 +45,9 @@ describe("Event", () => {
 
   describe("initialEventMap", () => {
     it("should not include pearlbrook events if not playing with pearlbrook", () => {
-      const eventsMap = initialEventMap({ pearlbrook: false });
+      const eventsMap = initialEventMap(
+        defaultGameOptions({ pearlbrook: false })
+      );
       expect(
         Object.keys(eventsMap).filter((eventName) => {
           return (
@@ -56,7 +59,9 @@ describe("Event", () => {
     });
 
     it("should include at least 1 pearlbrook event if playing with pearlbrook", () => {
-      const eventsMap = initialEventMap({ pearlbrook: true });
+      const eventsMap = initialEventMap(
+        defaultGameOptions({ pearlbrook: true })
+      );
       expect(
         Object.keys(eventsMap).filter((eventName) => {
           return (

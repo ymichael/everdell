@@ -3203,13 +3203,11 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
   }),
 };
 
-export const initialEventMap = ({
-  pearlbrook,
-}: Pick<GameOptions, "pearlbrook">): EventNameToPlayerId => {
+export const initialEventMap = (opt: GameOptions): EventNameToPlayerId => {
   const ret: EventNameToPlayerId = {};
 
   // if pearlbrook, use the wonders instead of basic events
-  if (pearlbrook) {
+  if (opt.pearlbrook) {
     Event.byType(EventType.WONDER).forEach((ty) => {
       ret[ty] = null;
     });
@@ -3227,18 +3225,24 @@ export const initialEventMap = ({
     const event = Event.fromName(eventName);
     switch (event.expansion) {
       case ExpansionType.NEWLEAF:
+        return opt.newleaf?.specialEvents;
+
       case ExpansionType.BELLFAIRE:
+        return opt.bellfaire?.specialEvents;
+
       case ExpansionType.SPIRECREST:
       case ExpansionType.MISTWOOD:
         break;
+
       case ExpansionType.PEARLBROOK:
         pearlbrookSpecialEvents.push(eventName);
         break;
+
       default:
         specialEvents.push(eventName);
     }
   });
-  if (pearlbrook) {
+  if (opt.pearlbrook) {
     // Use at least 1 pearlbrook special event.
     const [chosen, ...rest] = shuffle(pearlbrookSpecialEvents);
     ret[chosen] = null;

@@ -585,10 +585,21 @@ export class GameState {
           throw new Error("Invalid Location selected");
         }
         break;
+      case GameInputType.DISCARD_CARDS:
+        if (
+          gameInput.clientOptions.cardsToDiscard.length > gameInput.maxCards
+        ) {
+          throw new Error("Discarding too many cards");
+        }
+        if (
+          gameInput.clientOptions.cardsToDiscard.length < gameInput.minCards
+        ) {
+          throw new Error("Discarding too few cards");
+        }
+        break;
       // case GameInputType.SELECT_WORKER_PLACEMENT:
       // case GameInputType.SELECT_PAYMENT_FOR_CARD:
       // case GameInputType.SELECT_RESOURCES:
-      // case GameInputType.DISCARD_CARDS:
       // case GameInputType.SELECT_PLAYED_ADORNMENT:
       // case GameInputType.SELECT_RIVER_DESTINATION:
       default:

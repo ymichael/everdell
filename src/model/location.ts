@@ -688,13 +688,6 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
           });
         } else if (gameInput.inputType === GameInputType.DISCARD_CARDS) {
           const cardsToDiscard = gameInput.clientOptions.cardsToDiscard;
-          if (!cardsToDiscard) {
-            throw new Error("Invalid list of cards to discard");
-          }
-
-          if (cardsToDiscard.length > 3) {
-            throw new Error("May not discard more than 3 cards");
-          }
 
           // Ask the player what resource they want to gain
           gameState.pendingGameInputs.push(

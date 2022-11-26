@@ -311,7 +311,7 @@ describe("Location", () => {
             },
           },
         ]);
-      }).to.throwException(/not discard more than 3 cards/i);
+      }).to.throwException(/Discarding too many cards/i);
     });
   });
 

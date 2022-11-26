@@ -530,9 +530,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         gameInput.cardContext === CardName.BARD
       ) {
         if (gameInput.clientOptions?.cardsToDiscard) {
-          if (gameInput.clientOptions.cardsToDiscard.length > 5) {
-            throw new Error("Discarding too many cards");
-          }
           const numDiscarded = gameInput.clientOptions.cardsToDiscard.length;
           if (numDiscarded === 0 && gameInput.isAutoAdvancedInput) {
             gameState.addGameLogFromCard(CardName.BARD, [

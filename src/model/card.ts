@@ -4532,12 +4532,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     baseVP: 0,
     numInDeck: 4,
     resourcesToGain: {},
-    baseCost: {
-      [ResourceType.PEBBLE]: 1,
-    },
-    playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
-    },
+    baseCost: { [ResourceType.PEBBLE]: 1 },
   }),
   [CardName.MAYOR]: new Card({
     expansion: ExpansionType.NEWLEAF,

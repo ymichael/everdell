@@ -7337,7 +7337,18 @@ describe("Card", () => {
 
     describe(CardName.MAGICIAN, () => {});
 
-    describe(CardName.MAIN_ROAD, () => {});
+    describe(CardName.MAIN_ROAD, () => {
+      it("should not take up any space in the city", () => {
+        player.addToCity(gameState, CardName.MAIN_ROAD);
+        expect(player.getNumOccupiedSpacesInCity()).to.be(0);
+      });
+
+      it("should give you extra space in your city", () => {
+        expect(player.maxCitySize).to.be(15);
+        player.addToCity(gameState, CardName.MAIN_ROAD);
+        expect(player.maxCitySize).to.be(16);
+      });
+    });
 
     describe(CardName.MAYOR, () => {});
 

@@ -133,9 +133,11 @@ export class Player implements IGameTextEntity {
 
   get maxCitySize(): number {
     const MAX_CITY_SIZE = 15;
-
-    // TODO some cards might affect city size
-    return MAX_CITY_SIZE;
+    let citySize = MAX_CITY_SIZE;
+    if (this.hasCardInCity(CardName.MAIN_ROAD)) {
+      citySize += 1;
+    }
+    return citySize;
   }
 
   get maxHandSize(): number {
@@ -406,7 +408,10 @@ export class Player implements IGameTextEntity {
       if (
         cardName === CardName.WANDERER ||
         cardName === CardName.PIRATE ||
-        cardName === CardName.MESSENGER
+        cardName === CardName.MESSENGER ||
+        cardName === CardName.AIR_BALLOON ||
+        cardName === CardName.EVER_WALL ||
+        cardName === CardName.MAIN_ROAD
       ) {
         return;
       }

@@ -7563,7 +7563,52 @@ describe("Card", () => {
       });
     });
 
-    describe(CardName.MUSEUM, () => {});
+    describe(CardName.MUSEUM, () => {
+      it("should draw a card if player plays a construction", () => {
+        player.addToCity(gameState, CardName.MUSEUM);
+
+        const cardToPlay = Card.fromName(CardName.MINE);
+        player.addCardToHand(gameState, cardToPlay.name);
+        player.gainResources(gameState, cardToPlay.baseCost);
+
+        gameState.deck.addToStack(CardName.KING);
+        gameState.deck.addToStack(CardName.QUEEN);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(cardToPlay.name),
+        ]);
+
+        expect(player.cardsInHand).to.eql([CardName.QUEEN, CardName.KING]);
+      });
+
+      it("should draw a card if player plays a critter", () => {
+        player.addToCity(gameState, CardName.MUSEUM);
+
+        const cardToPlay = Card.fromName(CardName.SHOPKEEPER);
+        player.addCardToHand(gameState, cardToPlay.name);
+        player.gainResources(gameState, cardToPlay.baseCost);
+
+        gameState.deck.addToStack(CardName.KING);
+        gameState.deck.addToStack(CardName.QUEEN);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(cardToPlay.name),
+        ]);
+
+        expect(player.cardsInHand).to.eql([CardName.QUEEN, CardName.KING]);
+      });
+
+      it("should not draw a card when the player plays the Museum", () => {
+        const cardToPlay = Card.fromName(CardName.MUSEUM);
+        player.addCardToHand(gameState, cardToPlay.name);
+        player.gainResources(gameState, cardToPlay.baseCost);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(cardToPlay.name),
+        ]);
+        expect(player.cardsInHand).to.eql([]);
+      });
+    });
 
     describe(CardName.PHOTOGRAPHER, () => {});
 

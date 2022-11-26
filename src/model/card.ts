@@ -4621,7 +4621,25 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       [ResourceType.PEBBLE]: 1,
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
+      const player = gameState.getActivePlayer();
+      if (
+        gameInput.inputType === GameInputType.PLAY_CARD &&
+        gameInput.clientOptions.card !== CardName.MUSEUM &&
+        gameInput.clientOptions.card &&
+        // maybe this is overkill unless a 3rd type is introduced
+        (Card.fromName(gameInput.clientOptions.card).isCritter ||
+          Card.fromName(gameInput.clientOptions.card).isConstruction)
+      ) {
+        player.drawCards(gameState, 2);
+        gameState.addGameLogFromCard(CardName.MUSEUM, [
+          player,
+          ` drew 2 CARD for playing a ${
+            Card.fromName(gameInput.clientOptions.card).isCritter
+              ? "Critter"
+              : "Construction"
+          }.`,
+        ]);
+      }
     },
   }),
   [CardName.PHOTOGRAPHER]: new Card({

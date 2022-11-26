@@ -338,26 +338,29 @@ export class Player implements IGameTextEntity {
     while (pendingPlayCardGameInput.length !== 0) {
       const gameInput = pendingPlayCardGameInput.pop() as GameInputPlayCard;
       pendingCardNames.pop();
-      [CardName.HISTORIAN, CardName.SHOPKEEPER, CardName.COURTHOUSE].forEach(
-        (cardName) => {
-          // Don't trigger if we just played this card and we haven't gotten to it yet.
-          // Eg. We played POSTAL_PIGEON -> SHOPKEEPER. We shouldn't activate SHOPKEEPER
-          // on the POSTAL_PIGEON.
-          if (pendingCardNames.indexOf(cardName) !== -1) {
-            return;
-          }
-
-          if (this.hasCardInCity(cardName)) {
-            const card = Card.fromName(cardName);
-            card.activateCard(
-              gameState,
-              gameInput,
-              this,
-              this.getFirstPlayedCard(cardName)
-            );
-          }
+      [
+        CardName.HISTORIAN,
+        CardName.SHOPKEEPER,
+        CardName.COURTHOUSE,
+        CardName.MUSEUM,
+      ].forEach((cardName) => {
+        // Don't trigger if we just played this card and we haven't gotten to it yet.
+        // Eg. We played POSTAL_PIGEON -> SHOPKEEPER. We shouldn't activate SHOPKEEPER
+        // on the POSTAL_PIGEON.
+        if (pendingCardNames.indexOf(cardName) !== -1) {
+          return;
         }
-      );
+
+        if (this.hasCardInCity(cardName)) {
+          const card = Card.fromName(cardName);
+          card.activateCard(
+            gameState,
+            gameInput,
+            this,
+            this.getFirstPlayedCard(cardName)
+          );
+        }
+      });
     }
   }
 

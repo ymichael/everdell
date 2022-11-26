@@ -70,6 +70,8 @@ export const gameTextToDebugStr = (gameText: GameText): string => {
         case "em":
         case "i":
           return part.text;
+        case "iblock":
+          return gameTextToDebugStr(part.text);
         case "BR":
           return "\n";
         case "HR":

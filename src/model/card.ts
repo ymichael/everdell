@@ -3358,9 +3358,9 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: false,
     associatedCard: CardName.LOOKOUT,
     cardDescription: toGameText([
-      "Draw 3 CARD.",
+      { type: 'i', text: "Does not take up a space in your city." },
       { type: "HR" },
-      "Does not take up a space in your city.",
+      "Draw 3 CARD.",
     ]),
     resourcesToGain: {
       CARD: 3,
@@ -3988,10 +3988,12 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     associatedCard: null,
     cardType: CardType.TRAVELER,
     cardDescription: toGameText([
+      { type: 'i', text: "Does not take up a space in your city." },
+      { type: "BR" },
       "Copy any TRAVELER in an opponent's city.",
       { type: "BR" },
       "Activate it based on your city.",
-      { type: "HR" },
+      { type: "BR" },
       { type: "i", text: "May not copy Fool, Main Road, Ruins, or Legendary." },
     ]),
     isConstruction: true,
@@ -4043,8 +4045,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     numInDeck: 2,
     resourcesToGain: {},
     baseCost: {
-      [ResourceType.PEBBLE]: 2,
       [ResourceType.RESIN]: 2,
+      [ResourceType.PEBBLE]: 2,
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       throw new Error("Not Implemented");
@@ -4088,8 +4090,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     resourcesToGain: {},
     baseCost: {
       [ResourceType.TWIG]: 2,
-      [ResourceType.PEBBLE]: 1,
       [ResourceType.RESIN]: 1,
+      [ResourceType.PEBBLE]: 1,
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       throw new Error("Not Implemented");
@@ -4114,10 +4116,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     numInDeck: 0,
     resourcesToGain: {},
     baseCost: {
-      [ResourceType.BERRY]: 0,
-      [ResourceType.TWIG]: 0,
-      [ResourceType.PEBBLE]: 0,
-      [ResourceType.RESIN]: 0,
+      [ResourceType.BERRY]: 3,
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       throw new Error("Not Implemented");
@@ -4127,18 +4126,19 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     expansion: ExpansionType.NEWLEAF,
     name: CardName.DIPLOMAT,
     associatedCard: null,
-    cardType: CardType.PRODUCTION,
-    cardDescription: toGameText("TODO"),
+    cardType: CardType.GOVERNANCE,
+    cardDescription: toGameText([
+      "After you play a ",
+      { type: 'em', text: "Critter"},
+      ", you may give an opponent 1 CARD to gain 1 VP and draw 1 CARD."
+    ]),
     isConstruction: false,
-    isUnique: false,
-    baseVP: 0,
-    numInDeck: 0,
+    isUnique: true,
+    baseVP: 2,
+    numInDeck: 2,
     resourcesToGain: {},
     baseCost: {
-      [ResourceType.BERRY]: 0,
-      [ResourceType.TWIG]: 0,
-      [ResourceType.PEBBLE]: 0,
-      [ResourceType.RESIN]: 0,
+      [ResourceType.BERRY]: 3,
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       throw new Error("Not Implemented");
@@ -4148,20 +4148,25 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     expansion: ExpansionType.NEWLEAF,
     name: CardName.EVER_WALL,
     associatedCard: null,
-    cardType: CardType.PRODUCTION,
-    cardDescription: toGameText("TODO"),
-    isConstruction: false,
-    isUnique: false,
-    baseVP: 0,
-    numInDeck: 0,
+    cardType: CardType.PROSPERITY,
+    cardDescription: toGameText([
+      { type: "i", text: "Does not take up a space in your city." },
+      { type: "BR" },
+      { type: "points", value: 2 },
+      { type: "BR" },
+      "for every 5 spaces you have filled in your city."
+    ]),
+    isConstruction: true,
+    isUnique: true,
+    baseVP: 6,
+    numInDeck: 2,
     resourcesToGain: {},
     baseCost: {
-      [ResourceType.BERRY]: 0,
-      [ResourceType.TWIG]: 0,
-      [ResourceType.PEBBLE]: 0,
-      [ResourceType.RESIN]: 0,
+      [ResourceType.TWIG]: 4,
+      [ResourceType.RESIN]: 4,
+      [ResourceType.PEBBLE]: 3,
     },
-    playInner: (gameState: GameState, gameInput: GameInput) => {
+    pointsInner: (player) => {
       throw new Error("Not Implemented");
     },
   }),
@@ -4170,17 +4175,20 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     name: CardName.FREIGHT_CAR,
     associatedCard: null,
     cardType: CardType.PRODUCTION,
-    cardDescription: toGameText("TODO"),
-    isConstruction: false,
-    isUnique: false,
-    baseVP: 0,
-    numInDeck: 0,
+    cardDescription: toGameText([
+      { type: "iblock", text: toGameText("When played, place 2 TWIG, 2 RESIN, 2 PEBBLE, 2 BERRY here from the supply") },
+      { type: "BR" },
+      "Gain 2 resources from this Freight Car."
+    ]),
+    isConstruction: true,
+    isUnique: true,
+    baseVP: 3,
+    numInDeck: 2,
     resourcesToGain: {},
     baseCost: {
-      [ResourceType.BERRY]: 0,
-      [ResourceType.TWIG]: 0,
-      [ResourceType.PEBBLE]: 0,
-      [ResourceType.RESIN]: 0,
+      [ResourceType.TWIG]: 1,
+      [ResourceType.RESIN]: 2,
+      [ResourceType.PEBBLE]: 2,
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       throw new Error("Not Implemented");

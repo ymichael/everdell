@@ -2513,12 +2513,8 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
-
-      const claimedEvents = player.claimedEvents;
-
       let numPoints = 0;
-
-      claimedEvents.foreach((eventName) => {
+      Object.keys(player.claimedEvents).forEach((eventName) => {
         const event = Event.fromName(eventName as EventName);
         if (event.type === EventType.BASIC) {
           numPoints += 1;

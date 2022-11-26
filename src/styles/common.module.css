@@ -23,6 +23,13 @@
   font-size: 0.8em;
 }
 
+
+.i_part  .resource_inner {
+  top: 2px;
+  height: 14px;
+  width: 14px;
+}
+
 .entity_part {
   border-bottom: solid 1px var(--text-color-light);
   font-weight: var(--font-bold);

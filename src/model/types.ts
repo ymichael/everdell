@@ -547,7 +547,7 @@ export enum CardName {
   CONDUCTOR = "Conductor",
   DIPLOMAT = "Diplomat",
   EVER_WALL = "Ever Wall",
-  FREIGHT_CAR = "Freight_car",
+  FREIGHT_CAR = "Freight Car",
   GARDENER = "Gardener",
   GREENHOUSE = "Greenhouse",
   HOTEL = "Hotel",
@@ -672,10 +672,13 @@ export type TextPartIcon =
   | { type: "symbol"; symbol: "VP" | "CARD" };
 export type TextPartBR = { type: "BR" };
 export type TextPartHR = { type: "HR" };
-export type TextPart =
+export type TextPartText =
   | { type: "text"; text: string }
   | { type: "em"; text: string }
   | { type: "i"; text: string }
+  | { type: "iblock"; text: GameText }
+export type TextPart =
+  | TextPartText
   | TextPartIcon
   | TextPartBR
   | TextPartHR

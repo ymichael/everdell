@@ -21,13 +21,33 @@
 .i_part {
   font-style: italic;
   font-size: 0.8em;
+  display: inline-block;
+  line-height: 1.3em;
+}
+
+.i_part * {
+  display: inline-block;
+  line-height: 1.3em;
 }
 
 
-.i_part  .resource_inner {
+.i_part .resource_inner {
   top: 2px;
   height: 14px;
   width: 14px;
+}
+
+.i_part .points {
+  height: 16px;
+  width: 16px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.i_part .points span {
+  font-size: 10px;
 }
 
 .entity_part {

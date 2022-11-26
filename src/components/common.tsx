@@ -32,7 +32,7 @@ export const GameBlock: React.FC<{ title: string; id?: string }> = ({
 export const CardTypeSymbol = ({ cardType }: { cardType: CardType }) => {
   return (
     <span>
-      <span hidden>{cardType}</span>
+      <span className={styles.hidden}>{cardType}</span>
       <span aria-hidden={true}>
         {cardType === CardType.PRODUCTION ? (
           <Image
@@ -243,7 +243,7 @@ export const Description = ({ textParts }: { textParts: GameText }) => {
           case "resource":
             return (
               <span key={idx}>
-                <span hidden>{part.resourceType}</span>
+                <span className={styles.hidden}>{part.resourceType}</span>
                 <span aria-hidden={true}>
                   <GameIcon type={part.resourceType} />
                 </span>
@@ -256,7 +256,7 @@ export const Description = ({ textParts }: { textParts: GameText }) => {
           case "symbol":
             return (
               <span key={idx}>
-                <span hidden>{part.symbol}</span>
+                <span className={styles.hidden}>{part.symbol}</span>
                 <span aria-hidden={true}>
                   <GameIcon type={part.symbol} />
                 </span>
@@ -272,7 +272,7 @@ export const Description = ({ textParts }: { textParts: GameText }) => {
             if (part.entityType === "event") {
               return (
                 <span key={idx} className={styles.entity_part}>
-                  <span hidden>Event:</span>
+                  <span className={styles.hidden}>Event:</span>
                   <Description
                     textParts={Event.fromName(part.event).getShortName()}
                   />
@@ -282,7 +282,7 @@ export const Description = ({ textParts }: { textParts: GameText }) => {
             if (part.entityType === "location") {
               return (
                 <span key={idx} className={styles.entity_part}>
-                  <span hidden>Location:</span>
+                  <span className={styles.hidden}>Location:</span>
                   <Description
                     textParts={Location.fromName(part.location).shortName}
                   />
@@ -317,7 +317,7 @@ export const Description = ({ textParts }: { textParts: GameText }) => {
             if (part.entityType === "riverDestinationSpot") {
               return (
                 <span key={idx} className={styles.entity_part}>
-                  <span hidden>River Destination Spot:</span>
+                  <span className={styles.hidden}>River Destination Spot:</span>
                   <Description
                     textParts={
                       RiverDestinationSpot.fromName(part.spot).shortName

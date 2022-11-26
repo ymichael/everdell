@@ -2497,10 +2497,37 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_CITY_JUBILEE,
     type: EventType.SPECIAL,
     baseVP: 0,
-    eventDescription: toGameText(["Add game text here"]),
+    // TODO: REQUIRES 10 CARDS IN CITY -> SHOW IN UI
+    eventDescription: toGameText([
+      "When achieved, gain 1 VP for each ",
+      "basic Event you have achieved, and ",
+      "2 VP for each special Event, including this one",
+    ]),
     expansion: ExpansionType.NEWLEAF,
+    canPlayCheckInner: (gameState: GameState) => {
+      const player = gameState.getActivePlayer();
+      if (player.getNumCardsInCity() < 10) {
+        return `Need at least 10 cards in city to claim event`;
+      }
+      return null;
+    },
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      // TODO: IMPLEMENT
+      const player = gameState.getActivePlayer();
+
+      const claimedEvents = player.claimedEvents;
+
+      let numPoints = 0;
+
+      claimedEvents.foreach((eventName) => {
+        const event = Event.fromName(eventName as EventName);
+        if (event.type === EventType.BASIC) {
+          numPoints += 1;
+        } else if (event.type === EventType.SPECIAL) {
+          numPoints += 2;
+        }
+      });
+
+      player.gainResources(gameState, { VP: numPoints });
     },
   }),
   [EventName.SPECIAL_EVER_WALL_TOWER_CONSTRUCTED]: new Event({

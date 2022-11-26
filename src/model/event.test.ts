@@ -5512,7 +5512,7 @@ describe("Event", () => {
       ).to.be(undefined);
     });
   });
-  describe.skip(EventName.SPECIAL_ROYAL_WEDDING, () => {
+  describe(EventName.SPECIAL_ROYAL_WEDDING, () => {
     beforeEach(() => {
       gameState = testInitialGameState();
       player = gameState.getActivePlayer();
@@ -5524,18 +5524,51 @@ describe("Event", () => {
       const event = Event.fromName(EventName.SPECIAL_ROYAL_WEDDING);
       const gameInput = claimEventInput(event.name);
 
+      player.addToCityMulti(gameState, [
+        CardName.EVERTREE,
+        CardName.PALACE,
+        CardName.KING,
+        CardName.ARCHITECT,
+      ]);
+
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.HUSBAND);
+      player.addCardToHand(gameState, CardName.WIFE);
+
       expect(player.getClaimedEvent(EventName.SPECIAL_ROYAL_WEDDING)).to.be(
         undefined
       );
 
-      [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        gameInput,
+        {
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          eventContext: EventName.SPECIAL_ROYAL_WEDDING,
+          cardOptions: player.cardsInHand,
+          maxToSelect: 3,
+          minToSelect: 3,
+          clientOptions: {
+            selectedCards: [CardName.FARM, CardName.HUSBAND, CardName.WIFE],
+          },
+        },
+      ]);
 
       expect(player.getClaimedEvent(EventName.SPECIAL_ROYAL_WEDDING));
-      // expect(player.getPointsFromEvents(gameState)).to.be(5);
+      expect(player.getPointsFromEvents(gameState)).to.be(6);
+      expect(player.cardsInHand.length).to.be(0);
+      expect(player.getNumCardsInCity()).to.be(4);
     });
     it("should not allow player to claim event if conditions not met", () => {
       const event = Event.fromName(EventName.SPECIAL_ROYAL_WEDDING);
       const gameInput = claimEventInput(event.name);
+
+      player.addToCityMulti(gameState, [
+        CardName.EVERTREE,
+        CardName.PALACE,
+        CardName.KING,
+        CardName.ARCHITECT,
+      ]);
 
       expect(player.getClaimedEvent(EventName.SPECIAL_ROYAL_WEDDING)).to.be(
         undefined
@@ -5543,7 +5576,17 @@ describe("Event", () => {
 
       expect(() => {
         gameState.next(gameInput);
-      }).to.throwException(/Need at least 9 Critters/i);
+      }).to.throwException(/Need at least 4 PROSPERITY/i);
+      expect(player.getClaimedEvent(EventName.SPECIAL_ROYAL_WEDDING)).to.be(
+        undefined
+      );
+
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.HUSBAND);
+
+      expect(() => {
+        gameState.next(gameInput);
+      }).to.throwException(/Need at least 4 PROSPERITY/i);
       expect(player.getClaimedEvent(EventName.SPECIAL_ROYAL_WEDDING)).to.be(
         undefined
       );

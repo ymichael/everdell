@@ -3112,7 +3112,41 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       return null;
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      // TODO: IMPLEMENT
+      const player = gameState.getActivePlayer();
+
+      if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          label: `Select 3 CARD to discard`,
+          eventContext: EventName.SPECIAL_ROYAL_WEDDING,
+          maxToSelect: 3,
+          minToSelect: 3,
+          cardOptions: player.cardsInHand,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_CARDS) {
+        // make sure you chose the right number
+        const selectedCards = gameInput.clientOptions.selectedCards;
+
+        if (selectedCards.length < 3) {
+          throw new Error("Too few cards discarded");
+        }
+
+        // remove the cards from player's hand
+        selectedCards.forEach((cardName) => {
+          player.removeCardFromHand(gameState, cardName);
+        });
+
+        gameState.addGameLogFromEvent(EventName.SPECIAL_ROYAL_WEDDING, [
+          player,
+          " discarded 3 CARD.",
+        ]);
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
+      }
     },
   }),
   [EventName.SPECIAL_STATUES_COMMISSIONED]: new Event({

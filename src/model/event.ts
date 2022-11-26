@@ -2497,8 +2497,10 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_CITY_JUBILEE,
     type: EventType.SPECIAL,
     baseVP: 0,
-    // TODO: REQUIRES 10 CARDS IN CITY -> SHOW IN UI
+    // TODO: Improve requirements display
     eventDescription: toGameText([
+      "Requires 10 Cards in your city",
+      { type: "HR" },
       "When achieved, gain 1 VP for each ",
       "basic Event you have achieved, and ",
       "2 VP for each special Event, including this one",
@@ -2530,18 +2532,38 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_EVER_WALL_TOWER_CONSTRUCTED,
     type: EventType.SPECIAL,
     baseVP: 5,
-    eventDescription: toGameText(["Add game text here"]),
+    // TODO: Improve requirements display
+    eventDescription: toGameText(["Requires 9 Constructions in your city"]),
     expansion: ExpansionType.NEWLEAF,
-    playInner: (gameState: GameState, gameInput: GameInput) => {
-      // TODO: IMPLEMENT
+    canPlayCheckInner: (gameState: GameState) => {
+      const player = gameState.getActivePlayer();
+      if (player.getNumPlayedConstructions() < 9) {
+        return `Need at least 9 Constructions in city to claim event`;
+      }
+      return null;
     },
   }),
   [EventName.SPECIAL_GLOW_LIGHT_FESTIVAL]: new Event({
     name: EventName.SPECIAL_GLOW_LIGHT_FESTIVAL,
     type: EventType.SPECIAL,
     baseVP: 3,
-    eventDescription: toGameText(["Add game text here"]),
+    eventDescription: toGameText([
+      "3 PRODUCTION 2 TRAVELER",
+      { type: "HR" },
+      "When achieved, you may discard 1 CARD for each PRODUCTION ",
+      "in your city. Gain 1 VP for each discarded CARD.",
+    ]),
     expansion: ExpansionType.NEWLEAF,
+    canPlayCheckInner: (gameState: GameState) => {
+      const player = gameState.getActivePlayer();
+      if (
+        player.getNumCardType(CardType.PRODUCTION) < 3 ||
+        player.getNumCardType(CardType.TRAVELER) < 2
+      ) {
+        return `Need at least 3 ${CardType.PRODUCTION} cards and 2 ${CardType.TRAVELER} cards in city to claim event`;
+      }
+      return null;
+    },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       // TODO: IMPLEMENT
     },
@@ -2550,8 +2572,23 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_HOT_AIR_BALLOON_RACE,
     type: EventType.SPECIAL,
     baseVP: 4,
-    eventDescription: toGameText(["Add game text here"]),
+    eventDescription: toGameText([
+      "2 TRAVELER 2 GOVERNANCE",
+      { type: "HR" },
+      "When achieved, you may discard 1 CARD for each TRAVELER ",
+      "in your city. Gain 1 VP for each discarded CARD.",
+    ]),
     expansion: ExpansionType.NEWLEAF,
+    canPlayCheckInner: (gameState: GameState) => {
+      const player = gameState.getActivePlayer();
+      if (
+        player.getNumCardType(CardType.TRAVELER) < 2 ||
+        player.getNumCardType(CardType.GOVERNANCE) < 2
+      ) {
+        return `Need at least 2 ${CardType.TRAVELER} cards and 2 ${CardType.GOVERNANCE} cards in city to claim event`;
+      }
+      return null;
+    },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       // TODO: IMPLEMENT
     },
@@ -2560,18 +2597,38 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_JUNIPER_JIG_DANCE_CONTEST,
     type: EventType.SPECIAL,
     baseVP: 5,
-    eventDescription: toGameText(["Add game text here"]),
+    // TODO: improve requirements display
+    eventDescription: toGameText(["Requires 9 Critters in your city"]),
     expansion: ExpansionType.NEWLEAF,
-    playInner: (gameState: GameState, gameInput: GameInput) => {
-      // TODO: IMPLEMENT
+    canPlayCheckInner: (gameState: GameState) => {
+      const player = gameState.getActivePlayer();
+      if (player.getNumPlayedCritters() < 9) {
+        return `Need at least 9 Critters in city to claim event`;
+      }
+      return null;
     },
   }),
   [EventName.SPECIAL_MAGIC_SNOW]: new Event({
     name: EventName.SPECIAL_MAGIC_SNOW,
     type: EventType.SPECIAL,
     baseVP: 4,
-    eventDescription: toGameText(["Add game text here"]),
+    eventDescription: toGameText([
+      "2 DESTINATION 2 PROSPERITY",
+      { type: "HR" },
+      "When achieved, you may discard 1 CARD for each DESTINATION fin your city. ",
+      "Gain 1 VP for each discarded CARD.",
+    ]),
     expansion: ExpansionType.NEWLEAF,
+    canPlayCheckInner: (gameState: GameState) => {
+      const player = gameState.getActivePlayer();
+      if (
+        player.getNumCardType(CardType.DESTINATION) < 2 ||
+        player.getNumCardType(CardType.PROSPERITY) < 2
+      ) {
+        return `Need at least 2 ${CardType.DESTINATION} cards and 2 ${CardType.PROSPERITY} cards in city to claim event`;
+      }
+      return null;
+    },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       // TODO: IMPLEMENT
     },
@@ -2580,8 +2637,23 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_ROYAL_TEA,
     type: EventType.SPECIAL,
     baseVP: 4,
-    eventDescription: toGameText(["Add game text here"]),
+    eventDescription: toGameText([
+      "2 PROSPERITY 3 PRODUCTION",
+      { type: "HR" },
+      "When achieved, you may discard 1 CARD for each PROSPERITY in your city. ",
+      "Gain 1 VP for each discarded CARD.",
+    ]),
     expansion: ExpansionType.NEWLEAF,
+    canPlayCheckInner: (gameState: GameState) => {
+      const player = gameState.getActivePlayer();
+      if (
+        player.getNumCardType(CardType.PROSPERITY) < 2 ||
+        player.getNumCardType(CardType.PRODUCTION) < 3
+      ) {
+        return `Need at least 2 ${CardType.PROSPERITY} cards and 3 ${CardType.PRODUCTION} cards in city to claim event`;
+      }
+      return null;
+    },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       // TODO: IMPLEMENT
     },
@@ -2590,8 +2662,23 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_STOCK_MARKET_BOOM,
     type: EventType.SPECIAL,
     baseVP: 4,
-    eventDescription: toGameText(["Add game text here"]),
+    eventDescription: toGameText([
+      "2 GOVERNANCE 2 DESTINATION",
+      { type: "HR" },
+      "When achieved, you may discard 1 CARD for each GOVERNANCE in your city. ",
+      "Gain 1 VP for each discarded CARD.",
+    ]),
     expansion: ExpansionType.NEWLEAF,
+    canPlayCheckInner: (gameState: GameState) => {
+      const player = gameState.getActivePlayer();
+      if (
+        player.getNumCardType(CardType.GOVERNANCE) < 2 ||
+        player.getNumCardType(CardType.DESTINATION) < 2
+      ) {
+        return `Need at least 2 ${CardType.GOVERNANCE} cards and 2 ${CardType.TRAVELER} cards in city to claim event`;
+      }
+      return null;
+    },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       // TODO: IMPLEMENT
     },
@@ -2600,10 +2687,16 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_SUNFLOWER_PARADE,
     type: EventType.SPECIAL,
     baseVP: 5,
-    eventDescription: toGameText(["Add game text here"]),
+    eventDescription: toGameText([
+      "Requires that you have achieved at least 3 Events",
+    ]),
     expansion: ExpansionType.NEWLEAF,
-    playInner: (gameState: GameState, gameInput: GameInput) => {
-      // TODO: IMPLEMENT
+    canPlayCheckInner: (gameState: GameState) => {
+      const player = gameState.getActivePlayer();
+      if (player.getNumClaimedEvents() < 3) {
+        return `Need to have claimed at least 3 events to claim this event`;
+      }
+      return null;
     },
   }),
 
@@ -2612,18 +2705,36 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_ARCHITECTURAL_RENAISSANCE,
     type: EventType.SPECIAL,
     baseVP: 5,
-    eventDescription: toGameText(["Add game text here"]),
+    // TODO: improve requirements display
+    eventDescription: toGameText([
+      "Requires 4 Unique Constructions in your city",
+    ]),
     expansion: ExpansionType.BELLFAIRE,
-    playInner: (gameState: GameState, gameInput: GameInput) => {
-      // TODO: IMPLEMENT
+    canPlayCheckInner: (gameState: GameState) => {
+      const player = gameState.getActivePlayer();
+      if (player.getNumPlayedUniqueConstructions() < 4) {
+        return `Need at least 4 Unique Constructions in city to claim event`;
+      }
+      return null;
     },
   }),
   [EventName.SPECIAL_ARTS_AND_MUSIC_FESTIVAL]: new Event({
     name: EventName.SPECIAL_ARTS_AND_MUSIC_FESTIVAL,
     type: EventType.SPECIAL,
     baseVP: 6,
-    eventDescription: toGameText(["Add game text here"]),
+    // TODO: improve requirements display
+    eventDescription: toGameText(["4 DESTINATION and pay 2 RESIN"]),
     expansion: ExpansionType.BELLFAIRE,
+    canPlayCheckInner: (gameState: GameState) => {
+      const player = gameState.getActivePlayer();
+      if (
+        player.getNumCardType(CardType.DESTINATION) < 4 ||
+        player.getNumResourcesByType(ResourceType.RESIN) < 2
+      ) {
+        return `Need at least 4 ${CardType.DESTINATION} cards in city and ability to pay 2 ${ResourceType.RESIN} to claim event`;
+      }
+      return null;
+    },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       // TODO: IMPLEMENT
     },
@@ -2632,38 +2743,66 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_BED_AND_BREAKFAST_GUILD,
     type: EventType.SPECIAL,
     baseVP: 5,
-    eventDescription: toGameText(["Add game text here"]),
+    // TODO: improve requirements display
+    eventDescription: toGameText([
+      "Requires 5 Common Constructions in your city",
+    ]),
     expansion: ExpansionType.BELLFAIRE,
-    playInner: (gameState: GameState, gameInput: GameInput) => {
-      // TODO: IMPLEMENT
+    canPlayCheckInner: (gameState: GameState) => {
+      const player = gameState.getActivePlayer();
+      if (player.getNumPlayedCommonConstructions() < 5) {
+        return `Need at least 5 Common Constructions in city to claim event`;
+      }
+      return null;
     },
   }),
   [EventName.SPECIAL_CITY_HOLIDAY]: new Event({
     name: EventName.SPECIAL_CITY_HOLIDAY,
     type: EventType.SPECIAL,
     baseVP: 5,
-    eventDescription: toGameText(["Add game text here"]),
-    expansion: ExpansionType.BELLFAIRE,
-    playInner: (gameState: GameState, gameInput: GameInput) => {
-      // TODO: IMPLEMENT
+    // TODO: improve requirements display
+    eventDescription: toGameText(["Requires 5 Common Critters in your city"]),
+    canPlayCheckInner: (gameState: GameState) => {
+      const player = gameState.getActivePlayer();
+      if (player.getNumPlayedCommonCritters() < 5) {
+        return `Need at least 5 Common Critters in city to claim event`;
+      }
+      return null;
     },
+    expansion: ExpansionType.BELLFAIRE,
   }),
   [EventName.SPECIAL_GATHERING_OF_ELDERS]: new Event({
     name: EventName.SPECIAL_GATHERING_OF_ELDERS,
     type: EventType.SPECIAL,
     baseVP: 5,
-    eventDescription: toGameText(["Add game text here"]),
+    // TODO: improve requirements display
+    eventDescription: toGameText(["Requires 4 Unique Critters in your city"]),
     expansion: ExpansionType.BELLFAIRE,
-    playInner: (gameState: GameState, gameInput: GameInput) => {
-      // TODO: IMPLEMENT
+    canPlayCheckInner: (gameState: GameState) => {
+      const player = gameState.getActivePlayer();
+      if (player.getNumPlayedUniqueCritters() < 4) {
+        return `Need at least 4 Unique Critters in city to claim event`;
+      }
+      return null;
     },
   }),
   [EventName.SPECIAL_KINGS_ROAD_ESTABLISHED]: new Event({
     name: EventName.SPECIAL_KINGS_ROAD_ESTABLISHED,
     type: EventType.SPECIAL,
     baseVP: 6,
-    eventDescription: toGameText(["Add game text here"]),
+    // TODO: improve requirements display
+    eventDescription: toGameText(["4 TRAVELER and pay 2 TWIG"]),
     expansion: ExpansionType.BELLFAIRE,
+    canPlayCheckInner: (gameState: GameState) => {
+      const player = gameState.getActivePlayer();
+      if (
+        player.getNumCardType(CardType.TRAVELER) < 4 ||
+        player.getNumResourcesByType(ResourceType.TWIG) < 2
+      ) {
+        return `Need at least 4 ${CardType.TRAVELER} cards in city and ability to pay 2 ${ResourceType.TWIG} to claim event`;
+      }
+      return null;
+    },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       // TODO: IMPLEMENT
     },
@@ -2672,18 +2811,37 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_PIE_EATING_CONTEST,
     type: EventType.SPECIAL,
     baseVP: 6,
-    eventDescription: toGameText(["Add game text here"]),
+    // TODO: improve requirements display
+    eventDescription: toGameText(["5 PRODUCTION and pay 2 BERRY"]),
     expansion: ExpansionType.BELLFAIRE,
-    playInner: (gameState: GameState, gameInput: GameInput) => {
-      // TODO: IMPLEMENT
+    canPlayCheckInner: (gameState: GameState) => {
+      const player = gameState.getActivePlayer();
+      if (
+        player.getNumCardType(CardType.PRODUCTION) < 5 ||
+        player.getNumResourcesByType(ResourceType.BERRY) < 2
+      ) {
+        return `Need at least 5 ${CardType.PRODUCTION} cards in city and ability to pay 2 ${ResourceType.BERRY} to claim event`;
+      }
+      return null;
     },
   }),
   [EventName.SPECIAL_ROYAL_WEDDING]: new Event({
     name: EventName.SPECIAL_ROYAL_WEDDING,
     type: EventType.SPECIAL,
     baseVP: 6,
-    eventDescription: toGameText(["Add game text here"]),
+    // TODO: improve requirements display
+    eventDescription: toGameText(["4 PROSPERITY and discard 3 CARD"]),
     expansion: ExpansionType.BELLFAIRE,
+    canPlayCheckInner: (gameState: GameState) => {
+      const player = gameState.getActivePlayer();
+      if (
+        player.getNumCardType(CardType.PROSPERITY) < 4 ||
+        player.numCardsInHand < 3
+      ) {
+        return `Need at least 4 ${CardType.PROSPERITY} cards in city and ability to discard 3 CARD to claim event`;
+      }
+      return null;
+    },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       // TODO: IMPLEMENT
     },
@@ -2692,8 +2850,19 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     name: EventName.SPECIAL_STATUES_COMMISSIONED,
     type: EventType.SPECIAL,
     baseVP: 6,
-    eventDescription: toGameText(["Add game text here"]),
+    // TODO: improve requirements display
+    eventDescription: toGameText(["4 GOVERNANCE and pay 1 PEBBLE"]),
     expansion: ExpansionType.BELLFAIRE,
+    canPlayCheckInner: (gameState: GameState) => {
+      const player = gameState.getActivePlayer();
+      if (
+        player.getNumCardType(CardType.GOVERNANCE) < 4 ||
+        player.getNumResourcesByType(ResourceType.PEBBLE) < 1
+      ) {
+        return `Need at least 4 ${CardType.GOVERNANCE} cards in city and ability to pay 1 ${ResourceType.PEBBLE} to claim event`;
+      }
+      return null;
+    },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       // TODO: IMPLEMENT
     },

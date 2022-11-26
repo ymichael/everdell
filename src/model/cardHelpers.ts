@@ -25,10 +25,12 @@ export function playSpendResourceToGetVPFactory({
   card,
   resourceType,
   maxToSpend,
+  conversionRate = 1,
 }: {
   card: CardName;
   resourceType: ResourceType.BERRY | ResourceType.TWIG;
   maxToSpend: number;
+  conversionRate?: number;
 }): GameStatePlayFn {
   return (gameState: GameState, gameInput: GameInput) => {
     const player = gameState.getActivePlayer();
@@ -39,6 +41,7 @@ export function playSpendResourceToGetVPFactory({
           `Too many resources, max: ${maxToSpend}, got: ${numToSpend}`
         );
       }
+      const gainVP = numToSpend * conversionRate;
       if (numToSpend === 0) {
         // Only log if its not an auto advanced input.
         if (!gameInput.isAutoAdvancedInput) {
@@ -50,11 +53,11 @@ export function playSpendResourceToGetVPFactory({
       } else {
         gameState.addGameLogFromCard(card, [
           player,
-          ` spent ${numToSpend} ${resourceType} to gain ${numToSpend} VP.`,
+          ` spent ${numToSpend} ${resourceType} to gain ${gainVP} VP.`,
         ]);
       }
       player.spendResources({ [resourceType]: numToSpend });
-      player.gainResources(gameState, { [ResourceType.VP]: numToSpend });
+      player.gainResources(gameState, { [ResourceType.VP]: gainVP });
     }
   };
 }

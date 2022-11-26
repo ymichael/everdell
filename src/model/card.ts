@@ -4571,9 +4571,17 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     baseCost: {
       [ResourceType.BERRY]: 3,
     },
-    playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
-    },
+    productionInner: activateCardSpendResourceToGetVPFactory({
+      card: CardName.MILLER,
+      resourceType: ResourceType.PEBBLE,
+      maxToSpend: 1,
+    }),
+    playInner: playSpendResourceToGetVPFactory({
+      card: CardName.MILLER,
+      resourceType: ResourceType.PEBBLE,
+      maxToSpend: 1,
+      conversionRate: 3,
+    }),
   }),
   [CardName.MUSEUM]: new Card({
     expansion: ExpansionType.NEWLEAF,

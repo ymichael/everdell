@@ -7352,7 +7352,54 @@ describe("Card", () => {
 
     describe(CardName.MAYOR, () => {});
 
-    describe(CardName.MILLER, () => {});
+    describe(CardName.MILLER, () => {
+      it("should not prompt player if they don't have any PEBBLE", () => {
+        const card = Card.fromName(CardName.MILLER);
+
+        // Make sure we can play this card
+        player.gainResources(gameState, card.baseCost);
+        player.addCardToHand(gameState, card.name);
+        [player, gameState] = multiStepGameInputTest(
+          gameState,
+          [playCardInput(card.name)],
+          { autoAdvance: true }
+        );
+
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+      });
+
+      it("should allow player to pay 1 PEBBLE for 3 VP", () => {
+        const card = Card.fromName(CardName.MILLER);
+
+        // Make sure we can play this card
+        player.gainResources(gameState, card.baseCost);
+        // Make sure we can spend for VP
+        player.gainResources(gameState, { [ResourceType.PEBBLE]: 2 });
+        player.addCardToHand(gameState, card.name);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+          {
+            inputType: GameInputType.SELECT_RESOURCES,
+            toSpend: true,
+            prevInputType: GameInputType.PLAY_CARD,
+            cardContext: CardName.MILLER,
+            specificResource: ResourceType.PEBBLE,
+            minResources: 0,
+            maxResources: 1,
+            clientOptions: {
+              resources: {
+                [ResourceType.PEBBLE]: 1,
+              },
+            },
+          },
+        ]);
+
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(3);
+        expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(1);
+      });
+    });
 
     describe(CardName.MUSEUM, () => {});
 

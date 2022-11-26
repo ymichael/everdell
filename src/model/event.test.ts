@@ -4425,6 +4425,7 @@ describe("Event", () => {
     });
   });
 
+  // Newleaf events
   describe(EventName.SPECIAL_CITY_JUBILEE, () => {
     beforeEach(() => {
       gameState = testInitialGameState();
@@ -4490,6 +4491,26 @@ describe("Event", () => {
 
       // 2 from SPECIAL_CITY_JUBILEE, 2 from ANCIENT_SCROLLS_DISCOVERED
       expect(player.getNumResourcesByType(ResourceType.VP)).to.be(2 + 2);
+    });
+    it("should calculate points correctly when player has claimed multiple events", () => {
+      const event = Event.fromName(EventName.SPECIAL_CITY_JUBILEE);
+      const gameInput = claimEventInput(event.name);
+      expect(player.getClaimedEvent(EventName.SPECIAL_CITY_JUBILEE)).to.be(
+        undefined
+      );
+      player.nextSeason();
+      player.nextSeason();
+      player.nextSeason();
+
+      player.placeWorkerOnEvent(EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED);
+      player.placeWorkerOnEvent(EventName.BASIC_FOUR_PRODUCTION);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_CITY_JUBILEE));
+
+      // 2 from SPECIAL_CITY_JUBILEE, 2 from ANCIENT_SCROLLS_DISCOVERED, 1 from basic event
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(2 + 2 + 1);
     });
   });
 
@@ -5003,12 +5024,27 @@ describe("Event", () => {
       expect(player.getNumCardsInCity()).to.be(6);
     });
   });
-  describe.skip(EventName.SPECIAL_STOCK_MARKET_BOOM, () => {
+  describe(EventName.SPECIAL_STOCK_MARKET_BOOM, () => {
     beforeEach(() => {
       gameState = testInitialGameState();
       player = gameState.getActivePlayer();
 
       gameState.eventsMap[EventName.SPECIAL_STOCK_MARKET_BOOM] = null;
+    });
+    it("should not allow player to claim event conditions if not met", () => {
+      const event = Event.fromName(EventName.SPECIAL_STOCK_MARKET_BOOM);
+      const gameInput = claimEventInput(event.name);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_STOCK_MARKET_BOOM)).to.be(
+        undefined
+      );
+
+      expect(() => {
+        gameState.next(gameInput);
+      }).to.throwException(/Need at least 2 GOVERNANCE/i);
+      expect(player.getClaimedEvent(EventName.SPECIAL_STOCK_MARKET_BOOM)).to.be(
+        undefined
+      );
     });
 
     it("should allow player to claim event", () => {
@@ -5019,12 +5055,35 @@ describe("Event", () => {
         undefined
       );
 
-      [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
+      player.addToCityMulti(gameState, [
+        CardName.JUDGE,
+        CardName.SHOPKEEPER,
+        CardName.INN,
+        CardName.LOOKOUT,
+      ]);
+      expect(player.getNumCardsInCity()).to.be(4);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        gameInput,
+        {
+          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          eventContext: EventName.SPECIAL_STOCK_MARKET_BOOM,
+          cardOptions: player.getPlayedCards(),
+          maxToSelect: 2,
+          minToSelect: 0,
+          clientOptions: {
+            selectedCards: [player.getFirstPlayedCard(CardName.INN)],
+          },
+        },
+      ]);
 
       expect(player.getClaimedEvent(EventName.SPECIAL_STOCK_MARKET_BOOM));
-      // expect(player.getPointsFromEvents(gameState)).to.be(5);
+      expect(player.getPointsFromEvents(gameState)).to.be(4);
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(1);
+      expect(player.getNumCardsInCity()).to.be(3);
     });
-    it("should not allow player to claim event if conditions not met", () => {
+    it("should allow player to claim event and not discard cards", () => {
       const event = Event.fromName(EventName.SPECIAL_STOCK_MARKET_BOOM);
       const gameInput = claimEventInput(event.name);
 
@@ -5032,15 +5091,36 @@ describe("Event", () => {
         undefined
       );
 
-      expect(() => {
-        gameState.next(gameInput);
-      }).to.throwException(/Need at least 9 Critters/i);
-      expect(player.getClaimedEvent(EventName.SPECIAL_STOCK_MARKET_BOOM)).to.be(
-        undefined
-      );
+      player.addToCityMulti(gameState, [
+        CardName.JUDGE,
+        CardName.SHOPKEEPER,
+        CardName.INN,
+        CardName.LOOKOUT,
+      ]);
+      expect(player.getNumCardsInCity()).to.be(4);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        gameInput,
+        {
+          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          eventContext: EventName.SPECIAL_STOCK_MARKET_BOOM,
+          cardOptions: player.getPlayedCards(),
+          maxToSelect: 2,
+          minToSelect: 0,
+          clientOptions: {
+            selectedCards: [],
+          },
+        },
+      ]);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_STOCK_MARKET_BOOM));
+      expect(player.getPointsFromEvents(gameState)).to.be(4);
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+      expect(player.getNumCardsInCity()).to.be(4);
     });
   });
-  describe.skip(EventName.SPECIAL_SUNFLOWER_PARADE, () => {
+  describe(EventName.SPECIAL_SUNFLOWER_PARADE, () => {
     beforeEach(() => {
       gameState = testInitialGameState();
       player = gameState.getActivePlayer();
@@ -5056,10 +5136,18 @@ describe("Event", () => {
         undefined
       );
 
+      player.nextSeason();
+      player.nextSeason();
+      player.nextSeason();
+
+      player.placeWorkerOnEvent(EventName.BASIC_FOUR_PRODUCTION);
+      player.placeWorkerOnEvent(EventName.BASIC_THREE_DESTINATION);
+      player.placeWorkerOnEvent(EventName.BASIC_THREE_GOVERNANCE);
       [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
 
       expect(player.getClaimedEvent(EventName.SPECIAL_SUNFLOWER_PARADE));
-      // expect(player.getPointsFromEvents(gameState)).to.be(5);
+      // 5 from SUNFLOWER_PARADE and 3 each for basic events
+      expect(player.getPointsFromEvents(gameState)).to.be(5 + 9);
     });
     it("should not allow player to claim event if conditions not met", () => {
       const event = Event.fromName(EventName.SPECIAL_SUNFLOWER_PARADE);
@@ -5071,7 +5159,7 @@ describe("Event", () => {
 
       expect(() => {
         gameState.next(gameInput);
-      }).to.throwException(/Need at least 9 Critters/i);
+      }).to.throwException(/Need to have claimed at least 3 events/i);
       expect(player.getClaimedEvent(EventName.SPECIAL_SUNFLOWER_PARADE)).to.be(
         undefined
       );

@@ -2769,7 +2769,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           " from their city.",
         ]);
         player.gainResources(gameState, { VP: selectedCards.length });
-        gameState.addGameLogFromEvent(EventName.SPECIAL_ROYAL_TEA, [
+        gameState.addGameLogFromEvent(EventName.SPECIAL_MAGIC_SNOW, [
           player,
           " gained 1 VP per card discarded from their city.",
         ]);
@@ -2871,7 +2871,55 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       return null;
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      // TODO: IMPLEMENT
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
+        const numGovernance = player.getNumCardType(CardType.GOVERNANCE);
+
+        // ask player to choose which cards to discard
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          label: `You may discard up to ${numGovernance} CARD from your city for 1 VP each`,
+          eventContext: EventName.SPECIAL_STOCK_MARKET_BOOM,
+          cardOptions: player.getPlayedCards(),
+          maxToSelect: numGovernance,
+          minToSelect: 0,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS) {
+        const selectedCards = gameInput.clientOptions.selectedCards;
+        if (!selectedCards) {
+          throw new Error("invalid input");
+        }
+        if (selectedCards.length > gameInput.maxToSelect) {
+          throw new Error("Selected too many cards");
+        }
+        const eventInfo = player.getClaimedEvent(
+          EventName.SPECIAL_STOCK_MARKET_BOOM
+        );
+        if (!eventInfo) {
+          throw new Error("Cannot find event info");
+        }
+        selectedCards.forEach((playedCardInfo) => {
+          player.removeCardFromCity(gameState, playedCardInfo);
+        });
+
+        gameState.addGameLogFromEvent(EventName.SPECIAL_STOCK_MARKET_BOOM, [
+          player,
+          " discarded ",
+          ...cardListToGameText(selectedCards.map(({ cardName }) => cardName)),
+          " from their city.",
+        ]);
+        player.gainResources(gameState, { VP: selectedCards.length });
+        gameState.addGameLogFromEvent(EventName.SPECIAL_STOCK_MARKET_BOOM, [
+          player,
+          " gained 1 VP per card discarded from their city.",
+        ]);
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
+      }
     },
   }),
   [EventName.SPECIAL_SUNFLOWER_PARADE]: new Event({

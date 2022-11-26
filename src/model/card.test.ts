@@ -7202,7 +7202,6 @@ describe("Card", () => {
           CardName.FARM
         );
         player.gainResources(gameState, card.baseCost);
-
         gameState.deck.addToStack(CardName.RUINS);
         gameState.deck.addToStack(CardName.RUINS);
         gameState.deck.addToStack(CardName.RUINS);
@@ -7236,6 +7235,120 @@ describe("Card", () => {
     /**
      * Newleaf cards.
      */
-    // TODO
+    describe(CardName.AIR_BALLOON, () => {
+      it("should allow you to copy a TRAVELLER from an opponent's city", () => {
+        let player2 = gameState.players[1];
+        player2.addToCity(gameState, CardName.WANDERER);
+
+        const card = Card.fromName(CardName.AIR_BALLOON);
+        player.addCardToHand(gameState, card.name);
+        player.gainResources(gameState, card.baseCost);
+        expect(player.numCardsInHand).to.be(1);
+
+        [player, gameState] = multiStepGameInputTest(
+          gameState,
+          [playCardInput(card.name)],
+          { autoAdvance: true }
+        );
+        expect(player.numCardsInHand).to.be(3);
+      });
+
+      it("should not allow you to copy certain cards", () => {
+        let player2 = gameState.players[1];
+        player2.addToCity(gameState, CardName.WANDERER);
+        player2.addToCity(gameState, CardName.FOOL);
+        player2.addToCity(gameState, CardName.MAIN_ROAD);
+        player2.addToCity(gameState, CardName.RUINS);
+
+        const card = Card.fromName(CardName.AIR_BALLOON);
+        player.addCardToHand(gameState, card.name);
+        player.gainResources(gameState, card.baseCost);
+        expect(player.numCardsInHand).to.be(1);
+
+        [player, gameState] = multiStepGameInputTest(
+          gameState,
+          [playCardInput(card.name)],
+          { autoAdvance: true }
+        );
+        expect(player.numCardsInHand).to.be(3);
+      });
+
+      it("should allow you to select which TRAVELLER to copy from an opponent's city", () => {
+        let player2 = gameState.players[1];
+        player2.addToCity(gameState, CardName.WANDERER);
+        player2.addToCity(gameState, CardName.POSTAL_PIGEON);
+
+        const card = Card.fromName(CardName.AIR_BALLOON);
+        player.addCardToHand(gameState, card.name);
+        player.gainResources(gameState, card.baseCost);
+        expect(player.numCardsInHand).to.be(1);
+
+        [player, gameState] = multiStepGameInputTest(
+          gameState,
+          [
+            playCardInput(card.name),
+            {
+              inputType: GameInputType.SELECT_CARDS,
+              prevInputType: GameInputType.PLAY_CARD,
+              cardContext: CardName.AIR_BALLOON,
+              cardOptions: [CardName.WANDERER, CardName.POSTAL_PIGEON],
+              maxToSelect: 1,
+              minToSelect: 1,
+              clientOptions: {
+                selectedCards: [CardName.WANDERER],
+              },
+            },
+          ],
+          { autoAdvance: true }
+        );
+        expect(player.numCardsInHand).to.be(3);
+      });
+    });
+
+    describe(CardName.BAKER, () => {});
+
+    describe(CardName.BANK, () => {});
+
+    describe(CardName.CHIPSMITH, () => {});
+
+    describe(CardName.CITY_HALL, () => {});
+
+    describe(CardName.CONDUCTOR, () => {});
+
+    describe(CardName.DIPLOMAT, () => {});
+
+    describe(CardName.EVER_WALL, () => {});
+
+    describe(CardName.FREIGHT_CAR, () => {});
+
+    describe(CardName.GARDENER, () => {});
+
+    describe(CardName.GREENHOUSE, () => {});
+
+    describe(CardName.HOTEL, () => {});
+
+    describe(CardName.INVENTOR, () => {});
+
+    describe(CardName.LAMPLIGHTER, () => {});
+
+    describe(CardName.LIBRARY, () => {});
+
+    describe(CardName.LOCOMOTIVE, () => {});
+
+    describe(CardName.MAGICIAN, () => {});
+
+    describe(CardName.MAIN_ROAD, () => {});
+
+    describe(CardName.MAYOR, () => {});
+
+    describe(CardName.MILLER, () => {});
+
+    describe(CardName.MUSEUM, () => {});
+
+    describe(CardName.PHOTOGRAPHER, () => {});
+
+    describe(CardName.POET, () => {});
+
+    describe(CardName.TEA_HOUSE, () => {});
   });
 });

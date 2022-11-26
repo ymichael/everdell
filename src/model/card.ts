@@ -4062,7 +4062,68 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       [ResourceType.TWIG]: 3,
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.PLAY_CARD) {
+        const seenCards: Set<CardName> = new Set();
+        const cardOptions: Set<CardName> = new Set();
+        gameState.players.forEach((p) => {
+          if (p.playerId === player.playerId) {
+            return;
+          }
+          p.getAllPlayedCardsByType(CardType.TRAVELER).forEach(
+            ({ cardName }) => {
+              if (seenCards.has(cardName)) {
+                return;
+              }
+              seenCards.add(cardName);
+              if (
+                cardName === CardName.FOOL ||
+                cardName === CardName.MAIN_ROAD ||
+                cardName === CardName.RUINS
+              ) {
+                return;
+              }
+              const card = Card.fromName(cardName);
+              if (card.canReactivateCard(gameState)) {
+                cardOptions.add(cardName);
+              }
+            }
+          );
+        });
+        if (cardOptions.size === 0) {
+          return;
+        }
+        // Ask player to select 1
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: gameInput.inputType,
+          label: "Select 1 TRAVELER to copy",
+          cardOptions: Array.from(cardOptions),
+          maxToSelect: 1,
+          minToSelect: 1,
+          cardContext: CardName.AIR_BALLOON,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_CARDS) {
+        const selectedCards = gameInput.clientOptions.selectedCards;
+        if (selectedCards.length !== 1) {
+          throw new Error(`Please select 1 card to copy`);
+        }
+        const selectedCard = selectedCards[0];
+        gameState.addGameLogFromCard(CardName.AIR_BALLOON, [
+          player,
+          " reactivated ",
+          { type: "entity", entityType: "card", card: selectedCard },
+          ".",
+        ]);
+        const targetCard = Card.fromName(selectedCard);
+        targetCard.reactivateCard(gameState, gameInput, player, {
+          cardOwnerId: "",
+          cardName: selectedCard,
+        });
+      }
     },
   }),
   [CardName.BAKER]: new Card({

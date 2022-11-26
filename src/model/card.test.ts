@@ -7482,7 +7482,7 @@ describe("Card", () => {
 
     describe(CardName.CONDUCTOR, () => {});
 
-    describe.only(CardName.DIPLOMAT, () => {
+    describe(CardName.DIPLOMAT, () => {
       it("should do nothing is player plays a construction", () => {
         player.addToCity(gameState, CardName.DIPLOMAT);
 

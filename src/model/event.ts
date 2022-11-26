@@ -3052,7 +3052,16 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       return null;
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      // TODO: IMPLEMENT
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
+        player.spendResources({ [ResourceType.TWIG]: 2 });
+        gameState.addGameLogFromEvent(
+          EventName.SPECIAL_KINGS_ROAD_ESTABLISHED,
+          [player, ` spent 2 TWIG to claim this event.`]
+        );
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
+      }
     },
   }),
   [EventName.SPECIAL_PIE_EATING_CONTEST]: new Event({
@@ -3071,6 +3080,18 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         return `Need at least 5 ${CardType.PRODUCTION} cards in city and ability to pay 2 ${ResourceType.BERRY} to claim event`;
       }
       return null;
+    },
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
+        player.spendResources({ [ResourceType.BERRY]: 2 });
+        gameState.addGameLogFromEvent(EventName.SPECIAL_PIE_EATING_CONTEST, [
+          player,
+          ` spent 2 BERRY to claim this event.`,
+        ]);
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
+      }
     },
   }),
   [EventName.SPECIAL_ROYAL_WEDDING]: new Event({
@@ -3112,7 +3133,16 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       return null;
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      // TODO: IMPLEMENT
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
+        player.spendResources({ [ResourceType.PEBBLE]: 1 });
+        gameState.addGameLogFromEvent(EventName.SPECIAL_STATUES_COMMISSIONED, [
+          player,
+          ` spent 1 PEBBLE to claim this event.`,
+        ]);
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
+      }
     },
   }),
 };

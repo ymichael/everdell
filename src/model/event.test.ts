@@ -5261,7 +5261,7 @@ describe("Event", () => {
       ).to.be(undefined);
     });
   });
-  describe.skip(EventName.SPECIAL_BED_AND_BREAKFAST_GUILD, () => {
+  describe(EventName.SPECIAL_BED_AND_BREAKFAST_GUILD, () => {
     beforeEach(() => {
       gameState = testInitialGameState();
       player = gameState.getActivePlayer();
@@ -5273,6 +5273,14 @@ describe("Event", () => {
       const event = Event.fromName(EventName.SPECIAL_BED_AND_BREAKFAST_GUILD);
       const gameInput = claimEventInput(event.name);
 
+      player.addToCityMulti(gameState, [
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+      ]);
+
       expect(
         player.getClaimedEvent(EventName.SPECIAL_BED_AND_BREAKFAST_GUILD)
       ).to.be(undefined);
@@ -5280,7 +5288,7 @@ describe("Event", () => {
       [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
 
       expect(player.getClaimedEvent(EventName.SPECIAL_BED_AND_BREAKFAST_GUILD));
-      // expect(player.getPointsFromEvents(gameState)).to.be(5);
+      expect(player.getPointsFromEvents(gameState)).to.be(5);
     });
     it("should not allow player to claim event if conditions not met", () => {
       const event = Event.fromName(EventName.SPECIAL_BED_AND_BREAKFAST_GUILD);
@@ -5292,13 +5300,13 @@ describe("Event", () => {
 
       expect(() => {
         gameState.next(gameInput);
-      }).to.throwException(/Need at least 9 Critters/i);
+      }).to.throwException(/Need at least 5 Common Constructions/i);
       expect(
         player.getClaimedEvent(EventName.SPECIAL_BED_AND_BREAKFAST_GUILD)
       ).to.be(undefined);
     });
   });
-  describe.skip(EventName.SPECIAL_CITY_HOLIDAY, () => {
+  describe(EventName.SPECIAL_CITY_HOLIDAY, () => {
     beforeEach(() => {
       gameState = testInitialGameState();
       player = gameState.getActivePlayer();
@@ -5310,6 +5318,14 @@ describe("Event", () => {
       const event = Event.fromName(EventName.SPECIAL_CITY_HOLIDAY);
       const gameInput = claimEventInput(event.name);
 
+      player.addToCityMulti(gameState, [
+        CardName.HUSBAND,
+        CardName.HUSBAND,
+        CardName.HUSBAND,
+        CardName.HUSBAND,
+        CardName.HUSBAND,
+      ]);
+
       expect(player.getClaimedEvent(EventName.SPECIAL_CITY_HOLIDAY)).to.be(
         undefined
       );
@@ -5317,7 +5333,7 @@ describe("Event", () => {
       [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
 
       expect(player.getClaimedEvent(EventName.SPECIAL_CITY_HOLIDAY));
-      // expect(player.getPointsFromEvents(gameState)).to.be(5);
+      expect(player.getPointsFromEvents(gameState)).to.be(5);
     });
     it("should not allow player to claim event if conditions not met", () => {
       const event = Event.fromName(EventName.SPECIAL_CITY_HOLIDAY);
@@ -5329,13 +5345,13 @@ describe("Event", () => {
 
       expect(() => {
         gameState.next(gameInput);
-      }).to.throwException(/Need at least 9 Critters/i);
+      }).to.throwException(/at least 5 Common Critters/i);
       expect(
         player.getClaimedEvent(EventName.SPECIAL_BED_AND_BREAKFAST_GUILD)
       ).to.be(undefined);
     });
   });
-  describe.skip(EventName.SPECIAL_GATHERING_OF_ELDERS, () => {
+  describe(EventName.SPECIAL_GATHERING_OF_ELDERS, () => {
     beforeEach(() => {
       gameState = testInitialGameState();
       player = gameState.getActivePlayer();
@@ -5347,6 +5363,13 @@ describe("Event", () => {
       const event = Event.fromName(EventName.SPECIAL_GATHERING_OF_ELDERS);
       const gameInput = claimEventInput(event.name);
 
+      player.addToCityMulti(gameState, [
+        CardName.QUEEN,
+        CardName.KING,
+        CardName.RANGER,
+        CardName.ARCHITECT,
+      ]);
+
       expect(
         player.getClaimedEvent(EventName.SPECIAL_GATHERING_OF_ELDERS)
       ).to.be(undefined);
@@ -5354,7 +5377,7 @@ describe("Event", () => {
       [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
 
       expect(player.getClaimedEvent(EventName.SPECIAL_GATHERING_OF_ELDERS));
-      // expect(player.getPointsFromEvents(gameState)).to.be(5);
+      expect(player.getPointsFromEvents(gameState)).to.be(5);
     });
     it("should not allow player to claim event if conditions not met", () => {
       const event = Event.fromName(EventName.SPECIAL_GATHERING_OF_ELDERS);
@@ -5366,13 +5389,13 @@ describe("Event", () => {
 
       expect(() => {
         gameState.next(gameInput);
-      }).to.throwException(/Need at least 9 Critters/i);
+      }).to.throwException(/at least 4 Unique Critters/i);
       expect(
         player.getClaimedEvent(EventName.SPECIAL_GATHERING_OF_ELDERS)
       ).to.be(undefined);
     });
   });
-  describe.skip(EventName.SPECIAL_KINGS_ROAD_ESTABLISHED, () => {
+  describe(EventName.SPECIAL_KINGS_ROAD_ESTABLISHED, () => {
     beforeEach(() => {
       gameState = testInitialGameState();
       player = gameState.getActivePlayer();
@@ -5384,6 +5407,15 @@ describe("Event", () => {
       const event = Event.fromName(EventName.SPECIAL_KINGS_ROAD_ESTABLISHED);
       const gameInput = claimEventInput(event.name);
 
+      player.addToCityMulti(gameState, [
+        CardName.WANDERER,
+        CardName.WANDERER,
+        CardName.WANDERER,
+        CardName.WANDERER,
+      ]);
+
+      player.gainResources(gameState, { [ResourceType.TWIG]: 2 });
+
       expect(
         player.getClaimedEvent(EventName.SPECIAL_KINGS_ROAD_ESTABLISHED)
       ).to.be(undefined);
@@ -5391,7 +5423,8 @@ describe("Event", () => {
       [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
 
       expect(player.getClaimedEvent(EventName.SPECIAL_KINGS_ROAD_ESTABLISHED));
-      // expect(player.getPointsFromEvents(gameState)).to.be(5);
+      expect(player.getPointsFromEvents(gameState)).to.be(6);
+      expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
     });
     it("should not allow player to claim event if conditions not met", () => {
       const event = Event.fromName(EventName.SPECIAL_KINGS_ROAD_ESTABLISHED);
@@ -5403,13 +5436,35 @@ describe("Event", () => {
 
       expect(() => {
         gameState.next(gameInput);
-      }).to.throwException(/Need at least 9 Critters/i);
+      }).to.throwException(/at least 4 TRAVELER/i);
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_KINGS_ROAD_ESTABLISHED)
+      ).to.be(undefined);
+    });
+    it("should not allow player to claim event if not enough resources", () => {
+      const event = Event.fromName(EventName.SPECIAL_KINGS_ROAD_ESTABLISHED);
+      const gameInput = claimEventInput(event.name);
+
+      player.addToCityMulti(gameState, [
+        CardName.WANDERER,
+        CardName.WANDERER,
+        CardName.WANDERER,
+        CardName.WANDERER,
+      ]);
+
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_KINGS_ROAD_ESTABLISHED)
+      ).to.be(undefined);
+
+      expect(() => {
+        gameState.next(gameInput);
+      }).to.throwException(/at least 4 TRAVELER/i);
       expect(
         player.getClaimedEvent(EventName.SPECIAL_KINGS_ROAD_ESTABLISHED)
       ).to.be(undefined);
     });
   });
-  describe.skip(EventName.SPECIAL_PIE_EATING_CONTEST, () => {
+  describe(EventName.SPECIAL_PIE_EATING_CONTEST, () => {
     beforeEach(() => {
       gameState = testInitialGameState();
       player = gameState.getActivePlayer();
@@ -5421,6 +5476,16 @@ describe("Event", () => {
       const event = Event.fromName(EventName.SPECIAL_PIE_EATING_CONTEST);
       const gameInput = claimEventInput(event.name);
 
+      player.addToCityMulti(gameState, [
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+      ]);
+
+      player.gainResources(gameState, { [ResourceType.BERRY]: 2 });
+
       expect(
         player.getClaimedEvent(EventName.SPECIAL_PIE_EATING_CONTEST)
       ).to.be(undefined);
@@ -5428,7 +5493,8 @@ describe("Event", () => {
       [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
 
       expect(player.getClaimedEvent(EventName.SPECIAL_PIE_EATING_CONTEST));
-      // expect(player.getPointsFromEvents(gameState)).to.be(5);
+      expect(player.getPointsFromEvents(gameState)).to.be(6);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
     });
     it("should not allow player to claim event if conditions not met", () => {
       const event = Event.fromName(EventName.SPECIAL_PIE_EATING_CONTEST);
@@ -5440,7 +5506,7 @@ describe("Event", () => {
 
       expect(() => {
         gameState.next(gameInput);
-      }).to.throwException(/Need at least 9 Critters/i);
+      }).to.throwException(/Need at least 5 PRODUCTION/i);
       expect(
         player.getClaimedEvent(EventName.SPECIAL_PIE_EATING_CONTEST)
       ).to.be(undefined);
@@ -5483,7 +5549,7 @@ describe("Event", () => {
       );
     });
   });
-  describe.skip(EventName.SPECIAL_STATUES_COMMISSIONED, () => {
+  describe(EventName.SPECIAL_STATUES_COMMISSIONED, () => {
     beforeEach(() => {
       gameState = testInitialGameState();
       player = gameState.getActivePlayer();
@@ -5495,6 +5561,15 @@ describe("Event", () => {
       const event = Event.fromName(EventName.SPECIAL_STATUES_COMMISSIONED);
       const gameInput = claimEventInput(event.name);
 
+      player.addToCityMulti(gameState, [
+        CardName.JUDGE,
+        CardName.SHOPKEEPER,
+        CardName.COURTHOUSE,
+        CardName.DUNGEON,
+      ]);
+
+      player.gainResources(gameState, { [ResourceType.PEBBLE]: 2 });
+
       expect(
         player.getClaimedEvent(EventName.SPECIAL_STATUES_COMMISSIONED)
       ).to.be(undefined);
@@ -5502,7 +5577,8 @@ describe("Event", () => {
       [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
 
       expect(player.getClaimedEvent(EventName.SPECIAL_STATUES_COMMISSIONED));
-      // expect(player.getPointsFromEvents(gameState)).to.be(5);
+      expect(player.getPointsFromEvents(gameState)).to.be(6);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(1);
     });
     it("should not allow player to claim event if conditions not met", () => {
       const event = Event.fromName(EventName.SPECIAL_STATUES_COMMISSIONED);
@@ -5514,7 +5590,7 @@ describe("Event", () => {
 
       expect(() => {
         gameState.next(gameInput);
-      }).to.throwException(/Need at least 9 Critters/i);
+      }).to.throwException(/at least 4 GOVERNANCE/i);
       expect(
         player.getClaimedEvent(EventName.SPECIAL_STATUES_COMMISSIONED)
       ).to.be(undefined);

@@ -677,6 +677,86 @@ describe("Location", () => {
     });
   });
 
+  describe("FOREST_COPY_ANY_FOREST_LOCATION", () => {
+    it("player can visit FOREST_COPY_ANY_FOREST_LOCATION", () => {
+      const location = Location.fromName(
+        LocationName.FOREST_COPY_ANY_FOREST_LOCATION
+      );
+      const gameInput = placeWorkerInput(location.name);
+      gameState.locationsMap[LocationName.FOREST_COPY_ANY_FOREST_LOCATION] = [];
+
+      player.addCardToHand(gameState, CardName.BARD);
+      player.addCardToHand(gameState, CardName.INN);
+
+      expect(location.canPlay(gameState, gameInput)).to.be(true);
+      expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        gameInput,
+        {
+          inputType: GameInputType.SELECT_LOCATION,
+          prevInputType: GameInputType.PLACE_WORKER,
+          locationContext: LocationName.FOREST_COPY_ANY_FOREST_LOCATION,
+          locationOptions: Location.byType(LocationType.FOREST).filter(
+            (loc) => loc != LocationName.FOREST_COPY_ANY_FOREST_LOCATION
+          ),
+          clientOptions: {
+            selectedLocation: LocationName.FOREST_FOUR_TWIG,
+          },
+        },
+      ]);
+
+      expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(4);
+      expect(player.numCardsInHand).to.be(2);
+    });
+    it("player cannot copy FOREST_COPY_ANY_FOREST_LOCATION by visiting it", () => {
+      const location = Location.fromName(
+        LocationName.FOREST_COPY_ANY_FOREST_LOCATION
+      );
+      const gameInput = placeWorkerInput(location.name);
+      gameState.locationsMap[LocationName.FOREST_COPY_ANY_FOREST_LOCATION] = [];
+
+      gameState = gameState.next(gameInput);
+      expect(() => {
+        gameState.next({
+          inputType: GameInputType.SELECT_LOCATION,
+          prevInputType: GameInputType.PLACE_WORKER,
+          locationContext: LocationName.FOREST_COPY_ANY_FOREST_LOCATION,
+          locationOptions: Location.byType(LocationType.FOREST).filter(
+            (loc) => loc != LocationName.FOREST_COPY_ANY_FOREST_LOCATION
+          ),
+          clientOptions: {
+            selectedLocation: LocationName.FOREST_COPY_ANY_FOREST_LOCATION,
+          },
+        });
+      }).to.throwException(/Invalid location selected/i);
+    });
+    it("player cannot copy a basic location", () => {
+      const location = Location.fromName(
+        LocationName.FOREST_COPY_ANY_FOREST_LOCATION
+      );
+      const gameInput = placeWorkerInput(location.name);
+      gameState.locationsMap[LocationName.FOREST_COPY_ANY_FOREST_LOCATION] = [];
+
+      gameState = gameState.next(gameInput);
+      expect(() => {
+        gameState.next({
+          inputType: GameInputType.SELECT_LOCATION,
+          prevInputType: GameInputType.PLACE_WORKER,
+          locationContext: LocationName.FOREST_COPY_ANY_FOREST_LOCATION,
+          locationOptions: Location.byType(LocationType.FOREST).filter(
+            (loc) => loc != LocationName.FOREST_COPY_ANY_FOREST_LOCATION
+          ),
+          clientOptions: {
+            selectedLocation: LocationName.BASIC_ONE_BERRY,
+          },
+        });
+      }).to.throwException(/Invalid location selected/i);
+
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+    });
+  });
+
   describe("FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS", () => {
     it("player can visit FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS (only one playable card)", () => {
       const meadow = [

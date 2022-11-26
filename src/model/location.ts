@@ -1124,8 +1124,6 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.PLACE_WORKER) {
-        player.drawCards(gameState, 1);
-
         // Ask player which location they want to copy
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_LOCATION,
@@ -1134,7 +1132,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
           locationContext: LocationName.FOREST_COPY_ANY_FOREST_LOCATION,
           locationOptions: Location.byType(LocationType.FOREST).filter(
             // filter out this location
-            (loc) => loc.name != LocationName.FOREST_COPY_ANY_FOREST_LOCATION
+            (loc) => loc != LocationName.FOREST_COPY_ANY_FOREST_LOCATION
           ),
           clientOptions: {
             selectedLocation: null,

@@ -1117,13 +1117,50 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
   // TODO: implement
   [LocationName.FOREST_COPY_ANY_FOREST_LOCATION]: new Location({
     name: LocationName.FOREST_COPY_ANY_FOREST_LOCATION,
-    shortName: toGameText(["TWIG", "TWIG", "RESIIN"]),
+    shortName: toGameText(["Copy 1 Forest location"]),
     type: LocationType.FOREST,
     occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
     expansion: ExpansionType.NEWLEAF,
-    resourcesToGain: {
-      [ResourceType.TWIG]: 2,
-      [ResourceType.RESIN]: 1,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.PLACE_WORKER) {
+        player.drawCards(gameState, 1);
+
+        // Ask player which location they want to copy
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_LOCATION,
+          prevInputType: GameInputType.PLACE_WORKER,
+          label: "Select basic location to copy",
+          locationContext: LocationName.FOREST_COPY_ANY_FOREST_LOCATION,
+          locationOptions: Location.byType(LocationType.FOREST).filter(
+            // filter out this location
+            (loc) => loc.name != LocationName.FOREST_COPY_ANY_FOREST_LOCATION
+          ),
+          clientOptions: {
+            selectedLocation: null,
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_LOCATION) {
+        const selectedLocation = gameInput.clientOptions.selectedLocation;
+
+        if (!selectedLocation) {
+          throw new Error("Invalid location selected");
+        }
+
+        const location = Location.fromName(selectedLocation);
+        if (location.type !== LocationType.FOREST) {
+          throw new Error("can only copy a forest location");
+        }
+
+        gameState.addGameLogFromLocation(
+          LocationName.FOREST_COPY_ANY_FOREST_LOCATION,
+          [player, " copied ", location, "."]
+        );
+
+        location.triggerLocation(gameState);
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
+      }
     },
   }),
 

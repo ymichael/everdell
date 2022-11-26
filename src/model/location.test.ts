@@ -637,7 +637,7 @@ describe("Location", () => {
     });
   });
 
-  describe.only(LocationName.FOREST_PAY_THREE_TWIG_GAIN_THREE_ANY, () => {
+  describe(LocationName.FOREST_PAY_THREE_TWIG_GAIN_THREE_ANY, () => {
     const name = LocationName.FOREST_PAY_THREE_TWIG_GAIN_THREE_ANY;
     it("should allow player to pay 3 TWIG to gain 2 ANY", () => {
       gameState.locationsMap[name] = [];

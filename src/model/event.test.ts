@@ -5167,7 +5167,7 @@ describe("Event", () => {
   });
 
   // Bellfaire Events
-  describe.skip(EventName.SPECIAL_ARCHITECTURAL_RENAISSANCE, () => {
+  describe(EventName.SPECIAL_ARCHITECTURAL_RENAISSANCE, () => {
     beforeEach(() => {
       gameState = testInitialGameState();
       player = gameState.getActivePlayer();
@@ -5183,12 +5183,19 @@ describe("Event", () => {
         player.getClaimedEvent(EventName.SPECIAL_ARCHITECTURAL_RENAISSANCE)
       ).to.be(undefined);
 
+      player.addToCityMulti(gameState, [
+        CardName.CASTLE,
+        CardName.COURTHOUSE,
+        CardName.EVERTREE,
+        CardName.PALACE,
+      ]);
+
       [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
 
       expect(
         player.getClaimedEvent(EventName.SPECIAL_ARCHITECTURAL_RENAISSANCE)
       );
-      // expect(player.getPointsFromEvents(gameState)).to.be(5);
+      expect(player.getPointsFromEvents(gameState)).to.be(5);
     });
     it("should not allow player to claim event if conditions not met", () => {
       const event = Event.fromName(EventName.SPECIAL_ARCHITECTURAL_RENAISSANCE);
@@ -5200,7 +5207,7 @@ describe("Event", () => {
 
       expect(() => {
         gameState.next(gameInput);
-      }).to.throwException(/Need at least 9 Critters/i);
+      }).to.throwException(/at least 4 Unique Constructions/i);
       expect(
         player.getClaimedEvent(EventName.SPECIAL_ARCHITECTURAL_RENAISSANCE)
       ).to.be(undefined);

@@ -7370,7 +7370,129 @@ describe("Card", () => {
       });
     });
 
-    describe(CardName.CHIPSMITH, () => {});
+    describe(CardName.CHIPSMITH, () => {
+      it("should allow the player to reactivate production cards", () => {
+        let player = gameState.getActivePlayer();
+
+        player.addToCity(gameState, CardName.MINE);
+        player.addToCity(gameState, CardName.FARM);
+        player.addToCity(gameState, CardName.CHIPSMITH);
+
+        expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+
+        const visitDestinationInput = {
+          inputType: GameInputType.VISIT_DESTINATION_CARD as const,
+          clientOptions: {
+            playedCard: player.getFirstPlayedCard(CardName.CHIPSMITH),
+          },
+        };
+
+        const selectPlayedCardInput = {
+          inputType: GameInputType.SELECT_PLAYED_CARDS as const,
+          prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+          cardContext: CardName.CHIPSMITH,
+          maxToSelect: 2,
+          minToSelect: 2,
+          cardOptions: [
+            ...player.getPlayedCardForCardName(CardName.MINE),
+            ...player.getPlayedCardForCardName(CardName.FARM),
+          ],
+          clientOptions: {
+            selectedCards: [
+              player.getFirstPlayedCard(CardName.MINE),
+              player.getFirstPlayedCard(CardName.FARM),
+            ],
+          },
+        };
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          visitDestinationInput,
+          selectPlayedCardInput,
+        ]);
+
+        expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(1);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
+      });
+
+      it("should not allow player to visit if 0 production cards", () => {
+        player.addToCity(gameState, CardName.CHIPSMITH);
+
+        const visitDestinationInput = {
+          inputType: GameInputType.VISIT_DESTINATION_CARD as const,
+          clientOptions: {
+            playedCard: player.getFirstPlayedCard(CardName.CHIPSMITH),
+          },
+        };
+
+        expect(() => {
+          gameState.next(visitDestinationInput);
+        }).to.throwException(/No useful production cards/i);
+      });
+
+      it("allow player to visit if only 1 production card", () => {
+        player.addToCity(gameState, CardName.FARM);
+        player.addToCity(gameState, CardName.CHIPSMITH);
+
+        const visitDestinationInput = {
+          inputType: GameInputType.VISIT_DESTINATION_CARD as const,
+          clientOptions: {
+            playedCard: player.getFirstPlayedCard(CardName.CHIPSMITH),
+          },
+        };
+
+        const selectPlayedCardInput = {
+          inputType: GameInputType.SELECT_PLAYED_CARDS as const,
+          prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+          cardContext: CardName.CHIPSMITH,
+          maxToSelect: 1,
+          minToSelect: 1,
+          cardOptions: [...player.getPlayedCardForCardName(CardName.FARM)],
+          clientOptions: {
+            selectedCards: [player.getFirstPlayedCard(CardName.FARM)],
+          },
+        };
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          visitDestinationInput,
+          selectPlayedCardInput,
+        ]);
+
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
+      });
+
+      it("should not allow the player to copy their HUSBAND (if they are missing a WIFE)", () => {
+        player.addToCity(gameState, CardName.HUSBAND);
+        player.addToCity(gameState, CardName.FARM);
+        player.addToCity(gameState, CardName.CHIPSMITH);
+
+        const visitDestinationInput = {
+          inputType: GameInputType.VISIT_DESTINATION_CARD as const,
+          clientOptions: {
+            playedCard: player.getFirstPlayedCard(CardName.CHIPSMITH),
+          },
+        };
+
+        const selectPlayedCardInput = {
+          inputType: GameInputType.SELECT_PLAYED_CARDS as const,
+          prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+          cardContext: CardName.CHIPSMITH,
+          maxToSelect: 1,
+          minToSelect: 1,
+          cardOptions: [...player.getPlayedCardForCardName(CardName.FARM)],
+          clientOptions: {
+            selectedCards: [player.getFirstPlayedCard(CardName.FARM)],
+          },
+        };
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          visitDestinationInput,
+          selectPlayedCardInput,
+        ]);
+
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
+      });
+    });
 
     describe(CardName.CITY_HALL, () => {
       it("should do nothing is player plays a critter", () => {

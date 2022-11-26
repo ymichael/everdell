@@ -4194,8 +4194,69 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     baseCost: {
       [ResourceType.BERRY]: 2,
     },
+    canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
+        const productionCards = onlyRelevantProductionCards(
+          gameState,
+          player.getAllPlayedCardsByType(CardType.PRODUCTION)
+        );
+        if (productionCards.length === 0) {
+          return "No useful production cards to activate.";
+        }
+      }
+      return null;
+    },
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
+        const productionCards = onlyRelevantProductionCards(
+          gameState,
+          player.getAllPlayedCardsByType(CardType.PRODUCTION)
+        );
+
+        // betwee num of production cards & 2, get the lower of the two numbers
+        const numToActivate = Math.min(productionCards.length, 2);
+
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          prevInputType: gameInput.inputType,
+          label: `Select ${numToActivate} PRODUCTION to activate`,
+          cardOptions: productionCards,
+          cardContext: CardName.CHIPSMITH,
+          maxToSelect: numToActivate,
+          minToSelect: numToActivate,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS &&
+        gameInput.cardContext === CardName.CHIPSMITH
+      ) {
+        const selectedCards = gameInput.clientOptions.selectedCards;
+        if (!selectedCards || selectedCards.length !== gameInput.minToSelect) {
+          throw new Error(`Please select ${gameInput.minToSelect} cards`);
+        }
+
+        gameState.addGameLogFromCard(CardName.CHIPSMITH, [
+          player,
+          " activated PRODUCTION on ",
+          ...cardListToGameText(selectedCards.map(({ cardName }) => cardName)),
+          ".",
+        ]);
+        selectedCards.forEach((selectedCard) => {
+          if (!gameInput.cardOptions.find((x) => isEqual(x, selectedCard))) {
+            throw new Error("Could not find selected card.");
+          }
+          Card.fromName(selectedCard.cardName).reactivateCard(
+            gameState,
+            gameInput,
+            gameState.getPlayer(selectedCard.cardOwnerId),
+            selectedCard
+          );
+        });
+      }
     },
   }),
   [CardName.CITY_HALL]: new Card({

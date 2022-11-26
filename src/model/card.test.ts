@@ -7327,7 +7327,84 @@ describe("Card", () => {
 
     describe(CardName.HOTEL, () => {});
 
-    describe(CardName.INVENTOR, () => {});
+    describe(CardName.INVENTOR, () => {
+      it("can be used to play a critter for 3 BERRY less", () => {
+        const card = Card.fromName(CardName.WIFE);
+        player.addToCity(gameState, CardName.INVENTOR);
+        player.addCardToHand(gameState, card.name);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+
+        expect(player.hasCardInCity(card.name)).to.be(false);
+        expect(player.hasCardInCity(CardName.INVENTOR)).to.be(true);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name, {
+            paymentOptions: {
+              resources: { [ResourceType.BERRY]: 0 },
+              cardToUse: CardName.INVENTOR,
+            },
+          }),
+        ]);
+
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+        expect(player.hasCardInCity(card.name)).to.be(true);
+        expect(player.hasCardInCity(CardName.INVENTOR)).to.be(false);
+      });
+
+      it("can be used to play a construction for 3 ANY less", () => {
+        const card = Card.fromName(CardName.DUNGEON);
+        player.addToCity(gameState, CardName.INVENTOR);
+        player.addCardToHand(gameState, card.name);
+        expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+
+        expect(player.hasCardInCity(card.name)).to.be(false);
+        expect(player.hasCardInCity(CardName.INVENTOR)).to.be(true);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name, {
+            paymentOptions: {
+              resources: { [ResourceType.RESIN]: 0, [ResourceType.PEBBLE]: 0 },
+              cardToUse: CardName.INVENTOR,
+            },
+          }),
+        ]);
+
+        expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+        expect(player.hasCardInCity(card.name)).to.be(true);
+        expect(player.hasCardInCity(CardName.INVENTOR)).to.be(false);
+      });
+
+      it("can be used to play a critter even if city is full", () => {
+        const card = Card.fromName(CardName.WIFE);
+        player.addToCity(gameState, CardName.INVENTOR);
+        player.addCardToHand(gameState, card.name);
+
+        for (let i = 0; i < 14; i++) {
+          player.addToCity(gameState, CardName.FARM);
+        }
+
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+        expect(player.getNumOccupiedSpacesInCity()).to.be(15);
+        expect(player.hasCardInCity(card.name)).to.be(false);
+        expect(player.hasCardInCity(CardName.INVENTOR)).to.be(true);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name, {
+            paymentOptions: {
+              resources: { [ResourceType.BERRY]: 0 },
+              cardToUse: CardName.INVENTOR,
+            },
+          }),
+        ]);
+
+        expect(player.getNumOccupiedSpacesInCity()).to.be(15);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+        expect(player.hasCardInCity(card.name)).to.be(true);
+        expect(player.hasCardInCity(CardName.INVENTOR)).to.be(false);
+      });
+    });
 
     describe(CardName.LAMPLIGHTER, () => {});
 

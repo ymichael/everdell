@@ -4414,13 +4414,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: true,
     baseVP: 1,
     numInDeck: 3,
-    resourcesToGain: {},
-    baseCost: {
-      [ResourceType.BERRY]: 2,
-    },
-    playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
-    },
+    baseCost: { [ResourceType.BERRY]: 2 },
   }),
   [CardName.LAMPLIGHTER]: new Card({
     expansion: ExpansionType.NEWLEAF,

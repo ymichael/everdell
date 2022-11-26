@@ -617,6 +617,7 @@ export type CardPaymentOptions = {
     | CardName.QUEEN
     | CardName.INNKEEPER
     | CardName.CRANE
+    | CardName.INVENTOR
     | CardName.INN
     | null;
 

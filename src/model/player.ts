@@ -459,6 +459,9 @@ export class Player implements IGameTextEntity {
       if (card.isConstruction && this.hasCardInCity(CardName.CRANE)) {
         return true;
       }
+      if (this.hasCardInCity(CardName.INVENTOR)) {
+        return true;
+      }
       if (this.canInvokeDungeon()) {
         return true;
       }
@@ -1029,6 +1032,8 @@ export class Player implements IGameTextEntity {
     const wildDiscount =
       // Dungeon
       this.canInvokeDungeon() ||
+      // Inventor
+      this.hasCardInCity(CardName.INVENTOR) ||
       // Crane
       (card.isConstruction && this.hasCardInCity(CardName.CRANE));
 
@@ -1214,15 +1219,11 @@ export class Player implements IGameTextEntity {
     } else if (paymentOptions.cardToUse) {
       switch (paymentOptions.cardToUse) {
         case CardName.CRANE:
-          this.removeCardFromCity(
-            gameState,
-            this.getFirstPlayedCard(CardName.CRANE)
-          );
-          break;
+        case CardName.INVENTOR:
         case CardName.INNKEEPER:
           this.removeCardFromCity(
             gameState,
-            this.getFirstPlayedCard(CardName.INNKEEPER)
+            this.getFirstPlayedCard(paymentOptions.cardToUse)
           );
           break;
         case CardName.QUEEN:
@@ -1329,6 +1330,12 @@ export class Player implements IGameTextEntity {
           if (!gameInput.clientOptions.fromMeadow) {
             return `Cannot use ${CardName.INN} to play a non-meadow card`;
           }
+          return this.validatePaidResources(
+            paymentResources,
+            cardToPlay.baseCost,
+            "ANY 3"
+          );
+        case CardName.INVENTOR:
           return this.validatePaidResources(
             paymentResources,
             cardToPlay.baseCost,

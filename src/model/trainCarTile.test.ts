@@ -1,4 +1,5 @@
 import expect from "expect.js";
+import { TrainCarTileName } from "./types";
 import {
   TrainCarTile,
   TrainCarTileStack,

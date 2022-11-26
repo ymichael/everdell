@@ -786,3 +786,15 @@ export type RiverDestinationMapSpots = Record<
   RiverDestinationSpotName,
   RiverDestinationSpotNameInfo
 >;
+
+export type TAssociatedCard =
+  | {
+      type: "CARD",
+      cardName: CardName
+  }
+  | {
+      type: "GOLDEN_LEAF",
+      cardType: CardType | "ANY" | "UNIQUE" | "COMMON";
+    }
+  | { type: "ANY" }
+  | { type: "HUSBAND_WIFE" }

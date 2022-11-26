@@ -94,14 +94,18 @@ const OptionToUseAssociatedCard: React.FC<{
 }> = ({ cardName, name, resetPaymentOptions, viewingPlayer }) => {
   const [_field, meta, helpers] = useField(name);
   const card = CardModel.fromName(cardName);
-  const hasUnusedAssociatedCard =
-    card.associatedCard &&
-    viewingPlayer.hasUnoccupiedConstruction(card.associatedCard);
+  let associatedCardName: CardName | null = null;
+  if (
+    card.associatedCard.type === "CARD" &&
+    viewingPlayer.hasUnoccupiedConstruction(card.associatedCard.cardName)
+  ) {
+    associatedCardName = card.associatedCard.cardName;
+  }
   const hasUnusedEvertree = viewingPlayer.hasUnoccupiedConstruction(
     CardName.EVERTREE
   );
   const canUseAssociatedCard =
-    card.isCritter && (hasUnusedAssociatedCard || hasUnusedEvertree);
+    card.isCritter && (associatedCardName || hasUnusedEvertree);
   if (!canUseAssociatedCard) {
     return <></>;
   }
@@ -123,8 +127,8 @@ const OptionToUseAssociatedCard: React.FC<{
         <Description
           textParts={[
             { type: "text", text: "Use " },
-            hasUnusedAssociatedCard
-              ? CardModel.fromName(card.associatedCard!).getGameTextPart()
+            associatedCardName
+              ? CardModel.fromName(associatedCardName).getGameTextPart()
               : CardModel.fromName(CardName.EVERTREE).getGameTextPart(),
             { type: "text", text: " to play " },
             CardModel.fromName(card.name).getGameTextPart(),

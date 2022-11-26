@@ -1247,9 +1247,9 @@ export class GameState {
     if (paymentOptions.useAssociatedCard) {
       ret.push(
         " by occupying ",
-        card.associatedCard &&
-          player.hasUnoccupiedConstruction(card.associatedCard)
-          ? Card.fromName(card.associatedCard)
+        card.associatedCard.type === "CARD" &&
+          player.hasUnoccupiedConstruction(card.associatedCard.cardName)
+          ? Card.fromName(card.associatedCard.cardName)
           : player.hasUnoccupiedConstruction(CardName.EVERTREE)
           ? Card.fromName(CardName.EVERTREE)
           : "??"

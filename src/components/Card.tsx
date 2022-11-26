@@ -72,16 +72,14 @@ const getRarityLabel = (card: CardModel) => {
 
 // handle the farm and evertree
 const getAssociatedCard = (card: CardModel) => {
-  if (card.associatedCard) {
-    return card.associatedCard;
+  if (card.associatedCard.type === "CARD") {
+    return card.associatedCard.cardName;
+  } else if (card.associatedCard.type === "HUSBAND_WIFE") {
+    return "Husband / Wife";
+  } else if (card.associatedCard.type === "ANY") {
+    return "Any";
   } else {
-    if (card.name == CardName.FARM) {
-      return "Husband / Wife";
-    } else if (card.name == CardName.EVERTREE) {
-      return "Any";
-    } else {
-      return "TODO";
-    }
+    return "TODO";
   }
 };
 

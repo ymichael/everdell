@@ -24,8 +24,8 @@ const GameInputPlayCard: React.FC<{
     const card = CardModel.fromName(cardName);
     const canUseAssociatedCard =
       card.isCritter &&
-      card.associatedCard &&
-      viewingPlayer.hasUnoccupiedConstruction(card.associatedCard);
+      card.associatedCard.type === "CARD" &&
+      viewingPlayer.hasUnoccupiedConstruction(card.associatedCard.cardName);
 
     helpers.setValue({
       ...meta.value,

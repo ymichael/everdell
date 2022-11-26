@@ -19,6 +19,7 @@ import {
   GameText,
   TextPartEntity,
   IGameTextEntity,
+  TAssociatedCard,
 } from "./types";
 import {
   GameState,
@@ -104,7 +105,7 @@ export class Card<TCardType extends CardType = CardType>
   readonly isCritter: boolean;
   readonly expansion: ExpansionType | null;
   readonly isConstruction: boolean;
-  readonly associatedCard: CardName | null;
+  readonly associatedCard: TAssociatedCard;
   readonly isOpenDestination: boolean;
 
   readonly productionInner: ProductionInnerFn | undefined;
@@ -144,7 +145,7 @@ export class Card<TCardType extends CardType = CardType>
     isUnique: boolean;
     numInDeck: number;
     isConstruction: boolean;
-    associatedCard: CardName | null;
+    associatedCard: TAssociatedCard;
     isOpenDestination?: boolean;
     expansion?: ExpansionType | null;
     playInner?: GameStatePlayFn;
@@ -486,7 +487,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     baseVP: 2,
     isUnique: true,
     isConstruction: false,
-    associatedCard: CardName.CRANE,
+    associatedCard: { type: "CARD", cardName: CardName.CRANE },
     cardDescription: toGameText([
       { type: "points", value: 1 },
       " for each of your unused RESIN and PEBBLE, to a maximum of 6.",
@@ -507,7 +508,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     baseVP: 0,
     isUnique: true,
     isConstruction: false,
-    associatedCard: CardName.THEATRE,
+    associatedCard: { type: "CARD", cardName: CardName.THEATRE },
     cardDescription: toGameText(
       "You may discard up to 5 CARD to gain 1 VP each."
     ),
@@ -565,7 +566,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     baseVP: 1,
     isUnique: false,
     isConstruction: false,
-    associatedCard: CardName.TWIG_BARGE,
+    associatedCard: { type: "CARD", cardName: CardName.TWIG_BARGE },
     resourcesToGain: {},
     cardDescription: toGameText([
       "Gain 2 TWIG for each ",
@@ -605,7 +606,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     baseVP: 4,
     isUnique: true,
     isConstruction: true,
-    associatedCard: CardName.KING,
+    associatedCard: { type: "CARD", cardName: CardName.KING },
     cardDescription: toGameText([
       { type: "points", value: 1 },
       " for each ",
@@ -623,7 +624,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     baseVP: 0,
     isUnique: true,
     isConstruction: true,
-    associatedCard: CardName.UNDERTAKER,
+    associatedCard: { type: "CARD", cardName: CardName.UNDERTAKER },
     cardDescription: toGameText([
       "Reveal 4 CARD from the deck or discard pile and play 1 for free. ",
       "Discard the others.",
@@ -762,7 +763,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     baseVP: 2,
     isUnique: true,
     isConstruction: true,
-    associatedCard: CardName.SHEPHERD,
+    associatedCard: { type: "CARD", cardName: CardName.SHEPHERD },
     cardDescription: toGameText([
       "Place 1 VP on this ",
       { type: "entity", entityType: "card", card: CardName.CHAPEL },
@@ -800,7 +801,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     baseVP: 2,
     isUnique: false,
     isConstruction: false,
-    associatedCard: CardName.RESIN_REFINERY,
+    associatedCard: { type: "CARD", cardName: CardName.RESIN_REFINERY },
     resourcesToGain: {},
     cardDescription: toGameText("Activate 1 PRODUCTION in your city."),
     playInner: (gameState: GameState, gameInput: GameInput) => {
@@ -878,7 +879,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     baseVP: 0,
     isUnique: true,
     isConstruction: true,
-    associatedCard: CardName.HISTORIAN,
+    associatedCard: { type: "CARD", cardName: CardName.HISTORIAN },
     cardDescription: toGameText([
       { type: "iblock", text: toGameText("When played, place 3 VP here.") },
       { type: "BR" },
@@ -970,7 +971,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     baseVP: 2,
     isUnique: true,
     isConstruction: true,
-    associatedCard: CardName.JUDGE,
+    associatedCard: { type: "CARD", cardName: CardName.JUDGE },
     cardDescription: toGameText([
       "Gain 1 TWIG or 1 RESIN or 1 PEBBLE after you play a ",
       { type: "em", text: "Construction" },
@@ -1021,7 +1022,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     baseVP: 1,
     isUnique: true,
     isConstruction: true,
-    associatedCard: CardName.ARCHITECT,
+    associatedCard: { type: "CARD", cardName: CardName.ARCHITECT },
     cardDescription: toGameText([
       ...CARD_PLAYING_DISCLAIMER,
       "When playing a ",
@@ -1041,7 +1042,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     baseVP: 4,
     isUnique: true,
     isConstruction: false,
-    associatedCard: CardName.UNIVERSITY,
+    associatedCard: { type: "CARD", cardName: CardName.UNIVERSITY },
     resourcesToGain: {},
     cardDescription: toGameText("You may pay up to 3 BERRY to gain 1 VP each."),
     productionInner: activateCardSpendResourceToGetVPFactory({
@@ -1063,7 +1064,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     baseVP: 0,
     isUnique: true,
     isConstruction: true,
-    associatedCard: CardName.RANGER,
+    associatedCard: { type: "CARD", cardName: CardName.RANGER },
     cardDescription: toGameText([
       ...CARD_PLAYING_DISCLAIMER,
       "When playing a ",
@@ -1102,7 +1103,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     baseVP: 5,
     isUnique: true,
     isConstruction: true,
-    associatedCard: null,
+    associatedCard: { type: "ANY" },
     cardDescription: toGameText([
       { type: "points", value: 1 },
       " for each PROSPERITY in your city.",
@@ -1124,7 +1125,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     baseVP: 3,
     isUnique: true,
     isConstruction: true,
-    associatedCard: CardName.FOOL,
+    associatedCard: { type: "CARD", cardName: CardName.FOOL },
     cardDescription: toGameText("Draw 2 CARD."),
     resourcesToGain: {
       CARD: 2,
@@ -1138,7 +1139,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     baseVP: 1,
     isUnique: false,
     isConstruction: true,
-    associatedCard: null,
+    associatedCard: { type: "HUSBAND_WIFE" },
     resourcesToGain: {
       [ResourceType.BERRY]: 1,
     },
@@ -1151,7 +1152,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     numInDeck: 2,
     isUnique: true,
     isConstruction: false,
-    associatedCard: CardName.FAIRGROUNDS,
+    associatedCard: { type: "CARD", cardName: CardName.FAIRGROUNDS },
     cardDescription: toGameText([
       "Play this ",
       { type: "entity", entityType: "card", card: CardName.FOOL },
@@ -1244,7 +1245,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     numInDeck: 3,
     isUnique: false,
     isConstruction: true,
-    associatedCard: CardName.SHOPKEEPER,
+    associatedCard: { type: "CARD", cardName: CardName.SHOPKEEPER },
     resourcesToGain: {},
     cardDescription: toGameText([
       "Gain 1 BERRY. If you have a ",
@@ -1275,7 +1276,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     numInDeck: 3,
     isUnique: true,
     isConstruction: false,
-    associatedCard: CardName.CLOCK_TOWER,
+    associatedCard: { type: "CARD", cardName: CardName.CLOCK_TOWER },
     cardDescription: toGameText([
       "Draw 1 CARD after you play a ",
       { type: "em", text: "Critter" },
@@ -1305,7 +1306,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     numInDeck: 4,
     isUnique: false,
     isConstruction: false,
-    associatedCard: CardName.FARM,
+    associatedCard: { type: "CARD", cardName: CardName.FARM },
     cardDescription: toGameText([
       "Gain 1 ANY if paired with a ",
       { type: "entity", entityType: "card", card: CardName.WIFE },
@@ -1362,7 +1363,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     numInDeck: 3,
     isUnique: false,
     isConstruction: true,
-    associatedCard: CardName.INNKEEPER,
+    associatedCard: { type: "CARD", cardName: CardName.INNKEEPER },
     isOpenDestination: true,
     cardDescription: toGameText([
       ...CARD_PLAYING_DISCLAIMER,
@@ -1513,7 +1514,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     numInDeck: 3,
     isUnique: true,
     isConstruction: false,
-    associatedCard: CardName.INN,
+    associatedCard: { type: "CARD", cardName: CardName.INN },
     cardDescription: toGameText([
       ...CARD_PLAYING_DISCLAIMER,
       "When playing a ",
@@ -1531,7 +1532,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     numInDeck: 2,
     isUnique: true,
     isConstruction: false,
-    associatedCard: CardName.COURTHOUSE,
+    associatedCard: { type: "CARD", cardName: CardName.COURTHOUSE },
     cardDescription: toGameText([
       ...CARD_PLAYING_DISCLAIMER,
       "When you play a ",
@@ -1549,7 +1550,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     numInDeck: 2,
     isUnique: true,
     isConstruction: false,
-    associatedCard: CardName.CASTLE,
+    associatedCard: { type: "CARD", cardName: CardName.CASTLE },
     cardDescription: toGameText([
       { type: "points", value: 1 },
       " for each basic event you achieved.",
@@ -1582,7 +1583,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     numInDeck: 2,
     isUnique: true,
     isConstruction: true,
-    associatedCard: CardName.WANDERER,
+    associatedCard: { type: "CARD", cardName: CardName.WANDERER },
     cardDescription: [
       {
         type: "text",
@@ -1665,7 +1666,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     numInDeck: 3,
     isUnique: false,
     isConstruction: true,
-    associatedCard: CardName.MINER_MOLE,
+    associatedCard: { type: "CARD", cardName: CardName.MINER_MOLE },
     resourcesToGain: {
       [ResourceType.PEBBLE]: 1,
     },
@@ -1678,7 +1679,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     numInDeck: 3,
     isUnique: false,
     isConstruction: false,
-    associatedCard: CardName.MINE,
+    associatedCard: { type: "CARD", cardName: CardName.MINE },
     resourcesToGain: {},
     cardDescription: toGameText("Copy 1 PRODUCTION in an opponent's city"),
     playInner: (gameState: GameState, gameInput: GameInput) => {
@@ -1794,7 +1795,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     numInDeck: 2,
     isUnique: true,
     isConstruction: true,
-    associatedCard: CardName.MONK,
+    associatedCard: { type: "CARD", cardName: CardName.MONK },
     cardDescription: toGameText([
       "Give 2 ANY to an opponent and gain 4 VP.",
       { type: "HR" },
@@ -1938,7 +1939,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     numInDeck: 2,
     isUnique: true,
     isConstruction: false,
-    associatedCard: CardName.MONASTERY,
+    associatedCard: { type: "CARD", cardName: CardName.MONASTERY },
     resourcesToGain: {},
     cardDescription: toGameText([
       "You may give up to 2 BERRY to an opponent to gain 2 VP each.",
@@ -2055,7 +2056,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     numInDeck: 2,
     isUnique: true,
     isConstruction: true,
-    associatedCard: CardName.QUEEN,
+    associatedCard: { type: "CARD", cardName: CardName.QUEEN },
     cardDescription: toGameText([
       { type: "points", value: 1 },
       " for each ",
@@ -2073,7 +2074,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     numInDeck: 3,
     isUnique: false,
     isConstruction: false,
-    associatedCard: CardName.RUINS,
+    associatedCard: { type: "CARD", cardName: CardName.RUINS },
     resourcesToGain: {},
     cardDescription: toGameText(
       "You may pay up to 2 ANY to gain an equal amount of ANY."
@@ -2137,7 +2138,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     numInDeck: 3,
     isUnique: false,
     isConstruction: true,
-    associatedCard: CardName.POSTAL_PIGEON,
+    associatedCard: { type: "CARD", cardName: CardName.POSTAL_PIGEON },
     isOpenDestination: true,
     cardDescription: toGameText([
       "Give an opponent 2 CARD, then discard any number of CARD ",
@@ -2264,7 +2265,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     numInDeck: 3,
     isUnique: false,
     isConstruction: false,
-    associatedCard: CardName.POST_OFFICE,
+    associatedCard: { type: "CARD", cardName: CardName.POST_OFFICE },
     cardDescription: toGameText([
       "Reveal 2 CARD. ",
       "You may play 1 worth up to ",
@@ -2348,7 +2349,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     numInDeck: 2,
     isUnique: true,
     isConstruction: false,
-    associatedCard: CardName.PALACE,
+    associatedCard: { type: "CARD", cardName: CardName.PALACE },
     cardDescription: toGameText([
       "Play a CARD worth up to ",
       { type: "points", value: 3 },
@@ -2516,7 +2517,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     numInDeck: 2,
     isUnique: true,
     isConstruction: false,
-    associatedCard: CardName.DUNGEON,
+    associatedCard: { type: "CARD", cardName: CardName.DUNGEON },
     cardDescription: toGameText([
       "Move 1 of your deployed workers to a new location.",
       { type: "HR" },
@@ -2642,7 +2643,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     numInDeck: 3,
     isUnique: false,
     isConstruction: true,
-    associatedCard: CardName.CHIP_SWEEP,
+    associatedCard: { type: "CARD", cardName: CardName.CHIP_SWEEP },
     resourcesToGain: {
       [ResourceType.RESIN]: 1,
     },
@@ -2655,7 +2656,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     numInDeck: 3,
     isUnique: false,
     isConstruction: true,
-    associatedCard: CardName.PEDDLER,
+    associatedCard: { type: "CARD", cardName: CardName.PEDDLER },
     cardDescription: toGameText([
       "Discard a ",
       { type: "em", text: "Construction" },
@@ -2765,7 +2766,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     numInDeck: 2,
     isUnique: true,
     isConstruction: true,
-    associatedCard: CardName.TEACHER,
+    associatedCard: { type: "CARD", cardName: CardName.TEACHER },
     cardDescription: toGameText([
       { type: "points", value: 1 },
       " for each ",
@@ -2783,7 +2784,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     numInDeck: 2,
     isUnique: true,
     isConstruction: false,
-    associatedCard: CardName.CHAPEL,
+    associatedCard: { type: "CARD", cardName: CardName.CHAPEL },
     cardDescription: toGameText([
       "Gain 3 BERRY, then gain 1 VP for each VP on your ",
       { type: "entity", entityType: "card", card: CardName.CHAPEL },
@@ -2935,7 +2936,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     numInDeck: 3,
     isUnique: true,
     isConstruction: false,
-    associatedCard: CardName.GENERAL_STORE,
+    associatedCard: { type: "CARD", cardName: CardName.GENERAL_STORE },
     cardDescription: toGameText([
       "Gain 1 BERRY after you play a ",
       { type: "em", text: "Critter" },
@@ -2971,7 +2972,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     numInDeck: 3,
     isUnique: false,
     isConstruction: true,
-    associatedCard: CardName.WOODCARVER,
+    associatedCard: { type: "CARD", cardName: CardName.WOODCARVER },
     resourcesToGain: {},
     cardDescription: toGameText([
       {
@@ -3096,7 +3097,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     numInDeck: 3,
     isUnique: false,
     isConstruction: false,
-    associatedCard: CardName.SCHOOL,
+    associatedCard: { type: "CARD", cardName: CardName.SCHOOL },
     resourcesToGain: {},
     cardDescription: toGameText(
       "Draw 2 CARD, keep 1, and give the other to an opponent."
@@ -3193,7 +3194,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     numInDeck: 2,
     isUnique: true,
     isConstruction: true,
-    associatedCard: CardName.BARD,
+    associatedCard: { type: "CARD", cardName: CardName.BARD },
     cardDescription: toGameText([
       { type: "points", value: 1 },
       " for each ",
@@ -3211,7 +3212,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     numInDeck: 3,
     isUnique: false,
     isConstruction: true,
-    associatedCard: CardName.BARGE_TOAD,
+    associatedCard: { type: "CARD", cardName: CardName.BARGE_TOAD },
     resourcesToGain: {
       [ResourceType.TWIG]: 2,
     },
@@ -3224,7 +3225,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     numInDeck: 2,
     isUnique: true,
     isConstruction: false,
-    associatedCard: CardName.CEMETARY,
+    associatedCard: { type: "CARD", cardName: CardName.CEMETARY },
     cardDescription: toGameText([
       "Discard 3 CARD from the Meadow, replenish, then draw 1 CARD from the Meadow.",
       { type: "HR" },
@@ -3326,7 +3327,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     numInDeck: 2,
     isUnique: true,
     isConstruction: true,
-    associatedCard: CardName.DOCTOR,
+    associatedCard: { type: "CARD", cardName: CardName.DOCTOR },
     cardDescription: toGameText([
       "Discard a ",
       { type: "em", text: "Critter" },
@@ -3414,7 +3415,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     numInDeck: 3,
     isUnique: false,
     isConstruction: false,
-    associatedCard: CardName.LOOKOUT,
+    associatedCard: { type: "CARD", cardName: CardName.LOOKOUT },
     cardDescription: toGameText([...DOES_NOT_TAKE_UP_SPACE, "Draw 3 CARD."]),
     resourcesToGain: {
       CARD: 3,
@@ -3428,7 +3429,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     numInDeck: 4,
     isUnique: false,
     isConstruction: false,
-    associatedCard: CardName.FARM,
+    associatedCard: { type: "CARD", cardName: CardName.FARM },
     cardDescription: toGameText([
       { type: "points", value: 3 },
       " if paired with a ",
@@ -3448,7 +3449,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     numInDeck: 3,
     isUnique: false,
     isConstruction: false,
-    associatedCard: CardName.STOREHOUSE,
+    associatedCard: { type: "CARD", cardName: CardName.STOREHOUSE },
     resourcesToGain: {},
     cardDescription: toGameText("You may pay up to 3 TWIG to gain 1 VP each"),
     productionInner: activateCardSpendResourceToGetVPFactory({
@@ -3469,7 +3470,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
   [CardName.BRIDGE]: new Card({
     expansion: ExpansionType.PEARLBROOK,
     name: CardName.BRIDGE,
-    associatedCard: CardName.MESSENGER,
+    associatedCard: { type: "CARD", cardName: CardName.MESSENGER },
     cardType: CardType.GOVERNANCE,
     cardDescription: toGameText([
       "Increase your hand size by 1 for every PEARL you have.",
@@ -3497,7 +3498,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
   [CardName.HARBOR]: new Card({
     expansion: ExpansionType.PEARLBROOK,
     name: CardName.HARBOR,
-    associatedCard: CardName.SHIPWRIGHT,
+    associatedCard: { type: "CARD", cardName: CardName.SHIPWRIGHT },
     cardType: CardType.PRODUCTION,
     cardDescription: toGameText("If you have at least 2 PEARL, gain 2 ANY."),
     isUnique: true,
@@ -3540,7 +3541,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
   [CardName.MESSENGER]: new Card({
     expansion: ExpansionType.PEARLBROOK,
     name: CardName.MESSENGER,
-    associatedCard: CardName.BRIDGE,
+    associatedCard: { type: "CARD", cardName: CardName.BRIDGE },
     cardType: CardType.TRAVELER,
     cardDescription: toGameText([
       "Draw 1 CARD and gain 1 VP",
@@ -3649,7 +3650,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
   [CardName.SHIPWRIGHT]: new Card({
     expansion: ExpansionType.PEARLBROOK,
     name: CardName.SHIPWRIGHT,
-    associatedCard: CardName.HARBOR,
+    associatedCard: { type: "CARD", cardName: CardName.HARBOR },
     cardType: CardType.PROSPERITY,
     cardDescription: toGameText([
       { type: "points", value: 1 },
@@ -3675,7 +3676,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
   [CardName.PIRATE]: new Card({
     expansion: ExpansionType.PEARLBROOK,
     name: CardName.PIRATE,
-    associatedCard: CardName.PIRATE_SHIP,
+    associatedCard: { type: "CARD", cardName: CardName.PIRATE_SHIP },
     cardType: CardType.TRAVELER,
     cardDescription: toGameText([
       ...DOES_NOT_TAKE_UP_SPACE,
@@ -3765,7 +3766,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
   [CardName.PIRATE_SHIP]: new Card({
     expansion: ExpansionType.PEARLBROOK,
     name: CardName.PIRATE_SHIP,
-    associatedCard: CardName.PIRATE,
+    associatedCard: { type: "CARD", cardName: CardName.PIRATE },
     cardType: CardType.DESTINATION,
     cardDescription: toGameText([
       "Move this ",
@@ -3924,7 +3925,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
   [CardName.FERRY]: new Card({
     expansion: ExpansionType.PEARLBROOK,
     name: CardName.FERRY,
-    associatedCard: CardName.FERRY_FERRET,
+    associatedCard: { type: "CARD", cardName: CardName.FERRY_FERRET },
     cardType: CardType.DESTINATION,
     maxWorkerSpots: 0,
     playedCardInfoDefault: {
@@ -4007,7 +4008,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
   [CardName.FERRY_FERRET]: new Card({
     expansion: ExpansionType.PEARLBROOK,
     name: CardName.FERRY_FERRET,
-    associatedCard: CardName.FERRY,
+    associatedCard: { type: "CARD", cardName: CardName.FERRY },
     cardType: CardType.PRODUCTION,
     cardDescription: toGameText("If you have at least 2 PEARL, gain 2 VP"),
     isConstruction: false,
@@ -4043,7 +4044,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
   [CardName.AIR_BALLOON]: new Card({
     expansion: ExpansionType.NEWLEAF,
     name: CardName.AIR_BALLOON,
-    associatedCard: null,
+    associatedCard: { type: "GOLDEN_LEAF", cardType: CardType.TRAVELER },
     cardType: CardType.TRAVELER,
     cardDescription: toGameText([
       ...DOES_NOT_TAKE_UP_SPACE,
@@ -4129,7 +4130,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
   [CardName.BAKER]: new Card({
     expansion: ExpansionType.NEWLEAF,
     name: CardName.BAKER,
-    associatedCard: null,
+    associatedCard: { type: "GOLDEN_LEAF", cardType: CardType.PRODUCTION },
     cardType: CardType.PROSPERITY,
     cardDescription: toGameText([
       { type: "points", value: 2 },
@@ -4152,7 +4153,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
   [CardName.BANK]: new Card({
     expansion: ExpansionType.NEWLEAF,
     name: CardName.BANK,
-    associatedCard: null,
+    associatedCard: { type: "GOLDEN_LEAF", cardType: CardType.PROSPERITY },
     cardType: CardType.PRODUCTION,
     cardDescription: toGameText([
       "Place 1 VP here. Increase your hand limit size by 1 CARD for each VP here.",
@@ -4173,7 +4174,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
   [CardName.CHIPSMITH]: new Card({
     expansion: ExpansionType.NEWLEAF,
     name: CardName.CHIPSMITH,
-    associatedCard: null,
+    associatedCard: { type: "GOLDEN_LEAF", cardType: CardType.DESTINATION },
     cardType: CardType.DESTINATION,
     cardDescription: toGameText(
       "Activate 2 different PRODUCTION in your city."
@@ -4194,7 +4195,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
   [CardName.CITY_HALL]: new Card({
     expansion: ExpansionType.NEWLEAF,
     name: CardName.CITY_HALL,
-    associatedCard: null,
+    associatedCard: { type: "GOLDEN_LEAF", cardType: CardType.GOVERNANCE },
     cardType: CardType.GOVERNANCE,
     cardDescription: toGameText([
       "After you play a ",
@@ -4218,7 +4219,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
   [CardName.CONDUCTOR]: new Card({
     expansion: ExpansionType.NEWLEAF,
     name: CardName.CONDUCTOR,
-    associatedCard: null,
+    associatedCard: { type: "GOLDEN_LEAF", cardType: "UNIQUE" },
     cardType: CardType.DESTINATION,
     cardDescription: toGameText([
       "Copy any DESTINATION in an opponent's city. Apply to your city. ",
@@ -4243,7 +4244,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
   [CardName.DIPLOMAT]: new Card({
     expansion: ExpansionType.NEWLEAF,
     name: CardName.DIPLOMAT,
-    associatedCard: null,
+    associatedCard: { type: "GOLDEN_LEAF", cardType: CardType.GOVERNANCE },
     cardType: CardType.GOVERNANCE,
     cardDescription: toGameText([
       "After you play a ",
@@ -4265,7 +4266,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
   [CardName.EVER_WALL]: new Card({
     expansion: ExpansionType.NEWLEAF,
     name: CardName.EVER_WALL,
-    associatedCard: null,
+    associatedCard: { type: "GOLDEN_LEAF", cardType: CardType.PROSPERITY },
     cardType: CardType.PROSPERITY,
     cardDescription: toGameText([
       { type: "i", text: "Does not take up a space in your city." },
@@ -4291,7 +4292,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
   [CardName.FREIGHT_CAR]: new Card({
     expansion: ExpansionType.NEWLEAF,
     name: CardName.FREIGHT_CAR,
-    associatedCard: null,
+    associatedCard: { type: "GOLDEN_LEAF", cardType: "UNIQUE" },
     cardType: CardType.PRODUCTION,
     cardDescription: toGameText([
       {
@@ -4320,7 +4321,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
   [CardName.GARDENER]: new Card({
     expansion: ExpansionType.NEWLEAF,
     name: CardName.GARDENER,
-    associatedCard: null,
+    associatedCard: {
+      type: "GOLDEN_LEAF",
+      cardType: CardType.PRODUCTION,
+    },
     cardType: CardType.TRAVELER,
     cardDescription: toGameText(
       "You may activate 2 different PRODUCTION in your city."
@@ -4340,7 +4344,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
   [CardName.GREENHOUSE]: new Card({
     expansion: ExpansionType.NEWLEAF,
     name: CardName.GREENHOUSE,
-    associatedCard: null,
+    associatedCard: { type: "GOLDEN_LEAF", cardType: CardType.PRODUCTION },
     cardType: CardType.PRODUCTION,
     cardDescription: toGameText([
       { type: "i", text: "May share a space with a Farm." },
@@ -4366,7 +4370,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
   [CardName.HOTEL]: new Card({
     expansion: ExpansionType.NEWLEAF,
     name: CardName.HOTEL,
-    associatedCard: null,
+    associatedCard: { type: "GOLDEN_LEAF", cardType: CardType.TRAVELER },
     cardType: CardType.DESTINATION,
     cardDescription: toGameText([
       ...CARD_PLAYING_DISCLAIMER,
@@ -4398,7 +4402,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
   [CardName.INVENTOR]: new Card({
     expansion: ExpansionType.NEWLEAF,
     name: CardName.INVENTOR,
-    associatedCard: null,
+    associatedCard: { type: "GOLDEN_LEAF", cardType: CardType.GOVERNANCE },
     cardType: CardType.GOVERNANCE,
     cardDescription: toGameText([
       ...CARD_PLAYING_DISCLAIMER,
@@ -4419,7 +4423,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
   [CardName.LAMPLIGHTER]: new Card({
     expansion: ExpansionType.NEWLEAF,
     name: CardName.LAMPLIGHTER,
-    associatedCard: null,
+    associatedCard: { type: "GOLDEN_LEAF", cardType: "COMMON" },
     cardType: CardType.PRODUCTION,
     cardDescription: toGameText([
       "You may draw 2 CARD from the deck, the Meadow, and/or ",
@@ -4440,7 +4444,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
   [CardName.LIBRARY]: new Card({
     expansion: ExpansionType.NEWLEAF,
     name: CardName.LIBRARY,
-    associatedCard: null,
+    associatedCard: { type: "GOLDEN_LEAF", cardType: CardType.GOVERNANCE },
     cardType: CardType.PROSPERITY,
     cardDescription: toGameText([
       { type: "points", value: 1 },
@@ -4474,7 +4478,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
   [CardName.LOCOMOTIVE]: new Card({
     expansion: ExpansionType.NEWLEAF,
     name: CardName.LOCOMOTIVE,
-    associatedCard: null,
+    associatedCard: { type: "GOLDEN_LEAF", cardType: CardType.PRODUCTION },
     cardType: CardType.DESTINATION,
     cardDescription: toGameText([
       ...CARD_PLAYING_DISCLAIMER,
@@ -4497,7 +4501,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
   [CardName.MAGICIAN]: new Card({
     expansion: ExpansionType.NEWLEAF,
     name: CardName.MAGICIAN,
-    associatedCard: null,
+    associatedCard: { type: "GOLDEN_LEAF", cardType: CardType.DESTINATION },
     cardType: CardType.PRODUCTION,
     cardDescription: toGameText([
       "You may discard 1 other ",
@@ -4521,7 +4525,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
   [CardName.MAIN_ROAD]: new Card({
     expansion: ExpansionType.NEWLEAF,
     name: CardName.MAIN_ROAD,
-    associatedCard: null,
+    associatedCard: { type: "GOLDEN_LEAF", cardType: "COMMON" },
     cardType: CardType.TRAVELER,
     cardDescription: toGameText([
       { type: "i", text: "Does not take up space in your city." },
@@ -4539,7 +4543,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
   [CardName.MAYOR]: new Card({
     expansion: ExpansionType.NEWLEAF,
     name: CardName.MAYOR,
-    associatedCard: null,
+    associatedCard: { type: "GOLDEN_LEAF", cardType: "UNIQUE" },
     cardType: CardType.PRODUCTION,
     cardDescription: toGameText([
       "Gain 1 VP, and 1 VP for ",
@@ -4562,7 +4566,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
   [CardName.MILLER]: new Card({
     expansion: ExpansionType.NEWLEAF,
     name: CardName.MILLER,
-    associatedCard: null,
+    associatedCard: { type: "GOLDEN_LEAF", cardType: CardType.PROSPERITY },
     cardType: CardType.PRODUCTION,
     cardDescription: toGameText("You may pay 1 PEBBLE to gain 3 VP."),
     isConstruction: false,
@@ -4588,7 +4592,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
   [CardName.MUSEUM]: new Card({
     expansion: ExpansionType.NEWLEAF,
     name: CardName.MUSEUM,
-    associatedCard: null,
+    associatedCard: { type: "GOLDEN_LEAF", cardType: "UNIQUE" },
     cardType: CardType.GOVERNANCE,
     cardDescription: toGameText([
       "After you play a ",
@@ -4614,7 +4618,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
   [CardName.PHOTOGRAPHER]: new Card({
     expansion: ExpansionType.NEWLEAF,
     name: CardName.PHOTOGRAPHER,
-    associatedCard: null,
+    associatedCard: { type: "GOLDEN_LEAF", cardType: CardType.PROSPERITY },
     cardType: CardType.PROSPERITY,
     cardDescription: toGameText([
       "Copy any PROSPERITY in an opponent's city. ",
@@ -4638,7 +4642,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
   [CardName.POET]: new Card({
     expansion: ExpansionType.NEWLEAF,
     name: CardName.POET,
-    associatedCard: null,
+    associatedCard: { type: "GOLDEN_LEAF", cardType: "COMMON" },
     cardType: CardType.TRAVELER,
     cardDescription: toGameText([
       "Choose a color. ",
@@ -4662,7 +4666,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
   [CardName.TEA_HOUSE]: new Card({
     expansion: ExpansionType.NEWLEAF,
     name: CardName.TEA_HOUSE,
-    associatedCard: null,
+    associatedCard: { type: "GOLDEN_LEAF", cardType: "COMMON" },
     cardType: CardType.PRODUCTION,
     cardDescription: toGameText([
       "You may give 1 CARD to an opponent to",

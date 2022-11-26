@@ -21,6 +21,7 @@ import {
   LocationType,
   PlayerStatus,
   IGameTextEntity,
+  TAssociatedCard,
 } from "./types";
 import { PlayerJSON } from "./jsonTypes";
 import { GameState } from "./gameState";
@@ -999,8 +1000,8 @@ export class Player implements IGameTextEntity {
         return true;
       }
       if (
-        card.associatedCard &&
-        this.hasUnoccupiedConstruction(card.associatedCard)
+        card.associatedCard.type == "CARD" &&
+        this.hasUnoccupiedConstruction(card.associatedCard.cardName)
       ) {
         return true;
       }
@@ -1181,9 +1182,9 @@ export class Player implements IGameTextEntity {
     if (paymentOptions.useAssociatedCard) {
       let hasUsed = false;
       const playedCardsToCheck: PlayedCardInfo[] = [];
-      if (card.associatedCard) {
+      if (card.associatedCard.type === "CARD") {
         playedCardsToCheck.push(
-          ...this.getPlayedCardForCardName(card.associatedCard)
+          ...this.getPlayedCardForCardName(card.associatedCard.cardName)
         );
       }
       playedCardsToCheck.push(
@@ -1286,7 +1287,10 @@ export class Player implements IGameTextEntity {
 
       if (
         !this.hasUnoccupiedConstruction(CardName.EVERTREE) &&
-        !this.hasUnoccupiedConstruction(cardToPlay.associatedCard)
+        !(
+          cardToPlay.associatedCard.type === "CARD" &&
+          this.hasUnoccupiedConstruction(cardToPlay.associatedCard.cardName)
+        )
       ) {
         return `Cannot find associated card to play ${cardToPlay.name}`;
       }

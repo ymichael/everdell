@@ -39,6 +39,7 @@ export type GameStateJSON = {
   gameLog: GameLogEntry[];
   riverDestinationMap: RiverDestinationMapJSON | null;
   adornmentsPile: CardStackJSON<AdornmentName> | null;
+  stationCards: (CardName | null)[] | null;
   trainCarTileStack: TrainCarTileStackJSON | null;
 };
 

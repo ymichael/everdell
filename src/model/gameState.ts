@@ -64,6 +64,7 @@ import isEqual from "lodash/isEqual";
 import omit from "lodash/omit";
 
 const MEADOW_SIZE = 8;
+const STATION_SIZE = 8;
 const STARTING_PLAYER_HAND_SIZE = 5;
 const MAX_GAME_LOG_BUFFER = 500;
 
@@ -157,6 +158,8 @@ export class GameState {
   readonly riverDestinationMap: RiverDestinationMap | null;
   readonly trainCarTileStack: TrainCarTileStack | null;
 
+  readonly stationCards: (CardName | null)[];
+
   constructor({
     gameStateId,
     activePlayerId,
@@ -172,6 +175,7 @@ export class GameState {
     playedGameInputs = [],
     adornmentsPile = null,
     riverDestinationMap = null,
+    stationCards = [],
     trainCarTileStack = null,
   }: {
     gameStateId: number;
@@ -184,6 +188,7 @@ export class GameState {
     eventsMap: EventNameToPlayerId;
     adornmentsPile?: CardStack<AdornmentName> | null;
     riverDestinationMap?: RiverDestinationMap | null;
+    stationCards?: (CardName | null)[];
     trainCarTileStack?: TrainCarTileStack | null;
     pendingGameInputs: GameInputMultiStep[];
     playedGameInputs?: GameInput[];
@@ -194,6 +199,7 @@ export class GameState {
     this.players = players;
     this.locationsMap = locationsMap;
     this.meadowCards = meadowCards;
+    this.stationCards = stationCards;
     this.discardPile = discardPile;
     this.deck = deck;
     this.eventsMap = eventsMap;
@@ -331,6 +337,7 @@ export class GameState {
         trainCarTileStack: this.trainCarTileStack
           ? this.trainCarTileStack.toJSON(includePrivate)
           : null,
+        stationCards: this.stationCards,
       },
       ...(includePrivate
         ? {
@@ -392,6 +399,16 @@ export class GameState {
   replenishMeadow(): void {
     while (this.meadowCards.length < MEADOW_SIZE) {
       this.meadowCards.push(this.drawCard());
+    }
+  }
+
+  replenishStation(): void {
+    if (this.gameOptions.newleaf?.station) {
+      for (let i = 0; i < STATION_SIZE; i++) {
+        if (!this.stationCards[i]) {
+          this.stationCards[i] = this.drawCard();
+        }
+      }
     }
   }
 
@@ -1323,6 +1340,7 @@ export class GameState {
       riverDestinationMap: gameStateJSON.riverDestinationMap
         ? RiverDestinationMap.fromJSON(gameStateJSON.riverDestinationMap)
         : null,
+      stationCards: gameStateJSON.stationCards ?? [],
       trainCarTileStack: gameStateJSON.trainCarTileStack
         ? TrainCarTileStack.fromJSON(gameStateJSON.trainCarTileStack)
         : null,
@@ -1348,6 +1366,7 @@ export class GameState {
       gameStateId: 1,
       players,
       meadowCards: [],
+      stationCards: [],
       deck: initialDeck(gameOptionsWithDefaults),
       discardPile: discardPile(),
       locationsMap: initialLocationsMap(
@@ -1396,6 +1415,12 @@ export class GameState {
     gameState.replenishMeadow();
     gameState.addGameLog(`Dealing cards to each player.`);
     gameState.addGameLog(`Dealing cards to the Meadow.`);
+
+    if (gameOptions.newleaf?.station) {
+      gameState.addGameLog(`Dealing cards to the Station.`);
+      gameState.replenishStation();
+    }
+
     if (withPearlbrook) {
       gameState.addGameLog(`Dealing 2 adornment cards to each player.`);
     }

@@ -8080,7 +8080,108 @@ describe("Card", () => {
 
     describe(CardName.LOCOMOTIVE, () => {});
 
-    describe(CardName.MAGICIAN, () => {});
+    // TODO: add test case for "should now allow player to select Magician"
+    describe(CardName.MAGICIAN, () => {
+      it("allow player to discard card from city to receive 1 VP and 1 ANY", () => {
+        let player = gameState.getActivePlayer();
+
+        const card = Card.fromName(CardName.MAGICIAN);
+
+        // Make sure we can play this card
+        player.gainResources(gameState, card.baseCost);
+        player.addCardToHand(gameState, card.name);
+
+        player.addToCity(gameState, CardName.FARM);
+        player.addToCity(gameState, CardName.TWIG_BARGE);
+
+        expect(player.hasCardInCity(CardName.FARM)).to.be(true);
+        expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+
+        const selectPlayedCardInput = {
+          inputType: GameInputType.SELECT_PLAYED_CARDS as const,
+          prevInputType: GameInputType.PLAY_CARD,
+          cardContext: CardName.MAGICIAN,
+          cardOptions: [
+            ...player.getPlayedCardForCardName(CardName.FARM),
+            ...player.getPlayedCardForCardName(CardName.TWIG_BARGE),
+          ],
+          maxToSelect: 1,
+          minToSelect: 0,
+          clientOptions: {
+            selectedCards: [player.getFirstPlayedCard(CardName.FARM)],
+          },
+        };
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+          selectPlayedCardInput,
+          {
+            inputType: GameInputType.SELECT_OPTION_GENERIC,
+            prevInputType: GameInputType.SELECT_PLAYED_CARDS,
+            prevInput: selectPlayedCardInput,
+            cardContext: CardName.MAGICIAN,
+            options: [
+              ResourceType.BERRY,
+              ResourceType.TWIG,
+              ResourceType.RESIN,
+              ResourceType.PEBBLE,
+            ],
+            clientOptions: {
+              selectedOption: ResourceType.TWIG,
+            },
+          },
+        ]);
+
+        expect(player.hasCardInCity(CardName.FARM)).to.be(false);
+        expect(player.hasCardInCity(CardName.TWIG_BARGE)).to.be(true);
+        expect(player.hasCardInCity(CardName.MAGICIAN)).to.be(true);
+        expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(1);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(1);
+      });
+      it("allow player to select 0 cards", () => {
+        let player = gameState.getActivePlayer();
+
+        const card = Card.fromName(CardName.MAGICIAN);
+
+        // Make sure we can play this card
+        player.gainResources(gameState, card.baseCost);
+        player.addCardToHand(gameState, card.name);
+
+        player.addToCity(gameState, CardName.FARM);
+        player.addToCity(gameState, CardName.TWIG_BARGE);
+
+        expect(player.hasCardInCity(CardName.FARM)).to.be(true);
+        expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+
+        const selectPlayedCardInput = {
+          inputType: GameInputType.SELECT_PLAYED_CARDS as const,
+          prevInputType: GameInputType.PLAY_CARD,
+          cardContext: CardName.MAGICIAN,
+          cardOptions: [
+            ...player.getPlayedCardForCardName(CardName.FARM),
+            ...player.getPlayedCardForCardName(CardName.TWIG_BARGE),
+          ],
+          maxToSelect: 1,
+          minToSelect: 0,
+          clientOptions: {
+            selectedCards: [],
+          },
+        };
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+          selectPlayedCardInput,
+        ]);
+
+        expect(player.hasCardInCity(CardName.FARM)).to.be(true);
+        expect(player.hasCardInCity(CardName.TWIG_BARGE)).to.be(true);
+        expect(player.hasCardInCity(CardName.MAGICIAN)).to.be(true);
+        expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+      });
+    });
 
     describe(CardName.MAIN_ROAD, () => {
       it("should not take up any space in the city", () => {

@@ -4807,8 +4807,93 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     baseCost: {
       [ResourceType.BERRY]: 3,
     },
+    productionInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+
+      if (player.getPlayedCards().length === 0) {
+        gameState.addGameLogFromCard(CardName.MAGICIAN, [
+          player,
+          " did not discard any cards from city.",
+        ]);
+        return;
+      }
+
+      gameState.pendingGameInputs.push({
+        inputType: GameInputType.SELECT_PLAYED_CARDS,
+        label:
+          "You may choose 1 Critter or Construction to discard from your city to gain 1 VP and 1 ANY",
+        prevInputType: gameInput.inputType,
+        cardOptions: player
+          .getPlayedCards()
+          .filter((card) => card.cardName != CardName.MAGICIAN),
+        maxToSelect: 1,
+        minToSelect: 0,
+        cardContext: CardName.MAGICIAN,
+        clientOptions: {
+          selectedCards: [],
+        },
+      });
+    },
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
+      const player = gameState.getActivePlayer();
+      const gainAnyHelper = new GainAnyResource({
+        cardContext: CardName.MAGICIAN,
+        skipGameLog: true,
+      });
+      if (
+        gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS &&
+        gameInput.cardContext === CardName.MAGICIAN
+      ) {
+        if (!gameInput.clientOptions.selectedCards) {
+          throw new Error("Invalid selected cards");
+        }
+        if (gameInput.clientOptions.selectedCards.length > 1) {
+          throw new Error("Too many cards selected");
+        }
+
+        if (gameInput.clientOptions.selectedCards.length === 0) {
+          gameState.addGameLogFromCard(CardName.MAGICIAN, [
+            player,
+            " did discard any cards from city.",
+          ]);
+          return;
+        }
+
+        if (
+          gameInput.clientOptions.selectedCards[0].cardName ===
+          CardName.MAGICIAN
+        ) {
+          throw new Error("May not select Magician");
+        }
+
+        gameState.pendingGameInputs.push(
+          gainAnyHelper.getGameInput({
+            prevInputType: gameInput.inputType,
+            prevInput: gameInput,
+          })
+        );
+      } else if (
+        gainAnyHelper.matchesGameInput(gameInput) &&
+        gameInput.prevInputType === GameInputType.SELECT_PLAYED_CARDS &&
+        !!gameInput.prevInput &&
+        gameInput.prevInput.inputType === GameInputType.SELECT_PLAYED_CARDS
+      ) {
+        const prevInput = gameInput.prevInput;
+        const cardToRemove = prevInput.clientOptions.selectedCards[0];
+        const removedCard = Card.fromName(cardToRemove.cardName);
+        gameState.addGameLogFromCard(CardName.MAGICIAN, [
+          player,
+          " discarded ",
+          removedCard,
+          ` from their city and gained 1 VP.`,
+        ]);
+
+        // Remove card from city + put in discard pile
+        player.removeCardFromCity(gameState, cardToRemove, true);
+
+        player.gainResources(gameState, { [ResourceType.VP]: 1 });
+        gainAnyHelper.play(gameState, gameInput);
+      }
     },
   }),
   [CardName.MAIN_ROAD]: new Card({

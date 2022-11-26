@@ -4396,7 +4396,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     ]),
     isConstruction: true,
     isUnique: false,
-    isOpenDestination: true, // TODO: you get 2 VP when someone visits your hotel
+    isOpenDestination: true,
     baseVP: 1,
     numInDeck: 3,
     resourcesToGain: {},
@@ -4404,8 +4404,127 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       [ResourceType.TWIG]: 2,
       [ResourceType.PEBBLE]: 1,
     },
+    canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
+        const resources = player.getResources();
+        const canPlayHandCard = player.cardsInHand.some((cardName) => {
+          const card = Card.fromName(cardName);
+          return (
+            card.canPlayIgnoreCostAndSource(gameState) &&
+            player.isPaidResourcesValid(
+              resources,
+              card.baseCost,
+              "ANY 3",
+              false
+            )
+          );
+        });
+        if (!canPlayHandCard) {
+          return `Cannot play any cards from hand`;
+        }
+      }
+      return null;
+    },
+    // Play card from hand for 3 less resources
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
+        // add pending input to select 1 card from your hand
+        const resources = player.getResources();
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: gameInput.inputType,
+          label: "Select 1 CARD from the Meadow to play for 3 fewer ANY",
+          cardOptions: player.cardsInHand.filter((cardName) => {
+            const card = Card.fromName(cardName);
+            return (
+              card.canPlayIgnoreCostAndSource(gameState) &&
+              player.isPaidResourcesValid(
+                resources,
+                card.baseCost,
+                "ANY 3",
+                false
+              )
+            );
+          }),
+          maxToSelect: 1,
+          minToSelect: 1,
+          cardContext: CardName.HOTEL,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_CARDS &&
+        gameInput.cardContext === CardName.HOTEL
+      ) {
+        const selectedCards = gameInput.clientOptions.selectedCards;
+        if (!selectedCards) {
+          throw new Error("Must select card to play.");
+        }
+        if (selectedCards.length !== 1) {
+          throw new Error("Can only play 1 card.");
+        }
+        const selectedCardName = selectedCards[0];
+        if (player.cardsInHand.indexOf(selectedCardName) < 0) {
+          throw new Error("Cannot find selected card in the hand.");
+        }
+        const selectedCard = Card.fromName(selectedCardName);
+        if (!selectedCard.canPlayIgnoreCostAndSource(gameState)) {
+          throw new Error(`Unable to play ${selectedCardName}`);
+        }
+
+        if (sumResources(selectedCard.baseCost) <= 3) {
+          selectedCard.addToCityAndPlay(gameState, gameInput);
+          player.removeCardFromHand(gameState, selectedCardName);
+          gameState.addGameLogFromCard(CardName.HOTEL, [
+            player,
+            " played ",
+            selectedCard,
+            " for 3 fewer ANY.",
+          ]);
+        } else {
+          gameState.pendingGameInputs.push({
+            inputType: GameInputType.SELECT_PAYMENT_FOR_CARD,
+            prevInputType: gameInput.inputType,
+            cardContext: CardName.HOTEL,
+            card: selectedCardName,
+            clientOptions: {
+              card: selectedCardName,
+              paymentOptions: { resources: {} },
+            },
+          });
+        }
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_PAYMENT_FOR_CARD &&
+        gameInput.cardContext === CardName.HOTEL
+      ) {
+        if (!gameInput.clientOptions?.paymentOptions?.resources) {
+          throw new Error(
+            "Invalid input: clientOptions.paymentOptions.resources missing"
+          );
+        }
+        const card = Card.fromName(gameInput.card);
+        const paymentError = player.validatePaidResources(
+          gameInput.clientOptions.paymentOptions.resources,
+          card.baseCost,
+          "ANY 3"
+        );
+        if (paymentError) {
+          throw new Error(paymentError);
+        }
+        player.payForCard(gameState, gameInput);
+        player.removeCardFromHand(gameState, card.name);
+        card.addToCityAndPlay(gameState, gameInput);
+
+        gameState.addGameLogFromCard(CardName.INN, [
+          player,
+          " played ",
+          card,
+          " for 3 fewer ANY.",
+        ]);
+      }
     },
   }),
   [CardName.INVENTOR]: new Card({

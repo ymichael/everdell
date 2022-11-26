@@ -1914,7 +1914,7 @@ describe("Card", () => {
         expect(idx).to.be(-1);
 
         let player = gameState.getActivePlayer();
-        const player2 = gameState.players[1];
+        let player2 = gameState.players[1];
 
         const card = Card.fromName(CardName.INN);
 
@@ -1951,10 +1951,13 @@ describe("Card", () => {
           },
         ]);
 
+        player2 = gameState.getPlayer(player2.playerId);
+
         expect(player.numAvailableWorkers).to.be(1);
         expect(player.hasCardInCity(CardName.FARM)).to.be(true);
         expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
         expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
+        expect(player2.getNumResourcesByType(ResourceType.VP)).to.be(1);
 
         const doctorInMeadow =
           gameState.meadowCards.indexOf(CardName.DOCTOR) >= 0;
@@ -7382,7 +7385,374 @@ describe("Card", () => {
 
     describe(CardName.GREENHOUSE, () => {});
 
-    describe(CardName.HOTEL, () => {});
+    describe(CardName.HOTEL, () => {
+      it("should allow player play card from hand without spending resources if cost is <= 3", () => {
+        let player = gameState.getActivePlayer();
+
+        const card = Card.fromName(CardName.HOTEL);
+
+        player.addToCity(gameState, CardName.HOTEL);
+
+        player.addCardToHand(gameState, CardName.WIFE);
+        player.addCardToHand(gameState, CardName.PALACE);
+
+        expect(player.numAvailableWorkers).to.be(2);
+        expect(player.getFirstPlayedCard(CardName.HOTEL)).to.eql({
+          cardName: CardName.HOTEL,
+          cardOwnerId: player.playerId,
+          usedForCritter: false,
+          workers: [],
+        });
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+        expect(player.hasCardInCity(CardName.WIFE)).to.be(false);
+        expect(player.cardsInHand.length).to.be(2);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            clientOptions: {
+              playedCard: player.getFirstPlayedCard(CardName.HOTEL),
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardContext: CardName.HOTEL,
+            cardOptions: [CardName.WIFE],
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              selectedCards: [CardName.WIFE],
+            },
+          },
+        ]);
+
+        expect(player.numAvailableWorkers).to.be(1);
+        expect(player.hasCardInCity(CardName.WIFE)).to.be(true);
+        expect(player.cardsInHand).to.eql([CardName.PALACE]);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+      });
+
+      it("should allow player buy card from hand if cost is > 3", () => {
+        let player = gameState.getActivePlayer();
+
+        const card = Card.fromName(CardName.HOTEL);
+
+        // Make sure we can play this card
+        player.gainResources(gameState, { [ResourceType.BERRY]: 4 });
+        player.addToCity(gameState, CardName.HOTEL);
+
+        player.addCardToHand(gameState, CardName.QUEEN);
+
+        expect(player.numAvailableWorkers).to.be(2);
+        expect(player.hasCardInCity(CardName.QUEEN)).to.be(false);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(4);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            clientOptions: {
+              playedCard: player.getFirstPlayedCard(CardName.HOTEL),
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardContext: CardName.HOTEL,
+            cardOptions: [CardName.QUEEN],
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              selectedCards: [CardName.QUEEN],
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_PAYMENT_FOR_CARD,
+            prevInputType: GameInputType.SELECT_CARDS,
+            cardContext: card.name,
+            card: CardName.QUEEN,
+            clientOptions: {
+              card: CardName.QUEEN,
+              paymentOptions: {
+                resources: {
+                  [ResourceType.BERRY]: 2,
+                },
+                cardToUse: CardName.HOTEL,
+              },
+            },
+          },
+        ]);
+
+        expect(player.numAvailableWorkers).to.be(1);
+        expect(player.hasCardInCity(CardName.QUEEN)).to.be(true);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
+      });
+
+      it("should not allow player to buy from their hand", () => {
+        const player = gameState.getActivePlayer();
+
+        const card = Card.fromName(CardName.HOTEL);
+
+        // Make sure we can play this card
+        player.gainResources(gameState, { [ResourceType.BERRY]: 4 });
+        player.addToCity(gameState, CardName.HOTEL);
+
+        // Already have QUEEN & KING in city.
+        player.addToCity(gameState, CardName.QUEEN);
+        player.addToCity(gameState, CardName.KING);
+
+        // Add QUEEN and WIFE to hand. QUEEN should not be playable
+        player.addCardToHand(gameState, CardName.QUEEN);
+        player.addCardToHand(gameState, CardName.WIFE);
+
+        expect(player.numAvailableWorkers).to.be(2);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(4);
+
+        expect(() => {
+          multiStepGameInputTest(gameState, [
+            {
+              inputType: GameInputType.VISIT_DESTINATION_CARD,
+              clientOptions: {
+                playedCard: player.getFirstPlayedCard(CardName.HOTEL),
+              },
+            },
+            {
+              inputType: GameInputType.SELECT_CARDS,
+              prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+              cardContext: CardName.HOTEL,
+              cardOptions: [CardName.WIFE],
+              maxToSelect: 1,
+              minToSelect: 1,
+              clientOptions: {
+                selectedCards: [CardName.QUEEN],
+              },
+            },
+          ]);
+        }).to.throwException(/Selected card is not a valid option/i);
+      });
+
+      it("should allow player buy card using another player's hotel", () => {
+        let player = gameState.getActivePlayer();
+        let player2 = gameState.players[1];
+
+        const card = Card.fromName(CardName.HOTEL);
+
+        player2.addToCity(gameState, CardName.HOTEL);
+        player.addCardToHand(gameState, CardName.WIFE);
+
+        expect(player.numAvailableWorkers).to.be(2);
+        expect(player.hasCardInCity(CardName.WIFE)).to.be(false);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            clientOptions: {
+              playedCard: player2.getFirstPlayedCard(CardName.HOTEL),
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardContext: CardName.HOTEL,
+            cardOptions: [CardName.WIFE],
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              selectedCards: [CardName.WIFE],
+            },
+          },
+        ]);
+
+        player2 = gameState.getPlayer(player2.playerId);
+
+        expect(player.numAvailableWorkers).to.be(1);
+        expect(player.hasCardInCity(CardName.WIFE)).to.be(true);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+        expect(player2.getNumResourcesByType(ResourceType.VP)).to.be(2);
+      });
+
+      it("should not allow player buy card in meadow but not in hand", () => {
+        const cards = [
+          CardName.KING,
+          CardName.QUEEN,
+          CardName.POSTAL_PIGEON,
+          CardName.POSTAL_PIGEON,
+          CardName.FARM,
+          CardName.HUSBAND,
+          CardName.CHAPEL,
+          CardName.MONK,
+        ];
+        gameState = testInitialGameState({ meadowCards: cards });
+        const player = gameState.getActivePlayer();
+
+        // Make sure we can play this card
+        player.addCardToHand(gameState, CardName.WIFE);
+        player.addToCity(gameState, CardName.HOTEL);
+
+        expect(player.numAvailableWorkers).to.be(2);
+        expect(player.hasCardInCity(CardName.WIFE)).to.be(false);
+
+        gameState = gameState.next({
+          inputType: GameInputType.VISIT_DESTINATION_CARD,
+          clientOptions: {
+            playedCard: player.getFirstPlayedCard(CardName.HOTEL),
+          },
+        });
+
+        expect(() => {
+          gameState.next({
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardContext: CardName.INN,
+            cardOptions: [CardName.WIFE],
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              selectedCards: [CardName.POSTAL_PIGEON],
+            },
+          });
+        }).to.throwException(/Selected card is not a valid option/i);
+      });
+
+      it("should allow player to buy card that exists in hand and meadow", () => {
+        const cards = [
+          CardName.KING,
+          CardName.QUEEN,
+          CardName.POSTAL_PIGEON,
+          CardName.POSTAL_PIGEON,
+          CardName.FARM,
+          CardName.HUSBAND,
+          CardName.CHAPEL,
+          CardName.WIFE,
+        ];
+        gameState = testInitialGameState({ meadowCards: cards });
+        let player = gameState.getActivePlayer();
+        gameState.deck.addToStack(CardName.LOOKOUT);
+
+        const idx = gameState.meadowCards.indexOf(CardName.LOOKOUT);
+        expect(idx).to.be(-1);
+
+        player.addToCity(gameState, CardName.HOTEL);
+        player.addCardToHand(gameState, CardName.WIFE);
+        player.addCardToHand(gameState, CardName.HUSBAND);
+
+        expect(player.numAvailableWorkers).to.be(2);
+        expect(player.hasCardInCity(CardName.WIFE)).to.be(false);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            clientOptions: {
+              playedCard: player.getFirstPlayedCard(CardName.HOTEL),
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardContext: CardName.HOTEL,
+            cardOptions: [CardName.WIFE, CardName.HUSBAND],
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              selectedCards: [CardName.WIFE],
+            },
+          },
+        ]);
+
+        expect(player.numAvailableWorkers).to.be(1);
+        expect(player.hasCardInCity(CardName.WIFE)).to.be(true);
+
+        const hasWifeInHand = player.cardsInHand.indexOf(CardName.WIFE) >= 0;
+        expect(hasWifeInHand).to.be(false);
+
+        const wifeInMeadow = gameState.meadowCards.indexOf(CardName.WIFE) >= 0;
+        expect(wifeInMeadow).to.be(true);
+
+        // false because no cards were played from the meadow
+        const lookoutInMeadow =
+          gameState.meadowCards.indexOf(CardName.LOOKOUT) >= 0;
+        expect(lookoutInMeadow).to.be(false);
+      });
+
+      it("should allow player to use both their Hotels", () => {
+        let player = gameState.getActivePlayer();
+
+        const card = Card.fromName(CardName.HOTEL);
+        player.addToCity(gameState, CardName.HOTEL);
+        player.addToCity(gameState, CardName.HOTEL);
+
+        expect(player.numAvailableWorkers).to.be(2);
+        expect(player.getFirstPlayedCard(CardName.HOTEL)).to.eql({
+          cardName: CardName.HOTEL,
+          cardOwnerId: player.playerId,
+          usedForCritter: false,
+          workers: [],
+        });
+
+        player.addCardToHand(gameState, CardName.FARM);
+        player.addCardToHand(gameState, CardName.FARM);
+        player.addCardToHand(gameState, CardName.FARM);
+
+        expect(player.hasCardInCity(CardName.FARM)).to.be(false);
+        expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            clientOptions: {
+              playedCard: player.getFirstPlayedCard(CardName.HOTEL),
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardContext: CardName.HOTEL,
+            cardOptions: [CardName.FARM, CardName.FARM, CardName.FARM],
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              selectedCards: [CardName.FARM],
+            },
+          },
+        ]);
+
+        expect(player.numAvailableWorkers).to.be(1);
+        expect(player.getPlayedCardForCardName(CardName.FARM).length).to.be(1);
+        expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
+
+        // Back to the same player's turn
+        gameState.nextPlayer();
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            clientOptions: {
+              playedCard: player.getPlayedCardForCardName(CardName.HOTEL)[1],
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardContext: CardName.HOTEL,
+            cardOptions: [CardName.FARM, CardName.FARM],
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              selectedCards: [CardName.FARM],
+            },
+          },
+        ]);
+
+        expect(player.numAvailableWorkers).to.be(0);
+        expect(player.getPlayedCardForCardName(CardName.FARM).length).to.be(2);
+        expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
+      });
+    });
 
     describe(CardName.INVENTOR, () => {
       it("can be used to play a critter for 3 BERRY less", () => {

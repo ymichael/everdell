@@ -1236,6 +1236,7 @@ export class Player implements IGameTextEntity {
           break;
         case CardName.QUEEN:
         case CardName.INN:
+        case CardName.HOTEL:
           if (gameInput.inputType === GameInputType.PLAY_CARD) {
             this.placeWorkerOnCard(
               gameState,
@@ -1336,6 +1337,15 @@ export class Player implements IGameTextEntity {
             return `Cannot use ${CardName.QUEEN} to play ${cardToPlay.name} (baseVP: ${cardToPlay.baseVP})`;
           }
           return null;
+        case CardName.HOTEL:
+          if (gameInput.clientOptions.fromMeadow) {
+            return `Cannot use ${CardName.HOTEL} to play a Meadow card`;
+          }
+          return this.validatePaidResources(
+            paymentResources,
+            cardToPlay.baseCost,
+            "ANY 3"
+          );
         case CardName.INN:
           // TODO check if we can place a worker here
           if (!gameInput.clientOptions.fromMeadow) {

@@ -629,6 +629,7 @@ export type CardPaymentOptions = {
     | CardName.CRANE
     | CardName.INVENTOR
     | CardName.INN
+    | CardName.HOTEL
     | null;
 
   resources: {

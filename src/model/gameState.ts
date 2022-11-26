@@ -736,7 +736,10 @@ export class GameState {
 
     // If card isn't owned by active player, pay the other player a VP
     if (cardOwner.playerId !== activePlayer.playerId) {
-      cardOwner.gainResources(this, { [ResourceType.VP]: 1 });
+      // you get 2 VP for visiting someone else's hotel, but 1 for others
+      const VPToGain = playedCard.cardName === CardName.HOTEL ? 2 : 1;
+
+      cardOwner.gainResources(this, { [ResourceType.VP]: VPToGain });
       this.addGameLog([
         cardOwner,
         " gained 1 VP when ",

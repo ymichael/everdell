@@ -34,7 +34,11 @@ import {
 } from "./types";
 import { GameStateJSON } from "./jsonTypes";
 import { Player } from "./player";
-import { TrainCarTile } from "./trainCarTile";
+import {
+  TrainCarTile,
+  TrainCarTileStack,
+  intialTrainCarTileStack,
+} from "./trainCarTile";
 import { Adornment, allAdornments } from "./adornment";
 import { Card } from "./card";
 import { CardStack, discardPile } from "./cardStack";
@@ -158,6 +162,7 @@ export class GameState {
 
   readonly adornmentsPile: CardStack<AdornmentName> | null;
   readonly riverDestinationMap: RiverDestinationMap | null;
+  readonly trainCarTileStack: TrainCarTileStack | null;
 
   constructor({
     gameStateId,
@@ -174,6 +179,7 @@ export class GameState {
     playedGameInputs = [],
     adornmentsPile = null,
     riverDestinationMap = null,
+    trainCarTileStack = null,
   }: {
     gameStateId: number;
     activePlayerId?: Player["playerId"];
@@ -185,6 +191,7 @@ export class GameState {
     eventsMap: EventNameToPlayerId;
     adornmentsPile?: CardStack<AdornmentName> | null;
     riverDestinationMap?: RiverDestinationMap | null;
+    trainCarTileStack?: TrainCarTileStack | null;
     pendingGameInputs: GameInputMultiStep[];
     playedGameInputs?: GameInput[];
     gameLog: GameLogEntry[];
@@ -203,6 +210,7 @@ export class GameState {
     this.gameLog = gameLog;
     this.adornmentsPile = adornmentsPile;
     this.riverDestinationMap = riverDestinationMap;
+    this.trainCarTileStack = trainCarTileStack;
     this.gameOptions = defaultGameOptions(gameOptions);
   }
 
@@ -326,6 +334,9 @@ export class GameState {
           : null,
         adornmentsPile: this.adornmentsPile
           ? this.adornmentsPile.toJSON(includePrivate)
+          : null,
+        trainCarTileStack: this.trainCarTileStack
+          ? this.trainCarTileStack.toJSON(includePrivate)
           : null,
       },
       ...(includePrivate
@@ -1319,6 +1330,9 @@ export class GameState {
       riverDestinationMap: gameStateJSON.riverDestinationMap
         ? RiverDestinationMap.fromJSON(gameStateJSON.riverDestinationMap)
         : null,
+      trainCarTileStack: gameStateJSON.trainCarTileStack
+        ? TrainCarTileStack.fromJSON(gameStateJSON.trainCarTileStack)
+        : null,
     });
   }
 
@@ -1349,6 +1363,9 @@ export class GameState {
       ),
       adornmentsPile: withPearlbrook ? allAdornments() : null,
       riverDestinationMap: withPearlbrook ? initialRiverDestinationMap() : null,
+      trainCarTileStack: gameOptionsWithDefaults?.newleaf?.station
+        ? intialTrainCarTileStack()
+        : null,
       eventsMap: initialEventMap(gameOptionsWithDefaults),
       gameOptions: gameOptionsWithDefaults,
       gameLog: [],

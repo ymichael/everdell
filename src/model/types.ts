@@ -676,7 +676,7 @@ export type TextPartText =
   | { type: "text"; text: string }
   | { type: "em"; text: string }
   | { type: "i"; text: string }
-  | { type: "iblock"; text: GameText }
+  | { type: "iblock"; text: GameText };
 export type TextPart =
   | TextPartText
   | TextPartIcon
@@ -706,7 +706,7 @@ export type GameOptions = {
     specialEvents?: boolean;
     playerPowers?: boolean;
   };
-  newLeaf?: {
+  newleaf?: {
     cards?: boolean;
     forestLocations?: boolean;
     specialEvents?: boolean;

@@ -4424,45 +4424,40 @@ describe("Event", () => {
     });
   });
 
-  // TODO: uncomment this when we have a newleaf game option
-  // describe(EventName.SPECIAL_CITY_JUBILEE, () => {
-  //   beforeEach(() => {
-  //     gameState = testInitialGameState({ gameOptions: { newleaf: true } });
-  //     player = gameState.getActivePlayer();
+  describe(EventName.SPECIAL_CITY_JUBILEE, () => {
+    beforeEach(() => {
+      gameState = testInitialGameState();
+      player = gameState.getActivePlayer();
 
-  //     gameState.eventsMap[EventName.SPECIAL_CITY_JUBILEE] = null;
+      gameState.eventsMap[EventName.SPECIAL_CITY_JUBILEE] = null;
 
-  //     player.addToCity(gameState, CardName.FARM);
-  //     player.addToCity(gameState, CardName.FARM);
-  //     player.addToCity(gameState, CardName.FARM);
-  //     player.addToCity(gameState, CardName.FARM);
-  //     player.addToCity(gameState, CardName.FARM);
-  //     player.addToCity(gameState, CardName.FARM);
-  //     player.addToCity(gameState, CardName.FARM);
-  //     player.addToCity(gameState, CardName.FARM);
-  //     player.addToCity(gameState, CardName.FARM);
-  //     player.addToCity(gameState, CardName.FARM);
-  //     player.addToCity(gameState, CardName.FARM);
-  //   });
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
+    });
 
-  //   it("should allow player claim event with no other claimed events", () => {
-  //     const event = Event.fromName(EventName.SPECIAL_CITY_JUBILEE);
-  //     const gameInput = claimEventInput(event.name);
-  //     let player2 = gameState.players[1];
+    it("should allow player claim event with no other claimed events", () => {
+      const event = Event.fromName(EventName.SPECIAL_CITY_JUBILEE);
+      const gameInput = claimEventInput(event.name);
+      let player2 = gameState.players[1];
 
-  //     expect(player.getClaimedEvent(EventName.SPECIAL_CITY_JUBILEE)).to.be(
-  //       undefined
-  //     );
+      expect(player.getClaimedEvent(EventName.SPECIAL_CITY_JUBILEE)).to.be(
+        undefined
+      );
 
-  //     [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
-
-  //     player2 = gameState.getPlayer(player2.playerId);
-
-  //     player = gameState.getPlayer(player.playerId);
-
-  //     expect(player.getClaimedEvent(EventName.SPECIAL_CITY_JUBILEE));
-
-  //     expect(player.getPointsFromEvents(gameState)).to.be(0);
-  //   });
-  // });
+      [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
+      player2 = gameState.getPlayer(player2.playerId);
+      player = gameState.getPlayer(player.playerId);
+      expect(player.getClaimedEvent(EventName.SPECIAL_CITY_JUBILEE));
+      expect(player.getPointsFromEvents(gameState)).to.be(0);
+    });
+  });
 });

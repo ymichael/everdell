@@ -7232,5 +7232,10 @@ describe("Card", () => {
         expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
       });
     });
+
+    /**
+     * Newleaf cards.
+     */
+    // TODO
   });
 });

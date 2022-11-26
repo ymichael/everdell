@@ -63,7 +63,10 @@ export default function TestUIPage() {
     LocationName
   ) as LocationName[];
 
-  const [showPearlbrookOnly, setShowPearlbrookOnly] = useState(false);
+  const [includeBaseGame, setIncludeBaseGame] = useState(true);
+  const [includePearlbrook, setIncludePearlbrook] = useState(true);
+  const [includeNewleaf, setIncludeNewLeaf] = useState(true);
+
   const [showCards, setShowCards] = useState(true);
   const [showAdornments, setShowAdornments] = useState(true);
   const [showRiver, setShowRiver] = useState(true);
@@ -87,6 +90,30 @@ export default function TestUIPage() {
     setShowRiver(!!(riverOnly || !showOneType));
   }, []);
 
+  function createItemFilter<
+    T extends string,
+    M extends CardModel | LocationModel | EventModel
+  >(toModel: (x: T) => M): (x: T) => boolean {
+    return (x: T): boolean => {
+      if (filter) {
+        if (x.toLowerCase().indexOf(filter) === -1) {
+          return false;
+        }
+      }
+      const model = toModel(x);
+      if (!includePearlbrook && model.expansion === ExpansionType.PEARLBROOK) {
+        return false;
+      }
+      if (!includeNewleaf && model.expansion === ExpansionType.NEWLEAF) {
+        return false;
+      }
+      if (!includeBaseGame && model.expansion === null) {
+        return false;
+      }
+      return true;
+    };
+  }
+
   return (
     <div className={styles.container}>
       <Head>
@@ -104,31 +131,33 @@ export default function TestUIPage() {
         <label>
           <input
             type="checkbox"
-            checked={showPearlbrookOnly}
-            onChange={() => {
-              setShowPearlbrookOnly(!showPearlbrookOnly);
-            }}
+            checked={includeBaseGame}
+            onChange={() => setIncludeBaseGame((x) => !x)}
           />
-          Pearlbrook only
+          Basegame
+        </label>
+        &nbsp;&nbsp;&middot;&nbsp;&nbsp;
+        <label>
+          <input
+            type="checkbox"
+            checked={includePearlbrook}
+            onChange={() => setIncludePearlbrook((x) => !x)}
+          />
+          Pearlbrook
+        </label>
+        &nbsp;&nbsp;&middot;&nbsp;&nbsp;
+        <label>
+          <input
+            type="checkbox"
+            checked={includeNewleaf}
+            onChange={() => setIncludeNewLeaf((x) => !x)}
+          />
+          Newleaf
         </label>
       </div>
       <ItemsList title={"Cards"} visible={showCards}>
         {allCards
-          .filter((x) => {
-            if (filter) {
-              if (x.toLowerCase().indexOf(filter) === -1) {
-                return false;
-              }
-            }
-            if (showPearlbrookOnly) {
-              if (
-                CardModel.fromName(x).expansion !== ExpansionType.PEARLBROOK
-              ) {
-                return false;
-              }
-            }
-            return true;
-          })
+          .filter(createItemFilter<CardName, CardModel>(CardModel.fromName))
           .map((card) => {
             return (
               <ItemWrapper key={card}>
@@ -139,88 +168,68 @@ export default function TestUIPage() {
       </ItemsList>
       <ItemsList title={"Locations"} visible={showLocations}>
         {allLocations
-          .filter((x) => {
-            if (filter) {
-              if (x.toLowerCase().indexOf(filter) === -1) {
-                return false;
-              }
-            }
-            if (showPearlbrookOnly) {
-              if (
-                LocationModel.fromName(x).expansion !== ExpansionType.PEARLBROOK
-              ) {
-                return false;
-              }
-            }
-            return true;
-          })
+          .filter(
+            createItemFilter<LocationName, LocationModel>(
+              LocationModel.fromName
+            )
+          )
           .map((loc) => {
             return <Location key={loc} name={loc} />;
           })}
       </ItemsList>
       <ItemsList title={"Events"} visible={showEvents}>
         {allEvents
-          .filter((x) => {
-            if (filter) {
-              if (x.toLowerCase().indexOf(filter) === -1) {
-                return false;
-              }
-            }
-            if (showPearlbrookOnly) {
-              if (
-                EventModel.fromName(x).expansion !== ExpansionType.PEARLBROOK
-              ) {
-                return false;
-              }
-            }
-            return true;
-          })
+          .filter(createItemFilter<EventName, EventModel>(EventModel.fromName))
           .map((evt) => {
             return <Event key={evt} name={evt} />;
           })}
       </ItemsList>
-      <ItemsList title={"Adornments"} visible={showAdornments}>
-        {allAdornments
-          .filter((x) => {
-            if (filter) {
-              if (x.toLowerCase().indexOf(filter) === -1) {
-                return false;
-              }
-            }
-            return true;
-          })
-          .map((name) => {
-            return <Adornment key={name} name={name} />;
-          })}
-      </ItemsList>
-      <ItemsList title={"River Destinations"} visible={showRiver}>
-        {allRiverDestinations
-          .filter((x) => {
-            if (filter) {
-              if (x.toLowerCase().indexOf(filter) === -1) {
-                return false;
-              }
-            }
-            return true;
-          })
-          .map((name) => {
-            return <RiverDestination key={name} name={name} />;
-          })}
-      </ItemsList>
-      <ItemsList title={"River Destination Spots"} visible={showRiver}>
-        {allRiverSpots
-          .filter((x) => {
-            if (filter) {
-              if (x.toLowerCase().indexOf(filter) === -1) {
-                return false;
-              }
-            }
-            return true;
-          })
-          .map((name) => {
-            return <RiverDestinationSpot key={name} name={name} />;
-          })}
-      </ItemsList>
+      {includePearlbrook && (
+        <>
+          <ItemsList title={"Adornments"} visible={showAdornments}>
+            {allAdornments
+              .filter((x) => {
+                if (filter) {
+                  if (x.toLowerCase().indexOf(filter) === -1) {
+                    return false;
+                  }
+                }
+                return true;
+              })
+              .map((name) => {
+                return <Adornment key={name} name={name} />;
+              })}
+          </ItemsList>
+          <ItemsList title={"River Destinations"} visible={showRiver}>
+            {allRiverDestinations
+              .filter((x) => {
+                if (filter) {
+                  if (x.toLowerCase().indexOf(filter) === -1) {
+                    return false;
+                  }
+                }
+                return true;
+              })
+              .map((name) => {
+                return <RiverDestination key={name} name={name} />;
+              })}
+          </ItemsList>
+          <ItemsList title={"River Destination Spots"} visible={showRiver}>
+            {allRiverSpots
+              .filter((x) => {
+                if (filter) {
+                  if (x.toLowerCase().indexOf(filter) === -1) {
+                    return false;
+                  }
+                }
+                return true;
+              })
+              .map((name) => {
+                return <RiverDestinationSpot key={name} name={name} />;
+              })}
+          </ItemsList>
+        </>
+      )}
     </div>
   );
 }

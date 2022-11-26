@@ -147,6 +147,7 @@ const CardToUseForm: React.FC<{
     CardName.QUEEN,
     CardName.INNKEEPER,
     CardName.CRANE,
+    CardName.INVENTOR,
   ].filter((cardToUse) => {
     if (!viewingPlayer.hasCardInCity(cardToUse)) {
       return false;

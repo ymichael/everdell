@@ -70,6 +70,11 @@ const openDestinationGameText: GameText = toGameText([
   " when other players visit this card.",
 ]);
 
+const CARD_PLAYING_DISCLAIMER = [
+  { type: "i", text: "May not be used with any other card-playing ability." },
+  { type: "BR" },
+]
+
 export class Card<TCardType extends CardType = CardType>
   implements GameStatePlayable, IGameTextEntity {
   readonly cardDescription: GameText | undefined;
@@ -4220,10 +4225,12 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     associatedCard: null,
     cardType: CardType.PRODUCTION,
     cardDescription: toGameText([
-      "Drawn 1 CARD. ",
-      "If sharing a space with a Farm, gain 1 ANY.",
-      { type: "HR" },
-      "May share a space with a Farm.",
+      { type: "i", text: "May share a space with a Farm.", },
+      { type: "BR" },
+      "Draw 1 CARD. ",
+      "If sharing a space with a ",
+      { type: "entity", entityType: "card", card: CardName.FARM },
+      ", gain 1 ANY.",
     ]),
     isConstruction: true,
     isUnique: false,
@@ -4244,10 +4251,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     associatedCard: null,
     cardType: CardType.DESTINATION,
     cardDescription: toGameText([
+      ...CARD_PLAYING_DISCLAIMER,
       "Play a Critter or Construction from your hard for 3 fewer ANY.",
       { type: "HR" },
-      "May not be combined with any other card-playing ability.",
-      "Other players may visit this card. Owner gains ",
+      "Owner gains ",
       { type: "points", value: 2 },
       " when other players visit this card.",
     ]),
@@ -4271,11 +4278,14 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     associatedCard: null,
     cardType: CardType.GOVERNANCE,
     cardDescription: toGameText([
-      "When playing a Critter or Construction, you may ",
-      "discard this Inventor from your city to decrease ",
-      "the cost by 3 ANY.",
-      { type: "HR" },
-      "May not be used with any other card-playing ability.",
+      ...CARD_PLAYING_DISCLAIMER,
+      "When playing a ",
+      { type: "em", text: "Critter" },
+      " or ",
+      { type: "em", text: "Construction" },
+      ", you may discard this ",
+      { type: "entity", entityType: "card", card: CardName.INVENTOR },
+      " from your city to decrease the cost by 3 ANY.",
     ]),
     isConstruction: false,
     isUnique: true,
@@ -4283,7 +4293,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     numInDeck: 3,
     resourcesToGain: {},
     baseCost: {
-      [ResourceType.BERRY]: 3,
+      [ResourceType.BERRY]: 2,
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       throw new Error("Not Implemented");
@@ -4342,9 +4352,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     associatedCard: null,
     cardType: CardType.DESTINATION,
     cardDescription: toGameText([
+      ...CARD_PLAYING_DISCLAIMER,
       "Play a Station CARD for 3 fewer ANY.",
-      { type: "HR" },
-      "May not be used with any other card-playing ability.",
     ]),
     isConstruction: true,
     isUnique: true,
@@ -4366,8 +4375,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     associatedCard: null,
     cardType: CardType.PRODUCTION,
     cardDescription: toGameText([
-      "You may discard 1 other Critter or Construction ",
-      "from your city to gain 1 VP and 1 ANY.",
+      "You may discard 1 other ",
+      { type: "em", text: "Critter" },
+      " or ",
+      { type: "em", text: "Construction" },
+      " from your city to gain 1 VP and 1 ANY.",
     ]),
     isConstruction: false,
     isUnique: true,
@@ -4387,10 +4399,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     associatedCard: null,
     cardType: CardType.TRAVELER,
     cardDescription: toGameText([
+      { type: "i", text: "Does not take up space in your city." },
+      { type: "BR" },
       "Opens an additional space in your city. ",
-      { type: "HR" },
-      "Does not take up space in your city. ",
-      "May not be copied, removed, or reactivated.",
+      { type: "i", text: "May not be copied, removed, or reactivated." },
     ]),
     isConstruction: true,
     isUnique: true,
@@ -4432,7 +4444,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     name: CardName.MILLER,
     associatedCard: null,
     cardType: CardType.PRODUCTION,
-    cardDescription: toGameText("You may pay 1 PEBBLE to gain 3 VP"),
+    cardDescription: toGameText("You may pay 1 PEBBLE to gain 3 VP."),
     isConstruction: false,
     isUnique: true,
     baseVP: 2,
@@ -4451,8 +4463,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     associatedCard: null,
     cardType: CardType.GOVERNANCE,
     cardDescription: toGameText([
-      "After you play a Critter or Construction, ",
-      "you may draw 2 CARD.",
+      "After you play a ",
+      { type: "em", text: "Critter" },
+      " or ",
+      { type: "em", text: "Construction" },
+      ", you may draw 2 CARD.",
     ]),
     isConstruction: true,
     isUnique: true,
@@ -4500,7 +4515,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     cardDescription: toGameText([
       "Choose a color. ",
       "Draw all the CARD from the Meadow of that color. ",
-      "Gain 1 VP for each CARD drawn",
+      "Gain 1 VP for each CARD drawn.",
       // TODO: if we only give points for cards drawn into hand,
       // add a note that discarded cards don't count for points
     ]),

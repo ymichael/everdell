@@ -2569,6 +2569,55 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       // TODO: IMPLEMENT
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
+        const numProductionCards = player.getNumCardType(CardType.PRODUCTION);
+
+        // ask player to choose which cards to discard
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          label: `You may discard up to ${numProductionCards} CARD from your city for 1 VP each`,
+          eventContext: EventName.SPECIAL_GLOW_LIGHT_FESTIVAL,
+          cardOptions: player.getPlayedCards(),
+          maxToSelect: numProductionCards,
+          minToSelect: 0,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS) {
+        const selectedCards = gameInput.clientOptions.selectedCards;
+        if (!selectedCards) {
+          throw new Error("invalid input");
+        }
+        if (selectedCards.length > gameInput.maxToSelect) {
+          throw new Error("Selected too many cards");
+        }
+        const eventInfo = player.getClaimedEvent(
+          EventName.SPECIAL_GLOW_LIGHT_FESTIVAL
+        );
+        if (!eventInfo) {
+          throw new Error("Cannot find event info");
+        }
+        selectedCards.forEach((playedCardInfo) => {
+          player.removeCardFromCity(gameState, playedCardInfo);
+        });
+
+        gameState.addGameLogFromEvent(EventName.SPECIAL_GLOW_LIGHT_FESTIVAL, [
+          player,
+          " discarded ",
+          ...cardListToGameText(selectedCards.map(({ cardName }) => cardName)),
+          " from their city.",
+        ]);
+        player.gainResources(gameState, { VP: selectedCards.length });
+        gameState.addGameLogFromEvent(EventName.SPECIAL_GLOW_LIGHT_FESTIVAL, [
+          player,
+          " gained 1 VP per card discarded from their city.",
+        ]);
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
+      }
     },
   }),
   [EventName.SPECIAL_HOT_AIR_BALLOON_RACE]: new Event({

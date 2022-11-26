@@ -12,6 +12,7 @@ import {
   CardName,
   ResourceType,
   LocationName,
+  CardType,
 } from "./types";
 
 const claimEventInput = (event: EventName): GameInputClaimEvent => {
@@ -4548,7 +4549,7 @@ describe("Event", () => {
     });
   });
 
-  describe.skip(EventName.SPECIAL_GLOW_LIGHT_FESTIVAL, () => {
+  describe(EventName.SPECIAL_GLOW_LIGHT_FESTIVAL, () => {
     beforeEach(() => {
       gameState = testInitialGameState();
       player = gameState.getActivePlayer();
@@ -4565,7 +4566,7 @@ describe("Event", () => {
 
       expect(() => {
         gameState.next(gameInput);
-      }).to.throwException(/Need at least 9 Constructions/i);
+      }).to.throwException(/Need at least 3 PRODUCTION/i);
       expect(
         player.getClaimedEvent(EventName.SPECIAL_GLOW_LIGHT_FESTIVAL)
       ).to.be(undefined);
@@ -4579,10 +4580,74 @@ describe("Event", () => {
         player.getClaimedEvent(EventName.SPECIAL_GLOW_LIGHT_FESTIVAL)
       ).to.be(undefined);
 
-      [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
+      player.addToCityMulti(gameState, [
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.WANDERER,
+        CardName.WANDERER,
+      ]);
+      expect(player.getNumCardsInCity()).to.be(5);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        gameInput,
+        {
+          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          eventContext: EventName.SPECIAL_GLOW_LIGHT_FESTIVAL,
+          cardOptions: player.getPlayedCards(),
+          maxToSelect: 3,
+          minToSelect: 0,
+          clientOptions: {
+            selectedCards: [
+              player.getFirstPlayedCard(CardName.FARM),
+              player.getFirstPlayedCard(CardName.WANDERER),
+            ],
+          },
+        },
+      ]);
 
       expect(player.getClaimedEvent(EventName.SPECIAL_GLOW_LIGHT_FESTIVAL));
-      // expect(player.getPointsFromEvents(gameState)).to.be(5);
+      expect(player.getPointsFromEvents(gameState)).to.be(3);
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(2);
+      expect(player.getNumCardsInCity()).to.be(3);
+    });
+    it("should allow player to claim event and not discard cards", () => {
+      const event = Event.fromName(EventName.SPECIAL_GLOW_LIGHT_FESTIVAL);
+      const gameInput = claimEventInput(event.name);
+
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_GLOW_LIGHT_FESTIVAL)
+      ).to.be(undefined);
+
+      player.addToCityMulti(gameState, [
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.WANDERER,
+        CardName.WANDERER,
+      ]);
+      expect(player.getNumCardsInCity()).to.be(5);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        gameInput,
+        {
+          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          eventContext: EventName.SPECIAL_GLOW_LIGHT_FESTIVAL,
+          cardOptions: player.getPlayedCards(),
+          maxToSelect: 3,
+          minToSelect: 0,
+          clientOptions: {
+            selectedCards: [],
+          },
+        },
+      ]);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_GLOW_LIGHT_FESTIVAL));
+      expect(player.getPointsFromEvents(gameState)).to.be(3);
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+      expect(player.getNumCardsInCity()).to.be(5);
     });
   });
 

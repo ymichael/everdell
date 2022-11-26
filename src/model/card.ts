@@ -4232,7 +4232,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isConstruction: false,
     isUnique: true,
     baseVP: 2,
-    numInDeck: 0,
+    numInDeck: 2,
     resourcesToGain: {},
     baseCost: {
       [ResourceType.BERRY]: 3,

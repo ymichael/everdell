@@ -4651,14 +4651,13 @@ describe("Event", () => {
     });
   });
 
-  describe.skip(EventName.SPECIAL_HOT_AIR_BALLOON_RACE, () => {
+  describe(EventName.SPECIAL_HOT_AIR_BALLOON_RACE, () => {
     beforeEach(() => {
       gameState = testInitialGameState();
       player = gameState.getActivePlayer();
 
       gameState.eventsMap[EventName.SPECIAL_HOT_AIR_BALLOON_RACE] = null;
     });
-
     it("should not allow player to claim event conditions if not met", () => {
       const event = Event.fromName(EventName.SPECIAL_HOT_AIR_BALLOON_RACE);
       const gameInput = claimEventInput(event.name);
@@ -4669,7 +4668,7 @@ describe("Event", () => {
 
       expect(() => {
         gameState.next(gameInput);
-      }).to.throwException(/Need at least 9 Constructions/i);
+      }).to.throwException(/Need at least 2 TRAVELER/i);
       expect(
         player.getClaimedEvent(EventName.SPECIAL_HOT_AIR_BALLOON_RACE)
       ).to.be(undefined);
@@ -4683,10 +4682,69 @@ describe("Event", () => {
         player.getClaimedEvent(EventName.SPECIAL_HOT_AIR_BALLOON_RACE)
       ).to.be(undefined);
 
-      [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
+      player.addToCityMulti(gameState, [
+        CardName.WANDERER,
+        CardName.WANDERER,
+        CardName.SHOPKEEPER,
+        CardName.JUDGE,
+      ]);
+      expect(player.getNumCardsInCity()).to.be(4);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        gameInput,
+        {
+          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          eventContext: EventName.SPECIAL_HOT_AIR_BALLOON_RACE,
+          cardOptions: player.getPlayedCards(),
+          maxToSelect: 2,
+          minToSelect: 0,
+          clientOptions: {
+            selectedCards: [player.getFirstPlayedCard(CardName.SHOPKEEPER)],
+          },
+        },
+      ]);
 
       expect(player.getClaimedEvent(EventName.SPECIAL_HOT_AIR_BALLOON_RACE));
-      // expect(player.getPointsFromEvents(gameState)).to.be(5);
+      expect(player.getPointsFromEvents(gameState)).to.be(4);
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(1);
+      expect(player.getNumCardsInCity()).to.be(3);
+    });
+    it("should allow player to claim event and not discard cards", () => {
+      const event = Event.fromName(EventName.SPECIAL_HOT_AIR_BALLOON_RACE);
+      const gameInput = claimEventInput(event.name);
+
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_HOT_AIR_BALLOON_RACE)
+      ).to.be(undefined);
+
+      player.addToCityMulti(gameState, [
+        CardName.WANDERER,
+        CardName.WANDERER,
+        CardName.SHOPKEEPER,
+        CardName.JUDGE,
+      ]);
+      expect(player.getNumCardsInCity()).to.be(4);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        gameInput,
+        {
+          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          eventContext: EventName.SPECIAL_HOT_AIR_BALLOON_RACE,
+          cardOptions: player.getPlayedCards(),
+          maxToSelect: 2,
+          minToSelect: 0,
+          clientOptions: {
+            selectedCards: [],
+          },
+        },
+      ]);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_HOT_AIR_BALLOON_RACE));
+      expect(player.getPointsFromEvents(gameState)).to.be(4);
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+      expect(player.getNumCardsInCity()).to.be(4);
     });
   });
 

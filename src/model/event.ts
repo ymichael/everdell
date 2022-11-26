@@ -2568,7 +2568,6 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       return null;
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      // TODO: IMPLEMENT
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
         const numProductionCards = player.getNumCardType(CardType.PRODUCTION);

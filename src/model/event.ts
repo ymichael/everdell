@@ -2499,7 +2499,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     baseVP: 0,
     // TODO: Improve requirements display
     eventDescription: toGameText([
-      "Requires 10 Cards in your city",
+      "Requires 10 CARD in your city",
       { type: "HR" },
       "When achieved, gain 1 VP for each ",
       "basic Event you have achieved, and ",
@@ -2536,7 +2536,11 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     baseVP: 5,
     // TODO: Improve requirements display
-    eventDescription: toGameText(["Requires 9 Constructions in your city"]),
+    eventDescription: toGameText([
+      "Requires 9 ",
+      { type: "em", text: "Constructions" },
+      " in your city",
+    ]),
     expansion: ExpansionType.NEWLEAF,
     canPlayCheckInner: (gameState: GameState) => {
       const player = gameState.getActivePlayer();
@@ -2697,7 +2701,11 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     baseVP: 5,
     // TODO: improve requirements display
-    eventDescription: toGameText(["Requires 9 Critters in your city"]),
+    eventDescription: toGameText([
+      "Requires 9 ",
+      { type: "em", text: "Critters" },
+      " in your city.",
+    ]),
     expansion: ExpansionType.NEWLEAF,
     canPlayCheckInner: (gameState: GameState) => {
       const player = gameState.getActivePlayer();
@@ -2927,7 +2935,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     baseVP: 5,
     eventDescription: toGameText([
-      "Requires that you have achieved at least 3 Events",
+      "Requires that you have achieved at least 3 ",
+      { type: "em", text: "Events" },
+      ".",
     ]),
     expansion: ExpansionType.NEWLEAF,
     canPlayCheckInner: (gameState: GameState) => {
@@ -2946,7 +2956,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     baseVP: 5,
     // TODO: improve requirements display
     eventDescription: toGameText([
-      "Requires 4 Unique Constructions in your city",
+      "Requires 4 ",
+      { type: "em", text: "Unique Constructions" },
+      " in your city.",
     ]),
     expansion: ExpansionType.BELLFAIRE,
     canPlayCheckInner: (gameState: GameState) => {
@@ -2993,7 +3005,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     baseVP: 5,
     // TODO: improve requirements display
     eventDescription: toGameText([
-      "Requires 5 Common Constructions in your city",
+      "Requires 5 ",
+      { type: "em", text: "Common Constructions" },
+      " in your city.",
     ]),
     expansion: ExpansionType.BELLFAIRE,
     canPlayCheckInner: (gameState: GameState) => {
@@ -3009,7 +3023,11 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     baseVP: 5,
     // TODO: improve requirements display
-    eventDescription: toGameText(["Requires 5 Common Critters in your city"]),
+    eventDescription: toGameText([
+      "Requires 5 ",
+      { type: "em", text: "Common Critters" },
+      " in your city.",
+    ]),
     canPlayCheckInner: (gameState: GameState) => {
       const player = gameState.getActivePlayer();
       if (player.getNumPlayedCommonCritters() < 5) {
@@ -3024,7 +3042,11 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     type: EventType.SPECIAL,
     baseVP: 5,
     // TODO: improve requirements display
-    eventDescription: toGameText(["Requires 4 Unique Critters in your city"]),
+    eventDescription: toGameText([
+      "Requires 4 ",
+      { type: "em", text: "Unique Critters" },
+      " in your city.",
+    ]),
     expansion: ExpansionType.BELLFAIRE,
     canPlayCheckInner: (gameState: GameState) => {
       const player = gameState.getActivePlayer();

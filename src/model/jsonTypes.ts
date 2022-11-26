@@ -15,6 +15,7 @@ import {
   RiverDestinationMapSpots,
   Season,
   WorkerPlacementInfo,
+  TrainCarTileName,
 } from "./types";
 
 export type GameJSON = {
@@ -67,4 +68,9 @@ export type PlayerJSON = {
 
 export type RiverDestinationMapJSON = {
   spots: RiverDestinationMapSpots;
+};
+
+export type TrainCarTileStackJSON = {
+  revealed: [TrainCarTileName, TrainCarTileName, TrainCarTileName];
+  rest: TrainCarTileName[];
 };

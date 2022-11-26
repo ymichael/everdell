@@ -40,6 +40,9 @@ export enum GameInputType {
   // Pearlbrook specific (multi)
   SELECT_PLAYED_ADORNMENT = "SELECT_PLAYED_ADORNMENT",
   SELECT_RIVER_DESTINATION = "SELECT_RIVER_DESTINATION",
+
+  // Newleaf specific
+  SELECT_TRAIN_CAR_TILE = "SELECT_TRAIN_CAR_TILE",
 }
 
 export type GameInputPlaceWorker = {
@@ -124,6 +127,15 @@ export type GameInputDiscardCards = {
   isAutoAdvancedInput?: boolean;
   clientOptions: {
     cardsToDiscard: CardName[];
+  };
+};
+
+export type GameInputSelectTrainCarTile = {
+  inputType: GameInputType.SELECT_TRAIN_CAR_TILE;
+  prevInputType: GameInputType;
+  options: TrainCarTileName[];
+  clientOptions: {
+    trainCarTile: TrainCarTileName | null;
   };
 };
 
@@ -248,6 +260,7 @@ export type GameInputMultiStepContext = {
   locationContext?: LocationName;
   adornmentContext?: AdornmentName;
   riverDestinationContext?: RiverDestinationName;
+  trainCarTileContext?: TrainCarTileName;
 };
 
 export type GameInputMultiStep = (
@@ -262,6 +275,7 @@ export type GameInputMultiStep = (
   | GameInputSelectOptionGeneric
   | GameInputSelectPlayedAdornment
   | GameInputSelectRiverDestination
+  | GameInputSelectTrainCarTile
 ) &
   GameInputMultiStepContext & {
     prevInput?: GameInput;
@@ -670,6 +684,11 @@ export type TextPartEntity =
       type: "entity";
       entityType: "riverDestinationSpot";
       spot: RiverDestinationSpotName;
+    }
+  | {
+      type: "entity";
+      entityType: "trainCarTile";
+      trainCarTile: TrainCarTileName;
     };
 
 export type TextPartPlayer = {
@@ -809,3 +828,12 @@ export type TAssociatedCard =
     }
   | { type: "ANY" }
   | { type: "HUSBAND_WIFE" };
+
+export enum TrainCarTileName {
+  ONE_BERRY = "ONE_BERRY",
+  ONE_RESIN = "ONE_RESIN",
+  ONE_PEBBLE = "ONE_PEBBLE",
+  ONE_ANY = "ONE_ANY",
+  TWO_TWIG = "TWO_TWIG",
+  ONE_VP = "ONE_VP",
+}

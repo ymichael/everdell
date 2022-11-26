@@ -219,6 +219,15 @@ const renderMultiStepGameInputLabel = (
           ]}
         />
       );
+    case GameInputType.SELECT_TRAIN_CAR_TILE:
+      return (
+        <Description
+          textParts={[
+            ...inputContextPrefix(gameInput),
+            { type: "text", text: `Select Train Car Tile` },
+          ]}
+        />
+      );
     default:
       assertUnreachable(gameInput, gameInput);
   }

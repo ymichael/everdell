@@ -5,6 +5,7 @@ import styles from "../styles/common.module.css";
 import { Event } from "../model/event";
 import { RiverDestinationSpot } from "../model/riverDestination";
 import { Location } from "../model/location";
+import { TrainCarTile } from "../model/trainCarTile";
 import { GameText, TextPart, ResourceType, CardType } from "../model/types";
 import { assertUnreachable } from "../utils";
 
@@ -275,6 +276,18 @@ export const Description = ({ textParts }: { textParts: GameText }) => {
                   <span className={styles.hidden}>Event:</span>
                   <Description
                     textParts={Event.fromName(part.event).getShortName()}
+                  />
+                </span>
+              );
+            }
+            if (part.entityType === "trainCarTile") {
+              return (
+                <span key={idx} className={styles.entity_part}>
+                  <span className={styles.hidden}>Train Car Tile:</span>
+                  <Description
+                    textParts={
+                      TrainCarTile.fromName(part.trainCarTile).shortName
+                    }
                   />
                 </span>
               );

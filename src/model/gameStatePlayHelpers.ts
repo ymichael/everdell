@@ -5,6 +5,7 @@ import {
   CardName,
   LocationName,
   EventName,
+  TrainCarTileName,
   ResourceType,
   ResourceMap,
   GameInput,
@@ -32,6 +33,7 @@ class GameInputMultiStepHelperBase {
   protected cardContext: CardName | undefined;
   protected adornmentContext: AdornmentName | undefined;
   protected locationContext: LocationName | undefined;
+  protected trainCarTileContext: TrainCarTileName | undefined;
   protected eventContext: EventName | undefined;
   protected skipGameLog: boolean;
 
@@ -40,18 +42,21 @@ class GameInputMultiStepHelperBase {
     eventContext = undefined,
     cardContext = undefined,
     locationContext = undefined,
+    trainCarTileContext = undefined,
     skipGameLog = false,
   }: {
     adornmentContext?: AdornmentName | undefined;
     eventContext?: EventName | undefined;
     cardContext?: CardName | undefined;
     locationContext?: LocationName | undefined;
+    trainCarTileContext?: TrainCarTileName | undefined;
     skipGameLog?: boolean;
   }) {
     this.adornmentContext = adornmentContext;
     this.cardContext = cardContext;
     this.eventContext = eventContext;
     this.locationContext = locationContext;
+    this.trainCarTileContext = trainCarTileContext;
     this.skipGameLog = skipGameLog;
   }
 
@@ -66,6 +71,9 @@ class GameInputMultiStepHelperBase {
       return false;
     }
     if (this.adornmentContext !== gameInput.adornmentContext) {
+      return false;
+    }
+    if (this.trainCarTileContext !== gameInput.trainCarTileContext) {
       return false;
     }
     return true;
@@ -86,6 +94,8 @@ class GameInputMultiStepHelperBase {
       gameState.addGameLogFromEvent(this.eventContext, arg);
     } else if (this.adornmentContext) {
       gameState.addGameLogFromAdornment(this.adornmentContext, arg);
+    } else if (this.trainCarTileContext) {
+      gameState.addGameLogFromTrainCarTile(this.trainCarTileContext, arg);
     } else {
       throw new Error("Unexpected game input");
     }
@@ -98,6 +108,7 @@ class GameInputMultiStepHelperBase {
         locationContext: this.locationContext,
         eventContext: this.eventContext,
         adornmentContext: this.adornmentContext,
+        trainCarTileContext: this.trainCarTileContext,
       },
       (v) => !!v
     );

@@ -201,6 +201,16 @@ export function inputContextPrefix(gameInput: GameInputMultiStep): GameText {
       { type: "text", text: ": " },
     ];
   }
+  if (gameInput.trainCarTileContext) {
+    return [
+      {
+        type: "entity",
+        entityType: "trainCarTile",
+        trainCarTile: gameInput.trainCarTileContext,
+      },
+      { type: "text", text: ": " },
+    ];
+  }
   if (gameInput.adornmentContext) {
     return [
       {

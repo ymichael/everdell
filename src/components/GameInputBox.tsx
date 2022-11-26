@@ -168,6 +168,8 @@ const GameInputBoxInner = ({
           name={"gameInput.clientOptions.riverDestination"}
           options={gameInput.options}
         />
+      ) : gameInput.inputType === GameInputType.SELECT_TRAIN_CAR_TILE ? (
+        <>TODO: Not implemented</>
       ) : (
         <>
           {assertUnreachable(

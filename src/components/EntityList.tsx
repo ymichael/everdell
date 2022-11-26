@@ -42,6 +42,9 @@ const EntityList = ({ textParts }: { textParts: GameText }) => {
         if (part.entityType === "riverDestinationSpot") {
           return null;
         }
+        if (part.entityType === "trainCarTile") {
+          return null;
+        }
         assertUnreachable(part, `Unexpected part: ${JSON.stringify(part)}`);
         return null;
       })}

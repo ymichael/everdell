@@ -30,9 +30,11 @@ import {
   RiverDestinationSpotName,
   Season,
   TextPart,
+  TrainCarTileName,
 } from "./types";
 import { GameStateJSON } from "./jsonTypes";
 import { Player } from "./player";
+import { TrainCarTile } from "./trainCarTile";
 import { Adornment, allAdornments } from "./adornment";
 import { Card } from "./card";
 import { CardStack, discardPile } from "./cardStack";
@@ -105,6 +107,9 @@ export const gameTextToDebugStr = (gameText: GameText): string => {
           }
           if (part.entityType === "riverDestination") {
             return part.riverDestination;
+          }
+          if (part.entityType === "trainCarTile") {
+            return part.trainCarTile;
           }
           if (part.entityType === "riverDestinationSpot") {
             return gameTextToDebugStr(
@@ -203,6 +208,17 @@ export class GameState {
 
   get activePlayerId(): string {
     return this._activePlayerId;
+  }
+
+  addGameLogFromTrainCarTile(
+    name: TrainCarTileName,
+    args: Parameters<typeof toGameText>[0]
+  ): void {
+    if (typeof args === "string") {
+      this.addGameLog([TrainCarTile.fromName(name), ": ", args]);
+    } else {
+      this.addGameLog([TrainCarTile.fromName(name), ": ", ...args]);
+    }
   }
 
   addGameLogFromRiverDestinationSpot(
@@ -657,6 +673,12 @@ export class GameState {
       return;
     }
 
+    if (gameInput.trainCarTileContext) {
+      const trainCarTile = TrainCarTile.fromName(gameInput.trainCarTileContext);
+      trainCarTile.playTile(this, gameInput);
+      return;
+    }
+
     if (
       gameInput.prevInputType === GameInputType.PREPARE_FOR_SEASON &&
       gameInput.inputType === GameInputType.SELECT_CARDS
@@ -1040,6 +1062,7 @@ export class GameState {
       case GameInputType.SELECT_OPTION_GENERIC:
       case GameInputType.SELECT_PLAYED_ADORNMENT:
       case GameInputType.SELECT_RIVER_DESTINATION:
+      case GameInputType.SELECT_TRAIN_CAR_TILE:
         this.handleMultiStepGameInput(gameInput);
         break;
       case GameInputType.PLAY_CARD:

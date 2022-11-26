@@ -4462,11 +4462,19 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       [ResourceType.RESIN]: 1,
       [ResourceType.PEBBLE]: 1,
     },
-    pointsInner: (player: Player) => {
-      throw new Error("Not Implemented");
-    },
-    playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
+    pointsInner: (player) => {
+      const numProduction = player.getNumCardType(CardType.PRODUCTION);
+      const numGovernance = player.getNumCardType(CardType.GOVERNANCE);
+      const numDestination = player.getNumCardType(CardType.DESTINATION);
+      const numTraveler = player.getNumCardType(CardType.TRAVELER);
+      const numProsperity = player.getNumCardType(CardType.PROSPERITY);
+      return (
+        (numProduction > 0 ? 1 : 0) +
+        (numGovernance > 0 ? 1 : 0) +
+        (numDestination > 0 ? 1 : 0) +
+        (numTraveler > 0 ? 1 : 0) +
+        (numProsperity > 0 ? 1 : 0)
+      );
     },
   }),
   [CardName.LOCOMOTIVE]: new Card({

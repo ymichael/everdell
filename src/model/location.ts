@@ -1114,7 +1114,6 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
       [ResourceType.RESIN]: 1,
     },
   }),
-  // TODO: implement
   [LocationName.FOREST_COPY_ANY_FOREST_LOCATION]: new Location({
     name: LocationName.FOREST_COPY_ANY_FOREST_LOCATION,
     shortName: toGameText(["Copy 1 Forest location"]),

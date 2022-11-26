@@ -12,6 +12,7 @@ import {
   CardTypeSymbol,
 } from "./common";
 import { sumResources } from "../model/gameStatePlayHelpers";
+import { assertUnreachable } from "../utils";
 
 const colorClassMap = {
   GOVERNANCE: styles.color_governance,
@@ -90,7 +91,10 @@ const getAssociatedCard = (card: CardModel) => {
     ]);
     return <Description textParts={textParts} />;
   } else {
-    assertUnreachable(associatedCard);
+    assertUnreachable(
+      associatedCard,
+      `Unexpected associatedCard: ${JSON.stringify(associatedCard)}`
+    );
   }
 };
 

@@ -3203,34 +3203,6 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
   }),
 };
 
-const baseGameSpecialEvents: EventName[] = [
-  EventName.SPECIAL_GRADUATION_OF_SCHOLARS,
-  EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN,
-  EventName.SPECIAL_PERFORMER_IN_RESIDENCE,
-  EventName.SPECIAL_CAPTURE_OF_THE_ACORN_THIEVES,
-  EventName.SPECIAL_MINISTERING_TO_MISCREANTS,
-  EventName.SPECIAL_CROAK_WART_CURE,
-  EventName.SPECIAL_AN_EVENING_OF_FIREWORKS,
-  EventName.SPECIAL_A_WEE_RUN_CITY,
-  EventName.SPECIAL_TAX_RELIEF,
-  EventName.SPECIAL_UNDER_NEW_MANAGEMENT,
-  EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED,
-  EventName.SPECIAL_FLYING_DOCTOR_SERVICE,
-  EventName.SPECIAL_PATH_OF_THE_PILGRIMS,
-  EventName.SPECIAL_REMEMBERING_THE_FALLEN,
-  EventName.SPECIAL_PRISTINE_CHAPEL_CEILING,
-  EventName.SPECIAL_THE_EVERDELL_GAMES,
-];
-
-const pearlbrookSpecialEvents: EventName[] = [
-  EventName.SPECIAL_ROMANTIC_CRUISE,
-  EventName.SPECIAL_X_MARKS_THE_SPOT,
-  EventName.SPECIAL_RIVERSIDE_RESORT,
-  EventName.SPECIAL_MASQUERADE_INVITATIONS,
-  EventName.SPECIAL_SUNKEN_TREASURE_DISCOVERED,
-  EventName.SPECIAL_RIVER_RACE,
-];
-
 export const initialEventMap = ({
   pearlbrook,
 }: Pick<GameOptions, "pearlbrook">): EventNameToPlayerId => {
@@ -3238,17 +3210,34 @@ export const initialEventMap = ({
 
   // if pearlbrook, use the wonders instead of basic events
   if (pearlbrook) {
-    [...Event.byType(EventType.WONDER)].forEach((ty) => {
+    Event.byType(EventType.WONDER).forEach((ty) => {
       ret[ty] = null;
     });
   } else {
-    [...Event.byType(EventType.BASIC)].forEach((ty) => {
+    Event.byType(EventType.BASIC).forEach((ty) => {
       ret[ty] = null;
     });
   }
 
   let toSelect = 4;
-  const specialEvents = [...baseGameSpecialEvents];
+  const specialEvents: EventName[] = [];
+  const pearlbrookSpecialEvents: EventName[] = [];
+
+  Event.byType(EventType.SPECIAL).forEach((eventName) => {
+    const event = Event.fromName(eventName);
+    switch (event.expansion) {
+      case ExpansionType.NEWLEAF:
+      case ExpansionType.BELLFAIRE:
+      case ExpansionType.SPIRECREST:
+      case ExpansionType.MISTWOOD:
+        break;
+      case ExpansionType.PEARLBROOK:
+        pearlbrookSpecialEvents.push(eventName);
+        break;
+      default:
+        specialEvents.push(eventName);
+    }
+  });
   if (pearlbrook) {
     // Use at least 1 pearlbrook special event.
     const [chosen, ...rest] = shuffle(pearlbrookSpecialEvents);

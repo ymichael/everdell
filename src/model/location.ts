@@ -1331,49 +1331,27 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
   }),
 };
 
-const baseGameForestLocations: LocationName[] = [
-  LocationName.FOREST_TWO_BERRY_ONE_CARD,
-  LocationName.FOREST_TWO_WILD,
-  LocationName.FOREST_DISCARD_ANY_THEN_DRAW_TWO_PER_CARD,
-  LocationName.FOREST_COPY_BASIC_ONE_CARD,
-  LocationName.FOREST_ONE_PEBBLE_THREE_CARD,
-  LocationName.FOREST_ONE_TWIG_RESIN_BERRY,
-  LocationName.FOREST_THREE_BERRY,
-  LocationName.FOREST_TWO_RESIN_ONE_TWIG,
-  LocationName.FOREST_TWO_CARDS_ONE_WILD,
-  LocationName.FOREST_DISCARD_UP_TO_THREE_CARDS_TO_GAIN_WILD_PER_CARD,
-  LocationName.FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS,
-];
-
-const pearlbrookForestLocations: LocationName[] = [
-  LocationName.FOREST_TWO_PEBBLE_ONE_CARD,
-  LocationName.FOREST_RESIN_PEBBLE_OR_FOUR_CARDS,
-  LocationName.FOREST_BERRY_PEBBLE_CARD,
-  LocationName.FOREST_DISCARD_2_MEADOW_DRAW_2_MEADOW_GAIN_ANY,
-];
-
-const newleafForestLocations: LocationName[] = [
-  LocationName.FOREST_FOUR_TWIG,
-  LocationName.FOREST_TWO_TWIG_ONE_RESIN,
-  LocationName.FOREST_COPY_ANY_FOREST_LOCATION,
-];
-
-const bellfaireForestLocations: LocationName[] = [
-  LocationName.FOREST_ACTIVATE_2_PRODUCTION,
-  LocationName.FOREST_THREE_RESIN,
-  LocationName.FOREST_PAY_THREE_TWIG_GAIN_THREE_ANY,
-  LocationName.FOREST_TWO_RESIN_OR_TWO_BERRY,
-];
-
 export const initialLocationsMap = (
   numPlayers: number,
   { pearlbrook }: Pick<GameOptions, "pearlbrook">
 ): LocationNameToPlayerIds => {
-  const forestLocationsToChooseFrom = [...baseGameForestLocations];
-  if (pearlbrook) {
-    forestLocationsToChooseFrom.push(...pearlbrookForestLocations);
-  }
-  const forestLocationsToPlay = shuffle(forestLocationsToChooseFrom).slice(
+  const forestLocations = Location.byType(LocationType.FOREST).filter(
+    (locationName) => {
+      const location = Location.fromName(locationName);
+      switch (location.expansion) {
+        case ExpansionType.NEWLEAF:
+        case ExpansionType.BELLFAIRE:
+        case ExpansionType.SPIRECREST:
+        case ExpansionType.MISTWOOD:
+          return false;
+        case ExpansionType.PEARLBROOK:
+          return pearlbrook;
+        default:
+          return true;
+      }
+    }
+  );
+  const forestLocationsToPlay = shuffle(forestLocations).slice(
     0,
     numPlayers == 2 ? 3 : 4
   );

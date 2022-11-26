@@ -4447,7 +4447,6 @@ describe("Event", () => {
     it("should allow player claim event with no other claimed events", () => {
       const event = Event.fromName(EventName.SPECIAL_CITY_JUBILEE);
       const gameInput = claimEventInput(event.name);
-      let player2 = gameState.players[1];
 
       expect(player.getClaimedEvent(EventName.SPECIAL_CITY_JUBILEE)).to.be(
         undefined
@@ -4490,6 +4489,676 @@ describe("Event", () => {
 
       // 2 from SPECIAL_CITY_JUBILEE, 2 from ANCIENT_SCROLLS_DISCOVERED
       expect(player.getNumResourcesByType(ResourceType.VP)).to.be(2 + 2);
+    });
+  });
+
+  describe(EventName.SPECIAL_EVER_WALL_TOWER_CONSTRUCTED, () => {
+    beforeEach(() => {
+      gameState = testInitialGameState();
+      player = gameState.getActivePlayer();
+
+      gameState.eventsMap[EventName.SPECIAL_EVER_WALL_TOWER_CONSTRUCTED] = null;
+    });
+
+    it("should not allow player to claim event with < 9 constructions", () => {
+      const event = Event.fromName(
+        EventName.SPECIAL_EVER_WALL_TOWER_CONSTRUCTED
+      );
+      const gameInput = claimEventInput(event.name);
+
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_EVER_WALL_TOWER_CONSTRUCTED)
+      ).to.be(undefined);
+
+      expect(() => {
+        gameState.next(gameInput);
+      }).to.throwException(/Need at least 9 Constructions/i);
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_EVER_WALL_TOWER_CONSTRUCTED)
+      ).to.be(undefined);
+    });
+
+    it("should allow player to claim event with >= 9 constructions", () => {
+      const event = Event.fromName(
+        EventName.SPECIAL_EVER_WALL_TOWER_CONSTRUCTED
+      );
+      const gameInput = claimEventInput(event.name);
+
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_EVER_WALL_TOWER_CONSTRUCTED)
+      ).to.be(undefined);
+
+      player.addToCityMulti(gameState, [
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+      ]);
+      [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
+
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_EVER_WALL_TOWER_CONSTRUCTED)
+      );
+      expect(player.getPointsFromEvents(gameState)).to.be(5);
+    });
+  });
+
+  describe.skip(EventName.SPECIAL_GLOW_LIGHT_FESTIVAL, () => {
+    beforeEach(() => {
+      gameState = testInitialGameState();
+      player = gameState.getActivePlayer();
+
+      gameState.eventsMap[EventName.SPECIAL_GLOW_LIGHT_FESTIVAL] = null;
+    });
+    it("should not allow player to claim event conditions if not met", () => {
+      const event = Event.fromName(EventName.SPECIAL_GLOW_LIGHT_FESTIVAL);
+      const gameInput = claimEventInput(event.name);
+
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_GLOW_LIGHT_FESTIVAL)
+      ).to.be(undefined);
+
+      expect(() => {
+        gameState.next(gameInput);
+      }).to.throwException(/Need at least 9 Constructions/i);
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_GLOW_LIGHT_FESTIVAL)
+      ).to.be(undefined);
+    });
+
+    it("should allow player to claim event", () => {
+      const event = Event.fromName(EventName.SPECIAL_GLOW_LIGHT_FESTIVAL);
+      const gameInput = claimEventInput(event.name);
+
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_GLOW_LIGHT_FESTIVAL)
+      ).to.be(undefined);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_GLOW_LIGHT_FESTIVAL));
+      // expect(player.getPointsFromEvents(gameState)).to.be(5);
+    });
+  });
+
+  describe.skip(EventName.SPECIAL_HOT_AIR_BALLOON_RACE, () => {
+    beforeEach(() => {
+      gameState = testInitialGameState();
+      player = gameState.getActivePlayer();
+
+      gameState.eventsMap[EventName.SPECIAL_HOT_AIR_BALLOON_RACE] = null;
+    });
+
+    it("should not allow player to claim event conditions if not met", () => {
+      const event = Event.fromName(EventName.SPECIAL_HOT_AIR_BALLOON_RACE);
+      const gameInput = claimEventInput(event.name);
+
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_HOT_AIR_BALLOON_RACE)
+      ).to.be(undefined);
+
+      expect(() => {
+        gameState.next(gameInput);
+      }).to.throwException(/Need at least 9 Constructions/i);
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_HOT_AIR_BALLOON_RACE)
+      ).to.be(undefined);
+    });
+
+    it("should allow player to claim event", () => {
+      const event = Event.fromName(EventName.SPECIAL_HOT_AIR_BALLOON_RACE);
+      const gameInput = claimEventInput(event.name);
+
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_HOT_AIR_BALLOON_RACE)
+      ).to.be(undefined);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_HOT_AIR_BALLOON_RACE));
+      // expect(player.getPointsFromEvents(gameState)).to.be(5);
+    });
+  });
+
+  describe(EventName.SPECIAL_JUNIPER_JIG_DANCE_CONTEST, () => {
+    beforeEach(() => {
+      gameState = testInitialGameState();
+      player = gameState.getActivePlayer();
+
+      gameState.eventsMap[EventName.SPECIAL_JUNIPER_JIG_DANCE_CONTEST] = null;
+    });
+
+    it("should allow player to claim event", () => {
+      const event = Event.fromName(EventName.SPECIAL_JUNIPER_JIG_DANCE_CONTEST);
+      const gameInput = claimEventInput(event.name);
+
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_JUNIPER_JIG_DANCE_CONTEST)
+      ).to.be(undefined);
+
+      player.addToCityMulti(gameState, [
+        CardName.WIFE,
+        CardName.WIFE,
+        CardName.WIFE,
+        CardName.WIFE,
+        CardName.WIFE,
+        CardName.WIFE,
+        CardName.WIFE,
+        CardName.WIFE,
+        CardName.WIFE,
+      ]);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
+
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_JUNIPER_JIG_DANCE_CONTEST)
+      );
+      // expect(player.getPointsFromEvents(gameState)).to.be(5);
+    });
+    it("should not allow player to claim event with < 9 Critters", () => {
+      const event = Event.fromName(EventName.SPECIAL_JUNIPER_JIG_DANCE_CONTEST);
+      const gameInput = claimEventInput(event.name);
+
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_JUNIPER_JIG_DANCE_CONTEST)
+      ).to.be(undefined);
+
+      expect(() => {
+        gameState.next(gameInput);
+      }).to.throwException(/Need at least 9 Critters/i);
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_JUNIPER_JIG_DANCE_CONTEST)
+      ).to.be(undefined);
+    });
+  });
+  describe.skip(EventName.SPECIAL_MAGIC_SNOW, () => {
+    beforeEach(() => {
+      gameState = testInitialGameState();
+      player = gameState.getActivePlayer();
+
+      gameState.eventsMap[EventName.SPECIAL_MAGIC_SNOW] = null;
+    });
+
+    it("should allow player to claim event", () => {
+      const event = Event.fromName(EventName.SPECIAL_MAGIC_SNOW);
+      const gameInput = claimEventInput(event.name);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_MAGIC_SNOW)).to.be(
+        undefined
+      );
+
+      [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_MAGIC_SNOW));
+      // expect(player.getPointsFromEvents(gameState)).to.be(5);
+    });
+    it("should not allow player to claim event if conditions not met", () => {
+      const event = Event.fromName(EventName.SPECIAL_MAGIC_SNOW);
+      const gameInput = claimEventInput(event.name);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_MAGIC_SNOW)).to.be(
+        undefined
+      );
+
+      expect(() => {
+        gameState.next(gameInput);
+      }).to.throwException(/Need at least 9 Critters/i);
+      expect(player.getClaimedEvent(EventName.SPECIAL_MAGIC_SNOW)).to.be(
+        undefined
+      );
+    });
+  });
+  describe.skip(EventName.SPECIAL_ROYAL_TEA, () => {
+    beforeEach(() => {
+      gameState = testInitialGameState();
+      player = gameState.getActivePlayer();
+
+      gameState.eventsMap[EventName.SPECIAL_ROYAL_TEA] = null;
+    });
+
+    it("should allow player to claim event", () => {
+      const event = Event.fromName(EventName.SPECIAL_ROYAL_TEA);
+      const gameInput = claimEventInput(event.name);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_ROYAL_TEA)).to.be(
+        undefined
+      );
+
+      [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_ROYAL_TEA));
+      // expect(player.getPointsFromEvents(gameState)).to.be(5);
+    });
+    it("should not allow player to claim event if conditions not met", () => {
+      const event = Event.fromName(EventName.SPECIAL_ROYAL_TEA);
+      const gameInput = claimEventInput(event.name);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_ROYAL_TEA)).to.be(
+        undefined
+      );
+
+      expect(() => {
+        gameState.next(gameInput);
+      }).to.throwException(/Need at least 9 Critters/i);
+      expect(player.getClaimedEvent(EventName.SPECIAL_ROYAL_TEA)).to.be(
+        undefined
+      );
+    });
+  });
+  describe.skip(EventName.SPECIAL_STOCK_MARKET_BOOM, () => {
+    beforeEach(() => {
+      gameState = testInitialGameState();
+      player = gameState.getActivePlayer();
+
+      gameState.eventsMap[EventName.SPECIAL_STOCK_MARKET_BOOM] = null;
+    });
+
+    it("should allow player to claim event", () => {
+      const event = Event.fromName(EventName.SPECIAL_STOCK_MARKET_BOOM);
+      const gameInput = claimEventInput(event.name);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_STOCK_MARKET_BOOM)).to.be(
+        undefined
+      );
+
+      [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_STOCK_MARKET_BOOM));
+      // expect(player.getPointsFromEvents(gameState)).to.be(5);
+    });
+    it("should not allow player to claim event if conditions not met", () => {
+      const event = Event.fromName(EventName.SPECIAL_STOCK_MARKET_BOOM);
+      const gameInput = claimEventInput(event.name);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_STOCK_MARKET_BOOM)).to.be(
+        undefined
+      );
+
+      expect(() => {
+        gameState.next(gameInput);
+      }).to.throwException(/Need at least 9 Critters/i);
+      expect(player.getClaimedEvent(EventName.SPECIAL_STOCK_MARKET_BOOM)).to.be(
+        undefined
+      );
+    });
+  });
+  describe.skip(EventName.SPECIAL_SUNFLOWER_PARADE, () => {
+    beforeEach(() => {
+      gameState = testInitialGameState();
+      player = gameState.getActivePlayer();
+
+      gameState.eventsMap[EventName.SPECIAL_SUNFLOWER_PARADE] = null;
+    });
+
+    it("should allow player to claim event", () => {
+      const event = Event.fromName(EventName.SPECIAL_SUNFLOWER_PARADE);
+      const gameInput = claimEventInput(event.name);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_SUNFLOWER_PARADE)).to.be(
+        undefined
+      );
+
+      [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_SUNFLOWER_PARADE));
+      // expect(player.getPointsFromEvents(gameState)).to.be(5);
+    });
+    it("should not allow player to claim event if conditions not met", () => {
+      const event = Event.fromName(EventName.SPECIAL_SUNFLOWER_PARADE);
+      const gameInput = claimEventInput(event.name);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_SUNFLOWER_PARADE)).to.be(
+        undefined
+      );
+
+      expect(() => {
+        gameState.next(gameInput);
+      }).to.throwException(/Need at least 9 Critters/i);
+      expect(player.getClaimedEvent(EventName.SPECIAL_SUNFLOWER_PARADE)).to.be(
+        undefined
+      );
+    });
+  });
+
+  // Bellfaire Events
+  describe.skip(EventName.SPECIAL_ARCHITECTURAL_RENAISSANCE, () => {
+    beforeEach(() => {
+      gameState = testInitialGameState();
+      player = gameState.getActivePlayer();
+
+      gameState.eventsMap[EventName.SPECIAL_ARCHITECTURAL_RENAISSANCE] = null;
+    });
+
+    it("should allow player to claim event", () => {
+      const event = Event.fromName(EventName.SPECIAL_ARCHITECTURAL_RENAISSANCE);
+      const gameInput = claimEventInput(event.name);
+
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_ARCHITECTURAL_RENAISSANCE)
+      ).to.be(undefined);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
+
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_ARCHITECTURAL_RENAISSANCE)
+      );
+      // expect(player.getPointsFromEvents(gameState)).to.be(5);
+    });
+    it("should not allow player to claim event if conditions not met", () => {
+      const event = Event.fromName(EventName.SPECIAL_ARCHITECTURAL_RENAISSANCE);
+      const gameInput = claimEventInput(event.name);
+
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_ARCHITECTURAL_RENAISSANCE)
+      ).to.be(undefined);
+
+      expect(() => {
+        gameState.next(gameInput);
+      }).to.throwException(/Need at least 9 Critters/i);
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_ARCHITECTURAL_RENAISSANCE)
+      ).to.be(undefined);
+    });
+  });
+  describe.skip(EventName.SPECIAL_ARTS_AND_MUSIC_FESTIVAL, () => {
+    beforeEach(() => {
+      gameState = testInitialGameState();
+      player = gameState.getActivePlayer();
+
+      gameState.eventsMap[EventName.SPECIAL_ARTS_AND_MUSIC_FESTIVAL] = null;
+    });
+
+    it("should allow player to claim event", () => {
+      const event = Event.fromName(EventName.SPECIAL_ARTS_AND_MUSIC_FESTIVAL);
+      const gameInput = claimEventInput(event.name);
+
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_ARTS_AND_MUSIC_FESTIVAL)
+      ).to.be(undefined);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_ARTS_AND_MUSIC_FESTIVAL));
+      // expect(player.getPointsFromEvents(gameState)).to.be(5);
+    });
+    it("should not allow player to claim event if conditions not met", () => {
+      const event = Event.fromName(EventName.SPECIAL_ARTS_AND_MUSIC_FESTIVAL);
+      const gameInput = claimEventInput(event.name);
+
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_ARTS_AND_MUSIC_FESTIVAL)
+      ).to.be(undefined);
+
+      expect(() => {
+        gameState.next(gameInput);
+      }).to.throwException(/Need at least 9 Critters/i);
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_ARTS_AND_MUSIC_FESTIVAL)
+      ).to.be(undefined);
+    });
+  });
+  describe.skip(EventName.SPECIAL_BED_AND_BREAKFAST_GUILD, () => {
+    beforeEach(() => {
+      gameState = testInitialGameState();
+      player = gameState.getActivePlayer();
+
+      gameState.eventsMap[EventName.SPECIAL_BED_AND_BREAKFAST_GUILD] = null;
+    });
+
+    it("should allow player to claim event", () => {
+      const event = Event.fromName(EventName.SPECIAL_BED_AND_BREAKFAST_GUILD);
+      const gameInput = claimEventInput(event.name);
+
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_BED_AND_BREAKFAST_GUILD)
+      ).to.be(undefined);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_BED_AND_BREAKFAST_GUILD));
+      // expect(player.getPointsFromEvents(gameState)).to.be(5);
+    });
+    it("should not allow player to claim event if conditions not met", () => {
+      const event = Event.fromName(EventName.SPECIAL_BED_AND_BREAKFAST_GUILD);
+      const gameInput = claimEventInput(event.name);
+
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_BED_AND_BREAKFAST_GUILD)
+      ).to.be(undefined);
+
+      expect(() => {
+        gameState.next(gameInput);
+      }).to.throwException(/Need at least 9 Critters/i);
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_BED_AND_BREAKFAST_GUILD)
+      ).to.be(undefined);
+    });
+  });
+  describe.skip(EventName.SPECIAL_CITY_HOLIDAY, () => {
+    beforeEach(() => {
+      gameState = testInitialGameState();
+      player = gameState.getActivePlayer();
+
+      gameState.eventsMap[EventName.SPECIAL_CITY_HOLIDAY] = null;
+    });
+
+    it("should allow player to claim event", () => {
+      const event = Event.fromName(EventName.SPECIAL_CITY_HOLIDAY);
+      const gameInput = claimEventInput(event.name);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_CITY_HOLIDAY)).to.be(
+        undefined
+      );
+
+      [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_CITY_HOLIDAY));
+      // expect(player.getPointsFromEvents(gameState)).to.be(5);
+    });
+    it("should not allow player to claim event if conditions not met", () => {
+      const event = Event.fromName(EventName.SPECIAL_CITY_HOLIDAY);
+      const gameInput = claimEventInput(event.name);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_CITY_HOLIDAY)).to.be(
+        undefined
+      );
+
+      expect(() => {
+        gameState.next(gameInput);
+      }).to.throwException(/Need at least 9 Critters/i);
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_BED_AND_BREAKFAST_GUILD)
+      ).to.be(undefined);
+    });
+  });
+  describe.skip(EventName.SPECIAL_GATHERING_OF_ELDERS, () => {
+    beforeEach(() => {
+      gameState = testInitialGameState();
+      player = gameState.getActivePlayer();
+
+      gameState.eventsMap[EventName.SPECIAL_GATHERING_OF_ELDERS] = null;
+    });
+
+    it("should allow player to claim event", () => {
+      const event = Event.fromName(EventName.SPECIAL_GATHERING_OF_ELDERS);
+      const gameInput = claimEventInput(event.name);
+
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_GATHERING_OF_ELDERS)
+      ).to.be(undefined);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_GATHERING_OF_ELDERS));
+      // expect(player.getPointsFromEvents(gameState)).to.be(5);
+    });
+    it("should not allow player to claim event if conditions not met", () => {
+      const event = Event.fromName(EventName.SPECIAL_GATHERING_OF_ELDERS);
+      const gameInput = claimEventInput(event.name);
+
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_GATHERING_OF_ELDERS)
+      ).to.be(undefined);
+
+      expect(() => {
+        gameState.next(gameInput);
+      }).to.throwException(/Need at least 9 Critters/i);
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_GATHERING_OF_ELDERS)
+      ).to.be(undefined);
+    });
+  });
+  describe.skip(EventName.SPECIAL_KINGS_ROAD_ESTABLISHED, () => {
+    beforeEach(() => {
+      gameState = testInitialGameState();
+      player = gameState.getActivePlayer();
+
+      gameState.eventsMap[EventName.SPECIAL_KINGS_ROAD_ESTABLISHED] = null;
+    });
+
+    it("should allow player to claim event", () => {
+      const event = Event.fromName(EventName.SPECIAL_KINGS_ROAD_ESTABLISHED);
+      const gameInput = claimEventInput(event.name);
+
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_KINGS_ROAD_ESTABLISHED)
+      ).to.be(undefined);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_KINGS_ROAD_ESTABLISHED));
+      // expect(player.getPointsFromEvents(gameState)).to.be(5);
+    });
+    it("should not allow player to claim event if conditions not met", () => {
+      const event = Event.fromName(EventName.SPECIAL_KINGS_ROAD_ESTABLISHED);
+      const gameInput = claimEventInput(event.name);
+
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_KINGS_ROAD_ESTABLISHED)
+      ).to.be(undefined);
+
+      expect(() => {
+        gameState.next(gameInput);
+      }).to.throwException(/Need at least 9 Critters/i);
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_KINGS_ROAD_ESTABLISHED)
+      ).to.be(undefined);
+    });
+  });
+  describe.skip(EventName.SPECIAL_PIE_EATING_CONTEST, () => {
+    beforeEach(() => {
+      gameState = testInitialGameState();
+      player = gameState.getActivePlayer();
+
+      gameState.eventsMap[EventName.SPECIAL_PIE_EATING_CONTEST] = null;
+    });
+
+    it("should allow player to claim event", () => {
+      const event = Event.fromName(EventName.SPECIAL_PIE_EATING_CONTEST);
+      const gameInput = claimEventInput(event.name);
+
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_PIE_EATING_CONTEST)
+      ).to.be(undefined);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_PIE_EATING_CONTEST));
+      // expect(player.getPointsFromEvents(gameState)).to.be(5);
+    });
+    it("should not allow player to claim event if conditions not met", () => {
+      const event = Event.fromName(EventName.SPECIAL_PIE_EATING_CONTEST);
+      const gameInput = claimEventInput(event.name);
+
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_PIE_EATING_CONTEST)
+      ).to.be(undefined);
+
+      expect(() => {
+        gameState.next(gameInput);
+      }).to.throwException(/Need at least 9 Critters/i);
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_PIE_EATING_CONTEST)
+      ).to.be(undefined);
+    });
+  });
+  describe.skip(EventName.SPECIAL_ROYAL_WEDDING, () => {
+    beforeEach(() => {
+      gameState = testInitialGameState();
+      player = gameState.getActivePlayer();
+
+      gameState.eventsMap[EventName.SPECIAL_ROYAL_WEDDING] = null;
+    });
+
+    it("should allow player to claim event", () => {
+      const event = Event.fromName(EventName.SPECIAL_ROYAL_WEDDING);
+      const gameInput = claimEventInput(event.name);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_ROYAL_WEDDING)).to.be(
+        undefined
+      );
+
+      [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_ROYAL_WEDDING));
+      // expect(player.getPointsFromEvents(gameState)).to.be(5);
+    });
+    it("should not allow player to claim event if conditions not met", () => {
+      const event = Event.fromName(EventName.SPECIAL_ROYAL_WEDDING);
+      const gameInput = claimEventInput(event.name);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_ROYAL_WEDDING)).to.be(
+        undefined
+      );
+
+      expect(() => {
+        gameState.next(gameInput);
+      }).to.throwException(/Need at least 9 Critters/i);
+      expect(player.getClaimedEvent(EventName.SPECIAL_ROYAL_WEDDING)).to.be(
+        undefined
+      );
+    });
+  });
+  describe.skip(EventName.SPECIAL_STATUES_COMMISSIONED, () => {
+    beforeEach(() => {
+      gameState = testInitialGameState();
+      player = gameState.getActivePlayer();
+
+      gameState.eventsMap[EventName.SPECIAL_STATUES_COMMISSIONED] = null;
+    });
+
+    it("should allow player to claim event", () => {
+      const event = Event.fromName(EventName.SPECIAL_STATUES_COMMISSIONED);
+      const gameInput = claimEventInput(event.name);
+
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_STATUES_COMMISSIONED)
+      ).to.be(undefined);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_STATUES_COMMISSIONED));
+      // expect(player.getPointsFromEvents(gameState)).to.be(5);
+    });
+    it("should not allow player to claim event if conditions not met", () => {
+      const event = Event.fromName(EventName.SPECIAL_STATUES_COMMISSIONED);
+      const gameInput = claimEventInput(event.name);
+
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_STATUES_COMMISSIONED)
+      ).to.be(undefined);
+
+      expect(() => {
+        gameState.next(gameInput);
+      }).to.throwException(/Need at least 9 Critters/i);
+      expect(
+        player.getClaimedEvent(EventName.SPECIAL_STATUES_COMMISSIONED)
+      ).to.be(undefined);
     });
   });
 });

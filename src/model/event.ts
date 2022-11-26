@@ -2729,7 +2729,53 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       return null;
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      // TODO: IMPLEMENT
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
+        const numDestination = player.getNumCardType(CardType.DESTINATION);
+
+        // ask player to choose which cards to discard
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          label: `You may discard up to ${numDestination} CARD from your city for 1 VP each`,
+          eventContext: EventName.SPECIAL_MAGIC_SNOW,
+          cardOptions: player.getPlayedCards(),
+          maxToSelect: numDestination,
+          minToSelect: 0,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS) {
+        const selectedCards = gameInput.clientOptions.selectedCards;
+        if (!selectedCards) {
+          throw new Error("invalid input");
+        }
+        if (selectedCards.length > gameInput.maxToSelect) {
+          throw new Error("Selected too many cards");
+        }
+        const eventInfo = player.getClaimedEvent(EventName.SPECIAL_MAGIC_SNOW);
+        if (!eventInfo) {
+          throw new Error("Cannot find event info");
+        }
+        selectedCards.forEach((playedCardInfo) => {
+          player.removeCardFromCity(gameState, playedCardInfo);
+        });
+
+        gameState.addGameLogFromEvent(EventName.SPECIAL_MAGIC_SNOW, [
+          player,
+          " discarded ",
+          ...cardListToGameText(selectedCards.map(({ cardName }) => cardName)),
+          " from their city.",
+        ]);
+        player.gainResources(gameState, { VP: selectedCards.length });
+        gameState.addGameLogFromEvent(EventName.SPECIAL_ROYAL_TEA, [
+          player,
+          " gained 1 VP per card discarded from their city.",
+        ]);
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
+      }
     },
   }),
   [EventName.SPECIAL_ROYAL_TEA]: new Event({
@@ -2754,7 +2800,53 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       return null;
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      // TODO: IMPLEMENT
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
+        const numProsperity = player.getNumCardType(CardType.PROSPERITY);
+
+        // ask player to choose which cards to discard
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          label: `You may discard up to ${numProsperity} CARD from your city for 1 VP each`,
+          eventContext: EventName.SPECIAL_ROYAL_TEA,
+          cardOptions: player.getPlayedCards(),
+          maxToSelect: numProsperity,
+          minToSelect: 0,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS) {
+        const selectedCards = gameInput.clientOptions.selectedCards;
+        if (!selectedCards) {
+          throw new Error("invalid input");
+        }
+        if (selectedCards.length > gameInput.maxToSelect) {
+          throw new Error("Selected too many cards");
+        }
+        const eventInfo = player.getClaimedEvent(EventName.SPECIAL_ROYAL_TEA);
+        if (!eventInfo) {
+          throw new Error("Cannot find event info");
+        }
+        selectedCards.forEach((playedCardInfo) => {
+          player.removeCardFromCity(gameState, playedCardInfo);
+        });
+
+        gameState.addGameLogFromEvent(EventName.SPECIAL_ROYAL_TEA, [
+          player,
+          " discarded ",
+          ...cardListToGameText(selectedCards.map(({ cardName }) => cardName)),
+          " from their city.",
+        ]);
+        player.gainResources(gameState, { VP: selectedCards.length });
+        gameState.addGameLogFromEvent(EventName.SPECIAL_ROYAL_TEA, [
+          player,
+          " gained 1 VP per card discarded from their city.",
+        ]);
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
+      }
     },
   }),
   [EventName.SPECIAL_STOCK_MARKET_BOOM]: new Event({

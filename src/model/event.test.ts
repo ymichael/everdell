@@ -4799,28 +4799,14 @@ describe("Event", () => {
       ).to.be(undefined);
     });
   });
-  describe.skip(EventName.SPECIAL_MAGIC_SNOW, () => {
+  describe(EventName.SPECIAL_MAGIC_SNOW, () => {
     beforeEach(() => {
       gameState = testInitialGameState();
       player = gameState.getActivePlayer();
 
       gameState.eventsMap[EventName.SPECIAL_MAGIC_SNOW] = null;
     });
-
-    it("should allow player to claim event", () => {
-      const event = Event.fromName(EventName.SPECIAL_MAGIC_SNOW);
-      const gameInput = claimEventInput(event.name);
-
-      expect(player.getClaimedEvent(EventName.SPECIAL_MAGIC_SNOW)).to.be(
-        undefined
-      );
-
-      [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
-
-      expect(player.getClaimedEvent(EventName.SPECIAL_MAGIC_SNOW));
-      // expect(player.getPointsFromEvents(gameState)).to.be(5);
-    });
-    it("should not allow player to claim event if conditions not met", () => {
+    it("should not allow player to claim event conditions if not met", () => {
       const event = Event.fromName(EventName.SPECIAL_MAGIC_SNOW);
       const gameInput = claimEventInput(event.name);
 
@@ -4830,34 +4816,98 @@ describe("Event", () => {
 
       expect(() => {
         gameState.next(gameInput);
-      }).to.throwException(/Need at least 9 Critters/i);
+      }).to.throwException(/Need at least 2 DESTINATION/i);
       expect(player.getClaimedEvent(EventName.SPECIAL_MAGIC_SNOW)).to.be(
         undefined
       );
     });
+
+    it("should allow player to claim event", () => {
+      const event = Event.fromName(EventName.SPECIAL_MAGIC_SNOW);
+      const gameInput = claimEventInput(event.name);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_MAGIC_SNOW)).to.be(
+        undefined
+      );
+
+      player.addToCityMulti(gameState, [
+        CardName.ARCHITECT,
+        CardName.KING,
+        CardName.EVERTREE,
+        CardName.INN,
+        CardName.LOOKOUT,
+      ]);
+      expect(player.getNumCardsInCity()).to.be(5);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        gameInput,
+        {
+          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          eventContext: EventName.SPECIAL_MAGIC_SNOW,
+          cardOptions: player.getPlayedCards(),
+          maxToSelect: 2,
+          minToSelect: 0,
+          clientOptions: {
+            selectedCards: [
+              player.getFirstPlayedCard(CardName.LOOKOUT),
+              player.getFirstPlayedCard(CardName.KING),
+            ],
+          },
+        },
+      ]);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_MAGIC_SNOW));
+      expect(player.getPointsFromEvents(gameState)).to.be(4);
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(2);
+      expect(player.getNumCardsInCity()).to.be(3);
+    });
+    it("should allow player to claim event and not discard cards", () => {
+      const event = Event.fromName(EventName.SPECIAL_MAGIC_SNOW);
+      const gameInput = claimEventInput(event.name);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_MAGIC_SNOW)).to.be(
+        undefined
+      );
+
+      player.addToCityMulti(gameState, [
+        CardName.ARCHITECT,
+        CardName.KING,
+        CardName.EVERTREE,
+        CardName.INN,
+        CardName.LOOKOUT,
+      ]);
+      expect(player.getNumCardsInCity()).to.be(5);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        gameInput,
+        {
+          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          eventContext: EventName.SPECIAL_MAGIC_SNOW,
+          cardOptions: player.getPlayedCards(),
+          maxToSelect: 2,
+          minToSelect: 0,
+          clientOptions: {
+            selectedCards: [],
+          },
+        },
+      ]);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_MAGIC_SNOW));
+      expect(player.getPointsFromEvents(gameState)).to.be(4);
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+      expect(player.getNumCardsInCity()).to.be(5);
+    });
   });
-  describe.skip(EventName.SPECIAL_ROYAL_TEA, () => {
+  describe(EventName.SPECIAL_ROYAL_TEA, () => {
     beforeEach(() => {
       gameState = testInitialGameState();
       player = gameState.getActivePlayer();
 
       gameState.eventsMap[EventName.SPECIAL_ROYAL_TEA] = null;
     });
-
-    it("should allow player to claim event", () => {
-      const event = Event.fromName(EventName.SPECIAL_ROYAL_TEA);
-      const gameInput = claimEventInput(event.name);
-
-      expect(player.getClaimedEvent(EventName.SPECIAL_ROYAL_TEA)).to.be(
-        undefined
-      );
-
-      [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
-
-      expect(player.getClaimedEvent(EventName.SPECIAL_ROYAL_TEA));
-      // expect(player.getPointsFromEvents(gameState)).to.be(5);
-    });
-    it("should not allow player to claim event if conditions not met", () => {
+    it("should not allow player to claim event conditions if not met", () => {
       const event = Event.fromName(EventName.SPECIAL_ROYAL_TEA);
       const gameInput = claimEventInput(event.name);
 
@@ -4867,10 +4917,90 @@ describe("Event", () => {
 
       expect(() => {
         gameState.next(gameInput);
-      }).to.throwException(/Need at least 9 Critters/i);
+      }).to.throwException(/Need at least 2 PROSPERITY/i);
       expect(player.getClaimedEvent(EventName.SPECIAL_ROYAL_TEA)).to.be(
         undefined
       );
+    });
+
+    it("should allow player to claim event", () => {
+      const event = Event.fromName(EventName.SPECIAL_ROYAL_TEA);
+      const gameInput = claimEventInput(event.name);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_ROYAL_TEA)).to.be(
+        undefined
+      );
+
+      player.addToCityMulti(gameState, [
+        CardName.ARCHITECT,
+        CardName.KING,
+        CardName.EVERTREE,
+        CardName.FARM,
+        CardName.HUSBAND,
+        CardName.TWIG_BARGE,
+      ]);
+      expect(player.getNumCardsInCity()).to.be(6);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        gameInput,
+        {
+          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          eventContext: EventName.SPECIAL_ROYAL_TEA,
+          cardOptions: player.getPlayedCards(),
+          maxToSelect: 3,
+          minToSelect: 0,
+          clientOptions: {
+            selectedCards: [
+              player.getFirstPlayedCard(CardName.FARM),
+              player.getFirstPlayedCard(CardName.TWIG_BARGE),
+            ],
+          },
+        },
+      ]);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_ROYAL_TEA));
+      expect(player.getPointsFromEvents(gameState)).to.be(4);
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(2);
+      expect(player.getNumCardsInCity()).to.be(4);
+    });
+    it("should allow player to claim event and not discard cards", () => {
+      const event = Event.fromName(EventName.SPECIAL_ROYAL_TEA);
+      const gameInput = claimEventInput(event.name);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_ROYAL_TEA)).to.be(
+        undefined
+      );
+
+      player.addToCityMulti(gameState, [
+        CardName.ARCHITECT,
+        CardName.KING,
+        CardName.EVERTREE,
+        CardName.FARM,
+        CardName.HUSBAND,
+        CardName.TWIG_BARGE,
+      ]);
+      expect(player.getNumCardsInCity()).to.be(6);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        gameInput,
+        {
+          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          prevInputType: GameInputType.CLAIM_EVENT,
+          eventContext: EventName.SPECIAL_ROYAL_TEA,
+          cardOptions: player.getPlayedCards(),
+          maxToSelect: 3,
+          minToSelect: 0,
+          clientOptions: {
+            selectedCards: [],
+          },
+        },
+      ]);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_ROYAL_TEA));
+      expect(player.getPointsFromEvents(gameState)).to.be(4);
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+      expect(player.getNumCardsInCity()).to.be(6);
     });
   });
   describe.skip(EventName.SPECIAL_STOCK_MARKET_BOOM, () => {

@@ -4251,7 +4251,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           throw new Error("Invalid selected cards");
         }
         if (gameInput.clientOptions.selectedCards.length === 0) {
-          gameState.addGameLogFromCard(CardName.TEA_HOUSE, [
+          gameState.addGameLogFromCard(CardName.CITY_HALL, [
             player,
             " did not give any CARD to opponents.",
           ]);
@@ -4351,7 +4351,89 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       [ResourceType.BERRY]: 3,
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
+      const player = gameState.getActivePlayer();
+
+      if (
+        gameInput.inputType === GameInputType.PLAY_CARD &&
+        gameInput.clientOptions.card !== CardName.DIPLOMAT &&
+        gameInput.clientOptions.card &&
+        Card.fromName(gameInput.clientOptions.card).isCritter
+      ) {
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_CARDS,
+          label:
+            "You may give 1 CARD to an opponent to gain 1 VP and draw 1 CARD",
+          prevInputType: gameInput.inputType,
+          cardOptions: player.cardsInHand,
+          maxToSelect: 1,
+          minToSelect: 0,
+          cardContext: CardName.DIPLOMAT,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_CARDS &&
+        gameInput.cardContext === CardName.DIPLOMAT
+      ) {
+        if (!gameInput.clientOptions.selectedCards) {
+          throw new Error("Invalid selected cards");
+        }
+        if (gameInput.clientOptions.selectedCards.length === 0) {
+          gameState.addGameLogFromCard(CardName.DIPLOMAT, [
+            player,
+            " did not give any CARD to opponents.",
+          ]);
+          return;
+        }
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_PLAYER,
+          label: "Select player to give a CARD to",
+          prevInputType: gameInput.inputType,
+          prevInput: gameInput,
+          playerOptions: gameState.players
+            .filter((p) => p.playerId !== player.playerId)
+            .map((p) => p.playerId),
+          mustSelectOne: true,
+          cardContext: CardName.DIPLOMAT,
+          clientOptions: {
+            selectedPlayer: null,
+          },
+        });
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_PLAYER &&
+        gameInput.cardContext === CardName.DIPLOMAT
+      ) {
+        if (
+          !gameInput.prevInput ||
+          gameInput.prevInput.inputType !== GameInputType.SELECT_CARDS
+        ) {
+          throw new Error("Invalid input");
+        }
+        const selectedPlayerId = gameInput.clientOptions.selectedPlayer;
+        if (!selectedPlayerId) {
+          throw new Error("Must select a player");
+        }
+        const selectedPlayer = gameState.getPlayer(selectedPlayerId);
+        if (!selectedPlayer || selectedPlayer.playerId === player.playerId) {
+          throw new Error("Must select a different player");
+        }
+
+        const cardToGive = gameInput.prevInput.clientOptions.selectedCards[0];
+        player.removeCardFromHand(gameState, cardToGive, false);
+        selectedPlayer.addCardToHand(gameState, cardToGive);
+
+        // give rewards
+        player.gainResources(gameState, { [ResourceType.VP]: 1 });
+        player.drawCards(gameState, 1);
+
+        gameState.addGameLogFromCard(CardName.DIPLOMAT, [
+          player,
+          " gave 1 CARD to ",
+          selectedPlayer,
+          " to gain 1 VP and draw 1 CARD.",
+        ]);
+      }
     },
   }),
   [CardName.EVER_WALL]: new Card({

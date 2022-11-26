@@ -7335,29 +7335,29 @@ describe("Card", () => {
       it("Should calculate points correctly", () => {
         const card = Card.fromName(CardName.LIBRARY);
         player.addToCity(gameState, card.name);
-        expect(card.getPoints(player)).to.be(3 + 1);
+        expect(card.getPoints(player, gameState)).to.be(3 + 1);
 
         player.addToCity(gameState, CardName.FARM);
-        expect(card.getPoints(player)).to.be(3 + 2);
+        expect(card.getPoints(player, gameState)).to.be(3 + 2);
 
         player.addToCity(gameState, CardName.FARM);
         // still 1, because didn't add another unique color
-        expect(card.getPoints(player)).to.be(3 + 2);
+        expect(card.getPoints(player, gameState)).to.be(3 + 2);
 
         player.addToCity(gameState, CardName.INN);
-        expect(card.getPoints(player)).to.be(3 + 3);
+        expect(card.getPoints(player, gameState)).to.be(3 + 3);
 
         player.addToCity(gameState, CardName.UNDERTAKER);
-        expect(card.getPoints(player)).to.be(3 + 4);
+        expect(card.getPoints(player, gameState)).to.be(3 + 4);
 
         player.addToCity(gameState, CardName.EVERTREE);
-        expect(card.getPoints(player)).to.be(3 + 4);
+        expect(card.getPoints(player, gameState)).to.be(3 + 4);
 
         player.addToCity(gameState, CardName.INNKEEPER);
-        expect(card.getPoints(player)).to.be(3 + 5);
+        expect(card.getPoints(player, gameState)).to.be(3 + 5);
 
         player.addToCity(gameState, CardName.HISTORIAN);
-        expect(card.getPoints(player)).to.be(3 + 5);
+        expect(card.getPoints(player, gameState)).to.be(3 + 5);
       });
     });
 

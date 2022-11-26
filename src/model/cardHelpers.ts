@@ -28,7 +28,7 @@ export function playSpendResourceToGetVPFactory({
   conversionRate = 1,
 }: {
   card: CardName;
-  resourceType: ResourceType.BERRY | ResourceType.TWIG;
+  resourceType: ResourceType.BERRY | ResourceType.TWIG | ResourceType.PEBBLE;
   maxToSpend: number;
   conversionRate?: number;
 }): GameStatePlayFn {
@@ -67,7 +67,7 @@ export function activateCardSpendResourceToGetVPFactory({
   maxToSpend,
 }: {
   card: CardName;
-  resourceType: ResourceType.BERRY | ResourceType.TWIG;
+  resourceType: ResourceType.BERRY | ResourceType.TWIG | ResourceType.PEBBLE;
   maxToSpend: number;
 }): GameStatePlayFn {
   return (gameState: GameState, gameInput: GameInput) => {

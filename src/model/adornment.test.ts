@@ -72,7 +72,7 @@ describe("Adornment", () => {
     it("should gain 1 ANY, CARD and PEARL", () => {
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
 
-      expect(player.cardsInHand.length).to.be(0);
+      expect(player.numCardsInHand).to.be(0);
       expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
 
       [player, gameState] = multiStepGameInputTest(gameState, [
@@ -95,7 +95,7 @@ describe("Adornment", () => {
 
       expect(player.adornmentsInHand).to.eql([]);
       expect(player.playedAdornments).to.eql([name]);
-      expect(player.cardsInHand.length).to.be(1);
+      expect(player.numCardsInHand).to.be(1);
       expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(1);
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
     });
@@ -115,13 +115,13 @@ describe("Adornment", () => {
       expect(adornment.canPlay(gameState, gameInput)).to.be(true);
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
       expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
-      player.cardsInHand.push(CardName.WIFE);
-      player.cardsInHand.push(CardName.FARM);
-      player.cardsInHand.push(CardName.HUSBAND);
-      player.cardsInHand.push(CardName.POSTAL_PIGEON);
-      player.cardsInHand.push(CardName.INN);
-      player.cardsInHand.push(CardName.INNKEEPER);
-      player.cardsInHand.push(CardName.QUEEN);
+      player.addCardToHand(gameState, CardName.WIFE);
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.HUSBAND);
+      player.addCardToHand(gameState, CardName.POSTAL_PIGEON);
+      player.addCardToHand(gameState, CardName.INN);
+      player.addCardToHand(gameState, CardName.INNKEEPER);
+      player.addCardToHand(gameState, CardName.QUEEN);
 
       const selectCardsInput = {
         inputType: GameInputType.SELECT_CARDS as const,
@@ -181,13 +181,13 @@ describe("Adornment", () => {
       expect(adornment.canPlay(gameState, gameInput)).to.be(true);
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
       expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
-      player.cardsInHand.push(CardName.WIFE);
-      player.cardsInHand.push(CardName.FARM);
-      player.cardsInHand.push(CardName.HUSBAND);
-      player.cardsInHand.push(CardName.POSTAL_PIGEON);
-      player.cardsInHand.push(CardName.INN);
-      player.cardsInHand.push(CardName.INNKEEPER);
-      player.cardsInHand.push(CardName.QUEEN);
+      player.addCardToHand(gameState, CardName.WIFE);
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.HUSBAND);
+      player.addCardToHand(gameState, CardName.POSTAL_PIGEON);
+      player.addCardToHand(gameState, CardName.INN);
+      player.addCardToHand(gameState, CardName.INNKEEPER);
+      player.addCardToHand(gameState, CardName.QUEEN);
 
       const selectCardsInput = {
         inputType: GameInputType.SELECT_CARDS as const,
@@ -231,82 +231,24 @@ describe("Adornment", () => {
     it("should calculate points correctly", () => {
       player.playedAdornments.push(name);
 
-      let testHand = [CardName.WIFE];
-      player.cardsInHand.push(...testHand);
+      player.addCardToHand(gameState, CardName.WIFE);
       expect(player.getPointsFromAdornments(gameState)).to.be(1);
 
-      player.cardsInHand = [];
-      testHand = [CardName.WIFE, CardName.FARM];
-      player.cardsInHand.push(...testHand);
+      player.addCardToHand(gameState, CardName.FARM);
       expect(player.getPointsFromAdornments(gameState)).to.be(2);
 
-      player.cardsInHand = [];
-      testHand = [CardName.WIFE, CardName.FARM, CardName.HUSBAND];
-      player.cardsInHand.push(...testHand);
+      player.addCardToHand(gameState, CardName.HUSBAND);
       expect(player.getPointsFromAdornments(gameState)).to.be(3);
 
-      player.cardsInHand = [];
-      testHand = [
-        CardName.WIFE,
-        CardName.FARM,
-        CardName.HUSBAND,
-        CardName.MONK,
-      ];
-      player.cardsInHand.push(...testHand);
+      player.addCardToHand(gameState, CardName.MONK);
       expect(player.getPointsFromAdornments(gameState)).to.be(4);
 
-      player.cardsInHand = [];
-      testHand = [
-        CardName.WIFE,
-        CardName.FARM,
-        CardName.HUSBAND,
-        CardName.MONK,
-        CardName.QUEEN,
-      ];
-      player.cardsInHand.push(...testHand);
       // max 5 points from adornment
+      player.addCardToHand(gameState, CardName.QUEEN);
       expect(player.getPointsFromAdornments(gameState)).to.be(5);
 
-      player.cardsInHand = [];
-      testHand = [
-        CardName.WIFE,
-        CardName.FARM,
-        CardName.HUSBAND,
-        CardName.MONK,
-        CardName.QUEEN,
-        CardName.KING,
-      ];
-      player.cardsInHand.push(...testHand);
       // max 5 points from adornment
-      expect(player.getPointsFromAdornments(gameState)).to.be(5);
-
-      player.cardsInHand = [];
-      testHand = [
-        CardName.WIFE,
-        CardName.FARM,
-        CardName.HUSBAND,
-        CardName.MONK,
-        CardName.QUEEN,
-        CardName.KING,
-        CardName.POSTAL_PIGEON,
-      ];
-      player.cardsInHand.push(...testHand);
-      // max 5 points from adornment
-      expect(player.getPointsFromAdornments(gameState)).to.be(5);
-
-      testHand = [
-        CardName.WIFE,
-        CardName.FARM,
-        CardName.HUSBAND,
-        CardName.MONK,
-        CardName.QUEEN,
-        CardName.KING,
-        CardName.POSTAL_PIGEON,
-        CardName.INN,
-      ];
-      player.cardsInHand.push(...testHand);
-
-      // max 5 points from adornment
+      player.addCardToHand(gameState, CardName.KING);
       expect(player.getPointsFromAdornments(gameState)).to.be(5);
     });
   });
@@ -344,7 +286,7 @@ describe("Adornment", () => {
 
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(3);
-      expect(player.cardsInHand.length).to.be(1);
+      expect(player.numCardsInHand).to.be(1);
       expect(player.getPointsFromAdornments(gameState)).to.be(1);
       expect(player.adornmentsInHand).to.eql([]);
       expect(player.playedAdornments).to.eql([name]);
@@ -525,7 +467,7 @@ describe("Adornment", () => {
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
       expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(1);
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
-      expect(player.cardsInHand.length).to.be(2);
+      expect(player.numCardsInHand).to.be(2);
       expect(player.getPointsFromAdornments(gameState)).to.be(1);
       expect(player.adornmentsInHand).to.eql([]);
       expect(player.playedAdornments).to.eql([name]);
@@ -811,7 +753,7 @@ describe("Adornment", () => {
     it("should be able to play", () => {
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
 
-      expect(player.cardsInHand.length).to.be(0);
+      expect(player.numCardsInHand).to.be(0);
       expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
 
       const selectAnyInput = {
@@ -837,7 +779,7 @@ describe("Adornment", () => {
 
       expect(player.adornmentsInHand).to.eql([]);
       expect(player.playedAdornments).to.eql([name]);
-      expect(player.cardsInHand.length).to.be(2);
+      expect(player.numCardsInHand).to.be(2);
       expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(1);
       expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
       expect(player.getNumResourcesByType(ResourceType.VP)).to.be(1);
@@ -912,7 +854,7 @@ describe("Adornment", () => {
 
     it("should allow player to choose to play card from meadow OR hand", () => {
       gameState.meadowCards.push(CardName.FARM);
-      player.cardsInHand.push(CardName.FARM);
+      player.addCardToHand(gameState, CardName.FARM);
       expect(player.hasCardInCity(CardName.FARM)).to.be(false);
 
       const selectCardInput = {
@@ -967,7 +909,7 @@ describe("Adornment", () => {
     });
 
     it("should allow player to buy card from hand for less than 3 points for free", () => {
-      player.cardsInHand.push(CardName.HUSBAND);
+      player.addCardToHand(gameState, CardName.HUSBAND);
       expect(player.hasCardInCity(CardName.HUSBAND)).to.be(false);
 
       [player, gameState] = multiStepGameInputTest(gameState, [
@@ -1259,7 +1201,7 @@ describe("Adornment", () => {
       player.addToCity(gameState, CardName.WANDERER);
       player.addToCity(gameState, CardName.WANDERER);
 
-      expect(player.cardsInHand.length).to.be(0);
+      expect(player.numCardsInHand).to.be(0);
 
       [player, gameState] = multiStepGameInputTest(gameState, [
         playAdornmentInput(name),
@@ -1274,7 +1216,7 @@ describe("Adornment", () => {
         },
       ]);
 
-      expect(player.cardsInHand.length).to.be(0);
+      expect(player.numCardsInHand).to.be(0);
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
     });
 
@@ -1283,7 +1225,7 @@ describe("Adornment", () => {
       player.addToCity(gameState, CardName.WANDERER);
       player.addToCity(gameState, CardName.WANDERER);
 
-      expect(player.cardsInHand.length).to.be(0);
+      expect(player.numCardsInHand).to.be(0);
 
       [player, gameState] = multiStepGameInputTest(gameState, [
         playAdornmentInput(name),
@@ -1300,7 +1242,7 @@ describe("Adornment", () => {
         },
       ]);
 
-      expect(player.cardsInHand.length).to.be(6);
+      expect(player.numCardsInHand).to.be(6);
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
     });
 
@@ -1311,7 +1253,7 @@ describe("Adornment", () => {
 
       expect(player.hasCardInCity(CardName.FARM)).to.be(true);
       expect(player.getPlayedCardForCardName(CardName.RUINS).length).to.be(1);
-      expect(player.cardsInHand.length).to.be(0);
+      expect(player.numCardsInHand).to.be(0);
 
       [player, gameState] = multiStepGameInputTest(gameState, [
         playAdornmentInput(name),
@@ -1341,7 +1283,7 @@ describe("Adornment", () => {
       ]);
 
       expect(player.hasCardInCity(CardName.FARM)).to.be(false);
-      expect(player.cardsInHand.length).to.be(2);
+      expect(player.numCardsInHand).to.be(2);
       expect(player.getPlayedCardForCardName(CardName.RUINS).length).to.be(1);
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
     });

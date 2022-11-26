@@ -103,7 +103,7 @@ describe("Card", () => {
       it("should not prompt is user has no cards to discard", () => {
         const card = Card.fromName(CardName.BARD);
 
-        player.cardsInHand = [card.name];
+        player.addCardToHand(gameState, card.name);
         player.gainResources(gameState, card.baseCost);
         expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
 
@@ -120,7 +120,9 @@ describe("Card", () => {
       it("should gain vp corresponding to no. of discarded cards", () => {
         const card = Card.fromName(CardName.BARD);
 
-        player.cardsInHand = [CardName.BARD, CardName.FARM, CardName.RUINS];
+        player.addCardToHand(gameState, CardName.BARD);
+        player.addCardToHand(gameState, CardName.FARM);
+        player.addCardToHand(gameState, CardName.RUINS);
         player.gainResources(gameState, card.baseCost);
         expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
 
@@ -215,7 +217,7 @@ describe("Card", () => {
     describe(CardName.BARGE_TOAD, () => {
       it("should gain 0 TWIG if no FARM in city", () => {
         const card = Card.fromName(CardName.BARGE_TOAD);
-        player.cardsInHand.push(card.name);
+        player.addCardToHand(gameState, card.name);
         player.gainResources(gameState, card.baseCost);
 
         expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
@@ -227,7 +229,7 @@ describe("Card", () => {
 
       it("should gain 2 TWIG if one FARM in city", () => {
         const card = Card.fromName(CardName.BARGE_TOAD);
-        player.cardsInHand.push(card.name);
+        player.addCardToHand(gameState, card.name);
         player.gainResources(gameState, card.baseCost);
         player.addToCity(gameState, CardName.FARM);
 
@@ -240,7 +242,7 @@ describe("Card", () => {
 
       it("should gain 2 TWIG per FARM in city", () => {
         const card = Card.fromName(CardName.BARGE_TOAD);
-        player.cardsInHand.push(card.name);
+        player.addCardToHand(gameState, card.name);
         player.gainResources(gameState, card.baseCost);
         player.addToCity(gameState, CardName.FARM);
         player.addToCity(gameState, CardName.FARM);
@@ -609,7 +611,7 @@ describe("Card", () => {
         let chapelResources = chapelInfo.resources || { [ResourceType.VP]: 0 };
         let numVP = chapelResources[ResourceType.VP] || 0;
         expect(numVP).to.be(0);
-        expect(player.cardsInHand.length).to.be(0);
+        expect(player.numCardsInHand).to.be(0);
 
         [player, gameState] = multiStepGameInputTest(gameState, [
           {
@@ -621,7 +623,7 @@ describe("Card", () => {
         ]);
 
         expect(player.numAvailableWorkers).to.be(1);
-        expect(player.cardsInHand.length).to.be(2);
+        expect(player.numCardsInHand).to.be(2);
 
         chapelInfo = player.getFirstPlayedCard(CardName.CHAPEL);
         chapelResources = chapelInfo.resources || { [ResourceType.VP]: 0 };
@@ -649,7 +651,7 @@ describe("Card", () => {
 
         let numVP = chapelResources[ResourceType.VP] || 0;
         expect(numVP).to.be(1);
-        expect(player.cardsInHand.length).to.be(0);
+        expect(player.numCardsInHand).to.be(0);
 
         [player, gameState] = multiStepGameInputTest(gameState, [
           {
@@ -661,7 +663,7 @@ describe("Card", () => {
         ]);
 
         expect(player.numAvailableWorkers).to.be(1);
-        expect(player.cardsInHand.length).to.be(4);
+        expect(player.numCardsInHand).to.be(4);
 
         chapelInfo = player.getFirstPlayedCard(CardName.CHAPEL);
         chapelResources = chapelInfo.resources || { [ResourceType.VP]: 0 };
@@ -676,7 +678,7 @@ describe("Card", () => {
 
         // Make sure we can play this card
         player.gainResources(gameState, card.baseCost);
-        player.cardsInHand.push(card.name);
+        player.addCardToHand(gameState, card.name);
         expect(player.hasCardInCity(card.name)).to.be(false);
         [player, gameState] = multiStepGameInputTest(gameState, [
           playCardInput(card.name),
@@ -693,7 +695,7 @@ describe("Card", () => {
 
         // Make sure we can play this card
         player.gainResources(gameState, card.baseCost);
-        player.cardsInHand.push(card.name);
+        player.addCardToHand(gameState, card.name);
 
         expect(player.hasCardInCity(card.name)).to.be(false);
         expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
@@ -727,7 +729,7 @@ describe("Card", () => {
 
         // Make sure we can play this card
         player.gainResources(gameState, card.baseCost);
-        player.cardsInHand.push(card.name);
+        player.addCardToHand(gameState, card.name);
         expect(player.hasCardInCity(card.name)).to.be(false);
 
         [player, gameState] = multiStepGameInputTest(gameState, [
@@ -1032,7 +1034,7 @@ describe("Card", () => {
         player.addToCity(gameState, CardName.COURTHOUSE);
 
         const cardToPlay = Card.fromName(CardName.HUSBAND);
-        player.cardsInHand = [cardToPlay.name];
+        player.addCardToHand(gameState, cardToPlay.name);
         player.gainResources(gameState, cardToPlay.baseCost);
         multiStepGameInputTest(gameState, [playCardInput(cardToPlay.name)]);
       });
@@ -1041,7 +1043,7 @@ describe("Card", () => {
         player.addToCity(gameState, CardName.COURTHOUSE);
 
         const cardToPlay = Card.fromName(CardName.FARM);
-        player.cardsInHand = [cardToPlay.name];
+        player.addCardToHand(gameState, cardToPlay.name);
         player.gainResources(gameState, cardToPlay.baseCost);
         expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
         expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
@@ -1067,7 +1069,7 @@ describe("Card", () => {
     describe(CardName.CRANE, () => {
       it("should make constructions 3 cheaper", () => {
         player.addToCity(gameState, CardName.CRANE);
-        player.cardsInHand.push(CardName.FARM);
+        player.addCardToHand(gameState, CardName.FARM);
 
         expect(() => {
           multiStepGameInputTest(gameState, [playCardInput(CardName.FARM)]);
@@ -1106,7 +1108,7 @@ describe("Card", () => {
 
       it("cannot be used for critters", () => {
         player.addToCity(gameState, CardName.CRANE);
-        player.cardsInHand.push(CardName.WIFE);
+        player.addCardToHand(gameState, CardName.WIFE);
 
         expect(() => {
           multiStepGameInputTest(gameState, [playCardInput(CardName.WIFE)]);
@@ -1192,7 +1194,7 @@ describe("Card", () => {
       it("should allow players to play a card even if city is full", () => {
         const card = Card.fromName(CardName.DUNGEON);
         player.addToCity(gameState, card.name);
-        player.cardsInHand.push(CardName.FARM);
+        player.addCardToHand(gameState, CardName.FARM);
         for (let i = 0; i < 14; i++) {
           player.addToCity(gameState, CardName.HUSBAND);
         }
@@ -1212,7 +1214,7 @@ describe("Card", () => {
       it("should NOT allow players to use DUNGEON with WANDERER if city is full", () => {
         const card = Card.fromName(CardName.DUNGEON);
         player.addToCity(gameState, card.name);
-        player.cardsInHand.push(CardName.FARM);
+        player.addCardToHand(gameState, CardName.FARM);
         for (let i = 0; i < 14; i++) {
           player.addToCity(gameState, CardName.HUSBAND);
         }
@@ -1236,7 +1238,7 @@ describe("Card", () => {
         const card = Card.fromName(CardName.DUNGEON);
         player.addToCity(gameState, card.name);
         player.addToCity(gameState, CardName.RANGER);
-        player.cardsInHand.push(CardName.FARM);
+        player.addCardToHand(gameState, CardName.FARM);
         [player, gameState] = multiStepGameInputTest(gameState, [
           playCardInput(CardName.FARM, {
             paymentOptions: {
@@ -1272,7 +1274,7 @@ describe("Card", () => {
 
         player.addToCity(gameState, CardName.RANGER);
         player.addToCity(gameState, CardName.BARGE_TOAD);
-        player.cardsInHand.push(CardName.FARM);
+        player.addCardToHand(gameState, CardName.FARM);
         expect(() => {
           [player, gameState] = multiStepGameInputTest(gameState, [
             playCardInput(CardName.FARM, {
@@ -1300,7 +1302,7 @@ describe("Card", () => {
         );
 
         player.addToCity(gameState, CardName.RANGER);
-        player.cardsInHand.push(CardName.FARM);
+        player.addCardToHand(gameState, CardName.FARM);
         expect(() => {
           [player, gameState] = multiStepGameInputTest(gameState, [
             playCardInput(CardName.FARM, {
@@ -1329,7 +1331,7 @@ describe("Card", () => {
           }
         );
 
-        player.cardsInHand.push(CardName.FARM);
+        player.addCardToHand(gameState, CardName.FARM);
         expect(() => {
           [player, gameState] = multiStepGameInputTest(gameState, [
             playCardInput(CardName.FARM, {
@@ -1371,12 +1373,12 @@ describe("Card", () => {
         player.gainResources(gameState, card.baseCost);
         player.addCardToHand(gameState, card.name);
 
-        expect(player.cardsInHand.length).to.be(1);
+        expect(player.numCardsInHand).to.be(1);
         expect(player.hasCardInCity(card.name)).to.be(false);
         [player, gameState] = multiStepGameInputTest(gameState, [
           playCardInput(card.name),
         ]);
-        expect(player.cardsInHand.length).to.be(2);
+        expect(player.numCardsInHand).to.be(2);
         expect(player.hasCardInCity(card.name)).to.be(true);
       });
     });
@@ -1387,9 +1389,8 @@ describe("Card", () => {
         const gameInput = playCardInput(card.name);
         player.gainResources(gameState, card.baseCost);
 
-        player.cardsInHand = [];
         expect(card.canPlay(gameState, gameInput)).to.be(false);
-        player.cardsInHand = [card.name];
+        player.addCardToHand(gameState, card.name);
         expect(card.canPlay(gameState, gameInput)).to.be(true);
       });
 
@@ -1398,9 +1399,8 @@ describe("Card", () => {
         const gameInput = playCardInput(card.name);
         player.gainResources(gameState, card.baseCost);
 
-        player.cardsInHand = [];
         expect(card.canPlay(gameState, gameInput)).to.be(false);
-        player.cardsInHand = [card.name];
+        player.addCardToHand(gameState, card.name);
         expect(card.canPlay(gameState, gameInput)).to.be(true);
 
         expect(player.cardsInHand).to.not.eql([]);
@@ -1418,7 +1418,7 @@ describe("Card", () => {
         expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(2);
         expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
 
-        player.cardsInHand = [card.name];
+        player.addCardToHand(gameState, card.name);
         expect(card.canPlay(gameState, gameInput)).to.be(true);
 
         [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
@@ -1433,7 +1433,7 @@ describe("Card", () => {
         const card = Card.fromName(CardName.FARM);
         const gameInput = playCardInput(card.name);
 
-        player.cardsInHand.push(card.name);
+        player.addCardToHand(gameState, card.name);
         player.gainResources(gameState, card.baseCost);
         expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
 
@@ -1449,7 +1449,7 @@ describe("Card", () => {
 
         // Make sure we can play this card
         player.gainResources(gameState, card.baseCost);
-        player.cardsInHand.push(card.name);
+        player.addCardToHand(gameState, card.name);
 
         [player, gameState] = multiStepGameInputTest(gameState, [
           playCardInput(card.name),
@@ -1477,7 +1477,7 @@ describe("Card", () => {
 
         // Make sure we can play this card
         player.gainResources(gameState, card.baseCost);
-        player.cardsInHand.push(card.name);
+        player.addCardToHand(gameState, card.name);
 
         [player, gameState] = multiStepGameInputTest(
           gameState,
@@ -1519,7 +1519,7 @@ describe("Card", () => {
 
         // Make sure we can play this card
         player.gainResources(gameState, card.baseCost);
-        player.cardsInHand.push(card.name);
+        player.addCardToHand(gameState, card.name);
 
         gameState = gameState.next(
           playCardInput(card.name),
@@ -1552,7 +1552,7 @@ describe("Card", () => {
 
         // Make sure we can play this card
         player.gainResources(gameState, card.baseCost);
-        player.cardsInHand.push(card.name);
+        player.addCardToHand(gameState, card.name);
 
         gameState = gameState.next(
           playCardInput(card.name),
@@ -1579,7 +1579,7 @@ describe("Card", () => {
         const card = Card.fromName(CardName.GENERAL_STORE);
         const gameInput = playCardInput(card.name);
 
-        player.cardsInHand.push(card.name);
+        player.addCardToHand(gameState, card.name);
         player.gainResources(gameState, card.baseCost);
         expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
         [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
@@ -1591,7 +1591,7 @@ describe("Card", () => {
         const gameInput = playCardInput(card.name);
 
         player.addToCity(gameState, CardName.FARM);
-        player.cardsInHand.push(card.name);
+        player.addCardToHand(gameState, card.name);
         player.gainResources(gameState, card.baseCost);
         expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
 
@@ -1605,7 +1605,7 @@ describe("Card", () => {
         player.addToCity(gameState, CardName.HISTORIAN);
 
         const cardToPlay = Card.fromName(CardName.MINE);
-        player.cardsInHand = [cardToPlay.name];
+        player.addCardToHand(gameState, cardToPlay.name);
         player.gainResources(gameState, cardToPlay.baseCost);
 
         gameState.deck.addToStack(CardName.KING);
@@ -1621,7 +1621,7 @@ describe("Card", () => {
         player.addToCity(gameState, CardName.HISTORIAN);
 
         const cardToPlay = Card.fromName(CardName.SHOPKEEPER);
-        player.cardsInHand = [cardToPlay.name];
+        player.addCardToHand(gameState, cardToPlay.name);
         player.gainResources(gameState, cardToPlay.baseCost);
 
         gameState.deck.addToStack(CardName.KING);
@@ -1635,7 +1635,7 @@ describe("Card", () => {
 
       it("should not draw a card when the player plays the historian", () => {
         const cardToPlay = Card.fromName(CardName.HISTORIAN);
-        player.cardsInHand = [cardToPlay.name];
+        player.addCardToHand(gameState, cardToPlay.name);
         player.gainResources(gameState, cardToPlay.baseCost);
 
         [player, gameState] = multiStepGameInputTest(gameState, [
@@ -1652,7 +1652,7 @@ describe("Card", () => {
         player.addToCity(gameState, CardName.WIFE);
         player.addToCity(gameState, CardName.HUSBAND);
 
-        player.cardsInHand = [CardName.HUSBAND];
+        player.addCardToHand(gameState, CardName.HUSBAND);
         player.gainResources(gameState, card.baseCost);
         multiStepGameInputTest(gameState, [playCardInput(card.name)]);
       });
@@ -1660,7 +1660,7 @@ describe("Card", () => {
       it("should gain a wild resource if there's a available wife and farm in city", () => {
         const card = Card.fromName(CardName.HUSBAND);
 
-        player.cardsInHand = [CardName.HUSBAND];
+        player.addCardToHand(gameState, CardName.HUSBAND);
         player.addToCity(gameState, CardName.WIFE);
         player.addToCity(gameState, CardName.FARM);
         player.gainResources(gameState, card.baseCost);
@@ -1976,7 +1976,7 @@ describe("Card", () => {
         const player = gameState.getActivePlayer();
 
         // Make sure we can play this card
-        player.cardsInHand.push(CardName.WIFE);
+        player.addCardToHand(gameState, CardName.WIFE);
         player.addToCity(gameState, CardName.INN);
 
         expect(player.numAvailableWorkers).to.be(2);
@@ -2029,7 +2029,7 @@ describe("Card", () => {
         expect(idx).to.be(-1);
 
         player.addToCity(gameState, CardName.INN);
-        player.cardsInHand.push(CardName.WIFE);
+        player.addCardToHand(gameState, CardName.WIFE);
 
         expect(player.numAvailableWorkers).to.be(2);
         expect(player.hasCardInCity(CardName.WIFE)).to.be(false);
@@ -2183,7 +2183,7 @@ describe("Card", () => {
       it("can be used to play a critter for 3 BERRY less", () => {
         const card = Card.fromName(CardName.WIFE);
         player.addToCity(gameState, CardName.INNKEEPER);
-        player.cardsInHand.push(card.name);
+        player.addCardToHand(gameState, card.name);
         expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
 
         expect(player.hasCardInCity(card.name)).to.be(false);
@@ -2206,7 +2206,7 @@ describe("Card", () => {
       it("can be used to play a critter even if city is full", () => {
         const card = Card.fromName(CardName.WIFE);
         player.addToCity(gameState, CardName.INNKEEPER);
-        player.cardsInHand.push(card.name);
+        player.addCardToHand(gameState, card.name);
 
         for (let i = 0; i < 14; i++) {
           player.addToCity(gameState, CardName.FARM);
@@ -2235,7 +2235,7 @@ describe("Card", () => {
       it("can be used to play a critter that cost more then 3 BERRY", () => {
         const card = Card.fromName(CardName.QUEEN);
         player.addToCity(gameState, CardName.INNKEEPER);
-        player.cardsInHand.push(card.name);
+        player.addCardToHand(gameState, card.name);
         player.gainResources(gameState, { [ResourceType.BERRY]: 2 });
 
         expect(player.hasCardInCity(card.name)).to.be(false);
@@ -2258,7 +2258,7 @@ describe("Card", () => {
       it("cannot be used to play a construction", () => {
         const card = Card.fromName(CardName.FARM);
         player.addToCity(gameState, CardName.INNKEEPER);
-        player.cardsInHand.push(card.name);
+        player.addCardToHand(gameState, card.name);
         expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
         expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
 
@@ -2613,7 +2613,7 @@ describe("Card", () => {
     describe(CardName.MINE, () => {
       it("gain 1 PEBBLE when played", () => {
         const card = Card.fromName(CardName.MINE);
-        player.cardsInHand.push(card.name);
+        player.addCardToHand(gameState, card.name);
         player.gainResources(gameState, card.baseCost);
 
         [player, gameState] = multiStepGameInputTest(gameState, [
@@ -2980,7 +2980,7 @@ describe("Card", () => {
     describe(CardName.MONK, () => {
       it("should do nothing if no resources", () => {
         const card = Card.fromName(CardName.MONK);
-        player.cardsInHand = [CardName.MONK];
+        player.addCardToHand(gameState, CardName.MONK);
         player.gainResources(gameState, card.baseCost);
         multiStepGameInputTest(gameState, [playCardInput(card.name)], {
           autoAdvance: true,
@@ -2991,7 +2991,7 @@ describe("Card", () => {
         const card = Card.fromName(CardName.MONK);
         expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
 
-        player.cardsInHand = [CardName.MONK];
+        player.addCardToHand(gameState, CardName.MONK);
         player.gainResources(gameState, card.baseCost);
         player.gainResources(gameState, {
           [ResourceType.BERRY]: 2,
@@ -3046,7 +3046,7 @@ describe("Card", () => {
         const card = Card.fromName(CardName.MONK);
         expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
 
-        player.cardsInHand = [CardName.MONK];
+        player.addCardToHand(gameState, CardName.MONK);
         player.gainResources(gameState, card.baseCost);
         player.gainResources(gameState, {
           [ResourceType.BERRY]: 1,
@@ -3092,7 +3092,7 @@ describe("Card", () => {
         const card = Card.fromName(CardName.MONK);
         expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
 
-        player.cardsInHand = [CardName.MONK];
+        player.addCardToHand(gameState, CardName.MONK);
         player.gainResources(gameState, card.baseCost);
         player.gainResources(gameState, {
           [ResourceType.BERRY]: 4,
@@ -3138,7 +3138,7 @@ describe("Card", () => {
         const card = Card.fromName(CardName.MONK);
         expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
 
-        player.cardsInHand = [CardName.MONK];
+        player.addCardToHand(gameState, CardName.MONK);
         player.gainResources(gameState, card.baseCost);
         player.gainResources(gameState, {
           [ResourceType.BERRY]: 4,
@@ -3208,7 +3208,7 @@ describe("Card", () => {
       it("should do nothing if no resources", () => {
         const card = Card.fromName(CardName.PEDDLER);
 
-        player.cardsInHand = [CardName.PEDDLER];
+        player.addCardToHand(gameState, CardName.PEDDLER);
         player.gainResources(gameState, card.baseCost);
         [player, gameState] = multiStepGameInputTest(
           gameState,
@@ -3220,7 +3220,7 @@ describe("Card", () => {
       it("should allow player to swap 2 resources", () => {
         const card = Card.fromName(CardName.PEDDLER);
 
-        player.cardsInHand = [CardName.PEDDLER];
+        player.addCardToHand(gameState, CardName.PEDDLER);
         player.gainResources(gameState, card.baseCost);
         player.gainResources(gameState, {
           [ResourceType.PEBBLE]: 1,
@@ -3264,7 +3264,7 @@ describe("Card", () => {
 
       it("should not allow player to swap 2 non-existent resources", () => {
         const card = Card.fromName(CardName.PEDDLER);
-        player.cardsInHand = [CardName.PEDDLER];
+        player.addCardToHand(gameState, CardName.PEDDLER);
         player.gainResources(gameState, card.baseCost);
         player.gainResources(gameState, {
           [ResourceType.PEBBLE]: 1,
@@ -3293,7 +3293,7 @@ describe("Card", () => {
 
       it("should not allow player to swap more than 2 resources", () => {
         const card = Card.fromName(CardName.PEDDLER);
-        player.cardsInHand = [CardName.PEDDLER];
+        player.addCardToHand(gameState, CardName.PEDDLER);
         player.gainResources(gameState, card.baseCost);
         player.gainResources(gameState, {
           [ResourceType.PEBBLE]: 2,
@@ -3326,7 +3326,7 @@ describe("Card", () => {
       it("should allow the player to select a card to play", () => {
         const card = Card.fromName(CardName.POSTAL_PIGEON);
         player.gainResources(gameState, card.baseCost);
-        player.cardsInHand.push(card.name);
+        player.addCardToHand(gameState, card.name);
 
         gameState.deck.addToStack(CardName.FARM);
         gameState.deck.addToStack(CardName.MINE);
@@ -3361,7 +3361,7 @@ describe("Card", () => {
       it("should only allow the player to select eligible cards", () => {
         const card = Card.fromName(CardName.POSTAL_PIGEON);
         player.gainResources(gameState, card.baseCost);
-        player.cardsInHand.push(card.name);
+        player.addCardToHand(gameState, card.name);
 
         // Add cards that have too high vp
         gameState.deck.addToStack(CardName.KING);
@@ -3395,7 +3395,7 @@ describe("Card", () => {
       it("should trigger production cards when played via the postal pigeon", () => {
         const card = Card.fromName(CardName.POSTAL_PIGEON);
         player.gainResources(gameState, card.baseCost);
-        player.cardsInHand.push(card.name);
+        player.addCardToHand(gameState, card.name);
 
         gameState.deck.addToStack(CardName.FARM);
         gameState.deck.addToStack(CardName.MINE);
@@ -3440,10 +3440,10 @@ describe("Card", () => {
         gameState.deck.addToStack(CardName.WANDERER);
         gameState.deck.addToStack(CardName.FARM);
 
-        player.cardsInHand = [card.name];
+        player.addCardToHand(gameState, card.name);
 
         expect(gameState.discardPile.length).to.eql(0);
-        expect(player.cardsInHand.length).to.eql(1);
+        expect(player.numCardsInHand).to.eql(1);
         expect(player.hasCardInCity(card.name)).to.be(false);
         expect(player.hasCardInCity(CardName.WANDERER)).to.be(false);
 
@@ -3468,7 +3468,7 @@ describe("Card", () => {
         // From shopkeeper (1 for postal pigeon, 1 for wanderer)
         expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
         // From historian (2 cards) and wanderer
-        expect(player.cardsInHand.length).to.eql(3 + 2);
+        expect(player.numCardsInHand).to.eql(3 + 2);
       });
 
       it("should trigger COURTHOUSE cards when played via the postal pigeon", () => {
@@ -3484,10 +3484,10 @@ describe("Card", () => {
         gameState.deck.addToStack(CardName.WANDERER);
         gameState.deck.addToStack(CardName.FARM);
 
-        player.cardsInHand = [card.name];
+        player.addCardToHand(gameState, card.name);
 
         expect(gameState.discardPile.length).to.eql(0);
-        expect(player.cardsInHand.length).to.eql(1);
+        expect(player.numCardsInHand).to.eql(1);
         expect(player.hasCardInCity(card.name)).to.be(false);
         expect(player.hasCardInCity(CardName.MINE)).to.be(false);
         expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
@@ -3523,7 +3523,7 @@ describe("Card", () => {
         // From farm production
         expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
         // From historian (postal pigeon + farm)
-        expect(player.cardsInHand.length).to.eql(2);
+        expect(player.numCardsInHand).to.eql(2);
         // From COURTHOUSE
         expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(1);
       });
@@ -3536,10 +3536,10 @@ describe("Card", () => {
         gameState.deck.addToStack(CardName.WANDERER);
         gameState.deck.addToStack(CardName.SHOPKEEPER);
 
-        player.cardsInHand = [card.name];
+        player.addCardToHand(gameState, card.name);
 
         expect(gameState.discardPile.length).to.eql(0);
-        expect(player.cardsInHand.length).to.eql(1);
+        expect(player.numCardsInHand).to.eql(1);
 
         expect(player.hasCardInCity(card.name)).to.be(false);
         expect(player.hasCardInCity(CardName.SHOPKEEPER)).to.be(false);
@@ -3576,10 +3576,10 @@ describe("Card", () => {
         gameState.deck.addToStack(CardName.WANDERER);
         gameState.deck.addToStack(CardName.HISTORIAN);
 
-        player.cardsInHand = [card.name];
+        player.addCardToHand(gameState, card.name);
 
         expect(gameState.discardPile.length).to.eql(0);
-        expect(player.cardsInHand.length).to.eql(1);
+        expect(player.numCardsInHand).to.eql(1);
 
         expect(player.hasCardInCity(card.name)).to.be(false);
         expect(player.hasCardInCity(CardName.SHOPKEEPER)).to.be(false);
@@ -3604,14 +3604,13 @@ describe("Card", () => {
         expect(player.hasCardInCity(card.name)).to.be(true);
         expect(player.hasCardInCity(CardName.HISTORIAN)).to.be(true);
         // Did not draw card.
-        expect(player.cardsInHand.length).to.be(0);
+        expect(player.numCardsInHand).to.be(0);
       });
     });
 
     describe(CardName.POST_OFFICE, () => {
       it("should not be visitable if player has less than 2 cards", () => {
         const card = Card.fromName(CardName.POST_OFFICE);
-        player.cardsInHand = [];
         player.addToCity(gameState, CardName.POST_OFFICE);
 
         const visitDestinationInput = {
@@ -3622,7 +3621,8 @@ describe("Card", () => {
         };
 
         expect(card.canPlay(gameState, visitDestinationInput)).to.be(false);
-        player.cardsInHand = [CardName.FARM, CardName.MONK];
+        player.addCardToHand(gameState, CardName.FARM);
+        player.addCardToHand(gameState, CardName.MONK);
         expect(card.canPlay(gameState, visitDestinationInput)).to.be(true);
       });
 
@@ -3746,7 +3746,7 @@ describe("Card", () => {
 
         const card = Card.fromName(CardName.QUEEN);
         player.addToCity(gameState, CardName.QUEEN);
-        player.cardsInHand.push(CardName.FARM);
+        player.addCardToHand(gameState, CardName.FARM);
 
         expect(player.numAvailableWorkers).to.be(2);
         expect(gameState.meadowCards.length).to.be(8);
@@ -3820,7 +3820,7 @@ describe("Card", () => {
       it("should allow player to buy card from hand for less than 3 points for free", () => {
         const card = Card.fromName(CardName.QUEEN);
         player.addToCity(gameState, CardName.QUEEN);
-        player.cardsInHand.push(CardName.HUSBAND);
+        player.addCardToHand(gameState, CardName.HUSBAND);
 
         expect(player.numAvailableWorkers).to.be(2);
         expect(player.hasCardInCity(CardName.HUSBAND)).to.be(false);
@@ -4034,7 +4034,7 @@ describe("Card", () => {
 
       it("should not allow player to visit the queen if occupied", () => {
         const card = Card.fromName(CardName.QUEEN);
-        player.cardsInHand.push(CardName.WIFE);
+        player.addCardToHand(gameState, CardName.WIFE);
         player.addToCity(gameState, CardName.QUEEN);
         player.placeWorkerOnCard(
           gameState,
@@ -4066,7 +4066,7 @@ describe("Card", () => {
         });
         const player = gameState.getActivePlayer();
         const card = Card.fromName(CardName.QUEEN);
-        player.cardsInHand.push(CardName.WIFE);
+        player.addCardToHand(gameState, CardName.WIFE);
 
         // Fill up city
         player.addToCity(gameState, CardName.QUEEN);
@@ -4101,7 +4101,7 @@ describe("Card", () => {
 
         // Make sure we can play this card
         player.gainResources(gameState, card.baseCost);
-        player.cardsInHand.push(CardName.RUINS);
+        player.addCardToHand(gameState, CardName.RUINS);
         player.addToCity(gameState, CardName.QUEEN);
         for (let i = 0; i < 14; i++) {
           player.addToCity(gameState, CardName.FARM);
@@ -4144,14 +4144,14 @@ describe("Card", () => {
     describe(CardName.RANGER, () => {
       it("should do nothing if there's no placed workers", () => {
         const card = Card.fromName(CardName.RANGER);
-        player.cardsInHand = [CardName.RANGER];
+        player.addCardToHand(gameState, CardName.RANGER);
         player.gainResources(gameState, card.baseCost);
         multiStepGameInputTest(gameState, [playCardInput(card.name)]);
       });
 
       it("should do nothing if there's no recallable workers", () => {
         const card = Card.fromName(CardName.RANGER);
-        player.cardsInHand = [CardName.RANGER];
+        player.addCardToHand(gameState, CardName.RANGER);
         player.gainResources(gameState, card.baseCost);
 
         player.placeWorkerOnLocation(LocationName.JOURNEY_FIVE);
@@ -4161,7 +4161,7 @@ describe("Card", () => {
 
       it("should prompt to move an existing worker and trigger the new placement", () => {
         const card = Card.fromName(CardName.RANGER);
-        player.cardsInHand = [CardName.RANGER];
+        player.addCardToHand(gameState, CardName.RANGER);
         player.gainResources(gameState, card.baseCost);
 
         gameState.locationsMap[LocationName.BASIC_ONE_STONE]!.push(
@@ -4170,7 +4170,7 @@ describe("Card", () => {
         player.placeWorkerOnLocation(LocationName.BASIC_ONE_STONE);
         expect(player.numAvailableWorkers).to.be(1);
         expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
-        expect(player.cardsInHand.length).to.be(1);
+        expect(player.numCardsInHand).to.be(1);
 
         const recallWorkerInput = {
           inputType: GameInputType.SELECT_WORKER_PLACEMENT as const,
@@ -4216,12 +4216,12 @@ describe("Card", () => {
         ).to.eql([player.playerId]);
         expect(player.numAvailableWorkers).to.be(1);
         expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(2);
-        expect(player.cardsInHand.length).to.be(1);
+        expect(player.numCardsInHand).to.be(1);
       });
 
       it("should not allow moving the worker back to the same location", () => {
         const card = Card.fromName(CardName.RANGER);
-        player.cardsInHand = [CardName.RANGER];
+        player.addCardToHand(gameState, CardName.RANGER);
         player.gainResources(gameState, card.baseCost);
 
         gameState.locationsMap[LocationName.BASIC_ONE_STONE]!.push(
@@ -4235,7 +4235,7 @@ describe("Card", () => {
         expect(player.numAvailableWorkers).to.be(0);
 
         expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
-        expect(player.cardsInHand.length).to.be(1);
+        expect(player.numCardsInHand).to.be(1);
 
         const recallWorkerInput = {
           inputType: GameInputType.SELECT_WORKER_PLACEMENT as const,
@@ -4284,14 +4284,14 @@ describe("Card", () => {
         ).to.eql([player.playerId, player.playerId]);
         expect(player.numAvailableWorkers).to.be(0);
         expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(2);
-        expect(player.cardsInHand.length).to.be(1);
+        expect(player.numCardsInHand).to.be(1);
       });
     });
 
     describe(CardName.RESIN_REFINERY, () => {
       it("should gain 1 RESIN when played", () => {
         const card = Card.fromName(CardName.RESIN_REFINERY);
-        player.cardsInHand.push(card.name);
+        player.addCardToHand(gameState, card.name);
         player.gainResources(gameState, card.baseCost);
 
         [player, gameState] = multiStepGameInputTest(gameState, [
@@ -4306,7 +4306,7 @@ describe("Card", () => {
     describe(CardName.RUINS, () => {
       it("should not be playable if there's no construction in the city", () => {
         const card = Card.fromName(CardName.RUINS);
-        player.cardsInHand.push(card.name);
+        player.addCardToHand(gameState, card.name);
         expect(() => {
           [player, gameState] = multiStepGameInputTest(gameState, [
             playCardInput(card.name),
@@ -4316,7 +4316,7 @@ describe("Card", () => {
 
       it("should be playable if there's a construction in the city", () => {
         const card = Card.fromName(CardName.RUINS);
-        player.cardsInHand.push(card.name);
+        player.addCardToHand(gameState, card.name);
         player.addToCity(gameState, CardName.FARM);
         [player, gameState] = multiStepGameInputTest(gameState, [
           playCardInput(card.name),
@@ -4339,7 +4339,7 @@ describe("Card", () => {
 
       it("should be playable even if there's no space in the city", () => {
         const card = Card.fromName(CardName.RUINS);
-        player.cardsInHand.push(card.name);
+        player.addCardToHand(gameState, card.name);
         player.addToCity(gameState, CardName.FARM);
         for (let i = 0; i < 14; i++) {
           player.addToCity(gameState, CardName.HUSBAND);
@@ -4625,7 +4625,7 @@ describe("Card", () => {
         player.addToCity(gameState, CardName.SHOPKEEPER);
 
         const cardToPlay = Card.fromName(CardName.MINE);
-        player.cardsInHand = [cardToPlay.name];
+        player.addCardToHand(gameState, cardToPlay.name);
         player.gainResources(gameState, cardToPlay.baseCost);
 
         expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
@@ -4641,7 +4641,7 @@ describe("Card", () => {
         player.addToCity(gameState, CardName.SHOPKEEPER);
 
         const cardToPlay = Card.fromName(CardName.QUEEN);
-        player.cardsInHand = [cardToPlay.name];
+        player.addCardToHand(gameState, cardToPlay.name);
         player.gainResources(gameState, cardToPlay.baseCost);
 
         [player, gameState] = multiStepGameInputTest(gameState, [
@@ -4653,7 +4653,7 @@ describe("Card", () => {
 
       it("should not gain a berry when playing a shopkeeper", () => {
         const cardToPlay = Card.fromName(CardName.SHOPKEEPER);
-        player.cardsInHand = [cardToPlay.name];
+        player.addCardToHand(gameState, cardToPlay.name);
         player.gainResources(gameState, cardToPlay.baseCost);
 
         [player, gameState] = multiStepGameInputTest(gameState, [
@@ -4667,7 +4667,7 @@ describe("Card", () => {
     describe(CardName.STOREHOUSE, () => {
       it("should allow player to choose resources to place on card", () => {
         const card = Card.fromName(CardName.STOREHOUSE);
-        player.cardsInHand = [card.name];
+        player.addCardToHand(gameState, card.name);
 
         // Make sure we can play this card
         player.gainResources(gameState, card.baseCost);
@@ -4713,7 +4713,7 @@ describe("Card", () => {
 
       it("should add resources to the correct storehouse", () => {
         const card = Card.fromName(CardName.STOREHOUSE);
-        player.cardsInHand = [card.name];
+        player.addCardToHand(gameState, card.name);
 
         // play one store card
         const storehouse1 = player.addToCity(gameState, card.name);
@@ -5170,7 +5170,7 @@ describe("Card", () => {
     describe(CardName.TWIG_BARGE, () => {
       it("gain 2 TWIG when played", () => {
         const card = Card.fromName(CardName.TWIG_BARGE);
-        player.cardsInHand.push(card.name);
+        player.addCardToHand(gameState, card.name);
         player.gainResources(gameState, card.baseCost);
 
         [player, gameState] = multiStepGameInputTest(gameState, [
@@ -5216,7 +5216,7 @@ describe("Card", () => {
 
         // Make sure we can play this card
         player.gainResources(gameState, card.baseCost);
-        player.cardsInHand.push(card.name);
+        player.addCardToHand(gameState, card.name);
 
         [player, gameState] = multiStepGameInputTest(gameState, [
           playCardInput(card.name),
@@ -5535,7 +5535,7 @@ describe("Card", () => {
         gameState.deck.addToStack(CardName.FARM);
         gameState.deck.addToStack(CardName.FARM);
 
-        player.cardsInHand.push(card.name);
+        player.addCardToHand(gameState, card.name);
         player.gainResources(gameState, card.baseCost);
         expect(player.cardsInHand).to.eql([card.name]);
 
@@ -5640,33 +5640,33 @@ describe("Card", () => {
       it("should draw 2 cards every time you gain a PEARL", () => {
         player.addToCity(gameState, CardName.BRIDGE);
 
-        expect(player.cardsInHand.length).to.be(0);
+        expect(player.numCardsInHand).to.be(0);
 
         player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
-        expect(player.cardsInHand.length).to.be(2);
+        expect(player.numCardsInHand).to.be(2);
 
         player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
-        expect(player.cardsInHand.length).to.be(4);
+        expect(player.numCardsInHand).to.be(4);
 
         player.gainResources(gameState, { [ResourceType.PEARL]: 4 });
-        expect(player.cardsInHand.length).to.be(12);
+        expect(player.numCardsInHand).to.be(12);
 
         player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
-        expect(player.cardsInHand.length).to.be(14);
+        expect(player.numCardsInHand).to.be(14);
 
         player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
-        expect(player.cardsInHand.length).to.be(16);
+        expect(player.numCardsInHand).to.be(16);
 
         player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
         // MAX hand size reached!
-        expect(player.cardsInHand.length).to.be(17);
+        expect(player.numCardsInHand).to.be(17);
       });
 
       it("should do nothing", () => {
         const card = Card.fromName(CardName.BRIDGE);
 
         player.gainResources(gameState, card.baseCost);
-        player.cardsInHand.push(card.name);
+        player.addCardToHand(gameState, card.name);
         player.gainResources(gameState, {
           [ResourceType.PEARL]: 2,
         });
@@ -5681,7 +5681,7 @@ describe("Card", () => {
       const card = Card.fromName(CardName.HARBOR);
 
       it("should do nothing if fewer than 2 PEARL", () => {
-        player.cardsInHand = [card.name];
+        player.addCardToHand(gameState, card.name);
         player.gainResources(gameState, card.baseCost);
         [player, gameState] = multiStepGameInputTest(gameState, [
           playCardInput(card.name),
@@ -5690,7 +5690,7 @@ describe("Card", () => {
       });
 
       it("should gain a wild resource if at least 2 PEARL", () => {
-        player.cardsInHand = [card.name];
+        player.addCardToHand(gameState, card.name);
         player.gainResources(gameState, card.baseCost);
         player.gainResources(gameState, { [ResourceType.PEARL]: 2 });
 
@@ -5717,7 +5717,7 @@ describe("Card", () => {
       const card = Card.fromName(CardName.FERRY_FERRET);
 
       it("should do nothing if fewer than 2 PEARL", () => {
-        player.cardsInHand = [card.name];
+        player.addCardToHand(gameState, card.name);
         player.gainResources(gameState, card.baseCost);
         [player, gameState] = multiStepGameInputTest(gameState, [
           playCardInput(card.name),
@@ -5727,7 +5727,7 @@ describe("Card", () => {
       });
 
       it("should gain 2 VP if at least 2 PEARL", () => {
-        player.cardsInHand = [card.name];
+        player.addCardToHand(gameState, card.name);
         player.gainResources(gameState, card.baseCost);
         player.gainResources(gameState, { [ResourceType.PEARL]: 2 });
         expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
@@ -5774,7 +5774,7 @@ describe("Card", () => {
       const card = Card.fromName(CardName.MESSENGER);
 
       it("should not be playable w/o a construction", () => {
-        player.cardsInHand = [card.name];
+        player.addCardToHand(gameState, card.name);
         player.gainResources(gameState, card.baseCost);
         expect(() => {
           multiStepGameInputTest(gameState, [playCardInput(card.name)]);
@@ -5783,7 +5783,7 @@ describe("Card", () => {
 
       it("should be playable w a construction", () => {
         player.addToCity(gameState, CardName.FARM);
-        player.cardsInHand = [card.name];
+        player.addCardToHand(gameState, card.name);
         player.gainResources(gameState, card.baseCost);
         expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
         [player, gameState] = multiStepGameInputTest(
@@ -5925,7 +5925,7 @@ describe("Card", () => {
 
       it("should remove from Construction if MESSENGER is removed from city", () => {
         player.addToCity(gameState, CardName.FARM);
-        player.cardsInHand = [card.name];
+        player.addCardToHand(gameState, card.name);
         player.gainResources(gameState, card.baseCost);
         [player, gameState] = multiStepGameInputTest(
           gameState,
@@ -6135,7 +6135,7 @@ describe("Card", () => {
           player.getFirstPlayedCard(CardName.MESSENGER),
           { shareSpaceWith: CardName.FARM }
         );
-        player.cardsInHand.push(CardName.RUINS);
+        player.addCardToHand(gameState, CardName.RUINS);
 
         expect(player.getFirstPlayedCard(CardName.MESSENGER)).to.eql({
           cardName: CardName.MESSENGER,
@@ -6179,7 +6179,7 @@ describe("Card", () => {
           player.getFirstPlayedCard(CardName.MESSENGER),
           { shareSpaceWith: CardName.FARM }
         );
-        player.cardsInHand.push(CardName.RUINS);
+        player.addCardToHand(gameState, CardName.RUINS);
 
         expect(player.getFirstPlayedCard(CardName.MESSENGER)).to.eql({
           cardName: CardName.MESSENGER,
@@ -6356,7 +6356,7 @@ describe("Card", () => {
           player.getFirstPlayedCard(CardName.MESSENGER),
           { shareSpaceWith: CardName.CRANE }
         );
-        player.cardsInHand.push(CardName.FAIRGROUNDS);
+        player.addCardToHand(gameState, CardName.FAIRGROUNDS);
 
         expect(player.getFirstPlayedCard(CardName.MESSENGER)).to.eql({
           cardName: CardName.MESSENGER,
@@ -6439,7 +6439,7 @@ describe("Card", () => {
           shareSpaceWith: CardName.TWIG_BARGE,
         });
 
-        player.cardsInHand.push(CardName.RUINS);
+        player.addCardToHand(gameState, CardName.RUINS);
 
         playedMessengers = player.getPlayedCardForCardName(CardName.MESSENGER);
 
@@ -6975,7 +6975,7 @@ describe("Card", () => {
         expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
         expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
         expect(player.getNumResourcesByType(ResourceType.VP)).to.be(1);
-        expect(player.cardsInHand.length).to.be(0);
+        expect(player.numCardsInHand).to.be(0);
         [player, gameState] = multiStepGameInputTest(gameState, [
           {
             inputType: GameInputType.PLACE_AMBASSADOR,
@@ -7011,7 +7011,7 @@ describe("Card", () => {
         expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
         expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
         expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
-        expect(player.cardsInHand.length).to.be(3);
+        expect(player.numCardsInHand).to.be(3);
       });
 
       it("should auto advance if there's only one option", () => {
@@ -7036,7 +7036,7 @@ describe("Card", () => {
         expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
         expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
         expect(player.getNumResourcesByType(ResourceType.VP)).to.be(1);
-        expect(player.cardsInHand.length).to.be(0);
+        expect(player.numCardsInHand).to.be(0);
 
         [player, gameState] = multiStepGameInputTest(
           gameState,
@@ -7070,7 +7070,7 @@ describe("Card", () => {
         expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
         expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
         expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
-        expect(player.cardsInHand.length).to.be(3);
+        expect(player.numCardsInHand).to.be(3);
       });
 
       it("should recall ambassador properly", () => {
@@ -7095,7 +7095,7 @@ describe("Card", () => {
         expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
         expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
         expect(player.getNumResourcesByType(ResourceType.VP)).to.be(1);
-        expect(player.cardsInHand.length).to.be(0);
+        expect(player.numCardsInHand).to.be(0);
 
         [player, gameState] = multiStepGameInputTest(
           gameState,
@@ -7129,7 +7129,7 @@ describe("Card", () => {
         expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
         expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
         expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
-        expect(player.cardsInHand.length).to.be(3);
+        expect(player.numCardsInHand).to.be(3);
 
         player.recallAmbassador(gameState);
         expect(player.getFirstPlayedCard(card.name)).to.eql({
@@ -7146,7 +7146,7 @@ describe("Card", () => {
       const card = Card.fromName(CardName.PIRATE);
 
       it("should do nothing if the player has no cards in hand", () => {
-        player.cardsInHand.push(card.name);
+        player.addCardToHand(gameState, card.name);
         player.gainResources(gameState, card.baseCost);
         [player, gameState] = multiStepGameInputTest(gameState, [
           playCardInput(card.name),

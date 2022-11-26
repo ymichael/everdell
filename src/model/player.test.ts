@@ -939,7 +939,7 @@ describe("Player", () => {
         let player = gameState.getActivePlayer();
         player.addToCity(gameState, CardName.INN);
         expect(player.hasUnoccupiedConstruction(CardName.INN)).to.be(true);
-        player.cardsInHand = [card.name];
+        player.addCardToHand(gameState, card.name);
 
         expect(player.hasCardInCity(CardName.INN)).to.be(true);
         expect(card.canPlay(gameState, gameInput)).to.be(true);
@@ -957,7 +957,7 @@ describe("Player", () => {
         gameState.nextPlayer();
 
         // Now INN is occupied, try to occupy it again
-        player.cardsInHand = [card.name];
+        player.addCardToHand(gameState, card.name);
         expect(player.cardsInHand).to.not.eql([]);
         expect(card.canPlay(gameState, gameInput)).to.be(false);
 
@@ -989,7 +989,9 @@ describe("Player", () => {
         });
 
         let player = gameState.getActivePlayer();
-        player.cardsInHand = [card.name, card.name, card.name];
+        player.addCardToHand(gameState, card.name);
+        player.addCardToHand(gameState, card.name);
+        player.addCardToHand(gameState, card.name);
 
         // Add 2 farms
         player.addToCity(gameState, CardName.FARM);
@@ -1037,7 +1039,9 @@ describe("Player", () => {
         });
 
         let player = gameState.getActivePlayer();
-        player.cardsInHand = [card.name, card.name, card.name];
+        player.addCardToHand(gameState, card.name);
+        player.addCardToHand(gameState, card.name);
+        player.addCardToHand(gameState, card.name);
 
         // Add 2 farms
         player.addToCity(gameState, CardName.FARM);
@@ -1094,7 +1098,7 @@ describe("Player", () => {
         let player = gameState.getActivePlayer();
 
         player.addToCity(gameState, CardName.CRANE);
-        player.cardsInHand = [card.name];
+        player.addCardToHand(gameState, card.name);
         expect(player.hasCardInCity(CardName.CRANE)).to.be(true);
         expect(card.canPlay(gameState, gameInput)).to.be(true);
         expect(player.cardsInHand).to.not.eql([]);
@@ -1118,7 +1122,7 @@ describe("Player", () => {
         let player = gameState.getActivePlayer();
 
         player.addToCity(gameState, CardName.INNKEEPER);
-        player.cardsInHand = [card.name];
+        player.addCardToHand(gameState, card.name);
         expect(player.hasCardInCity(CardName.INNKEEPER)).to.be(true);
         expect(card.canPlay(gameState, gameInput)).to.be(true);
         expect(player.cardsInHand).to.not.eql([]);
@@ -1142,7 +1146,7 @@ describe("Player", () => {
         let player = gameState.getActivePlayer();
 
         player.addToCity(gameState, CardName.QUEEN);
-        player.cardsInHand = [card.name];
+        player.addCardToHand(gameState, card.name);
 
         expect(card.canPlay(gameState, gameInput)).to.be(true);
         expect(player.cardsInHand).to.not.eql([]);
@@ -1165,7 +1169,7 @@ describe("Player", () => {
         expect(player.numAvailableWorkers).to.be(1);
 
         nextGameState.nextPlayer();
-        player.cardsInHand = [card.name];
+        player.addCardToHand(gameState, card.name);
         expect(() => {
           nextGameState.next(gameInput);
         }).to.throwException(/cannot place worker on card/i);
@@ -1184,7 +1188,7 @@ describe("Player", () => {
         });
 
         let player = gameState.getActivePlayer();
-        player.cardsInHand = [card.name];
+        player.addCardToHand(gameState, card.name);
 
         player.addToCity(gameState, CardName.DUNGEON);
         player.addToCity(gameState, CardName.WIFE);

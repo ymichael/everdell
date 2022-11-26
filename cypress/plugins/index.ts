@@ -60,7 +60,7 @@ module.exports = (on: any, config: any) => {
       return await getTestGameJSON({}, (gameState) => {
         const card = Card.fromName(CardName.MINE);
         gameState.players.forEach((player) => {
-          player.cardsInHand.push(card.name);
+          player.addCardToHand(gameState, card.name);
           player.gainResources(gameState, card.baseCost);
         });
       });
@@ -69,7 +69,7 @@ module.exports = (on: any, config: any) => {
       return await getTestGameJSON({}, (gameState) => {
         const card = Card.fromName(CardName.MINE);
         gameState.players.forEach((player) => {
-          player.cardsInHand.push(card.name);
+          player.addCardToHand(gameState, card.name);
           player.gainResources(gameState, card.baseCost);
         });
       });
@@ -192,7 +192,7 @@ module.exports = (on: any, config: any) => {
             [ResourceType.TWIG]: 5,
             [ResourceType.PEBBLE]: 5,
           });
-          player.cardsInHand.push(card.name);
+          player.addCardToHand(gameState, card.name);
           player.cardsInHand.push(CardName.FARM, CardName.MINE);
         }
       );
@@ -200,7 +200,7 @@ module.exports = (on: any, config: any) => {
     "db:play-ranger-game": async () => {
       return await getTestGameJSON({}, (gameState, player) => {
         const card = Card.fromName(CardName.RANGER);
-        player.cardsInHand.push(card.name);
+        player.addCardToHand(gameState, card.name);
         player.gainResources(gameState, card.baseCost);
 
         // Claim this event using the ranger.
@@ -229,7 +229,7 @@ module.exports = (on: any, config: any) => {
           [ResourceType.TWIG]: 5,
           [ResourceType.PEBBLE]: 5,
         });
-        player.cardsInHand.push(card.name);
+        player.addCardToHand(gameState, card.name);
         player.cardsInHand.push(CardName.FARM, CardName.MINE);
       });
     },
@@ -242,7 +242,7 @@ module.exports = (on: any, config: any) => {
           [ResourceType.TWIG]: 5,
           [ResourceType.PEBBLE]: 5,
         });
-        player.cardsInHand.push(card.name);
+        player.addCardToHand(gameState, card.name);
         player.cardsInHand.push(
           CardName.FARM,
           CardName.MINE,
@@ -256,7 +256,7 @@ module.exports = (on: any, config: any) => {
     "db:play-husband-via-farm-game": async () => {
       return await getTestGameJSON({}, (gameState, player) => {
         const card = Card.fromName(CardName.HUSBAND);
-        player.cardsInHand.push(card.name);
+        player.addCardToHand(gameState, card.name);
 
         player.addToCity(gameState, CardName.GENERAL_STORE);
         player.addToCity(gameState, CardName.FARM);
@@ -270,7 +270,7 @@ module.exports = (on: any, config: any) => {
 
         const card = Card.fromName(CardName.MINER_MOLE);
         player.gainResources(gameState, card.baseCost);
-        player.cardsInHand.push(card.name);
+        player.addCardToHand(gameState, card.name);
       });
     },
     "db:visit-inn-game": async () => {

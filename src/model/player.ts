@@ -37,8 +37,8 @@ export class Player implements IGameTextEntity {
 
   public name: string;
   public playerId: string;
-  public cardsInHand: CardName[];
 
+  public cardsInHand: CardName[];
   private _currentSeason: Season;
   private _numCardsInHand: number | null;
 

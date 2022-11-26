@@ -303,11 +303,11 @@ describe("RiverDestinationMap", () => {
     });
 
     it("should allow player to NOT discard 3 PRODUCTION cards", () => {
-      player.cardsInHand.push(CardName.FARM);
-      player.cardsInHand.push(CardName.FARM);
-      player.cardsInHand.push(CardName.QUEEN);
-      player.cardsInHand.push(CardName.JUDGE);
-      player.cardsInHand.push(CardName.MINE);
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.QUEEN);
+      player.addCardToHand(gameState, CardName.JUDGE);
+      player.addCardToHand(gameState, CardName.MINE);
 
       expect(player.hasUnusedAmbassador()).to.be(true);
       expect(player.cardsInHand).to.not.eql([]);
@@ -347,11 +347,11 @@ describe("RiverDestinationMap", () => {
     });
 
     it("should allow player to discard 3 PRODUCTION cards", () => {
-      player.cardsInHand.push(CardName.FARM);
-      player.cardsInHand.push(CardName.FARM);
-      player.cardsInHand.push(CardName.QUEEN);
-      player.cardsInHand.push(CardName.JUDGE);
-      player.cardsInHand.push(CardName.MINE);
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.QUEEN);
+      player.addCardToHand(gameState, CardName.JUDGE);
+      player.addCardToHand(gameState, CardName.MINE);
 
       expect(player.hasUnusedAmbassador()).to.be(true);
       expect(player.cardsInHand).to.not.eql([]);
@@ -418,7 +418,7 @@ describe("RiverDestinationMap", () => {
         [ResourceType.PEBBLE]: 1,
         [ResourceType.VP]: 1,
       });
-      expect(player.cardsInHand.length).to.be(0);
+      expect(player.numCardsInHand).to.be(0);
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
       [player, gameState] = multiStepGameInputTest(gameState, [
         {
@@ -437,7 +437,7 @@ describe("RiverDestinationMap", () => {
       ]);
       expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
-      expect(player.cardsInHand.length).to.be(4);
+      expect(player.numCardsInHand).to.be(4);
     });
   });
 
@@ -477,7 +477,7 @@ describe("RiverDestinationMap", () => {
         [ResourceType.PEBBLE]: 1,
         [ResourceType.VP]: 1,
       });
-      expect(player.cardsInHand.length).to.be(0);
+      expect(player.numCardsInHand).to.be(0);
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
 
       gameState.replenishMeadow();
@@ -515,7 +515,7 @@ describe("RiverDestinationMap", () => {
       );
       expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
-      expect(player.cardsInHand.length).to.be(2);
+      expect(player.numCardsInHand).to.be(2);
     });
   });
 
@@ -544,11 +544,11 @@ describe("RiverDestinationMap", () => {
     });
 
     it("should allow player to NOT discard 2 GOVERNANCE cards", () => {
-      player.cardsInHand.push(CardName.FARM);
-      player.cardsInHand.push(CardName.FARM);
-      player.cardsInHand.push(CardName.QUEEN);
-      player.cardsInHand.push(CardName.JUDGE);
-      player.cardsInHand.push(CardName.SHOPKEEPER);
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.QUEEN);
+      player.addCardToHand(gameState, CardName.JUDGE);
+      player.addCardToHand(gameState, CardName.SHOPKEEPER);
 
       expect(player.hasUnusedAmbassador()).to.be(true);
       expect(player.cardsInHand).to.not.eql([]);
@@ -588,11 +588,11 @@ describe("RiverDestinationMap", () => {
     });
 
     it("should allow player to discard 2 GOVERNANCE cards", () => {
-      player.cardsInHand.push(CardName.FARM);
-      player.cardsInHand.push(CardName.FARM);
-      player.cardsInHand.push(CardName.QUEEN);
-      player.cardsInHand.push(CardName.JUDGE);
-      player.cardsInHand.push(CardName.SHOPKEEPER);
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.QUEEN);
+      player.addCardToHand(gameState, CardName.JUDGE);
+      player.addCardToHand(gameState, CardName.SHOPKEEPER);
 
       expect(player.hasUnusedAmbassador()).to.be(true);
       expect(player.cardsInHand).to.not.eql([]);
@@ -678,7 +678,7 @@ describe("RiverDestinationMap", () => {
       });
       expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
       expect(player.getNumResourcesByType(ResourceType.VP)).to.be(1);
-      expect(player.cardsInHand.length).to.be(0);
+      expect(player.numCardsInHand).to.be(0);
 
       [player, gameState] = multiStepGameInputTest(gameState, [
         {
@@ -695,7 +695,7 @@ describe("RiverDestinationMap", () => {
           clientOptions: { selectedOption: "Ok" },
         },
       ]);
-      expect(player.cardsInHand.length).to.be(3);
+      expect(player.numCardsInHand).to.be(3);
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
       expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
       expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
@@ -709,7 +709,7 @@ describe("RiverDestinationMap", () => {
       });
       expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
       expect(player.getNumResourcesByType(ResourceType.VP)).to.be(1);
-      expect(player.cardsInHand.length).to.be(0);
+      expect(player.numCardsInHand).to.be(0);
 
       [player, gameState] = multiStepGameInputTest(gameState, [
         {
@@ -726,7 +726,7 @@ describe("RiverDestinationMap", () => {
           clientOptions: { selectedOption: "Decline" },
         },
       ]);
-      expect(player.cardsInHand.length).to.be(0);
+      expect(player.numCardsInHand).to.be(0);
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
       expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
       expect(player.getNumResourcesByType(ResourceType.VP)).to.be(1);
@@ -776,8 +776,8 @@ describe("RiverDestinationMap", () => {
 
     it("should ask the player to spend resources and discard cards", () => {
       player.gainResources(gameState, { [ResourceType.BERRY]: 2 });
-      player.cardsInHand.push(CardName.FARM);
-      player.cardsInHand.push(CardName.FARM);
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.FARM);
 
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
       [player, gameState] = multiStepGameInputTest(gameState, [
@@ -808,13 +808,13 @@ describe("RiverDestinationMap", () => {
       ]);
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
-      expect(player.cardsInHand.length).to.be(0);
+      expect(player.numCardsInHand).to.be(0);
     });
 
     it("should auto advance if possible", () => {
       player.gainResources(gameState, { [ResourceType.BERRY]: 2 });
-      player.cardsInHand.push(CardName.FARM);
-      player.cardsInHand.push(CardName.FARM);
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.FARM);
 
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
       [player, gameState] = multiStepGameInputTest(
@@ -831,7 +831,7 @@ describe("RiverDestinationMap", () => {
       );
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
-      expect(player.cardsInHand.length).to.be(0);
+      expect(player.numCardsInHand).to.be(0);
     });
   });
 });

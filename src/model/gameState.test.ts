@@ -368,7 +368,8 @@ describe("GameState", () => {
   describe("getPlayableCards", () => {
     it("should return cards from both the Meadow and your Hand", () => {
       gameState.meadowCards.push(CardName.FARM, CardName.MINE);
-      player.cardsInHand.push(CardName.FARM, CardName.MINE);
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.MINE);
       player.gainResources(gameState, Card.fromName(CardName.FARM).baseCost);
       player.gainResources(gameState, Card.fromName(CardName.MINE).baseCost);
 
@@ -504,7 +505,7 @@ describe("GameState", () => {
       const card = Card.fromName(CardName.FARM);
       const player = gameState.getActivePlayer();
 
-      player.cardsInHand.push(card.name);
+      player.addCardToHand(gameState, card.name);
       expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
       expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
 
@@ -520,7 +521,7 @@ describe("GameState", () => {
       const card = Card.fromName(CardName.FARM);
 
       const player = gameState.getActivePlayer();
-      player.cardsInHand.push(card.name);
+      player.addCardToHand(gameState, card.name);
       player.gainResources(gameState, card.baseCost);
 
       expect(gameState.getPlayableCards()).to.eql([
@@ -535,14 +536,14 @@ describe("GameState", () => {
     });
 
     it("should be able to play constructions if city is full (w/ crane)", () => {
-      player.cardsInHand.push(CardName.FARM);
+      player.addCardToHand(gameState, CardName.FARM);
       player.gainResources(gameState, Card.fromName(CardName.FARM).baseCost);
-      player.cardsInHand.push(CardName.MINE);
+      player.addCardToHand(gameState, CardName.MINE);
       player.gainResources(gameState, Card.fromName(CardName.MINE).baseCost);
 
-      player.cardsInHand.push(CardName.WIFE);
+      player.addCardToHand(gameState, CardName.WIFE);
       player.gainResources(gameState, Card.fromName(CardName.WIFE).baseCost);
-      player.cardsInHand.push(CardName.KING);
+      player.addCardToHand(gameState, CardName.KING);
       player.gainResources(gameState, Card.fromName(CardName.KING).baseCost);
 
       expect(gameState.getPlayableCards()).to.eql([
@@ -589,14 +590,14 @@ describe("GameState", () => {
     });
 
     it("should be able to play critters if city is full (w/ innkeeper)", () => {
-      player.cardsInHand.push(CardName.FARM);
+      player.addCardToHand(gameState, CardName.FARM);
       player.gainResources(gameState, Card.fromName(CardName.FARM).baseCost);
-      player.cardsInHand.push(CardName.MINE);
+      player.addCardToHand(gameState, CardName.MINE);
       player.gainResources(gameState, Card.fromName(CardName.MINE).baseCost);
 
-      player.cardsInHand.push(CardName.WIFE);
+      player.addCardToHand(gameState, CardName.WIFE);
       player.gainResources(gameState, Card.fromName(CardName.WIFE).baseCost);
-      player.cardsInHand.push(CardName.KING);
+      player.addCardToHand(gameState, CardName.KING);
       player.gainResources(gameState, Card.fromName(CardName.KING).baseCost);
 
       expect(gameState.getPlayableCards()).to.eql([
@@ -641,7 +642,7 @@ describe("GameState", () => {
 
     it("should be able to play FOOL if city is full", () => {
       const player = gameState.getActivePlayer();
-      player.cardsInHand.push(CardName.FOOL);
+      player.addCardToHand(gameState, CardName.FOOL);
       player.gainResources(gameState, Card.fromName(CardName.FOOL).baseCost);
       expect(gameState.getPlayableCards()).to.eql([
         { card: CardName.FOOL, fromMeadow: false },
@@ -657,7 +658,7 @@ describe("GameState", () => {
     });
 
     it("should be able to play RUINS if city is full (w/ construction)", () => {
-      player.cardsInHand.push(CardName.RUINS);
+      player.addCardToHand(gameState, CardName.RUINS);
       player.gainResources(gameState, Card.fromName(CardName.RUINS).baseCost);
 
       // no construction to destroy

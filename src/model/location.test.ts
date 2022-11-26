@@ -190,7 +190,7 @@ describe("Location", () => {
       gameState.locationsMap[LocationName.FOREST_TWO_CARDS_ONE_WILD] = [];
 
       expect(location.canPlay(gameState, gameInput)).to.be(true);
-      expect(player.cardsInHand.length).to.be(0);
+      expect(player.numCardsInHand).to.be(0);
 
       [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
@@ -211,7 +211,7 @@ describe("Location", () => {
       ]);
 
       expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(1);
-      expect(player.cardsInHand.length).to.be(2);
+      expect(player.numCardsInHand).to.be(2);
     });
   });
 
@@ -230,7 +230,7 @@ describe("Location", () => {
       player.addCardToHand(gameState, CardName.WIFE);
 
       expect(location.canPlay(gameState, gameInput)).to.be(true);
-      expect(player.cardsInHand.length).to.be(4);
+      expect(player.numCardsInHand).to.be(4);
       expect(gameState.discardPile.length).to.be(0);
 
       [player, gameState] = multiStepGameInputTest(gameState, [
@@ -271,7 +271,7 @@ describe("Location", () => {
       ]);
       expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(1);
       expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(2);
-      expect(player.cardsInHand.length).to.be(1);
+      expect(player.numCardsInHand).to.be(1);
     });
 
     it("player cannot discard more than 3 cards to get resources", () => {
@@ -288,7 +288,7 @@ describe("Location", () => {
       player.addCardToHand(gameState, CardName.WIFE);
 
       expect(location.canPlay(gameState, gameInput)).to.be(true);
-      expect(player.cardsInHand.length).to.be(4);
+      expect(player.numCardsInHand).to.be(4);
       expect(gameState.discardPile.length).to.be(0);
 
       expect(() => {
@@ -332,7 +332,7 @@ describe("Location", () => {
       player.addCardToHand(gameState, CardName.HUSBAND);
 
       expect(location.canPlay(gameState, gameInput)).to.be(true);
-      expect(player.cardsInHand.length).to.be(6);
+      expect(player.numCardsInHand).to.be(6);
 
       [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
@@ -355,7 +355,7 @@ describe("Location", () => {
       ]);
 
       // player gained 8 cards but already had 2 in hand + can't have more than 8 cards in hand
-      expect(player.cardsInHand.length).to.be(8);
+      expect(player.numCardsInHand).to.be(8);
     });
   });
 
@@ -431,7 +431,7 @@ describe("Location", () => {
     const name = LocationName.FOREST_RESIN_PEBBLE_OR_FOUR_CARDS;
     it("should allow the player to draw 4 CARD", () => {
       gameState.locationsMap[name] = [];
-      expect(player.cardsInHand.length).to.be(0);
+      expect(player.numCardsInHand).to.be(0);
       expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
       expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
 
@@ -448,14 +448,14 @@ describe("Location", () => {
         },
       ]);
 
-      expect(player.cardsInHand.length).to.be(4);
+      expect(player.numCardsInHand).to.be(4);
       expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
       expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
     });
 
     it("should allow the player to gain 1 RESIN & 1 PEBBLE", () => {
       gameState.locationsMap[name] = [];
-      expect(player.cardsInHand.length).to.be(0);
+      expect(player.numCardsInHand).to.be(0);
       expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
       expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
 
@@ -474,7 +474,7 @@ describe("Location", () => {
 
       expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(1);
       expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
-      expect(player.cardsInHand.length).to.be(0);
+      expect(player.numCardsInHand).to.be(0);
     });
   });
 
@@ -496,7 +496,7 @@ describe("Location", () => {
       gameState.deck.addToStack(CardName.RANGER);
       gameState.deck.addToStack(CardName.RANGER);
 
-      expect(player.cardsInHand.length).to.be(0);
+      expect(player.numCardsInHand).to.be(0);
       expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
       [player, gameState] = multiStepGameInputTest(gameState, [
         placeWorkerInput(name),
@@ -539,7 +539,7 @@ describe("Location", () => {
           clientOptions: { selectedOption: "PEBBLE" },
         },
       ]);
-      expect(player.cardsInHand.length).to.be(2);
+      expect(player.numCardsInHand).to.be(2);
       expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(1);
     });
   });
@@ -557,7 +557,7 @@ describe("Location", () => {
       player.addCardToHand(gameState, CardName.HUSBAND);
 
       expect(location.canPlay(gameState, gameInput)).to.be(true);
-      expect(player.cardsInHand.length).to.be(6);
+      expect(player.numCardsInHand).to.be(6);
       expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
       expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
 
@@ -568,7 +568,7 @@ describe("Location", () => {
           prevInputType: GameInputType.PLACE_WORKER,
           locationContext: LocationName.HAVEN,
           minCards: 0,
-          maxCards: player.cardsInHand.length,
+          maxCards: player.numCardsInHand,
           clientOptions: {
             cardsToDiscard: [
               CardName.FARM,
@@ -599,7 +599,7 @@ describe("Location", () => {
       );
 
       // player gained 8 cards but already had 2 in hand + can't have more than 8 cards in hand
-      expect(player.cardsInHand.length).to.be(2);
+      expect(player.numCardsInHand).to.be(2);
 
       expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(1);
       expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
@@ -633,7 +633,7 @@ describe("Location", () => {
       ]);
 
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
-      expect(player.cardsInHand.length).to.be(3);
+      expect(player.numCardsInHand).to.be(3);
     });
   });
 
@@ -1199,7 +1199,7 @@ describe("Location", () => {
 
       player = gameState.getActivePlayer();
       expect(player.hasCardInCity(CardName.CRANE)).to.be(false);
-      expect(player.cardsInHand.length).to.be(0);
+      expect(player.numCardsInHand).to.be(0);
 
       const gameInput = placeWorkerInput(location.name);
       gameState.locationsMap[
@@ -1237,7 +1237,7 @@ describe("Location", () => {
       ]);
       expect(player.hasCardInCity(CardName.CRANE)).to.be(true);
       expect(player.hasCardInCity(CardName.CEMETARY)).to.be(false);
-      expect(player.cardsInHand.length).to.be(1);
+      expect(player.numCardsInHand).to.be(1);
     });
   });
 
@@ -1287,7 +1287,7 @@ describe("Location", () => {
 
         expect(location.canPlay(gameState, gameInput)).to.be(false);
 
-        player.cardsInHand = [CardName.RUINS];
+        player.addCardToHand(gameState, CardName.RUINS);
         expect(location.canPlay(gameState, gameInput)).to.be(false);
 
         player.cardsInHand = [

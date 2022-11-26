@@ -38,16 +38,16 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     player.nextSeason();
 
     player.drawCards(gameState, idx);
-    player.cardsInHand.push(CardName.RANGER);
-    player.cardsInHand.push(CardName.FOOL);
-    player.cardsInHand.push(CardName.INNKEEPER);
-    player.cardsInHand.push(CardName.WANDERER);
-    player.cardsInHand.push(CardName.STOREHOUSE);
-    player.cardsInHand.push(CardName.KING);
-    player.cardsInHand.push(CardName.POSTAL_PIGEON);
-    player.cardsInHand.push(CardName.BARD);
-    player.cardsInHand.push(CardName.MINER_MOLE);
-    player.cardsInHand.push(CardName.CHIP_SWEEP);
+    player.addCardToHand(gameState, CardName.RANGER);
+    player.addCardToHand(gameState, CardName.FOOL);
+    player.addCardToHand(gameState, CardName.INNKEEPER);
+    player.addCardToHand(gameState, CardName.WANDERER);
+    player.addCardToHand(gameState, CardName.STOREHOUSE);
+    player.addCardToHand(gameState, CardName.KING);
+    player.addCardToHand(gameState, CardName.POSTAL_PIGEON);
+    player.addCardToHand(gameState, CardName.BARD);
+    player.addCardToHand(gameState, CardName.MINER_MOLE);
+    player.addCardToHand(gameState, CardName.CHIP_SWEEP);
 
     player.adornmentsInHand.push(AdornmentName.BELL);
     player.adornmentsInHand.push(AdornmentName.SPYGLASS);

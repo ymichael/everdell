@@ -4166,8 +4166,18 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       [ResourceType.RESIN]: 2,
       [ResourceType.PEBBLE]: 2,
     },
-    playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
+    playedCardInfoDefault: {
+      resources: {
+        [ResourceType.VP]: 0,
+      },
+    },
+    productionInner: (
+      gameState: GameState,
+      gameInput: GameInput,
+      cardOwner: Player,
+      playedCard: PlayedCardInfo
+    ) => {
+      (playedCard.resources![ResourceType.VP] as number) += 1;
     },
   }),
   [CardName.CHIPSMITH]: new Card({

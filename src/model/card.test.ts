@@ -7307,7 +7307,64 @@ describe("Card", () => {
 
     describe(CardName.BAKER, () => {});
 
-    describe(CardName.BANK, () => {});
+    describe(CardName.BANK, () => {
+      it("should add resources to the bank and increase hand size", () => {
+        const card = Card.fromName(CardName.BANK);
+        player.addCardToHand(gameState, card.name);
+
+        // Make sure we can play this card
+        player.gainResources(gameState, card.baseCost);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+        ]);
+
+        expect(
+          player.getFirstPlayedCard(CardName.BANK).resources![ResourceType.VP]
+        ).to.be(1);
+        expect(player.maxHandSize).to.be(9);
+        // 0 VP that you can use
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+
+        // 2 points from bank and 1 from VP on it
+        expect(player.getPoints(gameState)).to.be(3);
+      });
+      it("should add 1 VP when producing", () => {
+        const card = Card.fromName(CardName.BANK);
+        player.addCardToHand(gameState, card.name);
+
+        // Make sure we can play this card
+        player.gainResources(gameState, card.baseCost);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+        ]);
+
+        expect(
+          player.getFirstPlayedCard(CardName.BANK).resources![ResourceType.VP]
+        ).to.be(1);
+        expect(player.maxHandSize).to.be(9);
+        // 0 VP that you can use
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+
+        // 2 points from bank and 1 from VP on it
+        expect(player.getPoints(gameState)).to.be(3);
+
+        player.activateProduction(gameState, {
+          inputType: GameInputType.PREPARE_FOR_SEASON,
+        });
+
+        expect(
+          player.getFirstPlayedCard(CardName.BANK).resources![ResourceType.VP]
+        ).to.be(2);
+        expect(player.maxHandSize).to.be(10);
+        // 0 VP that you can use
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+
+        // 2 points from bank and 2 from VP on it
+        expect(player.getPoints(gameState)).to.be(4);
+      });
+    });
 
     describe(CardName.CHIPSMITH, () => {});
 

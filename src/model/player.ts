@@ -142,10 +142,15 @@ export class Player implements IGameTextEntity {
 
   get maxHandSize(): number {
     const MAX_HAND_SIZE = 8;
+    let additionalHandSize = 0;
     if (this.hasCardInCity(CardName.BRIDGE)) {
-      return MAX_HAND_SIZE + this.getNumResourcesByType(ResourceType.PEARL);
+      additionalHandSize += this.getNumResourcesByType(ResourceType.PEARL);
     }
-    return MAX_HAND_SIZE;
+    if (this.hasCardInCity(CardName.BANK)) {
+      const bank = this.getFirstPlayedCard(CardName.BANK);
+      additionalHandSize += bank.resources![ResourceType.VP] as number;
+    }
+    return MAX_HAND_SIZE + additionalHandSize;
   }
 
   drawMaxCards(gameState: GameState): number {

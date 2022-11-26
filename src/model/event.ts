@@ -2491,6 +2491,190 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       }
     },
   }),
+
+  // Newleaf events
+  [EventName.SPECIAL_CITY_JUBILEE]: new Event({
+    name: EventName.SPECIAL_CITY_JUBILEE,
+    type: EventType.SPECIAL,
+    baseVP: 0,
+    eventDescription: toGameText(["Add game text here"]),
+    expansion: ExpansionType.NEWLEAF,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      // TODO: IMPLEMENT
+    },
+  }),
+  [EventName.SPECIAL_EVER_WALL_TOWER_CONSTRUCTED]: new Event({
+    name: EventName.SPECIAL_EVER_WALL_TOWER_CONSTRUCTED,
+    type: EventType.SPECIAL,
+    baseVP: 5,
+    eventDescription: toGameText(["Add game text here"]),
+    expansion: ExpansionType.NEWLEAF,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      // TODO: IMPLEMENT
+    },
+  }),
+  [EventName.SPECIAL_GLOW_LIGHT_FESTIVAL]: new Event({
+    name: EventName.SPECIAL_GLOW_LIGHT_FESTIVAL,
+    type: EventType.SPECIAL,
+    baseVP: 3,
+    eventDescription: toGameText(["Add game text here"]),
+    expansion: ExpansionType.NEWLEAF,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      // TODO: IMPLEMENT
+    },
+  }),
+  [EventName.SPECIAL_HOT_AIR_BALLOON_RACE]: new Event({
+    name: EventName.SPECIAL_HOT_AIR_BALLOON_RACE,
+    type: EventType.SPECIAL,
+    baseVP: 4,
+    eventDescription: toGameText(["Add game text here"]),
+    expansion: ExpansionType.NEWLEAF,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      // TODO: IMPLEMENT
+    },
+  }),
+  [EventName.SPECIAL_JUNIPER_JIG_DANCE_CONTEST]: new Event({
+    name: EventName.SPECIAL_JUNIPER_JIG_DANCE_CONTEST,
+    type: EventType.SPECIAL,
+    baseVP: 5,
+    eventDescription: toGameText(["Add game text here"]),
+    expansion: ExpansionType.NEWLEAF,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      // TODO: IMPLEMENT
+    },
+  }),
+  [EventName.SPECIAL_MAGIC_SNOW]: new Event({
+    name: EventName.SPECIAL_MAGIC_SNOW,
+    type: EventType.SPECIAL,
+    baseVP: 4,
+    eventDescription: toGameText(["Add game text here"]),
+    expansion: ExpansionType.NEWLEAF,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      // TODO: IMPLEMENT
+    },
+  }),
+  [EventName.SPECIAL_ROYAL_TEA]: new Event({
+    name: EventName.SPECIAL_ROYAL_TEA,
+    type: EventType.SPECIAL,
+    baseVP: 4,
+    eventDescription: toGameText(["Add game text here"]),
+    expansion: ExpansionType.NEWLEAF,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      // TODO: IMPLEMENT
+    },
+  }),
+  [EventName.SPECIAL_STOCK_MARKET_BOOM]: new Event({
+    name: EventName.SPECIAL_STOCK_MARKET_BOOM,
+    type: EventType.SPECIAL,
+    baseVP: 4,
+    eventDescription: toGameText(["Add game text here"]),
+    expansion: ExpansionType.NEWLEAF,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      // TODO: IMPLEMENT
+    },
+  }),
+  [EventName.SPECIAL_SUNFLOWER_PARADE]: new Event({
+    name: EventName.SPECIAL_SUNFLOWER_PARADE,
+    type: EventType.SPECIAL,
+    baseVP: 5,
+    eventDescription: toGameText(["Add game text here"]),
+    expansion: ExpansionType.NEWLEAF,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      // TODO: IMPLEMENT
+    },
+  }),
+
+  // Bellfaire events
+  [EventName.SPECIAL_ARCHITECTURAL_RENAISSANCE]: new Event({
+    name: EventName.SPECIAL_ARCHITECTURAL_RENAISSANCE,
+    type: EventType.SPECIAL,
+    baseVP: 5,
+    eventDescription: toGameText(["Add game text here"]),
+    expansion: ExpansionType.BELLFAIRE,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      // TODO: IMPLEMENT
+    },
+  }),
+  [EventName.SPECIAL_ARTS_AND_MUSIC_FESTIVAL]: new Event({
+    name: EventName.SPECIAL_ARTS_AND_MUSIC_FESTIVAL,
+    type: EventType.SPECIAL,
+    baseVP: 6,
+    eventDescription: toGameText(["Add game text here"]),
+    expansion: ExpansionType.BELLFAIRE,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      // TODO: IMPLEMENT
+    },
+  }),
+  [EventName.SPECIAL_BED_AND_BREAKFAST_GUILD]: new Event({
+    name: EventName.SPECIAL_BED_AND_BREAKFAST_GUILD,
+    type: EventType.SPECIAL,
+    baseVP: 5,
+    eventDescription: toGameText(["Add game text here"]),
+    expansion: ExpansionType.BELLFAIRE,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      // TODO: IMPLEMENT
+    },
+  }),
+  [EventName.SPECIAL_CITY_HOLIDAY]: new Event({
+    name: EventName.SPECIAL_CITY_HOLIDAY,
+    type: EventType.SPECIAL,
+    baseVP: 5,
+    eventDescription: toGameText(["Add game text here"]),
+    expansion: ExpansionType.BELLFAIRE,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      // TODO: IMPLEMENT
+    },
+  }),
+  [EventName.SPECIAL_GATHERING_OF_ELDERS]: new Event({
+    name: EventName.SPECIAL_GATHERING_OF_ELDERS,
+    type: EventType.SPECIAL,
+    baseVP: 5,
+    eventDescription: toGameText(["Add game text here"]),
+    expansion: ExpansionType.BELLFAIRE,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      // TODO: IMPLEMENT
+    },
+  }),
+  [EventName.SPECIAL_KINGS_ROAD_ESTABLISHED]: new Event({
+    name: EventName.SPECIAL_KINGS_ROAD_ESTABLISHED,
+    type: EventType.SPECIAL,
+    baseVP: 6,
+    eventDescription: toGameText(["Add game text here"]),
+    expansion: ExpansionType.BELLFAIRE,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      // TODO: IMPLEMENT
+    },
+  }),
+  [EventName.SPECIAL_PIE_EATING_CONTEST]: new Event({
+    name: EventName.SPECIAL_PIE_EATING_CONTEST,
+    type: EventType.SPECIAL,
+    baseVP: 6,
+    eventDescription: toGameText(["Add game text here"]),
+    expansion: ExpansionType.BELLFAIRE,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      // TODO: IMPLEMENT
+    },
+  }),
+  [EventName.SPECIAL_ROYAL_WEDDING]: new Event({
+    name: EventName.SPECIAL_ROYAL_WEDDING,
+    type: EventType.SPECIAL,
+    baseVP: 6,
+    eventDescription: toGameText(["Add game text here"]),
+    expansion: ExpansionType.BELLFAIRE,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      // TODO: IMPLEMENT
+    },
+  }),
+  [EventName.SPECIAL_STATUES_COMMISSIONED]: new Event({
+    name: EventName.SPECIAL_STATUES_COMMISSIONED,
+    type: EventType.SPECIAL,
+    baseVP: 6,
+    eventDescription: toGameText(["Add game text here"]),
+    expansion: ExpansionType.BELLFAIRE,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      // TODO: IMPLEMENT
+    },
+  }),
 };
 
 const baseGameSpecialEvents: EventName[] = [

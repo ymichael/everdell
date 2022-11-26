@@ -375,6 +375,28 @@ export enum EventName {
   WONDER_STARFALLS_FLAME = "Starfalls flame",
   WONDER_HOPEWATCH_GATE = "Hopewatch Gate",
   WONDER_MISTRISE_FOUNTAIN = "Mistrise Fountain",
+
+  // Newleaf events
+  SPECIAL_CITY_JUBILEE = "City Jubilee",
+  SPECIAL_EVER_WALL_TOWER_CONSTRUCTED = "Ever Wall Tower Constructed",
+  SPECIAL_GLOW_LIGHT_FESTIVAL = "Glow Light Festival",
+  SPECIAL_HOT_AIR_BALLOON_RACE = "Hot Air Balloon Race",
+  SPECIAL_JUNIPER_JIG_DANCE_CONTEST = "Juniper Jig Dance Contest",
+  SPECIAL_MAGIC_SNOW = "Magic Snow",
+  SPECIAL_ROYAL_TEA = "Royal Tea",
+  SPECIAL_STOCK_MARKET_BOOM = "Stock Market Boom",
+  SPECIAL_SUNFLOWER_PARADE = "Sunflower Parade",
+
+  // // Bellfaire events
+  SPECIAL_ARCHITECTURAL_RENAISSANCE = "Architectural Renaissance",
+  SPECIAL_ARTS_AND_MUSIC_FESTIVAL = "Arts and Music Festival",
+  SPECIAL_BED_AND_BREAKFAST_GUILD = "Bed and Breakfast Guild",
+  SPECIAL_CITY_HOLIDAY = "City Holiday",
+  SPECIAL_GATHERING_OF_ELDERS = "Gathering of Elders",
+  SPECIAL_KINGS_ROAD_ESTABLISHED = "King's Road Established",
+  SPECIAL_PIE_EATING_CONTEST = "Pie Eating Contest",
+  SPECIAL_ROYAL_WEDDING = "Royal Wedding",
+  SPECIAL_STATUES_COMMISSIONED = "Statues Commissioned",
 }
 
 export type LocationNameToPlayerIds = Partial<

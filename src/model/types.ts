@@ -789,12 +789,12 @@ export type RiverDestinationMapSpots = Record<
 
 export type TAssociatedCard =
   | {
-      type: "CARD",
-      cardName: CardName
-  }
+      type: "CARD";
+      cardName: CardName;
+    }
   | {
-      type: "GOLDEN_LEAF",
-      cardType: CardType | "ANY" | "UNIQUE" | "COMMON";
+      type: "GOLDEN_LEAF";
+      cardType: CardType | "UNIQUE" | "COMMON";
     }
   | { type: "ANY" }
-  | { type: "HUSBAND_WIFE" }
+  | { type: "HUSBAND_WIFE" };

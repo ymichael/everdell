@@ -46,6 +46,15 @@
   opacity: 0.3;
 }
 
+.associated_card_golden_leaf {
+  white-space: nowrap;
+}
+
+.color_associated_card_gold {
+  background: var(--color-vp);
+  color: var(--color-vp-text) !important;
+}
+
 .associated_card > span {
   border-radius: 5px 0 0 0;
   font-weight: var(--font-bold);

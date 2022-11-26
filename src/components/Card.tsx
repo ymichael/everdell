@@ -72,14 +72,25 @@ const getRarityLabel = (card: CardModel) => {
 
 // handle the farm and evertree
 const getAssociatedCard = (card: CardModel) => {
-  if (card.associatedCard.type === "CARD") {
-    return card.associatedCard.cardName;
-  } else if (card.associatedCard.type === "HUSBAND_WIFE") {
+  const associatedCard = card.associatedCard;
+  if (associatedCard.type === "CARD") {
+    return associatedCard.cardName;
+  } else if (associatedCard.type === "HUSBAND_WIFE") {
     return "Husband / Wife";
-  } else if (card.associatedCard.type === "ANY") {
+  } else if (associatedCard.type === "ANY") {
     return "Any";
+  } else if (associatedCard.type === "GOLDEN_LEAF") {
+    const textParts = toGameText([
+      "Any ",
+      associatedCard.cardType === "UNIQUE"
+        ? { type: "em", text: "Unique" }
+        : associatedCard.cardType === "COMMON"
+        ? { type: "em", text: "Common" }
+        : { type: "cardType", cardType: associatedCard.cardType },
+    ]);
+    return <Description textParts={textParts} />;
   } else {
-    return "TODO";
+    assertUnreachable(associatedCard);
   }
 };
 
@@ -137,13 +148,19 @@ const AssociatedCard = ({
       className={[
         styles.associated_card,
         usedForCritter && styles.associated_card_used,
+        card.associatedCard.type === "GOLDEN_LEAF" &&
+          styles.associated_card_golden_leaf,
       ]
         .filter(Boolean)
         .join(" ")}
     >
       <span
         className={
-          card.isCritter ? styles.color_associated_card_critter : colorClass
+          card.isCritter
+            ? styles.color_associated_card_critter
+            : card.associatedCard.type === "GOLDEN_LEAF"
+            ? styles.color_associated_card_gold
+            : colorClass
         }
       >
         {associatedCard}

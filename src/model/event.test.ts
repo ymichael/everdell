@@ -14,6 +14,7 @@ import {
   LocationName,
   CardType,
 } from "./types";
+import exp from "constants";
 
 const claimEventInput = (event: EventName): GameInputClaimEvent => {
   return {
@@ -5213,7 +5214,7 @@ describe("Event", () => {
       ).to.be(undefined);
     });
   });
-  describe.skip(EventName.SPECIAL_ARTS_AND_MUSIC_FESTIVAL, () => {
+  describe(EventName.SPECIAL_ARTS_AND_MUSIC_FESTIVAL, () => {
     beforeEach(() => {
       gameState = testInitialGameState();
       player = gameState.getActivePlayer();
@@ -5225,6 +5226,15 @@ describe("Event", () => {
       const event = Event.fromName(EventName.SPECIAL_ARTS_AND_MUSIC_FESTIVAL);
       const gameInput = claimEventInput(event.name);
 
+      player.addToCityMulti(gameState, [
+        CardName.INN,
+        CardName.INN,
+        CardName.LOOKOUT,
+        CardName.POST_OFFICE,
+      ]);
+
+      player.gainResources(gameState, { [ResourceType.RESIN]: 3 });
+
       expect(
         player.getClaimedEvent(EventName.SPECIAL_ARTS_AND_MUSIC_FESTIVAL)
       ).to.be(undefined);
@@ -5232,7 +5242,8 @@ describe("Event", () => {
       [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
 
       expect(player.getClaimedEvent(EventName.SPECIAL_ARTS_AND_MUSIC_FESTIVAL));
-      // expect(player.getPointsFromEvents(gameState)).to.be(5);
+      expect(player.getPointsFromEvents(gameState)).to.be(6);
+      expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
     });
     it("should not allow player to claim event if conditions not met", () => {
       const event = Event.fromName(EventName.SPECIAL_ARTS_AND_MUSIC_FESTIVAL);
@@ -5244,7 +5255,7 @@ describe("Event", () => {
 
       expect(() => {
         gameState.next(gameInput);
-      }).to.throwException(/Need at least 9 Critters/i);
+      }).to.throwException(/Need at least 4 DESTINATION/i);
       expect(
         player.getClaimedEvent(EventName.SPECIAL_ARTS_AND_MUSIC_FESTIVAL)
       ).to.be(undefined);

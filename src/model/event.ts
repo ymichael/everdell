@@ -2975,7 +2975,16 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       return null;
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      // TODO: IMPLEMENT
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
+        player.spendResources({ [ResourceType.RESIN]: 2 });
+        gameState.addGameLogFromEvent(
+          EventName.SPECIAL_ARTS_AND_MUSIC_FESTIVAL,
+          [player, ` spent 2 RESIN to claim this event.`]
+        );
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
+      }
     },
   }),
   [EventName.SPECIAL_BED_AND_BREAKFAST_GUILD]: new Event({

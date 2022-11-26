@@ -1105,9 +1105,10 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
   }),
   [LocationName.FOREST_TWO_TWIG_ONE_RESIN]: new Location({
     name: LocationName.FOREST_TWO_TWIG_ONE_RESIN,
-    shortName: toGameText(["TWIG", "TWIG", "RESIIN"]),
+    shortName: toGameText(["TWIG", "TWIG", "RESIN"]),
     type: LocationType.FOREST,
     occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
+    expansion: ExpansionType.NEWLEAF,
     resourcesToGain: {
       [ResourceType.TWIG]: 2,
       [ResourceType.RESIN]: 1,
@@ -1119,6 +1120,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     shortName: toGameText(["TWIG", "TWIG", "RESIIN"]),
     type: LocationType.FOREST,
     occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
+    expansion: ExpansionType.NEWLEAF,
     resourcesToGain: {
       [ResourceType.TWIG]: 2,
       [ResourceType.RESIN]: 1,
@@ -1132,7 +1134,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
     shortName: toGameText("Activate 2 PRODUCTION in your city"),
     resourcesToGain: {},
-    expansion: ExpansionType.PEARLBROOK,
+    expansion: ExpansionType.BELLFAIRE,
     canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.PLACE_WORKER) {
@@ -1204,28 +1206,93 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     shortName: toGameText(["RESIN", "RESIN", "RESIN"]),
     type: LocationType.FOREST,
     occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
+    expansion: ExpansionType.BELLFAIRE,
     resourcesToGain: {
       [ResourceType.RESIN]: 3,
     },
   }),
-  // TODO: implement
   [LocationName.FOREST_TWO_RESIN_OR_TWO_BERRY]: new Location({
     name: LocationName.FOREST_TWO_RESIN_OR_TWO_BERRY,
-    shortName: toGameText(["TWIG", "TWIG", "TWIG", "TWIG"]),
+    shortName: toGameText(["2 RESIN or 2 BERRY"]),
     type: LocationType.FOREST,
     occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
-    resourcesToGain: {
-      [ResourceType.TWIG]: 4,
+    expansion: ExpansionType.BELLFAIRE,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.PLACE_WORKER) {
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_OPTION_GENERIC,
+          prevInputType: gameInput.inputType,
+          locationContext: LocationName.FOREST_TWO_RESIN_OR_TWO_BERRY,
+          label: "Choose one",
+          options: ["2 RESIN", "2 BERRY"],
+          clientOptions: {
+            selectedOption: null,
+          },
+        });
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_OPTION_GENERIC &&
+        gameInput.locationContext === LocationName.FOREST_TWO_RESIN_OR_TWO_BERRY
+      ) {
+        const selectedOption = gameInput.clientOptions.selectedOption;
+        if (
+          !selectedOption ||
+          gameInput.options.indexOf(selectedOption) === -1
+        ) {
+          throw new Error("Please selected an option");
+        }
+        if (selectedOption === "2 RESIN") {
+          gameState.addGameLogFromLocation(
+            LocationName.FOREST_TWO_RESIN_OR_TWO_BERRY,
+            [player, ` gained 2 RESIN.`]
+          );
+          player.gainResources(gameState, { [ResourceType.RESIN]: 2 });
+        } else if (selectedOption === "2 BERRY") {
+          player.gainResources(gameState, {
+            [ResourceType.BERRY]: 2,
+          });
+          gameState.addGameLogFromLocation(
+            LocationName.FOREST_TWO_RESIN_OR_TWO_BERRY,
+            [player, ` gained 2 BERRY.`]
+          );
+        }
+      }
     },
   }),
-  //TODO: implement
   [LocationName.FOREST_PAY_THREE_TWIG_GAIN_THREE_ANY]: new Location({
     name: LocationName.FOREST_PAY_THREE_TWIG_GAIN_THREE_ANY,
-    shortName: toGameText(["TWIG", "TWIG", "TWIG", "TWIG"]),
+    shortName: toGameText(["Pay 3 TWIG to gain 3 ANY"]),
     type: LocationType.FOREST,
     occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
-    resourcesToGain: {
-      [ResourceType.TWIG]: 4,
+    expansion: ExpansionType.BELLFAIRE,
+    canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.PLACE_WORKER) {
+        if (player.getNumResourcesByType(ResourceType.TWIG) < 3) {
+          return "Must be able to play 3 TWIG to visit this location";
+        }
+      }
+      return null;
+    },
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+
+      const gainAnyHelper = new GainMoreThan1AnyResource({
+        locationContext: LocationName.FOREST_PAY_THREE_TWIG_GAIN_THREE_ANY,
+      });
+      if (gameInput.inputType === GameInputType.PLACE_WORKER) {
+        player.spendResources({ [ResourceType.TWIG]: 3 });
+        // ask the player what resources they want to gain
+        gameState.pendingGameInputs.push(
+          gainAnyHelper.getGameInput(3, {
+            prevInputType: GameInputType.PLACE_WORKER,
+          })
+        );
+      } else if (gainAnyHelper.matchesGameInput(gameInput)) {
+        gainAnyHelper.play(gameState, gameInput);
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
+      }
     },
   }),
 };

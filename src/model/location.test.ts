@@ -637,6 +637,46 @@ describe("Location", () => {
     });
   });
 
+  describe.only(LocationName.FOREST_PAY_THREE_TWIG_GAIN_THREE_ANY, () => {
+    const name = LocationName.FOREST_PAY_THREE_TWIG_GAIN_THREE_ANY;
+    it("should allow player to pay 3 TWIG to gain 2 ANY", () => {
+      gameState.locationsMap[name] = [];
+      player.gainResources(gameState, { [ResourceType.TWIG]: 3 });
+      expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(3);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        placeWorkerInput(name),
+        {
+          inputType: GameInputType.SELECT_RESOURCES,
+          toSpend: false,
+          prevInputType: GameInputType.PLACE_WORKER,
+          locationContext: LocationName.FOREST_PAY_THREE_TWIG_GAIN_THREE_ANY,
+          maxResources: 3,
+          minResources: 3,
+          clientOptions: {
+            resources: {
+              [ResourceType.TWIG]: 1,
+              [ResourceType.RESIN]: 1,
+              [ResourceType.PEBBLE]: 1,
+            },
+          },
+        },
+      ]);
+
+      expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
+    });
+
+    it("should not allow player to visit if they don't have 3 TWIG", () => {
+      gameState.locationsMap[name] = [];
+
+      expect(() => {
+        gameState.next(placeWorkerInput(name));
+      }).to.throwException(/Must be able to play 3 TWIG/i);
+    });
+  });
+
   describe("FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS", () => {
     it("player can visit FOREST_DRAW_TWO_MEADOW_PLAY_ONE_FOR_ONE_LESS (only one playable card)", () => {
       const meadow = [

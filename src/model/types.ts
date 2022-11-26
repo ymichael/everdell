@@ -515,6 +515,32 @@ export enum CardName {
   PIRATE = "Pirate",
   PIRATE_SHIP = "Pirate Ship",
   SHIPWRIGHT = "Shipwright",
+
+  // Newleaf
+  AIR_BALLOON = "Air Balloon",
+  BAKER = "Baker",
+  BANK = "Bank",
+  CHIPSMITH = "Chipsmith",
+  CITY_HALL = "City Hall",
+  CONDUCTOR = "Conductor",
+  DIPLOMAT = "Diplomat",
+  EVER_WALL = "Ever Wall",
+  FREIGHT_CAR = "Freight_car",
+  GARDENER = "Gardener",
+  GREENHOUSE = "Greenhouse",
+  HOTEL = "Hotel",
+  INVENTOR = "Inventor",
+  LAMPLIGHTER = "Lamplighter",
+  LIBRARY = "Library",
+  LOCOMOTIVE = "Locomotive",
+  MAGICIAN = "Magician",
+  MAIN_ROAD = "Main Road",
+  MAYOR = "Mayor",
+  MILLER = "Miller",
+  MUSEUM = "Museum",
+  PHOTOGRAPHER = "Photographer",
+  POET = "Poet",
+  TEA_HOUSE = "Tea House",
 }
 
 export enum ResourceType {

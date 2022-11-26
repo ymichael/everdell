@@ -3409,7 +3409,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
   }),
 
   /**
-   * WIP: Pearlbrook Cards
+   * Pearlbrook Cards
    */
   [CardName.BRIDGE]: new Card({
     expansion: ExpansionType.PEARLBROOK,
@@ -3975,6 +3975,514 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           " gained 2 VP.",
         ]);
       }
+    },
+  }),
+
+  /**
+   * Newleaf Cards
+   */
+  [CardName.AIR_BALLOON]: new Card({
+    expansion: ExpansionType.NEWLEAF,
+    name: CardName.AIR_BALLOON,
+    associatedCard: null,
+    cardType: CardType.PRODUCTION,
+    cardDescription: toGameText("TODO"),
+    isConstruction: false,
+    isUnique: false,
+    baseVP: 0,
+    numInDeck: 0,
+    resourcesToGain: {},
+    baseCost: {
+      [ResourceType.BERRY]: 0,
+      [ResourceType.TWIG]: 0,
+      [ResourceType.PEBBLE]: 0,
+      [ResourceType.RESIN]: 0,
+    },
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
+    },
+  }),
+  [CardName.BAKER]: new Card({
+    expansion: ExpansionType.NEWLEAF,
+    name: CardName.BAKER,
+    associatedCard: null,
+    cardType: CardType.PRODUCTION,
+    cardDescription: toGameText("TODO"),
+    isConstruction: false,
+    isUnique: false,
+    baseVP: 0,
+    numInDeck: 0,
+    resourcesToGain: {},
+    baseCost: {
+      [ResourceType.BERRY]: 0,
+      [ResourceType.TWIG]: 0,
+      [ResourceType.PEBBLE]: 0,
+      [ResourceType.RESIN]: 0,
+    },
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
+    },
+  }),
+  [CardName.BANK]: new Card({
+    expansion: ExpansionType.NEWLEAF,
+    name: CardName.BANK,
+    associatedCard: null,
+    cardType: CardType.PRODUCTION,
+    cardDescription: toGameText("TODO"),
+    isConstruction: false,
+    isUnique: false,
+    baseVP: 0,
+    numInDeck: 0,
+    resourcesToGain: {},
+    baseCost: {
+      [ResourceType.BERRY]: 0,
+      [ResourceType.TWIG]: 0,
+      [ResourceType.PEBBLE]: 0,
+      [ResourceType.RESIN]: 0,
+    },
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
+    },
+  }),
+  [CardName.CHIPSMITH]: new Card({
+    expansion: ExpansionType.NEWLEAF,
+    name: CardName.CHIPSMITH,
+    associatedCard: null,
+    cardType: CardType.PRODUCTION,
+    cardDescription: toGameText("TODO"),
+    isConstruction: false,
+    isUnique: false,
+    baseVP: 0,
+    numInDeck: 0,
+    resourcesToGain: {},
+    baseCost: {
+      [ResourceType.BERRY]: 0,
+      [ResourceType.TWIG]: 0,
+      [ResourceType.PEBBLE]: 0,
+      [ResourceType.RESIN]: 0,
+    },
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
+    },
+  }),
+  [CardName.CITY_HALL]: new Card({
+    expansion: ExpansionType.NEWLEAF,
+    name: CardName.CITY_HALL,
+    associatedCard: null,
+    cardType: CardType.PRODUCTION,
+    cardDescription: toGameText("TODO"),
+    isConstruction: false,
+    isUnique: false,
+    baseVP: 0,
+    numInDeck: 0,
+    resourcesToGain: {},
+    baseCost: {
+      [ResourceType.BERRY]: 0,
+      [ResourceType.TWIG]: 0,
+      [ResourceType.PEBBLE]: 0,
+      [ResourceType.RESIN]: 0,
+    },
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
+    },
+  }),
+  [CardName.CONDUCTOR]: new Card({
+    expansion: ExpansionType.NEWLEAF,
+    name: CardName.CONDUCTOR,
+    associatedCard: null,
+    cardType: CardType.PRODUCTION,
+    cardDescription: toGameText("TODO"),
+    isConstruction: false,
+    isUnique: false,
+    baseVP: 0,
+    numInDeck: 0,
+    resourcesToGain: {},
+    baseCost: {
+      [ResourceType.BERRY]: 0,
+      [ResourceType.TWIG]: 0,
+      [ResourceType.PEBBLE]: 0,
+      [ResourceType.RESIN]: 0,
+    },
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
+    },
+  }),
+  [CardName.DIPLOMAT]: new Card({
+    expansion: ExpansionType.NEWLEAF,
+    name: CardName.DIPLOMAT,
+    associatedCard: null,
+    cardType: CardType.PRODUCTION,
+    cardDescription: toGameText("TODO"),
+    isConstruction: false,
+    isUnique: false,
+    baseVP: 0,
+    numInDeck: 0,
+    resourcesToGain: {},
+    baseCost: {
+      [ResourceType.BERRY]: 0,
+      [ResourceType.TWIG]: 0,
+      [ResourceType.PEBBLE]: 0,
+      [ResourceType.RESIN]: 0,
+    },
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
+    },
+  }),
+  [CardName.EVER_WALL]: new Card({
+    expansion: ExpansionType.NEWLEAF,
+    name: CardName.EVER_WALL,
+    associatedCard: null,
+    cardType: CardType.PRODUCTION,
+    cardDescription: toGameText("TODO"),
+    isConstruction: false,
+    isUnique: false,
+    baseVP: 0,
+    numInDeck: 0,
+    resourcesToGain: {},
+    baseCost: {
+      [ResourceType.BERRY]: 0,
+      [ResourceType.TWIG]: 0,
+      [ResourceType.PEBBLE]: 0,
+      [ResourceType.RESIN]: 0,
+    },
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
+    },
+  }),
+  [CardName.FREIGHT_CAR]: new Card({
+    expansion: ExpansionType.NEWLEAF,
+    name: CardName.FREIGHT_CAR,
+    associatedCard: null,
+    cardType: CardType.PRODUCTION,
+    cardDescription: toGameText("TODO"),
+    isConstruction: false,
+    isUnique: false,
+    baseVP: 0,
+    numInDeck: 0,
+    resourcesToGain: {},
+    baseCost: {
+      [ResourceType.BERRY]: 0,
+      [ResourceType.TWIG]: 0,
+      [ResourceType.PEBBLE]: 0,
+      [ResourceType.RESIN]: 0,
+    },
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
+    },
+  }),
+  [CardName.GARDENER]: new Card({
+    expansion: ExpansionType.NEWLEAF,
+    name: CardName.GARDENER,
+    associatedCard: null,
+    cardType: CardType.PRODUCTION,
+    cardDescription: toGameText("TODO"),
+    isConstruction: false,
+    isUnique: false,
+    baseVP: 0,
+    numInDeck: 0,
+    resourcesToGain: {},
+    baseCost: {
+      [ResourceType.BERRY]: 0,
+      [ResourceType.TWIG]: 0,
+      [ResourceType.PEBBLE]: 0,
+      [ResourceType.RESIN]: 0,
+    },
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
+    },
+  }),
+  [CardName.GREENHOUSE]: new Card({
+    expansion: ExpansionType.NEWLEAF,
+    name: CardName.GREENHOUSE,
+    associatedCard: null,
+    cardType: CardType.PRODUCTION,
+    cardDescription: toGameText("TODO"),
+    isConstruction: false,
+    isUnique: false,
+    baseVP: 0,
+    numInDeck: 0,
+    resourcesToGain: {},
+    baseCost: {
+      [ResourceType.BERRY]: 0,
+      [ResourceType.TWIG]: 0,
+      [ResourceType.PEBBLE]: 0,
+      [ResourceType.RESIN]: 0,
+    },
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
+    },
+  }),
+  [CardName.HOTEL]: new Card({
+    expansion: ExpansionType.NEWLEAF,
+    name: CardName.HOTEL,
+    associatedCard: null,
+    cardType: CardType.PRODUCTION,
+    cardDescription: toGameText("TODO"),
+    isConstruction: false,
+    isUnique: false,
+    baseVP: 0,
+    numInDeck: 0,
+    resourcesToGain: {},
+    baseCost: {
+      [ResourceType.BERRY]: 0,
+      [ResourceType.TWIG]: 0,
+      [ResourceType.PEBBLE]: 0,
+      [ResourceType.RESIN]: 0,
+    },
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
+    },
+  }),
+  [CardName.INVENTOR]: new Card({
+    expansion: ExpansionType.NEWLEAF,
+    name: CardName.INVENTOR,
+    associatedCard: null,
+    cardType: CardType.PRODUCTION,
+    cardDescription: toGameText("TODO"),
+    isConstruction: false,
+    isUnique: false,
+    baseVP: 0,
+    numInDeck: 0,
+    resourcesToGain: {},
+    baseCost: {
+      [ResourceType.BERRY]: 0,
+      [ResourceType.TWIG]: 0,
+      [ResourceType.PEBBLE]: 0,
+      [ResourceType.RESIN]: 0,
+    },
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
+    },
+  }),
+  [CardName.LAMPLIGHTER]: new Card({
+    expansion: ExpansionType.NEWLEAF,
+    name: CardName.LAMPLIGHTER,
+    associatedCard: null,
+    cardType: CardType.PRODUCTION,
+    cardDescription: toGameText("TODO"),
+    isConstruction: false,
+    isUnique: false,
+    baseVP: 0,
+    numInDeck: 0,
+    resourcesToGain: {},
+    baseCost: {
+      [ResourceType.BERRY]: 0,
+      [ResourceType.TWIG]: 0,
+      [ResourceType.PEBBLE]: 0,
+      [ResourceType.RESIN]: 0,
+    },
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
+    },
+  }),
+  [CardName.LIBRARY]: new Card({
+    expansion: ExpansionType.NEWLEAF,
+    name: CardName.LIBRARY,
+    associatedCard: null,
+    cardType: CardType.PRODUCTION,
+    cardDescription: toGameText("TODO"),
+    isConstruction: false,
+    isUnique: false,
+    baseVP: 0,
+    numInDeck: 0,
+    resourcesToGain: {},
+    baseCost: {
+      [ResourceType.BERRY]: 0,
+      [ResourceType.TWIG]: 0,
+      [ResourceType.PEBBLE]: 0,
+      [ResourceType.RESIN]: 0,
+    },
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
+    },
+  }),
+  [CardName.LOCOMOTIVE]: new Card({
+    expansion: ExpansionType.NEWLEAF,
+    name: CardName.LOCOMOTIVE,
+    associatedCard: null,
+    cardType: CardType.PRODUCTION,
+    cardDescription: toGameText("TODO"),
+    isConstruction: false,
+    isUnique: false,
+    baseVP: 0,
+    numInDeck: 0,
+    resourcesToGain: {},
+    baseCost: {
+      [ResourceType.BERRY]: 0,
+      [ResourceType.TWIG]: 0,
+      [ResourceType.PEBBLE]: 0,
+      [ResourceType.RESIN]: 0,
+    },
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
+    },
+  }),
+  [CardName.MAGICIAN]: new Card({
+    expansion: ExpansionType.NEWLEAF,
+    name: CardName.MAGICIAN,
+    associatedCard: null,
+    cardType: CardType.PRODUCTION,
+    cardDescription: toGameText("TODO"),
+    isConstruction: false,
+    isUnique: false,
+    baseVP: 0,
+    numInDeck: 0,
+    resourcesToGain: {},
+    baseCost: {
+      [ResourceType.BERRY]: 0,
+      [ResourceType.TWIG]: 0,
+      [ResourceType.PEBBLE]: 0,
+      [ResourceType.RESIN]: 0,
+    },
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
+    },
+  }),
+  [CardName.MAIN_ROAD]: new Card({
+    expansion: ExpansionType.NEWLEAF,
+    name: CardName.MAIN_ROAD,
+    associatedCard: null,
+    cardType: CardType.PRODUCTION,
+    cardDescription: toGameText("TODO"),
+    isConstruction: false,
+    isUnique: false,
+    baseVP: 0,
+    numInDeck: 0,
+    resourcesToGain: {},
+    baseCost: {
+      [ResourceType.BERRY]: 0,
+      [ResourceType.TWIG]: 0,
+      [ResourceType.PEBBLE]: 0,
+      [ResourceType.RESIN]: 0,
+    },
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
+    },
+  }),
+  [CardName.MAYOR]: new Card({
+    expansion: ExpansionType.NEWLEAF,
+    name: CardName.MAYOR,
+    associatedCard: null,
+    cardType: CardType.PRODUCTION,
+    cardDescription: toGameText("TODO"),
+    isConstruction: false,
+    isUnique: false,
+    baseVP: 0,
+    numInDeck: 0,
+    resourcesToGain: {},
+    baseCost: {
+      [ResourceType.BERRY]: 0,
+      [ResourceType.TWIG]: 0,
+      [ResourceType.PEBBLE]: 0,
+      [ResourceType.RESIN]: 0,
+    },
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
+    },
+  }),
+  [CardName.MILLER]: new Card({
+    expansion: ExpansionType.NEWLEAF,
+    name: CardName.MILLER,
+    associatedCard: null,
+    cardType: CardType.PRODUCTION,
+    cardDescription: toGameText("TODO"),
+    isConstruction: false,
+    isUnique: false,
+    baseVP: 0,
+    numInDeck: 0,
+    resourcesToGain: {},
+    baseCost: {
+      [ResourceType.BERRY]: 0,
+      [ResourceType.TWIG]: 0,
+      [ResourceType.PEBBLE]: 0,
+      [ResourceType.RESIN]: 0,
+    },
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
+    },
+  }),
+  [CardName.MUSEUM]: new Card({
+    expansion: ExpansionType.NEWLEAF,
+    name: CardName.MUSEUM,
+    associatedCard: null,
+    cardType: CardType.PRODUCTION,
+    cardDescription: toGameText("TODO"),
+    isConstruction: false,
+    isUnique: false,
+    baseVP: 0,
+    numInDeck: 0,
+    resourcesToGain: {},
+    baseCost: {
+      [ResourceType.BERRY]: 0,
+      [ResourceType.TWIG]: 0,
+      [ResourceType.PEBBLE]: 0,
+      [ResourceType.RESIN]: 0,
+    },
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
+    },
+  }),
+  [CardName.PHOTOGRAPHER]: new Card({
+    expansion: ExpansionType.NEWLEAF,
+    name: CardName.PHOTOGRAPHER,
+    associatedCard: null,
+    cardType: CardType.PRODUCTION,
+    cardDescription: toGameText("TODO"),
+    isConstruction: false,
+    isUnique: false,
+    baseVP: 0,
+    numInDeck: 0,
+    resourcesToGain: {},
+    baseCost: {
+      [ResourceType.BERRY]: 0,
+      [ResourceType.TWIG]: 0,
+      [ResourceType.PEBBLE]: 0,
+      [ResourceType.RESIN]: 0,
+    },
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
+    },
+  }),
+  [CardName.POET]: new Card({
+    expansion: ExpansionType.NEWLEAF,
+    name: CardName.POET,
+    associatedCard: null,
+    cardType: CardType.PRODUCTION,
+    cardDescription: toGameText("TODO"),
+    isConstruction: false,
+    isUnique: false,
+    baseVP: 0,
+    numInDeck: 0,
+    resourcesToGain: {},
+    baseCost: {
+      [ResourceType.BERRY]: 0,
+      [ResourceType.TWIG]: 0,
+      [ResourceType.PEBBLE]: 0,
+      [ResourceType.RESIN]: 0,
+    },
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
+    },
+  }),
+  [CardName.TEA_HOUSE]: new Card({
+    expansion: ExpansionType.NEWLEAF,
+    name: CardName.TEA_HOUSE,
+    associatedCard: null,
+    cardType: CardType.PRODUCTION,
+    cardDescription: toGameText("TODO"),
+    isConstruction: false,
+    isUnique: false,
+    baseVP: 0,
+    numInDeck: 0,
+    resourcesToGain: {},
+    baseCost: {
+      [ResourceType.BERRY]: 0,
+      [ResourceType.TWIG]: 0,
+      [ResourceType.PEBBLE]: 0,
+      [ResourceType.RESIN]: 0,
+    },
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      throw new Error("Not Implemented");
     },
   }),
 };

@@ -65,22 +65,25 @@ type ProductionWillActivateInnerFn = (
 ) => boolean;
 
 const openDestinationGameText: GameText = toGameText([
-  { type: 'iblock', text: toGameText([
-    "Other players may visit this card. Owner gains ",
-    { type: "points", value: 1 },
-    " when other players visit this card.",
-  ])}
+  {
+    type: "iblock",
+    text: toGameText([
+      "Other players may visit this card. Owner gains ",
+      { type: "points", value: 1 },
+      " when other players visit this card.",
+    ]),
+  },
 ]);
 
 const CARD_PLAYING_DISCLAIMER = toGameText([
   { type: "i", text: "May not be used with any other card-playing ability." },
   { type: "BR" },
-])
+]);
 
 const DOES_NOT_TAKE_UP_SPACE = toGameText([
-  { type: 'i', text: "Does not take up a space in your city." },
+  { type: "i", text: "Does not take up a space in your city." },
   { type: "BR" },
-])
+]);
 
 export class Card<TCardType extends CardType = CardType>
   implements GameStatePlayable, IGameTextEntity {
@@ -625,12 +628,15 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       "Reveal 4 CARD from the deck or discard pile and play 1 for free. ",
       "Discard the others.",
       { type: "HR" },
-      { type: "iblock", text: toGameText([
-        "Worker stays here permanently. Unlock second ",
-        { type: "entity", entityType: "card", card: CardName.CEMETARY },
-        " spot by playing ",
-        { type: "entity", entityType: "card", card: CardName.UNDERTAKER },
-      ])}
+      {
+        type: "iblock",
+        text: toGameText([
+          "Worker stays here permanently. Unlock second ",
+          { type: "entity", entityType: "card", card: CardName.CEMETARY },
+          " spot by playing ",
+          { type: "entity", entityType: "card", card: CardName.UNDERTAKER },
+        ]),
+      },
     ]),
     maxWorkerSpots: 2,
     numWorkersForPlayerInner: (cardOwner: Player) => {
@@ -1070,12 +1076,15 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       { type: "entity", entityType: "card", card: CardName.DUNGEON },
       " to decrease the cost by 3 ANY.",
       { type: "HR" },
-      { type: "iblock", text: toGameText([
-        " Unlock second ",
-        { type: "entity", entityType: "card", card: CardName.DUNGEON },
-        " spot by playing ",
-        { type: "entity", entityType: "card", card: CardName.RANGER },
-      ])}
+      {
+        type: "iblock",
+        text: toGameText([
+          " Unlock second ",
+          { type: "entity", entityType: "card", card: CardName.DUNGEON },
+          " spot by playing ",
+          { type: "entity", entityType: "card", card: CardName.RANGER },
+        ]),
+      },
     ]),
     playedCardInfoDefault: {
       pairedCards: [],
@@ -1789,12 +1798,15 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     cardDescription: toGameText([
       "Give 2 ANY to an opponent and gain 4 VP.",
       { type: "HR" },
-      { type: "iblock", text: toGameText([
-        "Worker stays here permanently. Unlock second ",
-        { type: "entity", entityType: "card", card: CardName.MONASTERY },
-        " spot by playing ",
-        { type: "entity", entityType: "card", card: CardName.MONK },
-      ])}
+      {
+        type: "iblock",
+        text: toGameText([
+          "Worker stays here permanently. Unlock second ",
+          { type: "entity", entityType: "card", card: CardName.MONASTERY },
+          " spot by playing ",
+          { type: "entity", entityType: "card", card: CardName.MONK },
+        ]),
+      },
     ]),
     maxWorkerSpots: 2,
     numWorkersForPlayerInner: (cardOwner: Player) => {
@@ -1931,11 +1943,14 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     cardDescription: toGameText([
       "You may give up to 2 BERRY to an opponent to gain 2 VP each.",
       { type: "HR" },
-      { type: "iblock", text: toGameText([
-        "Unlocks second ",
-        { type: "entity", entityType: "card", card: CardName.MONASTERY },
-        ".",
-      ])}
+      {
+        type: "iblock",
+        text: toGameText([
+          "Unlocks second ",
+          { type: "entity", entityType: "card", card: CardName.MONASTERY },
+          ".",
+        ]),
+      },
     ]),
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
@@ -2505,11 +2520,14 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     cardDescription: toGameText([
       "Move 1 of your deployed workers to a new location.",
       { type: "HR" },
-      { type: "iblock", text: toGameText([
-        "Unlocks second ",
-        { type: "entity", entityType: "card", card: CardName.DUNGEON },
-        ".",
-      ])}
+      {
+        type: "iblock",
+        text: toGameText([
+          "Unlocks second ",
+          { type: "entity", entityType: "card", card: CardName.DUNGEON },
+          ".",
+        ]),
+      },
     ]),
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
@@ -2771,9 +2789,12 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       { type: "entity", entityType: "card", card: CardName.CHAPEL },
       ".",
       { type: "HR" },
-      { type: "iblock", text: toGameText([
-        "If paying for card with resources, pay resources to an opponent.",
-      ]) }
+      {
+        type: "iblock",
+        text: toGameText([
+          "If paying for card with resources, pay resources to an opponent.",
+        ]),
+      },
     ]),
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
@@ -2953,9 +2974,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     associatedCard: CardName.WOODCARVER,
     resourcesToGain: {},
     cardDescription: toGameText([
-      { type: "iblock", text: toGameText([
-        "Place worker: Take all resources on this card.",
-      ])},
+      {
+        type: "iblock",
+        text: toGameText(["Place worker: Take all resources on this card."]),
+      },
       { type: "HR" },
       "Place either 3 TWIG, 2 RESIN, 1 PEBBLE or 2 BERRY on this ",
       { type: "entity", entityType: "card", card: CardName.STOREHOUSE },
@@ -3206,11 +3228,14 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     cardDescription: toGameText([
       "Discard 3 CARD from the Meadow, replenish, then draw 1 CARD from the Meadow.",
       { type: "HR" },
-      { type: "iblock", text: toGameText([
-      "Unlocks second ",
-      { type: "entity", entityType: "card", card: CardName.CEMETARY },
-      ".",
-      ])}
+      {
+        type: "iblock",
+        text: toGameText([
+          "Unlocks second ",
+          { type: "entity", entityType: "card", card: CardName.CEMETARY },
+          ".",
+        ]),
+      },
     ]),
     // Discard 3 meadow, replace, draw 1 meadow
     playInner: (gameState: GameState, gameInput: GameInput) => {
@@ -3390,10 +3415,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     isConstruction: false,
     associatedCard: CardName.LOOKOUT,
-    cardDescription: toGameText([
-      ...DOES_NOT_TAKE_UP_SPACE,
-      "Draw 3 CARD.",
-    ]),
+    cardDescription: toGameText([...DOES_NOT_TAKE_UP_SPACE, "Draw 3 CARD."]),
     resourcesToGain: {
       CARD: 3,
     },
@@ -3523,11 +3545,14 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     cardDescription: toGameText([
       "Draw 1 CARD and gain 1 VP",
       { type: "HR" },
-      { type: 'iblock', text: toGameText([
-      "Must share a space with a Construction.",
-      { type: "BR" },
-      "When visiting a River Destination, this Messenger is considered the same color as the shared Construction.",
-      ])}
+      {
+        type: "iblock",
+        text: toGameText([
+          "Must share a space with a Construction.",
+          { type: "BR" },
+          "When visiting a River Destination, this Messenger is considered the same color as the shared Construction.",
+        ]),
+      },
     ]),
     baseVP: 0,
     numInDeck: 3,
@@ -4161,8 +4186,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     cardType: CardType.GOVERNANCE,
     cardDescription: toGameText([
       "After you play a ",
-      { type: 'em', text: "Critter"},
-      ", you may give an opponent 1 CARD to gain 1 VP and draw 1 CARD."
+      { type: "em", text: "Critter" },
+      ", you may give an opponent 1 CARD to gain 1 VP and draw 1 CARD.",
     ]),
     isConstruction: false,
     isUnique: true,
@@ -4186,7 +4211,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       { type: "BR" },
       { type: "points", value: 2 },
       { type: "BR" },
-      "for every 5 spaces you have filled in your city."
+      "for every 5 spaces you have filled in your city.",
     ]),
     isConstruction: true,
     isUnique: true,
@@ -4208,9 +4233,14 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     associatedCard: null,
     cardType: CardType.PRODUCTION,
     cardDescription: toGameText([
-      { type: "iblock", text: toGameText("When played, place 2 TWIG, 2 RESIN, 2 PEBBLE, 2 BERRY here from the supply") },
+      {
+        type: "iblock",
+        text: toGameText(
+          "When played, place 2 TWIG, 2 RESIN, 2 PEBBLE, 2 BERRY here from the supply"
+        ),
+      },
       { type: "BR" },
-      "Gain 2 resources from this Freight Car."
+      "Gain 2 resources from this Freight Car.",
     ]),
     isConstruction: true,
     isUnique: true,
@@ -4252,7 +4282,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     associatedCard: null,
     cardType: CardType.PRODUCTION,
     cardDescription: toGameText([
-      { type: "i", text: "May share a space with a Farm.", },
+      { type: "i", text: "May share a space with a Farm." },
       { type: "BR" },
       "Draw 1 CARD. ",
       "If sharing a space with a ",
@@ -4281,12 +4311,14 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       ...CARD_PLAYING_DISCLAIMER,
       "Play a Critter or Construction from your hard for 3 fewer ANY.",
       { type: "HR" },
-      { type: 'iblock', text: toGameText([
-
-      "Owner gains ",
-      { type: "points", value: 2 },
-      " when other players visit this card.",
-      ])}
+      {
+        type: "iblock",
+        text: toGameText([
+          "Owner gains ",
+          { type: "points", value: 2 },
+          " when other players visit this card.",
+        ]),
+      },
     ]),
     isConstruction: true,
     isUnique: false,

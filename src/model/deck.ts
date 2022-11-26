@@ -20,7 +20,7 @@ export const initialDeck = ({
       case ExpansionType.BELLFAIRE:
       case ExpansionType.SPIRECREST:
       case ExpansionType.MISTWOOD:
-        // TODO
+        // TODO: Support other expansions
         break;
       case ExpansionType.PEARLBROOK:
         if (pearlbrook) {

@@ -166,7 +166,7 @@ export class GainMoreThan1AnyResource extends GameInputMultiStepHelperBase {
       throw new Error("Invalid input");
     }
 
-    // TODO(michael): for some reason it is possible to get strings here.
+    // TODO(michael): For some reason it is possible to get strings here.
     // Cast them into numbers to the comparisons below work as expected
     const maxResources = +gameInput.maxResources;
     const minResources = +gameInput.minResources;

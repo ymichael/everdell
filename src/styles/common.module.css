@@ -18,6 +18,11 @@
   font-weight: var(--font-bold);
 }
 
+.i_part {
+  font-style: italic;
+  font-size: 0.8em;
+}
+
 .entity_part {
   border-bottom: solid 1px var(--text-color-light);
   font-weight: var(--font-bold);

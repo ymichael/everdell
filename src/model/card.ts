@@ -3991,7 +3991,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       { type: "BR" },
       "Activate it based on your city.",
       { type: "HR" },
-      "May not copy Fool, Main Road, Ruins, or Legendary.",
+      { type: "i", text: "May not copy Fool, Main Road, Ruins, or Legendary." },
     ]),
     isConstruction: true,
     isUnique: false,
@@ -4009,21 +4009,23 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     expansion: ExpansionType.NEWLEAF,
     name: CardName.BAKER,
     associatedCard: null,
-    cardType: CardType.PRODUCTION,
-    cardDescription: toGameText("TODO"),
+    cardType: CardType.PROSPERITY,
+    cardDescription: toGameText([
+      { type: "points", value: 2 },
+      "for each of your unused BERRY ",
+      { type: "BR" },
+      "to a maximum of 3.",
+    ]),
     isConstruction: false,
-    isUnique: false,
-    baseVP: 0,
-    numInDeck: 0,
+    isUnique: true,
+    baseVP: 2,
+    numInDeck: 2,
     resourcesToGain: {},
     baseCost: {
-      [ResourceType.BERRY]: 0,
-      [ResourceType.TWIG]: 0,
-      [ResourceType.PEBBLE]: 0,
-      [ResourceType.RESIN]: 0,
+      [ResourceType.BERRY]: 3,
     },
-    playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
+    pointsInner: (player) => {
+      return Math.max(player.getNumResourcesByType(ResourceType.BERRY), 3);
     },
   }),
   [CardName.BANK]: new Card({
@@ -4031,17 +4033,17 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     name: CardName.BANK,
     associatedCard: null,
     cardType: CardType.PRODUCTION,
-    cardDescription: toGameText("TODO"),
-    isConstruction: false,
-    isUnique: false,
-    baseVP: 0,
-    numInDeck: 0,
+    cardDescription: toGameText([
+      "Place 1 VP here. Increase your hand limit size by 1 CARD for each VP here.",
+    ]),
+    isConstruction: true,
+    isUnique: true,
+    baseVP: 2,
+    numInDeck: 2,
     resourcesToGain: {},
     baseCost: {
-      [ResourceType.BERRY]: 0,
-      [ResourceType.TWIG]: 0,
-      [ResourceType.PEBBLE]: 0,
-      [ResourceType.RESIN]: 0,
+      [ResourceType.PEBBLE]: 2,
+      [ResourceType.RESIN]: 2,
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       throw new Error("Not Implemented");
@@ -4051,18 +4053,18 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     expansion: ExpansionType.NEWLEAF,
     name: CardName.CHIPSMITH,
     associatedCard: null,
-    cardType: CardType.PRODUCTION,
-    cardDescription: toGameText("TODO"),
+    cardType: CardType.DESTINATION,
+    cardDescription: toGameText(
+      "Activate 2 different PRODUCTION in your city."
+    ),
     isConstruction: false,
     isUnique: false,
-    baseVP: 0,
-    numInDeck: 0,
+    baseVP: 1,
+    numInDeck: 3,
+    maxWorkerSpots: 1,
     resourcesToGain: {},
     baseCost: {
-      [ResourceType.BERRY]: 0,
-      [ResourceType.TWIG]: 0,
-      [ResourceType.PEBBLE]: 0,
-      [ResourceType.RESIN]: 0,
+      [ResourceType.BERRY]: 2,
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       throw new Error("Not Implemented");
@@ -4072,18 +4074,21 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     expansion: ExpansionType.NEWLEAF,
     name: CardName.CITY_HALL,
     associatedCard: null,
-    cardType: CardType.PRODUCTION,
-    cardDescription: toGameText("TODO"),
-    isConstruction: false,
-    isUnique: false,
-    baseVP: 0,
-    numInDeck: 0,
+    cardType: CardType.GOVERNANCE,
+    cardDescription: toGameText([
+      "After you play a ",
+      { type: "em", text: "Construction" },
+      ", you may give an opponent 1 CARD to gain 1 VP and draw 1 CARD."
+    ]),
+    isConstruction: true,
+    isUnique: true,
+    baseVP: 2,
+    numInDeck: 2,
     resourcesToGain: {},
     baseCost: {
-      [ResourceType.BERRY]: 0,
-      [ResourceType.TWIG]: 0,
-      [ResourceType.PEBBLE]: 0,
-      [ResourceType.RESIN]: 0,
+      [ResourceType.TWIG]: 2,
+      [ResourceType.PEBBLE]: 1,
+      [ResourceType.RESIN]: 1,
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       throw new Error("Not Implemented");
@@ -4093,11 +4098,14 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     expansion: ExpansionType.NEWLEAF,
     name: CardName.CONDUCTOR,
     associatedCard: null,
-    cardType: CardType.PRODUCTION,
-    cardDescription: toGameText("TODO"),
+    cardType: CardType.DESTINATION,
+    cardDescription: toGameText([
+      "Copy any DESTINATION in an opponent's city. Apply to your city. ",
+      { type: "i", text: "May not copy Cemetary, Chappel, Monastary, Pirate Ship, or Legendary."  },
+    ]),
     isConstruction: false,
-    isUnique: false,
-    baseVP: 0,
+    isUnique: true,
+    baseVP: 2,
     numInDeck: 0,
     resourcesToGain: {},
     baseCost: {

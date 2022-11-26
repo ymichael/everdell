@@ -921,6 +921,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     },
   }),
 
+  // pearlbrook
   [LocationName.FOREST_TWO_PEBBLE_ONE_CARD]: new Location({
     name: LocationName.FOREST_TWO_PEBBLE_ONE_CARD,
     type: LocationType.FOREST,
@@ -981,79 +982,6 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
             [player, ` gained 1 RESIN & 1 PEBBLE.`]
           );
         }
-      }
-    },
-  }),
-  [LocationName.FOREST_ACTIVATE_2_PRODUCTION]: new Location({
-    name: LocationName.FOREST_ACTIVATE_2_PRODUCTION,
-    type: LocationType.FOREST,
-    occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
-    shortName: toGameText("Activate 2 PRODUCTION in your city"),
-    resourcesToGain: {},
-    expansion: ExpansionType.PEARLBROOK,
-    canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
-      const player = gameState.getActivePlayer();
-      if (gameInput.inputType === GameInputType.PLACE_WORKER) {
-        const productionCards = onlyRelevantProductionCards(
-          gameState,
-          player.getAllPlayedCardsByType(CardType.PRODUCTION)
-        );
-        if (productionCards.length === 0) {
-          return "No useful production cards to activate.";
-        }
-      }
-      return null;
-    },
-    playInner: (gameState: GameState, gameInput: GameInput) => {
-      const player = gameState.getActivePlayer();
-      if (gameInput.inputType === GameInputType.PLACE_WORKER) {
-        const productionCards = onlyRelevantProductionCards(
-          gameState,
-          player.getAllPlayedCardsByType(CardType.PRODUCTION)
-        );
-        const numToActivate = Math.min(productionCards.length, 2);
-        gameState.pendingGameInputs.push({
-          inputType: GameInputType.SELECT_PLAYED_CARDS,
-          prevInputType: gameInput.inputType,
-          label: `Select ${numToActivate} PRODUCTION to activate`,
-          cardOptions: productionCards,
-          locationContext: LocationName.FOREST_ACTIVATE_2_PRODUCTION,
-          maxToSelect: numToActivate,
-          minToSelect: numToActivate,
-          clientOptions: {
-            selectedCards: [],
-          },
-        });
-      } else if (
-        gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS &&
-        gameInput.locationContext === LocationName.FOREST_ACTIVATE_2_PRODUCTION
-      ) {
-        const selectedCards = gameInput.clientOptions.selectedCards;
-        if (!selectedCards || selectedCards.length !== gameInput.minToSelect) {
-          throw new Error(`Please select ${gameInput.minToSelect} cards`);
-        }
-        gameState.addGameLogFromLocation(
-          LocationName.FOREST_ACTIVATE_2_PRODUCTION,
-          [
-            player,
-            " activated PRODUCTION on ",
-            ...cardListToGameText(
-              selectedCards.map(({ cardName }) => cardName)
-            ),
-            ".",
-          ]
-        );
-        selectedCards.forEach((selectedCard) => {
-          if (!gameInput.cardOptions.find((x) => isEqual(x, selectedCard))) {
-            throw new Error("Could not find selected card.");
-          }
-          Card.fromName(selectedCard.cardName).reactivateCard(
-            gameState,
-            gameInput,
-            gameState.getPlayer(selectedCard.cardOwnerId),
-            selectedCard
-          );
-        });
       }
     },
   }),
@@ -1164,6 +1092,142 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
       }
     },
   }),
+  // newleaf
+  [LocationName.FOREST_FOUR_TWIG]: new Location({
+    name: LocationName.FOREST_FOUR_TWIG,
+    type: LocationType.FOREST,
+    shortName: toGameText(["TWIG", "TWIG", "TWIG", "TWIG"]),
+    occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
+    expansion: ExpansionType.NEWLEAF,
+    resourcesToGain: {
+      [ResourceType.TWIG]: 4,
+    },
+  }),
+  [LocationName.FOREST_TWO_TWIG_ONE_RESIN]: new Location({
+    name: LocationName.FOREST_TWO_TWIG_ONE_RESIN,
+    shortName: toGameText(["TWIG", "TWIG", "RESIIN"]),
+    type: LocationType.FOREST,
+    occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
+    resourcesToGain: {
+      [ResourceType.TWIG]: 2,
+      [ResourceType.RESIN]: 1,
+    },
+  }),
+  // TODO: implement
+  [LocationName.FOREST_COPY_ANY_FOREST_LOCATION]: new Location({
+    name: LocationName.FOREST_COPY_ANY_FOREST_LOCATION,
+    shortName: toGameText(["TWIG", "TWIG", "RESIIN"]),
+    type: LocationType.FOREST,
+    occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
+    resourcesToGain: {
+      [ResourceType.TWIG]: 2,
+      [ResourceType.RESIN]: 1,
+    },
+  }),
+
+  // bellfaire
+  [LocationName.FOREST_ACTIVATE_2_PRODUCTION]: new Location({
+    name: LocationName.FOREST_ACTIVATE_2_PRODUCTION,
+    type: LocationType.FOREST,
+    occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
+    shortName: toGameText("Activate 2 PRODUCTION in your city"),
+    resourcesToGain: {},
+    expansion: ExpansionType.PEARLBROOK,
+    canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.PLACE_WORKER) {
+        const productionCards = onlyRelevantProductionCards(
+          gameState,
+          player.getAllPlayedCardsByType(CardType.PRODUCTION)
+        );
+        if (productionCards.length === 0) {
+          return "No useful production cards to activate.";
+        }
+      }
+      return null;
+    },
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.PLACE_WORKER) {
+        const productionCards = onlyRelevantProductionCards(
+          gameState,
+          player.getAllPlayedCardsByType(CardType.PRODUCTION)
+        );
+        const numToActivate = Math.min(productionCards.length, 2);
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          prevInputType: gameInput.inputType,
+          label: `Select ${numToActivate} PRODUCTION to activate`,
+          cardOptions: productionCards,
+          locationContext: LocationName.FOREST_ACTIVATE_2_PRODUCTION,
+          maxToSelect: numToActivate,
+          minToSelect: numToActivate,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS &&
+        gameInput.locationContext === LocationName.FOREST_ACTIVATE_2_PRODUCTION
+      ) {
+        const selectedCards = gameInput.clientOptions.selectedCards;
+        if (!selectedCards || selectedCards.length !== gameInput.minToSelect) {
+          throw new Error(`Please select ${gameInput.minToSelect} cards`);
+        }
+        gameState.addGameLogFromLocation(
+          LocationName.FOREST_ACTIVATE_2_PRODUCTION,
+          [
+            player,
+            " activated PRODUCTION on ",
+            ...cardListToGameText(
+              selectedCards.map(({ cardName }) => cardName)
+            ),
+            ".",
+          ]
+        );
+        selectedCards.forEach((selectedCard) => {
+          if (!gameInput.cardOptions.find((x) => isEqual(x, selectedCard))) {
+            throw new Error("Could not find selected card.");
+          }
+          Card.fromName(selectedCard.cardName).reactivateCard(
+            gameState,
+            gameInput,
+            gameState.getPlayer(selectedCard.cardOwnerId),
+            selectedCard
+          );
+        });
+      }
+    },
+  }),
+  [LocationName.FOREST_THREE_RESIN]: new Location({
+    name: LocationName.FOREST_THREE_RESIN,
+    shortName: toGameText(["RESIN", "RESIN", "RESIN"]),
+    type: LocationType.FOREST,
+    occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
+    resourcesToGain: {
+      [ResourceType.RESIN]: 3,
+    },
+  }),
+  // TODO: implement
+  [LocationName.FOREST_TWO_RESIN_OR_TWO_BERRY]: new Location({
+    name: LocationName.FOREST_TWO_RESIN_OR_TWO_BERRY,
+    shortName: toGameText(["TWIG", "TWIG", "TWIG", "TWIG"]),
+    type: LocationType.FOREST,
+    occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
+    resourcesToGain: {
+      [ResourceType.TWIG]: 4,
+    },
+  }),
+  //TODO: implement
+  [LocationName.FOREST_PAY_THREE_TWIG_GAIN_THREE_ANY]: new Location({
+    name: LocationName.FOREST_PAY_THREE_TWIG_GAIN_THREE_ANY,
+    shortName: toGameText(["TWIG", "TWIG", "TWIG", "TWIG"]),
+    type: LocationType.FOREST,
+    occupancy: LocationOccupancy.EXCLUSIVE_FOUR,
+    resourcesToGain: {
+      [ResourceType.TWIG]: 4,
+    },
+  }),
 };
 
 const baseGameForestLocations: LocationName[] = [
@@ -1183,9 +1247,21 @@ const baseGameForestLocations: LocationName[] = [
 const pearlbrookForestLocations: LocationName[] = [
   LocationName.FOREST_TWO_PEBBLE_ONE_CARD,
   LocationName.FOREST_RESIN_PEBBLE_OR_FOUR_CARDS,
-  LocationName.FOREST_ACTIVATE_2_PRODUCTION,
   LocationName.FOREST_BERRY_PEBBLE_CARD,
   LocationName.FOREST_DISCARD_2_MEADOW_DRAW_2_MEADOW_GAIN_ANY,
+];
+
+const newleafForestLocations: LocationName[] = [
+  LocationName.FOREST_FOUR_TWIG,
+  LocationName.FOREST_TWO_TWIG_ONE_RESIN,
+  LocationName.FOREST_COPY_ANY_FOREST_LOCATION,
+];
+
+const bellfaireForestLocations: LocationName[] = [
+  LocationName.FOREST_ACTIVATE_2_PRODUCTION,
+  LocationName.FOREST_THREE_RESIN,
+  LocationName.FOREST_PAY_THREE_TWIG_GAIN_THREE_ANY,
+  LocationName.FOREST_TWO_RESIN_OR_TWO_BERRY,
 ];
 
 export const initialLocationsMap = (

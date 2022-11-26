@@ -66,6 +66,7 @@ export default function TestUIPage() {
   const [includeBaseGame, setIncludeBaseGame] = useState(true);
   const [includePearlbrook, setIncludePearlbrook] = useState(true);
   const [includeNewleaf, setIncludeNewLeaf] = useState(true);
+  const [includeBellfaire, setIncludeBellfaire] = useState(true);
 
   const [showCards, setShowCards] = useState(true);
   const [showAdornments, setShowAdornments] = useState(true);
@@ -101,14 +102,17 @@ export default function TestUIPage() {
         }
       }
       const model = toModel(x);
-      if (!includePearlbrook && model.expansion === ExpansionType.PEARLBROOK) {
-        return false;
+      if (model.expansion === ExpansionType.PEARLBROOK) {
+        return includePearlbrook;
       }
-      if (!includeNewleaf && model.expansion === ExpansionType.NEWLEAF) {
-        return false;
+      if (model.expansion === ExpansionType.NEWLEAF) {
+        return includeNewleaf;
       }
-      if (!includeBaseGame && model.expansion === null) {
-        return false;
+      if (model.expansion === ExpansionType.BELLFAIRE) {
+        return includeBellfaire;
+      }
+      if (model.expansion === null) {
+        return includeBaseGame;
       }
       return true;
     };
@@ -134,7 +138,7 @@ export default function TestUIPage() {
             checked={includeBaseGame}
             onChange={() => setIncludeBaseGame((x) => !x)}
           />
-          Basegame
+          Base Game
         </label>
         &nbsp;&nbsp;&middot;&nbsp;&nbsp;
         <label>
@@ -144,6 +148,15 @@ export default function TestUIPage() {
             onChange={() => setIncludePearlbrook((x) => !x)}
           />
           Pearlbrook
+        </label>
+        &nbsp;&nbsp;&middot;&nbsp;&nbsp;
+        <label>
+          <input
+            type="checkbox"
+            checked={includeBellfaire}
+            onChange={() => setIncludeBellfaire((x) => !x)}
+          />
+          Bellfaire
         </label>
         &nbsp;&nbsp;&middot;&nbsp;&nbsp;
         <label>

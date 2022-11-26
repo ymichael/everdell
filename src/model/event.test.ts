@@ -4454,10 +4454,42 @@ describe("Event", () => {
       );
 
       [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
-      player2 = gameState.getPlayer(player2.playerId);
-      player = gameState.getPlayer(player.playerId);
+
       expect(player.getClaimedEvent(EventName.SPECIAL_CITY_JUBILEE));
       expect(player.getPointsFromEvents(gameState)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(2);
+    });
+    it("should calculate points correctly when player has claimed 1 basic event", () => {
+      const event = Event.fromName(EventName.SPECIAL_CITY_JUBILEE);
+      const gameInput = claimEventInput(event.name);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_CITY_JUBILEE)).to.be(
+        undefined
+      );
+
+      player.placeWorkerOnEvent(EventName.BASIC_FOUR_PRODUCTION);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_CITY_JUBILEE));
+
+      // 2 from event, 1 from
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(2 + 1);
+    });
+    it("should calculate points correctly when player has claimed other special events", () => {
+      const event = Event.fromName(EventName.SPECIAL_CITY_JUBILEE);
+      const gameInput = claimEventInput(event.name);
+      expect(player.getClaimedEvent(EventName.SPECIAL_CITY_JUBILEE)).to.be(
+        undefined
+      );
+      player.placeWorkerOnEvent(EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
+
+      expect(player.getClaimedEvent(EventName.SPECIAL_CITY_JUBILEE));
+
+      // 2 from SPECIAL_CITY_JUBILEE, 2 from ANCIENT_SCROLLS_DISCOVERED
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(2 + 2);
     });
   });
 });

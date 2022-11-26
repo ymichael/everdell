@@ -2515,6 +2515,9 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
+
+      // at this point, this event has already been claimed.
+      // start from 0 to not double count
       let numPoints = 0;
       Object.keys(player.claimedEvents).forEach((eventName) => {
         const event = Event.fromName(eventName as EventName);

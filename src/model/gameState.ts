@@ -33,6 +33,7 @@ import {
   TextPart,
   TrainCarTileName,
   TPlayableCard,
+  WorkerPlacementInfo,
 } from "./types";
 import { defaultGameOptions } from "./gameOptions";
 import { GameStateJSON } from "./jsonTypes";
@@ -436,6 +437,46 @@ export class GameState {
     }
   }
 
+  getWorkerPlacementSpots(): WorkerPlacementInfo[] {
+    return [
+      ...this.getPlayableLocations().map((location) => ({ location })),
+      ...this.getClaimableEvents().map((event) => ({ event })),
+      ...this.getVisitableDestinationCards().map((playedCard) => ({
+        playedCard,
+      })),
+    ];
+  }
+
+  activateWorkerPlacement(workerInfo: WorkerPlacementInfo): void {
+    if (workerInfo.event) {
+      this.handleWorkerPlacementGameInput({
+        inputType: GameInputType.CLAIM_EVENT,
+        clientOptions: {
+          event: workerInfo.event,
+        },
+      });
+    } else if (workerInfo.location) {
+      this.handleWorkerPlacementGameInput({
+        inputType: GameInputType.PLACE_WORKER,
+        clientOptions: {
+          location: workerInfo.location,
+        },
+      });
+    } else if (workerInfo.playedCard) {
+      this.handleWorkerPlacementGameInput({
+        inputType: GameInputType.VISIT_DESTINATION_CARD,
+        clientOptions: {
+          playedCard: workerInfo.playedCard,
+        },
+      });
+    } else {
+      assertUnreachable(
+        workerInfo,
+        `Unexpected worker placement info ${JSON.stringify(workerInfo)}`
+      );
+    }
+  }
+
   clone(): GameState {
     const gameStateJSON = this.toJSON(true /* includePrivate */);
     gameStateJSON.gameStateId += 1;
@@ -482,24 +523,67 @@ export class GameState {
     card.play(this, gameInput);
   }
 
-  private handlePlayTrainTicketGameInput(
-    gameInput: GameInputPlayTrainTicket
-  ): void {
+  private handlePlayTrainTicketGameInput(gameInput: GameInput): void {
     if (!this.gameOptions.newleaf?.ticket) {
       throw new Error(`Unexpected game input ${JSON.stringify(gameInput)}`);
     }
-    if (!gameInput.clientOptions.selectedOption) {
-      throw new Error(`Must specify a worker to reactivate.`);
+    const player = this.getActivePlayer();
+    switch (gameInput.inputType) {
+      case GameInputType.PLAY_TRAIN_TICKET: {
+        const selectedOption = gameInput.clientOptions.selectedOption;
+        if (!selectedOption) {
+          throw new Error(`Must specify a worker to reactivate.`);
+        }
+        player.recallWorker(this, selectedOption, {
+          removeFromGameState: false,
+        });
+        this.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_WORKER_PLACEMENT,
+          label: "Move your worker",
+          prevInput: gameInput,
+          prevInputType: gameInput.inputType,
+          options: this.getWorkerPlacementSpots(),
+          trainTicketContext: true,
+          mustSelectOne: true,
+          clientOptions: {
+            selectedOption: null,
+          },
+        });
+        break;
+      }
+      case GameInputType.SELECT_WORKER_PLACEMENT: {
+        const selectedOption = gameInput.clientOptions.selectedOption;
+        if (!selectedOption) {
+          throw new Error("Must specify clientOptions.selectedOption");
+        }
+        const recalledWorkerInfo =
+          gameInput.prevInput?.inputType === GameInputType.PLAY_TRAIN_TICKET &&
+          gameInput.prevInput?.clientOptions?.selectedOption;
+        if (!recalledWorkerInfo) {
+          throw new Error(
+            `Invalid previous input ${JSON.stringify(gameInput.prevInput)}`
+          );
+        }
+        player.recallWorker(this, recalledWorkerInfo, {
+          removeFromPlacedWorkers: false,
+        });
+        player.useTrainTicket();
+        this.activateWorkerPlacement(selectedOption);
+        this.addGameLog([
+          { type: "symbol", symbol: "TRAIN_TICKET" },
+          ": ",
+          player,
+          " moved deployed worker on ",
+          ...workerPlacementToGameText(recalledWorkerInfo),
+          " to ",
+          ...workerPlacementToGameText(selectedOption),
+          ".",
+        ]);
+        break;
+      }
+      default:
+        throw new Error(`Unhandled game input: ${JSON.stringify(gameInput)}`);
     }
-    this.addGameLog([
-      { type: "symbol", symbol: "TRAIN_TICKET" },
-      ": ",
-      this.getActivePlayer(),
-      " reactivated worker on ",
-      ...workerPlacementToGameText(gameInput.clientOptions.selectedOption),
-      ".",
-    ]);
-    throw new Error(`Not implemented yet ${JSON.stringify(gameInput)}`);
   }
 
   private handlePlaceWorkerGameInput(gameInput: GameInputPlaceWorker): void {
@@ -732,6 +816,11 @@ export class GameState {
     if (gameInput.trainCarTileContext) {
       const trainCarTile = TrainCarTile.fromName(gameInput.trainCarTileContext);
       trainCarTile.playTile(this, gameInput);
+      return;
+    }
+
+    if (gameInput.trainTicketContext) {
+      this.handlePlayTrainTicketGameInput(gameInput);
       return;
     }
 

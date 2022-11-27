@@ -274,6 +274,7 @@ export type GameInputMultiStepContext = {
   adornmentContext?: AdornmentName;
   riverDestinationContext?: RiverDestinationName;
   trainCarTileContext?: TrainCarTileName;
+  trainTicketContext?: boolean;
 };
 
 export type GameInputMultiStep = (

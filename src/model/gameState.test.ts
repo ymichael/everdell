@@ -13,6 +13,7 @@ import {
   ResourceType,
   RiverDestinationSpotName,
   TrainCarTileName,
+  TrainTicketStatus,
   Season,
 } from "./types";
 import { Event } from "./event";
@@ -1042,6 +1043,152 @@ describe("GameState", () => {
       // player2 should not be able to claim event
       const event = Event.fromName(EventName.BASIC_FOUR_PRODUCTION);
       expect(event.canPlay(gameState, gameInput)).to.be(false);
+    });
+  });
+
+  describe("PLAY_TRAIN_TICKET", () => {
+    beforeEach(() => {
+      gameState = testInitialGameState({
+        stationCards: [],
+        gameOptions: { newleaf: { ticket: true } },
+      });
+      player = gameState.getActivePlayer();
+    });
+
+    it("should not be usable if there's no recallable workers", () => {
+      expect(player.hasValidTrainTicket()).to.be(true);
+      expect(
+        gameState
+          .getPossibleGameInputs()
+          .find((input) => input.inputType === GameInputType.PLAY_TRAIN_TICKET)
+      ).to.not.be.ok();
+    });
+
+    it("should prompt to move an existing worker and trigger the new placement", () => {
+      gameState.locationsMap[LocationName.BASIC_ONE_STONE]!.push(
+        player.playerId
+      );
+      player.placeWorkerOnLocation(LocationName.BASIC_ONE_STONE);
+      expect(player.hasValidTrainTicket()).to.be(true);
+      expect(player.trainTicketStatus).to.be(
+        TrainTicketStatus.VALID_FROM_WINTER
+      );
+
+      expect(player.numAvailableWorkers).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+
+      const playTrainTicket = {
+        inputType: GameInputType.PLAY_TRAIN_TICKET as const,
+        clientOptions: {
+          selectedOption: {
+            location: LocationName.BASIC_ONE_STONE,
+          },
+        },
+      };
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        playTrainTicket,
+        {
+          inputType: GameInputType.SELECT_WORKER_PLACEMENT,
+          prevInput: playTrainTicket,
+          prevInputType: GameInputType.PLAY_TRAIN_TICKET,
+          mustSelectOne: true,
+          options: [
+            { location: LocationName.BASIC_ONE_BERRY },
+            { location: LocationName.BASIC_ONE_BERRY_AND_ONE_CARD },
+            { location: LocationName.BASIC_ONE_RESIN_AND_ONE_CARD },
+            { location: LocationName.BASIC_THREE_TWIGS },
+            { location: LocationName.BASIC_TWO_CARDS_AND_ONE_VP },
+            { location: LocationName.BASIC_TWO_RESIN },
+            { location: LocationName.BASIC_TWO_TWIGS_AND_ONE_CARD },
+            { location: LocationName.HAVEN },
+          ],
+          clientOptions: {
+            selectedOption: {
+              location: LocationName.BASIC_TWO_TWIGS_AND_ONE_CARD,
+            },
+          },
+        },
+      ]);
+      expect(
+        gameState.locationsMap[LocationName.BASIC_TWO_TWIGS_AND_ONE_CARD]
+      ).to.eql([player.playerId]);
+      expect(player.numAvailableWorkers).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(2);
+      expect(player.numCardsInHand).to.be(1);
+      expect(player.hasValidTrainTicket()).to.be(false);
+      expect(player.trainTicketStatus).to.be(
+        TrainTicketStatus.VALID_FROM_SUMMER
+      );
+
+      expect(player.currentSeason).to.be(Season.WINTER);
+      expect(player.hasValidTrainTicket()).to.be(false);
+      player.nextSeason();
+      expect(player.currentSeason).to.be(Season.SPRING);
+      expect(player.hasValidTrainTicket()).to.be(false);
+      player.nextSeason();
+      expect(player.currentSeason).to.be(Season.SUMMER);
+      expect(player.hasValidTrainTicket()).to.be(true);
+    });
+
+    it("should not allow moving the worker back to the same location", () => {
+      gameState.locationsMap[LocationName.BASIC_ONE_STONE]!.push(
+        player.playerId
+      );
+      gameState.locationsMap[LocationName.BASIC_TWO_TWIGS_AND_ONE_CARD]!.push(
+        player.playerId
+      );
+      player.placeWorkerOnLocation(LocationName.BASIC_ONE_STONE);
+      player.placeWorkerOnLocation(LocationName.BASIC_TWO_TWIGS_AND_ONE_CARD);
+      expect(player.numAvailableWorkers).to.be(0);
+
+      expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+      expect(player.numCardsInHand).to.be(0);
+      expect(player.hasValidTrainTicket()).to.be(true);
+      expect(player.trainTicketStatus).to.be(
+        TrainTicketStatus.VALID_FROM_WINTER
+      );
+
+      const playTrainTicket = {
+        inputType: GameInputType.PLAY_TRAIN_TICKET as const,
+        clientOptions: {
+          selectedOption: {
+            location: LocationName.BASIC_ONE_STONE,
+          },
+        },
+      };
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        playTrainTicket,
+        {
+          inputType: GameInputType.SELECT_WORKER_PLACEMENT,
+          prevInput: playTrainTicket,
+          prevInputType: GameInputType.PLAY_TRAIN_TICKET,
+          trainTicketContext: true,
+          mustSelectOne: true,
+          options: [
+            { location: LocationName.BASIC_ONE_BERRY },
+            { location: LocationName.BASIC_ONE_BERRY_AND_ONE_CARD },
+            { location: LocationName.BASIC_ONE_RESIN_AND_ONE_CARD },
+            { location: LocationName.BASIC_THREE_TWIGS },
+            { location: LocationName.BASIC_TWO_CARDS_AND_ONE_VP },
+            { location: LocationName.BASIC_TWO_RESIN },
+            { location: LocationName.BASIC_TWO_TWIGS_AND_ONE_CARD },
+            { location: LocationName.HAVEN },
+          ],
+          clientOptions: {
+            selectedOption: {
+              location: LocationName.BASIC_TWO_TWIGS_AND_ONE_CARD,
+            },
+          },
+        },
+      ]);
+      expect(
+        gameState.locationsMap[LocationName.BASIC_TWO_TWIGS_AND_ONE_CARD]
+      ).to.eql([player.playerId, player.playerId]);
+      expect(player.numAvailableWorkers).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(2);
+      expect(player.numCardsInHand).to.be(1);
     });
   });
 

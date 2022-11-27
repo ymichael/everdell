@@ -1700,7 +1700,7 @@ export class Player implements IGameTextEntity {
       case TrainTicketStatus.VALID_FROM_SUMMER:
         return (
           this.currentSeason === Season.SUMMER ||
-          this.currentSeason === Season.SPRING
+          this.currentSeason === Season.AUTUMN
         );
       default:
         return false;

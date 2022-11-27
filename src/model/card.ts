@@ -2574,17 +2574,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             label: "Place your worker",
             prevInput: gameInput,
             prevInputType: gameInput.inputType,
-            options: [
-              ...gameState
-                .getPlayableLocations()
-                .map((location) => ({ location })),
-
-              ...gameState.getClaimableEvents().map((event) => ({ event })),
-
-              ...gameState
-                .getVisitableDestinationCards()
-                .map((playedCard) => ({ playedCard })),
-            ],
+            options: gameState.getWorkerPlacementSpots(),
             cardContext: CardName.RANGER,
             mustSelectOne: true,
             clientOptions: {
@@ -2611,34 +2601,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             ...workerPlacementToGameText(selectedOption),
             ".",
           ]);
-
-          if (selectedOption.event) {
-            gameState.handleWorkerPlacementGameInput({
-              inputType: GameInputType.CLAIM_EVENT,
-              clientOptions: {
-                event: selectedOption.event,
-              },
-            });
-          } else if (selectedOption.location) {
-            gameState.handleWorkerPlacementGameInput({
-              inputType: GameInputType.PLACE_WORKER,
-              clientOptions: {
-                location: selectedOption.location,
-              },
-            });
-          } else if (selectedOption.playedCard) {
-            gameState.handleWorkerPlacementGameInput({
-              inputType: GameInputType.VISIT_DESTINATION_CARD,
-              clientOptions: {
-                playedCard: selectedOption.playedCard,
-              },
-            });
-          } else {
-            assertUnreachable(
-              selectedOption,
-              `Unexpected selectedOption ${JSON.stringify(selectedOption)}`
-            );
-          }
+          gameState.activateWorkerPlacement(selectedOption);
         }
       } else {
         throw new Error(`Invalid input type: ${gameInput}`);

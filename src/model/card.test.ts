@@ -130,11 +130,6 @@ describe("Card", () => {
         [player, gameState] = multiStepGameInputTest(gameState, [
           playCardInput(card.name),
           {
-            inputType: GameInputType.DISCARD_CARDS,
-            prevInputType: GameInputType.PLAY_CARD,
-            cardContext: CardName.BARD,
-            minCards: 0,
-            maxCards: 5,
             clientOptions: {
               cardsToDiscard: [CardName.FARM, CardName.RUINS],
             },
@@ -161,55 +156,33 @@ describe("Card", () => {
         player.gainResources(gameState, card.baseCost);
         expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
 
-        gameState = gameState.next(gameInput);
-        player = gameState.getPlayer(player.playerId);
-        expect(player.playerId).to.be(gameState.getActivePlayer().playerId);
-        expect(gameState.pendingGameInputs).to.eql([
-          {
-            inputType: GameInputType.DISCARD_CARDS,
-            prevInputType: GameInputType.PLAY_CARD,
-            cardContext: CardName.BARD,
-            label: "Discard up to 5 CARD to gain 1 VP each",
-            minCards: 0,
-            maxCards: 5,
-            clientOptions: {
-              cardsToDiscard: [],
-            },
-          },
-        ]);
-
         expect(() => {
-          gameState.next({
-            inputType: GameInputType.DISCARD_CARDS,
-            prevInputType: GameInputType.PLAY_CARD,
-            cardContext: CardName.BARD,
-            minCards: 0,
-            maxCards: 5,
-            clientOptions: {
-              cardsToDiscard: [
-                CardName.BARD,
-                CardName.FARM,
-                CardName.RUINS,
-                CardName.FARM,
-                CardName.RUINS,
-                CardName.FARM,
-              ],
+          [player, gameState] = multiStepGameInputTest(gameState, [
+            playCardInput(card.name),
+            {
+              clientOptions: {
+                cardsToDiscard: [
+                  CardName.BARD,
+                  CardName.FARM,
+                  CardName.RUINS,
+                  CardName.FARM,
+                  CardName.RUINS,
+                  CardName.FARM,
+                ],
+              },
             },
-          });
+          ]);
         }).to.throwException(/too many cards/);
 
         expect(() => {
-          gameState.next({
-            inputType: GameInputType.DISCARD_CARDS,
-            prevInputType: GameInputType.PLAY_CARD,
-            cardContext: CardName.BARD,
-            minCards: 0,
-            maxCards: 5,
-            clientOptions: {
-              // Player doesn't have queen
-              cardsToDiscard: [CardName.QUEEN],
+          [player, gameState] = multiStepGameInputTest(gameState, [
+            playCardInput(card.name),
+            {
+              clientOptions: {
+                cardsToDiscard: [CardName.QUEEN],
+              },
             },
-          });
+          ]);
         }).to.throwException(/unable to discard/i);
         expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
       });
@@ -1177,12 +1150,6 @@ describe("Card", () => {
           playCardInput(card.name),
           {
             inputType: GameInputType.SELECT_RESOURCES,
-            toSpend: true,
-            prevInputType: GameInputType.PLAY_CARD,
-            cardContext: CardName.DOCTOR,
-            specificResource: ResourceType.BERRY,
-            minResources: 0,
-            maxResources: 3,
             clientOptions: {
               resources: {
                 [ResourceType.BERRY]: 3,

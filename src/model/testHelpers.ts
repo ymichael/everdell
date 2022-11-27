@@ -12,11 +12,14 @@ import {
   EventType,
   GameOptions,
   GameInput,
+  GameInputSimple,
+  GameInputMultiStep,
   GameInputType,
   GameInputPlayCard,
   TrainCarTileName,
 } from "./types";
 import omit from "lodash/omit";
+import pick from "lodash/pick";
 import merge from "lodash/merge";
 import cloneDeep from "lodash/cloneDeep";
 
@@ -100,44 +103,100 @@ export function testInitialGameState(
   return gameState;
 }
 
-// Returns the active player from the given game state and next gameState!
+/**
+ * Returns the active player from the given game state and next gameState!
+ */
 export const multiStepGameInputTest = (
   gameState: GameState,
-  pendingGameInputs: GameInput[],
+  gameInputs: [
+    GameInputSimple,
+    ...(Pick<GameInputMultiStep, "clientOptions"> &
+      Partial<GameInputMultiStep>)[]
+  ],
   opts: { autoAdvance?: boolean; skipMultiPendingInputCheck?: boolean } = {}
 ): [Player, GameState] => {
-  let currGameState = gameState.clone();
-  const player = currGameState.getActivePlayer();
   const { autoAdvance = false, skipMultiPendingInputCheck = false } = opts;
 
   // Sanity check
-  expect(currGameState.pendingGameInputs).to.eql([]);
+  expect(gameState.pendingGameInputs).to.eql([]);
 
-  pendingGameInputs.forEach((gameInput, idx) => {
-    const isLastInput = idx === pendingGameInputs.length - 1;
+  // Make a copy of game state so we don't mutate it.
+  gameState = gameState.clone();
 
+  const playerId = gameState.getActivePlayer().playerId;
+  const [simpleInput, ...multiStepInputs] = gameInputs;
+
+  const playInput = (input: GameInput, isLastInput: boolean): void => {
     // Clone gameInput to simulate client back and forth and make
     // sure we don't rely on references to objects.
-    gameInput = cloneDeep(gameInput);
+    input = cloneDeep(input);
 
-    currGameState = currGameState.next(gameInput, autoAdvance);
-    if (!isLastInput) {
-      const keysToOmit = ["label", "clientOptions"];
-      if (!skipMultiPendingInputCheck) {
-        expect(
-          currGameState.pendingGameInputs.map((x) => omit(x, keysToOmit))
-        ).to.eql([omit(pendingGameInputs[idx + 1], keysToOmit)]);
-      }
-      expect(player.playerId).to.be(currGameState.getActivePlayer().playerId);
+    // Apply input
+    gameState = gameState.next(input, autoAdvance);
+
+    if (isLastInput) {
+      // Make sure we don't have any more pending inputs.
+      expect(gameState.pendingGameInputs).to.eql([]);
+      // And the player is no longer active.
+      expect(playerId).to.not.be(gameState.getActivePlayer().playerId);
     } else {
-      expect(currGameState.pendingGameInputs).to.eql([]);
-      expect(player.playerId).to.not.be(
-        currGameState.getActivePlayer().playerId
+      expect(playerId).to.be(gameState.getActivePlayer().playerId);
+    }
+  };
+
+  playInput(simpleInput, multiStepInputs.length === 0);
+
+  multiStepInputs.forEach((partialInput, idx) => {
+    // Find the input the matches this one
+    let nextInput = gameState.pendingGameInputs[0];
+    // If there are multiple pending inputs, enforce that
+    // we specify the type and context
+    if (gameState.pendingGameInputs.length > 1) {
+      expect(partialInput.inputType).to.be.ok();
+      expect(partialInput.prevInputType).to.be.ok();
+      expect(
+        partialInput.eventContext ||
+          partialInput.cardContext ||
+          partialInput.playedCardContext ||
+          partialInput.locationContext ||
+          partialInput.adornmentContext ||
+          partialInput.riverDestinationContext ||
+          partialInput.trainCarTileContext
+      ).to.be.ok();
+      nextInput = gameState.pendingGameInputs.find((x) => {
+        return (
+          x.inputType === partialInput.inputType &&
+          x.prevInputType === partialInput.prevInputType &&
+          x.eventContext === partialInput.eventContext &&
+          x.cardContext === partialInput.cardContext &&
+          x.locationContext === partialInput.locationContext &&
+          x.adornmentContext === partialInput.adornmentContext &&
+          x.riverDestinationContext === partialInput.riverDestinationContext &&
+          x.trainCarTileContext === partialInput.trainCarTileContext
+        );
+      })!;
+      expect(nextInput).to.be.ok();
+    }
+
+    // Verify the pending input matches
+    if (!skipMultiPendingInputCheck) {
+      const keysToOmit = ["clientOptions", "label", "prevInput"];
+      const keysToMatch = Object.keys(partialInput).filter(
+        (x) => !keysToOmit.includes(x)
+      );
+      expect(pick(nextInput, keysToMatch)).to.eql(
+        omit(partialInput, keysToOmit)
       );
     }
+
+    // Play input
+    playInput(
+      merge({}, nextInput, pick(partialInput, "clientOptions")),
+      idx === multiStepInputs.length - 1
+    );
   });
 
-  return [currGameState.getPlayer(player.playerId), currGameState];
+  return [gameState.getPlayer(playerId), gameState];
 };
 
 export const playCardInput = (

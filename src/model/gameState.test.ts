@@ -1,5 +1,6 @@
 import expect from "expect.js";
 import { GameState } from "./gameState";
+import { defaultGameOptions } from "./gameOptions";
 import {
   AdornmentName,
   CardName,
@@ -89,6 +90,53 @@ describe("GameState", () => {
         CardName.MINE,
         CardName.FARM,
         CardName.SHOPKEEPER,
+      ]);
+    });
+  });
+
+  describe("station", () => {
+    beforeEach(() => {
+      gameState = testInitialGameState({
+        gameOptions: { newleaf: { station: true } },
+      });
+      player = gameState.getActivePlayer();
+    });
+
+    it("should replenish station", () => {
+      expect(gameState.stationCards).to.eql([]);
+
+      // Stack the deck
+      const topOfDeck = [
+        CardName.FARM,
+        CardName.QUEEN,
+        CardName.MINER_MOLE,
+        CardName.KING,
+      ];
+      topOfDeck.reverse();
+      topOfDeck.forEach((cardName) => {
+        gameState.deck.addToStack(cardName);
+      });
+
+      gameState.replenishStation();
+      expect(gameState.stationCards.length).to.be(3);
+      expect(gameState.stationCards).to.eql([
+        CardName.FARM,
+        CardName.QUEEN,
+        CardName.MINER_MOLE,
+      ]);
+
+      // Remove card from the middle position
+      gameState.stationCards[1] = null;
+      expect(gameState.stationCards).to.eql([
+        CardName.FARM,
+        null,
+        CardName.MINER_MOLE,
+      ]);
+      gameState.replenishStation();
+      expect(gameState.stationCards).to.eql([
+        CardName.FARM,
+        CardName.KING,
+        CardName.MINER_MOLE,
       ]);
     });
   });

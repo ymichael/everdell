@@ -28,6 +28,7 @@ export function testInitialGameState(
     specialEvents?: EventName[];
     gameOptions?: Partial<GameOptions>;
     meadowCards?: CardName[];
+    stationCards?: CardName[];
     shuffleDeck?: boolean;
   } = {}
 ): GameState {
@@ -36,6 +37,7 @@ export function testInitialGameState(
     playerNames = [],
     cardsInHand = [],
     meadowCards = [],
+    stationCards = [],
     forestLocations = [],
     specialEvents = [],
     shuffleDeck = false,
@@ -53,7 +55,11 @@ export function testInitialGameState(
   while (gameState.meadowCards.length) {
     gameState.meadowCards.pop();
   }
+  while (gameState.stationCards.length) {
+    gameState.stationCards.pop();
+  }
   gameState.meadowCards.push(...meadowCards);
+  gameState.stationCards.push(...stationCards);
   gameState.players.forEach((player) => {
     player.cardsInHand = [...cardsInHand];
   });

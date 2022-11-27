@@ -64,7 +64,7 @@ import isEqual from "lodash/isEqual";
 import omit from "lodash/omit";
 
 const MEADOW_SIZE = 8;
-const STATION_SIZE = 8;
+const STATION_SIZE = 3;
 const STARTING_PLAYER_HAND_SIZE = 5;
 const MAX_GAME_LOG_BUFFER = 500;
 
@@ -403,11 +403,12 @@ export class GameState {
   }
 
   replenishStation(): void {
-    if (this.gameOptions.newleaf?.station) {
-      for (let i = 0; i < STATION_SIZE; i++) {
-        if (!this.stationCards[i]) {
-          this.stationCards[i] = this.drawCard();
-        }
+    if (!this.gameOptions.newleaf?.station) {
+      return;
+    }
+    for (let i = 0; i < STATION_SIZE; i++) {
+      if (!this.stationCards[i]) {
+        this.stationCards[i] = this.drawCard();
       }
     }
   }

@@ -4561,8 +4561,167 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       [ResourceType.RESIN]: 2,
       [ResourceType.PEBBLE]: 2,
     },
+    playedCardInfoDefault: {
+      resources: {
+        [ResourceType.BERRY]: 2,
+        [ResourceType.TWIG]: 2,
+        [ResourceType.RESIN]: 2,
+        [ResourceType.PEBBLE]: 2,
+      },
+    },
+    productionInner: (
+      gameState: GameState,
+      gameInput: GameInput,
+      cardOwner: Player,
+      playedCard: PlayedCardInfo
+    ) => {
+      const player = gameState.getActivePlayer();
+
+      gameState.pendingGameInputs.push({
+        inputType: GameInputType.SELECT_RESOURCES,
+        label: "Choose 2 resources to gain from this Freight Car",
+        toSpend: false,
+        prevInputType: gameInput.inputType,
+        maxResources: 2,
+        minResources: 2,
+        cardContext: CardName.FREIGHT_CAR,
+        playedCardContext: playedCard,
+        clientOptions: {
+          resources: {},
+        },
+      });
+    },
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
+      const player = gameState.getActivePlayer();
+
+      if (
+        gameInput.inputType === GameInputType.SELECT_RESOURCES &&
+        gameInput.cardContext === CardName.FREIGHT_CAR
+      ) {
+        const playedCard = gameInput.playedCardContext;
+
+        if (!playedCard) {
+          throw new Error("Missing played card context.");
+        }
+
+        // check that they didn't get too many resources
+        const numResources = sumResources(gameInput.clientOptions.resources);
+        if (numResources !== 2) {
+          throw new Error("Must select exactly 2 resources");
+        }
+
+        // check that they chose resources that are actually on this card
+        const resources = gameInput.clientOptions.resources;
+
+        const origPlayedCard = player.findPlayedCard(playedCard);
+        if (!origPlayedCard) {
+          throw new Error("Cannot find played card");
+        }
+
+        if (!origPlayedCard.resources) {
+          throw new Error("Stored resources undefined");
+        }
+
+        const numRemainingResources = sumResources(origPlayedCard.resources);
+        if (numRemainingResources === 0) {
+          gameState.addGameLogFromCard(CardName.FREIGHT_CAR, [
+            "There are no remaining resources on this",
+            { type: "entity", entityType: "card", card: CardName.FREIGHT_CAR },
+            "FREIGHT_CARD. ",
+            player,
+            " did not gain any resources.",
+          ]);
+          return;
+        }
+
+        let updatedResources = { ...origPlayedCard.resources };
+
+        // Long roundabout way of checking each resource type + creating
+        // an updated resources list :()
+        if (resources[ResourceType.TWIG]) {
+          // check if they tried to play more Twigs than exist on the card
+          const numOrigResources = origPlayedCard.resources[ResourceType.TWIG]
+            ? origPlayedCard.resources[ResourceType.TWIG]
+            : 0;
+          if (resources[ResourceType.TWIG] > numOrigResources) {
+            throw new Error("Selected more TWIG than are on this card.");
+          } else if (resources[ResourceType.TWIG] > 0) {
+            updatedResources[ResourceType.TWIG] = updatedResources[
+              ResourceType.TWIG
+            ]
+              ? updatedResources[ResourceType.TWIG]
+              : 0;
+
+            updatedResources[ResourceType.TWIG] =
+              updatedResources[ResourceType.TWIG] -
+              resources[ResourceType.TWIG];
+          }
+        }
+
+        if (resources[ResourceType.RESIN]) {
+          // check if they tried to play more Resin than exist on the card
+          const numOrigResources = origPlayedCard.resources[ResourceType.RESIN]
+            ? origPlayedCard.resources[ResourceType.RESIN]
+            : 0;
+          if (resources[ResourceType.RESIN] > numOrigResources) {
+            throw new Error("Selected more RESIN than are on this card.");
+          } else if (resources[ResourceType.RESIN] > 0) {
+            updatedResources[ResourceType.RESIN] = updatedResources[
+              ResourceType.RESIN
+            ]
+              ? updatedResources[ResourceType.RESIN]
+              : 0;
+
+            updatedResources[ResourceType.RESIN] =
+              updatedResources[ResourceType.RESIN] -
+              resources[ResourceType.RESIN];
+          }
+        }
+
+        if (resources[ResourceType.BERRY]) {
+          const numOrigResources = origPlayedCard.resources[ResourceType.BERRY]
+            ? origPlayedCard.resources[ResourceType.BERRY]
+            : 0;
+          if (resources[ResourceType.BERRY] > numOrigResources) {
+            throw new Error("Selected more BERRY than are on this card.");
+          } else if (resources[ResourceType.BERRY] > 0) {
+            updatedResources[ResourceType.BERRY] = updatedResources[
+              ResourceType.BERRY
+            ]
+              ? updatedResources[ResourceType.BERRY]
+              : 0;
+
+            updatedResources[ResourceType.BERRY] =
+              updatedResources[ResourceType.BERRY] -
+              resources[ResourceType.BERRY];
+          }
+        }
+
+        if (resources[ResourceType.PEBBLE]) {
+          // check if they tried to play more Pebbles than exist on the card
+          const numOrigResources = origPlayedCard.resources[ResourceType.PEBBLE]
+            ? origPlayedCard.resources[ResourceType.PEBBLE]
+            : 0;
+          if (resources[ResourceType.PEBBLE] > numOrigResources) {
+            throw new Error("Selected more PEBBLE than are on this card.");
+          } else if (resources[ResourceType.PEBBLE] > 0) {
+            updatedResources[ResourceType.PEBBLE] = updatedResources[
+              ResourceType.PEBBLE
+            ]
+              ? updatedResources[ResourceType.PEBBLE]
+              : 0;
+
+            updatedResources[ResourceType.PEBBLE] =
+              updatedResources[ResourceType.PEBBLE] -
+              resources[ResourceType.PEBBLE];
+          }
+        }
+
+        player.gainResources(gameState, gameInput.clientOptions.resources);
+        player.updatePlayedCard(gameState, origPlayedCard, {
+          resources: updatedResources,
+        });
+      }
     },
   }),
   [CardName.GARDENER]: new Card({

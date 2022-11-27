@@ -7797,7 +7797,338 @@ describe("Card", () => {
 
     describe(CardName.EVER_WALL, () => {});
 
-    describe(CardName.FREIGHT_CAR, () => {});
+    describe(CardName.FREIGHT_CAR, () => {
+      it("should allow player to play and claim resources", () => {
+        let player = gameState.getActivePlayer();
+
+        const card = Card.fromName(CardName.FREIGHT_CAR);
+
+        // Make sure we can play this card
+        player.gainResources(gameState, card.baseCost);
+        player.addCardToHand(gameState, card.name);
+
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+        // freight car costs 1 twig, 2 resin, and 2 pebbles
+        expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(1);
+
+        const playedCardContext = {
+          cardName: card.name,
+          cardOwnerId: player.playerId,
+          resources: {
+            BERRY: 2,
+            PEBBLE: 2,
+            RESIN: 2,
+            TWIG: 2,
+          },
+          usedForCritter: false,
+        };
+
+        const selectResourcesInput = {
+          inputType: GameInputType.SELECT_RESOURCES as const,
+          prevInputType: GameInputType.PLAY_CARD,
+          maxResources: 2,
+          minResources: 2,
+          toSpend: false,
+          cardContext: CardName.FREIGHT_CAR,
+          playedCardContext: playedCardContext,
+          clientOptions: {
+            resources: {
+              [ResourceType.BERRY]: 1,
+              [ResourceType.TWIG]: 1,
+            },
+          },
+        };
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+          {
+            inputType: GameInputType.SELECT_RESOURCES as const,
+            prevInputType: GameInputType.PLAY_CARD,
+            maxResources: 2,
+            minResources: 2,
+            toSpend: false,
+            cardContext: CardName.FREIGHT_CAR,
+            playedCardContext: playedCardContext,
+            clientOptions: {
+              resources: {
+                [ResourceType.BERRY]: 1,
+                [ResourceType.TWIG]: 1,
+              },
+            },
+          },
+        ]);
+
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
+        expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(1);
+
+        let playedCard = player.getFirstPlayedCard(card.name);
+        expect(playedCard).to.eql({
+          cardName: card.name,
+          cardOwnerId: player.playerId,
+          resources: {
+            BERRY: 1,
+            TWIG: 1,
+            RESIN: 2,
+            PEBBLE: 2,
+          },
+          usedForCritter: false,
+        });
+
+        // skip player2
+        gameState.nextPlayer();
+
+        player.activateProduction(gameState, {
+          inputType: GameInputType.PREPARE_FOR_SEASON,
+        });
+
+        const selectResourcesInput2 = {
+          inputType: GameInputType.SELECT_RESOURCES as const,
+          prevInputType: GameInputType.PLAY_CARD,
+          maxResources: 2,
+          minResources: 2,
+          toSpend: false,
+          cardContext: CardName.FREIGHT_CAR,
+          playedCardContext: player.getFirstPlayedCard(CardName.FREIGHT_CAR),
+          clientOptions: {
+            resources: {
+              [ResourceType.RESIN]: 2,
+            },
+          },
+        };
+
+        gameState = gameState.next({
+          inputType: GameInputType.SELECT_RESOURCES as const,
+          prevInputType: GameInputType.PREPARE_FOR_SEASON,
+          maxResources: 2,
+          minResources: 2,
+          toSpend: false,
+          cardContext: CardName.FREIGHT_CAR,
+          playedCardContext: player.getFirstPlayedCard(CardName.FREIGHT_CAR),
+          clientOptions: {
+            resources: {
+              [ResourceType.RESIN]: 2,
+            },
+          },
+        });
+
+        player = gameState.getPlayer(player.playerId);
+
+        playedCard = player.getFirstPlayedCard(card.name);
+        expect(playedCard).to.eql({
+          cardName: card.name,
+          cardOwnerId: player.playerId,
+          resources: {
+            BERRY: 1,
+            TWIG: 1,
+            RESIN: 0,
+            PEBBLE: 2,
+          },
+          usedForCritter: false,
+        });
+
+        expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(2);
+      });
+      it("should not allow player to select than 2 resources", () => {
+        let player = gameState.getActivePlayer();
+
+        const card = Card.fromName(CardName.FREIGHT_CAR);
+
+        // Make sure we can play this card
+        player.gainResources(gameState, card.baseCost);
+        player.addCardToHand(gameState, card.name);
+
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+        // freight car costs 1 twig, 2 resin, and 2 pebbles
+        expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(1);
+
+        const playedCardContext = {
+          cardName: card.name,
+          cardOwnerId: player.playerId,
+          resources: {
+            BERRY: 2,
+            PEBBLE: 2,
+            RESIN: 2,
+            TWIG: 2,
+          },
+          usedForCritter: false,
+        };
+
+        const selectResourcesInput = {
+          inputType: GameInputType.SELECT_RESOURCES as const,
+          prevInputType: GameInputType.PLAY_CARD,
+          maxResources: 2,
+          minResources: 2,
+          toSpend: false,
+          cardContext: CardName.FREIGHT_CAR,
+          playedCardContext: playedCardContext,
+          clientOptions: {
+            resources: {
+              [ResourceType.TWIG]: 3,
+            },
+          },
+        };
+
+        gameState.next(playCardInput(card.name));
+
+        expect(() => {
+          gameState.next(selectResourcesInput);
+        }).to.throwException(/Must select exactly 2 resources/i);
+      });
+      it("should not allow player to select more resources than are on the card", () => {
+        let player = gameState.getActivePlayer();
+        let player2 = gameState.players[1];
+
+        const card = Card.fromName(CardName.FREIGHT_CAR);
+
+        // Make sure we can play this card
+        player.gainResources(gameState, card.baseCost);
+        player.addCardToHand(gameState, card.name);
+
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+
+        const playedCardContext = {
+          cardName: card.name,
+          cardOwnerId: player.playerId,
+          resources: {
+            BERRY: 2,
+            PEBBLE: 2,
+            RESIN: 2,
+            TWIG: 2,
+          },
+          usedForCritter: false,
+        };
+
+        const selectResourcesInput = {
+          inputType: GameInputType.SELECT_RESOURCES as const,
+          prevInputType: GameInputType.PLAY_CARD,
+          maxResources: 2,
+          minResources: 2,
+          toSpend: false,
+          cardContext: CardName.FREIGHT_CAR,
+          playedCardContext: playedCardContext,
+          clientOptions: {
+            resources: {
+              [ResourceType.BERRY]: 2,
+            },
+          },
+        };
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+          selectResourcesInput,
+        ]);
+
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
+
+        // skip player2's turn
+        gameState.nextPlayer();
+
+        player.activateProduction(gameState, {
+          inputType: GameInputType.PREPARE_FOR_SEASON,
+        });
+
+        expect(() => {
+          gameState = gameState.next({
+            inputType: GameInputType.SELECT_RESOURCES as const,
+            prevInputType: GameInputType.PREPARE_FOR_SEASON,
+            maxResources: 2,
+            minResources: 2,
+            toSpend: false,
+            cardContext: CardName.FREIGHT_CAR,
+            playedCardContext: player.getFirstPlayedCard(CardName.FREIGHT_CAR),
+            clientOptions: {
+              resources: {
+                [ResourceType.BERRY]: 2,
+              },
+            },
+          });
+        }).to.throwException(/Selected more BERRY/i);
+      });
+      it("should not allow player to select resources when there are none left", () => {
+        let player = gameState.getActivePlayer();
+
+        const card = Card.fromName(CardName.FREIGHT_CAR);
+
+        // Make sure we can play this card
+        player.gainResources(gameState, card.baseCost);
+        player.addCardToHand(gameState, card.name);
+
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+
+        const playedCardContext = {
+          cardName: card.name,
+          cardOwnerId: player.playerId,
+          resources: {
+            BERRY: 2,
+            PEBBLE: 2,
+            RESIN: 2,
+            TWIG: 2,
+          },
+          usedForCritter: false,
+        };
+
+        const selectResourcesInput = {
+          inputType: GameInputType.SELECT_RESOURCES as const,
+          prevInputType: GameInputType.PLAY_CARD,
+          maxResources: 2,
+          minResources: 2,
+          toSpend: false,
+          cardContext: CardName.FREIGHT_CAR,
+          playedCardContext: playedCardContext,
+          clientOptions: {
+            resources: {
+              [ResourceType.BERRY]: 2,
+            },
+          },
+        };
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+          selectResourcesInput,
+        ]);
+
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
+
+        // remove all the resources
+        player.updatePlayedCard(
+          gameState,
+          player.getFirstPlayedCard(CardName.FREIGHT_CAR),
+          {
+            resources: {
+              [ResourceType.TWIG]: 0,
+              [ResourceType.RESIN]: 0,
+              [ResourceType.BERRY]: 0,
+              [ResourceType.PEBBLE]: 0,
+            },
+          }
+        );
+
+        // skip player2's turn
+        gameState.nextPlayer();
+
+        player.activateProduction(gameState, {
+          inputType: GameInputType.PREPARE_FOR_SEASON,
+        });
+
+        gameState = gameState.next({
+          inputType: GameInputType.SELECT_RESOURCES as const,
+          prevInputType: GameInputType.PREPARE_FOR_SEASON,
+          maxResources: 2,
+          minResources: 2,
+          toSpend: false,
+          cardContext: CardName.FREIGHT_CAR,
+          playedCardContext: player.getFirstPlayedCard(CardName.FREIGHT_CAR),
+          clientOptions: {
+            resources: {
+              [ResourceType.BERRY]: 2,
+            },
+          },
+        });
+
+        // we expect nothing to happen and for this to not throw an error
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
+      });
+    });
 
     describe(CardName.GARDENER, () => {
       it("should allow the player to reactivate production cards", () => {

@@ -5278,6 +5278,82 @@ describe("Card", () => {
           gameState.meadowCards.indexOf(CardName.DOCTOR)
         ).to.be.greaterThan(0);
       });
+
+      it("should not replenish meadow until the end of the turn", () => {
+        const card = Card.fromName(CardName.UNDERTAKER);
+        const cards = [
+          CardName.KING,
+          CardName.QUEEN,
+          CardName.POSTAL_PIGEON,
+          CardName.POSTAL_PIGEON,
+          CardName.FARM,
+          CardName.HUSBAND,
+          CardName.CHAPEL,
+          card.name,
+        ];
+        gameState = testInitialGameState({ meadowCards: cards });
+        let player = gameState.getActivePlayer();
+        const topOfDeck = [
+          CardName.SCHOOL,
+          CardName.TEACHER,
+          CardName.WIFE,
+          CardName.DOCTOR,
+        ];
+        topOfDeck.reverse();
+        topOfDeck.forEach((cardName) => {
+          gameState.deck.addToStack(cardName);
+        });
+
+        expect(player.cardsInHand).to.eql([]);
+
+        // Make sure we can play this card
+        player.gainResources(gameState, card.baseCost);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name, { fromMeadow: true }),
+          {
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: GameInputType.PLAY_CARD,
+            cardContext: CardName.UNDERTAKER,
+            cardOptions: [
+              CardName.KING,
+              CardName.QUEEN,
+              CardName.POSTAL_PIGEON,
+              CardName.POSTAL_PIGEON,
+              CardName.FARM,
+              CardName.HUSBAND,
+              CardName.CHAPEL,
+            ],
+            maxToSelect: 3,
+            minToSelect: 3,
+            clientOptions: {
+              selectedCards: [CardName.QUEEN, CardName.KING, CardName.CHAPEL],
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: GameInputType.SELECT_CARDS,
+            cardContext: card.name,
+            cardOptions: [
+              CardName.POSTAL_PIGEON,
+              CardName.POSTAL_PIGEON,
+              CardName.FARM,
+              CardName.HUSBAND,
+              CardName.SCHOOL,
+              CardName.TEACHER,
+              CardName.WIFE,
+              CardName.DOCTOR,
+            ],
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              selectedCards: [CardName.TEACHER],
+            },
+          },
+        ]);
+
+        expect(player.cardsInHand).to.eql([CardName.TEACHER]);
+      });
     });
 
     describe(CardName.UNIVERSITY, () => {

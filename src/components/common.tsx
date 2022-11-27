@@ -77,6 +77,10 @@ export const CardIcon = () => {
   return <Image alt="Card Icon" src="/images/card.png" layout="fill" />;
 };
 
+export const TicketIcon = () => {
+  return <Image alt="Ticket Icon" src="/images/ticket.png" layout="fill" />;
+};
+
 export const AdornmentCardIcon = () => {
   return (
     <Image

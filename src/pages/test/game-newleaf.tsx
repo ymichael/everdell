@@ -29,12 +29,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     ],
     shuffleDeck: true,
     gameOptions: {
+      pearlbrook: true,
       newleaf: {
         cards: true,
         forestLocations: true,
         reserving: true,
         station: true,
         specialEvents: true,
+        ticket: true,
         visitors: true,
       },
     },

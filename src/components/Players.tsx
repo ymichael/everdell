@@ -21,6 +21,7 @@ import {
   CardTypeSymbol,
   ResourceTypeIcon,
   EmptyCitySpotIcon,
+  TicketIcon,
 } from "./common";
 
 export const Players = ({
@@ -197,7 +198,7 @@ const PlayerStatus: React.FC<{
           <div className={styles.status_box_item_resource_list}>
             {gameStateJSON.gameOptions.pearlbrook && (
               <div className={styles.status_box_item_resource}>
-                <div className={styles.status_box_item_resource_label}>
+                <div className={styles.status_box_item_resource_icon}>
                   <ResourceTypeIcon resourceType={ResourceType.PEARL} />
                 </div>
                 <div className={styles.status_box_item_resource_count}>
@@ -206,7 +207,7 @@ const PlayerStatus: React.FC<{
               </div>
             )}
             <div className={styles.status_box_item_resource}>
-              <div className={styles.status_box_item_resource_label}>
+              <div className={styles.status_box_item_resource_icon}>
                 <VPIcon />
               </div>
               <div className={styles.status_box_item_resource_count}>
@@ -217,19 +218,34 @@ const PlayerStatus: React.FC<{
               className={styles.status_box_item_resource}
               title="No. of Cards in hand"
             >
-              <div className={styles.status_box_item_resource_label}>
+              <div className={styles.status_box_item_resource_icon}>
                 <CardIcon />
               </div>
               <div className={styles.status_box_item_resource_count}>
                 {player.numCardsInHand}
               </div>
             </div>
+            {gameStateJSON.gameOptions.newleaf?.ticket && (
+              <div
+                className={styles.status_box_item_resource}
+                title="Ticket to reactivate a worker"
+              >
+                <div className={styles.status_box_item_resource_ticket_wrapper}>
+                  <div className={styles.status_box_item_resource_ticket}>
+                    <TicketIcon />
+                  </div>
+                </div>
+                <div className={styles.status_box_item_resource_ticket_status}>
+                  ??
+                </div>
+              </div>
+            )}
             {gameStateJSON.gameOptions.pearlbrook && (
               <div
                 className={styles.status_box_item_resource}
                 title="No. of Adornment cards in hand"
               >
-                <div className={styles.status_box_item_resource_label}>
+                <div className={styles.status_box_item_resource_icon}>
                   <AdornmentCardIcon />
                 </div>
                 <div className={styles.status_box_item_resource_count}>

@@ -1540,6 +1540,9 @@ export class GameState {
           gameState.adornmentsPile!.drawInner()
         );
       }
+      if (gameOptions.newleaf?.cards) {
+        p.initGoldenLeaf();
+      }
       if (gameOptions.newleaf?.ticket) {
         p.assignTrainTicket();
       }

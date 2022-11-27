@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Field, useField } from "formik";
+import isEqual from "lodash/isEqual";
 
 import { Card as CardModel } from "../model/card";
 import { Player } from "../model/player";
@@ -139,6 +140,88 @@ const OptionToUseAssociatedCard: React.FC<{
   );
 };
 
+const OptionToUseGoldenLeaf: React.FC<{
+  name: string;
+  cardName: CardName;
+  viewingPlayer: Player;
+  resetPaymentOptions: (state: "DEFAULT" | "COST" | "ZERO") => void;
+}> = ({ cardName, name, resetPaymentOptions, viewingPlayer }) => {
+  const [_field, meta, helpers] = useField(name);
+  const card = CardModel.fromName(cardName);
+  if (!card.isCritter || viewingPlayer.numGoldenLeaf <= 0) {
+    return <></>;
+  }
+
+  const cardOptions: CardName[] = [];
+  const cardToPlayMatcher = [
+    { type: "GOLDEN_LEAF", cardType: card.cardType },
+    {
+      type: "GOLDEN_LEAF",
+      cardType: card.isUnique ? "UNIQUE" : "COMMON",
+    },
+  ];
+  viewingPlayer.getPlayedConstructions().forEach((playedCardInfo) => {
+    if (playedCardInfo.usedForCritter) {
+      return;
+    }
+    const cardToOccupy = CardModel.fromName(playedCardInfo.cardName);
+    if (card.associatedCard.type === "GOLDEN_LEAF") {
+      switch (card.associatedCard.cardType) {
+        case "UNIQUE":
+          if (cardToOccupy.isUnique) {
+            cardOptions.push(cardToOccupy.name);
+            return;
+          }
+          break;
+        case "COMMON":
+          if (!cardToOccupy.isUnique) {
+            cardOptions.push(cardToOccupy.name);
+            return;
+          }
+          break;
+        case cardToOccupy.cardType:
+          cardOptions.push(cardToOccupy.name);
+          return;
+
+        default:
+          break;
+      }
+    }
+    if (
+      cardToOccupy.associatedCard.type === "GOLDEN_LEAF" &&
+      cardToPlayMatcher.some((m) => isEqual(m, cardToOccupy.associatedCard))
+    ) {
+      cardOptions.push(cardToOccupy.name);
+    }
+  });
+
+  if (cardOptions.length === 0) {
+    return <></>;
+  }
+
+  return (
+    <p>
+      {"Use Golden Leaf: "}
+      <select
+        value={meta.value || "None"}
+        onChange={(e) => {
+          resetPaymentOptions(e.target.value === "None" ? "DEFAULT" : "ZERO");
+          helpers.setValue(e.target.value !== "None" ? e.target.value : null);
+        }}
+      >
+        <option value={"None"}>None</option>
+        {cardOptions.map((cardName, idx) => {
+          return (
+            <option key={idx} value={cardName}>
+              {cardName}
+            </option>
+          );
+        })}
+      </select>
+    </p>
+  );
+};
+
 const CardToUseForm: React.FC<{
   name: string;
   cardName: CardName;
@@ -266,6 +349,14 @@ const CardPayment: React.FC<{
         viewingPlayer={viewingPlayer}
         resetPaymentOptions={resetPaymentOptions}
       />
+      {clientOptions.card && (
+        <OptionToUseGoldenLeaf
+          name={`${name}.occupyCardWithGoldenLeaf`}
+          cardName={clientOptions.card}
+          viewingPlayer={viewingPlayer}
+          resetPaymentOptions={resetPaymentOptions}
+        />
+      )}
     </div>
   );
 };

@@ -77,7 +77,7 @@ export class Player implements IGameTextEntity {
     },
     currentSeason = Season.WINTER,
     numWorkers = 2,
-    numGoldenLeaf = 3,
+    numGoldenLeaf = 0,
     numAmbassadors = 0,
     claimedEvents = {},
     placedWorkers = [],
@@ -1222,18 +1222,19 @@ export class Player implements IGameTextEntity {
       });
     }
 
-    if (paymentOptions.occupyCard) {
+    if (paymentOptions.occupyCardWithGoldenLeaf) {
       let hasUsed = false;
-      this.getPlayedCardForCardName(paymentOptions.occupyCard).forEach(
-        (playedCard) => {
-          if (!hasUsed) {
-            if (!playedCard.usedForCritter) {
-              playedCard.usedForCritter = true;
-              hasUsed = true;
-            }
+      this.getPlayedCardForCardName(
+        paymentOptions.occupyCardWithGoldenLeaf
+      ).forEach((playedCard) => {
+        if (!hasUsed) {
+          if (!playedCard.usedForCritter) {
+            playedCard.usedForCritter = true;
+            hasUsed = true;
           }
+          this.useGoldenLeaf();
         }
-      );
+      });
     }
 
     if (paymentOptions.cardToDungeon) {
@@ -1334,22 +1335,43 @@ export class Player implements IGameTextEntity {
       return null;
     }
 
-    if (paymentOptions.occupyCard) {
+    if (paymentOptions.occupyCardWithGoldenLeaf) {
       if (!cardToPlay.isCritter) {
         return `Cannot use associated card to play ${cardToPlay.name}`;
       }
-      if (cardToPlay.associatedCard.type === "GOLDEN_LEAF") {
-        // TODO
-        throw new Error("Not Implemented yet");
-      } else if (cardToPlay.associatedCard.type === "CARD") {
-        if (
-          !(
-            paymentOptions.occupyCard === cardToPlay.associatedCard.cardName &&
-            this.hasUnoccupiedConstruction(cardToPlay.associatedCard.cardName)
-          )
-        ) {
-          return `Cannot find associated card to play ${cardToPlay.name}`;
-        }
+      if (this.numGoldenLeaf <= 0) {
+        return `No more Golden Leaf left to use`;
+      }
+      const cardToOccupy = Card.fromName(
+        paymentOptions.occupyCardWithGoldenLeaf
+      );
+      const occupiedCardMatcher = [
+        { type: "GOLDEN_LEAF", cardType: cardToOccupy.cardType },
+        {
+          type: "GOLDEN_LEAF",
+          cardType: cardToOccupy.isUnique ? "UNIQUE" : "COMMON",
+        },
+      ];
+      const playedCardMatcher = [
+        { type: "GOLDEN_LEAF", cardType: cardToPlay.cardType },
+        {
+          type: "GOLDEN_LEAF",
+          cardType: cardToPlay.isUnique ? "UNIQUE" : "COMMON",
+        },
+      ];
+      if (
+        !(
+          (cardToPlay.associatedCard.type === "GOLDEN_LEAF" &&
+            occupiedCardMatcher.some((m) =>
+              isEqual(m, cardToPlay.associatedCard)
+            )) ||
+          (cardToOccupy.associatedCard.type === "GOLDEN_LEAF" &&
+            playedCardMatcher.some((m) =>
+              isEqual(m, cardToOccupy.associatedCard)
+            ))
+        )
+      ) {
+        return `Unable to use Golden Leaf to play card`;
       }
       return null;
     }
@@ -1729,6 +1751,10 @@ export class Player implements IGameTextEntity {
 
   get numGoldenLeaf(): number {
     return this._numGoldenLeaf;
+  }
+
+  initGoldenLeaf(): void {
+    this._numGoldenLeaf = 3;
   }
 
   useGoldenLeaf(): void {

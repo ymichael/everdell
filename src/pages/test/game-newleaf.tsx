@@ -2,7 +2,6 @@ import { GetServerSideProps } from "next";
 
 import { GameJSON, PlayerJSON } from "../../model/jsonTypes";
 import {
-  AdornmentName,
   GameInputType,
   GameInput,
   ResourceType,

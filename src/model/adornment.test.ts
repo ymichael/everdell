@@ -31,7 +31,7 @@ describe("Adornment", () => {
   let player: Player;
 
   beforeEach(() => {
-    gameState = testInitialGameState();
+    gameState = testInitialGameState({ meadowCards: [] });
     player = gameState.getActivePlayer();
   });
 

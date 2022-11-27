@@ -904,7 +904,7 @@ describe("Card", () => {
         });
       });
 
-      it("should with multiple multi-step productions", () => {
+      it("should work with multiple multi-step productions", () => {
         player.addToCity(gameState, CardName.CLOCK_TOWER);
         player.addToCity(gameState, CardName.TEACHER);
         player.addToCity(gameState, CardName.CHIP_SWEEP);
@@ -914,6 +914,11 @@ describe("Card", () => {
         expect(player.currentSeason).to.be(Season.WINTER);
         expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
         expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+
+        // Stack the deck with Teachers
+        gameState.replenishMeadow();
+        gameState.deck.addToStack(CardName.TEACHER);
+        gameState.deck.addToStack(CardName.SHOPKEEPER);
 
         // Use up all workers
         gameState.locationsMap[LocationName.BASIC_ONE_BERRY]!.push(
@@ -982,7 +987,7 @@ describe("Card", () => {
           inputType: GameInputType.SELECT_CARDS as const,
           prevInputType: GameInputType.SELECT_WORKER_PLACEMENT,
           cardContext: CardName.TEACHER,
-          cardOptions: [CardName.TEACHER, CardName.TEACHER],
+          cardOptions: [CardName.SHOPKEEPER, CardName.TEACHER],
           maxToSelect: 1,
           minToSelect: 1,
           clientOptions: {
@@ -2311,6 +2316,7 @@ describe("Card", () => {
         expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
 
         // All cards player can't play
+        gameState.clearMeadow();
         expect(gameState.meadowCards).to.eql([]);
         gameState.meadowCards.push(CardName.LOOKOUT);
 
@@ -3825,6 +3831,7 @@ describe("Card", () => {
         const card = Card.fromName(CardName.QUEEN);
         player.addToCity(gameState, CardName.QUEEN);
         player.addCardToHand(gameState, CardName.HUSBAND);
+        gameState.clearMeadow();
 
         expect(player.numAvailableWorkers).to.be(2);
         expect(player.hasCardInCity(CardName.HUSBAND)).to.be(false);
@@ -4500,7 +4507,7 @@ describe("Card", () => {
         const card = Card.fromName(CardName.SHEPHERD);
 
         // Make sure we can play this card
-
+        gameState.clearMeadow();
         player1.gainResources(gameState, {
           [ResourceType.TWIG]: 3,
           [ResourceType.BERRY]: 2,

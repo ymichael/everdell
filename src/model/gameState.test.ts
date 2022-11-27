@@ -29,7 +29,9 @@ describe("GameState", () => {
   let player: Player;
 
   beforeEach(() => {
-    gameState = testInitialGameState();
+    gameState = testInitialGameState({
+      meadowCards: [],
+    });
     player = gameState.getActivePlayer();
   });
 
@@ -67,7 +69,7 @@ describe("GameState", () => {
         CardName.MINE,
       ]);
 
-      gameState.removeCardFromMeadow(CardName.FARM, false);
+      gameState.removeCardFromMeadow(CardName.FARM);
       expect(gameState.meadowCards.length).to.be(7);
       expect(gameState.meadowCards).to.eql([
         CardName.QUEEN,
@@ -79,8 +81,8 @@ describe("GameState", () => {
         CardName.MINE,
       ]);
 
-      gameState.removeCardFromMeadow(CardName.FARM, true);
-      expect(gameState.meadowCards.length).to.be(8);
+      gameState.removeCardFromMeadow(CardName.FARM);
+      expect(gameState.meadowCards.length).to.be(6);
       expect(gameState.meadowCards).to.eql([
         CardName.QUEEN,
         CardName.MINER_MOLE,
@@ -88,8 +90,6 @@ describe("GameState", () => {
         CardName.QUEEN,
         CardName.MINER_MOLE,
         CardName.MINE,
-        CardName.FARM,
-        CardName.SHOPKEEPER,
       ]);
     });
   });
@@ -97,6 +97,7 @@ describe("GameState", () => {
   describe("station", () => {
     beforeEach(() => {
       gameState = testInitialGameState({
+        stationCards: [],
         gameOptions: { newleaf: { station: true } },
       });
       player = gameState.getActivePlayer();
@@ -692,6 +693,7 @@ describe("GameState", () => {
       const player = gameState.getActivePlayer();
       player.addCardToHand(gameState, CardName.FOOL);
       player.gainResources(gameState, Card.fromName(CardName.FOOL).baseCost);
+
       expect(gameState.getPlayableCards()).to.eql([
         { card: CardName.FOOL, fromMeadow: false },
       ]);
@@ -1120,7 +1122,7 @@ describe("GameState", () => {
       player.placeWorkerOnLocation(LocationName.BASIC_ONE_BERRY);
       player.placeWorkerOnLocation(LocationName.BASIC_ONE_BERRY);
 
-      const topOfDeck = [
+      gameState.meadowCards.push(
         CardName.FARM,
         CardName.MINE,
         CardName.QUEEN,
@@ -1128,10 +1130,10 @@ describe("GameState", () => {
         CardName.CASTLE,
         CardName.TEACHER,
         CardName.HISTORIAN,
-        CardName.INN,
-        CardName.LOOKOUT,
-        CardName.POST_OFFICE,
-      ];
+        CardName.INN
+      );
+
+      const topOfDeck = [CardName.LOOKOUT, CardName.POST_OFFICE];
       topOfDeck.reverse();
       topOfDeck.forEach((x) => gameState.deck.addToStack(x));
 
@@ -1206,7 +1208,7 @@ describe("GameState", () => {
       player.addCardToHand(gameState, CardName.KING);
       player.addCardToHand(gameState, CardName.EVERTREE);
 
-      const topOfDeck = [
+      gameState.meadowCards.push(
         CardName.FARM,
         CardName.MINE,
         CardName.QUEEN,
@@ -1214,10 +1216,10 @@ describe("GameState", () => {
         CardName.CASTLE,
         CardName.TEACHER,
         CardName.HISTORIAN,
-        CardName.INN,
-        CardName.LOOKOUT,
-        CardName.POST_OFFICE,
-      ];
+        CardName.INN
+      );
+
+      const topOfDeck = [CardName.LOOKOUT, CardName.POST_OFFICE];
       topOfDeck.reverse();
       topOfDeck.forEach((x) => gameState.deck.addToStack(x));
 
@@ -1310,7 +1312,7 @@ describe("GameState", () => {
       player.addCardToHand(gameState, CardName.FARM);
       player.addCardToHand(gameState, CardName.FARM);
 
-      const topOfDeck = [
+      gameState.meadowCards.push(
         CardName.FARM,
         CardName.MINE,
         CardName.QUEEN,
@@ -1318,10 +1320,10 @@ describe("GameState", () => {
         CardName.CASTLE,
         CardName.TEACHER,
         CardName.HISTORIAN,
-        CardName.INN,
-        CardName.LOOKOUT,
-        CardName.POST_OFFICE,
-      ];
+        CardName.INN
+      );
+
+      const topOfDeck = [CardName.LOOKOUT, CardName.POST_OFFICE];
       topOfDeck.reverse();
       topOfDeck.forEach((x) => gameState.deck.addToStack(x));
 
@@ -1350,9 +1352,7 @@ describe("GameState", () => {
       ]);
 
       [player, gameState] = multiStepGameInputTest(gameState, [
-        {
-          inputType: GameInputType.PREPARE_FOR_SEASON,
-        },
+        { inputType: GameInputType.PREPARE_FOR_SEASON },
       ]);
 
       expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);

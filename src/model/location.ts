@@ -1043,6 +1043,8 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
           gameState.discardPile.addToStack(cardName);
         });
 
+        gameState.replenishMeadow();
+
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_CARDS,
           prevInputType: gameInput.inputType,

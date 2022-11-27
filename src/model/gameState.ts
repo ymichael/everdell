@@ -396,6 +396,12 @@ export class GameState {
     return this.getRemainingPlayers().length === 0;
   }
 
+  clearMeadow(): void {
+    while (this.meadowCards.length) {
+      this.meadowCards.pop();
+    }
+  }
+
   replenishMeadow(): void {
     while (this.meadowCards.length < MEADOW_SIZE) {
       this.meadowCards.push(this.drawCard());
@@ -413,10 +419,7 @@ export class GameState {
     }
   }
 
-  removeCardFromMeadow(
-    cardName: CardName,
-    replenishMeadow: boolean = true
-  ): void {
+  removeCardFromMeadow(cardName: CardName): void {
     const idx = this.meadowCards.indexOf(cardName);
     if (idx === -1) {
       throw new Error(
@@ -428,9 +431,6 @@ export class GameState {
       );
     } else {
       this.meadowCards.splice(idx, 1);
-    }
-    if (replenishMeadow) {
-      this.replenishMeadow();
     }
   }
 
@@ -1115,6 +1115,11 @@ export class GameState {
     }
 
     const player = this.getActivePlayer();
+
+    if (this.pendingGameInputs.length === 0) {
+      this.replenishMeadow();
+      this.replenishStation();
+    }
 
     // A player is preparing for season, complete that first.
     if (

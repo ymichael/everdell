@@ -27,7 +27,7 @@ describe("Location", () => {
   let player: Player;
 
   beforeEach(() => {
-    gameState = testInitialGameState();
+    gameState = testInitialGameState({ meadowCards: [] });
     player = gameState.getActivePlayer();
   });
 
@@ -484,14 +484,16 @@ describe("Location", () => {
     it("should allow player to discard 2, draw 2 from the Meadow and gain 1 ANY", () => {
       gameState.locationsMap[name] = [];
 
-      gameState.meadowCards.push(CardName.FARM);
-      gameState.meadowCards.push(CardName.FARM);
-      gameState.meadowCards.push(CardName.FARM);
-      gameState.meadowCards.push(CardName.FARM);
-      gameState.meadowCards.push(CardName.MINE);
-      gameState.meadowCards.push(CardName.MINE);
-      gameState.meadowCards.push(CardName.MINE);
-      gameState.meadowCards.push(CardName.MINE);
+      gameState.meadowCards.push(
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.MINE,
+        CardName.MINE,
+        CardName.MINE,
+        CardName.MINE
+      );
 
       gameState.deck.addToStack(CardName.RANGER);
       gameState.deck.addToStack(CardName.RANGER);

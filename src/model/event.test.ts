@@ -2716,9 +2716,15 @@ describe("Event", () => {
   });
 
   describe(EventName.SPECIAL_RIVERSIDE_RESORT, () => {
-    it("can claim event + meadow replenishes properly", () => {
-      gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
+    beforeEach(() => {
+      gameState = testInitialGameState({
+        meadowCards: [],
+        gameOptions: { pearlbrook: true },
+      });
       player = gameState.getActivePlayer();
+    });
+
+    it("can claim event + meadow replenishes properly", () => {
       const event = Event.fromName(EventName.SPECIAL_RIVERSIDE_RESORT);
       const gameInput = claimEventInput(event.name);
 
@@ -2793,8 +2799,6 @@ describe("Event", () => {
     });
 
     it("should not be able to put non-Critters under event", () => {
-      gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
-      player = gameState.getActivePlayer();
       const event = Event.fromName(EventName.SPECIAL_RIVERSIDE_RESORT);
       const gameInput = claimEventInput(event.name);
 
@@ -2856,8 +2860,6 @@ describe("Event", () => {
     });
 
     it("calculate points correctly if putting 3 Critters beneath event", () => {
-      gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
-      player = gameState.getActivePlayer();
       const event = Event.fromName(EventName.SPECIAL_RIVERSIDE_RESORT);
       const gameInput = claimEventInput(event.name);
 
@@ -2932,8 +2934,6 @@ describe("Event", () => {
     });
 
     it("should calculate points correctly if putting 2 Critters beneath event", () => {
-      gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
-      player = gameState.getActivePlayer();
       const event = Event.fromName(EventName.SPECIAL_RIVERSIDE_RESORT);
       const gameInput = claimEventInput(event.name);
 
@@ -3008,8 +3008,6 @@ describe("Event", () => {
     });
 
     it("should calculate points correctly if putting 1 Critters beneath event", () => {
-      gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
-      player = gameState.getActivePlayer();
       const event = Event.fromName(EventName.SPECIAL_RIVERSIDE_RESORT);
       const gameInput = claimEventInput(event.name);
 
@@ -3084,8 +3082,6 @@ describe("Event", () => {
     });
 
     it("should calculate points correctly if putting 0 Critters beneath event", () => {
-      gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
-      player = gameState.getActivePlayer();
       const event = Event.fromName(EventName.SPECIAL_RIVERSIDE_RESORT);
       const gameInput = claimEventInput(event.name);
 
@@ -3155,9 +3151,15 @@ describe("Event", () => {
   });
 
   describe(EventName.SPECIAL_SUNKEN_TREASURE_DISCOVERED, () => {
-    it("can claim event, choose a card, and have meadow replenish properly", () => {
-      gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
+    beforeEach(() => {
+      gameState = testInitialGameState({
+        meadowCards: [],
+        gameOptions: { pearlbrook: true },
+      });
       player = gameState.getActivePlayer();
+    });
+
+    it("can claim event, choose a card, and have meadow replenish properly", () => {
       const event = Event.fromName(
         EventName.SPECIAL_SUNKEN_TREASURE_DISCOVERED
       );
@@ -3237,8 +3239,6 @@ describe("Event", () => {
     });
 
     it("cannot play card worth more than 3 VP", () => {
-      gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
-      player = gameState.getActivePlayer();
       const event = Event.fromName(
         EventName.SPECIAL_SUNKEN_TREASURE_DISCOVERED
       );
@@ -3302,8 +3302,6 @@ describe("Event", () => {
     });
 
     it("played card effect happens", () => {
-      gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
-      player = gameState.getActivePlayer();
       const event = Event.fromName(
         EventName.SPECIAL_SUNKEN_TREASURE_DISCOVERED
       );

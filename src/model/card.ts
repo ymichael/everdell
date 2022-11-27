@@ -3275,6 +3275,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           gameState.discardPile.addToStack(cardName);
         });
 
+        gameState.replenishMeadow();
+
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_CARDS,
           prevInputType: gameInput.inputType,

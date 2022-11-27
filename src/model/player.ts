@@ -51,6 +51,7 @@ export class Player implements IGameTextEntity {
   private placedWorkers: WorkerPlacementInfo[];
 
   private numAmbassadors: number;
+  private _numGoldenLeaf: number;
 
   public playerStatus: PlayerStatus;
 
@@ -76,6 +77,7 @@ export class Player implements IGameTextEntity {
     },
     currentSeason = Season.WINTER,
     numWorkers = 2,
+    numGoldenLeaf = 3,
     numAmbassadors = 0,
     claimedEvents = {},
     placedWorkers = [],
@@ -94,6 +96,7 @@ export class Player implements IGameTextEntity {
     currentSeason?: Season;
     numWorkers?: number;
     numAmbassadors?: number;
+    numGoldenLeaf?: number;
     claimedEvents?: Partial<Record<EventName, PlayedEventInfo>>;
     placedWorkers?: WorkerPlacementInfo[];
     playerStatus?: PlayerStatus;
@@ -120,6 +123,7 @@ export class Player implements IGameTextEntity {
 
     // newleaf only
     this._trainTicketStatus = trainTicketStatus;
+    this._numGoldenLeaf = numGoldenLeaf;
 
     this._numCardsInHand = numCardsInHand;
   }
@@ -1218,6 +1222,20 @@ export class Player implements IGameTextEntity {
       });
     }
 
+    if (paymentOptions.occupyCard) {
+      let hasUsed = false;
+      this.getPlayedCardForCardName(paymentOptions.occupyCard).forEach(
+        (playedCard) => {
+          if (!hasUsed) {
+            if (!playedCard.usedForCritter) {
+              playedCard.usedForCritter = true;
+              hasUsed = true;
+            }
+          }
+        }
+      );
+    }
+
     if (paymentOptions.cardToDungeon) {
       const playedDungeon = this.getFirstPlayedCard(CardName.DUNGEON);
 
@@ -1312,6 +1330,26 @@ export class Player implements IGameTextEntity {
         )
       ) {
         return `Cannot find associated card to play ${cardToPlay.name}`;
+      }
+      return null;
+    }
+
+    if (paymentOptions.occupyCard) {
+      if (!cardToPlay.isCritter) {
+        return `Cannot use associated card to play ${cardToPlay.name}`;
+      }
+      if (cardToPlay.associatedCard.type === "GOLDEN_LEAF") {
+        // TODO
+        throw new Error("Not Implemented yet");
+      } else if (cardToPlay.associatedCard.type === "CARD") {
+        if (
+          !(
+            paymentOptions.occupyCard === cardToPlay.associatedCard.cardName &&
+            this.hasUnoccupiedConstruction(cardToPlay.associatedCard.cardName)
+          )
+        ) {
+          return `Cannot find associated card to play ${cardToPlay.name}`;
+        }
       }
       return null;
     }
@@ -1689,6 +1727,17 @@ export class Player implements IGameTextEntity {
     }
   }
 
+  get numGoldenLeaf(): number {
+    return this._numGoldenLeaf;
+  }
+
+  useGoldenLeaf(): void {
+    if (this._numGoldenLeaf <= 0) {
+      throw new Error("Unable to use golden leaf");
+    }
+    this._numGoldenLeaf--;
+  }
+
   get trainTicketStatus(): TrainTicketStatus | null {
     return this._trainTicketStatus;
   }
@@ -1752,6 +1801,7 @@ export class Player implements IGameTextEntity {
       adornmentsInHand: [],
       playedAdornments: this.playedAdornments,
       trainTicketStatus: this.trainTicketStatus,
+      numGoldenLeaf: this.numGoldenLeaf,
       ...(includePrivate
         ? {
             playerSecret: this.playerSecret,

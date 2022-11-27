@@ -650,6 +650,8 @@ export type CardPaymentOptions = {
 
   useAssociatedCard?: boolean;
 
+  occupyCard?: CardName;
+
   // Eg crane, innkeeper, queen
   cardToUse?:
     | CardName.QUEEN

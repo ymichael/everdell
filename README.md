@@ -10,6 +10,8 @@ Currently supports:
 
 - [Base game](https://boardgamegeek.com/boardgame/199792/everdell)
 - [Pearlbrook Expansion](https://boardgamegeek.com/boardgame/259996/everdell-pearlbrook)
+- In progress: Newleaf
+- In progress: Bellfaire Locations & Events
 
 We designed this application with expansions in mind so it should be possible to add support for even more official expansions.
 

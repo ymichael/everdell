@@ -4575,8 +4575,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       cardOwner: Player,
       playedCard: PlayedCardInfo
     ) => {
-      const player = gameState.getActivePlayer();
-
       gameState.pendingGameInputs.push({
         inputType: GameInputType.SELECT_RESOURCES,
         label: "Choose 2 resources to gain from this Freight Car",
@@ -4634,7 +4632,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           return;
         }
 
-        let updatedResources = { ...origPlayedCard.resources };
+        const updatedResources = { ...origPlayedCard.resources };
 
         // Long roundabout way of checking each resource type + creating
         // an updated resources list :()

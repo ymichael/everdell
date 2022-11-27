@@ -7929,7 +7929,7 @@ describe("Card", () => {
         expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(2);
       });
       it("should not allow player to select than 2 resources", () => {
-        let player = gameState.getActivePlayer();
+        const player = gameState.getActivePlayer();
 
         const card = Card.fromName(CardName.FREIGHT_CAR);
 
@@ -7976,7 +7976,6 @@ describe("Card", () => {
       });
       it("should not allow player to select more resources than are on the card", () => {
         let player = gameState.getActivePlayer();
-        let player2 = gameState.players[1];
 
         const card = Card.fromName(CardName.FREIGHT_CAR);
 

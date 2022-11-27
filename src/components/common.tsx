@@ -77,6 +77,11 @@ export const CardIcon = () => {
   return <Image alt="Card Icon" src="/images/card.png" layout="fill" />;
 };
 
+export const GoldenLeafIcon = () => {
+  // TODO (replace this icon)
+  return <Image alt="Golden Leaf Icon" src="/images/leaf.png" layout="fill" />;
+};
+
 export const TicketIcon = () => {
   return <Image alt="Ticket Icon" src="/images/ticket.png" layout="fill" />;
 };

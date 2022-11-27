@@ -18,6 +18,7 @@ import {
   InfoIconSvg,
   VPIcon,
   CardIcon,
+  GoldenLeafIcon,
   AdornmentCardIcon,
   CardTypeSymbol,
   ResourceTypeIcon,
@@ -226,6 +227,18 @@ const PlayerStatus: React.FC<{
                 {player.numCardsInHand}
               </div>
             </div>
+            <div
+              className={styles.status_box_item_resource}
+              title="No. of Golden Leafs"
+            >
+              <div className={styles.status_box_item_resource_icon}>
+                <GoldenLeafIcon />
+              </div>
+              <div className={styles.status_box_item_resource_count}>
+                {player.numGoldenLeaf}
+              </div>
+            </div>
+
             {gameStateJSON.gameOptions.newleaf?.ticket && (
               <div
                 className={styles.status_box_item_resource}

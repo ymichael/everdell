@@ -7716,7 +7716,99 @@ describe("Card", () => {
 
     describe(CardName.FREIGHT_CAR, () => {});
 
-    describe(CardName.GARDENER, () => {});
+    describe(CardName.GARDENER, () => {
+      it("should allow the player to reactivate production cards", () => {
+        let player = gameState.getActivePlayer();
+        const card = Card.fromName(CardName.GARDENER);
+
+        player.addToCity(gameState, CardName.MINE);
+        player.addToCity(gameState, CardName.RESIN_REFINERY);
+
+        // Make sure we can play this card
+        player.gainResources(gameState, card.baseCost);
+        player.addCardToHand(gameState, card.name);
+
+        expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
+
+        const selectPlayedCardInput = {
+          inputType: GameInputType.SELECT_PLAYED_CARDS as const,
+          prevInputType: GameInputType.PLAY_CARD,
+          cardContext: CardName.GARDENER,
+          maxToSelect: 2,
+          minToSelect: 2,
+          cardOptions: [
+            ...player.getPlayedCardForCardName(CardName.MINE),
+            ...player.getPlayedCardForCardName(CardName.RESIN_REFINERY),
+          ],
+          clientOptions: {
+            selectedCards: [
+              player.getFirstPlayedCard(CardName.MINE),
+              player.getFirstPlayedCard(CardName.RESIN_REFINERY),
+            ],
+          },
+        };
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+          selectPlayedCardInput,
+        ]);
+
+        expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(1);
+        expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
+      });
+
+      it("should allow the player to play if 0 production cards in city", () => {
+        let player = gameState.getActivePlayer();
+        const card = Card.fromName(CardName.GARDENER);
+
+        // Make sure we can play this card
+        player.gainResources(gameState, card.baseCost);
+        player.addCardToHand(gameState, card.name);
+
+        expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+        ]);
+
+        expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
+      });
+
+      it("allow gardener to be played if only 1 production card in city", () => {
+        let player = gameState.getActivePlayer();
+        const card = Card.fromName(CardName.GARDENER);
+
+        player.addToCity(gameState, CardName.MINE);
+
+        // Make sure we can play this card
+        player.gainResources(gameState, card.baseCost);
+        player.addCardToHand(gameState, card.name);
+
+        expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+
+        const selectPlayedCardInput = {
+          inputType: GameInputType.SELECT_PLAYED_CARDS as const,
+          prevInputType: GameInputType.PLAY_CARD,
+          cardContext: CardName.GARDENER,
+          maxToSelect: 1,
+          minToSelect: 1,
+          cardOptions: [...player.getPlayedCardForCardName(CardName.MINE)],
+          clientOptions: {
+            selectedCards: [player.getFirstPlayedCard(CardName.MINE)],
+          },
+        };
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+          selectPlayedCardInput,
+        ]);
+
+        expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(1);
+      });
+    });
 
     describe(CardName.GREENHOUSE, () => {});
 

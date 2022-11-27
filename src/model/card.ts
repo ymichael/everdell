@@ -4569,7 +4569,66 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       [ResourceType.BERRY]: 3,
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.PLAY_CARD) {
+        const productionCards = onlyRelevantProductionCards(
+          gameState,
+          player.getAllPlayedCardsByType(CardType.PRODUCTION)
+        );
+
+        // betwee num of production cards & 2, get the lower of the two numbers
+        const numToActivate = Math.min(productionCards.length, 2);
+
+        // in Chipsmith and other cases, we check if you have at least 1 PRODUCTION
+        // card before letting you visit that location. However, you should be able to play
+        // the Gardener with 0 production cards in your city.
+        if (numToActivate === 0) {
+          gameState.addGameLogFromCard(CardName.GARDENER, [
+            player,
+            " does not have any PRODUCTION cards to activate.",
+          ]);
+          return;
+        }
+
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          prevInputType: gameInput.inputType,
+          label: `Select ${numToActivate} PRODUCTION to activate`,
+          cardOptions: productionCards,
+          cardContext: CardName.GARDENER,
+          maxToSelect: numToActivate,
+          minToSelect: numToActivate,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS &&
+        gameInput.cardContext === CardName.GARDENER
+      ) {
+        const selectedCards = gameInput.clientOptions.selectedCards;
+        if (!selectedCards || selectedCards.length !== gameInput.minToSelect) {
+          throw new Error(`Please select ${gameInput.minToSelect} cards`);
+        }
+
+        gameState.addGameLogFromCard(CardName.GARDENER, [
+          player,
+          " activated PRODUCTION on ",
+          ...cardListToGameText(selectedCards.map(({ cardName }) => cardName)),
+          ".",
+        ]);
+        selectedCards.forEach((selectedCard) => {
+          if (!gameInput.cardOptions.find((x) => isEqual(x, selectedCard))) {
+            throw new Error("Could not find selected card.");
+          }
+          Card.fromName(selectedCard.cardName).reactivateCard(
+            gameState,
+            gameInput,
+            gameState.getPlayer(selectedCard.cardOwnerId),
+            selectedCard
+          );
+        });
+      }
     },
   }),
   [CardName.GREENHOUSE]: new Card({

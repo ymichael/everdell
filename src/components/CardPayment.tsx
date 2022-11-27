@@ -152,49 +152,9 @@ const OptionToUseGoldenLeaf: React.FC<{
     return <></>;
   }
 
-  const cardOptions: CardName[] = [];
-  const cardToPlayMatcher = [
-    { type: "GOLDEN_LEAF", cardType: card.cardType },
-    {
-      type: "GOLDEN_LEAF",
-      cardType: card.isUnique ? "UNIQUE" : "COMMON",
-    },
-  ];
-  viewingPlayer.getPlayedConstructions().forEach((playedCardInfo) => {
-    if (playedCardInfo.usedForCritter) {
-      return;
-    }
-    const cardToOccupy = CardModel.fromName(playedCardInfo.cardName);
-    if (card.associatedCard.type === "GOLDEN_LEAF") {
-      switch (card.associatedCard.cardType) {
-        case "UNIQUE":
-          if (cardToOccupy.isUnique) {
-            cardOptions.push(cardToOccupy.name);
-            return;
-          }
-          break;
-        case "COMMON":
-          if (!cardToOccupy.isUnique) {
-            cardOptions.push(cardToOccupy.name);
-            return;
-          }
-          break;
-        case cardToOccupy.cardType:
-          cardOptions.push(cardToOccupy.name);
-          return;
-
-        default:
-          break;
-      }
-    }
-    if (
-      cardToOccupy.associatedCard.type === "GOLDEN_LEAF" &&
-      cardToPlayMatcher.some((m) => isEqual(m, cardToOccupy.associatedCard))
-    ) {
-      cardOptions.push(cardToOccupy.name);
-    }
-  });
-
+  const cardOptions = viewingPlayer.getUnoccupiedConstructionUsingGoldenLeaf(
+    cardName
+  );
   if (cardOptions.length === 0) {
     return <></>;
   }

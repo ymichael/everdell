@@ -1,7 +1,7 @@
 import expect from "expect.js";
 import { Card } from "./card";
 import { GameState } from "./gameState";
-import { testInitialGameState } from "./testHelpers";
+import { testInitialGameState, multiStepGameInputTest } from "./testHelpers";
 import {
   ResourceType,
   CardName,
@@ -344,6 +344,42 @@ describe("Player", () => {
         player.canAffordCard(CardName.RESIN_REFINERY, false /* isMeadow */)
       ).to.be(true);
     });
+
+    it("Use golden leaf on unoccupied special construction", () => {
+      const player = gameState.getActivePlayer();
+      expect(player.getNumResources()).to.be(0);
+      expect(player.numGoldenLeaf).to.be(0);
+      expect(
+        player.canAffordCard(CardName.HUSBAND, false /* isMeadow */)
+      ).to.be(false);
+
+      player.initGoldenLeaf();
+      player.addToCity(gameState, CardName.GREENHOUSE);
+      expect(
+        player.canAffordCard(CardName.HUSBAND, false /* isMeadow */)
+      ).to.be(true);
+      expect(player.canAffordCard(CardName.RANGER, false /* isMeadow */)).to.be(
+        false
+      );
+    });
+
+    it("Use golden leaf on unoccupied regular construction", () => {
+      const player = gameState.getActivePlayer();
+      expect(player.getNumResources()).to.be(0);
+      expect(player.numGoldenLeaf).to.be(0);
+      expect(
+        player.canAffordCard(CardName.LAMPLIGHTER, false /* isMeadow */)
+      ).to.be(false);
+
+      player.initGoldenLeaf();
+      player.addToCity(gameState, CardName.FARM);
+      expect(
+        player.canAffordCard(CardName.LAMPLIGHTER, false /* isMeadow */)
+      ).to.be(true);
+      expect(player.canAffordCard(CardName.RANGER, false /* isMeadow */)).to.be(
+        false
+      );
+    });
   });
 
   describe("validatePaymentOptions", () => {
@@ -485,6 +521,68 @@ describe("Player", () => {
       ).to.be(null);
     });
 
+    it("unoccupied & golden leaf", () => {
+      const player = gameState.getActivePlayer();
+      player.addToCity(gameState, CardName.FARM);
+
+      expect(
+        player.validatePaymentOptions(
+          playCardInput(CardName.FARM, {
+            paymentOptions: { resources: {} },
+          })
+        )
+      ).to.match(/insufficient/i);
+
+      // Doesn't work for constructions
+      expect(
+        player.validatePaymentOptions(
+          playCardInput(CardName.FARM, {
+            paymentOptions: {
+              resources: {},
+              occupyCardWithGoldenLeaf: CardName.GREENHOUSE,
+            },
+          })
+        )
+      ).to.match(/cannot use associated card/i);
+
+      // Need to have gold leafs
+      expect(
+        player.validatePaymentOptions(
+          playCardInput(CardName.LAMPLIGHTER, {
+            paymentOptions: {
+              resources: {},
+              occupyCardWithGoldenLeaf: CardName.FARM,
+            },
+          })
+        )
+      ).to.match(/no more golden leaf/i);
+
+      // Error if don't have the specified card
+      player.initGoldenLeaf();
+      expect(
+        player.validatePaymentOptions(
+          playCardInput(CardName.INNKEEPER, {
+            paymentOptions: {
+              resources: {},
+              occupyCardWithGoldenLeaf: CardName.LIBRARY,
+            },
+          })
+        )
+      ).to.match(/cannot find unoccupied library/i);
+
+      player.addToCity(gameState, CardName.LIBRARY);
+      expect(
+        player.validatePaymentOptions(
+          playCardInput(CardName.INNKEEPER, {
+            paymentOptions: {
+              resources: {},
+              occupyCardWithGoldenLeaf: CardName.LIBRARY,
+            },
+          })
+        )
+      ).to.be(null);
+    });
+
     it("cardToDungeon", () => {
       const player = gameState.getActivePlayer();
       expect(
@@ -597,6 +695,59 @@ describe("Player", () => {
             playCardInput(CardName.HUSBAND, {
               paymentOptions: {
                 cardToUse: CardName.INNKEEPER,
+                resources: {
+                  [ResourceType.BERRY]: 1,
+                },
+              },
+            })
+          )
+        ).to.match(/overpay/i);
+      });
+
+      it("INVENTOR", () => {
+        const player = gameState.getActivePlayer();
+        expect(
+          player.validatePaymentOptions(
+            playCardInput(CardName.FARM, {
+              paymentOptions: {
+                cardToUse: CardName.INVENTOR,
+                resources: {},
+              },
+            })
+          )
+        ).to.match(/inventor/i);
+
+        player.addToCity(gameState, CardName.INVENTOR);
+        expect(
+          player.validatePaymentOptions(
+            playCardInput(CardName.FARM, {
+              paymentOptions: {
+                cardToUse: CardName.INVENTOR,
+                resources: {},
+              },
+            })
+          )
+        ).to.be(null);
+        expect(
+          player.validatePaymentOptions(
+            playCardInput(CardName.HUSBAND, {
+              paymentOptions: {
+                cardToUse: CardName.INVENTOR,
+                resources: {},
+              },
+            })
+          )
+        ).to.be(null);
+
+        player.gainResources(gameState, {
+          [ResourceType.BERRY]: 1,
+        });
+
+        expect(
+          player.validatePaymentOptions(
+            playCardInput(CardName.HUSBAND, {
+              paymentOptions: {
+                cardToUse: CardName.INVENTOR,
                 resources: {
                   [ResourceType.BERRY]: 1,
                 },
@@ -1082,6 +1233,58 @@ describe("Player", () => {
         expect(() => {
           gameState = gameState.next(gameInput);
         }).to.throwException(/cannot find associated card/i);
+      });
+    });
+
+    describe("occupyCardWithGoldenLeaf", () => {
+      it("should occupy card after using it and reduce golden leaf by 1", () => {
+        let player = gameState.getActivePlayer();
+
+        // Use GREENHOUSE to play HUSBAND
+        const card = Card.fromName(CardName.HUSBAND);
+        player.initGoldenLeaf();
+        player.addToCity(gameState, CardName.GREENHOUSE);
+        expect(player.hasUnoccupiedConstruction(CardName.GREENHOUSE)).to.be(
+          true
+        );
+        expect(player.numGoldenLeaf).to.be(3);
+
+        player.addCardToHand(gameState, card.name);
+        expect(player.hasCardInCity(CardName.GREENHOUSE)).to.be(true);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name, {
+            paymentOptions: {
+              resources: {},
+              occupyCardWithGoldenLeaf: CardName.GREENHOUSE,
+            },
+          }),
+        ]);
+
+        expect(player.cardsInHand).to.eql([]);
+        expect(player.hasUnoccupiedConstruction(CardName.GREENHOUSE)).to.be(
+          false
+        );
+        expect(player.hasCardInCity(card.name)).to.be(true);
+        expect(player.hasCardInCity(CardName.GREENHOUSE)).to.be(true);
+        expect(player.numGoldenLeaf).to.be(2);
+
+        // Back to the prev player
+        gameState.nextPlayer();
+
+        // Now GREENHOUSE is occupied, try to occupy it again
+        player.addCardToHand(gameState, card.name);
+
+        expect(() => {
+          [player, gameState] = multiStepGameInputTest(gameState, [
+            playCardInput(card.name, {
+              paymentOptions: {
+                resources: {},
+                occupyCardWithGoldenLeaf: CardName.GREENHOUSE,
+              },
+            }),
+          ]);
+        }).to.throwException(/Cannot find unoccupied Greenhouse/i);
       });
     });
 

@@ -998,6 +998,57 @@ export class Player implements IGameTextEntity {
     return card.getNumWorkerSpotsForPlayer(this) > workers.length;
   }
 
+  getUnoccupiedConstructionUsingGoldenLeaf(cardName: CardName): CardName[] {
+    const card = Card.fromName(cardName);
+    if (this.numGoldenLeaf <= 0 || card.isConstruction) {
+      return [];
+    }
+
+    const cardOptions: CardName[] = [];
+    const cardToPlayMatcher = [
+      { type: "GOLDEN_LEAF", cardType: card.cardType },
+      {
+        type: "GOLDEN_LEAF",
+        cardType: card.isUnique ? "UNIQUE" : "COMMON",
+      },
+    ];
+    this.getPlayedConstructions().forEach((playedCardInfo) => {
+      if (playedCardInfo.usedForCritter) {
+        return;
+      }
+      const cardToOccupy = Card.fromName(playedCardInfo.cardName);
+      if (card.associatedCard.type === "GOLDEN_LEAF") {
+        switch (card.associatedCard.cardType) {
+          case "UNIQUE":
+            if (cardToOccupy.isUnique) {
+              cardOptions.push(cardToOccupy.name);
+              return;
+            }
+            break;
+          case "COMMON":
+            if (!cardToOccupy.isUnique) {
+              cardOptions.push(cardToOccupy.name);
+              return;
+            }
+            break;
+          case cardToOccupy.cardType:
+            cardOptions.push(cardToOccupy.name);
+            return;
+
+          default:
+            break;
+        }
+      }
+      if (
+        cardToOccupy.associatedCard.type === "GOLDEN_LEAF" &&
+        cardToPlayMatcher.some((m) => isEqual(m, cardToOccupy.associatedCard))
+      ) {
+        cardOptions.push(cardToOccupy.name);
+      }
+    });
+    return cardOptions;
+  }
+
   canAffordCard(
     cardName: CardName,
     isMeadowCard: boolean,
@@ -1021,9 +1072,13 @@ export class Player implements IGameTextEntity {
       if (this.hasUnoccupiedConstruction(CardName.EVERTREE)) {
         return true;
       }
+      if (card.associatedCard.type == "CARD") {
+        if (this.hasUnoccupiedConstruction(card.associatedCard.cardName)) {
+          return true;
+        }
+      }
       if (
-        card.associatedCard.type == "CARD" &&
-        this.hasUnoccupiedConstruction(card.associatedCard.cardName)
+        this.getUnoccupiedConstructionUsingGoldenLeaf(cardName).length !== 0
       ) {
         return true;
       }
@@ -1345,6 +1400,9 @@ export class Player implements IGameTextEntity {
       const cardToOccupy = Card.fromName(
         paymentOptions.occupyCardWithGoldenLeaf
       );
+      if (!this.hasUnoccupiedConstruction(cardToOccupy.name)) {
+        return `Cannot find unoccupied ${cardToOccupy.name}`;
+      }
       const occupiedCardMatcher = [
         { type: "GOLDEN_LEAF", cardType: cardToOccupy.cardType },
         {

@@ -5174,7 +5174,167 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       [ResourceType.BERRY]: 3,
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
+      const player = gameState.getActivePlayer();
+
+      // choose a color
+      // show cards from meadow that match that option
+      // allow player to choose which cards they want
+      // grant VP
+      // replensh meadow
+
+      if (gameInput.inputType === GameInputType.PLAY_CARD) {
+        // TODO: only show options that exist in the Meadow
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_OPTION_GENERIC,
+          prevInputType: GameInputType.PLAY_CARD,
+          label: "Choose a color",
+          options: [
+            "Blue / Governance",
+            "Green / Production",
+            "Tan / Traveler",
+            "Red / Destination",
+            "Purple / Prosperity",
+          ],
+          cardContext: CardName.POET,
+          clientOptions: {
+            selectedOption: null,
+          },
+        });
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_OPTION_GENERIC &&
+        gameInput.cardContext &&
+        gameInput.cardContext === CardName.POET
+      ) {
+        const meadowCards = gameState.meadowCards;
+
+        const getCardType = () => {
+          switch (gameInput.clientOptions.selectedOption) {
+            case "Blue / Governance":
+              return CardType.GOVERNANCE;
+            case "Green / Production":
+              return CardType.PRODUCTION;
+            case "Tan / Traveler":
+              return CardType.TRAVELER;
+            case "Red / Destination":
+              return CardType.DESTINATION;
+            case "Purple / Prosperity":
+              return CardType.PROSPERITY;
+            default:
+              throw new Error("Must choose a valid color");
+          }
+        };
+
+        const cardType = getCardType();
+
+        const meadowCardsOFType = gameState.meadowCards.filter(
+          (cardName) => Card.fromName(cardName).cardType === cardType
+        );
+
+        // between (1) number of cards in meadow of chosen type and
+        // (2) availalbe space in player's hand, pick the smaller number.
+        // If (1) is smaller, then we don't need the player to choose cards.
+        const numToPick = Math.min(
+          meadowCardsOFType.length,
+          player.maxHandSize - player.numCardsInHand
+        );
+
+        // if there's no space, exit + don't give VP
+        if (numToPick <= 0) {
+          gameState.addGameLogFromCard(CardName.POET, [
+            player,
+            " could not draw any additional CARD and discarded ",
+            ...cardListToGameText(meadowCardsOFType),
+            " from the Meadow.",
+          ]);
+
+          meadowCardsOFType.forEach((cardName) => {
+            gameState.removeCardFromMeadow(cardName);
+            gameState.discardPile.addToStack(cardName);
+          });
+
+          return;
+        }
+
+        // if player can draw all the cards, have them draw all the cards
+        if (meadowCardsOFType.length === numToPick) {
+          meadowCardsOFType.forEach((cardName) => {
+            gameState.removeCardFromMeadow(cardName);
+            player.addCardToHand(gameState, cardName);
+          });
+
+          player.gainResources(gameState, {
+            [ResourceType.VP]: meadowCardsOFType.length,
+          });
+
+          gameState.addGameLogFromCard(CardName.POET, [
+            player,
+            " drew ",
+            ...cardListToGameText(meadowCardsOFType),
+            ` from the Meadow and gained ${meadowCardsOFType.length} VP.`,
+          ]);
+          return;
+        }
+
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_CARDS,
+          prevInputType: gameInput.inputType,
+          label: `Choose ${numToPick} CARD to gain 1 VP per card drawn. The rest will be discarded`,
+          cardOptions: meadowCardsOFType,
+          maxToSelect: numToPick,
+          minToSelect: numToPick,
+          cardContext: CardName.POET,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_CARDS &&
+        gameInput.prevInputType === GameInputType.SELECT_OPTION_GENERIC &&
+        gameInput.cardContext === CardName.POET
+      ) {
+        const selectedCards = gameInput.clientOptions.selectedCards;
+        if (selectedCards.length !== gameInput.maxToSelect) {
+          throw new Error("Must draw up to your hand limit.");
+        }
+
+        // gain the cards you selected
+        selectedCards.forEach((cardName) => {
+          player.addCardToHand(gameState, cardName);
+          gameState.removeCardFromMeadow(cardName);
+        });
+
+        player.gainResources(gameState, {
+          [ResourceType.VP]: selectedCards.length,
+        });
+
+        gameState.addGameLogFromCard(CardName.POET, [
+          player,
+          " drew ",
+          ...cardListToGameText(selectedCards),
+          ` from the Meadow and gained ${selectedCards.length} VP.`,
+        ]);
+
+        // discard all other cards from meadow
+        const meadowCards = gameInput.cardOptions;
+        if (selectedCards.length != meadowCards.length) {
+          selectedCards.forEach((cardName) => {
+            let index = meadowCards.indexOf(cardName);
+            meadowCards.splice(index, 1);
+          });
+
+          meadowCards.forEach((cardName) => {
+            gameState.removeCardFromMeadow(cardName);
+            gameState.discardPile.addToStack(cardName);
+          });
+
+          gameState.addGameLogFromCard(CardName.POET, [
+            player,
+            " discarded ",
+            ...cardListToGameText(meadowCards),
+            " from the Meadow.",
+          ]);
+        }
+      }
     },
   }),
   [CardName.TEA_HOUSE]: new Card({

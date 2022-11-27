@@ -8593,7 +8593,234 @@ describe("Card", () => {
 
     describe(CardName.PHOTOGRAPHER, () => {});
 
-    describe(CardName.POET, () => {});
+    describe(CardName.POET, () => {
+      it("should allow player to choose a color, draw cards from meadow, and get VP", () => {
+        const cards = [
+          CardName.KING,
+          CardName.QUEEN,
+          CardName.POSTAL_PIGEON,
+          CardName.POSTAL_PIGEON,
+          CardName.FARM,
+          CardName.HUSBAND,
+          CardName.CHAPEL,
+          CardName.MONK,
+        ];
+        gameState = testInitialGameState({ meadowCards: cards });
+
+        const topOfDeck = [
+          CardName.SCHOOL,
+          CardName.TEACHER,
+          CardName.WIFE,
+          CardName.DOCTOR,
+        ];
+        topOfDeck.reverse();
+        topOfDeck.forEach((cardName) => {
+          gameState.deck.addToStack(cardName);
+        });
+
+        let player = gameState.getActivePlayer();
+
+        const card = Card.fromName(CardName.POET);
+        player.gainResources(gameState, card.baseCost);
+        player.addCardToHand(gameState, card.name);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+          {
+            inputType: GameInputType.SELECT_OPTION_GENERIC,
+            prevInputType: GameInputType.PLAY_CARD,
+            cardContext: CardName.POET,
+            options: [
+              "Blue / Governance",
+              "Green / Production",
+              "Tan / Traveler",
+              "Red / Destination",
+              "Purple / Prosperity",
+            ],
+            clientOptions: {
+              selectedOption: "Green / Production",
+            },
+          },
+        ]);
+
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(3);
+
+        // check state of player's hand
+        expect(player.cardsInHand.indexOf(CardName.FARM) >= 0);
+        expect(player.cardsInHand.indexOf(CardName.HUSBAND) >= 0);
+        expect(player.cardsInHand.indexOf(CardName.MONK) >= 0);
+
+        // check state of the Meadow
+        expect(gameState.meadowCards.indexOf(CardName.HUSBAND)).to.be.lessThan(
+          0
+        );
+        expect(gameState.meadowCards.indexOf(CardName.MONK)).to.be.lessThan(0);
+        expect(gameState.meadowCards.indexOf(CardName.FARM)).to.be.lessThan(0);
+        expect(
+          gameState.meadowCards.indexOf(CardName.SCHOOL)
+        ).to.be.greaterThan(0);
+      });
+      it("should handle case where player cannot draw all cards from Meadow", () => {
+        const cards = [
+          CardName.KING,
+          CardName.QUEEN,
+          CardName.POSTAL_PIGEON,
+          CardName.POSTAL_PIGEON,
+          CardName.FARM,
+          CardName.HUSBAND,
+          CardName.CHAPEL,
+          CardName.MONK,
+        ];
+        gameState = testInitialGameState({ meadowCards: cards });
+
+        const topOfDeck = [
+          CardName.SCHOOL,
+          CardName.TEACHER,
+          CardName.WIFE,
+          CardName.DOCTOR,
+        ];
+        topOfDeck.reverse();
+        topOfDeck.forEach((cardName) => {
+          gameState.deck.addToStack(cardName);
+        });
+
+        let player = gameState.getActivePlayer();
+
+        const card = Card.fromName(CardName.POET);
+        player.gainResources(gameState, card.baseCost);
+        player.addCardToHand(gameState, card.name);
+        player.addCardToHand(gameState, CardName.WIFE);
+        player.addCardToHand(gameState, CardName.WIFE);
+        player.addCardToHand(gameState, CardName.WIFE);
+        player.addCardToHand(gameState, CardName.WIFE);
+        player.addCardToHand(gameState, CardName.WIFE);
+        player.addCardToHand(gameState, CardName.WIFE);
+        player.addCardToHand(gameState, CardName.WIFE);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+          {
+            inputType: GameInputType.SELECT_OPTION_GENERIC,
+            prevInputType: GameInputType.PLAY_CARD,
+            cardContext: CardName.POET,
+            options: [
+              "Blue / Governance",
+              "Green / Production",
+              "Tan / Traveler",
+              "Red / Destination",
+              "Purple / Prosperity",
+            ],
+            clientOptions: {
+              selectedOption: "Green / Production",
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: GameInputType.SELECT_OPTION_GENERIC,
+            cardContext: CardName.POET,
+            cardOptions: [CardName.FARM, CardName.HUSBAND, CardName.MONK],
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              selectedCards: [CardName.FARM],
+            },
+          },
+        ]);
+
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(1);
+
+        // check state of player's hand
+        expect(player.cardsInHand.indexOf(CardName.FARM)).to.be.greaterThan(0);
+        expect(player.cardsInHand.indexOf(CardName.HUSBAND)).to.be.lessThan(0);
+        expect(player.cardsInHand.indexOf(CardName.MONK)).to.be.lessThan(0);
+
+        // check state of the Meadow
+        expect(gameState.meadowCards.indexOf(CardName.HUSBAND)).to.be.lessThan(
+          0
+        );
+        expect(gameState.meadowCards.indexOf(CardName.MONK)).to.be.lessThan(0);
+        expect(gameState.meadowCards.indexOf(CardName.FARM)).to.be.lessThan(0);
+        expect(
+          gameState.meadowCards.indexOf(CardName.SCHOOL)
+        ).to.be.greaterThan(0);
+      });
+      // TODO: This only happens if you play the Poet from the Meadow. Implement this after Meadow refactor
+      it.skip("should not let player draw cards if hand is full, but should still clear meadow", () => {
+        const cards = [
+          CardName.KING,
+          CardName.QUEEN,
+          CardName.POET,
+          CardName.POSTAL_PIGEON,
+          CardName.FARM,
+          CardName.HUSBAND,
+          CardName.CHAPEL,
+          CardName.MONK,
+        ];
+        gameState = testInitialGameState({ meadowCards: cards });
+
+        const topOfDeck = [
+          CardName.SCHOOL,
+          CardName.TEACHER,
+          CardName.WIFE,
+          CardName.DOCTOR,
+        ];
+        topOfDeck.reverse();
+        topOfDeck.forEach((cardName) => {
+          gameState.deck.addToStack(cardName);
+        });
+
+        let player = gameState.getActivePlayer();
+
+        const card = Card.fromName(CardName.POET);
+        player.gainResources(gameState, card.baseCost);
+        // player.addCardToHand(gameState, card.name);
+
+        player.addCardToHand(gameState, CardName.WIFE);
+        player.addCardToHand(gameState, CardName.WIFE);
+        player.addCardToHand(gameState, CardName.WIFE);
+        player.addCardToHand(gameState, CardName.WIFE);
+        player.addCardToHand(gameState, CardName.WIFE);
+        player.addCardToHand(gameState, CardName.WIFE);
+        player.addCardToHand(gameState, CardName.WIFE);
+        player.addCardToHand(gameState, CardName.WIFE);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+          {
+            inputType: GameInputType.SELECT_OPTION_GENERIC,
+            prevInputType: GameInputType.PLAY_CARD,
+            cardContext: CardName.POET,
+            options: [
+              "Blue / Governance",
+              "Green / Production",
+              "Tan / Traveler",
+              "Red / Destination",
+              "Purple / Prosperity",
+            ],
+            clientOptions: {
+              selectedOption: "Green / Production",
+            },
+          },
+        ]);
+
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+
+        // check state of player's hand
+        expect(player.cardsInHand.indexOf(CardName.FARM)).to.be.lessThan(0);
+        expect(player.cardsInHand.indexOf(CardName.HUSBAND)).to.be.lessThan(0);
+        expect(player.cardsInHand.indexOf(CardName.MONK)).to.be.lessThan(0);
+
+        // check state of the Meadow
+        expect(gameState.meadowCards.indexOf(CardName.HUSBAND)).to.be.lessThan(
+          0
+        );
+        expect(gameState.meadowCards.indexOf(CardName.MONK)).to.be.lessThan(0);
+        expect(gameState.meadowCards.indexOf(CardName.FARM)).to.be.lessThan(0);
+        expect(
+          gameState.meadowCards.indexOf(CardName.SCHOOL)
+        ).to.be.greaterThan(0);
+      });
+    });
 
     describe(CardName.TEA_HOUSE, () => {
       it("allow player to give cards to other player using Tea House", () => {

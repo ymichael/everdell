@@ -423,10 +423,10 @@ describe("GameState", () => {
       player.gainResources(gameState, Card.fromName(CardName.MINE).baseCost);
 
       expect(gameState.getPlayableCards()).to.eql([
-        { card: CardName.FARM, fromMeadow: true },
-        { card: CardName.MINE, fromMeadow: true },
-        { card: CardName.FARM, fromMeadow: false },
-        { card: CardName.MINE, fromMeadow: false },
+        { card: CardName.FARM, source: "MEADOW" },
+        { card: CardName.MINE, source: "MEADOW" },
+        { card: CardName.FARM, source: "HAND" },
+        { card: CardName.MINE, source: "HAND" },
       ]);
     });
   });
@@ -562,7 +562,7 @@ describe("GameState", () => {
 
       player.gainResources(gameState, card.baseCost);
       expect(gameState.getPlayableCards()).to.eql([
-        { card: CardName.FARM, fromMeadow: false },
+        { card: CardName.FARM, source: "HAND" },
       ]);
     });
 
@@ -574,7 +574,7 @@ describe("GameState", () => {
       player.gainResources(gameState, card.baseCost);
 
       expect(gameState.getPlayableCards()).to.eql([
-        { card: CardName.FARM, fromMeadow: false },
+        { card: CardName.FARM, source: "HAND" },
       ]);
 
       // Fill up city
@@ -596,10 +596,10 @@ describe("GameState", () => {
       player.gainResources(gameState, Card.fromName(CardName.KING).baseCost);
 
       expect(gameState.getPlayableCards()).to.eql([
-        { card: CardName.FARM, fromMeadow: false },
-        { card: CardName.MINE, fromMeadow: false },
-        { card: CardName.WIFE, fromMeadow: false },
-        { card: CardName.KING, fromMeadow: false },
+        { card: CardName.FARM, source: "HAND" },
+        { card: CardName.MINE, source: "HAND" },
+        { card: CardName.WIFE, source: "HAND" },
+        { card: CardName.KING, source: "HAND" },
       ]);
 
       // Fill up city
@@ -610,8 +610,8 @@ describe("GameState", () => {
 
       // Only constructions
       expect(gameState.getPlayableCards()).to.eql([
-        { card: CardName.FARM, fromMeadow: false },
-        { card: CardName.MINE, fromMeadow: false },
+        { card: CardName.FARM, source: "HAND" },
+        { card: CardName.MINE, source: "HAND" },
       ]);
 
       expect(() => {
@@ -650,10 +650,10 @@ describe("GameState", () => {
       player.gainResources(gameState, Card.fromName(CardName.KING).baseCost);
 
       expect(gameState.getPlayableCards()).to.eql([
-        { card: CardName.FARM, fromMeadow: false },
-        { card: CardName.MINE, fromMeadow: false },
-        { card: CardName.WIFE, fromMeadow: false },
-        { card: CardName.KING, fromMeadow: false },
+        { card: CardName.FARM, source: "HAND" },
+        { card: CardName.MINE, source: "HAND" },
+        { card: CardName.WIFE, source: "HAND" },
+        { card: CardName.KING, source: "HAND" },
       ]);
 
       // Fill up city
@@ -664,8 +664,8 @@ describe("GameState", () => {
 
       // Only critters
       expect(gameState.getPlayableCards()).to.eql([
-        { card: CardName.WIFE, fromMeadow: false },
-        { card: CardName.KING, fromMeadow: false },
+        { card: CardName.WIFE, source: "HAND" },
+        { card: CardName.KING, source: "HAND" },
       ]);
 
       expect(() => {
@@ -695,7 +695,7 @@ describe("GameState", () => {
       player.gainResources(gameState, Card.fromName(CardName.FOOL).baseCost);
 
       expect(gameState.getPlayableCards()).to.eql([
-        { card: CardName.FOOL, fromMeadow: false },
+        { card: CardName.FOOL, source: "HAND" },
       ]);
 
       // Fill up city
@@ -703,7 +703,7 @@ describe("GameState", () => {
         player.addToCity(gameState, CardName.FARM);
       }
       expect(gameState.getPlayableCards()).to.eql([
-        { card: CardName.FOOL, fromMeadow: false },
+        { card: CardName.FOOL, source: "HAND" },
       ]);
     });
 
@@ -719,7 +719,7 @@ describe("GameState", () => {
         player.addToCity(gameState, CardName.FARM);
       }
       expect(gameState.getPlayableCards()).to.eql([
-        { card: CardName.RUINS, fromMeadow: false },
+        { card: CardName.RUINS, source: "HAND" },
       ]);
 
       expect(player.hasCardInCity(CardName.RUINS)).to.be(false);

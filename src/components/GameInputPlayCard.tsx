@@ -3,7 +3,7 @@ import { useField } from "formik";
 
 import styles from "../styles/gameBoard.module.css";
 
-import { CardName, ResourceType } from "../model/types";
+import { CardName, ResourceType, TPlayableCard } from "../model/types";
 import { Player } from "../model/player";
 import { Card as CardModel } from "../model/card";
 
@@ -12,7 +12,7 @@ import Card from "./Card";
 import { ItemWrapper } from "./common";
 
 const GameInputPlayCard: React.FC<{
-  options: { card: CardName; fromMeadow: boolean }[];
+  options: TPlayableCard[];
   viewingPlayer: Player;
 }> = ({ options = [], viewingPlayer }) => {
   const [_field, meta, helpers] = useField("gameInput.clientOptions");
@@ -50,11 +50,11 @@ const GameInputPlayCard: React.FC<{
   return (
     <div role="group">
       <div className={styles.items}>
-        {options.map(({ card: cardName, fromMeadow }, idx) => {
+        {options.map(({ card: cardName, source }, idx) => {
           const isSelected =
             meta.value &&
             meta.value.card === cardName &&
-            meta.value.fromMeadow === fromMeadow &&
+            meta.value.source === source &&
             meta.value._idx === idx;
           return (
             <div key={idx} className={styles.clickable}>
@@ -64,7 +64,7 @@ const GameInputPlayCard: React.FC<{
                 onClick={() => {
                   resetPaymentOptions(cardName, "DEFAULT", {
                     _idx: idx,
-                    fromMeadow,
+                    source,
                   });
                 }}
               >
@@ -72,7 +72,11 @@ const GameInputPlayCard: React.FC<{
                   isHighlighted={isSelected}
                   footerChildren={
                     <div className={styles.item_footer_text}>
-                      {fromMeadow ? "(Meadow)" : " "}
+                      {source === "MEADOW"
+                        ? "(Meadow)"
+                        : source === "STATION"
+                        ? "(Station)"
+                        : " "}
                     </div>
                   }
                 >

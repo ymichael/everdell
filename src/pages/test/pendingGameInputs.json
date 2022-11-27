@@ -2580,7 +2580,7 @@
       "inputType": "PLAY_CARD",
       "clientOptions": {
         "card": "Shepherd",
-        "fromMeadow": false,
+        "source": "HAND",
         "paymentOptions": {
           "resources": {
             "BERRY": 3
@@ -2628,7 +2628,7 @@
       "inputType": "PLAY_CARD",
       "clientOptions": {
         "card": "Shepherd",
-        "fromMeadow": false,
+        "source": "HAND",
         "paymentOptions": {
           "resources": {
             "TWIG": 1,

@@ -259,28 +259,31 @@ export class Card<TCardType extends CardType = CardType>
         }
       }
       if (
-        gameInput.clientOptions.fromMeadow &&
-        gameState.meadowCards.indexOf(this.name) === -1
+        gameInput.clientOptions.fromMeadow ||
+        gameInput.clientOptions.source === "MEADOW"
       ) {
-        return `Card ${
-          this.name
-        } does not exist in the meadow.\n ${JSON.stringify(
-          gameState.meadowCards,
-          null,
-          2
-        )}`;
-      }
-      if (
-        !gameInput.clientOptions.fromMeadow &&
-        player.cardsInHand.indexOf(this.name) === -1
+        if (gameState.meadowCards.indexOf(this.name) === -1) {
+          return `Card ${
+            this.name
+          } does not exist in the meadow.\n ${JSON.stringify(
+            gameState.meadowCards,
+            null,
+            2
+          )}`;
+        }
+      } else if (
+        !gameInput.clientOptions.fromMeadow ||
+        gameInput.clientOptions.source === "HAND"
       ) {
-        return `Card ${
-          this.name
-        } does not exist in your hand.\n ${JSON.stringify(
-          player.cardsInHand,
-          null,
-          2
-        )}`;
+        if (player.cardsInHand.indexOf(this.name) === -1) {
+          return `Card ${
+            this.name
+          } does not exist in your hand.\n ${JSON.stringify(
+            player.cardsInHand,
+            null,
+            2
+          )}`;
+        }
       }
     }
     if (this.canPlayCheckInner) {
@@ -401,7 +404,7 @@ export class Card<TCardType extends CardType = CardType>
         playedCardContext: playedCard,
         clientOptions: {
           card: this.name,
-          fromMeadow: false,
+          source: "HAND",
           paymentOptions: { resources: {} },
         },
       };

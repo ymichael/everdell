@@ -108,7 +108,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   //   inputType: GameInputType.PLAY_CARD,
   //   clientOptions: {
   //     card: CardName.RANGER,
-  //     fromMeadow: false,
+  //     source: "HAND",
   //     paymentOptions: {
   //       resources: { [ResourceType.BERRY]: 2 },
   //     },
@@ -118,7 +118,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   //   inputType: GameInputType.PLAY_CARD,
   //   clientOptions: {
   //     card: CardName.BARD,
-  //     fromMeadow: false,
+  //     source: "HAND",
   //     paymentOptions: {
   //       resources: { [ResourceType.BERRY]: 3 },
   //     },

@@ -1325,6 +1325,9 @@ export class Player implements IGameTextEntity {
       if (!this.hasCardInCity(paymentOptions.cardToUse)) {
         return `Unable to find ${paymentOptions.cardToUse} in your city`;
       }
+      const fromMeadow =
+        gameInput.clientOptions.fromMeadow ||
+        gameInput.clientOptions.source === "MEADOW";
       switch (paymentOptions.cardToUse) {
         case CardName.CRANE:
           if (!cardToPlay.isConstruction) {
@@ -1341,7 +1344,7 @@ export class Player implements IGameTextEntity {
           }
           return null;
         case CardName.HOTEL:
-          if (gameInput.clientOptions.fromMeadow) {
+          if (fromMeadow) {
             return `Cannot use ${CardName.HOTEL} to play a Meadow card`;
           }
           return this.validatePaidResources(
@@ -1351,7 +1354,7 @@ export class Player implements IGameTextEntity {
           );
         case CardName.INN:
           // TODO check if we can place a worker here
-          if (!gameInput.clientOptions.fromMeadow) {
+          if (!fromMeadow) {
             return `Cannot use ${CardName.INN} to play a non-meadow card`;
           }
           return this.validatePaidResources(

@@ -70,7 +70,8 @@ export type GameInputPlayCard = {
 
   clientOptions: {
     card: CardName | null;
-    fromMeadow: boolean;
+    fromMeadow?: boolean; // Deprecated
+    source?: TPlayableCard["source"];
     paymentOptions: CardPaymentOptions;
   };
 };
@@ -837,3 +838,8 @@ export enum TrainCarTileName {
   TWO_TWIG = "TWO_TWIG",
   ONE_VP = "ONE_VP",
 }
+
+export type TPlayableCard = {
+  card: CardName;
+  source: "HAND" | "MEADOW" | "STATION";
+};

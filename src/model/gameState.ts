@@ -31,6 +31,7 @@ import {
   Season,
   TextPart,
   TrainCarTileName,
+  TPlayableCard,
 } from "./types";
 import { defaultGameOptions } from "./gameOptions";
 import { GameStateJSON } from "./jsonTypes";
@@ -460,8 +461,13 @@ export class GameState {
     this.addGameLog(this.playCardInputLog(gameInput));
 
     player.payForCard(this, gameInput);
-    if (gameInput.clientOptions.fromMeadow) {
+    if (
+      gameInput.clientOptions.fromMeadow ||
+      gameInput.clientOptions.source === "MEADOW"
+    ) {
       this.removeCardFromMeadow(card.name);
+    } else if (gameInput.clientOptions.source === "STATION") {
+      throw new Error("Not implemented");
     } else {
       player.removeCardFromHand(this, card.name, false /* addToDiscardPile */);
     }
@@ -1554,9 +1560,9 @@ export class GameState {
     });
   };
 
-  getPlayableCards(): { card: CardName; fromMeadow: boolean }[] {
+  getPlayableCards(): TPlayableCard[] {
     const player = this.getActivePlayer();
-    const ret: { card: CardName; fromMeadow: boolean }[] = [];
+    const ret: TPlayableCard[] = [];
 
     this.meadowCards.forEach((cardName) => {
       const card = Card.fromName(cardName);
@@ -1564,7 +1570,7 @@ export class GameState {
         player.canAffordCard(card.name, true) &&
         card.canPlayIgnoreCostAndSource(this, false /* strict */)
       ) {
-        ret.push({ card: cardName, fromMeadow: true });
+        ret.push({ card: cardName, source: "MEADOW" });
       }
     });
     player.cardsInHand.forEach((cardName) => {
@@ -1573,7 +1579,7 @@ export class GameState {
         player.canAffordCard(card.name, true) &&
         card.canPlayIgnoreCostAndSource(this, false /* strict */)
       ) {
-        ret.push({ card: cardName, fromMeadow: false });
+        ret.push({ card: cardName, source: "HAND" });
       }
     });
     return ret;
@@ -1631,7 +1637,7 @@ export class GameState {
         inputType: GameInputType.PLAY_CARD,
         clientOptions: {
           card: null,
-          fromMeadow: false,
+          source: "HAND",
           paymentOptions: {
             resources: {},
           },

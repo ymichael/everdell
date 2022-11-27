@@ -4457,7 +4457,7 @@ describe("Card", () => {
             inputType: GameInputType.PLAY_CARD,
             clientOptions: {
               card: card.name,
-              fromMeadow: false,
+              source: "HAND",
               paymentOptions: {
                 resources: {
                   [ResourceType.TWIG]: 1,
@@ -4473,7 +4473,7 @@ describe("Card", () => {
               inputType: GameInputType.PLAY_CARD,
               clientOptions: {
                 card: card.name,
-                fromMeadow: false,
+                source: "HAND",
                 paymentOptions: {
                   resources: {
                     [ResourceType.TWIG]: 1,
@@ -4569,7 +4569,7 @@ describe("Card", () => {
             inputType: GameInputType.PLAY_CARD,
             clientOptions: {
               card: CardName.SHEPHERD,
-              fromMeadow: false,
+              source: "HAND",
               paymentOptions: {
                 useAssociatedCard: true,
                 resources: {},
@@ -5310,7 +5310,7 @@ describe("Card", () => {
         player.gainResources(gameState, card.baseCost);
 
         [player, gameState] = multiStepGameInputTest(gameState, [
-          playCardInput(card.name, { fromMeadow: true }),
+          playCardInput(card.name, { source: "MEADOW" }),
           {
             inputType: GameInputType.SELECT_CARDS,
             prevInputType: GameInputType.PLAY_CARD,

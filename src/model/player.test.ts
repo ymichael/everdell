@@ -18,7 +18,7 @@ const playCardInput = (
     inputType: GameInputType.PLAY_CARD as const,
     clientOptions: {
       card,
-      fromMeadow: false,
+      source: "HAND",
       ...clientOptionOverrides,
     },
   };
@@ -720,7 +720,7 @@ describe("Player", () => {
         expect(
           player.validatePaymentOptions(
             playCardInput(CardName.FARM, {
-              fromMeadow: true,
+              source: "MEADOW",
               paymentOptions: {
                 cardToUse: CardName.INN,
                 resources: {},

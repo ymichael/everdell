@@ -139,7 +139,7 @@ export const playCardInput = (
       inputType: GameInputType.PLAY_CARD as const,
       clientOptions: {
         card,
-        fromMeadow: false,
+        source: "HAND",
         paymentOptions: {
           resources: Card.fromName(card).baseCost,
         },

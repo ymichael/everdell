@@ -3,7 +3,6 @@ import {
   ResourceType,
   GameText,
   GameInput,
-  GameInputType,
   IGameTextEntity,
   TextPartEntity,
   TrainCarTileName,

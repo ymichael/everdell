@@ -16,6 +16,7 @@ import {
   Season,
   WorkerPlacementInfo,
   TrainCarTileName,
+  TrainTicketStatus,
 } from "./types";
 
 export type GameJSON = {
@@ -66,6 +67,7 @@ export type PlayerJSON = {
   adornmentsInHand: AdornmentName[];
   playedAdornments: AdornmentName[];
   numAmbassadors: number;
+  trainTicketStatus: TrainTicketStatus | null;
 };
 
 export type RiverDestinationMapJSON = {

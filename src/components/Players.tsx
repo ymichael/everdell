@@ -7,6 +7,7 @@ import {
   Season,
   ResourceType,
   CardType,
+  TrainTicketStatus,
 } from "../model/types";
 import { PlayerJSON, GameStateJSON } from "../model/jsonTypes";
 import { Player } from "../model/player";
@@ -228,7 +229,7 @@ const PlayerStatus: React.FC<{
             {gameStateJSON.gameOptions.newleaf?.ticket && (
               <div
                 className={styles.status_box_item_resource}
-                title="Ticket to reactivate a worker"
+                title="Train Ticket: Use to reactivate a deployed worker"
               >
                 <div className={styles.status_box_item_resource_ticket_wrapper}>
                   <div className={styles.status_box_item_resource_ticket}>
@@ -236,7 +237,13 @@ const PlayerStatus: React.FC<{
                   </div>
                 </div>
                 <div className={styles.status_box_item_resource_ticket_status}>
-                  ??
+                  {player.trainTicketStatus ===
+                  TrainTicketStatus.VALID_FROM_WINTER
+                    ? "Valid from Winter"
+                    : player.trainTicketStatus ===
+                      TrainTicketStatus.VALID_FROM_SUMMER
+                    ? "Valid from Summer"
+                    : "Discarded"}
                 </div>
               </div>
             )}

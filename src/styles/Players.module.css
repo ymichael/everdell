@@ -116,10 +116,11 @@
 
 .status_box_item_resource_ticket_status {
   display: inline-block;
-  font-size: 15px;
+  font-size: 10px;
+  word-wrap: break-word;
   text-align: center;
-  min-height: 18px;
-  min-width: 35px;
+  height: 20px;
+  max-width: 70px;
 }
 
 .status_box_item_resource_icon svg {

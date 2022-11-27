@@ -41,7 +41,10 @@ export enum GameInputType {
   SELECT_PLAYED_ADORNMENT = "SELECT_PLAYED_ADORNMENT",
   SELECT_RIVER_DESTINATION = "SELECT_RIVER_DESTINATION",
 
-  // Newleaf specific
+  // Newleaf specific (simple)
+  PLAY_TRAIN_TICKET = "PLAY_TRAIN_TICKET",
+
+  // Newleaf specific (multi)
   SELECT_TRAIN_CAR_TILE = "SELECT_TRAIN_CAR_TILE",
 }
 
@@ -98,6 +101,13 @@ export type GameInputPlaceAmbassador = {
   };
 };
 
+export type GameInputPlayTrainTicket = {
+  inputType: GameInputType.PLAY_TRAIN_TICKET;
+  clientOptions: {
+    selectedOption: WorkerPlacementInfo | null;
+  };
+};
+
 export type GameInputGameEnd = {
   inputType: GameInputType.GAME_END;
 };
@@ -118,6 +128,7 @@ export type GameInputSimple =
   | GameInputPrepareForSeason
   | GameInputPlayAdornment
   | GameInputPlaceAmbassador
+  | GameInputPlayTrainTicket
   | GameInputPrepareForSeason;
 
 export type GameInputDiscardCards = {
@@ -702,7 +713,7 @@ export type TextPartIcon =
   | { type: "resource"; resourceType: ResourceType | "ANY" }
   | { type: "cardType"; cardType: CardType }
   | { type: "points"; value: number }
-  | { type: "symbol"; symbol: "VP" | "CARD" };
+  | { type: "symbol"; symbol: "VP" | "CARD" | "TRAIN_TICKET" };
 export type TextPartBR = { type: "BR" };
 export type TextPartHR = { type: "HR" };
 export type TextPartText =
@@ -840,3 +851,8 @@ export type TPlayableCard = {
   source: "HAND" | "MEADOW" | "STATION";
   stationIdx?: number;
 };
+
+export enum TrainTicketStatus {
+  VALID_FROM_WINTER = "VALID_FROM_WINTER",
+  VALID_FROM_SUMMER = "VALID_FROM_SUMMER",
+}

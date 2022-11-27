@@ -106,6 +106,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       location: LocationName.BASIC_TWO_CARDS_AND_ONE_VP,
     },
   });
+  game.applyGameInput({
+    inputType: GameInputType.PLACE_WORKER,
+    clientOptions: {
+      location: LocationName.FOREST_ONE_PEBBLE_THREE_CARD,
+    },
+  });
 
   const player = game.getActivePlayer();
   const isActivePlayer = true;
@@ -124,7 +130,6 @@ export default function TestGamePage(props: {
   viewingPlayer: PlayerJSON;
 }) {
   const { game, gameInputs, viewingPlayer } = props;
-  console.log({ game });
   return (
     <Game game={game} gameInputs={gameInputs} viewingPlayer={viewingPlayer} />
   );

@@ -57,7 +57,7 @@ function strToGameText(str: string): GameText {
         cardType: part as CardType,
       });
       textBuffer = [];
-    } else if (part === "VP" || part === "CARD") {
+    } else if (part === "VP" || part === "CARD" || part === "TRAIN_TICKET") {
       ret.push({ type: "text", text: textBuffer.join("") });
       ret.push({ type: "symbol", symbol: part });
       textBuffer = [];

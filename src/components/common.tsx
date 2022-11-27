@@ -193,7 +193,7 @@ export const ResourceTypeIcon = ({
 export const GameIcon = ({
   type,
 }: {
-  type: CardType | ResourceType | "CARD" | "VP" | "ANY";
+  type: CardType | ResourceType | "CARD" | "VP" | "ANY" | "TRAIN_TICKET";
 }) => {
   return (
     <div className={styles.resource}>
@@ -202,6 +202,8 @@ export const GameIcon = ({
           <CardIcon />
         ) : type === "VP" ? (
           <VPIcon />
+        ) : type === "TRAIN_TICKET" ? (
+          <TicketIcon />
         ) : type === "ANY" ? (
           <WildResourceIcon />
         ) : Object.values(ResourceType).includes(type as any) ? (

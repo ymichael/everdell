@@ -122,7 +122,7 @@ const GameInputBoxInner = ({
       ) : gameInput.inputType === GameInputType.SELECT_WORKER_PLACEMENT ? (
         <GameInputSelectWorkerPlacement
           name={"gameInput.clientOptions.selectedOption"}
-          gameInput={gameInput}
+          options={gameInput.options}
           gameState={gameState}
           viewingPlayer={viewingPlayer}
         />
@@ -167,6 +167,13 @@ const GameInputBoxInner = ({
         <GameInputSelectRiverDestinationSelector
           name={"gameInput.clientOptions.riverDestination"}
           options={gameInput.options}
+        />
+      ) : gameInput.inputType === GameInputType.PLAY_TRAIN_TICKET ? (
+        <GameInputSelectWorkerPlacement
+          name={"gameInput.clientOptions.selectedOption"}
+          options={viewingPlayer.getRecallableWorkers()}
+          gameState={gameState}
+          viewingPlayer={viewingPlayer}
         />
       ) : gameInput.inputType === GameInputType.SELECT_TRAIN_CAR_TILE ? (
         <>TODO: Not implemented</>

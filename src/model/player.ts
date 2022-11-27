@@ -21,6 +21,7 @@ import {
   LocationType,
   PlayerStatus,
   IGameTextEntity,
+  TrainTicketStatus,
 } from "./types";
 import { PlayerJSON } from "./jsonTypes";
 import { GameState } from "./gameState";
@@ -56,6 +57,8 @@ export class Player implements IGameTextEntity {
   readonly adornmentsInHand: AdornmentName[];
   readonly playedAdornments: AdornmentName[];
 
+  private _trainTicketStatus: TrainTicketStatus | null;
+
   constructor({
     name,
     playerSecret = uuid(),
@@ -79,6 +82,7 @@ export class Player implements IGameTextEntity {
     playerStatus = PlayerStatus.DURING_SEASON,
     adornmentsInHand = [],
     playedAdornments = [],
+    trainTicketStatus = null,
   }: {
     name: string;
     playerSecret?: string;
@@ -95,6 +99,7 @@ export class Player implements IGameTextEntity {
     playerStatus?: PlayerStatus;
     adornmentsInHand?: AdornmentName[];
     playedAdornments?: AdornmentName[];
+    trainTicketStatus?: TrainTicketStatus | null;
   }) {
     this.playerId = playerId;
     this.playerSecret = playerSecret;
@@ -112,6 +117,9 @@ export class Player implements IGameTextEntity {
     this.numAmbassadors = numAmbassadors;
     this.adornmentsInHand = adornmentsInHand;
     this.playedAdornments = playedAdornments;
+
+    // newleaf only
+    this._trainTicketStatus = trainTicketStatus;
 
     this._numCardsInHand = numCardsInHand;
   }
@@ -1681,6 +1689,51 @@ export class Player implements IGameTextEntity {
     }
   }
 
+  get trainTicketStatus(): TrainTicketStatus | null {
+    return this._trainTicketStatus;
+  }
+
+  hasValidTrainTicket(): boolean {
+    switch (this.trainTicketStatus) {
+      case TrainTicketStatus.VALID_FROM_WINTER:
+        return true;
+      case TrainTicketStatus.VALID_FROM_SUMMER:
+        return (
+          this.currentSeason === Season.SUMMER ||
+          this.currentSeason === Season.SPRING
+        );
+      default:
+        return false;
+    }
+  }
+
+  assignTrainTicket(): void {
+    if (this._trainTicketStatus !== null) {
+      throw new Error(
+        "Attempting to assign train ticket to player with a ticket"
+      );
+    }
+    this._trainTicketStatus = TrainTicketStatus.VALID_FROM_WINTER;
+  }
+
+  useTrainTicket(): void {
+    if (!this.hasValidTrainTicket()) {
+      throw new Error(
+        `Cannot use train ticket: ${this.trainTicketStatus} (currentSeason=${this._currentSeason})`
+      );
+    }
+    switch (this.trainTicketStatus) {
+      case TrainTicketStatus.VALID_FROM_WINTER:
+        this._trainTicketStatus = TrainTicketStatus.VALID_FROM_SUMMER;
+        break;
+      case TrainTicketStatus.VALID_FROM_SUMMER:
+        this._trainTicketStatus = null;
+        break;
+      default:
+        break;
+    }
+  }
+
   toJSON(includePrivate: boolean): PlayerJSON {
     return cloneDeep({
       name: this.name,
@@ -1698,6 +1751,7 @@ export class Player implements IGameTextEntity {
       cardsInHand: null,
       adornmentsInHand: [],
       playedAdornments: this.playedAdornments,
+      trainTicketStatus: this.trainTicketStatus,
       ...(includePrivate
         ? {
             playerSecret: this.playerSecret,

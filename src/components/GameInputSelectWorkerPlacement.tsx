@@ -5,7 +5,7 @@ import uniqBy from "lodash/uniqBy";
 
 import styles from "../styles/gameBoard.module.css";
 
-import { GameInputSelectWorkerPlacement as TGameInputSelectWorkerPlacement } from "../model/types";
+import { WorkerPlacementInfo } from "../model/types";
 import { Player } from "../model/player";
 import { GameState } from "../model/gameState";
 
@@ -15,14 +15,12 @@ import { LocationInner as Location } from "./Location";
 import { PlayedCard } from "./Card";
 
 const GameInputSelectWorkerPlacement: React.FC<{
-  gameInput: TGameInputSelectWorkerPlacement;
   name: string;
+  options: WorkerPlacementInfo[];
   gameState: GameState;
   viewingPlayer: Player;
-}> = ({ gameInput, name, gameState, viewingPlayer }) => {
+}> = ({ options, name, gameState, viewingPlayer }) => {
   const [_field, meta, helpers] = useField(name);
-
-  const options = gameInput.options;
   const eventOptions = options.filter((x) => x.event);
   const locationOptions = options.filter((x) => x.location);
   const playedCardOptions = options.filter((x) => x.playedCard);

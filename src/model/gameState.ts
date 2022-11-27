@@ -13,6 +13,7 @@ import {
   GameInputPlaceWorker,
   GameInputPlayAdornment,
   GameInputPlayCard,
+  GameInputPlayTrainTicket,
   GameInputPrepareForSeason,
   GameInputType,
   GameInputVisitDestinationCard,
@@ -479,6 +480,26 @@ export class GameState {
       player.removeCardFromHand(this, card.name, false /* addToDiscardPile */);
     }
     card.play(this, gameInput);
+  }
+
+  private handlePlayTrainTicketGameInput(
+    gameInput: GameInputPlayTrainTicket
+  ): void {
+    if (!this.gameOptions.newleaf?.ticket) {
+      throw new Error(`Unexpected game input ${JSON.stringify(gameInput)}`);
+    }
+    if (!gameInput.clientOptions.selectedOption) {
+      throw new Error(`Must specify a worker to reactivate.`);
+    }
+    this.addGameLog([
+      { type: "symbol", symbol: "TRAIN_TICKET" },
+      ": ",
+      this.getActivePlayer(),
+      " reactivated worker on ",
+      ...workerPlacementToGameText(gameInput.clientOptions.selectedOption),
+      ".",
+    ]);
+    throw new Error(`Not implemented yet ${JSON.stringify(gameInput)}`);
   }
 
   private handlePlaceWorkerGameInput(gameInput: GameInputPlaceWorker): void {
@@ -1103,6 +1124,9 @@ export class GameState {
       case GameInputType.PLAY_CARD:
         this.handlePlayCardGameInput(gameInput);
         break;
+      case GameInputType.PLAY_TRAIN_TICKET:
+        this.handlePlayTrainTicketGameInput(gameInput);
+        break;
       case GameInputType.PLACE_WORKER:
       case GameInputType.VISIT_DESTINATION_CARD:
       case GameInputType.CLAIM_EVENT:
@@ -1428,6 +1452,9 @@ export class GameState {
           gameState.adornmentsPile!.drawInner()
         );
       }
+      if (gameOptions.newleaf?.ticket) {
+        p.assignTrainTicket();
+      }
       p.drawCards(gameState, STARTING_PLAYER_HAND_SIZE + idx);
     });
 
@@ -1668,6 +1695,20 @@ export class GameState {
           },
         },
       });
+    }
+
+    if (this.gameOptions.newleaf?.ticket) {
+      if (
+        player.hasValidTrainTicket() &&
+        player.getRecallableWorkers().length !== 0
+      ) {
+        possibleGameInputs.push({
+          inputType: GameInputType.PLAY_TRAIN_TICKET,
+          clientOptions: {
+            selectedOption: null,
+          },
+        });
+      }
     }
 
     if (this.gameOptions.pearlbrook) {

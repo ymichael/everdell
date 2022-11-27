@@ -43,7 +43,6 @@ import {
   resourceMapToGameText,
   workerPlacementToGameText,
 } from "./gameText";
-import { assertUnreachable } from "../utils";
 import {
   countCardsByAttribute,
   onlyRelevantProductionCards,

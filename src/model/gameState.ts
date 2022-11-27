@@ -13,7 +13,6 @@ import {
   GameInputPlaceWorker,
   GameInputPlayAdornment,
   GameInputPlayCard,
-  GameInputPlayTrainTicket,
   GameInputPrepareForSeason,
   GameInputType,
   GameInputVisitDestinationCard,

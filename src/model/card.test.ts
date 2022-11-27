@@ -7652,7 +7652,81 @@ describe("Card", () => {
       });
     });
 
-    describe(CardName.CONDUCTOR, () => {});
+    describe(CardName.CONDUCTOR, () => {
+      it("should allow player to use an opponent's DESTINATION card", () => {
+        const cards = [
+          CardName.KING,
+          CardName.QUEEN,
+          CardName.POSTAL_PIGEON,
+          CardName.POSTAL_PIGEON,
+          CardName.FARM,
+          CardName.HUSBAND,
+          CardName.CHAPEL,
+          CardName.MONK,
+        ];
+        gameState = testInitialGameState({ meadowCards: cards });
+
+        let player1 = gameState.getActivePlayer();
+        let player2 = gameState.players[1];
+
+        player1.addToCity(gameState, CardName.CONDUCTOR);
+        player2.addToCity(gameState, CardName.QUEEN);
+
+        player1.addCardToHand(gameState, CardName.WIFE);
+
+        expect(player1.numAvailableWorkers).to.be(2);
+        expect(player.hasCardInCity(CardName.WIFE)).to.be(false);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            clientOptions: {
+              playedCard: player1.getFirstPlayedCard(CardName.CONDUCTOR),
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_PLAYED_CARDS,
+            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardContext: CardName.CONDUCTOR,
+            cardOptions: [player2.getFirstPlayedCard(CardName.QUEEN)],
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              selectedCards: [player2.getFirstPlayedCard(CardName.QUEEN)],
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardContext: CardName.QUEEN,
+            cardOptions: [
+              CardName.WIFE,
+              CardName.POSTAL_PIGEON,
+              CardName.POSTAL_PIGEON,
+              CardName.FARM,
+              CardName.HUSBAND,
+              CardName.CHAPEL,
+              CardName.MONK,
+            ],
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              selectedCards: [CardName.WIFE],
+            },
+          },
+        ]);
+
+        player1 = gameState.getPlayer(player1.playerId);
+
+        expect(player1.numAvailableWorkers).to.be(1);
+        expect(player1.hasCardInCity(CardName.WIFE)).to.be(true);
+      });
+      // TODO: add more tests:
+      // - Open Destinations shouldn't give owner VP
+      // - can't copy destinations in your own city
+      // - copy the ferry
+      // - copy destination you can't use
+    });
 
     describe(CardName.DIPLOMAT, () => {
       it("should do nothing is player plays a construction", () => {

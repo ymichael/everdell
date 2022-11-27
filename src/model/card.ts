@@ -4353,7 +4353,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       {
         type: "i",
         text:
-          "May not copy Cemetary, Chappel, Monastary, Pirate Ship, or Legendary.",
+          "May not copy Cemetary, Chapel, Monastary, Pirate Ship, or Legendary.",
       },
     ]),
     isConstruction: false,
@@ -4365,7 +4365,71 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       [ResourceType.BERRY]: 3,
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
+        let destinationCards = [] as PlayedCardInfo[];
+        const players = gameState.players
+          .filter((p) => p.playerId !== player.playerId)
+          .map((p) => p.playerId);
+
+        // TODO: write a test for copying the ferry
+        players.forEach((p) => {
+          const otherPlayer = gameState.getPlayer(p);
+          destinationCards.push(
+            ...otherPlayer.getAllPlayedCardsByType(CardType.DESTINATION)
+          );
+        });
+
+        if (destinationCards.length === 0) {
+          // This should never happen because there are unlimited basic locations.
+          throw new Error("No DESTINATION cards available to copy.");
+        }
+
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          prevInputType: gameInput.inputType,
+          label: "Select location to copy",
+          cardContext: CardName.CONDUCTOR,
+          cardOptions: destinationCards,
+          maxToSelect: 1,
+          minToSelect: 1,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS &&
+        gameInput.cardContext === CardName.CONDUCTOR
+      ) {
+        const selectedCards = gameInput.clientOptions.selectedCards;
+
+        if (!selectedCards) {
+          throw new Error("Cannot find played card");
+        }
+
+        if (selectedCards.length !== 1) {
+          throw new Error("Must select 1 DESTINATION to copy");
+        }
+
+        const selectedCard = selectedCards[0];
+
+        gameState.addGameLogFromCard(CardName.CONDUCTOR, [
+          player,
+          " copied the ",
+          selectedCard.cardName,
+          "owned by ",
+          gameState.getPlayer(selectedCard.cardOwnerId),
+          ".",
+        ]);
+
+        const card = Card.fromName(selectedCard.cardName);
+        card.play(gameState, {
+          inputType: GameInputType.VISIT_DESTINATION_CARD,
+          clientOptions: {
+            playedCard: selectedCard,
+          },
+        });
+      }
     },
   }),
   [CardName.DIPLOMAT]: new Card({

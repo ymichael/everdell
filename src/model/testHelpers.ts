@@ -14,6 +14,7 @@ import {
   GameInput,
   GameInputType,
   GameInputPlayCard,
+  TrainCarTileName,
 } from "./types";
 import omit from "lodash/omit";
 import merge from "lodash/merge";
@@ -29,6 +30,7 @@ export function testInitialGameState(
     gameOptions?: Partial<GameOptions>;
     meadowCards?: CardName[];
     stationCards?: CardName[];
+    trainCarTiles?: TrainCarTileName[];
     shuffleDeck?: boolean;
   } = {}
 ): GameState {
@@ -40,6 +42,7 @@ export function testInitialGameState(
     stationCards,
     forestLocations = [],
     specialEvents = [],
+    trainCarTiles = [],
     shuffleDeck = false,
     gameOptions = {},
   } = opts;
@@ -65,7 +68,15 @@ export function testInitialGameState(
     }
     gameState.stationCards.push(...stationCards);
   }
-
+  if (gameState.trainCarTileStack && trainCarTiles) {
+    trainCarTiles.reverse();
+    for (let i = 0; i < trainCarTiles.length; i++) {
+      gameState.trainCarTileStack?.pushTile(trainCarTiles[i]);
+    }
+    gameState.trainCarTileStack.replaceAt(0);
+    gameState.trainCarTileStack.replaceAt(1);
+    gameState.trainCarTileStack.replaceAt(2);
+  }
   gameState.players.forEach((player) => {
     player.cardsInHand = [...cardsInHand];
   });

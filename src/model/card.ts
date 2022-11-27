@@ -265,16 +265,27 @@ export class Card<TCardType extends CardType = CardType>
         if (gameState.meadowCards.indexOf(this.name) === -1) {
           return `Card ${
             this.name
-          } does not exist in the meadow.\n ${JSON.stringify(
+          } does not exist in the Meadow.\n ${JSON.stringify(
             gameState.meadowCards,
             null,
             2
           )}`;
         }
-      } else if (
-        !gameInput.clientOptions.fromMeadow ||
-        gameInput.clientOptions.source === "HAND"
-      ) {
+      } else if (gameInput.clientOptions.source === "STATION") {
+        const idx = gameInput.clientOptions.stationIdx;
+        if (typeof idx !== "number") {
+          return `Invalid station card index specified`;
+        }
+        if (gameState.stationCards[idx] !== this.name) {
+          return `Card ${
+            this.name
+          } does not exist in the Station.\n ${JSON.stringify(
+            gameState.stationCards,
+            null,
+            2
+          )}`;
+        }
+      } else {
         if (player.cardsInHand.indexOf(this.name) === -1) {
           return `Card ${
             this.name

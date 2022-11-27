@@ -58,9 +58,6 @@ export class TrainCarTile implements IGameTextEntity {
       ]);
     }
     this.playInner?.(gameState, gameInput);
-
-    // TODO Replace tiles in the station
-    throw new Error("Not completely implemented yet");
   }
 
   static fromName(name: TrainCarTileName): TrainCarTile {
@@ -94,17 +91,15 @@ const TRAIN_CAR_TILE_REGISTRY: Record<TrainCarTileName, TrainCarTile> = {
       const gainAnyHelper = new GainAnyResource({
         trainCarTileContext: TrainCarTileName.ONE_ANY,
       });
-      if (gameInput.inputType === GameInputType.SELECT_TRAIN_CAR_TILE) {
+      if (gainAnyHelper.matchesGameInput(gameInput)) {
+        gainAnyHelper.play(gameState, gameInput);
+      } else {
         // Ask the player what resources they want to gain
         gameState.pendingGameInputs.push(
           gainAnyHelper.getGameInput({
-            prevInputType: GameInputType.SELECT_TRAIN_CAR_TILE,
+            prevInputType: gameInput.inputType,
           })
         );
-      } else if (gainAnyHelper.matchesGameInput(gameInput)) {
-        gainAnyHelper.play(gameState, gameInput);
-      } else {
-        throw new Error(`Invalid input type ${gameInput.inputType}`);
       }
     },
   }),
@@ -129,11 +124,15 @@ export class TrainCarTileStack {
     this.rest = rest;
   }
 
-  peekAt(position: 0 | 1 | 2): TrainCarTileName | null {
+  peekAt(position: number): TrainCarTileName | null {
     return this.revealed[position];
   }
 
-  replaceAt(position: 0 | 1 | 2): TrainCarTileName {
+  pushTile(name: TrainCarTileName): void {
+    this.rest.unshift(name);
+  }
+
+  replaceAt(position: number): TrainCarTileName {
     const [next, ...rest] = this.rest;
     this.rest = rest;
     const currTile = this.peekAt(position);

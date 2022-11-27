@@ -12,6 +12,7 @@ import {
   PlayerStatus,
   ResourceType,
   RiverDestinationSpotName,
+  TrainCarTileName,
   Season,
 } from "./types";
 import { Event } from "./event";
@@ -429,6 +430,32 @@ describe("GameState", () => {
         { card: CardName.MINE, source: "HAND" },
       ]);
     });
+
+    it("should return cards from the station", () => {
+      gameState = testInitialGameState({
+        meadowCards: [CardName.INN],
+        stationCards: [CardName.FARM, CardName.MINE, CardName.MINE],
+        gameOptions: {
+          newleaf: { station: true },
+        },
+      });
+      player = gameState.getActivePlayer();
+
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.MINE);
+      player.gainResources(gameState, Card.fromName(CardName.INN).baseCost);
+      player.gainResources(gameState, Card.fromName(CardName.FARM).baseCost);
+      player.gainResources(gameState, Card.fromName(CardName.MINE).baseCost);
+
+      expect(gameState.getPlayableCards()).to.eql([
+        { card: CardName.INN, source: "MEADOW" },
+        { card: CardName.FARM, source: "STATION", stationIdx: 0 },
+        { card: CardName.MINE, source: "STATION", stationIdx: 1 },
+        { card: CardName.MINE, source: "STATION", stationIdx: 2 },
+        { card: CardName.FARM, source: "HAND" },
+        { card: CardName.MINE, source: "HAND" },
+      ]);
+    });
   });
 
   describe("getRemainingPlayers", () => {
@@ -552,7 +579,6 @@ describe("GameState", () => {
   describe("PLAY_CARD", () => {
     it("should be able to pay for the card to play it", () => {
       const card = Card.fromName(CardName.FARM);
-      const player = gameState.getActivePlayer();
 
       player.addCardToHand(gameState, card.name);
       expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
@@ -564,6 +590,142 @@ describe("GameState", () => {
       expect(gameState.getPlayableCards()).to.eql([
         { card: CardName.FARM, source: "HAND" },
       ]);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        playCardInput(CardName.FARM, { source: "HAND" }),
+      ]);
+      expect(player.cardsInHand.length).to.be(0);
+      expect(player.hasCardInCity(CardName.FARM)).to.be(true);
+    });
+
+    it("should be able to play card from the station", () => {
+      const card = Card.fromName(CardName.FARM);
+      gameState = testInitialGameState({
+        meadowCards: [
+          CardName.CASTLE,
+          CardName.CASTLE,
+          CardName.CASTLE,
+          CardName.CASTLE,
+          CardName.CASTLE,
+          CardName.CASTLE,
+          CardName.CASTLE,
+          CardName.CASTLE,
+        ],
+        stationCards: [card.name],
+        trainCarTiles: [
+          TrainCarTileName.ONE_BERRY,
+          TrainCarTileName.ONE_PEBBLE,
+          TrainCarTileName.ONE_RESIN,
+        ],
+        gameOptions: { newleaf: { station: true } },
+      });
+      player = gameState.getActivePlayer();
+      player.gainResources(gameState, card.baseCost);
+      expect(player.numCardsInHand).to.be(0);
+      expect(player.hasCardInCity(CardName.FARM)).to.be(false);
+
+      const replenishedStationCards = [
+        CardName.KING,
+        CardName.KING,
+        CardName.KING,
+      ];
+      replenishedStationCards.forEach((card) => {
+        gameState.deck.addToStack(card);
+      });
+
+      expect(() => {
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(CardName.FARM, { source: "HAND" }),
+        ]);
+      }).to.throwException(/does not exist in your hand/i);
+      expect(() => {
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(CardName.FARM, { source: "MEADOW" }),
+        ]);
+      }).to.throwException(/does not exist in the meadow/i);
+
+      expect(() => {
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(CardName.FARM, { source: "STATION" }),
+        ]);
+      }).to.throwException(/invalid station card index/i);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        playCardInput(CardName.FARM, { source: "STATION", stationIdx: 0 }),
+      ]);
+
+      expect(player.hasCardInCity(CardName.FARM)).to.be(true);
+      expect(gameState.stationCards).to.eql(replenishedStationCards);
+    });
+
+    it("should be able to gain train tile resources", () => {
+      const card = Card.fromName(CardName.FARM);
+      gameState = testInitialGameState({
+        meadowCards: [],
+        stationCards: [card.name, card.name, card.name],
+        trainCarTiles: [
+          TrainCarTileName.ONE_BERRY,
+          TrainCarTileName.ONE_PEBBLE,
+          TrainCarTileName.ONE_RESIN,
+        ],
+        gameOptions: { newleaf: { station: true } },
+      });
+
+      player = gameState.getActivePlayer();
+      player.gainResources(gameState, card.baseCost);
+      expect(player.numCardsInHand).to.be(0);
+      expect(player.hasCardInCity(CardName.FARM)).to.be(false);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        playCardInput(CardName.FARM, { source: "STATION", stationIdx: 0 }),
+      ]);
+
+      expect(player.hasCardInCity(CardName.FARM)).to.be(true);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
+    });
+
+    it("should be able to gain train tile resources for the wild tile", () => {
+      const card = Card.fromName(CardName.FARM);
+      gameState = testInitialGameState({
+        meadowCards: [],
+        stationCards: [card.name, card.name, card.name],
+        trainCarTiles: [
+          TrainCarTileName.ONE_ANY,
+          TrainCarTileName.ONE_PEBBLE,
+          TrainCarTileName.ONE_RESIN,
+          TrainCarTileName.TWO_TWIG,
+        ],
+        gameOptions: { newleaf: { station: true } },
+      });
+
+      player = gameState.getActivePlayer();
+      player.gainResources(gameState, card.baseCost);
+      expect(player.numCardsInHand).to.be(0);
+      expect(player.hasCardInCity(CardName.FARM)).to.be(false);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+      expect(gameState.trainCarTileStack?.peekAt(0)).to.be(
+        TrainCarTileName.ONE_ANY
+      );
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        playCardInput(CardName.FARM, { source: "STATION", stationIdx: 0 }),
+        {
+          inputType: GameInputType.SELECT_OPTION_GENERIC,
+          options: ["BERRY", "TWIG", "RESIN", "PEBBLE"],
+          prevInputType: GameInputType.PLAY_CARD,
+          trainCarTileContext: TrainCarTileName.ONE_ANY,
+          clientOptions: {
+            selectedOption: "BERRY",
+          },
+        },
+      ]);
+
+      expect(player.hasCardInCity(CardName.FARM)).to.be(true);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
+      expect(gameState.trainCarTileStack?.peekAt(0)).to.be(
+        TrainCarTileName.TWO_TWIG
+      );
     });
 
     it("should be not be able to play cards if city is full", () => {

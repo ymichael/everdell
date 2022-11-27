@@ -467,7 +467,14 @@ export class GameState {
     ) {
       this.removeCardFromMeadow(card.name);
     } else if (gameInput.clientOptions.source === "STATION") {
-      throw new Error("Not implemented");
+      const idx = gameInput.clientOptions.stationIdx;
+      if (typeof idx !== "number" || this.stationCards[idx] !== card.name) {
+        throw new Error("Invalid station card selected");
+      }
+      this.stationCards[idx] = null;
+      const tileName = this.trainCarTileStack!.peekAt(idx)!;
+      TrainCarTile.fromName(tileName).playTile(this, gameInput);
+      this.trainCarTileStack!.replaceAt(idx);
     } else {
       player.removeCardFromHand(this, card.name, false /* addToDiscardPile */);
     }
@@ -1573,6 +1580,24 @@ export class GameState {
         ret.push({ card: cardName, source: "MEADOW" });
       }
     });
+    if (this.gameOptions.newleaf?.station) {
+      this.stationCards.forEach((cardNameOrNull, idx) => {
+        if (!cardNameOrNull) {
+          return;
+        }
+        const card = Card.fromName(cardNameOrNull);
+        if (
+          player.canAffordCard(card.name, true) &&
+          card.canPlayIgnoreCostAndSource(this, false /* strict */)
+        ) {
+          ret.push({
+            card: cardNameOrNull,
+            source: "STATION",
+            stationIdx: idx,
+          });
+        }
+      });
+    }
     player.cardsInHand.forEach((cardName) => {
       const card = Card.fromName(cardName);
       if (

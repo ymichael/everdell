@@ -72,6 +72,7 @@ export type GameInputPlayCard = {
     card: CardName | null;
     fromMeadow?: boolean; // Deprecated
     source?: TPlayableCard["source"];
+    stationIdx?: TPlayableCard["stationIdx"];
     paymentOptions: CardPaymentOptions;
   };
 };
@@ -819,14 +820,8 @@ export type RiverDestinationMapSpots = Record<
 >;
 
 export type TAssociatedCard =
-  | {
-      type: "CARD";
-      cardName: CardName;
-    }
-  | {
-      type: "GOLDEN_LEAF";
-      cardType: CardType | "UNIQUE" | "COMMON";
-    }
+  | { type: "CARD"; cardName: CardName }
+  | { type: "GOLDEN_LEAF"; cardType: CardType | "UNIQUE" | "COMMON" }
   | { type: "ANY" }
   | { type: "HUSBAND_WIFE" };
 
@@ -842,4 +837,5 @@ export enum TrainCarTileName {
 export type TPlayableCard = {
   card: CardName;
   source: "HAND" | "MEADOW" | "STATION";
+  stationIdx?: number;
 };

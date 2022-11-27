@@ -33,9 +33,20 @@ export default async (
     : [...body.players];
   const realtimePoints = !!body.realtimePoints;
   const pearlbrook = !!body.pearlbrook;
+  const newleaf = body.newleaf
+    ? {
+        cards: true,
+        forestLocations: true,
+        specialEvents: true,
+        station: true,
+      }
+    : {};
+  const bellfaire = body.bellfaire
+    ? { forestLocations: true, specialEvents: true }
+    : {};
   const game = await createGame(
     players.map((p: any) => p.name),
-    { realtimePoints, pearlbrook }
+    { realtimePoints, pearlbrook, newleaf, bellfaire }
   );
   res.json({
     success: "ok",

@@ -16,6 +16,7 @@ import { Location as LocationModel } from "../model/location";
 import GameLog from "./GameLog";
 import Card, { PlayedCard } from "./Card";
 import Location from "./Location";
+import TrainCarTile from "./TrainCarTile";
 import { RiverDestinationSpot } from "./RiverDestination";
 import Adornment from "./Adornment";
 import Event from "./Event";
@@ -40,6 +41,41 @@ export const Meadow: React.FC<{ meadowCards: CardName[] }> = ({
               <Card name={cardName} />
             </ItemWrapper>
           ))}
+        </div>
+      </div>
+    </GameBlock>
+  );
+};
+
+const StationCard: React.FC<{ position: 0 | 1 | 2; gameState: GameState }> = ({
+  position,
+  gameState,
+}) => {
+  if (!gameState.trainCarTileStack) {
+    return null;
+  }
+  const cardName = gameState.stationCards[position];
+  return (
+    <ItemWrapper>
+      <div className={styles.station_card}>
+        {cardName && <Card name={cardName} />}
+        <TrainCarTile name={gameState.trainCarTileStack.peekAt(position)} />
+      </div>
+    </ItemWrapper>
+  );
+};
+
+export const Station: React.FC<{ gameState: GameState }> = ({ gameState }) => {
+  if (!gameState.trainCarTileStack) {
+    return null;
+  }
+  return (
+    <GameBlock title={"Station"}>
+      <div id={"js-station"}>
+        <div className={[styles.items_no_wrap, styles.station_cards].join(" ")}>
+          <StationCard position={0} gameState={gameState} />
+          <StationCard position={1} gameState={gameState} />
+          <StationCard position={2} gameState={gameState} />
         </div>
       </div>
     </GameBlock>
@@ -266,12 +302,25 @@ export const GameBoard: React.FC<{
         </div>
         <GameLog logs={gameState.gameLog} gameStateJSON={gameStateJSON} />
       </div>
-      <div>
-        <ForestLocations gameState={gameState} viewingPlayer={viewingPlayer} />
-      </div>
-      <div className={styles.game_board_events}>
-        <Events gameState={gameState} numColumns={2} />
-      </div>
+      {gameState.gameOptions.newleaf?.station ? (
+        <>
+          <Station gameState={gameState} />
+          <ForestLocations
+            gameState={gameState}
+            viewingPlayer={viewingPlayer}
+          />
+        </>
+      ) : (
+        <>
+          <ForestLocations
+            gameState={gameState}
+            viewingPlayer={viewingPlayer}
+          />
+          <div className={styles.game_board_events}>
+            <Events gameState={gameState} numColumns={2} />
+          </div>
+        </>
+      )}
     </div>
   );
 };

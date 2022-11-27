@@ -1,0 +1,22 @@
+.trainCarTile {
+  padding: 5px;
+  border: solid 2px var(--border-color-train-car-tile);
+  background-color: var(--bg-color-item);
+  display: flex;
+  width: 40px;
+  height: 80px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 5px;
+}
+
+.trainCarTile span {
+  display: inline-grid;
+  gap: 5px;
+}
+
+.label {
+  font-size: 10px;
+  text-transform: uppercase;
+  text-align: left;
+}

@@ -56,10 +56,11 @@
 
 .game_board {
   display: flex;
+  justify-content: space-between;
 }
 
 .forest_locations {
-  height: 100%;
+  height: auto;
   margin-left: -10px;
   display: flex;
   flex-direction: column;
@@ -85,4 +86,16 @@
   display: flex;
   flex-direction: row;
   justify-items: flex-start;
+}
+
+.station_cards {
+  flex-direction: column;
+  gap: 8px;
+}
+
+.station_card {
+  display: flex;
+  gap: 6px;
+  flex-direction: row;
+  align-items: center;
 }

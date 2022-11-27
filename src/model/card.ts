@@ -5208,8 +5208,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         gameInput.cardContext &&
         gameInput.cardContext === CardName.POET
       ) {
-        const meadowCards = gameState.meadowCards;
-
         const getCardType = () => {
           switch (gameInput.clientOptions.selectedOption) {
             case "Blue / Governance":
@@ -5321,7 +5319,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         const meadowCards = gameInput.cardOptions;
         if (selectedCards.length != meadowCards.length) {
           selectedCards.forEach((cardName) => {
-            let index = meadowCards.indexOf(cardName);
+            const index = meadowCards.indexOf(cardName);
             meadowCards.splice(index, 1);
           });
 

@@ -746,6 +746,7 @@ export type GameOptions = {
     reserving?: boolean;
     station?: boolean;
     visitors?: boolean;
+    ticket?: boolean;
   };
   mistwood?: {
     throughTheSeasons?: boolean;

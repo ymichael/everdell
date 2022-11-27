@@ -121,27 +121,25 @@ const TRAIN_CAR_TILE_REGISTRY: Record<TrainCarTileName, TrainCarTile> = {
 };
 
 export class TrainCarTileStack {
-  private revealed: [TrainCarTileName, TrainCarTileName, TrainCarTileName];
+  private revealed: (TrainCarTileName | null)[];
   private rest: TrainCarTileName[];
 
-  constructor({
-    revealed,
-    rest,
-  }: {
-    revealed: [TrainCarTileName, TrainCarTileName, TrainCarTileName];
-    rest: TrainCarTileName[];
-  }) {
+  constructor({ revealed, rest }: TrainCarTileStackJSON) {
     this.revealed = revealed;
     this.rest = rest;
   }
 
-  peekAt(position: 0 | 1 | 2): TrainCarTileName {
+  peekAt(position: 0 | 1 | 2): TrainCarTileName | null {
     return this.revealed[position];
   }
 
   replaceAt(position: 0 | 1 | 2): TrainCarTileName {
     const [next, ...rest] = this.rest;
-    this.rest = [...rest, this.peekAt(position)];
+    this.rest = rest;
+    const currTile = this.peekAt(position);
+    if (currTile) {
+      this.rest.push(currTile);
+    }
     this.revealed[position] = next;
     return next;
   }

@@ -14,7 +14,7 @@ import { Event as EventModel, oldEventEnums } from "../model/event";
 import { Location as LocationModel } from "../model/location";
 
 import GameLog from "./GameLog";
-import Card, { PlayedCard } from "./Card";
+import Card, { PlayedCard, EmptyCard } from "./Card";
 import Location from "./Location";
 import TrainCarTile from "./TrainCarTile";
 import { RiverDestinationSpot } from "./RiverDestination";
@@ -58,7 +58,7 @@ const StationCard: React.FC<{ position: 0 | 1 | 2; gameState: GameState }> = ({
   return (
     <ItemWrapper>
       <div className={styles.station_card}>
-        {cardName && <Card name={cardName} />}
+        {cardName ? <Card name={cardName} /> : <EmptyCard />}
         <TrainCarTile name={gameState.trainCarTileStack.peekAt(position)} />
       </div>
     </ItemWrapper>

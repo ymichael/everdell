@@ -7,12 +7,16 @@ import styles from "../styles/TrainCarTile.module.css";
 
 import { Description } from "./common";
 
-export const TrainCarTile = ({ name }: { name: TrainCarTileName }) => {
-  return (
+export const TrainCarTile = ({ name }: { name: TrainCarTileName | null }) => {
+  return name ? (
     <ItemWrapper footerChildren={<span className={styles.label}>Bonus</span>}>
       <div data-cy={`trainCarTile:${name}`} className={styles.trainCarTile}>
         <Description textParts={TrainCarTileModel.fromName(name).shortName} />
       </div>
+    </ItemWrapper>
+  ) : (
+    <ItemWrapper footerChildren={<span className={styles.label}>Empty</span>}>
+      <div data-cy={`trainCarTile:empty`} className={styles.trainCarTile}></div>
     </ItemWrapper>
   );
 };

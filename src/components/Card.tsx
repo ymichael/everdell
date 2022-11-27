@@ -181,72 +181,74 @@ const Card: React.FC<{ name: CardName; usedForCritter?: boolean }> = ({
   const colorClass = colorClassMap[card.cardType];
   const rarityLabel = getRarityLabel(card);
   return (
-    <>
-      <div className={styles.card}>
-        <div className={styles.card_header_row}>
-          <div className={[styles.circle, styles.card_header_symbol].join(" ")}>
-            <CardTypeSymbol cardType={card.cardType} />
-          </div>
-          <div
-            className={[
-              styles.circle,
-              styles.color_victory_point,
-              styles.card_header_vp,
-            ].join(" ")}
-          >
-            <span className={styles.card_header_vp_number}>{card.baseVP}</span>
-          </div>
-          <div className={[styles.card_header, colorClass].join(" ")}>
-            <span>{name}</span>
-            {card.expansion && (
-              <span className={styles.expansion}>{card.expansion}</span>
-            )}
-          </div>
+    <div className={styles.card}>
+      <div className={styles.card_header_row}>
+        <div className={[styles.circle, styles.card_header_symbol].join(" ")}>
+          <CardTypeSymbol cardType={card.cardType} />
         </div>
-        <div className={styles.info_row}>
-          <div className={styles.card_cost}>
-            {Object.entries(card.baseCost).map(([resourceType, count], idx) => {
-              return (
-                <div className={styles.card_cost_item} key={idx}>
-                  <GameIcon type={resourceType as ResourceType} />
-                  <span className={styles.card_cost_value}> {count}</span>
-                </div>
-              );
-            })}
-          </div>
-          {card.name === CardName.FERRY && (
-            <div className={styles.worker_spot_row}>
-              <div className={styles.worker_spot}>
-                <AmbassadorSpotIcon />
-              </div>
-            </div>
-          )}
-          {card.maxWorkerSpots !== 0 && (
-            <div className={styles.worker_spot_row}>
-              <div className={styles.worker_spot}>
-                <WorkerSpotIcon />
-              </div>
-              {card.maxWorkerSpots == 2 && (
-                <div className={styles.worker_spot}>
-                  <WorkerSpotIcon locked={true} />
-                </div>
-              )}
-            </div>
-          )}
-          <div className={styles.card_description}>
-            <CardDescription card={card} />
-          </div>
+        <div
+          className={[
+            styles.circle,
+            styles.color_victory_point,
+            styles.card_header_vp,
+          ].join(" ")}
+        >
+          <span className={styles.card_header_vp_number}>{card.baseVP}</span>
         </div>
-        <div className={styles.card_bottom_row}>
-          <div className={styles.rarity_label}>
-            {rarityLabel}
-            &nbsp;&middot;&nbsp;{romanize(card.numInDeck)}
-          </div>
-          <AssociatedCard card={card} usedForCritter={usedForCritter} />
+        <div className={[styles.card_header, colorClass].join(" ")}>
+          <span>{name}</span>
+          {card.expansion && (
+            <span className={styles.expansion}>{card.expansion}</span>
+          )}
         </div>
       </div>
-    </>
+      <div className={styles.info_row}>
+        <div className={styles.card_cost}>
+          {Object.entries(card.baseCost).map(([resourceType, count], idx) => {
+            return (
+              <div className={styles.card_cost_item} key={idx}>
+                <GameIcon type={resourceType as ResourceType} />
+                <span className={styles.card_cost_value}> {count}</span>
+              </div>
+            );
+          })}
+        </div>
+        {card.name === CardName.FERRY && (
+          <div className={styles.worker_spot_row}>
+            <div className={styles.worker_spot}>
+              <AmbassadorSpotIcon />
+            </div>
+          </div>
+        )}
+        {card.maxWorkerSpots !== 0 && (
+          <div className={styles.worker_spot_row}>
+            <div className={styles.worker_spot}>
+              <WorkerSpotIcon />
+            </div>
+            {card.maxWorkerSpots == 2 && (
+              <div className={styles.worker_spot}>
+                <WorkerSpotIcon locked={true} />
+              </div>
+            )}
+          </div>
+        )}
+        <div className={styles.card_description}>
+          <CardDescription card={card} />
+        </div>
+      </div>
+      <div className={styles.card_bottom_row}>
+        <div className={styles.rarity_label}>
+          {rarityLabel}
+          &nbsp;&middot;&nbsp;{romanize(card.numInDeck)}
+        </div>
+        <AssociatedCard card={card} usedForCritter={usedForCritter} />
+      </div>
+    </div>
   );
+};
+
+export const EmptyCard = () => {
+  return <div className={styles.card} />;
 };
 
 export default Card;

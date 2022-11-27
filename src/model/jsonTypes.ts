@@ -73,6 +73,6 @@ export type RiverDestinationMapJSON = {
 };
 
 export type TrainCarTileStackJSON = {
-  revealed: [TrainCarTileName, TrainCarTileName, TrainCarTileName];
+  revealed: (TrainCarTileName | null)[];
   rest: TrainCarTileName[];
 };

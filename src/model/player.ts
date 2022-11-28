@@ -473,10 +473,6 @@ export class Player implements IGameTextEntity {
     if (card.isUnique && this.hasCardInCity(card.name)) {
       return false;
     }
-    if (cardName === CardName.WANDERER || cardName === CardName.PIRATE) {
-      return true;
-    }
-
     if (cardName === CardName.MESSENGER) {
       // Must have more Constructions than Messengers.
       return (
@@ -484,6 +480,10 @@ export class Player implements IGameTextEntity {
           this.getPlayedCardForCardName(CardName.MESSENGER).length >
         0
       );
+    }
+
+    if (CARDS_THAT_DONT_TAKE_SPACE.includes(cardName)) {
+      return true;
     }
 
     if (card.isConstruction && this.getUnpairedMessengers().length !== 0) {

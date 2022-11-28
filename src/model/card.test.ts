@@ -8264,7 +8264,50 @@ describe("Card", () => {
       });
     });
 
-    describe(CardName.GREENHOUSE, () => {});
+    describe(CardName.GREENHOUSE, () => {
+      it("should only draw a card if there's no farm in city", () => {
+        const card = Card.fromName(CardName.GREENHOUSE);
+        player.addCardToHand(gameState, card.name);
+        player.gainResources(gameState, card.baseCost);
+        expect(player.numCardsInHand).to.be(1);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+        ]);
+        expect(player.numCardsInHand).to.be(1);
+        expect(player.getNumResources()).to.be(0);
+        expect(player.getNumOccupiedSpacesInCity()).to.be(1);
+      });
+
+      it("should gain a wild resource if there's farm in city", () => {
+        const card = Card.fromName(CardName.GREENHOUSE);
+        player.addCardToHand(gameState, card.name);
+        player.gainResources(gameState, card.baseCost);
+        expect(player.numCardsInHand).to.be(1);
+
+        player.addToCity(gameState, CardName.FARM);
+        expect(player.getNumOccupiedSpacesInCity()).to.be(1);
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+          {
+            inputType: GameInputType.SELECT_OPTION_GENERIC,
+            prevInputType: GameInputType.PLAY_CARD,
+            cardContext: CardName.GREENHOUSE,
+            options: [
+              ResourceType.BERRY,
+              ResourceType.TWIG,
+              ResourceType.RESIN,
+              ResourceType.PEBBLE,
+            ],
+            clientOptions: {
+              selectedOption: ResourceType.BERRY,
+            },
+          },
+        ]);
+        expect(player.numCardsInHand).to.be(1);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
+      });
+    });
 
     describe(CardName.HOTEL, () => {
       it("should allow player play card from hand without spending resources if cost is <= 3", () => {

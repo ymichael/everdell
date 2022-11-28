@@ -4847,13 +4847,33 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     isUnique: false,
     baseVP: 2,
     numInDeck: 3,
-    resourcesToGain: {},
+    resourcesToGain: { CARD: 1 },
     baseCost: {
       [ResourceType.TWIG]: 1,
       [ResourceType.RESIN]: 2,
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
+      const gainAnyHelper = new GainAnyResource({
+        cardContext: CardName.GREENHOUSE,
+      });
+      if (gainAnyHelper.matchesGameInput(gameInput)) {
+        gainAnyHelper.play(gameState, gameInput);
+      }
+    },
+    productionInner: (
+      gameState: GameState,
+      gameInput: GameInput,
+      cardOwner: Player
+    ) => {
+      const numFarms = cardOwner.getNumPlayedCard(CardName.FARM);
+      if (numFarms !== 0) {
+        const gainAnyHelper = new GainAnyResource({
+          cardContext: CardName.GREENHOUSE,
+        });
+        gameState.pendingGameInputs.push(
+          gainAnyHelper.getGameInput({ prevInputType: gameInput.inputType })
+        );
+      }
     },
   }),
   [CardName.HOTEL]: new Card({

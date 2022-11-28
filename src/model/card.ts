@@ -5150,7 +5150,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       gameInput: GameInput,
       cardOwner: Player
     ) => {
-      const player = gameState.getActivePlayer();
       gameState.pendingGameInputs.push({
         inputType: GameInputType.SELECT_CARDS_WITH_SOURCE,
         prevInputType: gameInput.inputType,

@@ -4433,8 +4433,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         gameState.addGameLogFromCard(CardName.CONDUCTOR, [
           player,
           " copied the ",
-          selectedCard.cardName,
-          "owned by ",
+          { type: "entity", entityType: "card", card: selectedCard.cardName },
+          " owned by ",
           gameState.getPlayer(selectedCard.cardOwnerId),
           ".",
         ]);

@@ -4379,7 +4379,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           .filter((p) => p.playerId !== player.playerId)
           .map((p) => p.playerId);
 
-        // TODO: write a test for copying the ferry
         players.forEach((p) => {
           const otherPlayer = gameState.getPlayer(p);
           destinationCards.push(
@@ -5658,11 +5657,44 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     baseCost: {
       [ResourceType.BERRY]: 4,
     },
-    pointsInner: (player: Player) => {
-      throw new Error("Not Implemented");
+    pointsInner: (player: Player, gameState) => {
+      const prosperityCards = [] as PlayedCardInfo[];
+      const otherPlayers = gameState.players
+        .filter((p) => p.playerId !== player.playerId)
+        .map((p) => p.playerId);
+
+      otherPlayers.forEach((p) => {
+        const otherPlayer = gameState.getPlayer(p);
+        prosperityCards.push(
+          ...otherPlayer.getAllPlayedCardsByType(CardType.PROSPERITY)
+        );
+      });
+
+      let maxVP = 0;
+
+      prosperityCards.forEach((p) => {
+        const card = Card.fromName(p.cardName);
+        const points = card.pointsInner!(player, gameState)
+          ? card.pointsInner!(player, gameState)
+          : 0;
+
+        if (points > maxVP) {
+          maxVP = points;
+        }
+      });
+
+      // TODO: decide if we want to allow the WIFE to score across cities
+
+      return maxVP;
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
+      if (gameInput.inputType === GameInputType.PLAY_CARD) {
+        gameState.addGameLogFromCard(CardName.PHOTOGRAPHER, [
+          "This ",
+          { type: "entity", entityType: "card", card: CardName.PHOTOGRAPHER },
+          " will automatically choose the PROSPERITY that is worth the most points.",
+        ]);
+      }
     },
   }),
   [CardName.POET]: new Card({

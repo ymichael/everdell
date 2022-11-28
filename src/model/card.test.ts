@@ -9796,7 +9796,69 @@ describe("Card", () => {
       });
     });
 
-    describe(CardName.PHOTOGRAPHER, () => {});
+    describe(CardName.PHOTOGRAPHER, () => {
+      it("should copy prosperity card from opponent's city", () => {
+        const player1 = gameState.getActivePlayer();
+        const player2 = gameState.players[1];
+
+        player1.addToCityMulti(gameState, [CardName.PHOTOGRAPHER]);
+
+        player2.addToCityMulti(gameState, [
+          CardName.EVERTREE,
+          CardName.WIFE,
+          CardName.WIFE,
+        ]);
+
+        // 2 points for Photographer, 1 for Evertree based on player1's city
+        expect(player1.getPoints(gameState)).to.be(2 + 1);
+      });
+
+      it("should pick the prosperity card that gives the most points", () => {
+        let player1 = gameState.getActivePlayer();
+        const player2 = gameState.players[1];
+
+        player1.addToCityMulti(gameState, [
+          CardName.PHOTOGRAPHER,
+          CardName.POSTAL_PIGEON,
+          CardName.POSTAL_PIGEON,
+        ]);
+
+        player2.addToCityMulti(gameState, [CardName.EVERTREE, CardName.SCHOOL]);
+
+        player1 = gameState.getPlayer(player1.playerId);
+
+        // 2 points for photographer, 0 points for postal pigeons
+        // Evertree would be 1 point, School would be 2
+        expect(player1.getPoints(gameState)).to.be(2 + 2);
+      });
+
+      it("should score based on your city", () => {
+        let player1 = gameState.getActivePlayer();
+        const player2 = gameState.players[1];
+
+        player1.addToCityMulti(gameState, [
+          CardName.PHOTOGRAPHER,
+          CardName.POSTAL_PIGEON,
+          CardName.POSTAL_PIGEON,
+        ]);
+
+        player2.addToCityMulti(gameState, [
+          CardName.EVERTREE,
+          CardName.SCHOOL,
+          CardName.POSTAL_PIGEON,
+          CardName.POSTAL_PIGEON,
+          CardName.POSTAL_PIGEON,
+          CardName.POSTAL_PIGEON,
+          CardName.POSTAL_PIGEON,
+        ]);
+
+        player1 = gameState.getPlayer(player1.playerId);
+
+        // 2 points for photographer, 0 points for postal pigeons
+        // Evertree would be 1 point, School would be 2
+        expect(player1.getPoints(gameState)).to.be(2 + 2);
+      });
+    });
 
     describe(CardName.POET, () => {
       it("should allow player to choose a color, draw cards from meadow, and get VP", () => {

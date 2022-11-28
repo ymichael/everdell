@@ -5885,7 +5885,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     associatedCard: { type: "GOLDEN_LEAF", cardType: "COMMON" },
     cardType: CardType.PRODUCTION,
     cardDescription: toGameText([
-      "You may give 1 CARD to an opponent to",
+      "You may give 1 CARD to an opponent to ",
       "gain 1 ANY and draw 1 CARD",
     ]),
     isConstruction: true,

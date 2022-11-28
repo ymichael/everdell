@@ -438,7 +438,7 @@ export class Player implements IGameTextEntity {
     );
   }
 
-  getNumOccupiedSpacesInCity(): number {
+  getNumOccupiedSpacesInCity(forScoring: boolean = false): number {
     let numOccupiedSpacesInCity = 0;
     this.forEachPlayedCard(({ cardName }) => {
       if (CARDS_THAT_DONT_TAKE_SPACE.includes(cardName)) {
@@ -447,6 +447,14 @@ export class Player implements IGameTextEntity {
       numOccupiedSpacesInCity += 1;
     });
 
+    // Account for unpaired messengers.
+    numOccupiedSpacesInCity += this.getUnpairedMessengers().length;
+
+    // For scoring, we want the max number of occupied spots possible.
+    if (forScoring) {
+      return Math.min(this.maxCitySize, numOccupiedSpacesInCity);
+    }
+
     CARDS_THAT_SHARE_SPACE.forEach((cards) => {
       let numSets = this.getNumPlayedCard(cards[0]);
       cards.forEach(
@@ -454,9 +462,6 @@ export class Player implements IGameTextEntity {
       );
       numOccupiedSpacesInCity -= numSets * (cards.length - 1);
     });
-
-    // Account for unpaired messengers.
-    numOccupiedSpacesInCity += this.getUnpairedMessengers().length;
 
     return numOccupiedSpacesInCity;
   }

@@ -41,6 +41,23 @@ describe("Player", () => {
       expect(p.getNumOccupiedSpacesInCity()).to.be(2);
     });
 
+    it("for scoring", () => {
+      const p = gameState.getActivePlayer();
+      expect(p.getNumOccupiedSpacesInCity()).to.be(0);
+      p.addToCity(gameState, CardName.HUSBAND);
+      expect(p.getNumOccupiedSpacesInCity()).to.be(1);
+      p.addToCity(gameState, CardName.WIFE);
+      expect(p.getNumOccupiedSpacesInCity()).to.be(1);
+      expect(p.getNumOccupiedSpacesInCity(true /* forScoring */)).to.be(2);
+
+      for (let i = 0; i < 14; i++) {
+        p.addToCity(gameState, CardName.HUSBAND);
+        p.addToCity(gameState, CardName.WIFE);
+      }
+      expect(p.getNumOccupiedSpacesInCity()).to.be(15);
+      expect(p.getNumOccupiedSpacesInCity(true /* forScoring */)).to.be(15);
+    });
+
     it("playing Husband & Wife cards share spaces", () => {
       const p = gameState.getActivePlayer();
       expect(p.getNumOccupiedSpacesInCity()).to.be(0);

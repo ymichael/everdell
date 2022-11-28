@@ -39,6 +39,7 @@ export default async (
         forestLocations: true,
         specialEvents: true,
         station: true,
+        ticket: true,
       }
     : {};
   const bellfaire = body.bellfaire

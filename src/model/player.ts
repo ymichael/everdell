@@ -33,6 +33,20 @@ import { generate as uuid } from "short-uuid";
 import { sumResources } from "./gameStatePlayHelpers";
 import { assertUnreachable } from "../utils";
 
+const CARDS_THAT_SHARE_SPACE: CardName[][] = [
+  [CardName.HUSBAND, CardName.WIFE],
+  [CardName.GREENHOUSE, CardName.FARM],
+];
+
+const CARDS_THAT_DONT_TAKE_SPACE: CardName[] = [
+  CardName.WANDERER,
+  CardName.PIRATE,
+  CardName.MESSENGER,
+  CardName.AIR_BALLOON,
+  CardName.EVER_WALL,
+  CardName.MAIN_ROAD,
+];
+
 export class Player implements IGameTextEntity {
   private playerSecret: string;
 
@@ -427,20 +441,19 @@ export class Player implements IGameTextEntity {
   getNumOccupiedSpacesInCity(): number {
     let numOccupiedSpacesInCity = 0;
     this.forEachPlayedCard(({ cardName }) => {
-      if (
-        cardName === CardName.WANDERER ||
-        cardName === CardName.PIRATE ||
-        cardName === CardName.MESSENGER ||
-        cardName === CardName.AIR_BALLOON ||
-        cardName === CardName.EVER_WALL ||
-        cardName === CardName.MAIN_ROAD
-      ) {
+      if (CARDS_THAT_DONT_TAKE_SPACE.includes(cardName)) {
         return;
       }
       numOccupiedSpacesInCity += 1;
     });
-    // Only count each husband/wife pair once
-    numOccupiedSpacesInCity -= this.getNumHusbandWifePairs();
+
+    CARDS_THAT_SHARE_SPACE.forEach((cards) => {
+      let numSets = this.getNumPlayedCard(cards[0]);
+      cards.forEach(
+        (c) => (numSets = Math.min(numSets, this.getNumPlayedCard(c)))
+      );
+      numOccupiedSpacesInCity -= numSets * (cards.length - 1);
+    });
 
     // Account for unpaired messengers.
     numOccupiedSpacesInCity += this.getUnpairedMessengers().length;
@@ -496,14 +509,14 @@ export class Player implements IGameTextEntity {
       return true;
     }
 
-    if (cardName === CardName.HUSBAND || cardName === CardName.WIFE) {
-      const numHusbands = (this.playedCards[CardName.HUSBAND] || []).length;
-      const numWifes = (this.playedCards[CardName.WIFE] || []).length;
-      if (cardName === CardName.HUSBAND && numHusbands < numWifes) {
-        return true;
-      }
-      if (cardName === CardName.WIFE && numWifes < numHusbands) {
-        return true;
+    for (let i = 0; i < CARDS_THAT_SHARE_SPACE.length; i++) {
+      const cardsSet = CARDS_THAT_SHARE_SPACE[i];
+      if (cardsSet.includes(cardName)) {
+        const countByCard = cardsSet.map((c) => this.getNumPlayedCard(c));
+        const maxCount = Math.max(...countByCard);
+        if (this.getNumPlayedCard(cardName) < maxCount) {
+          return true;
+        }
       }
     }
 
@@ -558,9 +571,10 @@ export class Player implements IGameTextEntity {
   }
 
   getNumHusbandWifePairs(): number {
-    const numHusbands = (this.playedCards[CardName.HUSBAND] || []).length;
-    const numWifes = (this.playedCards[CardName.WIFE] || []).length;
-    return Math.min(numHusbands, numWifes);
+    return Math.min(
+      this.getNumPlayedCard(CardName.HUSBAND),
+      this.getNumPlayedCard(CardName.WIFE)
+    );
   }
 
   getPointsFromCards(gameState: GameState): number {
@@ -703,6 +717,10 @@ export class Player implements IGameTextEntity {
 
   getNumPlayedCritters(): number {
     return this.getPlayedCritters().length;
+  }
+
+  getNumPlayedCard(cardName: CardName): number {
+    return (this.playedCards[cardName] || []).length;
   }
 
   getPlayedCritters(): PlayedCardInfo[] {

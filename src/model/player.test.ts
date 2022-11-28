@@ -158,6 +158,34 @@ describe("Player", () => {
       );
     });
 
+    it("should account for greenhouse/farm pairs", () => {
+      const p = gameState.getActivePlayer();
+
+      for (let i = 0; i < 15; i++) {
+        p.addToCity(gameState, CardName.FARM);
+      }
+
+      expect(p.canAddToCity(CardName.GREENHOUSE, true /* strict */)).to.be(
+        true
+      );
+      expect(p.canAddToCity(CardName.GREENHOUSE, false /* strict */)).to.be(
+        true
+      );
+
+      expect(p.canAddToCity(CardName.FARM, true /* strict */)).to.be(false);
+      expect(p.canAddToCity(CardName.FARM, false /* strict */)).to.be(false);
+      expect(p.canAddToCity(CardName.HUSBAND, true /* strict */)).to.be(false);
+      expect(p.canAddToCity(CardName.HUSBAND, false /* strict */)).to.be(false);
+
+      // We can add a GREENHOUSE though
+      expect(p.canAddToCity(CardName.GREENHOUSE, true /* strict */)).to.be(
+        true
+      );
+      expect(p.canAddToCity(CardName.GREENHOUSE, false /* strict */)).to.be(
+        true
+      );
+    });
+
     it("should account for husband/wife pairs", () => {
       const p = gameState.getActivePlayer();
 

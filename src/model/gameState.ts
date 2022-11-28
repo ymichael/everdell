@@ -421,6 +421,16 @@ export class GameState {
     }
   }
 
+  playCardFromStation(stationIdx: number, gameInput: GameInput): void {
+    if (!this.gameOptions.newleaf?.station) {
+      return;
+    }
+    this.removeCardFromStation(this.stationCards[stationIdx]!, stationIdx);
+    const tileName = this.trainCarTileStack!.peekAt(stationIdx)!;
+    TrainCarTile.fromName(tileName).playTile(this, gameInput);
+    this.trainCarTileStack!.replaceAt(stationIdx);
+  }
+
   removeCardFromStation(cardName: CardName, sourceIdx: number): void {
     if (!this.gameOptions.newleaf?.station) {
       return;
@@ -524,10 +534,7 @@ export class GameState {
       if (typeof idx !== "number" || this.stationCards[idx] !== card.name) {
         throw new Error("Invalid station card selected");
       }
-      this.stationCards[idx] = null;
-      const tileName = this.trainCarTileStack!.peekAt(idx)!;
-      TrainCarTile.fromName(tileName).playTile(this, gameInput);
-      this.trainCarTileStack!.replaceAt(idx);
+      this.playCardFromStation(idx, gameInput);
     } else {
       player.removeCardFromHand(this, card.name, false /* addToDiscardPile */);
     }

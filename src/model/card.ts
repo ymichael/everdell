@@ -10,6 +10,7 @@ import {
   CardCost,
   CardType,
   CardName,
+  CardWithSource,
   EventName,
   EventType,
   GameInput,
@@ -5226,8 +5227,182 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       [ResourceType.RESIN]: 1,
       [ResourceType.PEBBLE]: 1,
     },
+    canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
+        const resources = player.getResources();
+        const canPlayStationCard = gameState.stationCards.some((cardName) => {
+          if (!cardName) {
+            return false;
+          }
+          const card = Card.fromName(cardName);
+          return (
+            card.canPlayIgnoreCostAndSource(gameState) &&
+            player.isPaidResourcesValid(
+              resources,
+              card.baseCost,
+              "ANY 3",
+              false
+            )
+          );
+        });
+        if (!canPlayStationCard) {
+          return `Cannot play any cards from the Station`;
+        }
+      }
+      return null;
+    },
+    // Play station cards for 3 less resources
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
+        const resources = player.getResources();
+        const cardOptions: CardWithSource[] = [];
+        gameState.stationCards.forEach((cardName, idx) => {
+          if (!cardName) {
+            return;
+          }
+          const card = Card.fromName(cardName);
+          if (
+            card.canPlayIgnoreCostAndSource(gameState) &&
+            player.isPaidResourcesValid(
+              resources,
+              card.baseCost,
+              "ANY 3",
+              false
+            )
+          ) {
+            cardOptions.push({
+              card: cardName,
+              source: "STATION",
+              sourceIdx: idx,
+            });
+          }
+        });
+        if (cardOptions.length === 0) {
+          return;
+        }
+
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_CARDS_WITH_SOURCE,
+          prevInputType: gameInput.inputType,
+          label: "Select 1 CARD from the Station to play for 3 fewer ANY",
+          cardOptions,
+          maxToSelect: 1,
+          minToSelect: 1,
+          cardContext: CardName.LOCOMOTIVE,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_CARDS_WITH_SOURCE &&
+        gameInput.cardContext === CardName.LOCOMOTIVE
+      ) {
+        const selectedCards = gameInput.clientOptions.selectedCards;
+        if (!selectedCards) {
+          throw new Error("Must select card to play.");
+        }
+        if (selectedCards.length !== 1) {
+          throw new Error("Can only play 1 card.");
+        }
+        const selectedCardWithSource = selectedCards[0];
+        if (
+          selectedCardWithSource === "FROM_DECK" ||
+          selectedCardWithSource.source !== "STATION"
+        ) {
+          throw new Error(
+            `Invalid selected card ${JSON.stringify(selectedCardWithSource)}`
+          );
+        }
+        const selectedCardName = selectedCardWithSource.card;
+        const selectedCard = Card.fromName(selectedCardName);
+        const selectedCardIdx = selectedCardWithSource.sourceIdx!;
+        if (!selectedCard.canPlayIgnoreCostAndSource(gameState)) {
+          throw new Error(`Unable to play ${selectedCardName}`);
+        }
+        if (gameState.stationCards[selectedCardIdx] !== selectedCardName) {
+          throw new Error(`Selected card not found at the Station`);
+        }
+
+        gameState.addGameLogFromCard(CardName.LOCOMOTIVE, [
+          player,
+          " selected ",
+          selectedCard,
+          " to play from the Station.",
+        ]);
+
+        if (sumResources(selectedCard.baseCost) <= 3) {
+          gameState.playCardFromStation(selectedCardIdx, gameInput);
+          selectedCard.addToCityAndPlay(gameState, gameInput);
+          gameState.addGameLogFromCard(CardName.LOCOMOTIVE, [
+            player,
+            " played ",
+            selectedCard,
+            " from the Station.",
+          ]);
+        } else {
+          gameState.pendingGameInputs.push({
+            inputType: GameInputType.SELECT_PAYMENT_FOR_CARD,
+            prevInputType: gameInput.inputType,
+            prevInput: gameInput,
+            cardContext: CardName.LOCOMOTIVE,
+            card: selectedCardName,
+            clientOptions: {
+              card: selectedCardName,
+              paymentOptions: { resources: {} },
+            },
+          });
+        }
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_PAYMENT_FOR_CARD &&
+        gameInput.cardContext === CardName.LOCOMOTIVE
+      ) {
+        if (!gameInput.clientOptions?.paymentOptions?.resources) {
+          throw new Error(
+            "Invalid input: clientOptions.paymentOptions.resources missing"
+          );
+        }
+        const card = Card.fromName(gameInput.card);
+        const paymentError = player.validatePaidResources(
+          gameInput.clientOptions.paymentOptions.resources,
+          card.baseCost,
+          "ANY 3"
+        );
+        if (paymentError) {
+          throw new Error(paymentError);
+        }
+        if (
+          gameInput.prevInput?.inputType !==
+          GameInputType.SELECT_CARDS_WITH_SOURCE
+        ) {
+          throw new Error(
+            `Invalid previous input: ${JSON.stringify(gameInput.prevInput)}`
+          );
+        }
+
+        const selectedCardWithSource =
+          gameInput.prevInput.clientOptions.selectedCards[0];
+        if (
+          selectedCardWithSource === "FROM_DECK" ||
+          selectedCardWithSource.source !== "STATION"
+        ) {
+          throw new Error(
+            `Invalid selected card ${JSON.stringify(selectedCardWithSource)}`
+          );
+        }
+        const selectedCardIdx = selectedCardWithSource.sourceIdx!;
+
+        player.payForCard(gameState, gameInput);
+        gameState.playCardFromStation(selectedCardIdx, gameInput);
+        card.addToCityAndPlay(gameState, gameInput);
+        gameState.addGameLogFromCard(CardName.LOCOMOTIVE, [
+          player,
+          " played ",
+          card,
+          " from the Station.",
+        ]);
+      }
     },
   }),
   [CardName.MAGICIAN]: new Card({

@@ -17,6 +17,7 @@ import {
   CardName,
   Season,
   LocationName,
+  TrainCarTileName,
   RiverDestinationName,
   RiverDestinationSpotName,
   PlayerStatus,
@@ -9329,7 +9330,140 @@ describe("Card", () => {
       });
     });
 
-    describe(CardName.LOCOMOTIVE, () => {});
+    describe(CardName.LOCOMOTIVE, () => {
+      beforeEach(() => {
+        gameState = testInitialGameState({
+          stationCards: [CardName.FARM, CardName.KING, CardName.QUEEN],
+          trainCarTiles: [
+            TrainCarTileName.ONE_BERRY,
+            TrainCarTileName.ONE_PEBBLE,
+            TrainCarTileName.ONE_RESIN,
+          ],
+          gameOptions: { newleaf: { station: true, cards: true } },
+        });
+        player = gameState.getActivePlayer();
+      });
+
+      it("should allow player buy card from station without spending resources if cost is <= 3", () => {
+        const card = Card.fromName(CardName.LOCOMOTIVE);
+        player.addToCity(gameState, card.name);
+
+        expect(gameState.stationCards).to.eql([
+          CardName.FARM,
+          CardName.KING,
+          CardName.QUEEN,
+        ]);
+
+        expect(player.numAvailableWorkers).to.be(2);
+        expect(player.getFirstPlayedCard(CardName.LOCOMOTIVE)).to.eql({
+          cardName: CardName.LOCOMOTIVE,
+          cardOwnerId: player.playerId,
+          usedForCritter: false,
+          workers: [],
+        });
+
+        expect(player.hasCardInCity(CardName.FARM)).to.be(false);
+        expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            clientOptions: {
+              playedCard: player.getFirstPlayedCard(CardName.LOCOMOTIVE),
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_CARDS_WITH_SOURCE,
+            clientOptions: {
+              selectedCards: [
+                {
+                  card: CardName.FARM,
+                  source: "STATION",
+                  sourceIdx: 0,
+                },
+              ],
+            },
+          },
+        ]);
+
+        expect(player.numAvailableWorkers).to.be(1);
+        expect(player.hasCardInCity(CardName.FARM)).to.be(true);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
+      });
+
+      it("should allow player buy card from station if cost is > 3", () => {
+        const card = Card.fromName(CardName.LOCOMOTIVE);
+        player.addToCity(gameState, card.name);
+        player.gainResources(gameState, { [ResourceType.BERRY]: 2 });
+
+        expect(gameState.stationCards).to.eql([
+          CardName.FARM,
+          CardName.KING,
+          CardName.QUEEN,
+        ]);
+
+        expect(player.numAvailableWorkers).to.be(2);
+        expect(player.getFirstPlayedCard(CardName.LOCOMOTIVE)).to.eql({
+          cardName: CardName.LOCOMOTIVE,
+          cardOwnerId: player.playerId,
+          usedForCritter: false,
+          workers: [],
+        });
+
+        expect(player.hasCardInCity(CardName.QUEEN)).to.be(false);
+        expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            clientOptions: {
+              playedCard: player.getFirstPlayedCard(CardName.LOCOMOTIVE),
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_CARDS_WITH_SOURCE,
+            cardOptions: [
+              {
+                card: CardName.FARM,
+                source: "STATION",
+                sourceIdx: 0,
+              },
+              {
+                card: CardName.QUEEN,
+                source: "STATION",
+                sourceIdx: 2,
+              },
+            ],
+            clientOptions: {
+              selectedCards: [
+                {
+                  card: CardName.QUEEN,
+                  source: "STATION",
+                  sourceIdx: 2,
+                },
+              ],
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_PAYMENT_FOR_CARD,
+            clientOptions: {
+              paymentOptions: {
+                resources: { [ResourceType.BERRY]: 2 },
+              },
+            },
+          },
+        ]);
+
+        expect(player.numAvailableWorkers).to.be(1);
+        expect(player.hasCardInCity(CardName.QUEEN)).to.be(true);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
+      });
+    });
 
     // TODO: add test case for "should now allow player to select Magician"
     describe(CardName.MAGICIAN, () => {

@@ -3,6 +3,7 @@ import {
   AmbassadorPlacementInfo,
   CardName,
   CardType,
+  CardWithSource,
   EventName,
   EventType,
   EventNameToPlayerId,
@@ -31,7 +32,6 @@ import {
   Season,
   TextPart,
   TrainCarTileName,
-  TPlayableCard,
   WorkerPlacementInfo,
 } from "./types";
 import { defaultGameOptions } from "./gameOptions";
@@ -419,6 +419,18 @@ export class GameState {
         this.stationCards[i] = this.drawCard();
       }
     }
+  }
+
+  removeCardFromStation(cardName: CardName, stationIdx: number): void {
+    if (!this.gameOptions.newleaf?.station) {
+      return;
+    }
+    if (this.stationCards[stationIdx] !== cardName) {
+      throw new Error(
+        `Unexpected card at station, expected ${cardName}, got ${this.stationCards[stationIdx]}`
+      );
+    }
+    this.stationCards[stationIdx] = null;
   }
 
   removeCardFromMeadow(cardName: CardName): void {
@@ -1207,6 +1219,7 @@ export class GameState {
       case GameInputType.SELECT_PLAYED_ADORNMENT:
       case GameInputType.SELECT_RIVER_DESTINATION:
       case GameInputType.SELECT_TRAIN_CAR_TILE:
+      case GameInputType.SELECT_CARDS_WITH_SOURCE:
         this.handleMultiStepGameInput(gameInput);
         break;
       case GameInputType.PLAY_CARD:
@@ -1685,47 +1698,41 @@ export class GameState {
     });
   };
 
-  getPlayableCards(): TPlayableCard[] {
-    const player = this.getActivePlayer();
-    const ret: TPlayableCard[] = [];
-
+  getCardsWithSource(includeHand: boolean): CardWithSource[] {
+    const ret: CardWithSource[] = [];
     this.meadowCards.forEach((cardName) => {
-      const card = Card.fromName(cardName);
-      if (
-        player.canAffordCard(card.name, true) &&
-        card.canPlayIgnoreCostAndSource(this, false /* strict */)
-      ) {
-        ret.push({ card: cardName, source: "MEADOW" });
-      }
+      ret.push({ card: cardName, source: "MEADOW" });
     });
     if (this.gameOptions.newleaf?.station) {
       this.stationCards.forEach((cardNameOrNull, idx) => {
         if (!cardNameOrNull) {
           return;
         }
-        const card = Card.fromName(cardNameOrNull);
-        if (
-          player.canAffordCard(card.name, true) &&
-          card.canPlayIgnoreCostAndSource(this, false /* strict */)
-        ) {
-          ret.push({
-            card: cardNameOrNull,
-            source: "STATION",
-            stationIdx: idx,
-          });
-        }
+        ret.push({
+          card: cardNameOrNull,
+          source: "STATION",
+          stationIdx: idx,
+        });
       });
     }
-    player.cardsInHand.forEach((cardName) => {
-      const card = Card.fromName(cardName);
-      if (
+    if (includeHand) {
+      const player = this.getActivePlayer();
+      player.cardsInHand.forEach((cardName) => {
+        ret.push({ card: cardName, source: "HAND" });
+      });
+    }
+    return ret;
+  }
+
+  getPlayableCards(): CardWithSource[] {
+    const player = this.getActivePlayer();
+    return this.getCardsWithSource(true).filter((cardWithSource) => {
+      const card = Card.fromName(cardWithSource.card);
+      return (
         player.canAffordCard(card.name, true) &&
         card.canPlayIgnoreCostAndSource(this, false /* strict */)
-      ) {
-        ret.push({ card: cardName, source: "HAND" });
-      }
+      );
     });
-    return ret;
   }
 
   getPossibleGameInputs(): GameInput[] {

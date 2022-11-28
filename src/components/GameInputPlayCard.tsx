@@ -3,7 +3,7 @@ import { useField } from "formik";
 
 import styles from "../styles/gameBoard.module.css";
 
-import { CardName, ResourceType, TPlayableCard } from "../model/types";
+import { CardName, ResourceType, CardWithSource } from "../model/types";
 import { Player } from "../model/player";
 import { Card as CardModel } from "../model/card";
 
@@ -12,7 +12,7 @@ import Card from "./Card";
 import { ItemWrapper } from "./common";
 
 const GameInputPlayCard: React.FC<{
-  options: TPlayableCard[];
+  options: CardWithSource[];
   viewingPlayer: Player;
 }> = ({ options = [], viewingPlayer }) => {
   const [_field, meta, helpers] = useField("gameInput.clientOptions");

@@ -175,6 +175,8 @@ const GameInputBoxInner = ({
           gameState={gameState}
           viewingPlayer={viewingPlayer}
         />
+      ) : gameInput.inputType === GameInputType.SELECT_CARDS_WITH_SOURCE ? (
+        <>TODO: Not implemented</>
       ) : gameInput.inputType === GameInputType.SELECT_TRAIN_CAR_TILE ? (
         <>TODO: Not implemented</>
       ) : (

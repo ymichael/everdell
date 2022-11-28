@@ -24,6 +24,7 @@ export enum GameInputType {
 
   // multi
   SELECT_CARDS = "SELECT_CARDS",
+  SELECT_CARDS_WITH_SOURCE = "SELECT_CARDS_WITH_SOURCE",
   SELECT_PLAYED_CARDS = "SELECT_PLAYED_CARDS",
   SELECT_PLAYER = "SELECT_PLAYER",
   SELECT_RESOURCES = "SELECT_RESOURCES",
@@ -74,8 +75,8 @@ export type GameInputPlayCard = {
   clientOptions: {
     card: CardName | null;
     fromMeadow?: boolean; // Deprecated
-    source?: TPlayableCard["source"];
-    stationIdx?: TPlayableCard["stationIdx"];
+    source?: CardWithSource["source"];
+    stationIdx?: CardWithSource["stationIdx"];
     paymentOptions: CardPaymentOptions;
   };
 };
@@ -193,6 +194,17 @@ export type GameInputSelectCards = {
   };
 };
 
+export type GameInputSelectCardsWithSource = {
+  inputType: GameInputType.SELECT_CARDS_WITH_SOURCE;
+  prevInputType: GameInputType;
+  cardOptions: (CardWithSource | "FROM_DECK")[];
+  maxToSelect: number;
+  minToSelect: number;
+  clientOptions: {
+    selectedCards: (CardWithSource | "FROM_DECK")[];
+  };
+};
+
 export type GameInputSelectPlayedCards = {
   inputType: GameInputType.SELECT_PLAYED_CARDS;
   prevInputType: GameInputType;
@@ -290,6 +302,7 @@ export type GameInputMultiStep = (
   | GameInputSelectPlayedAdornment
   | GameInputSelectRiverDestination
   | GameInputSelectTrainCarTile
+  | GameInputSelectCardsWithSource
 ) &
   GameInputMultiStepContext & {
     prevInput?: GameInput;
@@ -849,7 +862,7 @@ export enum TrainCarTileName {
   ONE_VP = "ONE_VP",
 }
 
-export type TPlayableCard = {
+export type CardWithSource = {
   card: CardName;
   source: "HAND" | "MEADOW" | "STATION";
   stationIdx?: number;

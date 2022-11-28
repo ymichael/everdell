@@ -5066,7 +5066,86 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       [ResourceType.BERRY]: 1,
     },
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.SELECT_CARDS_WITH_SOURCE) {
+        const selectedCard = gameInput.clientOptions.selectedCards[0];
+        if (!selectedCard) {
+          throw new Error("Must selected a card to draw");
+        }
+        if (selectedCard === "FROM_DECK") {
+          player.drawCards(gameState, 1);
+          gameState.addGameLogFromCard(CardName.LAMPLIGHTER, [
+            player,
+            " drew 1 CARD from the deck.",
+          ]);
+        } else if (selectedCard.source === "MEADOW") {
+          gameState.removeCardFromMeadow(selectedCard.card);
+          player.addCardToHand(gameState, selectedCard.card);
+          gameState.addGameLogFromCard(CardName.LAMPLIGHTER, [
+            player,
+            " drew 1 ",
+            Card.fromName(selectedCard.card),
+            " from the Meadow.",
+          ]);
+        } else if (selectedCard.source === "STATION") {
+          gameState.removeCardFromStation(
+            selectedCard.card,
+            selectedCard.stationIdx!
+          );
+          player.addCardToHand(gameState, selectedCard.card);
+          gameState.addGameLogFromCard(CardName.LAMPLIGHTER, [
+            player,
+            " drew 1 ",
+            Card.fromName(selectedCard.card),
+            " from the Station.",
+          ]);
+        } else {
+          throw new Error(
+            `Invalid selected card ${JSON.stringify(selectedCard)}`
+          );
+        }
+        if (
+          gameInput.prevInputType !== GameInputType.SELECT_CARDS_WITH_SOURCE
+        ) {
+          gameState.pendingGameInputs.push({
+            inputType: GameInputType.SELECT_CARDS_WITH_SOURCE,
+            prevInputType: gameInput.inputType,
+            cardContext: CardName.LAMPLIGHTER,
+            label: "Choose your second CARD",
+            cardOptions: [
+              "FROM_DECK",
+              ...gameState.getCardsWithSource(false /* includeHand */),
+            ],
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              selectedCards: [],
+            },
+          });
+        }
+      }
+    },
+    productionInner: (
+      gameState: GameState,
+      gameInput: GameInput,
+      cardOwner: Player
+    ) => {
+      const player = gameState.getActivePlayer();
+      gameState.pendingGameInputs.push({
+        inputType: GameInputType.SELECT_CARDS_WITH_SOURCE,
+        prevInputType: gameInput.inputType,
+        cardContext: CardName.LAMPLIGHTER,
+        label: "Choose your first CARD",
+        cardOptions: [
+          "FROM_DECK",
+          ...gameState.getCardsWithSource(false /* includeHand */),
+        ],
+        maxToSelect: 1,
+        minToSelect: 1,
+        clientOptions: {
+          selectedCards: [],
+        },
+      });
     },
   }),
   [CardName.LIBRARY]: new Card({

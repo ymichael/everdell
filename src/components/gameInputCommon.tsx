@@ -186,6 +186,7 @@ const renderMultiStepGameInputLabel = (
         />
       );
     case GameInputType.SELECT_PLAYED_CARDS:
+    case GameInputType.SELECT_CARDS_WITH_SOURCE:
     case GameInputType.SELECT_CARDS:
       return (
         <Description

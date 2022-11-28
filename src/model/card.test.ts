@@ -8757,7 +8757,78 @@ describe("Card", () => {
       });
     });
 
-    describe(CardName.LAMPLIGHTER, () => {});
+    describe(CardName.LAMPLIGHTER, () => {
+      beforeEach(() => {
+        gameState = testInitialGameState({
+          meadowCards: [
+            CardName.MINER_MOLE,
+            CardName.MINER_MOLE,
+            CardName.MINER_MOLE,
+            CardName.MINER_MOLE,
+            CardName.MINER_MOLE,
+            CardName.MINER_MOLE,
+            CardName.MINER_MOLE,
+            CardName.MINER_MOLE,
+          ],
+          stationCards: [CardName.CHIP_SWEEP, CardName.HUSBAND, CardName.WIFE],
+          gameOptions: { newleaf: { station: true } },
+        });
+        player = gameState.getActivePlayer();
+      });
+
+      it("should allow you to draw 2 cards from the deck", () => {
+        const card = Card.fromName(CardName.LAMPLIGHTER);
+        player.addCardToHand(gameState, card.name);
+        player.gainResources(gameState, card.baseCost);
+        expect(player.numCardsInHand).to.be(1);
+
+        gameState.deck.addToStack(CardName.KING);
+        gameState.deck.addToStack(CardName.QUEEN);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+          { clientOptions: { selectedCards: ["FROM_DECK"] } },
+          { clientOptions: { selectedCards: ["FROM_DECK"] } },
+        ]);
+
+        expect(player.numCardsInHand).to.be(2);
+        expect(player.cardsInHand).to.eql([CardName.QUEEN, CardName.KING]);
+        expect(player.hasCardInCity(CardName.LAMPLIGHTER)).to.be(true);
+      });
+
+      it("should allow you to draw 1 card from the station and 1 card from the meadow", () => {
+        const card = Card.fromName(CardName.LAMPLIGHTER);
+        player.addCardToHand(gameState, card.name);
+        player.gainResources(gameState, card.baseCost);
+        expect(player.numCardsInHand).to.be(1);
+
+        gameState.deck.addToStack(CardName.KING);
+        gameState.deck.addToStack(CardName.QUEEN);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+          {
+            clientOptions: {
+              selectedCards: [{ card: CardName.MINER_MOLE, source: "MEADOW" }],
+            },
+          },
+          {
+            clientOptions: {
+              selectedCards: [
+                { card: CardName.HUSBAND, source: "STATION", stationIdx: 1 },
+              ],
+            },
+          },
+        ]);
+
+        expect(player.numCardsInHand).to.be(2);
+        expect(player.cardsInHand).to.eql([
+          CardName.MINER_MOLE,
+          CardName.HUSBAND,
+        ]);
+        expect(player.hasCardInCity(CardName.LAMPLIGHTER)).to.be(true);
+      });
+    });
 
     describe(CardName.LIBRARY, () => {
       it("Should calculate points correctly", () => {

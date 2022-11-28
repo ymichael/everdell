@@ -191,7 +191,8 @@ const PlayerStatus: React.FC<{
                 <EmptyCitySpotIcon />
               </div>
               <div className={styles.status_box_item_resource_count}>
-                {15 - playerImpl.getNumOccupiedSpacesInCity()}
+                {playerImpl.maxCitySize -
+                  playerImpl.getNumOccupiedSpacesInCity()}
               </div>
             </div>
           </div>

@@ -39,12 +39,12 @@ const CARDS_THAT_SHARE_SPACE: CardName[][] = [
 ];
 
 const CARDS_THAT_DONT_TAKE_SPACE: CardName[] = [
-  CardName.WANDERER,
-  CardName.PIRATE,
-  CardName.MESSENGER,
   CardName.AIR_BALLOON,
   CardName.EVER_WALL,
   CardName.MAIN_ROAD,
+  CardName.MESSENGER,
+  CardName.PIRATE,
+  CardName.WANDERER,
 ];
 
 export class Player implements IGameTextEntity {

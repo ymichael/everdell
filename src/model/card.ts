@@ -4579,7 +4579,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       [ResourceType.PEBBLE]: 3,
     },
     pointsInner: (player) => {
-      throw new Error("Not Implemented");
+      return Math.floor(player.getNumOccupiedSpacesInCity(true) / 5);
     },
   }),
   [CardName.FREIGHT_CAR]: new Card({

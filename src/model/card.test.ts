@@ -8238,7 +8238,74 @@ describe("Card", () => {
       });
     });
 
-    describe(CardName.EVER_WALL, () => {});
+    describe(CardName.EVER_WALL, () => {
+      it("should award points based on number of occupied spaces", () => {
+        const player = gameState.getActivePlayer();
+
+        player.addToCityMulti(gameState, [
+          CardName.EVER_WALL,
+          CardName.POSTAL_PIGEON,
+          CardName.POSTAL_PIGEON,
+          CardName.POSTAL_PIGEON,
+          CardName.POSTAL_PIGEON,
+        ]);
+
+        // Ever Wall has base 6 VP. Should be 6 because Ever Wall doesn't take up
+        // space in city
+        expect(player.getPointsFromCards(gameState)).to.be(6);
+
+        player.addToCityMulti(gameState, [CardName.POSTAL_PIGEON]);
+
+        // Now player has 5 occupied spots, so should be 6 + 1
+        expect(player.getPointsFromCards(gameState)).to.be(6 + 1);
+
+        player.addToCityMulti(gameState, [
+          CardName.POSTAL_PIGEON,
+          CardName.POSTAL_PIGEON,
+          CardName.POSTAL_PIGEON,
+          CardName.POSTAL_PIGEON,
+          CardName.POSTAL_PIGEON,
+          CardName.POSTAL_PIGEON,
+          CardName.POSTAL_PIGEON,
+          CardName.POSTAL_PIGEON,
+          CardName.POSTAL_PIGEON,
+          CardName.POSTAL_PIGEON,
+        ]);
+
+        // 15 / 5 = 3 + 6 from Ever Wall
+        expect(player.getPointsFromCards(gameState)).to.be(6 + 3);
+
+        player.addToCityMulti(gameState, [
+          CardName.WANDERER,
+          CardName.WANDERER,
+          CardName.WANDERER,
+          CardName.WANDERER,
+          CardName.WANDERER,
+        ]);
+
+        // Adding additional wanderer shouldn't add more than 1 VP per Wanderer
+        expect(player.getPointsFromCards(gameState)).to.be(6 + 3 + 5);
+        expect(player.getNumCardsInCity()).to.be(21);
+      });
+      it("should handle shared spaces correctly", () => {
+        const player = gameState.getActivePlayer();
+
+        player.addToCityMulti(gameState, [
+          CardName.EVER_WALL,
+          CardName.POSTAL_PIGEON,
+          CardName.POSTAL_PIGEON,
+          CardName.POSTAL_PIGEON,
+          CardName.HUSBAND,
+          CardName.WIFE,
+        ]);
+
+        // Ever Wall has base 6 VP, Husband + Wife together are worth 2+2+3 = 7
+        // Even though the Husband and Wife can share a space, for scoring this
+        // would be counted as 5 occupied spots
+        expect(player.getPointsFromCards(gameState)).to.be(6 + 7 + 1);
+        expect(player.getNumCardsInCity()).to.be(6);
+      });
+    });
 
     describe(CardName.FREIGHT_CAR, () => {
       it("should allow player to play and claim resources", () => {

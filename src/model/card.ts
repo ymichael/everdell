@@ -4367,7 +4367,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
-        let destinationCards = [] as PlayedCardInfo[];
+        const destinationCards = [] as PlayedCardInfo[];
         const players = gameState.players
           .filter((p) => p.playerId !== player.playerId)
           .map((p) => p.playerId);

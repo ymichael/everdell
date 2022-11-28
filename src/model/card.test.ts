@@ -7667,7 +7667,7 @@ describe("Card", () => {
         gameState = testInitialGameState({ meadowCards: cards });
 
         let player1 = gameState.getActivePlayer();
-        let player2 = gameState.players[1];
+        const player2 = gameState.players[1];
 
         player1.addToCity(gameState, CardName.CONDUCTOR);
         player2.addToCity(gameState, CardName.QUEEN);

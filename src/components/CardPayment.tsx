@@ -1,6 +1,5 @@
 import * as React from "react";
 import { Field, useField } from "formik";
-import isEqual from "lodash/isEqual";
 
 import { Card as CardModel } from "../model/card";
 import { Player } from "../model/player";

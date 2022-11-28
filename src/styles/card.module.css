@@ -51,7 +51,7 @@
 }
 
 .color_associated_card_gold {
-  background: var(--color-vp);
+  background: var(--color-gold-leaf);
   color: var(--color-vp-text) !important;
 }
 

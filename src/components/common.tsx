@@ -78,8 +78,13 @@ export const CardIcon = () => {
 };
 
 export const GoldenLeafIcon = () => {
-  // TODO (replace this icon)
-  return <Image alt="Golden Leaf Icon" src="/images/leaf.png" layout="fill" />;
+  return (
+    <Image
+      alt="Golden Leaf Icon"
+      src="/images/gold_occupied.png"
+      layout="fill"
+    />
+  );
 };
 
 export const TicketIcon = () => {

@@ -7721,11 +7721,413 @@ describe("Card", () => {
         expect(player1.numAvailableWorkers).to.be(1);
         expect(player1.hasCardInCity(CardName.WIFE)).to.be(true);
       });
-      // TODO: add more tests:
-      // - Open Destinations shouldn't give owner VP
-      // - can't copy destinations in your own city
-      // - copy the ferry
-      // - copy destination you can't use
+      it("should not grant VP for copying an open destination card", () => {
+        const cards = [
+          CardName.KING,
+          CardName.QUEEN,
+          CardName.POSTAL_PIGEON,
+          CardName.POSTAL_PIGEON,
+          CardName.FARM,
+          CardName.HUSBAND,
+          CardName.CHAPEL,
+          CardName.MONK,
+        ];
+        gameState = testInitialGameState({ meadowCards: cards });
+
+        let player1 = gameState.getActivePlayer();
+        let player2 = gameState.players[1];
+
+        player1.addToCity(gameState, CardName.CONDUCTOR);
+        player2.addToCity(gameState, CardName.INN);
+
+        expect(player1.numAvailableWorkers).to.be(2);
+        expect(player.hasCardInCity(CardName.HUSBAND)).to.be(false);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            clientOptions: {
+              playedCard: player1.getFirstPlayedCard(CardName.CONDUCTOR),
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_PLAYED_CARDS,
+            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardContext: CardName.CONDUCTOR,
+            cardOptions: [player2.getFirstPlayedCard(CardName.INN)],
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              selectedCards: [player2.getFirstPlayedCard(CardName.INN)],
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardContext: CardName.INN,
+            cardOptions: [
+              CardName.POSTAL_PIGEON,
+              CardName.POSTAL_PIGEON,
+              CardName.FARM,
+              CardName.HUSBAND,
+              CardName.MONK,
+            ],
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              selectedCards: [CardName.HUSBAND],
+            },
+          },
+        ]);
+
+        player1 = gameState.getPlayer(player1.playerId);
+        player2 = gameState.getPlayer(player2.playerId);
+
+        expect(player1.numAvailableWorkers).to.be(1);
+        expect(player1.hasCardInCity(CardName.HUSBAND)).to.be(true);
+        expect(player2.getNumResourcesByType(ResourceType.VP)).to.be(0);
+      });
+      it("should not prevent card owner from using destination", () => {
+        const cards = [
+          CardName.KING,
+          CardName.QUEEN,
+          CardName.POSTAL_PIGEON,
+          CardName.POSTAL_PIGEON,
+          CardName.FARM,
+          CardName.HUSBAND,
+          CardName.CHAPEL,
+          CardName.MONK,
+        ];
+
+        const topOfDeck = [
+          CardName.PALACE,
+          CardName.EVERTREE,
+          CardName.DOCTOR,
+          CardName.DOCTOR,
+        ];
+        topOfDeck.reverse();
+        topOfDeck.forEach((cardName) => {
+          gameState.deck.addToStack(cardName);
+        });
+        gameState = testInitialGameState({ meadowCards: cards });
+
+        let player1 = gameState.getActivePlayer();
+        let player2 = gameState.players[1];
+
+        player1.addToCity(gameState, CardName.CONDUCTOR);
+        player2.addToCity(gameState, CardName.QUEEN);
+
+        player1.addCardToHand(gameState, CardName.WIFE);
+
+        expect(player1.numAvailableWorkers).to.be(2);
+        expect(player.hasCardInCity(CardName.WIFE)).to.be(false);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            clientOptions: {
+              playedCard: player1.getFirstPlayedCard(CardName.CONDUCTOR),
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_PLAYED_CARDS,
+            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardContext: CardName.CONDUCTOR,
+            cardOptions: [player2.getFirstPlayedCard(CardName.QUEEN)],
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              selectedCards: [player2.getFirstPlayedCard(CardName.QUEEN)],
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardContext: CardName.QUEEN,
+            cardOptions: [
+              CardName.WIFE,
+              CardName.POSTAL_PIGEON,
+              CardName.POSTAL_PIGEON,
+              CardName.FARM,
+              CardName.HUSBAND,
+              CardName.CHAPEL,
+              CardName.MONK,
+            ],
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              selectedCards: [CardName.WIFE],
+            },
+          },
+        ]);
+
+        player1 = gameState.getPlayer(player1.playerId);
+
+        expect(player1.numAvailableWorkers).to.be(1);
+        expect(player1.hasCardInCity(CardName.WIFE)).to.be(true);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            clientOptions: {
+              playedCard: player2.getFirstPlayedCard(CardName.QUEEN),
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardContext: CardName.QUEEN,
+            cardOptions: [
+              CardName.POSTAL_PIGEON,
+              CardName.POSTAL_PIGEON,
+              CardName.FARM,
+              CardName.HUSBAND,
+              CardName.CHAPEL,
+              CardName.MONK,
+            ],
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              selectedCards: [CardName.FARM],
+            },
+          },
+        ]);
+
+        player2 = gameState.getPlayer(player2.playerId);
+
+        expect(player2.hasCardInCity(CardName.FARM)).to.be(true);
+      });
+
+      it("should not allow player to copy a DESTINATION in their own city", () => {
+        const cards = [
+          CardName.KING,
+          CardName.QUEEN,
+          CardName.POSTAL_PIGEON,
+          CardName.POSTAL_PIGEON,
+          CardName.FARM,
+          CardName.HUSBAND,
+          CardName.CHAPEL,
+          CardName.MONK,
+        ];
+        gameState = testInitialGameState({ meadowCards: cards });
+
+        const player1 = gameState.getActivePlayer();
+        const player2 = gameState.players[1];
+
+        player1.addToCity(gameState, CardName.CONDUCTOR);
+        player1.addToCity(gameState, CardName.INN);
+        player2.addToCity(gameState, CardName.QUEEN);
+
+        expect(player1.numAvailableWorkers).to.be(2);
+
+        expect(() => {
+          multiStepGameInputTest(gameState, [
+            {
+              inputType: GameInputType.VISIT_DESTINATION_CARD,
+              clientOptions: {
+                playedCard: player1.getFirstPlayedCard(CardName.CONDUCTOR),
+              },
+            },
+            {
+              inputType: GameInputType.SELECT_PLAYED_CARDS,
+              prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+              cardContext: CardName.CONDUCTOR,
+              cardOptions: [player2.getFirstPlayedCard(CardName.QUEEN)],
+              maxToSelect: 1,
+              minToSelect: 1,
+              clientOptions: {
+                selectedCards: [player2.getFirstPlayedCard(CardName.INN)],
+              },
+            },
+          ]);
+        }).to.throwException(/Cannot find played card/i);
+      });
+
+      it("should not allow player to copy a DESTINATION they cannot use / play", () => {
+        const cards = [
+          CardName.EVERTREE,
+          CardName.EVERTREE,
+          CardName.EVERTREE,
+          CardName.EVERTREE,
+          CardName.EVERTREE,
+          CardName.EVERTREE,
+          CardName.EVERTREE,
+          CardName.EVERTREE,
+        ];
+        gameState = testInitialGameState({ meadowCards: cards });
+
+        const player1 = gameState.getActivePlayer();
+        const player2 = gameState.players[1];
+
+        player1.addToCity(gameState, CardName.CONDUCTOR);
+        player2.addToCity(gameState, CardName.QUEEN);
+
+        expect(player1.numAvailableWorkers).to.be(2);
+
+        expect(() => {
+          multiStepGameInputTest(gameState, [
+            {
+              inputType: GameInputType.VISIT_DESTINATION_CARD,
+              clientOptions: {
+                playedCard: player1.getFirstPlayedCard(CardName.CONDUCTOR),
+              },
+            },
+            {
+              inputType: GameInputType.SELECT_PLAYED_CARDS,
+              prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+              cardContext: CardName.CONDUCTOR,
+              cardOptions: [player2.getFirstPlayedCard(CardName.QUEEN)],
+              maxToSelect: 1,
+              minToSelect: 1,
+              clientOptions: {
+                selectedCards: [player2.getFirstPlayedCard(CardName.QUEEN)],
+              },
+            },
+          ]);
+        }).to.throwException(/No DESTINATION cards available to copy/i);
+      });
+
+      it("should allow player to copy the Ferry", () => {
+        gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
+
+        gameState.riverDestinationMap!.spots[
+          RiverDestinationSpotName.TWO_TRAVELER
+        ].name = RiverDestinationName.BALLROOM;
+
+        // make sure there's a revealed river destination
+        gameState.riverDestinationMap!.spots[
+          RiverDestinationSpotName.TWO_TRAVELER
+        ].revealed = true;
+
+        let player1 = gameState.getActivePlayer();
+        const player2 = gameState.players[1];
+
+        player1.gainResources(gameState, {
+          [ResourceType.RESIN]: 1,
+          [ResourceType.VP]: 1,
+        });
+
+        player1.addToCity(gameState, CardName.CONDUCTOR);
+        player2.addToCity(gameState, CardName.FERRY);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            clientOptions: {
+              playedCard: player1.getFirstPlayedCard(CardName.CONDUCTOR),
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_PLAYED_CARDS,
+            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardContext: CardName.CONDUCTOR,
+            cardOptions: [player2.getFirstPlayedCard(CardName.FERRY)],
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              selectedCards: [player2.getFirstPlayedCard(CardName.FERRY)],
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_RIVER_DESTINATION,
+            prevInputType: GameInputType.PLACE_AMBASSADOR,
+            options: [RiverDestinationName.BALLROOM],
+            cardContext: CardName.FERRY,
+            clientOptions: { riverDestination: RiverDestinationName.BALLROOM },
+          },
+          {
+            inputType: GameInputType.SELECT_OPTION_GENERIC,
+            prevInputType: GameInputType.PLACE_AMBASSADOR,
+            riverDestinationContext: RiverDestinationName.BALLROOM,
+            options: ["Ok", "Decline"],
+            clientOptions: { selectedOption: "Ok" },
+          },
+        ]);
+
+        player1 = gameState.getPlayer(player1.playerId);
+
+        expect(player1.numAvailableWorkers).to.be(1);
+        expect(player1.hasUnusedAmbassador()).to.be(true);
+
+        // Make sure we resolved the river destination correctly
+        expect(player1.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
+        expect(player1.getNumResourcesByType(ResourceType.VP)).to.be(0);
+        expect(player1.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
+        expect(player1.numCardsInHand).to.be(3);
+      });
+      it("should correctly filter FERRY out list of available DESTINATION to copy", () => {
+        const cards = [
+          CardName.KING,
+          CardName.QUEEN,
+          CardName.POSTAL_PIGEON,
+          CardName.POSTAL_PIGEON,
+          CardName.FARM,
+          CardName.HUSBAND,
+          CardName.CHAPEL,
+          CardName.MONK,
+        ];
+
+        gameState = testInitialGameState({
+          gameOptions: { pearlbrook: true },
+          meadowCards: cards,
+        });
+
+        // add a river destination but don't reveal it
+        gameState.riverDestinationMap!.spots[
+          RiverDestinationSpotName.TWO_TRAVELER
+        ].name = RiverDestinationName.BALLROOM;
+
+        let player1 = gameState.getActivePlayer();
+        const player2 = gameState.players[1];
+
+        player1.addToCity(gameState, CardName.CONDUCTOR);
+        player2.addToCity(gameState, CardName.FERRY);
+        player2.addToCity(gameState, CardName.QUEEN);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            clientOptions: {
+              playedCard: player1.getFirstPlayedCard(CardName.CONDUCTOR),
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_PLAYED_CARDS,
+            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardContext: CardName.CONDUCTOR,
+            cardOptions: [player2.getFirstPlayedCard(CardName.QUEEN)],
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              selectedCards: [player2.getFirstPlayedCard(CardName.QUEEN)],
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+            cardContext: CardName.QUEEN,
+            cardOptions: [
+              CardName.POSTAL_PIGEON,
+              CardName.POSTAL_PIGEON,
+              CardName.FARM,
+              CardName.HUSBAND,
+              CardName.CHAPEL,
+              CardName.MONK,
+            ],
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              selectedCards: [CardName.FARM],
+            },
+          },
+        ]);
+
+        player1 = gameState.getPlayer(player1.playerId);
+
+        expect(player1.numAvailableWorkers).to.be(1);
+        expect(player1.hasCardInCity(CardName.FARM)).to.be(true);
+        expect(player2.hasCardInCity(CardName.FERRY)).to.be(true);
+      });
     });
 
     describe(CardName.DIPLOMAT, () => {

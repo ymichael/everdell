@@ -4367,7 +4367,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
-        const destinationCards = [] as PlayedCardInfo[];
+        let destinationCards = [] as PlayedCardInfo[];
         const players = gameState.players
           .filter((p) => p.playerId !== player.playerId)
           .map((p) => p.playerId);
@@ -4378,6 +4378,17 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           destinationCards.push(
             ...otherPlayer.getAllPlayedCardsByType(CardType.DESTINATION)
           );
+        });
+
+        // filter out the ones that the player cannot play / utilize
+        destinationCards = destinationCards.filter((playedCard) => {
+          const card = Card.fromName(playedCard.cardName);
+          return card.canPlay(gameState, {
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            clientOptions: {
+              playedCard,
+            },
+          });
         });
 
         if (destinationCards.length === 0) {
@@ -4423,12 +4434,21 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         ]);
 
         const card = Card.fromName(selectedCard.cardName);
-        card.play(gameState, {
-          inputType: GameInputType.VISIT_DESTINATION_CARD,
-          clientOptions: {
-            playedCard: selectedCard,
-          },
-        });
+        if (selectedCard.cardName === CardName.FERRY) {
+          card.play(gameState, {
+            inputType: GameInputType.PLACE_AMBASSADOR,
+            clientOptions: {
+              loc: null,
+            },
+          });
+        } else {
+          card.play(gameState, {
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            clientOptions: {
+              playedCard: selectedCard,
+            },
+          });
+        }
       }
     },
   }),

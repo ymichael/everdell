@@ -9447,7 +9447,123 @@ describe("Card", () => {
       });
     });
 
-    describe(CardName.MAYOR, () => {});
+    describe(CardName.MAYOR, () => {
+      it("allow player to play card with no cards in city", () => {
+        const card = Card.fromName(CardName.MAYOR);
+        player.addCardToHand(gameState, card.name);
+
+        // Make sure we can play this card
+        player.gainResources(gameState, card.baseCost);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+        ]);
+
+        // should get 1 VP if < 5 cards in city
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(1);
+      });
+      it("should give player additional VP if > 5 cards in city", () => {
+        const card = Card.fromName(CardName.MAYOR);
+        player.addCardToHand(gameState, card.name);
+
+        // Make sure we can play this card
+        player.gainResources(gameState, card.baseCost);
+
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+
+        player.addToCityMulti(gameState, [
+          CardName.FARM,
+          CardName.FARM,
+          CardName.FARM,
+          CardName.FARM,
+        ]);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+        ]);
+
+        // 1 for Mayor and 1 for 5 occupied spaces in city
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(2);
+      });
+      it("should not count cards that don't take up space in city", () => {
+        const card = Card.fromName(CardName.MAYOR);
+        player.addCardToHand(gameState, card.name);
+
+        // Make sure we can play this card
+        player.gainResources(gameState, card.baseCost);
+
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+
+        player.addToCityMulti(gameState, [
+          CardName.FARM,
+          CardName.FARM,
+          CardName.FARM,
+          CardName.WANDERER,
+        ]);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+        ]);
+
+        // Wanderer doesn't take up space in city
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(1);
+      });
+      it("should handle production properly", () => {
+        const card = Card.fromName(CardName.MAYOR);
+        player.addCardToHand(gameState, card.name);
+
+        // Make sure we can play this card
+        player.gainResources(gameState, card.baseCost);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+        ]);
+
+        // forcefully go back to the first player
+        gameState.nextPlayer();
+
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(1);
+
+        player.addToCityMulti(gameState, [
+          CardName.FARM,
+          CardName.FARM,
+          CardName.FARM,
+          CardName.FARM,
+        ]);
+
+        player = gameState.getPlayer(player.playerId);
+
+        player.activateProduction(gameState, {
+          inputType: GameInputType.PREPARE_FOR_SEASON,
+        });
+        player = gameState.getPlayer(player.playerId);
+
+        // 1 from first production, and then 1 + 1 from second
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(1 + 1 + 1);
+
+        player.addToCityMulti(gameState, [
+          CardName.FARM,
+          CardName.FARM,
+          CardName.FARM,
+          CardName.FARM,
+          CardName.FARM,
+        ]);
+
+        player = gameState.getPlayer(player.playerId);
+
+        player.activateProduction(gameState, {
+          inputType: GameInputType.PREPARE_FOR_SEASON,
+        });
+        player = gameState.getPlayer(player.playerId);
+
+        // additional 1 + 2 for the next round of production
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(
+          1 + 1 + 1 + 1 + 2
+        );
+      });
+    });
 
     describe(CardName.MILLER, () => {
       it("should not prompt player if they don't have any PEBBLE", () => {

@@ -4153,6 +4153,12 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       playedCard: PlayedCardInfo
     ) => {
       (playedCard.resources![ResourceType.VP] as number) += 1;
+      gameState.addGameLogFromCard(CardName.BANK, [
+        cardOwner,
+        " added 1 VP to their ",
+        { type: "entity", entityType: "card", card: CardName.BANK },
+        " and increased their max hand size by 1 CARD.",
+      ]);
     },
   }),
   [CardName.CHIPSMITH]: new Card({
@@ -4671,7 +4677,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           gameState.addGameLogFromCard(CardName.FREIGHT_CAR, [
             "There are no remaining resources on this",
             { type: "entity", entityType: "card", card: CardName.FREIGHT_CAR },
-            "FREIGHT_CARD. ",
+            ". ",
             player,
             " did not gain any resources.",
           ]);
@@ -5370,8 +5376,22 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     baseCost: {
       [ResourceType.BERRY]: 4,
     },
-    playInner: (gameState: GameState, gameInput: GameInput) => {
-      throw new Error("Not Implemented");
+    productionInner: (
+      gameState: GameState,
+      gameInput: GameInput,
+      cardOwner: Player,
+      playedCard: PlayedCardInfo
+    ) => {
+      const player = gameState.getActivePlayer();
+      const VPToGain =
+        Math.floor(player.getNumOccupiedSpacesInCity(true) / 5) + 1;
+      player.gainResources(gameState, { [ResourceType.VP]: VPToGain });
+
+      gameState.addGameLogFromCard(CardName.MAYOR, [
+        player,
+        ` gained 1 VP and 1 VP for every 5 occupied spaces`,
+        ` in their city for a total of ${VPToGain} VP.`,
+      ]);
     },
   }),
   [CardName.MILLER]: new Card({

@@ -12,11 +12,13 @@ function GameInputSelectItemWrapper<T = any>({
   items,
   renderItem,
   chooseOne,
+  valueOnSelect,
 }: {
   name: string;
   items: T[];
   renderItem: (t: T) => JSX.Element;
   chooseOne: boolean;
+  valueOnSelect?: (t: T) => any;
 }) {
   const [_field, meta, helpers] = useField(name);
   const selectedIdxMap = useRef<any>({});
@@ -24,7 +26,7 @@ function GameInputSelectItemWrapper<T = any>({
     <div className={styles.items}>
       {items.map((item, idx) => {
         const isSelected = chooseOne
-          ? isEqual(meta.value, item)
+          ? isEqual(meta.value, valueOnSelect ? valueOnSelect(item) : item)
           : !!selectedIdxMap.current[idx];
         return (
           <div
@@ -34,6 +36,8 @@ function GameInputSelectItemWrapper<T = any>({
               if (chooseOne) {
                 if (isSelected) {
                   helpers.setValue(null);
+                } else if (valueOnSelect) {
+                  helpers.setValue(valueOnSelect(item));
                 } else {
                   helpers.setValue(item);
                 }

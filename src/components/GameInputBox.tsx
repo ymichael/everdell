@@ -24,6 +24,7 @@ import GameInputPlayAdornmentSelector from "./GameInputPlayAdornmentSelector";
 import GameInputSelectPaymentForCard from "./GameInputSelectPaymentForCard";
 import GameInputSelectWorkerPlacement from "./GameInputSelectWorkerPlacement";
 import GameInputSelectOptionGeneric from "./GameInputSelectOptionGeneric";
+import GameInputSelectCardWithSourceSelector from "./GameInputSelectCardWithSourceSelector";
 import GameInputPlayCard from "./GameInputPlayCard";
 
 import { assertUnreachable } from "../utils";
@@ -176,7 +177,14 @@ const GameInputBoxInner = ({
           viewingPlayer={viewingPlayer}
         />
       ) : gameInput.inputType === GameInputType.SELECT_CARDS_WITH_SOURCE ? (
-        <>TODO: Not implemented</>
+        <GameInputSelectCardWithSourceSelector
+          name={"gameInput.clientOptions.selectedCards"}
+          chooseOne={
+            gameInput.minToSelect === gameInput.maxToSelect &&
+            gameInput.maxToSelect === 1
+          }
+          options={gameInput.cardOptions}
+        />
       ) : gameInput.inputType === GameInputType.SELECT_TRAIN_CAR_TILE ? (
         <>TODO: Not implemented</>
       ) : (

@@ -273,6 +273,31 @@ module.exports = (on: any, config: any) => {
         player.addCardToHand(gameState, card.name);
       });
     },
+    "db:play-lamp-lighter-game": async () => {
+      return await getTestGameJSON(
+        {
+          meadowCards: [
+            CardName.MINER_MOLE,
+            CardName.MINER_MOLE,
+            CardName.MINER_MOLE,
+            CardName.MINER_MOLE,
+            CardName.MINER_MOLE,
+            CardName.MINER_MOLE,
+            CardName.MINER_MOLE,
+            CardName.MINER_MOLE,
+          ],
+          stationCards: [CardName.CHIP_SWEEP, CardName.HUSBAND, CardName.MONK],
+          gameOptions: {
+            newleaf: { cards: true, station: true },
+          },
+        },
+        (gameState, player) => {
+          const card = Card.fromName(CardName.LAMPLIGHTER);
+          player.gainResources(gameState, card.baseCost);
+          player.addCardToHand(gameState, card.name);
+        }
+      );
+    },
     "db:visit-inn-game": async () => {
       return await getTestGameJSON(
         {

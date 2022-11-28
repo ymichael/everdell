@@ -271,7 +271,7 @@ export class Card<TCardType extends CardType = CardType>
           )}`;
         }
       } else if (gameInput.clientOptions.source === "STATION") {
-        const idx = gameInput.clientOptions.stationIdx;
+        const idx = gameInput.clientOptions.sourceIdx;
         if (typeof idx !== "number") {
           return `Invalid station card index specified`;
         }
@@ -5083,19 +5083,19 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           player.addCardToHand(gameState, selectedCard.card);
           gameState.addGameLogFromCard(CardName.LAMPLIGHTER, [
             player,
-            " drew 1 ",
+            " drew ",
             Card.fromName(selectedCard.card),
             " from the Meadow.",
           ]);
         } else if (selectedCard.source === "STATION") {
           gameState.removeCardFromStation(
             selectedCard.card,
-            selectedCard.stationIdx!
+            selectedCard.sourceIdx!
           );
           player.addCardToHand(gameState, selectedCard.card);
           gameState.addGameLogFromCard(CardName.LAMPLIGHTER, [
             player,
-            " drew 1 ",
+            " drew ",
             Card.fromName(selectedCard.card),
             " from the Station.",
           ]);

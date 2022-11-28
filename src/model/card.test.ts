@@ -8815,7 +8815,7 @@ describe("Card", () => {
           {
             clientOptions: {
               selectedCards: [
-                { card: CardName.HUSBAND, source: "STATION", stationIdx: 1 },
+                { card: CardName.HUSBAND, source: "STATION", sourceIdx: 1 },
               ],
             },
           },

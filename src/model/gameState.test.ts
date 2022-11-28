@@ -425,8 +425,8 @@ describe("GameState", () => {
       player.gainResources(gameState, Card.fromName(CardName.MINE).baseCost);
 
       expect(gameState.getPlayableCards()).to.eql([
-        { card: CardName.FARM, source: "MEADOW" },
-        { card: CardName.MINE, source: "MEADOW" },
+        { card: CardName.FARM, source: "MEADOW", sourceIdx: 0 },
+        { card: CardName.MINE, source: "MEADOW", sourceIdx: 1 },
         { card: CardName.FARM, source: "HAND" },
         { card: CardName.MINE, source: "HAND" },
       ]);
@@ -449,10 +449,10 @@ describe("GameState", () => {
       player.gainResources(gameState, Card.fromName(CardName.MINE).baseCost);
 
       expect(gameState.getPlayableCards()).to.eql([
-        { card: CardName.INN, source: "MEADOW" },
-        { card: CardName.FARM, source: "STATION", stationIdx: 0 },
-        { card: CardName.MINE, source: "STATION", stationIdx: 1 },
-        { card: CardName.MINE, source: "STATION", stationIdx: 2 },
+        { card: CardName.INN, source: "MEADOW", sourceIdx: 0 },
+        { card: CardName.FARM, source: "STATION", sourceIdx: 0 },
+        { card: CardName.MINE, source: "STATION", sourceIdx: 1 },
+        { card: CardName.MINE, source: "STATION", sourceIdx: 2 },
         { card: CardName.FARM, source: "HAND" },
         { card: CardName.MINE, source: "HAND" },
       ]);
@@ -652,7 +652,7 @@ describe("GameState", () => {
       }).to.throwException(/invalid station card index/i);
 
       [player, gameState] = multiStepGameInputTest(gameState, [
-        playCardInput(CardName.FARM, { source: "STATION", stationIdx: 0 }),
+        playCardInput(CardName.FARM, { source: "STATION", sourceIdx: 0 }),
       ]);
 
       expect(player.hasCardInCity(CardName.FARM)).to.be(true);
@@ -679,7 +679,7 @@ describe("GameState", () => {
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
 
       [player, gameState] = multiStepGameInputTest(gameState, [
-        playCardInput(CardName.FARM, { source: "STATION", stationIdx: 0 }),
+        playCardInput(CardName.FARM, { source: "STATION", sourceIdx: 0 }),
       ]);
 
       expect(player.hasCardInCity(CardName.FARM)).to.be(true);
@@ -710,7 +710,7 @@ describe("GameState", () => {
       );
 
       [player, gameState] = multiStepGameInputTest(gameState, [
-        playCardInput(CardName.FARM, { source: "STATION", stationIdx: 0 }),
+        playCardInput(CardName.FARM, { source: "STATION", sourceIdx: 0 }),
         {
           inputType: GameInputType.SELECT_OPTION_GENERIC,
           options: ["BERRY", "TWIG", "RESIN", "PEBBLE"],

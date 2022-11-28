@@ -50,7 +50,7 @@ const GameInputPlayCard: React.FC<{
   return (
     <div role="group">
       <div className={styles.items}>
-        {options.map(({ card: cardName, source, stationIdx }, idx) => {
+        {options.map(({ card: cardName, source, sourceIdx }, idx) => {
           const isSelected =
             meta.value &&
             meta.value.card === cardName &&
@@ -65,7 +65,7 @@ const GameInputPlayCard: React.FC<{
                   resetPaymentOptions(cardName, "DEFAULT", {
                     _idx: idx,
                     source,
-                    stationIdx,
+                    sourceIdx,
                   });
                 }}
               >
@@ -76,7 +76,7 @@ const GameInputPlayCard: React.FC<{
                       {source === "MEADOW"
                         ? "(Meadow)"
                         : source === "STATION"
-                        ? `(Station ${stationIdx! + 1})`
+                        ? `(Station ${sourceIdx! + 1})`
                         : " "}
                     </div>
                   }

@@ -421,16 +421,16 @@ export class GameState {
     }
   }
 
-  removeCardFromStation(cardName: CardName, stationIdx: number): void {
+  removeCardFromStation(cardName: CardName, sourceIdx: number): void {
     if (!this.gameOptions.newleaf?.station) {
       return;
     }
-    if (this.stationCards[stationIdx] !== cardName) {
+    if (this.stationCards[sourceIdx] !== cardName) {
       throw new Error(
-        `Unexpected card at station, expected ${cardName}, got ${this.stationCards[stationIdx]}`
+        `Unexpected card at station, expected ${cardName}, got ${this.stationCards[sourceIdx]}`
       );
     }
-    this.stationCards[stationIdx] = null;
+    this.stationCards[sourceIdx] = null;
   }
 
   removeCardFromMeadow(cardName: CardName): void {
@@ -520,7 +520,7 @@ export class GameState {
     ) {
       this.removeCardFromMeadow(card.name);
     } else if (gameInput.clientOptions.source === "STATION") {
-      const idx = gameInput.clientOptions.stationIdx;
+      const idx = gameInput.clientOptions.sourceIdx;
       if (typeof idx !== "number" || this.stationCards[idx] !== card.name) {
         throw new Error("Invalid station card selected");
       }
@@ -1700,8 +1700,8 @@ export class GameState {
 
   getCardsWithSource(includeHand: boolean): CardWithSource[] {
     const ret: CardWithSource[] = [];
-    this.meadowCards.forEach((cardName) => {
-      ret.push({ card: cardName, source: "MEADOW" });
+    this.meadowCards.forEach((cardName, idx) => {
+      ret.push({ card: cardName, source: "MEADOW", sourceIdx: idx });
     });
     if (this.gameOptions.newleaf?.station) {
       this.stationCards.forEach((cardNameOrNull, idx) => {
@@ -1711,7 +1711,7 @@ export class GameState {
         ret.push({
           card: cardNameOrNull,
           source: "STATION",
-          stationIdx: idx,
+          sourceIdx: idx,
         });
       });
     }

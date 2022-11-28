@@ -76,7 +76,7 @@ export type GameInputPlayCard = {
     card: CardName | null;
     fromMeadow?: boolean; // Deprecated
     source?: CardWithSource["source"];
-    stationIdx?: CardWithSource["stationIdx"];
+    sourceIdx?: CardWithSource["sourceIdx"];
     paymentOptions: CardPaymentOptions;
   };
 };
@@ -865,7 +865,7 @@ export enum TrainCarTileName {
 export type CardWithSource = {
   card: CardName;
   source: "HAND" | "MEADOW" | "STATION";
-  stationIdx?: number;
+  sourceIdx?: number;
 };
 
 export enum TrainTicketStatus {

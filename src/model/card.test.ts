@@ -3730,36 +3730,6 @@ describe("Card", () => {
         expect(gameState.meadowCards.length).to.be(8);
         expect(player.hasCardInCity(CardName.FARM)).to.be(false);
 
-        const selectCardInput = {
-          inputType: GameInputType.SELECT_CARDS as const,
-          prevInputType: GameInputType.VISIT_DESTINATION_CARD,
-          cardContext: CardName.QUEEN,
-          cardOptions: [CardName.FARM, CardName.FARM],
-          maxToSelect: 1,
-          minToSelect: 1,
-          clientOptions: {
-            selectedCards: [CardName.FARM],
-          },
-        };
-
-        const selectCardFromMeadowSourceInput = {
-          inputType: GameInputType.SELECT_OPTION_GENERIC as const,
-          prevInputType: GameInputType.SELECT_CARDS,
-          prevInput: selectCardInput,
-          cardContext: CardName.QUEEN,
-          options: ["Meadow", "Hand"],
-          clientOptions: { selectedOption: "Meadow" },
-        };
-
-        const selectCardFromHandSourceInput = {
-          inputType: GameInputType.SELECT_OPTION_GENERIC as const,
-          prevInputType: GameInputType.SELECT_CARDS,
-          prevInput: selectCardInput,
-          cardContext: CardName.QUEEN,
-          options: ["Meadow", "Hand"],
-          clientOptions: { selectedOption: "Hand" },
-        };
-
         const [playerMeadow, gameState2] = multiStepGameInputTest(gameState, [
           {
             inputType: GameInputType.VISIT_DESTINATION_CARD,
@@ -3767,8 +3737,11 @@ describe("Card", () => {
               playedCard: player.getFirstPlayedCard(CardName.QUEEN),
             },
           },
-          selectCardInput,
-          selectCardFromMeadowSourceInput,
+          {
+            clientOptions: {
+              selectedCards: [{ card: CardName.FARM, source: "MEADOW" }],
+            },
+          },
         ]);
 
         expect(gameState2.meadowCards.indexOf(CardName.FARM)).to.be(-1);
@@ -3784,8 +3757,11 @@ describe("Card", () => {
               playedCard: player.getFirstPlayedCard(CardName.QUEEN),
             },
           },
-          selectCardInput,
-          selectCardFromHandSourceInput,
+          {
+            clientOptions: {
+              selectedCards: [{ card: CardName.FARM, source: "HAND" }],
+            },
+          },
         ]);
 
         expect(gameState3.meadowCards.indexOf(CardName.FARM)).to.be(0);
@@ -3812,14 +3788,9 @@ describe("Card", () => {
             },
           },
           {
-            inputType: GameInputType.SELECT_CARDS,
-            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
-            cardContext: CardName.QUEEN,
-            cardOptions: [CardName.HUSBAND],
-            maxToSelect: 1,
-            minToSelect: 1,
+            inputType: GameInputType.SELECT_CARDS_WITH_SOURCE,
             clientOptions: {
-              selectedCards: [CardName.HUSBAND],
+              selectedCards: [{ card: CardName.HUSBAND, source: "HAND" }],
             },
           },
         ]);
@@ -3858,21 +3829,9 @@ describe("Card", () => {
             },
           },
           {
-            inputType: GameInputType.SELECT_CARDS,
-            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
-            cardContext: CardName.QUEEN,
-            cardOptions: [
-              CardName.POSTAL_PIGEON,
-              CardName.POSTAL_PIGEON,
-              CardName.FARM,
-              CardName.HUSBAND,
-              CardName.CHAPEL,
-              CardName.MONK,
-            ],
-            maxToSelect: 1,
-            minToSelect: 1,
+            inputType: GameInputType.SELECT_CARDS_WITH_SOURCE,
             clientOptions: {
-              selectedCards: [CardName.HUSBAND],
+              selectedCards: [{ card: CardName.HUSBAND, source: "MEADOW" }],
             },
           },
         ]);
@@ -3880,6 +3839,41 @@ describe("Card", () => {
         expect(player.numAvailableWorkers).to.be(1);
         expect(player.hasCardInCity(CardName.HUSBAND)).to.be(true);
         expect(gameState.meadowCards.indexOf(CardName.HUSBAND)).to.be(-1);
+      });
+
+      it("should allow player to play card from the station for less than 3 points for free", () => {
+        gameState = testInitialGameState({
+          meadowCards: [],
+          stationCards: [CardName.HUSBAND, CardName.CHAPEL, CardName.MONK],
+          gameOptions: { newleaf: { station: true } },
+        });
+        player = gameState.getActivePlayer();
+
+        const card = Card.fromName(CardName.QUEEN);
+        player.addToCity(gameState, CardName.QUEEN);
+
+        expect(player.numAvailableWorkers).to.be(2);
+        expect(player.hasCardInCity(CardName.HUSBAND)).to.be(false);
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            clientOptions: {
+              playedCard: player.getFirstPlayedCard(CardName.QUEEN),
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_CARDS_WITH_SOURCE,
+            clientOptions: {
+              selectedCards: [
+                { card: CardName.HUSBAND, source: "STATION", sourceIdx: 0 },
+              ],
+            },
+          },
+        ]);
+
+        expect(player.numAvailableWorkers).to.be(1);
+        expect(player.hasCardInCity(CardName.HUSBAND)).to.be(true);
       });
 
       it("should allow player to play card worth exactly 3 points for free", () => {
@@ -3911,21 +3905,9 @@ describe("Card", () => {
             },
           },
           {
-            inputType: GameInputType.SELECT_CARDS,
-            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
-            cardContext: CardName.QUEEN,
-            cardOptions: [
-              CardName.POSTAL_PIGEON,
-              CardName.POSTAL_PIGEON,
-              CardName.FARM,
-              CardName.HUSBAND,
-              CardName.CHAPEL,
-              CardName.FAIRGROUNDS,
-            ],
-            maxToSelect: 1,
-            minToSelect: 1,
+            inputType: GameInputType.SELECT_CARDS_WITH_SOURCE,
             clientOptions: {
-              selectedCards: [CardName.FAIRGROUNDS],
+              selectedCards: [{ card: CardName.FAIRGROUNDS, source: "MEADOW" }],
             },
           },
         ]);
@@ -3948,40 +3930,30 @@ describe("Card", () => {
             CardName.MONK,
           ],
         });
-        const player = gameState.getActivePlayer();
+        let player = gameState.getActivePlayer();
 
         const card = Card.fromName(CardName.QUEEN);
         player.addToCity(gameState, CardName.QUEEN);
 
         expect(player.numAvailableWorkers).to.be(2);
-
-        gameState = gameState.next({
-          inputType: GameInputType.VISIT_DESTINATION_CARD,
-          clientOptions: {
-            playedCard: player.getFirstPlayedCard(CardName.QUEEN),
-          },
-        });
-
         expect(() => {
-          gameState.next({
-            inputType: GameInputType.SELECT_CARDS,
-            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
-            cardContext: CardName.QUEEN,
-            cardOptions: [
-              CardName.POSTAL_PIGEON,
-              CardName.POSTAL_PIGEON,
-              CardName.FARM,
-              CardName.HUSBAND,
-              CardName.CHAPEL,
-              CardName.MONK,
-            ],
-            maxToSelect: 1,
-            minToSelect: 1,
-            clientOptions: {
-              selectedCards: [CardName.KING],
+          [player, gameState] = multiStepGameInputTest(gameState, [
+            {
+              inputType: GameInputType.VISIT_DESTINATION_CARD,
+              clientOptions: {
+                playedCard: player.getFirstPlayedCard(CardName.QUEEN),
+              },
             },
-          });
-        }).to.throwException(/Selected card is not a valid option/i);
+            {
+              inputType: GameInputType.SELECT_CARDS_WITH_SOURCE,
+              clientOptions: {
+                selectedCards: [{ card: CardName.KING, source: "MEADOW" }],
+              },
+            },
+          ]);
+        }).to.throwException(
+          /Cannot use Queen to play a card worth more than 3 base VP/i
+        );
       });
 
       it("should not allow player to visit the queen if there are no applicable cards", () => {
@@ -4094,13 +4066,10 @@ describe("Card", () => {
             },
           },
           {
-            inputType: GameInputType.SELECT_CARDS,
-            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
-            cardOptions: [CardName.RUINS],
-            maxToSelect: 1,
-            minToSelect: 1,
-            cardContext: CardName.QUEEN,
-            clientOptions: { selectedCards: [CardName.RUINS] },
+            inputType: GameInputType.SELECT_CARDS_WITH_SOURCE,
+            clientOptions: {
+              selectedCards: [{ card: CardName.RUINS, source: "HAND" }],
+            },
           },
           {
             inputType: GameInputType.SELECT_PLAYED_CARDS,
@@ -4493,14 +4462,11 @@ describe("Card", () => {
             },
           },
           {
-            inputType: GameInputType.SELECT_CARDS,
+            inputType: GameInputType.SELECT_CARDS_WITH_SOURCE,
             prevInputType: GameInputType.VISIT_DESTINATION_CARD,
             cardContext: CardName.QUEEN,
-            cardOptions: [CardName.SHEPHERD],
-            maxToSelect: 1,
-            minToSelect: 1,
             clientOptions: {
-              selectedCards: [CardName.SHEPHERD],
+              selectedCards: [{ card: CardName.SHEPHERD, source: "HAND" }],
             },
           },
         ]);
@@ -7697,22 +7663,10 @@ describe("Card", () => {
             },
           },
           {
-            inputType: GameInputType.SELECT_CARDS,
-            prevInputType: GameInputType.VISIT_DESTINATION_CARD,
+            inputType: GameInputType.SELECT_CARDS_WITH_SOURCE,
             cardContext: CardName.QUEEN,
-            cardOptions: [
-              CardName.WIFE,
-              CardName.POSTAL_PIGEON,
-              CardName.POSTAL_PIGEON,
-              CardName.FARM,
-              CardName.HUSBAND,
-              CardName.CHAPEL,
-              CardName.MONK,
-            ],
-            maxToSelect: 1,
-            minToSelect: 1,
             clientOptions: {
-              selectedCards: [CardName.WIFE],
+              selectedCards: [{ card: CardName.WIFE, source: "HAND" }],
             },
           },
         ]);
@@ -7842,22 +7796,13 @@ describe("Card", () => {
             },
           },
           {
-            inputType: GameInputType.SELECT_CARDS,
+            inputType: GameInputType.SELECT_CARDS_WITH_SOURCE,
             prevInputType: GameInputType.VISIT_DESTINATION_CARD,
             cardContext: CardName.QUEEN,
-            cardOptions: [
-              CardName.WIFE,
-              CardName.POSTAL_PIGEON,
-              CardName.POSTAL_PIGEON,
-              CardName.FARM,
-              CardName.HUSBAND,
-              CardName.CHAPEL,
-              CardName.MONK,
-            ],
             maxToSelect: 1,
             minToSelect: 1,
             clientOptions: {
-              selectedCards: [CardName.WIFE],
+              selectedCards: [{ card: CardName.WIFE, source: "HAND" }],
             },
           },
         ]);
@@ -7875,21 +7820,11 @@ describe("Card", () => {
             },
           },
           {
-            inputType: GameInputType.SELECT_CARDS,
+            inputType: GameInputType.SELECT_CARDS_WITH_SOURCE,
             prevInputType: GameInputType.VISIT_DESTINATION_CARD,
             cardContext: CardName.QUEEN,
-            cardOptions: [
-              CardName.POSTAL_PIGEON,
-              CardName.POSTAL_PIGEON,
-              CardName.FARM,
-              CardName.HUSBAND,
-              CardName.CHAPEL,
-              CardName.MONK,
-            ],
-            maxToSelect: 1,
-            minToSelect: 1,
             clientOptions: {
-              selectedCards: [CardName.FARM],
+              selectedCards: [{ card: CardName.FARM, source: "MEADOW" }],
             },
           },
         ]);
@@ -8104,21 +8039,11 @@ describe("Card", () => {
             },
           },
           {
-            inputType: GameInputType.SELECT_CARDS,
+            inputType: GameInputType.SELECT_CARDS_WITH_SOURCE,
             prevInputType: GameInputType.VISIT_DESTINATION_CARD,
             cardContext: CardName.QUEEN,
-            cardOptions: [
-              CardName.POSTAL_PIGEON,
-              CardName.POSTAL_PIGEON,
-              CardName.FARM,
-              CardName.HUSBAND,
-              CardName.CHAPEL,
-              CardName.MONK,
-            ],
-            maxToSelect: 1,
-            minToSelect: 1,
             clientOptions: {
-              selectedCards: [CardName.FARM],
+              selectedCards: [{ card: CardName.FARM, source: "MEADOW" }],
             },
           },
         ]);

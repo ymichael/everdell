@@ -45,7 +45,11 @@ export function testInitialGameState(
     stationCards,
     forestLocations = [],
     specialEvents = [],
-    trainCarTiles = [],
+    trainCarTiles = [
+      TrainCarTileName.ONE_BERRY,
+      TrainCarTileName.ONE_BERRY,
+      TrainCarTileName.ONE_BERRY,
+    ],
     shuffleDeck = false,
     gameOptions = {},
   } = opts;
@@ -71,7 +75,7 @@ export function testInitialGameState(
     }
     gameState.stationCards.push(...stationCards);
   }
-  if (gameState.trainCarTileStack && trainCarTiles) {
+  if (gameState.trainCarTileStack) {
     trainCarTiles.reverse();
     for (let i = 0; i < trainCarTiles.length; i++) {
       gameState.trainCarTileStack?.pushTile(trainCarTiles[i]);

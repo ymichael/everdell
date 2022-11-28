@@ -33,6 +33,7 @@ import { Location } from "./location";
 import { Event } from "./event";
 import { RiverDestination } from "./riverDestination";
 import { Player } from "./player";
+import { assertUnreachable } from "../utils";
 import {
   sumResources,
   GainAnyResource,
@@ -2369,14 +2370,15 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
-        const hasPlayableCard = [
-          ...gameState.meadowCards,
-          ...player.cardsInHand,
-        ].some((cardName) => {
-          const card = Card.fromName(cardName);
-          return card.baseVP <= 3 && card.canPlayIgnoreCostAndSource(gameState);
-        });
-        if (!hasPlayableCard) {
+        const playableCards = gameState
+          .getCardsWithSource(true)
+          .filter((cardWithSource) => {
+            const card = Card.fromName(cardWithSource.card);
+            return (
+              card.baseVP <= 3 && card.canPlayIgnoreCostAndSource(gameState)
+            );
+          });
+        if (playableCards.length === 0) {
           return "No playable cards worth less than 3 VP";
         }
       }
@@ -2386,21 +2388,16 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
         // Find all playable cards worth up to 3 baseVP
-        const playableCards: CardName[] = [];
-        [...player.cardsInHand, ...gameState.meadowCards].forEach(
-          (cardName) => {
-            const card = Card.fromName(cardName as CardName);
-            if (
-              card.baseVP <= 3 &&
-              card.canPlayIgnoreCostAndSource(gameState)
-            ) {
-              playableCards.push(card.name);
-            }
-          }
-        );
-
+        const playableCards = gameState
+          .getCardsWithSource(true)
+          .filter((cardWithSource) => {
+            const card = Card.fromName(cardWithSource.card);
+            return (
+              card.baseVP <= 3 && card.canPlayIgnoreCostAndSource(gameState)
+            );
+          });
         gameState.pendingGameInputs.push({
-          inputType: GameInputType.SELECT_CARDS,
+          inputType: GameInputType.SELECT_CARDS_WITH_SOURCE,
           prevInputType: gameInput.inputType,
           label: "Select CARD to play for free",
           cardOptions: playableCards,
@@ -2412,7 +2409,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           },
         });
       } else if (
-        gameInput.inputType === GameInputType.SELECT_CARDS &&
+        gameInput.inputType === GameInputType.SELECT_CARDS_WITH_SOURCE &&
         gameInput.cardContext === CardName.QUEEN
       ) {
         const selectedCards = gameInput.clientOptions.selectedCards;
@@ -2422,32 +2419,19 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         if (selectedCards.length !== 1) {
           throw new Error("incorrect number of cards selected");
         }
-
-        const card = Card.fromName(selectedCards[0]);
-        if (card.baseVP > 3) {
-          throw new Error(
-            "cannot use Queen to play a card worth more than 3 base VP"
-          );
+        const selectedCardWithSource = selectedCards[0];
+        if (selectedCardWithSource === "FROM_DECK") {
+          throw new Error("Invalid selected card");
         }
 
-        const cardExistInHand = player.cardsInHand.indexOf(card.name) !== -1;
-        const cardExistInMeadow =
-          gameState.meadowCards.indexOf(card.name) !== -1;
-
-        if (cardExistInHand && cardExistInMeadow) {
-          gameState.pendingGameInputs.push({
-            inputType: GameInputType.SELECT_OPTION_GENERIC,
-            prevInputType: gameInput.inputType,
-            prevInput: gameInput,
-            cardContext: CardName.QUEEN,
-            label: ["Select where to play ", card.getGameTextPart(), " from"],
-            options: ["Meadow", "Hand"],
-            clientOptions: {
-              selectedOption: null,
-            },
-          });
-        } else if (cardExistInMeadow || cardExistInHand) {
-          if (cardExistInMeadow) {
+        const card = Card.fromName(selectedCardWithSource.card);
+        if (card.baseVP > 3) {
+          throw new Error(
+            "Cannot use Queen to play a card worth more than 3 base VP"
+          );
+        }
+        switch (selectedCardWithSource.source) {
+          case "MEADOW":
             gameState.removeCardFromMeadow(card.name);
             gameState.addGameLogFromCard(CardName.QUEEN, [
               player,
@@ -2455,7 +2439,8 @@ const CARD_REGISTRY: Record<CardName, Card> = {
               card,
               " from the Meadow.",
             ]);
-          } else {
+            break;
+          case "HAND":
             player.removeCardFromHand(
               gameState,
               card.name,
@@ -2467,54 +2452,24 @@ const CARD_REGISTRY: Record<CardName, Card> = {
               card,
               " from their hand.",
             ]);
-          }
-          card.addToCityAndPlay(gameState, gameInput);
-        } else {
-          throw new Error(
-            "Cannot find the selected card in the Meadow or your hand."
-          );
-        }
-      } else if (
-        gameInput.inputType === GameInputType.SELECT_OPTION_GENERIC &&
-        gameInput.cardContext === CardName.QUEEN &&
-        gameInput.prevInput &&
-        gameInput.prevInput.inputType === GameInputType.SELECT_CARDS
-      ) {
-        const selectedCards = gameInput.prevInput.clientOptions.selectedCards;
-        if (!selectedCards) {
-          throw new Error("No card selected");
-        }
-        if (selectedCards.length !== 1) {
-          throw new Error("Incorrect number of cards selected");
-        }
-        const card = Card.fromName(selectedCards[0]);
-        if (card.baseVP > 3) {
-          throw new Error(
-            "Cannot use Queen to play a card worth more than 3 base VP"
-          );
-        }
-        if (gameInput.clientOptions.selectedOption === "Meadow") {
-          gameState.removeCardFromMeadow(card.name);
-          gameState.addGameLogFromCard(CardName.QUEEN, [
-            player,
-            " played ",
-            card,
-            " from the Meadow.",
-          ]);
-        } else if (gameInput.clientOptions.selectedOption === "Hand") {
-          player.removeCardFromHand(
-            gameState,
-            card.name,
-            false /* addToDiscardPile */
-          );
-          gameState.addGameLogFromCard(CardName.QUEEN, [
-            player,
-            " played ",
-            card,
-            " from their hand.",
-          ]);
-        } else {
-          throw new Error("Please choose one of the options");
+            break;
+          case "STATION":
+            gameState.playCardFromStation(
+              selectedCardWithSource.sourceIdx!,
+              gameInput
+            );
+            gameState.addGameLogFromCard(CardName.QUEEN, [
+              player,
+              " played ",
+              card,
+              " from the Station.",
+            ]);
+            break;
+          default:
+            assertUnreachable(
+              selectedCardWithSource.source,
+              "Invalid card source type"
+            );
         }
         card.addToCityAndPlay(gameState, gameInput);
       }

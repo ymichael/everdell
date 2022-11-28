@@ -9451,6 +9451,7 @@ describe("Card", () => {
           {
             inputType: GameInputType.SELECT_PAYMENT_FOR_CARD,
             clientOptions: {
+              card: CardName.QUEEN,
               paymentOptions: {
                 resources: { [ResourceType.BERRY]: 2 },
               },

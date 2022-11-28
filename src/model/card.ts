@@ -1476,6 +1476,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           gameState.pendingGameInputs.push({
             inputType: GameInputType.SELECT_PAYMENT_FOR_CARD,
             prevInputType: gameInput.inputType,
+            label: "Pay for the rest of the card (3 fewer ANY)",
             cardContext: CardName.INN,
             card: selectedCardName,
             clientOptions: {
@@ -5015,6 +5016,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             inputType: GameInputType.SELECT_PAYMENT_FOR_CARD,
             prevInputType: gameInput.inputType,
             cardContext: CardName.HOTEL,
+            label: "Pay for the rest of the card (3 fewer ANY)",
             card: selectedCardName,
             clientOptions: {
               card: selectedCardName,
@@ -5344,6 +5346,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           gameState.pendingGameInputs.push({
             inputType: GameInputType.SELECT_PAYMENT_FOR_CARD,
             prevInputType: gameInput.inputType,
+            label: "Pay for the rest of the card (3 fewer ANY)",
             prevInput: gameInput,
             cardContext: CardName.LOCOMOTIVE,
             card: selectedCardName,

@@ -5383,8 +5383,10 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       playedCard: PlayedCardInfo
     ) => {
       const player = gameState.getActivePlayer();
+      // calculate this based on the card owner's city, but give
+      // resources to the active player
       const VPToGain =
-        Math.floor(player.getNumOccupiedSpacesInCity(true) / 5) + 1;
+        Math.floor(cardOwner.getNumOccupiedSpacesInCity(true) / 5) + 1;
       player.gainResources(gameState, { [ResourceType.VP]: VPToGain });
 
       gameState.addGameLogFromCard(CardName.MAYOR, [

@@ -2368,7 +2368,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       " for free.",
     ]),
     canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
-      const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
         const playableCards = gameState
           .getCardsWithSource(true)

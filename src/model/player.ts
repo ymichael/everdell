@@ -1310,8 +1310,8 @@ export class Player implements IGameTextEntity {
           if (!playedCard.usedForCritter) {
             playedCard.usedForCritter = true;
             hasUsed = true;
+            this.useGoldenLeaf();
           }
-          this.useGoldenLeaf();
         }
       });
     }

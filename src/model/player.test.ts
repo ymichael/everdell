@@ -1331,6 +1331,40 @@ describe("Player", () => {
           ]);
         }).to.throwException(/Cannot find unoccupied Greenhouse/i);
       });
+
+      it("should work with multiple same cards", () => {
+        let player = gameState.getActivePlayer();
+        player.addToCity(gameState, CardName.AIR_BALLOON);
+        player.addToCity(gameState, CardName.AIR_BALLOON);
+        player.addCardToHand(gameState, CardName.WANDERER);
+        player.addCardToHand(gameState, CardName.WANDERER);
+        player.initGoldenLeaf();
+        player.useGoldenLeaf();
+        expect(player.numGoldenLeaf).to.be(2);
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(CardName.WANDERER, {
+            paymentOptions: {
+              resources: {},
+              occupyCardWithGoldenLeaf: CardName.AIR_BALLOON,
+            },
+          }),
+        ]);
+        expect(player.numGoldenLeaf).to.be(1);
+        expect(player.getPlayedCards().length).to.be(3);
+
+        gameState.nextPlayer();
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(CardName.WANDERER, {
+            paymentOptions: {
+              resources: {},
+              occupyCardWithGoldenLeaf: CardName.AIR_BALLOON,
+            },
+          }),
+        ]);
+
+        expect(player.numGoldenLeaf).to.be(0);
+        expect(player.getPlayedCards().length).to.be(4);
+      });
     });
 
     describe("cardToUse", () => {

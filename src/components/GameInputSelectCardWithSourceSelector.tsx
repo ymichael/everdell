@@ -19,6 +19,7 @@ const GameInputSelectCardWithSourceSelector: React.FC<{
       name={name}
       items={options}
       chooseOne={chooseOne}
+      valueOnSelect={valueOnSelect}
       renderItem={(cardWithSource) => {
         return (
           <ItemWrapper

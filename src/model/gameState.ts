@@ -15,7 +15,6 @@ import {
   GameInputPlayAdornment,
   GameInputPlayCard,
   GameInputPrepareForSeason,
-  GameInputReserveCard,
   GameInputType,
   GameInputVisitDestinationCard,
   GameInputPlaceAmbassador,
@@ -840,7 +839,7 @@ export class GameState {
           throw new Error("Discarding too few cards");
         }
         break;
-      case GameInputType.SELECT_RESOURCES:
+      case GameInputType.SELECT_RESOURCES: {
         const numResources = sumResources(gameInput.clientOptions.resources);
         if (gameInput.maxResources === gameInput.minResources) {
           if (numResources !== gameInput.minResources) {
@@ -874,6 +873,7 @@ export class GameState {
           }
         }
         break;
+      }
       // case GameInputType.SELECT_PAYMENT_FOR_CARD:
       // case GameInputType.SELECT_WORKER_PLACEMENT:
       // case GameInputType.SELECT_PLAYED_ADORNMENT:

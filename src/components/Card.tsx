@@ -9,7 +9,6 @@ import {
   AmbassadorSpotIcon,
   WorkerSpotIcon,
   Description,
-  GoldenLeafIcon,
   CardTypeSymbol,
 } from "./common";
 import { sumResources } from "../model/gameStatePlayHelpers";

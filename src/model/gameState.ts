@@ -15,6 +15,7 @@ import {
   GameInputPlayAdornment,
   GameInputPlayCard,
   GameInputPrepareForSeason,
+  GameInputReserveCard,
   GameInputType,
   GameInputVisitDestinationCard,
   GameInputPlaceAmbassador,
@@ -529,16 +530,82 @@ export class GameState {
       gameInput.clientOptions.source === "MEADOW"
     ) {
       this.removeCardFromMeadow(card.name);
+    } else if (gameInput.clientOptions.source === "RESERVED") {
+      if (player.getReservedCardOrNull() !== card.name) {
+        throw new Error(`Cannot find reserved card: ${card.name}`);
+      }
+      player.useReservedCard();
     } else if (gameInput.clientOptions.source === "STATION") {
       const idx = gameInput.clientOptions.sourceIdx;
       if (typeof idx !== "number" || this.stationCards[idx] !== card.name) {
         throw new Error("Invalid station card selected");
       }
       this.playCardFromStation(idx, gameInput);
-    } else {
+    } else if (gameInput.clientOptions.source === "HAND") {
       player.removeCardFromHand(this, card.name, false /* addToDiscardPile */);
+    } else if (gameInput.clientOptions.source) {
+      assertUnreachable(gameInput.clientOptions.source, "Unexpected source");
     }
     card.play(this, gameInput);
+  }
+
+  private handleReserveCardGameInput(gameInput: GameInput): void {
+    if (!this.gameOptions.newleaf?.reserving) {
+      throw new Error(`Unexpected game input ${JSON.stringify(gameInput)}`);
+    }
+    if (gameInput.inputType === GameInputType.RESERVE_CARD) {
+      const selectedOption = gameInput.clientOptions.selectedOption;
+      if (!selectedOption) {
+        throw new Error(`Must specify a card to reserve.`);
+      }
+      switch (selectedOption.source) {
+        case "MEADOW":
+          this.removeCardFromMeadow(selectedOption.card);
+          break;
+        case "STATION":
+          this.removeCardFromStation(
+            selectedOption.card,
+            selectedOption.sourceIdx!
+          );
+          break;
+        default:
+          throw new Error(
+            `Cannot reserve selected card: ${JSON.stringify(selectedOption)}`
+          );
+      }
+      const player = this.getActivePlayer();
+      player.reserveCard(selectedOption.card);
+      this.addGameLog([
+        { type: "symbol", symbol: "RESERVATION_TOKEN" },
+        ": ",
+        player,
+        " reserved ",
+        Card.fromName(selectedOption.card),
+        " from the ",
+        selectedOption.source === "MEADOW" ? "Meadow" : "Station",
+        ".",
+      ]);
+    } else if (
+      gameInput.inputType === GameInputType.SELECT_OPTION_GENERIC &&
+      gameInput.prevInputType === GameInputType.PREPARE_FOR_SEASON
+    ) {
+      const player = this.getActivePlayer();
+      const reservedCard = player.getReservedCardOrNull();
+      const toDiscard = gameInput.clientOptions.selectedOption === "Discard";
+      if (reservedCard && toDiscard) {
+        player.resetReservationToken(this);
+        this.addGameLog([
+          { type: "symbol", symbol: "RESERVATION_TOKEN" },
+          ": ",
+          player,
+          " discarded reserved ",
+          Card.fromName(reservedCard),
+          ".",
+        ]);
+      }
+    } else {
+      throw new Error(`Unexpected game input ${JSON.stringify(gameInput)}`);
+    }
   }
 
   private handlePlayTrainTicketGameInput(gameInput: GameInput): void {
@@ -842,6 +909,11 @@ export class GameState {
       return;
     }
 
+    if (gameInput.reservationTokenContext) {
+      this.handleReserveCardGameInput(gameInput);
+      return;
+    }
+
     if (
       gameInput.prevInputType === GameInputType.PREPARE_FOR_SEASON &&
       gameInput.inputType === GameInputType.SELECT_CARDS
@@ -1108,6 +1180,29 @@ export class GameState {
       const clocktower = Card.fromName(CardName.CLOCK_TOWER);
       clocktower.play(this, gameInput);
     }
+
+    // Ask player if they want to discard the reserved card.
+    if (this.gameOptions.newleaf?.reserving) {
+      const reservedCard = player.getReservedCardOrNull();
+      if (reservedCard) {
+        this.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_OPTION_GENERIC,
+          label: toGameText([
+            "Discard your reserved ",
+            Card.fromName(reservedCard),
+            "?",
+          ]),
+          prevInputType: gameInput.inputType,
+          reservationTokenContext: true,
+          options: ["Discard", "Continue Reserving"],
+          clientOptions: {
+            selectedOption: null,
+          },
+        });
+      } else {
+        player.resetReservationToken(this);
+      }
+    }
   }
 
   private prepareForSeason(player: Player, gameInput: GameInput): void {
@@ -1234,6 +1329,9 @@ export class GameState {
         break;
       case GameInputType.PLAY_TRAIN_TICKET:
         this.handlePlayTrainTicketGameInput(gameInput);
+        break;
+      case GameInputType.RESERVE_CARD:
+        this.handleReserveCardGameInput(gameInput);
         break;
       case GameInputType.PLACE_WORKER:
       case GameInputType.VISIT_DESTINATION_CARD:
@@ -1705,7 +1803,10 @@ export class GameState {
     });
   };
 
-  getCardsWithSource(includeHand: boolean): CardWithSource[] {
+  getCardsWithSource(
+    includeHand: boolean,
+    includeReserved: boolean
+  ): CardWithSource[] {
     const ret: CardWithSource[] = [];
     this.meadowCards.forEach((cardName, idx) => {
       ret.push({ card: cardName, source: "MEADOW", sourceIdx: idx });
@@ -1722,22 +1823,31 @@ export class GameState {
         });
       });
     }
+    const player = this.getActivePlayer();
     if (includeHand) {
-      const player = this.getActivePlayer();
       player.cardsInHand.forEach((cardName) => {
         ret.push({ card: cardName, source: "HAND" });
       });
+    }
+    if (this.gameOptions.newleaf?.reserving && includeReserved) {
+      const reservedCard = player.getReservedCardOrNull();
+      if (reservedCard) {
+        ret.push({ card: reservedCard, source: "RESERVED" });
+      }
     }
     return ret;
   }
 
   getPlayableCards(): CardWithSource[] {
     const player = this.getActivePlayer();
-    return this.getCardsWithSource(true).filter((cardWithSource) => {
+    return this.getCardsWithSource(true, true).filter((cardWithSource) => {
       const card = Card.fromName(cardWithSource.card);
       return (
-        player.canAffordCard(card.name, true) &&
-        card.canPlayIgnoreCostAndSource(this, false /* strict */)
+        player.canAffordCard(
+          card.name,
+          cardWithSource.source === "MEADOW",
+          cardWithSource.source === "RESERVED" ? "ANY 1" : null
+        ) && card.canPlayIgnoreCostAndSource(this, false /* strict */)
       );
     });
   }
@@ -1809,6 +1919,17 @@ export class GameState {
       ) {
         possibleGameInputs.push({
           inputType: GameInputType.PLAY_TRAIN_TICKET,
+          clientOptions: {
+            selectedOption: null,
+          },
+        });
+      }
+    }
+
+    if (this.gameOptions.newleaf?.reserving) {
+      if (player.canReserveCard()) {
+        possibleGameInputs.push({
+          inputType: GameInputType.RESERVE_CARD,
           clientOptions: {
             selectedOption: null,
           },

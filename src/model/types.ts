@@ -44,6 +44,7 @@ export enum GameInputType {
 
   // Newleaf specific (simple)
   PLAY_TRAIN_TICKET = "PLAY_TRAIN_TICKET",
+  RESERVE_CARD = "RESERVE_CARD",
 
   // Newleaf specific (multi)
   SELECT_TRAIN_CAR_TILE = "SELECT_TRAIN_CAR_TILE",
@@ -109,6 +110,13 @@ export type GameInputPlayTrainTicket = {
   };
 };
 
+export type GameInputReserveCard = {
+  inputType: GameInputType.RESERVE_CARD;
+  clientOptions: {
+    selectedOption: CardWithSource | null;
+  };
+};
+
 export type GameInputGameEnd = {
   inputType: GameInputType.GAME_END;
 };
@@ -130,6 +138,7 @@ export type GameInputSimple =
   | GameInputPlayAdornment
   | GameInputPlaceAmbassador
   | GameInputPlayTrainTicket
+  | GameInputReserveCard
   | GameInputPrepareForSeason;
 
 export type GameInputDiscardCards = {
@@ -287,6 +296,7 @@ export type GameInputMultiStepContext = {
   riverDestinationContext?: RiverDestinationName;
   trainCarTileContext?: TrainCarTileName;
   trainTicketContext?: boolean;
+  reservationTokenContext?: boolean;
 };
 
 export type GameInputMultiStep = (
@@ -729,7 +739,15 @@ export type TextPartIcon =
   | { type: "resource"; resourceType: ResourceType | "ANY" }
   | { type: "cardType"; cardType: CardType }
   | { type: "points"; value: number }
-  | { type: "symbol"; symbol: "VP" | "CARD" | "TRAIN_TICKET" | "GOLDEN_LEAF" };
+  | {
+      type: "symbol";
+      symbol:
+        | "VP"
+        | "CARD"
+        | "TRAIN_TICKET"
+        | "GOLDEN_LEAF"
+        | "RESERVATION_TOKEN";
+    };
 export type TextPartBR = { type: "BR" };
 export type TextPartHR = { type: "HR" };
 export type TextPartText =
@@ -864,7 +882,7 @@ export enum TrainCarTileName {
 
 export type CardWithSource = {
   card: CardName;
-  source: "HAND" | "MEADOW" | "STATION";
+  source: "HAND" | "MEADOW" | "STATION" | "RESERVED";
   sourceIdx?: number;
 };
 

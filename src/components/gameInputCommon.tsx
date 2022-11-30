@@ -260,6 +260,8 @@ export const renderGameInputLabel = (
       return <span>{"Play Adornment"}</span>;
     case GameInputType.PLACE_AMBASSADOR:
       return <span>{"Place Ambassador"}</span>;
+    case GameInputType.RESERVE_CARD:
+      return <span>{"Reserve Meadow/Station Card"}</span>;
     case GameInputType.PLAY_TRAIN_TICKET:
       return <span>{"Play Train Ticket"}</span>;
     default:

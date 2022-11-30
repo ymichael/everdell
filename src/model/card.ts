@@ -2370,7 +2370,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     canPlayCheckInner: (gameState: GameState, gameInput: GameInput) => {
       if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
         const playableCards = gameState
-          .getCardsWithSource(true)
+          .getCardsWithSource(true, true)
           .filter((cardWithSource) => {
             const card = Card.fromName(cardWithSource.card);
             return (
@@ -2388,7 +2388,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
         // Find all playable cards worth up to 3 baseVP
         const playableCards = gameState
-          .getCardsWithSource(true)
+          .getCardsWithSource(true, true)
           .filter((cardWithSource) => {
             const card = Card.fromName(cardWithSource.card);
             return (
@@ -2437,6 +2437,18 @@ const CARD_REGISTRY: Record<CardName, Card> = {
               " played ",
               card,
               " from the Meadow.",
+            ]);
+            break;
+          case "RESERVED":
+            if (player.getReservedCardOrNull() !== card.name) {
+              throw new Error(`Cannot find reserved card: ${card.name}`);
+            }
+            player.useReservedCard();
+            gameState.addGameLogFromCard(CardName.QUEEN, [
+              player,
+              " played their reserved ",
+              card,
+              ".",
             ]);
             break;
           case "HAND":
@@ -5096,7 +5108,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             label: "Choose your second CARD",
             cardOptions: [
               "FROM_DECK",
-              ...gameState.getCardsWithSource(false /* includeHand */),
+              ...gameState.getCardsWithSource(false, false),
             ],
             maxToSelect: 1,
             minToSelect: 1,
@@ -5119,7 +5131,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         label: "Choose your first CARD",
         cardOptions: [
           "FROM_DECK",
-          ...gameState.getCardsWithSource(false /* includeHand */),
+          ...gameState.getCardsWithSource(false, false),
         ],
         maxToSelect: 1,
         minToSelect: 1,

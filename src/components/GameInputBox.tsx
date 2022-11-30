@@ -188,7 +188,14 @@ const GameInputBoxInner = ({
             gameInput.minToSelect === gameInput.maxToSelect &&
             gameInput.maxToSelect === 1
           }
+          valueOnSelect={(item) => [item]}
           options={gameInput.cardOptions}
+        />
+      ) : gameInput.inputType === GameInputType.RESERVE_CARD ? (
+        <GameInputSelectCardWithSourceSelector
+          name={"gameInput.clientOptions.selectedCard"}
+          chooseOne={true}
+          options={gameState.getCardsWithSource(false, false)}
         />
       ) : gameInput.inputType === GameInputType.SELECT_TRAIN_CAR_TILE ? (
         <>TODO: Not implemented</>

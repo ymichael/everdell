@@ -220,6 +220,7 @@ export const GameIcon = ({
     | "VP"
     | "ANY"
     | "TRAIN_TICKET"
+    | "RESERVATION_TOKEN"
     | "GOLDEN_LEAF";
 }) => {
   return (
@@ -231,6 +232,8 @@ export const GameIcon = ({
           <VPIcon />
         ) : type === "GOLDEN_LEAF" ? (
           <GoldenLeafIcon />
+        ) : type === "RESERVATION_TOKEN" ? (
+          <ReservationTokenIcon />
         ) : type === "TRAIN_TICKET" ? (
           <TicketIcon />
         ) : type === "ANY" ? (

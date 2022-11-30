@@ -61,6 +61,7 @@ function strToGameText(str: string): GameText {
       part === "VP" ||
       part === "CARD" ||
       part === "TRAIN_TICKET" ||
+      part === "RESERVATION_TOKEN" ||
       part === "GOLDEN_LEAF"
     ) {
       ret.push({ type: "text", text: textBuffer.join("") });

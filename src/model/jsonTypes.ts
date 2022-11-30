@@ -68,6 +68,7 @@ export type PlayerJSON = {
   playedAdornments: AdornmentName[];
   numAmbassadors: number;
   trainTicketStatus: TrainTicketStatus | null;
+  reservedCard: CardName | "UNUSED" | "USED";
   numGoldenLeaf: number;
 };
 

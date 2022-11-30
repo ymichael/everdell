@@ -72,6 +72,7 @@ export class Player implements IGameTextEntity {
   readonly adornmentsInHand: AdornmentName[];
   readonly playedAdornments: AdornmentName[];
 
+  private reservedCard: CardName | "UNUSED" | "USED";
   private _trainTicketStatus: TrainTicketStatus | null;
 
   constructor({
@@ -99,6 +100,7 @@ export class Player implements IGameTextEntity {
     adornmentsInHand = [],
     playedAdornments = [],
     trainTicketStatus = null,
+    reservedCard = "UNUSED",
   }: {
     name: string;
     playerSecret?: string;
@@ -117,6 +119,7 @@ export class Player implements IGameTextEntity {
     adornmentsInHand?: AdornmentName[];
     playedAdornments?: AdornmentName[];
     trainTicketStatus?: TrainTicketStatus | null;
+    reservedCard?: CardName | "UNUSED" | "USED";
   }) {
     this.playerId = playerId;
     this.playerSecret = playerSecret;
@@ -138,6 +141,7 @@ export class Player implements IGameTextEntity {
     // newleaf only
     this._trainTicketStatus = trainTicketStatus;
     this._numGoldenLeaf = numGoldenLeaf;
+    this.reservedCard = reservedCard;
 
     this._numCardsInHand = numCardsInHand;
   }
@@ -1379,6 +1383,9 @@ export class Player implements IGameTextEntity {
     const paymentOptions = gameInput.clientOptions.paymentOptions;
     const paymentResources = paymentOptions.resources;
 
+    // If playing reserved card, cannot use any other card playing ability.
+    // TODO
+
     // Validate if player has resources specified by payment options
     const resourceToPayList = Object.entries(paymentResources) as [
       ResourceType,
@@ -1891,6 +1898,42 @@ export class Player implements IGameTextEntity {
     }
   }
 
+  getReservedCardOrNull(): CardName | null {
+    if (this.reservedCard === "UNUSED" || this.reservedCard === "USED") {
+      return null;
+    }
+    return this.reservedCard;
+  }
+
+  canReserveCard(): boolean {
+    return this.reservedCard === "UNUSED";
+  }
+
+  useReservedCard(): void {
+    if (this.reservedCard === "UNUSED" || this.reservedCard === "USED") {
+      throw new Error("No reserved card found");
+    }
+    this.reservedCard = "USED";
+  }
+
+  resetReservationToken(gameState: GameState): void {
+    if (this.reservedCard !== "UNUSED" && this.reservedCard !== "USED") {
+      gameState.discardPile.addToStack(this.reservedCard);
+    }
+    this.reservedCard = "UNUSED";
+  }
+
+  reserveCard(cardName: CardName): void {
+    if (this.reservedCard !== "UNUSED") {
+      throw new Error(
+        this.reservedCard === "USED"
+          ? `Already used reservation token`
+          : `Already reserving card: ${this.reservedCard}`
+      );
+    }
+    this.reservedCard = cardName;
+  }
+
   toJSON(includePrivate: boolean): PlayerJSON {
     return cloneDeep({
       name: this.name,
@@ -1910,6 +1953,7 @@ export class Player implements IGameTextEntity {
       playedAdornments: this.playedAdornments,
       trainTicketStatus: this.trainTicketStatus,
       numGoldenLeaf: this.numGoldenLeaf,
+      reservedCard: this.reservedCard,
       ...(includePrivate
         ? {
             playerSecret: this.playerSecret,

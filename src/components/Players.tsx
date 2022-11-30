@@ -245,12 +245,16 @@ const PlayerStatus: React.FC<{
             {gameStateJSON.gameOptions.newleaf?.reserving && (
               <div
                 className={styles.status_box_item_resource}
-                title="Reservation TOken"
+                title="Reservation Token"
               >
                 <div className={styles.status_box_item_resource_icon}>
                   <ReservationTokenIcon />
                 </div>
-                <div className={styles.status_box_item_resource_count}>??</div>
+                <div className={styles.status_box_item_resource_ticket_status}>
+                  {playerImpl.canReserveCard()
+                    ? "Unused"
+                    : playerImpl.getReservedCardOrNull() ?? "Used"}
+                </div>
               </div>
             )}
             {gameStateJSON.gameOptions.newleaf?.ticket && (

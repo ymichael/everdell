@@ -115,10 +115,11 @@
 }
 
 .status_box_item_resource_ticket_status {
-  display: inline-block;
+  display: flex;
   font-size: 10px;
   word-wrap: break-word;
   text-align: center;
+  align-items: center;
   height: 20px;
   max-width: 50px;
 }

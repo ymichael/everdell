@@ -6,18 +6,19 @@ import { GameInputSelectCardsWithSource } from "../model/types";
 import Card, { EmptyCard } from "./Card";
 import GameInputSelectItemWrapper from "./GameInputSelectItemWrapper";
 import { ItemWrapper } from "./common";
+import { assertUnreachable } from "../utils";
 
 const GameInputSelectCardWithSourceSelector: React.FC<{
   name: string;
   chooseOne: boolean;
   options: GameInputSelectCardsWithSource["cardOptions"];
-}> = ({ name, chooseOne, options }) => {
+  valueOnSelect?: (t: any) => any;
+}> = ({ name, chooseOne, options, valueOnSelect }) => {
   return (
     <GameInputSelectItemWrapper
       name={name}
       items={options}
       chooseOne={chooseOne}
-      valueOnSelect={(item) => [item]}
       renderItem={(cardWithSource) => {
         return (
           <ItemWrapper
@@ -38,7 +39,14 @@ const GameInputSelectCardWithSourceSelector: React.FC<{
                   ? "(Meadow)"
                   : cardWithSource.source === "STATION"
                   ? `(Station ${cardWithSource.sourceIdx! + 1})`
-                  : " "}
+                  : cardWithSource.source === "RESERVED"
+                  ? "(Reserved)"
+                  : cardWithSource.source === "HAND"
+                  ? " "
+                  : assertUnreachable(
+                      cardWithSource.source,
+                      "Unexpected source"
+                    )}
               </div>
             }
           >

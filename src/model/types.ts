@@ -729,7 +729,7 @@ export type TextPartIcon =
   | { type: "resource"; resourceType: ResourceType | "ANY" }
   | { type: "cardType"; cardType: CardType }
   | { type: "points"; value: number }
-  | { type: "symbol"; symbol: "VP" | "CARD" | "TRAIN_TICKET" };
+  | { type: "symbol"; symbol: "VP" | "CARD" | "TRAIN_TICKET" | "GOLDEN_LEAF" };
 export type TextPartBR = { type: "BR" };
 export type TextPartHR = { type: "HR" };
 export type TextPartText =

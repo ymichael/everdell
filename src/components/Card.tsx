@@ -9,6 +9,7 @@ import {
   AmbassadorSpotIcon,
   WorkerSpotIcon,
   Description,
+  GoldenLeafIcon,
   CardTypeSymbol,
 } from "./common";
 import { sumResources } from "../model/gameStatePlayHelpers";
@@ -88,6 +89,7 @@ const getAssociatedCard = (card: CardModel) => {
         : associatedCard.cardType === "COMMON"
         ? { type: "em", text: "Common" }
         : { type: "cardType", cardType: associatedCard.cardType },
+      "GOLDEN_LEAF",
     ]);
     return <Description textParts={textParts} />;
   } else {

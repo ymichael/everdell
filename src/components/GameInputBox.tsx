@@ -170,12 +170,17 @@ const GameInputBoxInner = ({
           options={gameInput.options}
         />
       ) : gameInput.inputType === GameInputType.PLAY_TRAIN_TICKET ? (
-        <GameInputSelectWorkerPlacement
-          name={"gameInput.clientOptions.selectedOption"}
-          options={viewingPlayer.getRecallableWorkers()}
-          gameState={gameState}
-          viewingPlayer={viewingPlayer}
-        />
+        <>
+          <p className={styles.description}>
+            Select a deployed worker to reactivate
+          </p>
+          <GameInputSelectWorkerPlacement
+            name={"gameInput.clientOptions.selectedOption"}
+            options={viewingPlayer.getRecallableWorkers()}
+            gameState={gameState}
+            viewingPlayer={viewingPlayer}
+          />
+        </>
       ) : gameInput.inputType === GameInputType.SELECT_CARDS_WITH_SOURCE ? (
         <GameInputSelectCardWithSourceSelector
           name={"gameInput.clientOptions.selectedCards"}

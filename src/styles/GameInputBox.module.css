@@ -19,7 +19,7 @@
 }
 
 .input_type_form_nested {
-  margin: 20px;
+  margin: 10px 30px;
 }
 
 .play_card_list {
@@ -41,4 +41,10 @@
 
 .play_card_list_item_selected {
   opacity: 0.5;
+}
+
+.description {
+  margin-left: -5px;
+  font-size: 14px;
+  font-style: italic;
 }

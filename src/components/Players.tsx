@@ -19,6 +19,7 @@ import {
   VPIcon,
   CardIcon,
   GoldenLeafIcon,
+  ReservationTokenIcon,
   AdornmentCardIcon,
   CardTypeSymbol,
   ResourceTypeIcon,
@@ -228,18 +229,30 @@ const PlayerStatus: React.FC<{
                 {player.numCardsInHand}
               </div>
             </div>
-            <div
-              className={styles.status_box_item_resource}
-              title="No. of Golden Leafs"
-            >
-              <div className={styles.status_box_item_resource_icon}>
-                <GoldenLeafIcon />
+            {gameStateJSON.gameOptions.newleaf?.cards && (
+              <div
+                className={styles.status_box_item_resource}
+                title="No. of Golden Leafs"
+              >
+                <div className={styles.status_box_item_resource_icon}>
+                  <GoldenLeafIcon />
+                </div>
+                <div className={styles.status_box_item_resource_count}>
+                  {player.numGoldenLeaf}
+                </div>
               </div>
-              <div className={styles.status_box_item_resource_count}>
-                {player.numGoldenLeaf}
+            )}
+            {gameStateJSON.gameOptions.newleaf?.reserving && (
+              <div
+                className={styles.status_box_item_resource}
+                title="Reservation TOken"
+              >
+                <div className={styles.status_box_item_resource_icon}>
+                  <ReservationTokenIcon />
+                </div>
+                <div className={styles.status_box_item_resource_count}>??</div>
               </div>
-            </div>
-
+            )}
             {gameStateJSON.gameOptions.newleaf?.ticket && (
               <div
                 className={styles.status_box_item_resource}

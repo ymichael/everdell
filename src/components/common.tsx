@@ -91,6 +91,16 @@ export const TicketIcon = () => {
   return <Image alt="Ticket Icon" src="/images/ticket.png" layout="fill" />;
 };
 
+export const ReservationTokenIcon = () => {
+  return (
+    <Image
+      alt="Ticket Icon"
+      src="/images/reservation_token.png"
+      layout="fill"
+    />
+  );
+};
+
 export const AdornmentCardIcon = () => {
   return (
     <Image
@@ -203,7 +213,14 @@ export const ResourceTypeIcon = ({
 export const GameIcon = ({
   type,
 }: {
-  type: CardType | ResourceType | "CARD" | "VP" | "ANY" | "TRAIN_TICKET";
+  type:
+    | CardType
+    | ResourceType
+    | "CARD"
+    | "VP"
+    | "ANY"
+    | "TRAIN_TICKET"
+    | "GOLDEN_LEAF";
 }) => {
   return (
     <div className={styles.resource}>
@@ -212,6 +229,8 @@ export const GameIcon = ({
           <CardIcon />
         ) : type === "VP" ? (
           <VPIcon />
+        ) : type === "GOLDEN_LEAF" ? (
+          <GoldenLeafIcon />
         ) : type === "TRAIN_TICKET" ? (
           <TicketIcon />
         ) : type === "ANY" ? (

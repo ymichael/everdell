@@ -47,7 +47,9 @@
 }
 
 .associated_card_golden_leaf {
+  position: relative;
   white-space: nowrap;
+  margin-right: -5px;
 }
 
 .color_associated_card_gold {
@@ -59,7 +61,7 @@
   border-radius: 5px 0 0 0;
   font-weight: var(--font-bold);
   color: var(--text-color-inv);
-  padding: 5px;
+  padding: 6px 5px 4px 5px;
   font-size: 10px;
   align-self: flex-end;
 }
@@ -94,7 +96,7 @@
 }
 
 .rarity_label {
-  padding: 5px;
+  padding: 6px 5px 4px 5px;
   text-transform: uppercase;
   font-size: 10px;
   font-weight: var(--font-bold);

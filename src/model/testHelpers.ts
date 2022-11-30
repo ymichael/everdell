@@ -117,9 +117,17 @@ export const multiStepGameInputTest = (
     ...(Pick<GameInputMultiStep, "clientOptions"> &
       Partial<GameInputMultiStep>)[]
   ],
-  opts: { autoAdvance?: boolean; skipMultiPendingInputCheck?: boolean } = {}
+  opts: {
+    autoAdvance?: boolean;
+    skipMultiPendingInputCheck?: boolean;
+    skipLastCheck?: boolean;
+  } = {}
 ): [Player, GameState] => {
-  const { autoAdvance = false, skipMultiPendingInputCheck = false } = opts;
+  const {
+    autoAdvance = false,
+    skipMultiPendingInputCheck = false,
+    skipLastCheck = false,
+  } = opts;
 
   // Sanity check
   expect(gameState.pendingGameInputs).to.eql([]);
@@ -138,13 +146,15 @@ export const multiStepGameInputTest = (
     // Apply input
     gameState = gameState.next(input, autoAdvance);
 
-    if (isLastInput) {
-      // Make sure we don't have any more pending inputs.
-      expect(gameState.pendingGameInputs).to.eql([]);
-      // And the player is no longer active.
-      expect(playerId).to.not.be(gameState.getActivePlayer().playerId);
-    } else {
-      expect(playerId).to.be(gameState.getActivePlayer().playerId);
+    if (!skipLastCheck) {
+      if (isLastInput) {
+        // Make sure we don't have any more pending inputs.
+        expect(gameState.pendingGameInputs).to.eql([]);
+        // And the player is no longer active.
+        expect(playerId).to.not.be(gameState.getActivePlayer().playerId);
+      } else {
+        expect(playerId).to.be(gameState.getActivePlayer().playerId);
+      }
     }
   };
 

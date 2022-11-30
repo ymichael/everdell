@@ -2874,6 +2874,40 @@ describe("Card", () => {
         expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
         expect(targetPlayer.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
       });
+
+      it("should make sure you can spend the declared 2 resources", () => {
+        player.addToCity(gameState, CardName.MONASTERY);
+
+        player.gainResources(gameState, {
+          [ResourceType.BERRY]: 2,
+        });
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+
+        const targetPlayerId = gameState.players[1].playerId;
+        expect(() => {
+          [player, gameState] = multiStepGameInputTest(
+            gameState,
+            [
+              {
+                inputType: GameInputType.VISIT_DESTINATION_CARD,
+                clientOptions: {
+                  playedCard: player.getFirstPlayedCard(CardName.MONASTERY),
+                },
+              },
+              {
+                clientOptions: {
+                  resources: {
+                    [ResourceType.RESIN]: 1,
+                    [ResourceType.BERRY]: 1,
+                  },
+                },
+              },
+            ],
+            { skipLastCheck: true }
+          );
+        }).to.throwException(/You do not have 1 RESIN to spend/i);
+      });
+
       it.skip("cannot give resources to player who has ended", () => {
         gameState = testInitialGameState({ numPlayers: 3 });
         player = gameState.getActivePlayer();
@@ -3109,7 +3143,7 @@ describe("Card", () => {
               },
             },
           ]);
-        }).to.throwException(/too many/i);
+        }).to.throwException(/please specify at most 2/i);
       });
 
       it("should not allow player to give themselves berries", () => {
@@ -3296,7 +3330,7 @@ describe("Card", () => {
               },
             },
           ]);
-        }).to.throwException(/too many/i);
+        }).to.throwException(/please specify at most 2/i);
       });
     });
 

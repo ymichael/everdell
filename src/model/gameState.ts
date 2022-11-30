@@ -61,6 +61,7 @@ import {
   cardListToGameText,
   workerPlacementToGameText,
 } from "./gameText";
+import { sumResources } from "./gameStatePlayHelpers";
 
 import cloneDeep from "lodash/cloneDeep";
 import isEqual from "lodash/isEqual";
@@ -734,6 +735,7 @@ export class GameState {
   }
 
   private validateMultiStepGameInput(gameInput: GameInputMultiStep): void {
+    const player = this.getActivePlayer();
     switch (gameInput.inputType) {
       case GameInputType.SELECT_OPTION_GENERIC:
         if (
@@ -838,9 +840,42 @@ export class GameState {
           throw new Error("Discarding too few cards");
         }
         break;
-      // case GameInputType.SELECT_WORKER_PLACEMENT:
+      case GameInputType.SELECT_RESOURCES:
+        const numResources = sumResources(gameInput.clientOptions.resources);
+        if (gameInput.maxResources === gameInput.minResources) {
+          if (numResources !== gameInput.minResources) {
+            throw new Error(
+              `Must select exactly ${gameInput.minResources} resources`
+            );
+          }
+        } else {
+          if (numResources < gameInput.minResources) {
+            throw new Error(
+              `Please specify at least ${gameInput.minResources} resources`
+            );
+          }
+          if (numResources > gameInput.maxResources) {
+            throw new Error(
+              `Please specify at most ${gameInput.maxResources} resources`
+            );
+          }
+        }
+        if (gameInput.toSpend) {
+          for (const [resourceType, count] of Object.entries(
+            gameInput.clientOptions.resources
+          )) {
+            if (
+              player.getNumResourcesByType(resourceType as ResourceType) < count
+            ) {
+              throw new Error(
+                `Insufficient resources! You do not have ${count} ${resourceType} to spend.`
+              );
+            }
+          }
+        }
+        break;
       // case GameInputType.SELECT_PAYMENT_FOR_CARD:
-      // case GameInputType.SELECT_RESOURCES:
+      // case GameInputType.SELECT_WORKER_PLACEMENT:
       // case GameInputType.SELECT_PLAYED_ADORNMENT:
       // case GameInputType.SELECT_RIVER_DESTINATION:
       default:

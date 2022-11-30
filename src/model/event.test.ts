@@ -2247,7 +2247,7 @@ describe("Event", () => {
 
       expect(() => {
         gameState.next(selectFirstResource);
-      }).to.throwException(/cannot give/i);
+      }).to.throwException(/please specify at most 3/i);
     });
 
     it("should not be able to give more than 3 resources across all donations", () => {
@@ -2337,7 +2337,7 @@ describe("Event", () => {
 
       expect(() => {
         gameState.next(selectSecondResource);
-      }).to.throwException(/cannot give/i);
+      }).to.throwException(/please specify at most 2/i);
     });
   });
 

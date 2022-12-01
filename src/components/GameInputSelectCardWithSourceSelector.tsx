@@ -1,12 +1,9 @@
 import * as React from "react";
 
-import styles from "../styles/gameBoard.module.css";
-
 import { GameInputSelectCardsWithSource } from "../model/types";
 import Card, { EmptyCard } from "./Card";
 import GameInputSelectItemWrapper from "./GameInputSelectItemWrapper";
 import { ItemWrapper, CardWithSourceFooter } from "./common";
-import { assertUnreachable } from "../utils";
 
 const GameInputSelectCardWithSourceSelector: React.FC<{
   name: string;

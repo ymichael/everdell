@@ -9,7 +9,7 @@ describe("Play Peddler", () => {
     ) as unknown) as Promise<GameJSON>);
   });
 
-  it("should allow player to play fool on another player card", () => {
+  it("should allow player to play peddler", () => {
     const player1 = gameJSON.gameState.players[0];
     cy.visit(`/game/${gameJSON.gameId}?playerSecret=${player1.playerSecret}`);
     cy.contains("Play Card");
@@ -24,7 +24,7 @@ describe("Play Peddler", () => {
 
     cy.get("#js-game-input-box-form").within(() => {
       cy.get("#js-game-input-type-PLAY_CARD").click();
-      cy.get("[data-cy='play-card-item:Peddler']").click();
+      cy.get("[data-cy='play-card-item:Peddler:HAND:']").click();
       cy.contains("Submit").click();
     });
 

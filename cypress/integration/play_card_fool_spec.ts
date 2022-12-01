@@ -24,7 +24,7 @@ describe("Play Fool", () => {
 
     cy.get("#js-game-input-box-form").within(() => {
       cy.get("#js-game-input-type-PLAY_CARD").click();
-      cy.get("[data-cy='play-card-item:Fool']").click();
+      cy.get("[data-cy='play-card-item:Fool:HAND:']").click();
       cy.contains("Submit").click();
     });
 

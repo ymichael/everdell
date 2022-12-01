@@ -9,7 +9,7 @@ import { Card as CardModel } from "../model/card";
 
 import CardPayment from "./CardPayment";
 import Card from "./Card";
-import { ItemWrapper } from "./common";
+import { ItemWrapper, CardWithSourceFooter } from "./common";
 
 const GameInputPlayCard: React.FC<{
   options: CardWithSource[];
@@ -50,7 +50,8 @@ const GameInputPlayCard: React.FC<{
   return (
     <div role="group">
       <div className={styles.items}>
-        {options.map(({ card: cardName, source, sourceIdx }, idx) => {
+        {options.map((cardWithSource, idx) => {
+          const { card: cardName, source, sourceIdx } = cardWithSource;
           const isSelected =
             meta.value &&
             meta.value.card === cardName &&
@@ -60,7 +61,9 @@ const GameInputPlayCard: React.FC<{
             <div key={idx} className={styles.clickable}>
               <div
                 key={idx}
-                data-cy={`play-card-item:${cardName}`}
+                data-cy={`play-card-item:${cardName}:${source}:${
+                  typeof sourceIdx === "number" ? sourceIdx : ""
+                }`}
                 onClick={() => {
                   resetPaymentOptions(cardName, "DEFAULT", {
                     _idx: idx,
@@ -72,13 +75,7 @@ const GameInputPlayCard: React.FC<{
                 <ItemWrapper
                   isHighlighted={isSelected}
                   footerChildren={
-                    <div className={styles.item_footer_text}>
-                      {source === "MEADOW"
-                        ? "(Meadow)"
-                        : source === "STATION"
-                        ? `(Station ${sourceIdx! + 1})`
-                        : " "}
-                    </div>
+                    <CardWithSourceFooter cardWithSource={cardWithSource} />
                   }
                 >
                   <Card name={cardName} />

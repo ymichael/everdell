@@ -298,6 +298,44 @@ module.exports = (on: any, config: any) => {
         }
       );
     },
+    "db:play-reserved-card-game": async () => {
+      return await getTestGameJSON(
+        {
+          gameOptions: {
+            newleaf: { cards: true, station: true, reserving: true },
+          },
+        },
+        (gameState, player) => {
+          const card = Card.fromName(CardName.HUSBAND);
+          player.reserveCard(card.name);
+          player.gainResources(gameState, card.baseCost);
+        }
+      );
+    },
+    "db:reserve-card-game": async () => {
+      return await getTestGameJSON(
+        {
+          meadowCards: [
+            CardName.MINER_MOLE,
+            CardName.MINER_MOLE,
+            CardName.MINER_MOLE,
+            CardName.MINER_MOLE,
+            CardName.MINER_MOLE,
+            CardName.MINER_MOLE,
+            CardName.MINER_MOLE,
+            CardName.MINER_MOLE,
+          ],
+          stationCards: [CardName.CHIP_SWEEP, CardName.HUSBAND, CardName.MONK],
+          gameOptions: {
+            newleaf: { cards: true, station: true, reserving: true },
+          },
+        },
+        (gameState, player) => {
+          const card = Card.fromName(CardName.HUSBAND);
+          player.gainResources(gameState, card.baseCost);
+        }
+      );
+    },
     "db:visit-inn-game": async () => {
       return await getTestGameJSON(
         {

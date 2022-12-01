@@ -74,14 +74,6 @@
   cursor: pointer;
 }
 
-.item_footer_text {
-  margin: 10px;
-  font-weight: var(--font-bold);
-  font-size: 10px;
-  text-align: center;
-  text-transform: uppercase;
-}
-
 .locations_and_events {
   display: flex;
   flex-direction: row;

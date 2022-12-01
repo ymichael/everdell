@@ -20,7 +20,7 @@ describe("Play Miner Mole and select played card", () => {
 
     cy.get("#js-game-input-box-form").within(() => {
       cy.get("#js-game-input-type-PLAY_CARD").click();
-      cy.get("[data-cy='play-card-item:Miner Mole']").click();
+      cy.get("[data-cy='play-card-item:Miner Mole:HAND:']").click();
       cy.contains("Submit").click();
     });
 

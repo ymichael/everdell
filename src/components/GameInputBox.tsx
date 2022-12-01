@@ -193,7 +193,7 @@ const GameInputBoxInner = ({
         />
       ) : gameInput.inputType === GameInputType.RESERVE_CARD ? (
         <GameInputSelectCardWithSourceSelector
-          name={"gameInput.clientOptions.selectedCard"}
+          name={"gameInput.clientOptions.selectedOption"}
           chooseOne={true}
           options={gameState.getCardsWithSource(false, false)}
         />

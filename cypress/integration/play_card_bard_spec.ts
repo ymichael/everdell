@@ -20,7 +20,7 @@ describe("Play Bard and discard some cards", () => {
 
     cy.get("#js-game-input-box-form").within(() => {
       cy.get("#js-game-input-type-PLAY_CARD").click();
-      cy.get("[data-cy='play-card-item:Bard']").click();
+      cy.get("[data-cy='play-card-item:Bard:HAND:']").click();
       cy.contains("Submit").click();
     });
 

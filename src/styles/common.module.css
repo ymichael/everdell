@@ -96,3 +96,11 @@
 .item_highlighted {
   opacity: 0.3;
 }
+
+.item_footer_text {
+  margin: 10px;
+  font-weight: var(--font-bold);
+  font-size: 10px;
+  text-align: center;
+  text-transform: uppercase;
+}

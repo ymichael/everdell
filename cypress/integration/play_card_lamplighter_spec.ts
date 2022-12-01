@@ -20,7 +20,7 @@ describe("Play Lamplighter and select cards to draw", () => {
 
     cy.get("#js-game-input-box-form").within(() => {
       cy.get("#js-game-input-type-PLAY_CARD").click();
-      cy.get("[data-cy='play-card-item:Lamplighter']").click();
+      cy.get("[data-cy='play-card-item:Lamplighter:HAND:']").click();
       cy.contains("Submit").click();
     });
 

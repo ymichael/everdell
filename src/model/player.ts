@@ -1383,9 +1383,6 @@ export class Player implements IGameTextEntity {
     const paymentOptions = gameInput.clientOptions.paymentOptions;
     const paymentResources = paymentOptions.resources;
 
-    // If playing reserved card, cannot use any other card playing ability.
-    // TODO
-
     // Validate if player has resources specified by payment options
     const resourceToPayList = Object.entries(paymentResources) as [
       ResourceType,
@@ -1402,6 +1399,14 @@ export class Player implements IGameTextEntity {
 
     // Validate if payment options are valid for the card
     const cardToPlay = Card.fromName(gameInput.clientOptions.card);
+
+    if (gameInput?.clientOptions?.source === "RESERVED") {
+      return this.validatePaidResources(
+        paymentResources,
+        cardToPlay.baseCost,
+        "ANY 1"
+      );
+    }
 
     // Check if you have the associated construction if card is a critter
     if (paymentOptions.useAssociatedCard) {

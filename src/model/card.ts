@@ -272,6 +272,12 @@ export class Card<TCardType extends CardType = CardType>
             2
           )}`;
         }
+      } else if (gameInput.clientOptions.source === "RESERVED") {
+        if (player.getReservedCardOrNull() !== this.name) {
+          return `Card ${
+            this.name
+          } is not reserved by player.\n ${player.getReservedCardOrNull()}`;
+        }
       } else if (gameInput.clientOptions.source === "STATION") {
         const idx = gameInput.clientOptions.sourceIdx;
         if (typeof idx !== "number") {
@@ -286,7 +292,7 @@ export class Card<TCardType extends CardType = CardType>
             2
           )}`;
         }
-      } else {
+      } else if (gameInput.clientOptions.source === "HAND") {
         if (player.cardsInHand.indexOf(this.name) === -1) {
           return `Card ${
             this.name
@@ -296,6 +302,8 @@ export class Card<TCardType extends CardType = CardType>
             2
           )}`;
         }
+      } else if (gameInput.clientOptions.source) {
+        assertUnreachable(gameInput.clientOptions.source, "Unexpected source");
       }
     }
     if (this.canPlayCheckInner) {

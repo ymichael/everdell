@@ -457,6 +457,27 @@ describe("GameState", () => {
         { card: CardName.MINE, source: "HAND" },
       ]);
     });
+
+    it("should return reserved cards", () => {
+      gameState = testInitialGameState({
+        meadowCards: [CardName.INN],
+        gameOptions: {
+          newleaf: { reserving: true },
+        },
+      });
+      player = gameState.getActivePlayer();
+      expect(gameState.getPlayableCards()).to.eql([]);
+      player.reserveCard(CardName.CRANE);
+      expect(gameState.getPlayableCards()).to.eql([
+        {
+          card: CardName.CRANE,
+          source: "RESERVED",
+        },
+      ]);
+
+      player.resetReservationToken(gameState);
+      expect(gameState.getPlayableCards()).to.eql([]);
+    });
   });
 
   describe("getRemainingPlayers", () => {
@@ -657,6 +678,66 @@ describe("GameState", () => {
 
       expect(player.hasCardInCity(CardName.FARM)).to.be(true);
       expect(gameState.stationCards).to.eql(replenishedStationCards);
+    });
+
+    it("should be able to play reserved card", () => {
+      const card = Card.fromName(CardName.FARM);
+      gameState = testInitialGameState({
+        meadowCards: [
+          CardName.CASTLE,
+          CardName.CASTLE,
+          CardName.CASTLE,
+          CardName.CASTLE,
+          CardName.CASTLE,
+          CardName.CASTLE,
+          CardName.CASTLE,
+          CardName.CASTLE,
+        ],
+        gameOptions: { newleaf: { reserving: true } },
+      });
+      player = gameState.getActivePlayer();
+      player.reserveCard(CardName.FARM);
+      player.gainResources(gameState, {
+        // when you reserve a card it cost 1 less to play.
+        [ResourceType.TWIG]: 2,
+        [ResourceType.RESIN]: 1,
+      });
+      expect(player.numCardsInHand).to.be(0);
+      expect(player.hasCardInCity(CardName.FARM)).to.be(false);
+
+      expect(() => {
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(CardName.FARM, { source: "HAND" }),
+        ]);
+      }).to.throwException(/does not exist in your hand/i);
+      expect(() => {
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(CardName.FARM, { source: "MEADOW" }),
+        ]);
+      }).to.throwException(/does not exist in the meadow/i);
+      // Cannot overpay
+      expect(() => {
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(CardName.FARM, { source: "RESERVED" }),
+        ]);
+      }).to.throwException(/cannot overpay for cards/i);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        playCardInput(CardName.FARM, {
+          source: "RESERVED",
+          paymentOptions: {
+            resources: {
+              [ResourceType.TWIG]: 1,
+              [ResourceType.RESIN]: 1,
+            },
+          },
+        }),
+      ]);
+      expect(player.hasCardInCity(CardName.FARM)).to.be(true);
+      expect(player.getReservedCardOrNull()).to.be(null);
+      expect(player.canReserveCard()).to.be(false);
+      expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(1);
+      expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
     });
 
     it("should be able to gain train tile resources", () => {
@@ -1192,8 +1273,57 @@ describe("GameState", () => {
     });
   });
 
+  describe("Reservation Token", () => {
+    beforeEach(() => {
+      gameState = testInitialGameState({
+        gameOptions: { newleaf: { reserving: true } },
+      });
+      player = gameState.getActivePlayer();
+
+      // Use up all workers
+      gameState.locationsMap[LocationName.BASIC_TWO_CARDS_AND_ONE_VP]!.push(
+        player.playerId,
+        player.playerId
+      );
+      player.placeWorkerOnLocation(LocationName.BASIC_TWO_CARDS_AND_ONE_VP);
+      player.placeWorkerOnLocation(LocationName.BASIC_TWO_CARDS_AND_ONE_VP);
+      player.reserveCard(CardName.INN);
+    });
+
+    it("should allow player to discard reserved card", () => {
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        { inputType: GameInputType.PREPARE_FOR_SEASON },
+        { clientOptions: { selectedOption: "Discard" } },
+      ]);
+      expect(player.getReservedCardOrNull()).to.be(null);
+      expect(player.canReserveCard()).to.be(true);
+    });
+
+    it("should allow player to keep reserved card", () => {
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        { inputType: GameInputType.PREPARE_FOR_SEASON },
+        { clientOptions: { selectedOption: "Continue Reserving" } },
+      ]);
+      expect(player.getReservedCardOrNull()).to.be(CardName.INN);
+      expect(player.canReserveCard()).to.be(false);
+    });
+
+    it("should reset reservation token", () => {
+      player.useReservedCard();
+      expect(player.canReserveCard()).to.be(false);
+      expect(player.getReservedCardOrNull()).to.be(null);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        { inputType: GameInputType.PREPARE_FOR_SEASON },
+      ]);
+
+      expect(player.getReservedCardOrNull()).to.be(null);
+      expect(player.canReserveCard()).to.be(true);
+    });
+  });
+
   describe("PREPARE_FOR_SEASON", () => {
-    it("should activate production in WINTER", () => {
+    it("WINTER: should activate production", () => {
       player.addToCity(gameState, CardName.FARM);
       player.addToCity(gameState, CardName.FARM);
       player.addToCity(gameState, CardName.MINE);
@@ -1379,7 +1509,7 @@ describe("GameState", () => {
       expect(player.numAvailableWorkers).to.be(3);
     });
 
-    it("should activate production in SUMMER", () => {
+    it("SUMMER: should activate production", () => {
       player.addToCity(gameState, CardName.FARM);
       player.addToCity(gameState, CardName.FARM);
       player.addToCity(gameState, CardName.MINE);

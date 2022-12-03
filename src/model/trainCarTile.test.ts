@@ -1,9 +1,6 @@
 import expect from "expect.js";
 import { TrainCarTileName } from "./types";
-import {
-  TrainCarTileStack,
-  intialTrainCarTileStack,
-} from "./trainCarTile";
+import { TrainCarTileStack, intialTrainCarTileStack } from "./trainCarTile";
 
 describe("TrainCarTileStack", () => {
   it("json round-trip", () => {

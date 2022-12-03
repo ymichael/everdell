@@ -769,25 +769,22 @@ describe("Card", () => {
         player.placeWorkerOnLocation(LocationName.BASIC_ONE_BERRY);
         player.placeWorkerOnLocation(LocationName.FOREST_TWO_WILD);
 
-        const [playerNoActivate] = multiStepGameInputTest(
-          gameState,
-          [
-            { inputType: GameInputType.PREPARE_FOR_SEASON },
-            {
-              cardContext: CardName.CLOCK_TOWER,
-              inputType: GameInputType.SELECT_WORKER_PLACEMENT,
-              mustSelectOne: false,
-              options: [
-                { location: LocationName.BASIC_ONE_BERRY },
-                { location: LocationName.FOREST_TWO_WILD },
-              ],
-              clientOptions: {
-                selectedOption: null,
-              },
-              prevInputType: GameInputType.PREPARE_FOR_SEASON,
+        const [playerNoActivate] = multiStepGameInputTest(gameState, [
+          { inputType: GameInputType.PREPARE_FOR_SEASON },
+          {
+            cardContext: CardName.CLOCK_TOWER,
+            inputType: GameInputType.SELECT_WORKER_PLACEMENT,
+            mustSelectOne: false,
+            options: [
+              { location: LocationName.BASIC_ONE_BERRY },
+              { location: LocationName.FOREST_TWO_WILD },
+            ],
+            clientOptions: {
+              selectedOption: null,
             },
-          ]
-        );
+            prevInputType: GameInputType.PREPARE_FOR_SEASON,
+          },
+        ]);
         expect(
           playerNoActivate.getNumResourcesByType(ResourceType.BERRY)
         ).to.be(2);
@@ -806,7 +803,7 @@ describe("Card", () => {
           usedForCritter: false,
         });
 
-        const [playerWithActivate, _,] = multiStepGameInputTest(gameState, [
+        const [playerWithActivate, _] = multiStepGameInputTest(gameState, [
           { inputType: GameInputType.PREPARE_FOR_SEASON },
           {
             cardContext: CardName.CLOCK_TOWER,
@@ -8252,7 +8249,6 @@ describe("Card", () => {
           },
           usedForCritter: false,
         };
-
 
         [player, gameState] = multiStepGameInputTest(gameState, [
           playCardInput(card.name),

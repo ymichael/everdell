@@ -5,11 +5,7 @@ import { Card as CardModel } from "../model/card";
 import { toGameText } from "../model/gameText";
 import { Player } from "../model/player";
 import { assertUnreachable } from "../utils";
-import {
-  ResourceType,
-  CardName,
-  GameInputPlayCard,
-} from "../model/types";
+import { ResourceType, CardName, GameInputPlayCard } from "../model/types";
 import { ResourceTypeIcon, Description } from "./common";
 
 import styles from "../styles/CardPayment.module.css";

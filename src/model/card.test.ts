@@ -9345,7 +9345,6 @@ describe("Card", () => {
       });
     });
 
-    // TODO: add test case for "should now allow player to select Magician"
     describe(CardName.MAGICIAN, () => {
       it("allow player to discard card from city to receive 1 VP and 1 ANY", () => {
         let player = gameState.getActivePlayer();
@@ -9445,6 +9444,44 @@ describe("Card", () => {
         expect(player.hasCardInCity(CardName.MAGICIAN)).to.be(true);
         expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
         expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+      });
+      it("should not allow player to select Magician as card to discard", () => {
+        let player = gameState.getActivePlayer();
+
+        const card = Card.fromName(CardName.MAGICIAN);
+
+        // Make sure we can play this card
+        player.gainResources(gameState, card.baseCost);
+        player.addCardToHand(gameState, card.name);
+
+        player.addToCity(gameState, CardName.FARM);
+        player.addToCity(gameState, CardName.TWIG_BARGE);
+
+        expect(player.hasCardInCity(CardName.FARM)).to.be(true);
+        expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+
+        gameState = gameState.next(playCardInput(card.name));
+        player = gameState.getPlayer(player.playerId);
+
+        const selectPlayedCardInput = {
+          inputType: GameInputType.SELECT_PLAYED_CARDS as const,
+          prevInputType: GameInputType.PLAY_CARD,
+          cardContext: CardName.MAGICIAN,
+          cardOptions: [
+            ...player.getPlayedCardForCardName(CardName.FARM),
+            ...player.getPlayedCardForCardName(CardName.TWIG_BARGE),
+          ],
+          maxToSelect: 1,
+          minToSelect: 0,
+          clientOptions: {
+            selectedCards: [player.getFirstPlayedCard(CardName.MAGICIAN)],
+          },
+        };
+
+        expect(() => gameState.next(selectPlayedCardInput)).to.throwException(
+          /Selected card is not a valid option/i
+        );
       });
     });
 

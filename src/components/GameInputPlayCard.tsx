@@ -24,7 +24,12 @@ const GameInputPlayCard: React.FC<{
   const resetPaymentOptions = (
     cardName: CardName,
     state: "DEFAULT" | "COST" | "ZERO",
-    overrides: Pick<TGameInputPlayCard["clientOptions"], "source" | "sourceIdx">
+    overrides: Pick<
+      TGameInputPlayCard["clientOptions"],
+      "source" | "sourceIdx"
+    > & {
+      _idx?: number;
+    }
   ) => {
     const card = CardModel.fromName(cardName);
     const canUseAssociatedCard =
@@ -63,6 +68,7 @@ const GameInputPlayCard: React.FC<{
             meta.value.card === cardName &&
             meta.value.source === source &&
             meta.value.sourceIdx === sourceIdx;
+          meta.value._idx === idx;
           return (
             <div key={idx} className={styles.clickable}>
               <div
@@ -74,6 +80,7 @@ const GameInputPlayCard: React.FC<{
                   resetPaymentOptions(cardName, "DEFAULT", {
                     source,
                     sourceIdx,
+                    _idx: idx,
                   });
                 }}
               >

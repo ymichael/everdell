@@ -22,6 +22,7 @@ import {
   PlayerStatus,
   IGameTextEntity,
   TrainTicketStatus,
+  VisitorName,
 } from "./types";
 import { PlayerJSON } from "./jsonTypes";
 import { GameState } from "./gameState";
@@ -75,6 +76,8 @@ export class Player implements IGameTextEntity {
   private reservedCard: CardName | "UNUSED" | "USED";
   private _trainTicketStatus: TrainTicketStatus | null;
 
+  public visitorsSelected: VisitorName[];
+
   constructor({
     name,
     playerSecret = uuid(),
@@ -101,6 +104,7 @@ export class Player implements IGameTextEntity {
     playedAdornments = [],
     trainTicketStatus = null,
     reservedCard = "UNUSED",
+    visitorsSelected = [],
   }: {
     name: string;
     playerSecret?: string;
@@ -120,6 +124,7 @@ export class Player implements IGameTextEntity {
     playedAdornments?: AdornmentName[];
     trainTicketStatus?: TrainTicketStatus | null;
     reservedCard?: CardName | "UNUSED" | "USED";
+    visitorsSelected?: VisitorName[];
   }) {
     this.playerId = playerId;
     this.playerSecret = playerSecret;
@@ -142,6 +147,7 @@ export class Player implements IGameTextEntity {
     this._trainTicketStatus = trainTicketStatus;
     this._numGoldenLeaf = numGoldenLeaf;
     this.reservedCard = reservedCard;
+    this.visitorsSelected = visitorsSelected;
 
     this._numCardsInHand = numCardsInHand;
   }

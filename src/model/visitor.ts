@@ -57,7 +57,8 @@ const VISITOR_REGISTRY: Record<VisitorName, Visitor> = {
     description: toGameText(["At least 6 DESTINATION cards in your city."]),
     baseVP: 7,
     isEligible: (player, gameState) => {
-      return false;
+      const numDestinations = player.getNumCardType(CardType.DESTINATION);
+      return numDestinations > 6;
     },
   }),
   [VisitorName.BOSLEY_TEDWARDSON]: new Visitor({

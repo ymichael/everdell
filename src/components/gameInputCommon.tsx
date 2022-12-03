@@ -264,6 +264,8 @@ export const renderGameInputLabel = (
       return <span>{"Reserve Meadow/Station Card"}</span>;
     case GameInputType.PLAY_TRAIN_TICKET:
       return <span>{"Play Train Ticket"}</span>;
+    case GameInputType.SELECT_VISITOR:
+      return <span>{"Select Visitor"}</span>;
     default:
       return renderMultiStepGameInputLabel(gameInput);
   }

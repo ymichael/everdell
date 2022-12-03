@@ -18,6 +18,7 @@ const colorClassMap = {
   HAVEN: styles.color_haven,
   JOURNEY: styles.color_journey,
   KNOLL: styles.color_knoll,
+  STATION: styles.color_station,
 };
 
 export const LocationInner: React.FC<{ name: LocationName }> = ({ name }) => {

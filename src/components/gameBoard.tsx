@@ -106,8 +106,9 @@ export const Locations: React.FC<{
     [LocationType.FOREST]: 1,
     [LocationType.BASIC]: 2,
     [LocationType.KNOLL]: 3,
-    [LocationType.HAVEN]: 4,
-    [LocationType.JOURNEY]: 5,
+    [LocationType.STATION]: 4,
+    [LocationType.HAVEN]: 5,
+    [LocationType.JOURNEY]: 6,
   };
 
   allLocationObjs.sort((a, b) => {

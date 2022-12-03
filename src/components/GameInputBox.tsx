@@ -203,6 +203,12 @@ const GameInputBoxInner = ({
           name={"gameInput.clientOptions.trainCarTileIdx"}
           options={gameInput.options}
         />
+      ) : gameInput.inputType === GameInputType.SELECT_VISITOR ? (
+        // <GameInputSelectVisitorSelector
+        //   name={"gameInput.clientOptions.trainCarTileIdx"}
+        //   options={gameInput.options}
+        // />
+        <div>TODO</div>
       ) : (
         <>
           {assertUnreachable(

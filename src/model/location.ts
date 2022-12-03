@@ -1301,6 +1301,27 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
       }
     },
   }),
+  [LocationName.STATION]: new Location({
+    name: LocationName.STATION,
+    description: toGameText([
+      "Discard 1 Visitor at the station, then gain 1 visitor and 1 train car tile",
+    ]),
+    shortName: toGameText(["Station"]),
+    type: LocationType.STATION,
+    occupancy: LocationOccupancy.UNLIMITED_MAX_ONE,
+    expansion: ExpansionType.NEWLEAF,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+
+      // if visit location, choose a visitor to discard
+
+      // if selecting visitor, discard that visitor
+
+      // after discarding, select the one to keep
+
+      return;
+    },
+  }),
 
   // bellfaire
   [LocationName.FOREST_ACTIVATE_2_PRODUCTION]: new Location({

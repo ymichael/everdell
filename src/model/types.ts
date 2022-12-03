@@ -45,6 +45,7 @@ export enum GameInputType {
   // Newleaf specific (simple)
   PLAY_TRAIN_TICKET = "PLAY_TRAIN_TICKET",
   RESERVE_CARD = "RESERVE_CARD",
+  SELECT_VISITOR = "SELECT_VISITOR",
 
   // Newleaf specific (multi)
   SELECT_TRAIN_CAR_TILE = "SELECT_TRAIN_CAR_TILE",
@@ -139,6 +140,7 @@ export type GameInputSimple =
   | GameInputPlaceAmbassador
   | GameInputPlayTrainTicket
   | GameInputReserveCard
+  | GameInputSelectVisitor
   | GameInputPrepareForSeason;
 
 export type GameInputDiscardCards = {
@@ -261,6 +263,15 @@ export type GameInputSelectLocation = {
   };
 };
 
+export type GameInputSelectVisitor = {
+  inputType: GameInputType.SELECT_VISITOR;
+  prevInputType: GameInputType;
+  visitorOptions: VisitorName[];
+  clientOptions: {
+    selectedVisitor: VisitorName | null;
+  };
+};
+
 export type GameInputSelectOptionGeneric = {
   inputType: GameInputType.SELECT_OPTION_GENERIC;
   prevInputType: GameInputType;
@@ -351,6 +362,7 @@ export enum LocationType {
 
   // newleaf
   KNOLL = "KNOLL",
+  STATION = "STATION",
 }
 
 export enum EventType {
@@ -397,6 +409,7 @@ export enum LocationName {
   FOREST_TWO_TWIG_ONE_RESIN = "FOREST_TWO_TWIG_ONE_RESIN",
   FOREST_COPY_ANY_FOREST_LOCATION = "FOREST_COPY_ANY_FOREST_LOCATION",
   KNOLL = "KNOLL",
+  STATION = "Station",
 
   // Bellfaire
   FOREST_ACTIVATE_2_PRODUCTION = "FOREST_ACTIVATE_2_PRODUCTION",

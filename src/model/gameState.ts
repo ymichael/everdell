@@ -671,6 +671,8 @@ export class GameState {
     }
   }
 
+  private handleSelectVisitorGameInput(gameInput: GameInput): void {}
+
   private handlePlaceWorkerGameInput(gameInput: GameInputPlaceWorker): void {
     if (!gameInput.clientOptions?.location) {
       throw new Error("Please select a location to visit");
@@ -1342,6 +1344,9 @@ export class GameState {
         break;
       case GameInputType.PLAY_TRAIN_TICKET:
         this.handlePlayTrainTicketGameInput(gameInput);
+        break;
+      case GameInputType.SELECT_VISITOR:
+        this.handleSelectVisitorGameInput(gameInput);
         break;
       case GameInputType.RESERVE_CARD:
         this.handleReserveCardGameInput(gameInput);

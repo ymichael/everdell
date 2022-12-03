@@ -51,6 +51,10 @@
   border: solid 2px var(--color-loc-haven);
 }
 
+.color_station {
+  border: solid 2px var(--color-loc-haven);
+}
+
 .location_center {
   padding: 10px;
   text-align: center;

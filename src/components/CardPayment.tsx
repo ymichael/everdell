@@ -312,7 +312,7 @@ const SelectedCardInfo = ({
 }: {
   clientOptions: GameInputPlayCard["clientOptions"];
 }) => {
-  if (!clientOptions.card) {
+  if (!clientOptions.card || !clientOptions.source) {
     return null;
   }
   const card = CardModel.fromName(clientOptions.card);

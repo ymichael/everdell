@@ -10,7 +10,7 @@ import Adornment from "./Adornment";
 const ViewerUI: React.FC<{
   player: Player;
 }> = ({ player }) => {
-  const reservedCard = player.getReservedCardOrNull() || "Farm";
+  const reservedCard = player.getReservedCardOrNull();
   return (
     <>
       <GameBlock title={"Your hand"}>

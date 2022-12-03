@@ -2,7 +2,9 @@ import * as React from "react";
 import { Field, useField } from "formik";
 
 import { Card as CardModel } from "../model/card";
+import { toGameText } from "../model/gameText";
 import { Player } from "../model/player";
+import { assertUnreachable } from "../utils";
 import { ResourceType, CardName, GameInputPlayCard } from "../model/types";
 import { ResourceTypeIcon, Description } from "./common";
 
@@ -47,7 +49,7 @@ export const ResourcesForm: React.FC<{
   specificResource?: ResourceType | null;
 }> = ({ name, excludeResource = null, specificResource = null }) => {
   return (
-    <>
+    <div className={styles.option_row}>
       <div className={styles.resource_input_list}>
         {[
           ResourceType.BERRY,
@@ -82,7 +84,7 @@ export const ResourcesForm: React.FC<{
           }
         })}
       </div>
-    </>
+    </div>
   );
 };
 
@@ -112,7 +114,7 @@ const OptionToUseAssociatedCard: React.FC<{
 
   const isChecked = !!meta.value;
   return (
-    <div className={styles.associated_card}>
+    <div className={styles.option_row}>
       <label>
         <input
           type={"checkbox"}
@@ -131,7 +133,8 @@ const OptionToUseAssociatedCard: React.FC<{
               ? CardModel.fromName(associatedCardName).getGameTextPart()
               : CardModel.fromName(CardName.EVERTREE).getGameTextPart(),
             { type: "text", text: " to play " },
-            CardModel.fromName(card.name).getGameTextPart(),
+            card.getGameTextPart(),
+            { type: "text", text: " for free." },
           ]}
         />
       </label>
@@ -159,8 +162,8 @@ const OptionToUseGoldenLeaf: React.FC<{
   }
 
   return (
-    <p>
-      {"Use Golden Leaf: "}
+    <div className={styles.option_row}>
+      {"Occupy "}
       <select
         value={meta.value || "None"}
         onChange={(e) => {
@@ -177,7 +180,10 @@ const OptionToUseGoldenLeaf: React.FC<{
           );
         })}
       </select>
-    </p>
+      <Description
+        textParts={toGameText([" with GOLDEN_LEAF to play for free."])}
+      />
+    </div>
   );
 };
 
@@ -189,12 +195,13 @@ const CardToUseForm: React.FC<{
 }> = ({ name, cardName, resetPaymentOptions, viewingPlayer }) => {
   const [_field, meta, helpers] = useField(name);
   const card = CardModel.fromName(cardName);
-  const cardsToUse: CardName[] = [
-    CardName.QUEEN,
-    CardName.INNKEEPER,
-    CardName.CRANE,
-    CardName.INVENTOR,
-  ].filter((cardToUse) => {
+  let cardsToUse = [
+    CardName.QUEEN as const,
+    CardName.INNKEEPER as const,
+    CardName.CRANE as const,
+    CardName.INVENTOR as const,
+  ];
+  cardsToUse = cardsToUse.filter((cardToUse) => {
     if (!viewingPlayer.hasCardInCity(cardToUse)) {
       return false;
     }
@@ -227,22 +234,38 @@ const CardToUseForm: React.FC<{
   });
   return cardsToUse.length !== 0 ? (
     <>
-      <p>Card to use:</p>
-      {[...cardsToUse, null].map((cardToUse, idx) => {
+      {cardsToUse.map((cardToUse, idx) => {
+        const isChecked = cardToUse === meta.value;
         return (
-          <label key={idx}>
-            <Field
-              type="radio"
-              name={name}
-              value={cardToUse || "NONE"}
-              checked={cardToUse === meta.value}
-              onChange={() => {
-                resetPaymentOptions(!cardToUse ? "DEFAULT" : "ZERO");
-                helpers.setValue(cardToUse);
-              }}
-            />
-            {cardToUse || "NONE"}
-          </label>
+          <div className={styles.option_row}>
+            <label key={idx}>
+              <Field
+                type="checkbox"
+                name={name}
+                value={cardToUse || "NONE"}
+                checked={isChecked}
+                onChange={() => {
+                  resetPaymentOptions(!cardToUse ? "DEFAULT" : "ZERO");
+                  helpers.setValue(isChecked ? null : cardToUse);
+                }}
+              />
+              <Description
+                textParts={toGameText([
+                  "Use ",
+                  CardModel.fromName(cardToUse).getGameTextPart(),
+                  { type: "text", text: " to " },
+                  cardToUse === CardName.INNKEEPER
+                    ? " to play for 3 fewer BERRY."
+                    : cardToUse === CardName.INVENTOR ||
+                      cardToUse === CardName.CRANE
+                    ? " to play for 3 fewer ANY."
+                    : cardToUse === CardName.QUEEN
+                    ? " to play for free."
+                    : assertUnreachable(cardToUse, "Unexpected cardToUse"),
+                ])}
+              />
+            </label>
+          </div>
         );
       })}
     </>
@@ -256,8 +279,8 @@ const CardToDungeonForm: React.FC<{
 }> = ({ name, resetPaymentOptions, viewingPlayer }) => {
   const [_field, meta, helpers] = useField(name);
   return viewingPlayer.canInvokeDungeon() ? (
-    <p>
-      {"Dungeon: "}
+    <div className={styles.option_row}>
+      {"Dungeon "}
       <select
         value={meta.value || "None"}
         onChange={(e) => {
@@ -274,7 +297,8 @@ const CardToDungeonForm: React.FC<{
           );
         })}
       </select>
-    </p>
+      <Description textParts={toGameText([" to play for 3 fewer ANY."])} />
+    </div>
   ) : null;
 };
 

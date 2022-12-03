@@ -13,6 +13,7 @@
 
 .resource_input_el {
   width: 60px;
+  font-size: 16px;
   border-radius: 5px;
 }
 
@@ -25,9 +26,15 @@
   border-radius: 5px;
   padding: 20px 10px 10px 10px;
   margin: 0px;
+  margin-left: -5px;
   width: 500px;
 }
 
-.associated_card {
+.option_row {
   padding-bottom: 15px;
+}
+
+.option_row select {
+  font-size: 16px;
+  font-weight: var(--font-bold);
 }

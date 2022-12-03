@@ -1878,11 +1878,8 @@ export class GameState {
     return this.getCardsWithSource(true, true).filter((cardWithSource) => {
       const card = Card.fromName(cardWithSource.card);
       return (
-        player.canAffordCard(
-          card.name,
-          cardWithSource.source === "MEADOW",
-          cardWithSource.source === "RESERVED" ? "ANY 1" : null
-        ) && card.canPlayIgnoreCostAndSource(this, false /* strict */)
+        player.canAffordCard(card.name, cardWithSource.source) &&
+        card.canPlayIgnoreCostAndSource(this, false /* strict */)
       );
     });
   }

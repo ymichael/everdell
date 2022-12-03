@@ -6,6 +6,7 @@ import {
   CardCost,
   CardName,
   CardType,
+  CardWithSource,
   EventName,
   EventType,
   Season,
@@ -1111,7 +1112,7 @@ export class Player implements IGameTextEntity {
 
   canAffordCard(
     cardName: CardName,
-    isMeadowCard: boolean,
+    cardSource: CardWithSource["source"] | null,
     forceDiscount: "ANY 1" | null = null
   ): boolean {
     const card = Card.fromName(cardName);
@@ -1174,6 +1175,15 @@ export class Player implements IGameTextEntity {
       this.hasCardInCity(CardName.INVENTOR) ||
       // Crane
       (card.isConstruction && this.hasCardInCity(CardName.CRANE));
+
+    if (cardSource === "RESERVED") {
+      return this.isPaidResourcesValid(
+        this.resources,
+        card.baseCost,
+        "ANY 1",
+        false
+      );
+    }
 
     return this.isPaidResourcesValid(
       this.resources,
@@ -1432,14 +1442,6 @@ export class Player implements IGameTextEntity {
     // Validate if payment options are valid for the card
     const cardToPlay = Card.fromName(gameInput.clientOptions.card);
 
-    if (gameInput?.clientOptions?.source === "RESERVED") {
-      return this.validatePaidResources(
-        paymentResources,
-        cardToPlay.baseCost,
-        "ANY 1"
-      );
-    }
-
     // Check if you have the associated construction if card is a critter
     if (paymentOptions.useAssociatedCard) {
       if (!cardToPlay.isCritter || !cardToPlay.associatedCard) {
@@ -1577,6 +1579,13 @@ export class Player implements IGameTextEntity {
             `Unexpected card: ${paymentOptions.cardToUse}`
           );
       }
+    }
+    if (gameInput?.clientOptions?.source === "RESERVED") {
+      return this.validatePaidResources(
+        paymentResources,
+        cardToPlay.baseCost,
+        "ANY 1"
+      );
     }
     return this.validatePaidResources(paymentResources, cardToPlay.baseCost);
   }

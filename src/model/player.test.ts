@@ -281,149 +281,101 @@ describe("Player", () => {
     it("have the right resources", () => {
       const player = gameState.getActivePlayer();
       expect(player.getNumResources()).to.be(0);
-      expect(player.canAffordCard(CardName.FARM, false /* isMeadow */)).to.be(
-        false
-      );
+      expect(player.canAffordCard(CardName.FARM, "HAND")).to.be(false);
       player.gainResources(gameState, Card.fromName(CardName.FARM).baseCost);
-      expect(player.canAffordCard(CardName.FARM, false /* isMeadow */)).to.be(
-        true
-      );
+      expect(player.canAffordCard(CardName.FARM, "HAND")).to.be(true);
     });
 
     it("unoccupied associated construction", () => {
       const player = gameState.getActivePlayer();
       expect(player.getNumResources()).to.be(0);
-      expect(
-        player.canAffordCard(CardName.HUSBAND, false /* isMeadow */)
-      ).to.be(false);
+      expect(player.canAffordCard(CardName.HUSBAND, "HAND")).to.be(false);
       player.addToCity(gameState, CardName.FARM);
-      expect(
-        player.canAffordCard(CardName.HUSBAND, false /* isMeadow */)
-      ).to.be(true);
+      expect(player.canAffordCard(CardName.HUSBAND, "HAND")).to.be(true);
       // Occupy the farm
       player.useConstructionToPlayCritter(CardName.FARM);
-      expect(
-        player.canAffordCard(CardName.HUSBAND, false /* isMeadow */)
-      ).to.be(false);
+      expect(player.canAffordCard(CardName.HUSBAND, "HAND")).to.be(false);
     });
 
     it("CRANE discount for constructions", () => {
       const player = gameState.getActivePlayer();
       expect(player.getNumResources()).to.be(0);
-      expect(player.canAffordCard(CardName.FARM, false /* isMeadow */)).to.be(
-        false
-      );
+      expect(player.canAffordCard(CardName.FARM, "HAND")).to.be(false);
       player.addToCity(gameState, CardName.CRANE);
-      expect(player.canAffordCard(CardName.FARM, false /* isMeadow */)).to.be(
-        true
-      );
+      expect(player.canAffordCard(CardName.FARM, "HAND")).to.be(true);
       // Doesn't work for critters
-      expect(player.canAffordCard(CardName.WIFE, false /* isMeadow */)).to.be(
-        false
-      );
+      expect(player.canAffordCard(CardName.WIFE, "HAND")).to.be(false);
     });
 
     it("INNKEEPER discount for critters", () => {
       const player = gameState.getActivePlayer();
       expect(player.getNumResources()).to.be(0);
-      expect(player.canAffordCard(CardName.WIFE, false /* isMeadow */)).to.be(
-        false
-      );
+      expect(player.canAffordCard(CardName.WIFE, "HAND")).to.be(false);
       player.addToCity(gameState, CardName.INNKEEPER);
-      expect(player.canAffordCard(CardName.WIFE, false /* isMeadow */)).to.be(
-        true
-      );
+      expect(player.canAffordCard(CardName.WIFE, "HAND")).to.be(true);
       // Doesn't work for constructions
-      expect(player.canAffordCard(CardName.FARM, false /* isMeadow */)).to.be(
-        false
-      );
+      expect(player.canAffordCard(CardName.FARM, "HAND")).to.be(false);
     });
 
     it("QUEEN discount", () => {
       const player = gameState.getActivePlayer();
       expect(player.getNumResources()).to.be(0);
-      expect(player.canAffordCard(CardName.WIFE, false /* isMeadow */)).to.be(
-        false
-      );
+      expect(player.canAffordCard(CardName.WIFE, "HAND")).to.be(false);
       player.addToCity(gameState, CardName.QUEEN);
-      expect(player.canAffordCard(CardName.WIFE, false /* isMeadow */)).to.be(
-        true
-      );
+      expect(player.canAffordCard(CardName.WIFE, "HAND")).to.be(true);
       // Doesn't work if VP is greater than 3
-      expect(player.canAffordCard(CardName.KING, false /* isMeadow */)).to.be(
-        false
-      );
+      expect(player.canAffordCard(CardName.KING, "HAND")).to.be(false);
     });
 
     it("JUDGE discount", () => {
       const player = gameState.getActivePlayer();
       expect(player.getNumResources()).to.be(0);
-      expect(player.canAffordCard(CardName.CRANE, false /* isMeadow */)).to.be(
-        false
-      );
+      expect(player.canAffordCard(CardName.CRANE, "HAND")).to.be(false);
       player.addToCity(gameState, CardName.JUDGE);
-      expect(player.canAffordCard(CardName.CRANE, false /* isMeadow */)).to.be(
-        false
-      );
+      expect(player.canAffordCard(CardName.CRANE, "HAND")).to.be(false);
       player.gainResources(gameState, {
         [ResourceType.BERRY]: 1,
       });
-      expect(player.canAffordCard(CardName.CRANE, false /* isMeadow */)).to.be(
-        true
-      );
+      expect(player.canAffordCard(CardName.CRANE, "HAND")).to.be(true);
 
       // need resin & pebble
-      expect(
-        player.canAffordCard(CardName.RESIN_REFINERY, false /* isMeadow */)
-      ).to.be(false);
+      expect(player.canAffordCard(CardName.RESIN_REFINERY, "HAND")).to.be(
+        false
+      );
       player.gainResources(gameState, {
         [ResourceType.BERRY]: 1,
       });
-      expect(
-        player.canAffordCard(CardName.RESIN_REFINERY, false /* isMeadow */)
-      ).to.be(false);
+      expect(player.canAffordCard(CardName.RESIN_REFINERY, "HAND")).to.be(
+        false
+      );
       player.gainResources(gameState, {
         [ResourceType.PEBBLE]: 1,
       });
-      expect(
-        player.canAffordCard(CardName.RESIN_REFINERY, false /* isMeadow */)
-      ).to.be(true);
+      expect(player.canAffordCard(CardName.RESIN_REFINERY, "HAND")).to.be(true);
     });
 
     it("Use golden leaf on unoccupied special construction", () => {
       const player = gameState.getActivePlayer();
       expect(player.getNumResources()).to.be(0);
       expect(player.numGoldenLeaf).to.be(0);
-      expect(
-        player.canAffordCard(CardName.HUSBAND, false /* isMeadow */)
-      ).to.be(false);
+      expect(player.canAffordCard(CardName.HUSBAND, "HAND")).to.be(false);
 
       player.initGoldenLeaf();
       player.addToCity(gameState, CardName.GREENHOUSE);
-      expect(
-        player.canAffordCard(CardName.HUSBAND, false /* isMeadow */)
-      ).to.be(true);
-      expect(player.canAffordCard(CardName.RANGER, false /* isMeadow */)).to.be(
-        false
-      );
+      expect(player.canAffordCard(CardName.HUSBAND, "HAND")).to.be(true);
+      expect(player.canAffordCard(CardName.RANGER, "HAND")).to.be(false);
     });
 
     it("Use golden leaf on unoccupied regular construction", () => {
       const player = gameState.getActivePlayer();
       expect(player.getNumResources()).to.be(0);
       expect(player.numGoldenLeaf).to.be(0);
-      expect(
-        player.canAffordCard(CardName.LAMPLIGHTER, false /* isMeadow */)
-      ).to.be(false);
+      expect(player.canAffordCard(CardName.LAMPLIGHTER, "HAND")).to.be(false);
 
       player.initGoldenLeaf();
       player.addToCity(gameState, CardName.FARM);
-      expect(
-        player.canAffordCard(CardName.LAMPLIGHTER, false /* isMeadow */)
-      ).to.be(true);
-      expect(player.canAffordCard(CardName.RANGER, false /* isMeadow */)).to.be(
-        false
-      );
+      expect(player.canAffordCard(CardName.LAMPLIGHTER, "HAND")).to.be(true);
+      expect(player.canAffordCard(CardName.RANGER, "HAND")).to.be(false);
     });
   });
 

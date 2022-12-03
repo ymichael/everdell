@@ -738,7 +738,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
       const hasPlayableCard = gameState.meadowCards.some((cardName) => {
         const card = Card.fromName(cardName);
         return (
-          player.canAffordCard(cardName, false, "ANY 1") &&
+          player.canAffordCard(cardName, null, "ANY 1") &&
           card.canPlayIgnoreCostAndSource(gameState)
         );
       });
@@ -778,7 +778,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
         const isCardPlayable = (cardName: CardName): boolean => {
           const card = Card.fromName(cardName);
           return (
-            player.canAffordCard(cardName, false, "ANY 1") &&
+            player.canAffordCard(cardName, null, "ANY 1") &&
             card.canPlayIgnoreCostAndSource(gameState)
           );
         };
@@ -846,7 +846,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
         const selectedCard = Card.fromName(selectedCardName);
         const canAffordCard = player.canAffordCard(
           selectedCardName,
-          false,
+          null,
           "ANY 1"
         );
         if (!canAffordCard) {

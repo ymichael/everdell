@@ -740,6 +740,43 @@ describe("GameState", () => {
       expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
     });
 
+    it("should be able to play reserved card using INNKEEPER", () => {
+      gameState = testInitialGameState({
+        meadowCards: [
+          CardName.CASTLE,
+          CardName.CASTLE,
+          CardName.CASTLE,
+          CardName.CASTLE,
+          CardName.CASTLE,
+          CardName.CASTLE,
+          CardName.CASTLE,
+          CardName.CASTLE,
+        ],
+        gameOptions: { newleaf: { reserving: true } },
+      });
+      player = gameState.getActivePlayer();
+      player.reserveCard(CardName.HUSBAND);
+      expect(player.numCardsInHand).to.be(0);
+      expect(player.hasCardInCity(CardName.HUSBAND)).to.be(false);
+
+      player.addToCity(gameState, CardName.INNKEEPER);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        playCardInput(CardName.HUSBAND, {
+          source: "RESERVED",
+          paymentOptions: {
+            resources: {
+              [ResourceType.BERRY]: 0,
+            },
+            cardToUse: CardName.INNKEEPER,
+          },
+        }),
+      ]);
+      expect(player.hasCardInCity(CardName.HUSBAND)).to.be(true);
+      expect(player.getReservedCardOrNull()).to.be(null);
+      expect(player.canReserveCard()).to.be(false);
+    });
+
     it("should be able to gain train tile resources", () => {
       const card = Card.fromName(CardName.FARM);
       gameState = testInitialGameState({

@@ -245,7 +245,7 @@ const CardToUseForm: React.FC<{
                 value={cardToUse || "NONE"}
                 checked={isChecked}
                 onChange={() => {
-                  resetPaymentOptions(!meta.value ? "DEFAULT" : "ZERO");
+                  resetPaymentOptions(meta.value ? "DEFAULT" : "ZERO");
                   helpers.setValue(isChecked ? null : cardToUse);
                 }}
               />

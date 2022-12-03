@@ -747,7 +747,7 @@ export class GameState {
         break;
       case GameInputType.SELECT_CARDS:
       case GameInputType.SELECT_PLAYED_CARDS:
-      case GameInputType.SELECT_CARDS_WITH_SOURCE:
+      case GameInputType.SELECT_CARDS_WITH_SOURCE: {
         if (
           gameInput.minToSelect === gameInput.maxToSelect &&
           gameInput.clientOptions.selectedCards.length !== gameInput.minToSelect
@@ -776,6 +776,7 @@ export class GameState {
           }
         });
         break;
+      }
       case GameInputType.SELECT_PLAYER:
         if (
           gameInput.mustSelectOne &&

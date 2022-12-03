@@ -3773,7 +3773,9 @@ describe("Card", () => {
           },
           {
             clientOptions: {
-              selectedCards: [{ card: CardName.FARM, source: "MEADOW" }],
+              selectedCards: [
+                { card: CardName.FARM, source: "MEADOW", sourceIdx: 0 },
+              ],
             },
           },
         ]);
@@ -3865,7 +3867,9 @@ describe("Card", () => {
           {
             inputType: GameInputType.SELECT_CARDS_WITH_SOURCE,
             clientOptions: {
-              selectedCards: [{ card: CardName.HUSBAND, source: "MEADOW" }],
+              selectedCards: [
+                { card: CardName.HUSBAND, source: "MEADOW", sourceIdx: 5 },
+              ],
             },
           },
         ]);
@@ -3941,7 +3945,9 @@ describe("Card", () => {
           {
             inputType: GameInputType.SELECT_CARDS_WITH_SOURCE,
             clientOptions: {
-              selectedCards: [{ card: CardName.FAIRGROUNDS, source: "MEADOW" }],
+              selectedCards: [
+                { card: CardName.FAIRGROUNDS, source: "MEADOW", sourceIdx: 7 },
+              ],
             },
           },
         ]);
@@ -3985,9 +3991,7 @@ describe("Card", () => {
               },
             },
           ]);
-        }).to.throwException(
-          /Cannot use Queen to play a card worth more than 3 base VP/i
-        );
+        }).to.throwException(/Selected card is not a valid option/i);
       });
 
       it("should not allow player to visit the queen if there are no applicable cards", () => {
@@ -7776,6 +7780,7 @@ describe("Card", () => {
         expect(player1.hasCardInCity(CardName.HUSBAND)).to.be(true);
         expect(player2.getNumResourcesByType(ResourceType.VP)).to.be(0);
       });
+
       it("should not prevent card owner from using destination", () => {
         const cards = [
           CardName.KING,
@@ -7858,7 +7863,9 @@ describe("Card", () => {
             prevInputType: GameInputType.VISIT_DESTINATION_CARD,
             cardContext: CardName.QUEEN,
             clientOptions: {
-              selectedCards: [{ card: CardName.FARM, source: "MEADOW" }],
+              selectedCards: [
+                { card: CardName.FARM, source: "MEADOW", sourceIdx: 4 },
+              ],
             },
           },
         ]);
@@ -8025,6 +8032,7 @@ describe("Card", () => {
         expect(player1.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
         expect(player1.numCardsInHand).to.be(3);
       });
+
       it("should correctly filter FERRY out list of available DESTINATION to copy", () => {
         const cards = [
           CardName.KING,
@@ -8077,7 +8085,9 @@ describe("Card", () => {
             prevInputType: GameInputType.VISIT_DESTINATION_CARD,
             cardContext: CardName.QUEEN,
             clientOptions: {
-              selectedCards: [{ card: CardName.FARM, source: "MEADOW" }],
+              selectedCards: [
+                { card: CardName.FARM, source: "MEADOW", sourceIdx: 4 },
+              ],
             },
           },
         ]);
@@ -9238,7 +9248,9 @@ describe("Card", () => {
           playCardInput(card.name),
           {
             clientOptions: {
-              selectedCards: [{ card: CardName.MINER_MOLE, source: "MEADOW" }],
+              selectedCards: [
+                { card: CardName.MINER_MOLE, source: "MEADOW", sourceIdx: 0 },
+              ],
             },
           },
           {

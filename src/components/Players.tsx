@@ -324,10 +324,12 @@ const PlayerStatus: React.FC<{
       </div>
       {showCity && (
         <div className={styles.status_box_city}>
-          <PlayerCity
-            player={playerImpl}
-            viewerId={viewingPlayer?.playerId || null}
-          />
+          <GameBlock title={`${playerImpl.name}'s City`}>
+            <PlayerCity
+              player={playerImpl}
+              viewerId={viewingPlayer?.playerId || null}
+            />
+          </GameBlock>
         </div>
       )}
     </>

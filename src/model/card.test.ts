@@ -9777,14 +9777,14 @@ describe("Card", () => {
             prevInputType: GameInputType.PLAY_CARD,
             cardContext: CardName.POET,
             options: [
-              "Blue / Governance",
-              "Green / Production",
-              "Tan / Traveler",
-              "Red / Destination",
-              "Purple / Prosperity",
+              "Blue / GOVERNANCE",
+              "Green / PRODUCTION",
+              "Tan / TRAVELER",
+              "Red / DESTINATION",
+              "Purple / PROSPERITY",
             ],
             clientOptions: {
-              selectedOption: "Green / Production",
+              selectedOption: "Green / PRODUCTION",
             },
           },
         ]);
@@ -9850,14 +9850,14 @@ describe("Card", () => {
             prevInputType: GameInputType.PLAY_CARD,
             cardContext: CardName.POET,
             options: [
-              "Blue / Governance",
-              "Green / Production",
-              "Tan / Traveler",
-              "Red / Destination",
-              "Purple / Prosperity",
+              "Blue / GOVERNANCE",
+              "Green / PRODUCTION",
+              "Tan / TRAVELER",
+              "Red / DESTINATION",
+              "Purple / PROSPERITY",
             ],
             clientOptions: {
-              selectedOption: "Green / Production",
+              selectedOption: "Green / PRODUCTION",
             },
           },
           {

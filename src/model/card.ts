@@ -5704,17 +5704,16 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           return;
         }
 
-        // TODO: only show options that exist in the Meadow
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_OPTION_GENERIC,
           prevInputType: GameInputType.PLAY_CARD,
           label: "Choose a color",
           options: [
-            "Blue / Governance",
-            "Green / Production",
-            "Tan / Traveler",
-            "Red / Destination",
-            "Purple / Prosperity",
+            "Blue / GOVERNANCE",
+            "Green / PRODUCTION",
+            "Tan / TRAVELER",
+            "Red / DESTINATION",
+            "Purple / PROSPERITY",
           ],
           cardContext: CardName.POET,
           clientOptions: {
@@ -5728,15 +5727,15 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       ) {
         const getCardType = () => {
           switch (gameInput.clientOptions.selectedOption) {
-            case "Blue / Governance":
+            case "Blue / GOVERNANCE":
               return CardType.GOVERNANCE;
-            case "Green / Production":
+            case "Green / PRODUCTION":
               return CardType.PRODUCTION;
-            case "Tan / Traveler":
+            case "Tan / TRAVELER":
               return CardType.TRAVELER;
-            case "Red / Destination":
+            case "Red / DESTINATION":
               return CardType.DESTINATION;
-            case "Purple / Prosperity":
+            case "Purple / PROSPERITY":
               return CardType.PROSPERITY;
             default:
               throw new Error("Must choose a valid color");

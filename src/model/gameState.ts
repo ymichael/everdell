@@ -671,7 +671,9 @@ export class GameState {
     }
   }
 
-  private handleSelectVisitorGameInput(gameInput: GameInput): void {}
+  private handleSelectVisitorGameInput(gameInput: GameInput): void {
+    throw new Error("Not implemented");
+  }
 
   private handlePlaceWorkerGameInput(gameInput: GameInputPlaceWorker): void {
     if (!gameInput.clientOptions?.location) {

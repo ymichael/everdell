@@ -1311,8 +1311,6 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     occupancy: LocationOccupancy.UNLIMITED_MAX_ONE,
     expansion: ExpansionType.NEWLEAF,
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      const player = gameState.getActivePlayer();
-
       // if visit location, choose a visitor to discard
 
       // if selecting visitor, discard that visitor

@@ -1,4 +1,4 @@
-import { GameText, VisitorName } from "./types";
+import { CardType, GameText, VisitorName } from "./types";
 import { GameState, GameStatePointsFn } from "./gameState";
 import { CardStack } from "./cardStack";
 import { Player } from "./player";

@@ -5,7 +5,6 @@ import { GameState } from "./gameState";
 import { testInitialGameState, multiStepGameInputTest } from "./testHelpers";
 import {
   AdornmentName,
-  ExpansionType,
   LocationName,
   GameInputType,
   GameInputPlayAdornment,
@@ -358,7 +357,6 @@ describe("Adornment", () => {
 
     it("MIRROR is still playable even if no adornments to copy", () => {
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
-      const player2 = gameState.players[1];
       player.addToCity(gameState, CardName.WIFE);
 
       [player, gameState] = multiStepGameInputTest(gameState, [
@@ -507,7 +505,6 @@ describe("Adornment", () => {
 
     it("should be worth 2 point for every 2 PRODUCTION", () => {
       const adornment = Adornment.fromName(name);
-      const playerId = player.playerId;
       expect(adornment.getPoints(player, gameState)).to.be(0);
 
       player.addToCity(gameState, CardName.FARM);
@@ -800,7 +797,6 @@ describe("Adornment", () => {
 
     it("should be worth 1 point for every 3 VP you have", () => {
       const adornment = Adornment.fromName(name);
-      const playerId = player.playerId;
       expect(adornment.getPoints(player, gameState)).to.be(0);
 
       player.gainResources(gameState, { [ResourceType.VP]: 1 });
@@ -824,7 +820,6 @@ describe("Adornment", () => {
 
     it("should account for VP on cards", () => {
       const adornment = Adornment.fromName(name);
-      const playerId = player.playerId;
       expect(adornment.getPoints(player, gameState)).to.be(0);
 
       player.gainResources(gameState, { [ResourceType.VP]: 1 });
@@ -1114,7 +1109,6 @@ describe("Adornment", () => {
 
     it("should be worth 1 point for every 1 DESTINATION", () => {
       const adornment = Adornment.fromName(name);
-      const playerId = player.playerId;
       expect(adornment.getPoints(player, gameState)).to.be(0);
 
       player.addToCity(gameState, CardName.FARM);
@@ -1464,7 +1458,6 @@ describe("Adornment", () => {
 
     it("should be worth 1 point for every 1 PROSPERITY", () => {
       const adornment = Adornment.fromName(name);
-      const playerId = player.playerId;
       expect(adornment.getPoints(player, gameState)).to.be(0);
 
       player.addToCity(gameState, CardName.FARM);

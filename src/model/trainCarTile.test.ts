@@ -1,7 +1,6 @@
 import expect from "expect.js";
 import { TrainCarTileName } from "./types";
 import {
-  TrainCarTile,
   TrainCarTileStack,
   intialTrainCarTileStack,
 } from "./trainCarTile";
@@ -27,7 +26,7 @@ describe("TrainCarTileStack", () => {
   it("peekAt and replaceAt should work", () => {
     const stack = intialTrainCarTileStack();
     const stackJSON = stack.toJSON(true /* includePrivate */);
-    const [a1, b1, c1] = [stack.peekAt(0), stack.peekAt(1), stack.peekAt(2)];
+    const [a1, _, c1] = [stack.peekAt(0), stack.peekAt(1), stack.peekAt(2)];
 
     const b2Expected = stackJSON.rest[0];
     const b2 = stack.replaceAt(1);

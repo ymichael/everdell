@@ -11,7 +11,6 @@ describe("Select cards from meadow", () => {
 
   it("SPRING: player should not draw/discard from meadow if they have a full hand", () => {
     const player1 = gameJSON.gameState.players[0];
-    const player2 = gameJSON.gameState.players[1];
 
     // Take player 1's turn.
     cy.visit(`/game/${gameJSON.gameId}?playerSecret=${player1.playerSecret}`);

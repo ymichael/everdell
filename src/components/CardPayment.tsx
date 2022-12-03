@@ -9,7 +9,6 @@ import {
   ResourceType,
   CardName,
   GameInputPlayCard,
-  CardWithSource,
 } from "../model/types";
 import { ResourceTypeIcon, Description } from "./common";
 

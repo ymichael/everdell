@@ -1,6 +1,5 @@
 import expect from "expect.js";
 import { GameState } from "./gameState";
-import { defaultGameOptions } from "./gameOptions";
 import {
   AdornmentName,
   CardName,
@@ -571,7 +570,6 @@ describe("GameState", () => {
     });
     it("Should return empty list of only remaining player is the active player", () => {
       gameState = testInitialGameState({ numPlayers: 4 });
-      const player0 = gameState.players[0];
       const player1 = gameState.players[1];
       const player2 = gameState.players[2];
       const player3 = gameState.players[3];
@@ -681,7 +679,6 @@ describe("GameState", () => {
     });
 
     it("should be able to play reserved card", () => {
-      const card = Card.fromName(CardName.FARM);
       gameState = testInitialGameState({
         meadowCards: [
           CardName.CASTLE,

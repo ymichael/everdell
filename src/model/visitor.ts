@@ -1,5 +1,5 @@
 import { GameText, VisitorName } from "./types";
-import { GameState, GameStatePointsFn, GameStatePlayable } from "./gameState";
+import { GameState, GameStatePointsFn } from "./gameState";
 import { CardStack } from "./cardStack";
 import { Player } from "./player";
 import { toGameText } from "./gameText";

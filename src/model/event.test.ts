@@ -13,9 +13,7 @@ import {
   CardName,
   ResourceType,
   LocationName,
-  CardType,
 } from "./types";
-import exp from "constants";
 
 const claimEventInput = (event: EventName): GameInputClaimEvent => {
   return {
@@ -1748,8 +1746,6 @@ describe("Event", () => {
       player.placeWorkerOnLocation(LocationName.BASIC_ONE_BERRY);
       expect(player.numAvailableWorkers).to.be(1);
 
-      const recallableWorkers = player.getRecallableWorkers();
-
       [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
         {
@@ -2044,9 +2040,6 @@ describe("Event", () => {
       gameState = testInitialGameState({ numPlayers: 4 });
       const gameInput = claimEventInput(event.name);
       let player = gameState.getActivePlayer();
-      const player2 = gameState.players[1];
-      const player3 = gameState.players[2];
-      const player4 = gameState.players[3];
 
       gameState.eventsMap[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN] = null;
 
@@ -2258,7 +2251,6 @@ describe("Event", () => {
       const gameInput = claimEventInput(event.name);
       const player = gameState.getActivePlayer();
       const player2 = gameState.players[1];
-      const player3 = gameState.players[2];
       const player4 = gameState.players[3];
 
       gameState.eventsMap[EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN] = null;
@@ -3775,7 +3767,6 @@ describe("Event", () => {
       player = gameState.getActivePlayer();
       const event = Event.fromName(EventName.SPECIAL_X_MARKS_THE_SPOT);
       const gameInput = claimEventInput(event.name);
-      const deckLength = gameState.deck.length;
 
       gameState.eventsMap[EventName.SPECIAL_X_MARKS_THE_SPOT] = null;
 
@@ -3799,7 +3790,6 @@ describe("Event", () => {
       player = gameState.getActivePlayer();
       const event = Event.fromName(EventName.SPECIAL_X_MARKS_THE_SPOT);
       const gameInput = claimEventInput(event.name);
-      const deckLength = gameState.deck.length;
 
       gameState.eventsMap[EventName.SPECIAL_X_MARKS_THE_SPOT] = null;
 
@@ -3837,7 +3827,6 @@ describe("Event", () => {
       player = gameState.getActivePlayer();
       const event = Event.fromName(EventName.SPECIAL_X_MARKS_THE_SPOT);
       const gameInput = claimEventInput(event.name);
-      const deckLength = gameState.deck.length;
 
       gameState.eventsMap[EventName.SPECIAL_X_MARKS_THE_SPOT] = null;
 
@@ -3902,7 +3891,6 @@ describe("Event", () => {
       player = gameState.getActivePlayer();
       const event = Event.fromName(EventName.SPECIAL_X_MARKS_THE_SPOT);
       const gameInput = claimEventInput(event.name);
-      const deckLength = gameState.deck.length;
 
       gameState.eventsMap[EventName.SPECIAL_X_MARKS_THE_SPOT] = null;
 
@@ -4333,7 +4321,6 @@ describe("Event", () => {
       const gameInput = claimEventInput(event.name);
       const player = gameState.getActivePlayer();
       const player2 = gameState.players[1];
-      const player3 = gameState.players[2];
       const player4 = gameState.players[3];
 
       player.addCardToHand(gameState, CardName.HUSBAND);

@@ -11,7 +11,6 @@ describe("Select cards from meadow", () => {
 
   it("SPRING: player should only pick and keep 1 card if at max hand size - 1", () => {
     const player1 = gameJSON.gameState.players[0];
-    const player2 = gameJSON.gameState.players[1];
 
     // Take player 1's turn.
     cy.visit(`/game/${gameJSON.gameId}?playerSecret=${player1.playerSecret}`);

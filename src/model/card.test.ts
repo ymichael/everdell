@@ -21,7 +21,6 @@ import {
   RiverDestinationName,
   RiverDestinationSpotName,
   PlayerStatus,
-  GameInput,
 } from "./types";
 
 describe("Card", () => {
@@ -143,8 +142,6 @@ describe("Card", () => {
 
       it("should not allow more than 5 discarded cards", () => {
         const card = Card.fromName(CardName.BARD);
-        const gameInput = playCardInput(card.name);
-
         player.cardsInHand = [
           CardName.BARD,
           CardName.FARM,
@@ -569,8 +566,6 @@ describe("Card", () => {
     describe(CardName.CHAPEL, () => {
       it("when player visits, should add a VP and give 2 cards per VP on Chapel", () => {
         let player = gameState.getActivePlayer();
-        const card = Card.fromName(CardName.CHAPEL);
-
         player.addToCity(gameState, CardName.CHAPEL);
 
         expect(player.numAvailableWorkers).to.be(2);
@@ -608,8 +603,6 @@ describe("Card", () => {
 
       it("should give additional cards when Chapel has already has VP on it", () => {
         let player = gameState.getActivePlayer();
-        const card = Card.fromName(CardName.CHAPEL);
-
         player.addToCity(gameState, CardName.CHAPEL);
         let chapelInfo = player.getFirstPlayedCard(CardName.CHAPEL);
         let chapelResources = chapelInfo.resources || { [ResourceType.VP]: 0 };
@@ -776,23 +769,17 @@ describe("Card", () => {
         player.placeWorkerOnLocation(LocationName.BASIC_ONE_BERRY);
         player.placeWorkerOnLocation(LocationName.FOREST_TWO_WILD);
 
-        const [playerNoActivate, gameStateNoActivate] = multiStepGameInputTest(
+        const [playerNoActivate] = multiStepGameInputTest(
           gameState,
           [
-            {
-              inputType: GameInputType.PREPARE_FOR_SEASON,
-            },
+            { inputType: GameInputType.PREPARE_FOR_SEASON },
             {
               cardContext: CardName.CLOCK_TOWER,
               inputType: GameInputType.SELECT_WORKER_PLACEMENT,
               mustSelectOne: false,
               options: [
-                {
-                  location: LocationName.BASIC_ONE_BERRY,
-                },
-                {
-                  location: LocationName.FOREST_TWO_WILD,
-                },
+                { location: LocationName.BASIC_ONE_BERRY },
+                { location: LocationName.FOREST_TWO_WILD },
               ],
               clientOptions: {
                 selectedOption: null,
@@ -819,24 +806,15 @@ describe("Card", () => {
           usedForCritter: false,
         });
 
-        const [
-          playerWithActivate,
-          gameStateWithActivate,
-        ] = multiStepGameInputTest(gameState, [
-          {
-            inputType: GameInputType.PREPARE_FOR_SEASON,
-          },
+        const [playerWithActivate, _,] = multiStepGameInputTest(gameState, [
+          { inputType: GameInputType.PREPARE_FOR_SEASON },
           {
             cardContext: CardName.CLOCK_TOWER,
             inputType: GameInputType.SELECT_WORKER_PLACEMENT,
             mustSelectOne: false,
             options: [
-              {
-                location: LocationName.BASIC_ONE_BERRY,
-              },
-              {
-                location: LocationName.FOREST_TWO_WILD,
-              },
+              { location: LocationName.BASIC_ONE_BERRY },
+              { location: LocationName.FOREST_TWO_WILD },
             ],
             clientOptions: {
               selectedOption: {
@@ -1680,9 +1658,6 @@ describe("Card", () => {
         expect(gameState.meadowCards.length).to.be(8);
 
         let player = gameState.getActivePlayer();
-
-        const card = Card.fromName(CardName.INN);
-
         player.addToCity(gameState, CardName.INN);
 
         expect(player.numAvailableWorkers).to.be(2);
@@ -1829,8 +1804,6 @@ describe("Card", () => {
         gameState = testInitialGameState({ meadowCards: cards });
         const player = gameState.getActivePlayer();
 
-        const card = Card.fromName(CardName.INN);
-
         // Make sure we can play this card
         player.gainResources(gameState, { [ResourceType.BERRY]: 4 });
         player.addToCity(gameState, CardName.INN);
@@ -1889,8 +1862,6 @@ describe("Card", () => {
 
         let player = gameState.getActivePlayer();
         let player2 = gameState.players[1];
-
-        const card = Card.fromName(CardName.INN);
 
         player2.addToCity(gameState, CardName.INN);
 
@@ -2069,8 +2040,6 @@ describe("Card", () => {
         expect(gameState.meadowCards.length).to.be(8);
 
         let player = gameState.getActivePlayer();
-
-        const card = Card.fromName(CardName.INN);
         player.addToCity(gameState, CardName.INN);
         player.addToCity(gameState, CardName.INN);
 
@@ -2883,7 +2852,6 @@ describe("Card", () => {
         });
         expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
 
-        const targetPlayerId = gameState.players[1].playerId;
         expect(() => {
           [player, gameState] = multiStepGameInputTest(
             gameState,
@@ -2916,9 +2884,8 @@ describe("Card", () => {
           [ResourceType.BERRY]: 2,
         });
 
-        const player0Id = gameState.players[0].playerId;
-        const player1Id = gameState.players[1].playerId;
-        const player2Id = gameState.players[2].playerId;
+        const player1Id = gameState.players[0].playerId;
+        const player2Id = gameState.players[1].playerId;
 
         // put player1 in the ended state
         gameState.getPlayer(player1Id).playerStatus = PlayerStatus.GAME_ENDED;
@@ -3755,8 +3722,6 @@ describe("Card", () => {
           ],
         });
         player = gameState.getActivePlayer();
-
-        const card = Card.fromName(CardName.QUEEN);
         player.addToCity(gameState, CardName.QUEEN);
         player.addCardToHand(gameState, CardName.FARM);
 
@@ -3808,7 +3773,6 @@ describe("Card", () => {
       });
 
       it("should allow player to buy card from hand for less than 3 points for free", () => {
-        const card = Card.fromName(CardName.QUEEN);
         player.addToCity(gameState, CardName.QUEEN);
         player.addCardToHand(gameState, CardName.HUSBAND);
         gameState.clearMeadow();
@@ -3850,8 +3814,6 @@ describe("Card", () => {
           ],
         });
         player = gameState.getActivePlayer();
-
-        const card = Card.fromName(CardName.QUEEN);
         player.addToCity(gameState, CardName.QUEEN);
 
         expect(player.numAvailableWorkers).to.be(2);
@@ -3887,7 +3849,6 @@ describe("Card", () => {
         });
         player = gameState.getActivePlayer();
 
-        const card = Card.fromName(CardName.QUEEN);
         player.addToCity(gameState, CardName.QUEEN);
 
         expect(player.numAvailableWorkers).to.be(2);
@@ -3928,8 +3889,6 @@ describe("Card", () => {
           ],
         });
         let player = gameState.getActivePlayer();
-
-        const card = Card.fromName(CardName.QUEEN);
         player.addToCity(gameState, CardName.QUEEN);
 
         expect(player.numAvailableWorkers).to.be(2);
@@ -3971,8 +3930,6 @@ describe("Card", () => {
           ],
         });
         let player = gameState.getActivePlayer();
-
-        const card = Card.fromName(CardName.QUEEN);
         player.addToCity(gameState, CardName.QUEEN);
 
         expect(player.numAvailableWorkers).to.be(2);
@@ -4008,7 +3965,6 @@ describe("Card", () => {
           ],
         });
         const player = gameState.getActivePlayer();
-        const card = Card.fromName(CardName.QUEEN);
         player.addToCity(gameState, CardName.QUEEN);
 
         expect(() => {
@@ -4022,7 +3978,6 @@ describe("Card", () => {
       });
 
       it("should not allow player to visit the queen if occupied", () => {
-        const card = Card.fromName(CardName.QUEEN);
         player.addCardToHand(gameState, CardName.WIFE);
         player.addToCity(gameState, CardName.QUEEN);
         player.placeWorkerOnCard(
@@ -4054,7 +4009,6 @@ describe("Card", () => {
           ],
         });
         const player = gameState.getActivePlayer();
-        const card = Card.fromName(CardName.QUEEN);
         player.addCardToHand(gameState, CardName.WIFE);
 
         // Fill up city
@@ -4354,7 +4308,6 @@ describe("Card", () => {
       it("worth 1 extra VP per common critter", () => {
         const card = Card.fromName(CardName.SCHOOL);
         player.addToCity(gameState, card.name);
-        const playerId = player.playerId;
 
         expect(card.getPoints(player, gameState)).to.be(2 + 0);
 
@@ -5129,7 +5082,6 @@ describe("Card", () => {
       it("worth 1 extra VP per unique critter", () => {
         const card = Card.fromName(CardName.THEATRE);
         player.addToCity(gameState, card.name);
-        const playerId = player.playerId;
 
         expect(card.getPoints(player, gameState)).to.be(3 + 0);
 
@@ -5813,9 +5765,7 @@ describe("Card", () => {
       const card = Card.fromName(CardName.SHIPWRIGHT);
 
       it("should be worth 1 point per Pearlbrook card", () => {
-        const playerId = player.playerId;
         player.addToCity(gameState, card.name);
-
         expect(card.getPoints(player, gameState)).to.be(2 + 1 /* itself */);
 
         player.addToCity(gameState, CardName.PIRATE);
@@ -8303,21 +8253,6 @@ describe("Card", () => {
           usedForCritter: false,
         };
 
-        const selectResourcesInput = {
-          inputType: GameInputType.SELECT_RESOURCES as const,
-          prevInputType: GameInputType.PLAY_CARD,
-          maxResources: 2,
-          minResources: 2,
-          toSpend: false,
-          cardContext: CardName.FREIGHT_CAR,
-          playedCardContext: playedCardContext,
-          clientOptions: {
-            resources: {
-              [ResourceType.BERRY]: 1,
-              [ResourceType.TWIG]: 1,
-            },
-          },
-        };
 
         [player, gameState] = multiStepGameInputTest(gameState, [
           playCardInput(card.name),
@@ -8360,21 +8295,6 @@ describe("Card", () => {
         player.activateProduction(gameState, {
           inputType: GameInputType.PREPARE_FOR_SEASON,
         });
-
-        const selectResourcesInput2 = {
-          inputType: GameInputType.SELECT_RESOURCES as const,
-          prevInputType: GameInputType.PLAY_CARD,
-          maxResources: 2,
-          minResources: 2,
-          toSpend: false,
-          cardContext: CardName.FREIGHT_CAR,
-          playedCardContext: player.getFirstPlayedCard(CardName.FREIGHT_CAR),
-          clientOptions: {
-            resources: {
-              [ResourceType.RESIN]: 2,
-            },
-          },
-        };
 
         gameState = gameState.next({
           inputType: GameInputType.SELECT_RESOURCES as const,
@@ -8752,8 +8672,6 @@ describe("Card", () => {
       it("should allow player play card from hand without spending resources if cost is <= 3", () => {
         let player = gameState.getActivePlayer();
 
-        const card = Card.fromName(CardName.HOTEL);
-
         player.addToCity(gameState, CardName.HOTEL);
 
         player.addCardToHand(gameState, CardName.WIFE);
@@ -8855,8 +8773,6 @@ describe("Card", () => {
       it("should not allow player to buy from their hand", () => {
         const player = gameState.getActivePlayer();
 
-        const card = Card.fromName(CardName.HOTEL);
-
         // Make sure we can play this card
         player.gainResources(gameState, { [ResourceType.BERRY]: 4 });
         player.addToCity(gameState, CardName.HOTEL);
@@ -8898,8 +8814,6 @@ describe("Card", () => {
       it("should allow player buy card using another player's hotel", () => {
         let player = gameState.getActivePlayer();
         let player2 = gameState.players[1];
-
-        const card = Card.fromName(CardName.HOTEL);
 
         player2.addToCity(gameState, CardName.HOTEL);
         player.addCardToHand(gameState, CardName.WIFE);
@@ -9041,8 +8955,6 @@ describe("Card", () => {
 
       it("should allow player to use both their Hotels", () => {
         let player = gameState.getActivePlayer();
-
-        const card = Card.fromName(CardName.HOTEL);
         player.addToCity(gameState, CardName.HOTEL);
         player.addToCity(gameState, CardName.HOTEL);
 

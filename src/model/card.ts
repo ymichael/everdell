@@ -5300,13 +5300,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           throw new Error(`Selected card not found at the Station`);
         }
 
-        gameState.addGameLogFromCard(CardName.LOCOMOTIVE, [
-          player,
-          " selected ",
-          selectedCard,
-          " to play from the Station.",
-        ]);
-
         if (sumResources(selectedCard.baseCost) <= 3) {
           gameState.playCardFromStation(selectedCardIdx, gameInput);
           selectedCard.addToCityAndPlay(gameState, gameInput);

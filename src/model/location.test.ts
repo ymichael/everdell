@@ -10,6 +10,7 @@ import {
   GameInputType,
   GameInputPlaceWorker,
   CardName,
+  TrainCarTileName,
   ResourceType,
 } from "./types";
 
@@ -1360,6 +1361,68 @@ describe("Location", () => {
       expect(player.hasCardInCity(CardName.CRANE)).to.be(true);
       expect(player.hasCardInCity(CardName.CEMETARY)).to.be(false);
       expect(player.numCardsInHand).to.be(1);
+    });
+  });
+
+  describe("Knoll", () => {
+    beforeEach(() => {
+      gameState = testInitialGameState({
+        meadowCards: [
+          CardName.ARCHITECT,
+          CardName.BARD,
+          CardName.BARGE_TOAD,
+          CardName.CASTLE,
+          CardName.CEMETARY,
+          CardName.CHAPEL,
+          CardName.CHIP_SWEEP,
+          CardName.CLOCK_TOWER,
+        ],
+        stationCards: [CardName.COURTHOUSE, CardName.CRANE, CardName.DOCTOR],
+        trainCarTiles: [
+          TrainCarTileName.ONE_BERRY,
+          TrainCarTileName.ONE_RESIN,
+          TrainCarTileName.ONE_PEBBLE,
+        ],
+        gameOptions: { newleaf: { station: true, knoll: true } },
+      });
+    });
+
+    it("player can visit", () => {
+      const location = Location.fromName(LocationName.KNOLL);
+      gameState.locationsMap[location.name] = [];
+
+      expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        placeWorkerInput(location.name),
+        {
+          clientOptions: {
+            selectedCards: [
+              { card: CardName.CRANE, source: "STATION", sourceIdx: 1 },
+              { card: CardName.CHIP_SWEEP, source: "MEADOW", sourceIdx: 6 },
+              { card: CardName.CLOCK_TOWER, source: "MEADOW", sourceIdx: 7 },
+            ],
+          },
+        },
+        {
+          clientOptions: {
+            selectedCards: [
+              { card: CardName.DOCTOR, source: "STATION", sourceIdx: 2 },
+              { card: CardName.ARCHITECT, source: "MEADOW", sourceIdx: 0 },
+              { card: CardName.BARD, source: "MEADOW", sourceIdx: 1 },
+            ],
+          },
+        },
+        { clientOptions: { trainCarTileIdx: 1 } },
+      ]);
+
+      expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
+      expect(player.numCardsInHand).to.be(3);
+      expect(player.cardsInHand).to.eql([
+        CardName.DOCTOR,
+        CardName.ARCHITECT,
+        CardName.BARD,
+      ]);
     });
   });
 

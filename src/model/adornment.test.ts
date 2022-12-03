@@ -46,7 +46,7 @@ describe("Adornment", () => {
     const name = AdornmentName.SPYGLASS;
     beforeEach(() => {
       player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
-      player.adornmentsInHand.push(name);
+      player.addAdornmentCardToHand(name);
     });
 
     it("should be worth 3 points for each wonder", () => {
@@ -92,7 +92,7 @@ describe("Adornment", () => {
         },
       ]);
 
-      expect(player.adornmentsInHand).to.eql([]);
+      expect(player.getAdornmentsInHand()).to.eql([]);
       expect(player.playedAdornments).to.eql([name]);
       expect(player.numCardsInHand).to.be(1);
       expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(1);
@@ -104,7 +104,7 @@ describe("Adornment", () => {
     const name = AdornmentName.SCALES;
     beforeEach(() => {
       player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
-      player.adornmentsInHand.push(name);
+      player.addAdornmentCardToHand(name);
     });
 
     it("should be able to play and gain resources", () => {
@@ -169,7 +169,7 @@ describe("Adornment", () => {
         CardName.QUEEN,
       ]);
       expect(player.getPoints(gameState)).to.be(3);
-      expect(player.adornmentsInHand).to.eql([]);
+      expect(player.getAdornmentsInHand()).to.eql([]);
       expect(player.playedAdornments).to.eql([name]);
     });
 
@@ -223,7 +223,7 @@ describe("Adornment", () => {
         CardName.QUEEN,
       ]);
       expect(player.getPoints(gameState)).to.be(5);
-      expect(player.adornmentsInHand).to.eql([]);
+      expect(player.getAdornmentsInHand()).to.eql([]);
       expect(player.playedAdornments).to.eql([name]);
     });
 
@@ -256,7 +256,7 @@ describe("Adornment", () => {
     const name = AdornmentName.MIRROR;
     beforeEach(() => {
       player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
-      player.adornmentsInHand.push(name);
+      player.addAdornmentCardToHand(name);
     });
 
     it("should play MIRROR and copy BELL", () => {
@@ -287,7 +287,7 @@ describe("Adornment", () => {
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(3);
       expect(player.numCardsInHand).to.be(1);
       expect(player.getPointsFromAdornments(gameState)).to.be(1);
-      expect(player.adornmentsInHand).to.eql([]);
+      expect(player.getAdornmentsInHand()).to.eql([]);
       expect(player.playedAdornments).to.eql([name]);
     });
 
@@ -351,7 +351,7 @@ describe("Adornment", () => {
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(3);
       expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(1);
       expect(player.getPointsFromAdornments(gameState)).to.be(2);
-      expect(player.adornmentsInHand).to.eql([]);
+      expect(player.getAdornmentsInHand()).to.eql([]);
       expect(player.playedAdornments).to.eql([name]);
     });
 
@@ -365,7 +365,7 @@ describe("Adornment", () => {
 
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
       expect(player.getPointsFromAdornments(gameState)).to.be(1);
-      expect(player.adornmentsInHand).to.eql([]);
+      expect(player.getAdornmentsInHand()).to.eql([]);
       expect(player.playedAdornments).to.eql([name]);
     });
 
@@ -394,7 +394,7 @@ describe("Adornment", () => {
 
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
       expect(player.getPointsFromAdornments(gameState)).to.be(1);
-      expect(player.adornmentsInHand).to.eql([]);
+      expect(player.getAdornmentsInHand()).to.eql([]);
       expect(player.playedAdornments).to.eql([name]);
     });
 
@@ -436,7 +436,7 @@ describe("Adornment", () => {
     const name = AdornmentName.KEY_TO_THE_CITY;
     beforeEach(() => {
       player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
-      player.adornmentsInHand.push(name);
+      player.addAdornmentCardToHand(name);
     });
 
     it("should be able to play", () => {
@@ -467,7 +467,7 @@ describe("Adornment", () => {
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
       expect(player.numCardsInHand).to.be(2);
       expect(player.getPointsFromAdornments(gameState)).to.be(1);
-      expect(player.adornmentsInHand).to.eql([]);
+      expect(player.getAdornmentsInHand()).to.eql([]);
       expect(player.playedAdornments).to.eql([name]);
     });
 
@@ -500,7 +500,7 @@ describe("Adornment", () => {
     const name = AdornmentName.SUNDIAL;
     beforeEach(() => {
       player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
-      player.adornmentsInHand.push(name);
+      player.addAdornmentCardToHand(name);
     });
 
     it("should be worth 2 point for every 2 PRODUCTION", () => {
@@ -672,7 +672,7 @@ describe("Adornment", () => {
     const name = AdornmentName.GILDED_BOOK;
     beforeEach(() => {
       player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
-      player.adornmentsInHand.push(name);
+      player.addAdornmentCardToHand(name);
     });
 
     it("should allow the player to gain resources equal to the cost of one GOVERNANCE", () => {
@@ -709,7 +709,7 @@ describe("Adornment", () => {
       expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
       expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(2);
       expect(player.getPointsFromAdornments(gameState)).to.be(3);
-      expect(player.adornmentsInHand).to.eql([]);
+      expect(player.getAdornmentsInHand()).to.eql([]);
       expect(player.playedAdornments).to.eql([name]);
     });
 
@@ -744,7 +744,7 @@ describe("Adornment", () => {
     const name = AdornmentName.SEAGLASS_AMULET;
     beforeEach(() => {
       player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
-      player.adornmentsInHand.push(name);
+      player.addAdornmentCardToHand(name);
     });
 
     it("should be able to play", () => {
@@ -774,7 +774,7 @@ describe("Adornment", () => {
         selectAnyInput,
       ]);
 
-      expect(player.adornmentsInHand).to.eql([]);
+      expect(player.getAdornmentsInHand()).to.eql([]);
       expect(player.playedAdornments).to.eql([name]);
       expect(player.numCardsInHand).to.be(2);
       expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(1);
@@ -792,7 +792,7 @@ describe("Adornment", () => {
     const name = AdornmentName.MASQUE;
     beforeEach(() => {
       player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
-      player.adornmentsInHand.push(name);
+      player.addAdornmentCardToHand(name);
     });
 
     it("should be worth 1 point for every 3 VP you have", () => {
@@ -1044,7 +1044,7 @@ describe("Adornment", () => {
     const name = AdornmentName.BELL;
     beforeEach(() => {
       player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
-      player.adornmentsInHand.push(name);
+      player.addAdornmentCardToHand(name);
     });
 
     it("can play adornment", () => {
@@ -1101,7 +1101,7 @@ describe("Adornment", () => {
     const name = AdornmentName.HOURGLASS;
     beforeEach(() => {
       player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
-      player.adornmentsInHand.push(name);
+      player.addAdornmentCardToHand(name);
 
       gameState.locationsMap[LocationName.FOREST_TWO_BERRY_ONE_CARD] = [];
       gameState.locationsMap[LocationName.FOREST_THREE_BERRY] = [];
@@ -1167,7 +1167,7 @@ describe("Adornment", () => {
         { skipMultiPendingInputCheck: true }
       );
 
-      expect(player.adornmentsInHand).to.eql([]);
+      expect(player.getAdornmentsInHand()).to.eql([]);
       expect(player.playedAdornments).to.eql([name]);
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(3);
       expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(1);
@@ -1179,7 +1179,7 @@ describe("Adornment", () => {
     const name = AdornmentName.COMPASS;
     beforeEach(() => {
       player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
-      player.adornmentsInHand.push(name);
+      player.addAdornmentCardToHand(name);
     });
 
     it("should do nothing if no traveller cards", () => {
@@ -1453,7 +1453,7 @@ describe("Adornment", () => {
     const name = AdornmentName.TIARA;
     beforeEach(() => {
       player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
-      player.adornmentsInHand.push(name);
+      player.addAdornmentCardToHand(name);
     });
 
     it("should be worth 1 point for every 1 PROSPERITY", () => {

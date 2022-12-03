@@ -135,20 +135,24 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const isActivePlayer = true;
   return {
     props: {
-      game: game.toJSON(false /* includePrivate */),
-      viewingPlayer: player.toJSON(true /* includePrivate */),
+      gameJSON: game.toJSON(false /* includePrivate */),
+      viewingPlayerJSON: player.toJSON(true /* includePrivate */),
       gameInputs: isActivePlayer ? game.getGameInputs() : [],
     },
   };
 };
 
 export default function TestGamePage(props: {
-  game: GameJSON;
+  gameJSON: GameJSON;
   gameInputs: GameInput[];
-  viewingPlayer: PlayerJSON;
+  viewingPlayerJSON: PlayerJSON;
 }) {
-  const { game, gameInputs, viewingPlayer } = props;
+  const { gameJSON, gameInputs, viewingPlayerJSON } = props;
   return (
-    <Game game={game} gameInputs={gameInputs} viewingPlayer={viewingPlayer} />
+    <Game
+      gameJSON={gameJSON}
+      gameInputs={gameInputs}
+      viewingPlayerJSON={viewingPlayerJSON}
+    />
   );
 }

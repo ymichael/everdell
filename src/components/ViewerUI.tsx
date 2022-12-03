@@ -22,7 +22,7 @@ const ViewerUI: React.FC<{
               <Card name={cardName} />
             </ItemWrapper>
           ))}
-          {player.adornmentsInHand.map((name, idx) => (
+          {player.getAdornmentsInHand().map((name, idx) => (
             <Adornment key={`adornment-${idx}`} name={name} />
           ))}
         </div>

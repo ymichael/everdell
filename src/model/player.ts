@@ -70,7 +70,8 @@ export class Player implements IGameTextEntity {
 
   public playerStatus: PlayerStatus;
 
-  readonly adornmentsInHand: AdornmentName[];
+  private adornmentsInHand: AdornmentName[];
+  private _numAdornmentsInHand: number | null;
   readonly playedAdornments: AdornmentName[];
 
   private reservedCard: CardName | "UNUSED" | "USED";
@@ -101,6 +102,7 @@ export class Player implements IGameTextEntity {
     placedWorkers = [],
     playerStatus = PlayerStatus.DURING_SEASON,
     adornmentsInHand = [],
+    numAdornmentsInHand = null,
     playedAdornments = [],
     trainTicketStatus = null,
     reservedCard = "UNUSED",
@@ -122,6 +124,7 @@ export class Player implements IGameTextEntity {
     playerStatus?: PlayerStatus;
     adornmentsInHand?: AdornmentName[];
     playedAdornments?: AdornmentName[];
+    numAdornmentsInHand?: number | null;
     trainTicketStatus?: TrainTicketStatus | null;
     reservedCard?: CardName | "UNUSED" | "USED";
     visitorsSelected?: VisitorName[];
@@ -150,6 +153,7 @@ export class Player implements IGameTextEntity {
     this.visitorsSelected = visitorsSelected;
 
     this._numCardsInHand = numCardsInHand;
+    this._numAdornmentsInHand = numAdornmentsInHand;
   }
 
   get playerSecretUNSAFE(): string {
@@ -223,6 +227,28 @@ export class Player implements IGameTextEntity {
     if (addToDiscardPile) {
       gameState.discardPile.addToStack(cardName);
     }
+  }
+
+  getAdornmentsInHand(): AdornmentName[] {
+    return [...this.adornmentsInHand];
+  }
+
+  addAdornmentCardToHand(adornmentName: AdornmentName): void {
+    this.adornmentsInHand.push(adornmentName);
+    if (this._numAdornmentsInHand !== null) {
+      this._numAdornmentsInHand++;
+    }
+  }
+
+  removeAdornmentCardFromHand(adornmentName: AdornmentName): void {
+    const idx = this.adornmentsInHand.indexOf(adornmentName);
+    if (idx === -1) {
+      throw new Error(`Unable to discard ${adornmentName}`);
+    }
+    if (this._numAdornmentsInHand !== null) {
+      this._numAdornmentsInHand--;
+    }
+    this.adornmentsInHand.splice(idx, 1);
   }
 
   addToCity(
@@ -1830,6 +1856,12 @@ export class Player implements IGameTextEntity {
       : this.cardsInHand.length;
   }
 
+  get numAdornmentsInHand(): number {
+    return this._numAdornmentsInHand
+      ? this._numAdornmentsInHand
+      : this.adornmentsInHand.length;
+  }
+
   get currentSeason(): Season {
     return this._currentSeason;
   }
@@ -1958,7 +1990,7 @@ export class Player implements IGameTextEntity {
       numAmbassadors: this.numAmbassadors,
       placedWorkers: this.placedWorkers,
       playerStatus: this.playerStatus,
-      numAdornmentsInHand: this.adornmentsInHand.length,
+      numAdornmentsInHand: this.numAdornmentsInHand,
       cardsInHand: null,
       adornmentsInHand: [],
       playedAdornments: this.playedAdornments,

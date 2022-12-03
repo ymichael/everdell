@@ -28,10 +28,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     props: {
       isGameAdmin,
       devDebugMode: process.env.NODE_ENV === "development" && !!debug,
-      game:
+      gameJSON:
         game &&
         game.toJSON(isGameAdmin || game.isGameOver() /* includePrivate */),
-      viewingPlayer: player && player.toJSON(true /* includePrivate */),
+      viewingPlayerJSON: player && player.toJSON(true /* includePrivate */),
       gameInputs: isActivePlayer ? game.getGameInputs() : [],
     },
   };
@@ -40,20 +40,26 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 export default function GamePage(props: {
   isGameAdmin: boolean;
   devDebugMode: boolean;
-  game: GameJSON;
+  gameJSON: GameJSON;
   gameInputs: GameInput[];
-  viewingPlayer: PlayerJSON | null;
+  viewingPlayerJSON: PlayerJSON | null;
 }) {
-  const { isGameAdmin, devDebugMode, game, gameInputs, viewingPlayer } = props;
+  const {
+    isGameAdmin,
+    devDebugMode,
+    gameJSON,
+    gameInputs,
+    viewingPlayerJSON,
+  } = props;
   return (
     <div>
       {isGameAdmin ? (
-        <GameAdmin game={game} devDebugMode={devDebugMode} />
+        <GameAdmin gameJSON={gameJSON} devDebugMode={devDebugMode} />
       ) : (
         <Game
-          game={game}
+          gameJSON={gameJSON}
           gameInputs={gameInputs}
-          viewingPlayer={viewingPlayer}
+          viewingPlayerJSON={viewingPlayerJSON}
         />
       )}
     </div>

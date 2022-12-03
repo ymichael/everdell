@@ -49,8 +49,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     player.addCardToHand(gameState, CardName.MINER_MOLE);
     player.addCardToHand(gameState, CardName.CHIP_SWEEP);
 
-    player.adornmentsInHand.push(AdornmentName.BELL);
-    player.adornmentsInHand.push(AdornmentName.SPYGLASS);
+    player.addAdornmentCardToHand(AdornmentName.BELL);
+    player.addAdornmentCardToHand(AdornmentName.SPYGLASS);
 
     player.gainResources(gameState, {
       [ResourceType.VP]: 12,
@@ -105,17 +105,17 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   return {
     props: {
-      game: game.toJSON(true /* includePrivate */),
+      gameJSON: game.toJSON(true /* includePrivate */),
     },
   };
 };
 
-export default function TestGameInputPage(props: { game: GameJSON }) {
-  const { game } = props;
-  const { gameState } = game;
-  const gameStateImpl = GameState.fromJSON(gameState);
+export default function TestGameInputPage(props: { gameJSON: GameJSON }) {
+  const { gameJSON } = props;
+  const { gameState: gameStateJSON } = gameJSON;
+  const gameState = GameState.fromJSON(gameStateJSON);
 
-  const gameStatePlacedWorkers = gameStateImpl.clone();
+  const gameStatePlacedWorkers = gameState.clone();
   gameStatePlacedWorkers.locationsMap[
     LocationName.BASIC_TWO_CARDS_AND_ONE_VP
   ] = [
@@ -129,16 +129,16 @@ export default function TestGameInputPage(props: { game: GameJSON }) {
     .getActivePlayer()
     .placeWorkerOnLocation(LocationName.BASIC_TWO_CARDS_AND_ONE_VP);
 
-  const gameStateSelectLocation = gameStateImpl.next({
+  const gameStateSelectLocation = gameState.next({
     inputType: GameInputType.VISIT_DESTINATION_CARD,
     clientOptions: {
-      playedCard: gameStateImpl
+      playedCard: gameState
         .getActivePlayer()
         .getFirstPlayedCard(CardName.LOOKOUT),
     },
   });
 
-  const gameStateSelectResources = gameStateImpl.next({
+  const gameStateSelectResources = gameState.next({
     inputType: GameInputType.PLACE_WORKER,
     clientOptions: {
       location: LocationName.FOREST_TWO_WILD,
@@ -157,12 +157,10 @@ export default function TestGameInputPage(props: { game: GameJSON }) {
     inputType: GameInputType.PREPARE_FOR_SEASON,
   });
 
-  let gameStatePaymentForCard = gameStateImpl.next({
+  let gameStatePaymentForCard = gameState.next({
     inputType: GameInputType.VISIT_DESTINATION_CARD,
     clientOptions: {
-      playedCard: gameStateImpl
-        .getActivePlayer()
-        .getFirstPlayedCard(CardName.INN),
+      playedCard: gameState.getActivePlayer().getFirstPlayedCard(CardName.INN),
     },
   });
   gameStatePaymentForCard = gameStatePaymentForCard.next({
@@ -189,7 +187,7 @@ export default function TestGameInputPage(props: { game: GameJSON }) {
     inputType: GameInputType.PREPARE_FOR_SEASON,
   });
 
-  let gameStateCourthouse = gameStateImpl.clone();
+  let gameStateCourthouse = gameState.clone();
   gameStateCourthouse
     .getActivePlayer()
     .addToCity(gameStateCourthouse, CardName.COURTHOUSE);
@@ -213,9 +211,9 @@ export default function TestGameInputPage(props: { game: GameJSON }) {
     <>
       <GameInputBox
         gameId={"testGameId"}
-        gameState={gameStateImpl.toJSON(true)}
+        gameState={gameState}
         gameInputs={[]}
-        viewingPlayer={gameStateImpl.players[1]}
+        viewingPlayer={gameState.players[1]}
       />
       <hr />
       {[
@@ -268,9 +266,9 @@ export default function TestGameInputPage(props: { game: GameJSON }) {
           <div key={idx}>
             <GameInputBox
               gameId={"testGameId"}
-              gameState={gameStateImpl.toJSON(true)}
+              gameState={gameState}
               gameInputs={[gameInput as GameInput]}
-              viewingPlayer={gameStateImpl.players[0]}
+              viewingPlayer={gameState.players[0]}
             />
             <hr />
           </div>
@@ -278,49 +276,49 @@ export default function TestGameInputPage(props: { game: GameJSON }) {
       })}
       <GameInputBox
         gameId={"testGameId"}
-        gameState={gameStateSelectLocation.toJSON(true)}
+        gameState={gameStateSelectLocation}
         gameInputs={gameStateSelectLocation.pendingGameInputs}
         viewingPlayer={gameStateSelectLocation.players[0]}
       />
       <hr />
       <GameInputBox
         gameId={"testGameId"}
-        gameState={gameStateSelectResources.toJSON(true)}
+        gameState={gameStateSelectResources}
         gameInputs={gameStateSelectResources.pendingGameInputs}
         viewingPlayer={gameStateSelectResources.players[0]}
       />
       <hr />
       <GameInputBox
         gameId={"testGameId"}
-        gameState={gameStatePaymentForCard.toJSON(true)}
+        gameState={gameStatePaymentForCard}
         gameInputs={gameStatePaymentForCard.pendingGameInputs}
         viewingPlayer={gameStatePaymentForCard.players[0]}
       />
       <hr />
       <GameInputBox
         gameId={"testGameId"}
-        gameState={gameStateSelectCardsFromMeadow.toJSON(true)}
+        gameState={gameStateSelectCardsFromMeadow}
         gameInputs={gameStateSelectCardsFromMeadow.pendingGameInputs}
         viewingPlayer={gameStateSelectCardsFromMeadow.getActivePlayer()}
       />
       <hr />
       <GameInputBox
         gameId={"testGameId"}
-        gameState={gameStateMultiplePending.toJSON(true)}
+        gameState={gameStateMultiplePending}
         gameInputs={gameStateMultiplePending.pendingGameInputs}
         viewingPlayer={gameStateMultiplePending.getActivePlayer()}
       />
       <hr />
       <GameInputBox
         gameId={"testGameId"}
-        gameState={gameStateClocktower.toJSON(true)}
+        gameState={gameStateClocktower}
         gameInputs={gameStateClocktower.pendingGameInputs}
         viewingPlayer={gameStateClocktower.getActivePlayer()}
       />
       <hr />
       <GameInputBox
         gameId={"testGameId"}
-        gameState={gameStateCourthouse.toJSON(true)}
+        gameState={gameStateCourthouse}
         gameInputs={gameStateCourthouse.pendingGameInputs}
         viewingPlayer={gameStateCourthouse.getActivePlayer()}
       />
@@ -338,7 +336,7 @@ export default function TestGameInputPage(props: { game: GameJSON }) {
         CardName.PEDDLER,
         CardName.WOODCARVER,
       ].map((cardName) => {
-        let gameStateX = gameStateImpl.clone();
+        let gameStateX = gameState.clone();
         const card = Card.fromName(cardName);
         gameStateX.getActivePlayer().cardsInHand.push(cardName);
         gameStateX = gameStateX.next({
@@ -356,7 +354,7 @@ export default function TestGameInputPage(props: { game: GameJSON }) {
             <hr />
             <GameInputBox
               gameId={"testGameId"}
-              gameState={gameStateX.toJSON(true)}
+              gameState={gameStateX}
               gameInputs={gameStateX.pendingGameInputs}
               viewingPlayer={gameStateX.getActivePlayer()}
             />

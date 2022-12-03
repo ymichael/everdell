@@ -240,7 +240,8 @@ describe("GameState", () => {
     beforeEach(() => {
       gameState = testInitialGameState({ gameOptions: { pearlbrook: true } });
       player = gameState.getActivePlayer();
-      player.adornmentsInHand.push(AdornmentName.BELL, AdornmentName.COMPASS);
+      player.addAdornmentCardToHand(AdornmentName.BELL);
+      player.addAdornmentCardToHand(AdornmentName.COMPASS);
     });
 
     it("should not return if player has no pearls", () => {
@@ -249,7 +250,9 @@ describe("GameState", () => {
 
     it("should return if player has pearls", () => {
       player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
-      expect(gameState.getPlayableAdornments()).to.eql(player.adornmentsInHand);
+      expect(gameState.getPlayableAdornments()).to.eql(
+        player.getAdornmentsInHand()
+      );
     });
   });
 

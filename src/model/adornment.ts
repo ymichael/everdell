@@ -84,7 +84,7 @@ export class Adornment implements GameStatePlayable, IGameTextEntity {
       if (!adornment) {
         return "Please select an Adornment to play";
       }
-      const adornmentsInHand = player.adornmentsInHand;
+      const adornmentsInHand = player.getAdornmentsInHand();
       let idx = adornmentsInHand.indexOf(adornment);
       if (idx === -1) {
         return "May only play adornments that are in your hand";

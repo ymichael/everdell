@@ -9,12 +9,13 @@ import GameInputBox from "./GameInputBox";
 import styles from "../styles/GameAdmin.module.css";
 
 const GameAdmin = ({
-  game,
+  gameJSON,
   devDebugMode,
 }: {
-  game: GameJSON;
+  gameJSON: GameJSON;
   devDebugMode: boolean;
 }) => {
+  const gameState = GameState.fromJSON(gameJSON.gameState);
   return (
     <div id={"js-game-admin"} className={styles.container}>
       <GameBlock title={"Game Created"}>
@@ -22,9 +23,11 @@ const GameAdmin = ({
           Copy links to share with other players:
         </div>
         <ul className={styles.links}>
-          {game.gameState.players.map((p: any, idx: number) => (
+          {gameState.players.map((p: any, idx: number) => (
             <li key={idx}>
-              <a href={`/game/${game.gameId}?playerSecret=${p.playerSecret}`}>
+              <a
+                href={`/game/${gameJSON.gameId}?playerSecret=${p.playerSecret}`}
+              >
                 {p.name}{" "}
               </a>
             </li>
@@ -33,9 +36,9 @@ const GameAdmin = ({
 
         <div className={styles.footer}>
           <i>
-            Game ID: {game.gameId}
+            Game ID: {gameJSON.gameId}
             &nbsp;&middot;&nbsp;
-            <a target="_blank" href={`/game/${game.gameId}`}>
+            <a target="_blank" href={`/game/${gameJSON.gameId}`}>
               spectator link
             </a>
           </i>
@@ -44,32 +47,32 @@ const GameAdmin = ({
       {devDebugMode && (
         <>
           <hr />
-          <GameAdminDebugOnly game={game} />
+          <GameAdminDebugOnly gameJSON={gameJSON} />
         </>
       )}
     </div>
   );
 };
 
-const GameAdminDebugOnly: React.FC<{ game: GameJSON }> = ({ game }) => {
-  const gameStateImpl = GameState.fromJSON(game.gameState);
-  const gameInputs = gameStateImpl.getPossibleGameInputs();
+const GameAdminDebugOnly: React.FC<{ gameJSON: GameJSON }> = ({ gameJSON }) => {
+  const gameState = GameState.fromJSON(gameJSON.gameState);
+  const gameInputs = gameState.getPossibleGameInputs();
   return (
     <>
-      {gameStateImpl.players.map((player, idx) => (
+      {gameState.players.map((player, idx) => (
         <React.Fragment key={idx}>
           <GameInputBox
             title={`Game Input: ${player.name}`}
             devDebug={true}
-            gameId={game.gameId}
+            gameId={gameJSON.gameId}
             gameInputs={gameInputs}
-            gameState={game.gameState}
+            gameState={gameState}
             viewingPlayer={player}
           />
           <pre>{JSON.stringify(player.toJSON(true), null, 2)}</pre>
         </React.Fragment>
       ))}
-      <Meadow meadowCards={game.gameState.meadowCards} />
+      <Meadow meadowCards={gameState.meadowCards} />
     </>
   );
 };

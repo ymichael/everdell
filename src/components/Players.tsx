@@ -9,7 +9,6 @@ import {
   CardType,
   TrainTicketStatus,
 } from "../model/types";
-import { PlayerJSON, GameStateJSON } from "../model/jsonTypes";
 import { Player } from "../model/player";
 import { GameState } from "../model/gameState";
 import { GameBlock } from "./common";
@@ -28,29 +27,27 @@ import {
 } from "./common";
 
 export const Players = ({
+  gameState,
   viewingPlayer,
-  gameStateJSON,
   showRealtimePoints = false,
 }: {
+  gameState: GameState;
   viewingPlayer: Player | null;
-  gameStateJSON: GameStateJSON;
   showRealtimePoints?: boolean;
 }) => {
   return (
     <GameBlock title={"Players"}>
-      {gameStateJSON.players.map((playerJSON: PlayerJSON) => {
+      {gameState.players.map((player) => {
         return (
           <PlayerStatus
-            key={playerJSON.playerId}
-            player={playerJSON}
-            gameStateJSON={gameStateJSON}
+            key={player.playerId}
+            player={player}
+            gameState={gameState}
             viewingPlayer={viewingPlayer}
             isViewer={
-              !!viewingPlayer && playerJSON.playerId === viewingPlayer.playerId
+              !!viewingPlayer && player.playerId === viewingPlayer.playerId
             }
-            isActivePlayer={
-              playerJSON.playerId === gameStateJSON.activePlayerId
-            }
+            isActivePlayer={player.playerId === gameState.activePlayerId}
             showRealtimePoints={showRealtimePoints}
           />
         );
@@ -60,23 +57,21 @@ export const Players = ({
 };
 
 const PlayerStatus: React.FC<{
-  player: PlayerJSON;
-  gameStateJSON: GameStateJSON;
+  player: Player;
+  gameState: GameState;
   viewingPlayer: Player | null;
   isViewer: boolean;
   isActivePlayer: boolean;
   showRealtimePoints?: boolean;
 }> = ({
   player,
-  gameStateJSON,
+  gameState,
   viewingPlayer,
   isViewer,
   isActivePlayer,
   showRealtimePoints,
 }) => {
   const [showCity, setShowCity] = useState(false);
-  const playerImpl = Player.fromJSON(player);
-  const gameState = GameState.fromJSON(gameStateJSON);
   return (
     <>
       <div
@@ -164,7 +159,7 @@ const PlayerStatus: React.FC<{
                   <ResourceTypeIcon resourceType={resourceType} />
                 </div>
                 <div className={styles.status_box_item_resource_count}>
-                  {playerImpl.getNumResourcesByType(resourceType)}
+                  {player.getNumResourcesByType(resourceType)}
                 </div>
               </div>
             ))}
@@ -184,7 +179,7 @@ const PlayerStatus: React.FC<{
                   <CardTypeSymbol cardType={cardType} />
                 </div>
                 <div className={styles.status_box_item_resource_count}>
-                  {playerImpl.getNumCardType(cardType)}
+                  {player.getNumCardType(cardType)}
                 </div>
               </div>
             ))}
@@ -193,21 +188,20 @@ const PlayerStatus: React.FC<{
                 <EmptyCitySpotIcon />
               </div>
               <div className={styles.status_box_item_resource_count}>
-                {playerImpl.maxCitySize -
-                  playerImpl.getNumOccupiedSpacesInCity()}
+                {player.maxCitySize - player.getNumOccupiedSpacesInCity()}
               </div>
             </div>
           </div>
         </div>
         <div className={styles.status_box_item}>
           <div className={styles.status_box_item_resource_list}>
-            {gameStateJSON.gameOptions.pearlbrook && (
+            {gameState.gameOptions.pearlbrook && (
               <div className={styles.status_box_item_resource}>
                 <div className={styles.status_box_item_resource_icon}>
                   <ResourceTypeIcon resourceType={ResourceType.PEARL} />
                 </div>
                 <div className={styles.status_box_item_resource_count}>
-                  {playerImpl.getNumResourcesByType(ResourceType.PEARL)}
+                  {player.getNumResourcesByType(ResourceType.PEARL)}
                 </div>
               </div>
             )}
@@ -216,7 +210,7 @@ const PlayerStatus: React.FC<{
                 <VPIcon />
               </div>
               <div className={styles.status_box_item_resource_count}>
-                {playerImpl.getNumResourcesByType(ResourceType.VP)}
+                {player.getNumResourcesByType(ResourceType.VP)}
               </div>
             </div>
             <div
@@ -230,7 +224,7 @@ const PlayerStatus: React.FC<{
                 {player.numCardsInHand}
               </div>
             </div>
-            {gameStateJSON.gameOptions.newleaf?.cards && (
+            {gameState.gameOptions.newleaf?.cards && (
               <div
                 className={styles.status_box_item_resource}
                 title="No. of Golden Leafs"
@@ -243,7 +237,7 @@ const PlayerStatus: React.FC<{
                 </div>
               </div>
             )}
-            {gameStateJSON.gameOptions.newleaf?.reserving && (
+            {gameState.gameOptions.newleaf?.reserving && (
               <div
                 className={styles.status_box_item_resource}
                 title="Reservation Token"
@@ -252,13 +246,13 @@ const PlayerStatus: React.FC<{
                   <ReservationTokenIcon />
                 </div>
                 <div className={styles.status_box_item_resource_ticket_status}>
-                  {playerImpl.canReserveCard()
+                  {player.canReserveCard()
                     ? "Unused"
-                    : playerImpl.getReservedCardOrNull() ?? "Used"}
+                    : player.getReservedCardOrNull() ?? "Used"}
                 </div>
               </div>
             )}
-            {gameStateJSON.gameOptions.newleaf?.ticket && (
+            {gameState.gameOptions.newleaf?.ticket && (
               <div
                 className={styles.status_box_item_resource}
                 title="Train Ticket: Use to reactivate a deployed worker"
@@ -279,7 +273,7 @@ const PlayerStatus: React.FC<{
                 </div>
               </div>
             )}
-            {gameStateJSON.gameOptions.pearlbrook && (
+            {gameState.gameOptions.pearlbrook && (
               <div
                 className={styles.status_box_item_resource}
                 title="No. of Adornment cards in hand"
@@ -297,16 +291,16 @@ const PlayerStatus: React.FC<{
                 {"WORKERS"}
               </div>
               <div className={styles.status_box_item_resource_count}>
-                {player.numWorkers - player.placedWorkers.length}
+                {player.numAvailableWorkers}
               </div>
             </div>
-            {gameStateJSON.gameOptions.pearlbrook && (
+            {gameState.gameOptions.pearlbrook && (
               <div className={styles.status_box_item_resource}>
                 <div className={styles.status_box_item_resource_label}>
                   {"AMBASSADORS"}
                 </div>
                 <div className={styles.status_box_item_resource_count}>
-                  {player.numAmbassadors}
+                  {player.hasUnusedAmbassador() ? 1 : 0}
                 </div>
               </div>
             )}
@@ -316,7 +310,7 @@ const PlayerStatus: React.FC<{
                   {"POINTS"}
                 </div>
                 <div className={styles.status_box_item_resource_count}>
-                  {playerImpl.getPoints(GameState.fromJSON(gameStateJSON))}
+                  {player.getPoints(gameState)}
                 </div>
               </div>
             )}
@@ -325,9 +319,9 @@ const PlayerStatus: React.FC<{
       </div>
       {showCity && (
         <div className={styles.status_box_city}>
-          <GameBlock title={`${playerImpl.name}'s City`}>
+          <GameBlock title={`${player.name}'s City`}>
             <PlayerCity
-              player={playerImpl}
+              player={player}
               gameState={gameState}
               viewerId={viewingPlayer?.playerId || null}
             />

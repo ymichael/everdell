@@ -16,82 +16,87 @@ import { GameJSON, PlayerJSON } from "../model/jsonTypes";
 import styles from "../styles/Game.module.css";
 
 const Game: React.FC<{
-  game: GameJSON;
+  gameJSON: GameJSON;
   gameInputs: GameInput[];
-  viewingPlayer: PlayerJSON | null;
+  viewingPlayerJSON: PlayerJSON | null;
 }> = (props) => {
-  const [game, setGame] = useState(props.game);
+  const [gameJSON, setGameJSON] = useState(props.gameJSON);
   const [gameInputs, setGameInputs] = useState(props.gameInputs);
-  const [viewingPlayer, setViewingPlayer] = useState(props.viewingPlayer);
+  const [viewingPlayerJSON, setViewingPlayerJSON] = useState(
+    props.viewingPlayerJSON
+  );
   const updateGameAndViewingPlayer = useCallback(
-    ({ game, viewingPlayer, gameInputs }) => {
+    ({ gameJSON, viewingPlayerJSON, gameInputs }) => {
       unstable_batchedUpdates(() => {
-        setGame(game);
-        setViewingPlayer(viewingPlayer);
+        setGameJSON(gameJSON);
+        setViewingPlayerJSON(viewingPlayerJSON);
         setGameInputs(gameInputs);
       });
     },
-    [game, viewingPlayer, gameInputs]
+    [gameJSON, viewingPlayerJSON, gameInputs]
   );
 
-  const { gameId, gameState } = game;
-  const { playerId = null, playerSecret = null } = viewingPlayer || {};
-  gameState.players = gameState.players.map((player) => {
-    if (viewingPlayer && player.playerId === viewingPlayer.playerId) {
-      return viewingPlayer;
+  const { gameId, gameState: gameStateJSON } = gameJSON;
+  const { playerId = null, playerSecret = null } = viewingPlayerJSON || {};
+
+  gameStateJSON.players = gameStateJSON.players.map((playerJSON) => {
+    if (playerJSON.playerId === viewingPlayerJSON?.playerId) {
+      return viewingPlayerJSON;
     } else {
-      return player;
+      return playerJSON;
     }
   });
-  const viewingPlayerImpl = viewingPlayer
-    ? Player.fromJSON(viewingPlayer)
+
+  const gameState = GameState.fromJSON(gameStateJSON);
+  const viewingPlayer = viewingPlayerJSON
+    ? Player.fromJSON(viewingPlayerJSON)
     : null;
-  const gameStateImpl = GameState.fromJSON(gameState);
+
   return (
     <div className={styles.container}>
       <GameUpdater
         gameId={gameId}
         playerId={playerId}
-        isGameOver={gameStateImpl.isGameOver()}
+        isGameOver={gameState.isGameOver()}
         activePlayerId={gameState.activePlayerId}
         playerSecret={playerSecret as string}
         gameStateId={gameState.gameStateId}
         onUpdate={updateGameAndViewingPlayer}
       >
         <GameBoard
-          gameStateJSON={gameState}
-          gameState={gameStateImpl}
-          viewingPlayer={viewingPlayerImpl}
+          gameStateJSON={gameStateJSON}
+          gameState={gameState}
+          viewingPlayer={viewingPlayer}
         />
-        {gameStateImpl.isGameOver() && (
-          <GamePointsBreakdown gameState={gameStateImpl} />
+        {gameState.isGameOver() && (
+          <GamePointsBreakdown gameState={gameState} />
         )}
         <GameInputBox
           key={gameState.gameStateId}
           gameId={gameId}
           gameState={gameState}
           gameInputs={gameInputs}
-          viewingPlayer={viewingPlayerImpl}
+          viewingPlayer={viewingPlayer}
         />
         <Players
-          viewingPlayer={viewingPlayerImpl}
-          gameStateJSON={gameState}
+          viewingPlayer={viewingPlayer}
+          gameState={gameState}
           showRealtimePoints={
             gameState.gameOptions.realtimePoints ||
             // Game options used to be on the game object.
             // Keeping this for backwards compatibility.
-            !!(game as any)?.gameOptions?.realtimePoints
+            !!(gameJSON as any)?.gameOptions?.realtimePoints
           }
         />
-        {viewingPlayerImpl && (
-          <ViewerUI player={viewingPlayerImpl} gameState={gameStateImpl} />
+        {viewingPlayer && (
+          <ViewerUI player={viewingPlayer} gameState={gameState} />
         )}
-        {gameStateImpl.gameOptions.pearlbrook && (
-          <River gameState={gameStateImpl} viewingPlayer={viewingPlayerImpl} />
+        {gameState.gameOptions.pearlbrook && (
+          <River gameState={gameState} viewingPlayer={viewingPlayer} />
         )}
         <LocationsAndEvents
-          gameState={gameStateImpl}
-          viewingPlayer={viewingPlayerImpl}
+          gameState={gameState}
+          viewingPlayer={viewingPlayer}
         />
       </GameUpdater>
     </div>

@@ -92,8 +92,8 @@ module.exports = (on: any, config: any) => {
         { gameOptions: { pearlbrook: true } },
         (gameState, player) => {
           player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
-          player.adornmentsInHand.push(AdornmentName.BELL);
-          player.adornmentsInHand.push(AdornmentName.SPYGLASS);
+          player.addAdornmentCardToHand(AdornmentName.BELL);
+          player.addAdornmentCardToHand(AdornmentName.SPYGLASS);
         }
       );
     },
@@ -102,7 +102,7 @@ module.exports = (on: any, config: any) => {
         { gameOptions: { pearlbrook: true } },
         (gameState, player) => {
           player.gainResources(gameState, { [ResourceType.PEARL]: 1 });
-          player.adornmentsInHand.push(AdornmentName.MIRROR);
+          player.addAdornmentCardToHand(AdornmentName.MIRROR);
 
           player.addToCity(gameState, CardName.WIFE);
           player.addToCity(gameState, CardName.WIFE);

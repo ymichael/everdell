@@ -6,7 +6,6 @@ import omit from "lodash/omit";
 import styles from "../styles/GameInputBox.module.css";
 import { GameState } from "../model/gameState";
 import { GameInputType, GameInput } from "../model/types";
-import { GameStateJSON } from "../model/jsonTypes";
 import { Player } from "../model/player";
 
 import { GameBlock } from "./common";
@@ -243,7 +242,7 @@ const GameInputBox: React.FC<{
   gameId: string;
   title?: string;
   devDebug?: boolean;
-  gameState: GameStateJSON;
+  gameState: GameState;
   gameInputs: GameInput[];
   viewingPlayer: Player | null;
 }> = ({
@@ -254,24 +253,20 @@ const GameInputBox: React.FC<{
   gameInputs,
   viewingPlayer,
 }) => {
-  const gameStateImpl = GameState.fromJSON(gameState);
-  const activePlayerImpl = gameStateImpl.getActivePlayer();
-  if (gameStateImpl.isGameOver()) {
+  const activePlayer = gameState.getActivePlayer();
+  if (gameState.isGameOver()) {
     return <GameInputBoxText title={title} text={`Game Over!`} />;
   }
   if (!viewingPlayer) {
     return (
-      <GameInputBoxText
-        title={title}
-        text={`${activePlayerImpl.name}'s turn`}
-      />
+      <GameInputBoxText title={title} text={`${activePlayer.name}'s turn`} />
     );
   }
   if (gameState.activePlayerId !== viewingPlayer.playerId) {
     return (
       <GameInputBoxText
         title={title}
-        text={`Waiting for ${activePlayerImpl.name}`}
+        text={`Waiting for ${activePlayer.name}`}
       />
     );
   }
@@ -294,7 +289,7 @@ const GameInputBox: React.FC<{
       devDebug={devDebug}
       viewingPlayer={viewingPlayer}
       initialValues={{
-        gameInput: getInitialSelectedGameInput(gameInputs[0], gameStateImpl),
+        gameInput: getInitialSelectedGameInput(gameInputs[0], gameState),
       }}
     >
       {({ values, setFieldValue, isSubmitting }) => {
@@ -341,25 +336,19 @@ const GameInputBox: React.FC<{
                         onChange={() => {
                           setFieldValue(
                             "gameInput",
-                            getInitialSelectedGameInput(
-                              gameInput,
-                              gameStateImpl
-                            )
+                            getInitialSelectedGameInput(gameInput, gameState)
                           );
                         }}
                       />
                       <span className={styles.input_type_radio_span}>
-                        {renderGameInputLabel(
-                          gameInput,
-                          gameStateImpl.gameOptions
-                        )}
+                        {renderGameInputLabel(gameInput, gameState.gameOptions)}
                       </span>
                     </label>
                     {isSelected && (
                       <div className={styles.input_type_form_nested}>
                         <GameInputBoxInner
                           gameInput={gameInput}
-                          gameState={gameStateImpl}
+                          gameState={gameState}
                           viewingPlayer={viewingPlayer}
                         />
                       </div>

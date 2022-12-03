@@ -1060,12 +1060,7 @@ export class GameState {
     adornment.play(this, gameInput);
     player.spendResources({ [ResourceType.PEARL]: 1 });
     player.playedAdornments.push(adornment.name);
-    const idx = player.adornmentsInHand.indexOf(adornment.name);
-    if (idx === -1) {
-      throw new Error(`${adornment.name} isn't in player's hand`);
-    } else {
-      player.adornmentsInHand.splice(idx, 1);
-    }
+    player.removeAdornmentCardFromHand(adornment.name);
   }
 
   private handlePlaceAmbassador(gameInput: GameInputPlaceAmbassador): void {
@@ -1695,10 +1690,8 @@ export class GameState {
     players.forEach((p, idx) => {
       if (withPearlbrook) {
         p.recallAmbassador(gameState);
-        p.adornmentsInHand.push(
-          gameState.adornmentsPile!.drawInner(),
-          gameState.adornmentsPile!.drawInner()
-        );
+        p.addAdornmentCardToHand(gameState.adornmentsPile!.drawInner());
+        p.addAdornmentCardToHand(gameState.adornmentsPile!.drawInner());
       }
       if (gameOptions.newleaf?.cards) {
         p.initGoldenLeaf();
@@ -1820,7 +1813,7 @@ export class GameState {
 
   getPlayableAdornments(): AdornmentName[] {
     const player = this.getActivePlayer();
-    return player.adornmentsInHand.filter((name) => {
+    return player.getAdornmentsInHand().filter((name) => {
       return Adornment.fromName(name).canPlay(this, {
         inputType: GameInputType.PLAY_ADORNMENT,
         clientOptions: { adornment: name },

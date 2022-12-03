@@ -40,7 +40,9 @@ export class Visitor {
   //   }
 
   getPoints(player: Player, gameState: GameState): number {
-    // TODO: implement
+    if (this.isEligible(player, gameState)) {
+      return this.baseVP;
+    }
     return 0;
   }
 
@@ -52,7 +54,7 @@ export class Visitor {
 const VISITOR_REGISTRY: Record<VisitorName, Visitor> = {
   [VisitorName.BIM_LITTLE]: new Visitor({
     name: VisitorName.BIM_LITTLE,
-    description: toGameText([]),
+    description: toGameText(["At least 6 DESTINATION cards in your city."]),
     baseVP: 7,
     isEligible: (player, gameState) => {
       return false;
@@ -60,7 +62,7 @@ const VISITOR_REGISTRY: Record<VisitorName, Visitor> = {
   }),
   [VisitorName.BOSLEY_TEDWARDSON]: new Visitor({
     name: VisitorName.BOSLEY_TEDWARDSON,
-    description: toGameText([]),
+    description: toGameText(["At least 2 of each card color in your city."]),
     baseVP: 9,
     isEligible: (player, gameState) => {
       return false;
@@ -68,7 +70,7 @@ const VISITOR_REGISTRY: Record<VisitorName, Visitor> = {
   }),
   [VisitorName.BUTTERBELL_SWEETPAW]: new Visitor({
     name: VisitorName.BUTTERBELL_SWEETPAW,
-    description: toGameText([]),
+    description: toGameText(["At least 15 cards in your city."]),
     baseVP: 6,
     isEligible: (player, gameState) => {
       return false;
@@ -76,7 +78,7 @@ const VISITOR_REGISTRY: Record<VisitorName, Visitor> = {
   }),
   [VisitorName.DIGGS_DEEPWELL]: new Visitor({
     name: VisitorName.DIGGS_DEEPWELL,
-    description: toGameText([]),
+    description: toGameText(["At least 2 PEBBLE left over."]),
     baseVP: 6,
     isEligible: (player, gameState) => {
       return false;
@@ -84,7 +86,7 @@ const VISITOR_REGISTRY: Record<VisitorName, Visitor> = {
   }),
   [VisitorName.DILLWEED_QUICKSNIFF]: new Visitor({
     name: VisitorName.DILLWEED_QUICKSNIFF,
-    description: toGameText([]),
+    description: toGameText(["More Constructions than Critters in your city."]),
     baseVP: 5,
     isEligible: (player, gameState) => {
       return false;
@@ -92,7 +94,7 @@ const VISITOR_REGISTRY: Record<VisitorName, Visitor> = {
   }),
   [VisitorName.DIM_DUSTLIGHT]: new Visitor({
     name: VisitorName.DIM_DUSTLIGHT,
-    description: toGameText([]),
+    description: toGameText(["At least 6 Unique cards in your city."]),
     baseVP: 5,
     isEligible: (player, gameState) => {
       return false;
@@ -100,7 +102,7 @@ const VISITOR_REGISTRY: Record<VisitorName, Visitor> = {
   }),
   [VisitorName.DIP_DUBBLE]: new Visitor({
     name: VisitorName.DIP_DUBBLE,
-    description: toGameText([]),
+    description: toGameText(["At least 4 DESTINATION cards in your city."]),
     baseVP: 5,
     isEligible: (player, gameState) => {
       return false;
@@ -108,7 +110,7 @@ const VISITOR_REGISTRY: Record<VisitorName, Visitor> = {
   }),
   [VisitorName.DUNE_TARRINGTON]: new Visitor({
     name: VisitorName.DUNE_TARRINGTON,
-    description: toGameText([]),
+    description: toGameText(["At least 6 PROSPERITY cards in your city."]),
     baseVP: 6,
     isEligible: (player, gameState) => {
       return false;
@@ -116,7 +118,7 @@ const VISITOR_REGISTRY: Record<VisitorName, Visitor> = {
   }),
   [VisitorName.DWELL_NORTHWATCH]: new Visitor({
     name: VisitorName.DWELL_NORTHWATCH,
-    description: toGameText([]),
+    description: toGameText(["At least 4 TRAVELER cards in your city."]),
     baseVP: 5,
     isEligible: (player, gameState) => {
       return false;
@@ -124,7 +126,7 @@ const VISITOR_REGISTRY: Record<VisitorName, Visitor> = {
   }),
   [VisitorName.EDVARD_TRIPTAIL]: new Visitor({
     name: VisitorName.EDVARD_TRIPTAIL,
-    description: toGameText([]),
+    description: toGameText(["At least 1 of each card color in your city."]),
     baseVP: 5,
     isEligible: (player, gameState) => {
       return false;
@@ -132,7 +134,7 @@ const VISITOR_REGISTRY: Record<VisitorName, Visitor> = {
   }),
   [VisitorName.FRIN_STICKLY]: new Visitor({
     name: VisitorName.FRIN_STICKLY,
-    description: toGameText([]),
+    description: toGameText(["At least 4 RESIN left over."]),
     baseVP: 6,
     isEligible: (player, gameState) => {
       return false;
@@ -140,7 +142,7 @@ const VISITOR_REGISTRY: Record<VisitorName, Visitor> = {
   }),
   [VisitorName.GLINDIL_FRINK]: new Visitor({
     name: VisitorName.GLINDIL_FRINK,
-    description: toGameText([]),
+    description: toGameText(["At least 4 PROSPERITY cards in your city."]),
     baseVP: 4,
     isEligible: (player, gameState) => {
       return false;
@@ -148,7 +150,7 @@ const VISITOR_REGISTRY: Record<VisitorName, Visitor> = {
   }),
   [VisitorName.IGGY_SILVERSCALE]: new Visitor({
     name: VisitorName.IGGY_SILVERSCALE,
-    description: toGameText([]),
+    description: toGameText(["At least 6 TRAVELER cards in your city."]),
     baseVP: 7,
     isEligible: (player, gameState) => {
       return false;
@@ -156,7 +158,7 @@ const VISITOR_REGISTRY: Record<VisitorName, Visitor> = {
   }),
   [VisitorName.MOSSY_STEPTOE]: new Visitor({
     name: VisitorName.MOSSY_STEPTOE,
-    description: toGameText([]),
+    description: toGameText(["At least 5 PRODUCTION cards in your city."]),
     baseVP: 5,
     isEligible: (player, gameState) => {
       return false;
@@ -164,7 +166,7 @@ const VISITOR_REGISTRY: Record<VisitorName, Visitor> = {
   }),
   [VisitorName.ORIN_NIMBLEPAW]: new Visitor({
     name: VisitorName.ORIN_NIMBLEPAW,
-    description: toGameText([]),
+    description: toGameText(["At least 2 workers on Journey."]),
     baseVP: 6,
     isEligible: (player, gameState) => {
       return false;
@@ -172,7 +174,7 @@ const VISITOR_REGISTRY: Record<VisitorName, Visitor> = {
   }),
   [VisitorName.OSCAR_LONGTALE]: new Visitor({
     name: VisitorName.OSCAR_LONGTALE,
-    description: toGameText([]),
+    description: toGameText(["More Critters than Constructions in your city."]),
     baseVP: 5,
     isEligible: (player, gameState) => {
       return false;
@@ -180,7 +182,7 @@ const VISITOR_REGISTRY: Record<VisitorName, Visitor> = {
   }),
   [VisitorName.PHILL_GURGLE]: new Visitor({
     name: VisitorName.PHILL_GURGLE,
-    description: toGameText([]),
+    description: toGameText(["No more than 2 PRODUCTION cards in your city."]),
     baseVP: 10,
     isEligible: (player, gameState) => {
       return false;
@@ -188,7 +190,7 @@ const VISITOR_REGISTRY: Record<VisitorName, Visitor> = {
   }),
   [VisitorName.PIFF_QUILLGLOW]: new Visitor({
     name: VisitorName.PIFF_QUILLGLOW,
-    description: toGameText([]),
+    description: toGameText(["At least 5 TWIG left over."]),
     baseVP: 6,
     isEligible: (player, gameState) => {
       return false;
@@ -196,7 +198,7 @@ const VISITOR_REGISTRY: Record<VisitorName, Visitor> = {
   }),
   [VisitorName.PLUM_SHORTCLAW]: new Visitor({
     name: VisitorName.PLUM_SHORTCLAW,
-    description: toGameText([]),
+    description: toGameText(["At least 4 GOVERNANCE cards in your city."]),
     baseVP: 5,
     isEligible: (player, gameState) => {
       return false;
@@ -204,7 +206,9 @@ const VISITOR_REGISTRY: Record<VisitorName, Visitor> = {
   }),
   [VisitorName.QUINN_CLEANWHISKER]: new Visitor({
     name: VisitorName.QUINN_CLEANWHISKER,
-    description: toGameText([]),
+    description: toGameText([
+      "At least 6 Critters and 6 Constructions in your city.",
+    ]),
     baseVP: 6,
     isEligible: (player, gameState) => {
       return false;
@@ -212,7 +216,7 @@ const VISITOR_REGISTRY: Record<VisitorName, Visitor> = {
   }),
   [VisitorName.REEMY_SNIGGLE]: new Visitor({
     name: VisitorName.REEMY_SNIGGLE,
-    description: toGameText([]),
+    description: toGameText(["Achieve at least 3 basic Events."]),
     baseVP: 7,
     isEligible: (player, gameState) => {
       return false;
@@ -220,7 +224,7 @@ const VISITOR_REGISTRY: Record<VisitorName, Visitor> = {
   }),
   [VisitorName.RIVIL_ABLACUS]: new Visitor({
     name: VisitorName.RIVIL_ABLACUS,
-    description: toGameText([]),
+    description: toGameText(["At least 6 GOVERNANCE cards in your city."]),
     baseVP: 7,
     isEligible: (player, gameState) => {
       return false;
@@ -228,7 +232,7 @@ const VISITOR_REGISTRY: Record<VisitorName, Visitor> = {
   }),
   [VisitorName.RUBY_DEW]: new Visitor({
     name: VisitorName.RUBY_DEW,
-    description: toGameText([]),
+    description: toGameText(["Achieve at least 2 special Events.."]),
     baseVP: 8,
     isEligible: (player, gameState) => {
       return false;
@@ -236,7 +240,7 @@ const VISITOR_REGISTRY: Record<VisitorName, Visitor> = {
   }),
   [VisitorName.SARIS_CLEARWHISTLE]: new Visitor({
     name: VisitorName.SARIS_CLEARWHISTLE,
-    description: toGameText([]),
+    description: toGameText(["At least 6 Common cards in your city."]),
     baseVP: 5,
     isEligible: (player, gameState) => {
       return false;
@@ -244,7 +248,7 @@ const VISITOR_REGISTRY: Record<VisitorName, Visitor> = {
   }),
   [VisitorName.SIR_TRIVLE_Q_S_MARQWILL_III]: new Visitor({
     name: VisitorName.SIR_TRIVLE_Q_S_MARQWILL_III,
-    description: toGameText([]),
+    description: toGameText(["At least 1 of each resource type left over."]),
     baseVP: 7,
     isEligible: (player, gameState) => {
       return false;
@@ -252,7 +256,7 @@ const VISITOR_REGISTRY: Record<VisitorName, Visitor> = {
   }),
   [VisitorName.SKIN_SHINYSNOUT]: new Visitor({
     name: VisitorName.SKIN_SHINYSNOUT,
-    description: toGameText([]),
+    description: toGameText(["At least 10 point tokens."]),
     baseVP: 5,
     isEligible: (player, gameState) => {
       return false;
@@ -260,7 +264,9 @@ const VISITOR_REGISTRY: Record<VisitorName, Visitor> = {
   }),
   [VisitorName.SNOUT_PUDDLEHOP]: new Visitor({
     name: VisitorName.SNOUT_PUDDLEHOP,
-    description: toGameText([]),
+    description: toGameText([
+      "Achieve at least 2 basic Events and 1 Special event.",
+    ]),
     baseVP: 8,
     isEligible: (player, gameState) => {
       return false;
@@ -268,7 +274,9 @@ const VISITOR_REGISTRY: Record<VisitorName, Visitor> = {
   }),
   [VisitorName.TRISS_PESKE]: new Visitor({
     name: VisitorName.TRISS_PESKE,
-    description: toGameText([]),
+    description: toGameText([
+      "At least 6 cards of one color in your city that isn't PRODUCTION.",
+    ]),
     baseVP: 6,
     isEligible: (player, gameState) => {
       return false;
@@ -276,7 +284,7 @@ const VISITOR_REGISTRY: Record<VisitorName, Visitor> = {
   }),
   [VisitorName.VARA_AND_BRUN_MAYBERRY]: new Visitor({
     name: VisitorName.VARA_AND_BRUN_MAYBERRY,
-    description: toGameText([]),
+    description: toGameText(["At least 7 Unique cards in your city."]),
     baseVP: 7,
     isEligible: (player, gameState) => {
       return false;
@@ -284,7 +292,7 @@ const VISITOR_REGISTRY: Record<VisitorName, Visitor> = {
   }),
   [VisitorName.WILDELL_FAMILY]: new Visitor({
     name: VisitorName.WILDELL_FAMILY,
-    description: toGameText([]),
+    description: toGameText(["At least 9 Common cards in your city."]),
     baseVP: 7,
     isEligible: (player, gameState) => {
       return false;
@@ -292,7 +300,7 @@ const VISITOR_REGISTRY: Record<VisitorName, Visitor> = {
   }),
   [VisitorName.WILLOW_GREENGRIN]: new Visitor({
     name: VisitorName.WILLOW_GREENGRIN,
-    description: toGameText([]),
+    description: toGameText(["At least 7 TRAVELER cards in your city."]),
     baseVP: 7,
     isEligible: (player, gameState) => {
       return false;
@@ -300,7 +308,7 @@ const VISITOR_REGISTRY: Record<VisitorName, Visitor> = {
   }),
   [VisitorName.WIMBLE_WUFFLE]: new Visitor({
     name: VisitorName.WIMBLE_WUFFLE,
-    description: toGameText([]),
+    description: toGameText(["At least 3 BERRY left over."]),
     baseVP: 6,
     isEligible: (player, gameState) => {
       return false;

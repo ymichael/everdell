@@ -5636,28 +5636,24 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     },
     pointsInner: (player: Player, gameState) => {
       const prosperityCards = [] as PlayedCardInfo[];
-      const otherPlayers = gameState.players
-        .filter((p) => p.playerId !== player.playerId)
-        .map((p) => p.playerId);
-
-      otherPlayers.forEach((p) => {
-        const otherPlayer = gameState.getPlayer(p);
+      gameState.players.forEach((otherPlayer) => {
+        if (otherPlayer.playerId === player.playerId) {
+          return;
+        }
         prosperityCards.push(
           ...otherPlayer.getAllPlayedCardsByType(CardType.PROSPERITY)
         );
       });
 
       let maxVP = 0;
-
-      prosperityCards.forEach((p) => {
-        const card = Card.fromName(p.cardName);
-        const points = card.pointsInner!(player, gameState)
-          ? card.pointsInner!(player, gameState)
-          : 0;
-
-        if (points > maxVP) {
-          maxVP = points;
+      prosperityCards.forEach(({ cardName }) => {
+        if (cardName === CardName.PHOTOGRAPHER) {
+          // LOL
+          return;
         }
+        const card = Card.fromName(cardName);
+        const points = card.pointsInner?.(player, gameState) ?? 0;
+        maxVP = Math.max(points, maxVP);
       });
 
       // TODO: decide if we want to allow the WIFE to score across cities

@@ -5864,7 +5864,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       const player = gameState.getActivePlayer();
       const gainAnyHelper = new GainAnyResource({
         cardContext: CardName.TEA_HOUSE,
-        skipGameLog: true,
+        skipGameLog: false,
       });
       if (
         gameInput.inputType === GameInputType.SELECT_CARDS &&

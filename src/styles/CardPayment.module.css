@@ -24,17 +24,27 @@
 .card_payment_form {
   border: solid 1px black;
   border-radius: 5px;
-  padding: 20px 10px 10px 10px;
   margin: 0px;
   margin-left: -5px;
+  margin-bottom: 20px;
   width: 500px;
+  overflow: hidden;
 }
 
 .option_row {
   padding-bottom: 15px;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
 .option_row select {
   font-size: 16px;
   font-weight: var(--font-bold);
+}
+
+.header {
+  background-color: var(--highlight-color);
+  border-bottom: solid 1px black;
+  padding: 20px 10px;
+  margin-bottom: 15px;
 }

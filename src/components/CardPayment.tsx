@@ -5,7 +5,12 @@ import { Card as CardModel } from "../model/card";
 import { toGameText } from "../model/gameText";
 import { Player } from "../model/player";
 import { assertUnreachable } from "../utils";
-import { ResourceType, CardName, GameInputPlayCard } from "../model/types";
+import {
+  ResourceType,
+  CardName,
+  GameInputPlayCard,
+  CardWithSource,
+} from "../model/types";
 import { ResourceTypeIcon, Description } from "./common";
 
 import styles from "../styles/CardPayment.module.css";
@@ -302,6 +307,34 @@ const CardToDungeonForm: React.FC<{
   ) : null;
 };
 
+const SelectedCardInfo = ({
+  clientOptions,
+}: {
+  clientOptions: GameInputPlayCard["clientOptions"];
+}) => {
+  if (!clientOptions.card) {
+    return null;
+  }
+  const card = CardModel.fromName(clientOptions.card);
+  return (
+    <div className={[styles.option_row, styles.header].join(" ")}>
+      <Description
+        textParts={
+          clientOptions.source === "HAND"
+            ? toGameText(["Play ", card, " from your hand:"])
+            : clientOptions.source === "MEADOW"
+            ? toGameText(["Play ", card, " from your the Meadow:"])
+            : clientOptions.source === "STATION"
+            ? toGameText(["Play ", card, " from your the Station:"])
+            : clientOptions.source === "RESERVED"
+            ? toGameText(["Play your reserved ", card, " for 1 fewer ANY."])
+            : assertUnreachable(clientOptions.source, "Unexpected source")
+        }
+      />
+    </div>
+  );
+};
+
 const CardPayment: React.FC<{
   name: string;
   resetPaymentOptions: (state: "DEFAULT" | "COST" | "ZERO") => void;
@@ -310,6 +343,7 @@ const CardPayment: React.FC<{
 }> = ({ clientOptions, name, resetPaymentOptions, viewingPlayer }) => {
   return (
     <div className={styles.card_payment_form}>
+      <SelectedCardInfo clientOptions={clientOptions} />
       {clientOptions.card && (
         <OptionToUseAssociatedCard
           name={`${name}.useAssociatedCard`}

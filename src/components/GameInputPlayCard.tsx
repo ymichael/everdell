@@ -3,7 +3,12 @@ import { useField } from "formik";
 
 import styles from "../styles/gameBoard.module.css";
 
-import { CardName, ResourceType, CardWithSource } from "../model/types";
+import {
+  CardName,
+  ResourceType,
+  CardWithSource,
+  GameInputPlayCard as TGameInputPlayCard,
+} from "../model/types";
 import { Player } from "../model/player";
 import { Card as CardModel } from "../model/card";
 
@@ -19,14 +24,14 @@ const GameInputPlayCard: React.FC<{
   const resetPaymentOptions = (
     cardName: CardName,
     state: "DEFAULT" | "COST" | "ZERO",
-    overrides: any = {}
+    overrides: Pick<TGameInputPlayCard["clientOptions"], "source" | "sourceIdx">
   ) => {
     const card = CardModel.fromName(cardName);
     const canUseAssociatedCard =
       card.isCritter &&
       card.associatedCard.type === "CARD" &&
       viewingPlayer.hasUnoccupiedConstruction(card.associatedCard.cardName);
-
+    const isReserved = overrides.source === "RESERVED";
     helpers.setValue({
       ...meta.value,
       ...overrides,
@@ -40,7 +45,8 @@ const GameInputPlayCard: React.FC<{
           [ResourceType.TWIG]: 0,
           [ResourceType.RESIN]: 0,
           [ResourceType.PEBBLE]: 0,
-          ...((state === "DEFAULT" && !canUseAssociatedCard) || state === "COST"
+          ...((state === "DEFAULT" && !canUseAssociatedCard && !isReserved) ||
+          state === "COST"
             ? card.baseCost
             : {}),
         },
@@ -56,7 +62,7 @@ const GameInputPlayCard: React.FC<{
             meta.value &&
             meta.value.card === cardName &&
             meta.value.source === source &&
-            meta.value._idx === idx;
+            meta.value.sourceIdx === sourceIdx;
           return (
             <div key={idx} className={styles.clickable}>
               <div
@@ -66,7 +72,6 @@ const GameInputPlayCard: React.FC<{
                 }`}
                 onClick={() => {
                   resetPaymentOptions(cardName, "DEFAULT", {
-                    _idx: idx,
                     source,
                     sourceIdx,
                   });
@@ -89,7 +94,10 @@ const GameInputPlayCard: React.FC<{
         <CardPayment
           name={"gameInput.clientOptions.paymentOptions"}
           resetPaymentOptions={(state: "DEFAULT" | "COST" | "ZERO") => {
-            resetPaymentOptions(meta.value.card, state);
+            resetPaymentOptions(meta.value.card, state, {
+              source: meta.value?.source,
+              sourceIdx: meta.value?.sourceIdx,
+            });
           }}
           clientOptions={meta.value}
           viewingPlayer={viewingPlayer}

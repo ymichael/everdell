@@ -21,6 +21,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const gameState = testInitialGameState({
     numPlayers,
     playerNames,
+    meadowCards: [
+      CardName.TEA_HOUSE,
+      CardName.GENERAL_STORE,
+      CardName.GENERAL_STORE,
+    ],
     specialEvents: [
       EventName.SPECIAL_GRADUATION_OF_SCHOLARS,
       EventName.SPECIAL_A_BRILLIANT_MARKETING_PLAN,
@@ -74,7 +79,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     player.addToCity(gameState, CardName.INVENTOR);
     player.addToCity(gameState, CardName.GREENHOUSE);
     player.addToCity(gameState, CardName.MINE).usedForCritter = true;
-    player.addToCity(gameState, CardName.CLOCK_TOWER);
+    player.reserveCard(CardName.CLOCK_TOWER);
   });
 
   gameState.replenishMeadow();

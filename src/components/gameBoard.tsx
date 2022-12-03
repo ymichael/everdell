@@ -105,8 +105,9 @@ export const Locations: React.FC<{
   const sortOrder: Record<LocationType, number> = {
     [LocationType.FOREST]: 1,
     [LocationType.BASIC]: 2,
-    [LocationType.HAVEN]: 3,
-    [LocationType.JOURNEY]: 4,
+    [LocationType.KNOLL]: 3,
+    [LocationType.HAVEN]: 4,
+    [LocationType.JOURNEY]: 5,
   };
 
   allLocationObjs.sort((a, b) => {
@@ -138,15 +139,17 @@ export const Locations: React.FC<{
   );
 };
 
-export const ForestLocations: React.FC<{
+export const LocationForType: React.FC<{
   gameState: GameState;
   viewingPlayer: Player | null;
-}> = ({ gameState, viewingPlayer }) => {
+  locationType: LocationType;
+  title: string;
+}> = ({ gameState, viewingPlayer, locationType, title }) => {
   const locationsMap = gameState.locationsMap;
   const allLocations = Object.keys(locationsMap) as LocationName[];
   const allLocationObjs = allLocations.map((x) => LocationModel.fromName(x));
   const allForestLocationObjs = allLocationObjs.filter(
-    (x) => x.type === LocationType.FOREST
+    (x) => x.type === locationType
   );
   const renderLocationWithPlayerNames = (name: LocationName) => {
     return (
@@ -162,8 +165,8 @@ export const ForestLocations: React.FC<{
     );
   };
 
-  return (
-    <GameBlock title={"Forest Locations"}>
+  return allForestLocationObjs.length === 0 ? null : (
+    <GameBlock title={title}>
       <div className={styles.forest_locations}>
         {allForestLocationObjs.map((location, idx) => {
           return renderLocationWithPlayerNames(location.name);
@@ -305,17 +308,30 @@ export const GameBoard: React.FC<{
       {gameState.gameOptions.newleaf?.station ? (
         <>
           <Station gameState={gameState} />
-          <ForestLocations
-            gameState={gameState}
-            viewingPlayer={viewingPlayer}
-          />
+          <div>
+            <LocationForType
+              gameState={gameState}
+              locationType={LocationType.FOREST}
+              title="Forest Locations"
+              viewingPlayer={viewingPlayer}
+            />
+            <LocationForType
+              gameState={gameState}
+              locationType={LocationType.KNOLL}
+              title="Knoll"
+              viewingPlayer={viewingPlayer}
+            />
+          </div>
         </>
       ) : (
         <>
-          <ForestLocations
+          <LocationForType
             gameState={gameState}
+            locationType={LocationType.FOREST}
+            title="Forest Locations"
             viewingPlayer={viewingPlayer}
           />
+
           <div className={styles.game_board_events}>
             <Events gameState={gameState} numColumns={2} />
           </div>

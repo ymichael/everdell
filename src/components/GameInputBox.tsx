@@ -25,6 +25,7 @@ import GameInputSelectPaymentForCard from "./GameInputSelectPaymentForCard";
 import GameInputSelectWorkerPlacement from "./GameInputSelectWorkerPlacement";
 import GameInputSelectOptionGeneric from "./GameInputSelectOptionGeneric";
 import GameInputSelectCardWithSourceSelector from "./GameInputSelectCardWithSourceSelector";
+import GameInputSelectTrainCarTileSelector from "./GameInputSelectTrainCarTileSelector";
 import GameInputPlayCard from "./GameInputPlayCard";
 
 import { assertUnreachable } from "../utils";
@@ -198,7 +199,10 @@ const GameInputBoxInner = ({
           options={gameState.getCardsWithSource(false, false)}
         />
       ) : gameInput.inputType === GameInputType.SELECT_TRAIN_CAR_TILE ? (
-        <>TODO: Not implemented</>
+        <GameInputSelectTrainCarTileSelector
+          name={"gameInput.clientOptions.trainCarTileIdx"}
+          options={gameInput.options}
+        />
       ) : (
         <>
           {assertUnreachable(

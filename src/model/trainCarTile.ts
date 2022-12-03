@@ -123,6 +123,15 @@ export class TrainCarTileStack {
     this.rest = rest;
   }
 
+  getRevealedTiles(): TrainCarTileName[] {
+    this.revealed.forEach((x) => {
+      if (!x) {
+        throw new Error("Unexpected missing train car tile.");
+      }
+    });
+    return [...this.revealed] as TrainCarTileName[];
+  }
+
   peekAt(position: number): TrainCarTileName | null {
     return this.revealed[position];
   }

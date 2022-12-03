@@ -17,6 +17,7 @@ const colorClassMap = {
   FOREST: styles.color_forest,
   HAVEN: styles.color_haven,
   JOURNEY: styles.color_journey,
+  KNOLL: styles.color_knoll,
 };
 
 export const LocationInner: React.FC<{ name: LocationName }> = ({ name }) => {
@@ -33,7 +34,11 @@ export const LocationInner: React.FC<{ name: LocationName }> = ({ name }) => {
           <div className={styles.location_bot_spacer}> </div>
           <div className={styles.location_type}>{location.type}</div>
           <div className={styles.location_occupancy}>
-            {location.occupancy === LocationOccupancy.UNLIMITED ? "1+" : ""}
+            {location.occupancy === LocationOccupancy.UNLIMITED
+              ? "1+"
+              : location.occupancy === LocationOccupancy.UNLIMITED_MAX_ONE
+              ? "1 / PLAYER"
+              : ""}
           </div>
         </div>
       </div>

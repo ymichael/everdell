@@ -9,6 +9,7 @@ import {
   ResourceType,
   RiverDestinationName,
   RiverDestinationSpotName,
+  TrainCarTileName,
 } from "../../src/model/types";
 import { GameJSON } from "../../src/model/jsonTypes";
 import { Card } from "../../src/model/card";
@@ -336,6 +337,40 @@ module.exports = (on: any, config: any) => {
         }
       );
     },
+    "db:visit-knoll-game": async () => {
+      return await getTestGameJSON(
+        {
+          meadowCards: [
+            CardName.ARCHITECT,
+            CardName.BARD,
+            CardName.BARGE_TOAD,
+            CardName.CASTLE,
+            CardName.CEMETARY,
+            CardName.CHAPEL,
+            CardName.CHIP_SWEEP,
+            CardName.CLOCK_TOWER,
+          ],
+          stationCards: [CardName.COURTHOUSE, CardName.CRANE, CardName.DOCTOR],
+          trainCarTiles: [
+            TrainCarTileName.ONE_BERRY,
+            TrainCarTileName.ONE_PEBBLE,
+            TrainCarTileName.ONE_RESIN,
+          ],
+          gameOptions: {
+            newleaf: {
+              cards: true,
+              station: true,
+              reserving: true,
+              knoll: true,
+            },
+          },
+        },
+        (gameState, player) => {
+          const card = Card.fromName(CardName.HUSBAND);
+          player.gainResources(gameState, card.baseCost);
+        }
+      );
+    },
     "db:visit-inn-game": async () => {
       return await getTestGameJSON(
         {
@@ -398,7 +433,6 @@ module.exports = (on: any, config: any) => {
         }
       );
     },
-
     "db:prepare-for-season-spring-full-hand": async () => {
       return await getTestGameJSON(
         {

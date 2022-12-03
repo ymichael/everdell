@@ -31,6 +31,7 @@ import {
   GameStateCanPlayCheckFn,
 } from "./gameState";
 import { Card } from "./card";
+import { TrainCarTile } from "./trainCarTile";
 import { Player } from "./player";
 import { onlyRelevantProductionCards } from "./cardHelpers";
 import { toGameText, cardListToGameText } from "./gameText";
@@ -116,6 +117,7 @@ export class Location implements GameStatePlayable, IGameTextEntity {
     if (player.numAvailableWorkers <= 0) {
       return `Active player (${player.name}) doesn't have any workers to place.`;
     }
+    const playerId = player.playerId;
     const workersOnLocation = gameState.locationsMap[this.name];
     if (!workersOnLocation) {
       return `Cannot find location ${this.name} in game`;
@@ -138,7 +140,7 @@ export class Location implements GameStatePlayable, IGameTextEntity {
           break;
         }
         if (numPlayers >= 4 && workersOnLocation.length === 1) {
-          if (gameState.getActivePlayer().playerId === workersOnLocation[0]) {
+          if (playerId === workersOnLocation[0]) {
             return `Cannot visit the same forest location twice.\nLocation ${
               this.name
             } is occupied. \nGame Locations: ${JSON.stringify(
@@ -156,6 +158,11 @@ export class Location implements GameStatePlayable, IGameTextEntity {
           null,
           2
         )}`;
+        break;
+      case LocationOccupancy.UNLIMITED_MAX_ONE:
+        if (workersOnLocation.includes(playerId)) {
+          return `Cannot visit the ${this.name} twice.`;
+        }
         break;
       case LocationOccupancy.UNLIMITED:
         break;
@@ -1087,6 +1094,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
       }
     },
   }),
+
   // newleaf
   [LocationName.FOREST_FOUR_TWIG]: new Location({
     name: LocationName.FOREST_FOUR_TWIG,
@@ -1150,6 +1158,144 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
         );
 
         location.triggerLocation(gameState);
+      } else {
+        throw new Error(`Invalid input type ${gameInput.inputType}`);
+      }
+    },
+  }),
+  [LocationName.KNOLL]: new Location({
+    name: LocationName.KNOLL,
+    description: toGameText([
+      "Discard 3 CARD from the Meadow / Station. Replenish and draw 3 CARD",
+    ]),
+    shortName: toGameText(["Knoll"]),
+    type: LocationType.KNOLL,
+    occupancy: LocationOccupancy.UNLIMITED_MAX_ONE,
+    expansion: ExpansionType.NEWLEAF,
+    playInner: (gameState: GameState, gameInput: GameInput) => {
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.PLACE_WORKER) {
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_CARDS_WITH_SOURCE,
+          prevInputType: gameInput.inputType,
+          locationContext: LocationName.KNOLL,
+          label: "Select 3 CARD to discard from the Meadow / Station",
+          cardOptions: gameState.getCardsWithSource(false, false),
+          maxToSelect: 3,
+          minToSelect: 3,
+          clientOptions: {
+            selectedCards: [],
+          },
+        });
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_CARDS_WITH_SOURCE
+      ) {
+        if (gameInput.prevInputType === GameInputType.PLACE_WORKER) {
+          const selectedCards = gameInput.clientOptions.selectedCards;
+          const meadowCards: CardName[] = [];
+          const stationCards: CardName[] = [];
+          selectedCards.forEach((cardWithSource) => {
+            if (cardWithSource === "FROM_DECK") {
+              throw new Error(`Invalid card selected`);
+            }
+            const { card, source, sourceIdx } = cardWithSource;
+
+            if (source === "MEADOW") {
+              meadowCards.push(card);
+              gameState.removeCardFromMeadow(card);
+            } else if (source === "STATION") {
+              stationCards.push(card);
+              gameState.removeCardFromStation(card, sourceIdx!);
+            } else {
+              throw new Error(`Invalid card selected`);
+            }
+          });
+          gameState.addGameLogFromLocation(LocationName.KNOLL, [
+            player,
+            " discarded ",
+            ...cardListToGameText([...meadowCards, ...stationCards]),
+            " from the ",
+            meadowCards.length === 0
+              ? "Station"
+              : stationCards.length === 0
+              ? "Meadow"
+              : "Meadow & Station",
+            ".",
+          ]);
+
+          // Replenish the meadow and station.
+          gameState.replenishMeadow();
+          gameState.replenishStation();
+
+          gameState.pendingGameInputs.push({
+            inputType: GameInputType.SELECT_CARDS_WITH_SOURCE,
+            prevInputType: gameInput.inputType,
+            locationContext: LocationName.KNOLL,
+            label: "Select 3 CARD to keep from the Meadow / Station",
+            cardOptions: gameState.getCardsWithSource(false, false),
+            maxToSelect: 3,
+            minToSelect: 3,
+            clientOptions: {
+              selectedCards: [],
+            },
+          });
+        } else {
+          const selectedCards = gameInput.clientOptions.selectedCards;
+          const meadowCards: CardName[] = [];
+          const stationCards: CardName[] = [];
+          selectedCards.forEach((cardWithSource) => {
+            if (cardWithSource === "FROM_DECK") {
+              throw new Error(`Invalid card selected`);
+            }
+            const { card, source, sourceIdx } = cardWithSource;
+
+            player.addCardToHand(gameState, card);
+            if (source === "MEADOW") {
+              meadowCards.push(card);
+              gameState.removeCardFromMeadow(card);
+            } else if (source === "STATION") {
+              stationCards.push(card);
+              gameState.removeCardFromStation(card, sourceIdx!);
+            } else {
+              throw new Error(`Invalid card selected`);
+            }
+          });
+
+          gameState.addGameLogFromLocation(LocationName.KNOLL, [
+            player,
+            " drew ",
+            ...cardListToGameText([...meadowCards, ...stationCards]),
+            " from the ",
+            meadowCards.length === 0
+              ? "Station"
+              : stationCards.length === 0
+              ? "Meadow"
+              : "Meadow & Station",
+            ".",
+          ]);
+
+          gameState.pendingGameInputs.push({
+            inputType: GameInputType.SELECT_TRAIN_CAR_TILE,
+            prevInputType: gameInput.inputType,
+            locationContext: LocationName.KNOLL,
+            label: "Select 1 Train Car Tile",
+            options: gameState.trainCarTileStack!.getRevealedTiles(),
+            clientOptions: {
+              trainCarTileIdx: -1,
+            },
+          });
+        }
+      } else if (gameInput.inputType === GameInputType.SELECT_TRAIN_CAR_TILE) {
+        const selectedIdx = gameInput.clientOptions.trainCarTileIdx;
+        const selectedTile = gameInput.options[selectedIdx];
+        if (
+          !selectedTile ||
+          gameState.trainCarTileStack?.peekAt(selectedIdx) !== selectedTile
+        ) {
+          throw new Error("Invalid train car tile selected");
+        }
+        TrainCarTile.fromName(selectedTile).playTile(gameState, gameInput);
+        gameState.trainCarTileStack!.replaceAt(selectedIdx);
       } else {
         throw new Error(`Invalid input type ${gameInput.inputType}`);
       }
@@ -1358,6 +1504,7 @@ export const initialLocationsMap = (
   [
     ...Location.byType(LocationType.BASIC),
     ...forestLocationsToPlay,
+    ...(opt.newleaf?.knoll ? Location.byType(LocationType.KNOLL) : []),
     ...Location.byType(LocationType.HAVEN),
     ...Location.byType(LocationType.JOURNEY),
   ].forEach((ty) => {

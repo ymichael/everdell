@@ -80,7 +80,9 @@ export const CardTypeSymbol = ({ cardType }: { cardType: CardType }) => {
 };
 
 export const CardIcon = () => {
-  return <Image alt="Card Icon" src="/images/card.png" layout="fill" />;
+  return (
+    <Image alt="Card Icon" src="/images/card.png" layout="fill" priority />
+  );
 };
 
 export const GoldenLeafIcon = () => {

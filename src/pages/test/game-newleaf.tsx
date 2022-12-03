@@ -38,6 +38,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         specialEvents: true,
         ticket: true,
         visitors: true,
+        knoll: true,
       },
     },
   });

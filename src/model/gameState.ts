@@ -746,33 +746,8 @@ export class GameState {
         }
         break;
       case GameInputType.SELECT_CARDS:
-        if (
-          gameInput.minToSelect === gameInput.maxToSelect &&
-          gameInput.clientOptions.selectedCards.length !== gameInput.minToSelect
-        ) {
-          throw new Error(`Please select ${gameInput.minToSelect} cards.`);
-        }
-        if (
-          gameInput.clientOptions.selectedCards.length < gameInput.minToSelect
-        ) {
-          throw new Error(
-            `Please select at least ${gameInput.minToSelect} cards.`
-          );
-        }
-        if (
-          gameInput.clientOptions.selectedCards.length > gameInput.maxToSelect
-        ) {
-          throw new Error(
-            `Please select a max of ${gameInput.maxToSelect} cards.`
-          );
-        }
-        gameInput.clientOptions.selectedCards.forEach((a) => {
-          if (!gameInput.cardOptions.find((b) => isEqual(a, b))) {
-            throw new Error("Selected card is not a valid option.");
-          }
-        });
-        break;
       case GameInputType.SELECT_PLAYED_CARDS:
+      case GameInputType.SELECT_CARDS_WITH_SOURCE:
         if (
           gameInput.minToSelect === gameInput.maxToSelect &&
           gameInput.clientOptions.selectedCards.length !== gameInput.minToSelect
@@ -793,8 +768,10 @@ export class GameState {
             `Please select a max of ${gameInput.maxToSelect} cards.`
           );
         }
-        gameInput.clientOptions.selectedCards.forEach((a) => {
-          if (!gameInput.cardOptions.find((b) => isEqual(a, b))) {
+        const items = gameInput.clientOptions.selectedCards;
+        const options: unknown[] = gameInput.cardOptions;
+        items.forEach((a) => {
+          if (!options.find((b: unknown) => isEqual(a, b))) {
             throw new Error("Selected card is not a valid option.");
           }
         });

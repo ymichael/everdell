@@ -158,7 +158,7 @@ export type GameInputSelectTrainCarTile = {
   prevInputType: GameInputType;
   options: TrainCarTileName[];
   clientOptions: {
-    trainCarTile: TrainCarTileName | null;
+    trainCarTileIdx: number;
   };
 };
 
@@ -340,6 +340,7 @@ export enum LocationOccupancy {
   EXCLUSIVE = "EXCLUSIVE",
   EXCLUSIVE_FOUR = "EXCLUSIVE_FOUR",
   UNLIMITED = "UNLIMITED",
+  UNLIMITED_MAX_ONE = "UNLIMITED_MAX_ONE",
 }
 
 export enum LocationType {
@@ -347,6 +348,9 @@ export enum LocationType {
   FOREST = "FOREST",
   HAVEN = "HAVEN",
   JOURNEY = "JOURNEY",
+
+  // newleaf
+  KNOLL = "KNOLL",
 }
 
 export enum EventType {
@@ -392,6 +396,7 @@ export enum LocationName {
   FOREST_FOUR_TWIG = "FOREST_FOUR_TWIG",
   FOREST_TWO_TWIG_ONE_RESIN = "FOREST_TWO_TWIG_ONE_RESIN",
   FOREST_COPY_ANY_FOREST_LOCATION = "FOREST_COPY_ANY_FOREST_LOCATION",
+  KNOLL = "KNOLL",
 
   // Bellfaire
   FOREST_ACTIVATE_2_PRODUCTION = "FOREST_ACTIVATE_2_PRODUCTION",
@@ -791,6 +796,7 @@ export type GameOptions = {
     reserving?: boolean;
     station?: boolean;
     visitors?: boolean;
+    knoll?: boolean;
     ticket?: boolean;
   };
   mistwood?: {

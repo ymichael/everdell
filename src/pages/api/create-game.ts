@@ -40,6 +40,8 @@ export default async (
         specialEvents: true,
         station: true,
         ticket: true,
+        knoll: true,
+        reserving: true,
       }
     : {};
   const bellfaire = body.bellfaire

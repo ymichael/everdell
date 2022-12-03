@@ -9881,17 +9881,23 @@ describe("Card", () => {
         expect(player.cardsInHand.indexOf(CardName.MONK)).to.be.lessThan(0);
 
         // check state of the Meadow
-        expect(gameState.meadowCards.indexOf(CardName.HUSBAND)).to.be.lessThan(
+        expect(
+          gameState.meadowCards.indexOf(CardName.HUSBAND)
+        ).to.be.greaterThan(0);
+        expect(gameState.meadowCards.indexOf(CardName.MONK)).to.be.greaterThan(
           0
         );
-        expect(gameState.meadowCards.indexOf(CardName.MONK)).to.be.lessThan(0);
         expect(gameState.meadowCards.indexOf(CardName.FARM)).to.be.lessThan(0);
+
+        // replenish only one spot
         expect(
           gameState.meadowCards.indexOf(CardName.SCHOOL)
         ).to.be.greaterThan(0);
+        expect(gameState.meadowCards.indexOf(CardName.TEACHER)).to.be.lessThan(
+          0
+        );
       });
-      // TODO: This only happens if you play the Poet from the Meadow. Implement this after Meadow refactor
-      it.skip("should not let player draw cards if hand is full, but should still clear meadow", () => {
+      it("if playing from meadow and player's hand is full, no cards are drawn or discarded from the Meadow", () => {
         const cards = [
           CardName.KING,
           CardName.QUEEN,
@@ -9900,7 +9906,7 @@ describe("Card", () => {
           CardName.FARM,
           CardName.HUSBAND,
           CardName.CHAPEL,
-          CardName.MONK,
+          CardName.POET,
         ];
         gameState = testInitialGameState({ meadowCards: cards });
 
@@ -9930,23 +9936,21 @@ describe("Card", () => {
         player.addCardToHand(gameState, CardName.WIFE);
         player.addCardToHand(gameState, CardName.WIFE);
 
-        [player, gameState] = multiStepGameInputTest(gameState, [
-          playCardInput(card.name),
-          {
-            inputType: GameInputType.SELECT_OPTION_GENERIC,
-            prevInputType: GameInputType.PLAY_CARD,
-            cardContext: CardName.POET,
-            options: [
-              "Blue / Governance",
-              "Green / Production",
-              "Tan / Traveler",
-              "Red / Destination",
-              "Purple / Prosperity",
-            ],
-            clientOptions: {
-              selectedOption: "Green / Production",
+        const playCardFromMeadowInput = {
+          inputType: GameInputType.PLAY_CARD as const,
+          clientOptions: {
+            card: CardName.POET,
+            fromMeadow: true,
+            paymentOptions: {
+              resources: {
+                [ResourceType.BERRY]: 3,
+              },
             },
           },
+        };
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardFromMeadowInput,
         ]);
 
         expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
@@ -9955,16 +9959,32 @@ describe("Card", () => {
         expect(player.cardsInHand.indexOf(CardName.FARM)).to.be.lessThan(0);
         expect(player.cardsInHand.indexOf(CardName.HUSBAND)).to.be.lessThan(0);
         expect(player.cardsInHand.indexOf(CardName.MONK)).to.be.lessThan(0);
+        expect(player.cardsInHand).to.eql([
+          CardName.WIFE,
+          CardName.WIFE,
+          CardName.WIFE,
+          CardName.WIFE,
+          CardName.WIFE,
+          CardName.WIFE,
+          CardName.WIFE,
+          CardName.WIFE,
+        ]);
 
         // check state of the Meadow
-        expect(gameState.meadowCards.indexOf(CardName.HUSBAND)).to.be.lessThan(
+        expect(
+          gameState.meadowCards.indexOf(CardName.HUSBAND)
+        ).to.be.greaterThan(0);
+        expect(gameState.meadowCards.indexOf(CardName.FARM)).to.be.greaterThan(
           0
         );
-        expect(gameState.meadowCards.indexOf(CardName.MONK)).to.be.lessThan(0);
-        expect(gameState.meadowCards.indexOf(CardName.FARM)).to.be.lessThan(0);
+
+        // Poet played from meadow, so only one card revealed
         expect(
           gameState.meadowCards.indexOf(CardName.SCHOOL)
         ).to.be.greaterThan(0);
+        expect(gameState.meadowCards.indexOf(CardName.TEACHER)).to.be.lessThan(
+          0
+        );
       });
     });
 

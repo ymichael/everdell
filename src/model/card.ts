@@ -5700,6 +5700,17 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       // replensh meadow
 
       if (gameInput.inputType === GameInputType.PLAY_CARD) {
+        // if there's no space, exit + don't give VP
+        if (player.numCardsInHand >= player.maxHandSize) {
+          gameState.addGameLogFromCard(CardName.POET, [
+            player,
+            " could not draw any additional CARD. No additional CARD were",
+            " drawn or discarded from the Meadow.",
+          ]);
+
+          return;
+        }
+
         // TODO: only show options that exist in the Meadow
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_OPTION_GENERIC,
@@ -5753,23 +5764,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           player.maxHandSize - player.numCardsInHand
         );
 
-        // if there's no space, exit + don't give VP
-        if (numToPick <= 0) {
-          gameState.addGameLogFromCard(CardName.POET, [
-            player,
-            " could not draw any additional CARD and discarded ",
-            ...cardListToGameText(meadowCardsOFType),
-            " from the Meadow.",
-          ]);
-
-          meadowCardsOFType.forEach((cardName) => {
-            gameState.removeCardFromMeadow(cardName);
-            gameState.discardPile.addToStack(cardName);
-          });
-
-          return;
-        }
-
         // if player can draw all the cards, have them draw all the cards
         if (meadowCardsOFType.length === numToPick) {
           meadowCardsOFType.forEach((cardName) => {
@@ -5793,7 +5787,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_CARDS,
           prevInputType: gameInput.inputType,
-          label: `Choose ${numToPick} CARD to gain 1 VP per card drawn. The rest will be discarded`,
+          label: `Choose ${numToPick} CARD to gain 1 VP per card drawn. The rest not be drawn from the Meadow.`,
           cardOptions: meadowCardsOFType,
           maxToSelect: numToPick,
           minToSelect: numToPick,
@@ -5828,27 +5822,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           ...cardListToGameText(selectedCards),
           ` from the Meadow and gained ${selectedCards.length} VP.`,
         ]);
-
-        // discard all other cards from meadow
-        const meadowCards = gameInput.cardOptions;
-        if (selectedCards.length != meadowCards.length) {
-          selectedCards.forEach((cardName) => {
-            const index = meadowCards.indexOf(cardName);
-            meadowCards.splice(index, 1);
-          });
-
-          meadowCards.forEach((cardName) => {
-            gameState.removeCardFromMeadow(cardName);
-            gameState.discardPile.addToStack(cardName);
-          });
-
-          gameState.addGameLogFromCard(CardName.POET, [
-            player,
-            " discarded ",
-            ...cardListToGameText(meadowCards),
-            " from the Meadow.",
-          ]);
-        }
       }
     },
   }),

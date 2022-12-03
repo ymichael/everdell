@@ -23,6 +23,7 @@ const GameInputPlayedCardsSelector: React.FC<{
         <div data-cy={`played-card-item:${cardInfo.cardName}`}>
           <PlayedCard
             playedCard={cardInfo}
+            gameState={gameState}
             viewerId={viewingPlayer.playerId}
             cardOwner={gameState.getPlayer(cardInfo.cardOwnerId)}
           />

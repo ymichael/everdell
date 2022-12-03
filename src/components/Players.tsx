@@ -76,6 +76,7 @@ const PlayerStatus: React.FC<{
 }) => {
   const [showCity, setShowCity] = useState(false);
   const playerImpl = Player.fromJSON(player);
+  const gameState = GameState.fromJSON(gameStateJSON);
   return (
     <>
       <div
@@ -327,6 +328,7 @@ const PlayerStatus: React.FC<{
           <GameBlock title={`${playerImpl.name}'s City`}>
             <PlayerCity
               player={playerImpl}
+              gameState={gameState}
               viewerId={viewingPlayer?.playerId || null}
             />
           </GameBlock>

@@ -83,7 +83,9 @@ const Game: React.FC<{
             !!(game as any)?.gameOptions?.realtimePoints
           }
         />
-        {viewingPlayerImpl && <ViewerUI player={viewingPlayerImpl} />}
+        {viewingPlayerImpl && (
+          <ViewerUI player={viewingPlayerImpl} gameState={gameStateImpl} />
+        )}
         {gameStateImpl.gameOptions.pearlbrook && (
           <River gameState={gameStateImpl} viewingPlayer={viewingPlayerImpl} />
         )}

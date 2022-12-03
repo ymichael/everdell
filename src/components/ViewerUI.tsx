@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Player } from "../model/player";
+import { GameState } from "../model/gameState";
 import styles from "../styles/ViewerUI.module.css";
 
 import { ItemWrapper, GameBlock } from "./common";
@@ -9,7 +10,8 @@ import Adornment from "./Adornment";
 
 const ViewerUI: React.FC<{
   player: Player;
-}> = ({ player }) => {
+  gameState: GameState;
+}> = ({ player, gameState }) => {
   const reservedCard = player.getReservedCardOrNull();
   return (
     <>
@@ -35,7 +37,11 @@ const ViewerUI: React.FC<{
         </GameBlock>
       )}
       <GameBlock title={"Your City"}>
-        <PlayerCity player={player} viewerId={player.playerId} />
+        <PlayerCity
+          player={player}
+          viewerId={player.playerId}
+          gameState={gameState}
+        />
       </GameBlock>
     </>
   );

@@ -43,6 +43,7 @@ const GameInputPlaceAmbassadorSelector: React.FC<{
             <div data-cy={`place-ambassador-item-card:${cardInfo.cardName}`}>
               <PlayedCard
                 playedCard={cardInfo}
+                gameState={gameState}
                 viewerId={viewingPlayer.playerId}
                 cardOwner={gameState.getPlayer(cardInfo.cardOwnerId)}
               />

@@ -240,8 +240,9 @@ export const Events: React.FC<{
 
 export const PlayerCity: React.FC<{
   player: Player;
+  gameState: GameState;
   viewerId: string | null;
-}> = ({ player, viewerId }) => {
+}> = ({ player, viewerId, gameState }) => {
   const playedCards = player.getPlayedCards();
   const playedAdornments = player.playedAdornments;
 
@@ -276,6 +277,7 @@ export const PlayerCity: React.FC<{
           <ItemWrapper key={`card-${idx}`}>
             <PlayedCard
               playedCard={playedCard}
+              gameState={gameState}
               viewerId={viewerId}
               cardOwner={player}
             />

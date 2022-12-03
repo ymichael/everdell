@@ -56,6 +56,7 @@ const GameInputSelectWorkerPlacement: React.FC<{
                 ) : workerOption.playedCard ? (
                   <PlayedCard
                     playedCard={workerOption.playedCard}
+                    gameState={gameState}
                     cardOwner={gameState.getPlayer(
                       workerOption.playedCard.cardOwnerId
                     )}

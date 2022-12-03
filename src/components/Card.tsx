@@ -1,7 +1,13 @@
 import * as React from "react";
 import { Card as CardModel } from "../model/card";
+import { GameState } from "../model/gameState";
 import styles from "../styles/card.module.css";
-import { ResourceType, CardName, PlayedCardInfo } from "../model/types";
+import {
+  ResourceType,
+  CardName,
+  PlayedCardInfo,
+  CardType,
+} from "../model/types";
 import { Player } from "../model/player";
 import { resourceMapToGameText, toGameText } from "../model/gameText";
 import {
@@ -257,8 +263,9 @@ export default Card;
 export const PlayedCard: React.FC<{
   playedCard: PlayedCardInfo;
   cardOwner: Player;
+  gameState: GameState;
   viewerId: string | null;
-}> = ({ playedCard, cardOwner, viewerId }) => {
+}> = ({ playedCard, cardOwner, gameState, viewerId }) => {
   const {
     cardOwnerId,
     cardName,
@@ -282,6 +289,9 @@ export const PlayedCard: React.FC<{
         <div>
           Card Owner: {viewerId === cardOwnerId ? "You" : cardOwner.name}
         </div>
+        {card.cardType === CardType.PROSPERITY && (
+          <div>Points: {card.getPoints(cardOwner, gameState)}</div>
+        )}
         {"workers" in playedCard && (
           <div>Workers on card: {workers.length}</div>
         )}

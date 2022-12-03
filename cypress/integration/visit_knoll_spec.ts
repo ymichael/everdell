@@ -23,8 +23,8 @@ describe("Visit Knoll", () => {
       cy.contains("Submit").click();
     });
 
+    cy.contains("Knoll: Select 3 CARD to discard from the Meadow / Station");
     cy.get("#js-game-input-box-form").within(() => {
-      cy.contains("Knoll: Select 3 CARD to discard from the Meadow / Station");
       cy.get("[data-cy='select-card-with-source:Bard:MEADOW:1']").click();
       cy.get(
         "[data-cy='select-card-with-source:Courthouse:STATION:0']"
@@ -39,8 +39,8 @@ describe("Visit Knoll", () => {
       cy.contains("Castle").should("not.exist");
     });
 
+    cy.contains("Knoll: Select 3 CARD to keep from the Meadow / Station");
     cy.get("#js-game-input-box-form").within(() => {
-      cy.contains("Knoll: Select 3 CARD to keep from the Meadow / Station");
       cy.get("[data-cy='select-card-with-source:Doctor:STATION:2']").click();
       cy.get("[data-cy='select-card-with-source:Architect:MEADOW:0']").click();
       cy.get("[data-cy='select-card-with-source:Castle:MEADOW:2']").click();
@@ -53,8 +53,8 @@ describe("Visit Knoll", () => {
       cy.contains("Castle");
     });
 
+    cy.contains("Knoll: Select 1 Train Car Tile");
     cy.get("#js-game-input-box-form").within(() => {
-      cy.contains("Knoll: Select 1 Train Car Tile");
       cy.get("[data-cy='select-train-car-tile:ONE_PEBBLE:1']").click();
       cy.contains("Submit").click();
     });

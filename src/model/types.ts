@@ -886,6 +886,41 @@ export enum TrainCarTileName {
   ONE_VP = "ONE_VP",
 }
 
+export enum VisitorName {
+  BIM_LITTLE = "Bim Little",
+  BOSLEY_TEDWARDSON = "Bosley Tedwardson",
+  BUTTERBELL_SWEETPAW = "Butterbell Sweetpaw",
+  DIGGS_DEEPWELL = "Diggs Deepwell",
+  DILLWEED_QUICKSNIFF = "Dillweed Quicksniff",
+  DIM_DUSTLIGHT = "Dim Dustlight",
+  DIP_DUBBLE = "Dip Dubble",
+  DUNE_TARRINGTON = "Dune Tarrington",
+  DWELL_NORTHWATCH = "Dwell Northwatch",
+  EDVARD_TRIPTAIL = "Edvard Triptail",
+  FRIN_STICKLY = "Frin Stickly",
+  GLINDIL_FRINK = "Glindil Frink",
+  IGGY_SILVERSCALE = "Iggy Silverscale",
+  MOSSY_STEPTOE = "Mossy Steptoe",
+  ORIN_NIMBLEPAW = "Orin Nimblepaw",
+  OSCAR_LONGTALE = "Oscar Longtale",
+  PHILL_GURGLE = "Phill Gurgle",
+  PIFF_QUILLGLOW = "Piff Quillglow",
+  PLUM_SHORTCLAW = "Plum Shortclaw",
+  QUINN_CLEANWHISKER = "Quinn Cleanwhisker",
+  REEMY_SNIGGLE = "Reemy Sniggle",
+  RIVIL_ABLACUS = "Rivil Ablacus",
+  RUBY_DEW = "Ruby Dew",
+  SARIS_CLEARWHISTLE = "Saris Clearwhistle",
+  SIR_TRIVLE_Q_S_MARQWILL_III = "Sir Trivle Q S Marqwill III",
+  SKIN_SHINYSNOUT = "Skin Shinysnout",
+  SNOUT_PUDDLEHOP = "Snout Puddlehop",
+  TRISS_PESKE = "Triss Peske",
+  VARA_AND_BRUN_MAYBERRY = "Vara and Brun Mayberry",
+  WILDELL_FAMILY = "Wildell Family",
+  WILLOW_GREENGRIN = "Willow Greengrin",
+  WIMBLE_WUFFLE = "Wimble Wuffle",
+}
+
 export type CardWithSource = {
   card: CardName;
   source: "HAND" | "MEADOW" | "STATION" | "RESERVED";

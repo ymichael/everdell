@@ -1563,6 +1563,28 @@ export class GameState {
     const card = Card.fromName(gameInput.clientOptions.card!);
     const ret = [player, " played ", card];
 
+    if (gameInput.clientOptions.source) {
+      switch (gameInput.clientOptions.source) {
+        case "HAND":
+          ret.push(" from their hand");
+          break;
+        case "MEADOW":
+          ret.push(" from the Meadow");
+          break;
+        case "STATION":
+          ret.push(" from the Station");
+          break;
+        case "RESERVED":
+          ret.push(" (reserved)");
+          break;
+        default:
+          assertUnreachable(
+            gameInput.clientOptions.source,
+            "Unexpected source"
+          );
+      }
+    }
+
     const paymentOptions = gameInput.clientOptions.paymentOptions;
     if (paymentOptions.useAssociatedCard) {
       ret.push(

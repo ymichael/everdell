@@ -114,13 +114,13 @@ const GameBuilder: React.FC = () => {
                             <Field type="checkbox" name="newleaf" />
                             {"Newleaf"}
                             &nbsp;
-                            <span className={styles.beta}>alpha</span>
+                            <span className={styles.beta}>beta</span>
                           </label>
                           <label className={styles.game_builder_option}>
                             <Field type="checkbox" name="bellfaire" />
                             {"Bellfaire"}
                             &nbsp;
-                            <span className={styles.beta}>alpha</span>
+                            <span className={styles.beta}>beta</span>
                           </label>
                         </div>
                         <div>

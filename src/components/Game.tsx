@@ -26,10 +26,10 @@ const Game: React.FC<{
     props.viewingPlayerJSON
   );
   const updateGameAndViewingPlayer = useCallback(
-    ({ gameJSON, viewingPlayerJSON, gameInputs }) => {
+    ({ game, viewingPlayer, gameInputs }) => {
       unstable_batchedUpdates(() => {
-        setGameJSON(gameJSON);
-        setViewingPlayerJSON(viewingPlayerJSON);
+        setGameJSON(game);
+        setViewingPlayerJSON(viewingPlayer);
         setGameInputs(gameInputs);
       });
     },

@@ -25,7 +25,7 @@ describe("Play reserved card", () => {
       cy.contains("Submit").click();
     });
 
-    cy.contains("Michael played Husband.");
+    cy.contains("Michael played Husband (reserved).");
 
     cy.get("[data-cy='player-city:Michael']").within(() => {
       cy.contains("Husband");

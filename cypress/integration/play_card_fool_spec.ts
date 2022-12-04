@@ -28,7 +28,7 @@ describe("Play Fool", () => {
       cy.contains("Submit").click();
     });
 
-    cy.contains("Michael played Fool.");
+    cy.contains("Michael played Fool from their hand.");
 
     cy.get("[data-cy='player-city:Michael']").within(() => {
       cy.contains("Fool").should("not.exist");

@@ -27,7 +27,7 @@ describe("Play Husband via Farm", () => {
       cy.contains("Submit").click();
     });
 
-    cy.contains("Michael played Husband by occupying Farm.");
+    cy.contains("Michael played Husband from their hand by occupying Farm.");
     cy.contains("Waiting for Elynn");
   });
 });

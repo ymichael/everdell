@@ -36,7 +36,7 @@ describe("Play Card", () => {
       cy.contains("Mine");
     });
 
-    cy.contains("Michael played Mine");
+    cy.contains("Michael played Mine from their hand.");
     cy.contains("Mine: Michael gained 1");
     cy.contains("Waiting for Elynn");
   });

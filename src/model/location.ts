@@ -1311,13 +1311,66 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     occupancy: LocationOccupancy.UNLIMITED_MAX_ONE,
     expansion: ExpansionType.NEWLEAF,
     playInner: (gameState: GameState, gameInput: GameInput) => {
-      // if visit location, choose a visitor to discard
+      const player = gameState.getActivePlayer();
+      if (gameInput.inputType === GameInputType.PLACE_WORKER) {
+        // if visit location, choose a visitor to discard
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_VISITOR,
+          prevInputType: gameInput.inputType,
+          label: `Select a VISITOR to discard`,
+          visitorOptions: gameState.visitorStack!.getRevealedVisitors(),
+          locationContext: LocationName.STATION,
+          clientOptions: {
+            selectedVisitor: null,
+          },
+        });
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_VISITOR &&
+        gameInput.prevInputType === GameInputType.PLACE_WORKER
+      ) {
+        const selectedVisitor = gameInput.clientOptions.selectedVisitor;
 
-      // if selecting visitor, discard that visitor
+        if (!selectedVisitor) {
+          throw new Error("Selected visitor does not exist");
+        }
 
-      // after discarding, select the one to keep
+        const visitorToDiscardIndex =
+          gameState.visitorStack?.peekAt(0) === selectedVisitor ? 0 : 1;
 
-      return;
+        // discard this visitor and replace it with a different one
+        gameState.visitorStack?.replaceAt(visitorToDiscardIndex, true);
+
+        // after discarding, select the one to keep
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_VISITOR,
+          prevInputType: gameInput.inputType,
+          label: `Select a VISITOR to keep`,
+          visitorOptions: gameState.visitorStack!.getRevealedVisitors(),
+          locationContext: LocationName.STATION,
+          clientOptions: {
+            selectedVisitor: null,
+          },
+        });
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_VISITOR &&
+        gameInput.prevInputType === GameInputType.SELECT_VISITOR
+      ) {
+        const selectedVisitor = gameInput.clientOptions.selectedVisitor;
+
+        if (!selectedVisitor) {
+          throw new Error("Selected visitor does not exist");
+        }
+
+        const visitorToKeepIndex =
+          gameState.visitorStack?.peekAt(0) === selectedVisitor ? 0 : 1;
+
+        // remove visitor from stack and don't put it back in rotation
+        gameState.visitorStack?.replaceAt(visitorToKeepIndex, false);
+
+        player.visitorsSelected.push(selectedVisitor);
+      } else {
+        throw new Error(`Unexpected input type ${gameInput.inputType}`);
+      }
     },
   }),
 

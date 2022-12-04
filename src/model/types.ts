@@ -140,7 +140,6 @@ export type GameInputSimple =
   | GameInputPlaceAmbassador
   | GameInputPlayTrainTicket
   | GameInputReserveCard
-  | GameInputSelectVisitor
   | GameInputPrepareForSeason;
 
 export type GameInputDiscardCards = {
@@ -324,6 +323,7 @@ export type GameInputMultiStep = (
   | GameInputSelectRiverDestination
   | GameInputSelectTrainCarTile
   | GameInputSelectCardsWithSource
+  | GameInputSelectVisitor
 ) &
   GameInputMultiStepContext & {
     prevInput?: GameInput;

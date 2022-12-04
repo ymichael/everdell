@@ -65,6 +65,7 @@ import { sumResources } from "./gameStatePlayHelpers";
 import cloneDeep from "lodash/cloneDeep";
 import isEqual from "lodash/isEqual";
 import omit from "lodash/omit";
+import { VisitorStack, intialVisitorStack } from "./visitor";
 
 const MEADOW_SIZE = 8;
 const STATION_SIZE = 3;
@@ -162,6 +163,7 @@ export class GameState {
   readonly trainCarTileStack: TrainCarTileStack | null;
 
   readonly stationCards: (CardName | null)[];
+  readonly visitorStack: VisitorStack | null;
 
   constructor({
     gameStateId,
@@ -180,6 +182,7 @@ export class GameState {
     riverDestinationMap = null,
     stationCards = [],
     trainCarTileStack = null,
+    visitorStack = null,
   }: {
     gameStateId: number;
     activePlayerId?: Player["playerId"];
@@ -193,6 +196,7 @@ export class GameState {
     riverDestinationMap?: RiverDestinationMap | null;
     stationCards?: (CardName | null)[];
     trainCarTileStack?: TrainCarTileStack | null;
+    visitorStack?: VisitorStack | null;
     pendingGameInputs: GameInputMultiStep[];
     playedGameInputs?: GameInput[];
     gameLog: GameLogEntry[];
@@ -213,6 +217,7 @@ export class GameState {
     this.adornmentsPile = adornmentsPile;
     this.riverDestinationMap = riverDestinationMap;
     this.trainCarTileStack = trainCarTileStack;
+    this.visitorStack = visitorStack;
     this.gameOptions = defaultGameOptions(gameOptions);
   }
 
@@ -339,6 +344,9 @@ export class GameState {
           : null,
         trainCarTileStack: this.trainCarTileStack
           ? this.trainCarTileStack.toJSON(includePrivate)
+          : null,
+        visitorStack: this.visitorStack
+          ? this.visitorStack.toJSON(includePrivate)
           : null,
         stationCards: this.stationCards,
       },
@@ -669,10 +677,6 @@ export class GameState {
       default:
         throw new Error(`Unhandled game input: ${JSON.stringify(gameInput)}`);
     }
-  }
-
-  private handleSelectVisitorGameInput(gameInput: GameInput): void {
-    throw new Error("Not implemented");
   }
 
   private handlePlaceWorkerGameInput(gameInput: GameInputPlaceWorker): void {
@@ -1334,6 +1338,7 @@ export class GameState {
       case GameInputType.SELECT_RIVER_DESTINATION:
       case GameInputType.SELECT_TRAIN_CAR_TILE:
       case GameInputType.SELECT_CARDS_WITH_SOURCE:
+      case GameInputType.SELECT_VISITOR:
         this.handleMultiStepGameInput(gameInput);
         break;
       case GameInputType.PLAY_CARD:
@@ -1341,9 +1346,6 @@ export class GameState {
         break;
       case GameInputType.PLAY_TRAIN_TICKET:
         this.handlePlayTrainTicketGameInput(gameInput);
-        break;
-      case GameInputType.SELECT_VISITOR:
-        this.handleSelectVisitorGameInput(gameInput);
         break;
       case GameInputType.RESERVE_CARD:
         this.handleReserveCardGameInput(gameInput);
@@ -1630,6 +1632,9 @@ export class GameState {
       trainCarTileStack: gameStateJSON.trainCarTileStack
         ? TrainCarTileStack.fromJSON(gameStateJSON.trainCarTileStack)
         : null,
+      visitorStack: gameStateJSON.visitorStack
+        ? VisitorStack.fromJSON(gameStateJSON.visitorStack)
+        : null,
     });
   }
 
@@ -1663,6 +1668,9 @@ export class GameState {
       riverDestinationMap: withPearlbrook ? initialRiverDestinationMap() : null,
       trainCarTileStack: gameOptionsWithDefaults?.newleaf?.station
         ? intialTrainCarTileStack()
+        : null,
+      visitorStack: gameOptionsWithDefaults?.newleaf?.visitors
+        ? intialVisitorStack()
         : null,
       eventsMap: initialEventMap(gameOptionsWithDefaults),
       gameOptions: gameOptionsWithDefaults,

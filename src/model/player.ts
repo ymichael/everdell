@@ -875,6 +875,7 @@ export class Player implements IGameTextEntity {
         case GameInputType.SELECT_RIVER_DESTINATION:
         case GameInputType.SELECT_CARDS_WITH_SOURCE:
         case GameInputType.SELECT_TRAIN_CAR_TILE:
+        case GameInputType.SELECT_VISITOR:
           return gameInput;
 
         case GameInputType.SELECT_OPTION_GENERIC:

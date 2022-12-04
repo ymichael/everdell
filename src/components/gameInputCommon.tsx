@@ -229,6 +229,15 @@ const renderMultiStepGameInputLabel = (
           ]}
         />
       );
+    case GameInputType.SELECT_VISITOR:
+      return (
+        <Description
+          textParts={[
+            ...inputContextPrefix(gameInput),
+            { type: "text", text: `Select Visitor` },
+          ]}
+        />
+      );
     default:
       assertUnreachable(gameInput, gameInput);
   }

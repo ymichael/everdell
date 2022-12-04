@@ -17,6 +17,7 @@ import {
   GameInputType,
   GameInputPlayCard,
   TrainCarTileName,
+  VisitorName,
 } from "./types";
 import omit from "lodash/omit";
 import pick from "lodash/pick";
@@ -34,6 +35,7 @@ export function testInitialGameState(
     meadowCards?: CardName[];
     stationCards?: CardName[];
     trainCarTiles?: TrainCarTileName[];
+    visitors?: VisitorName[];
     shuffleDeck?: boolean;
   } = {}
 ): GameState {
@@ -50,6 +52,7 @@ export function testInitialGameState(
       TrainCarTileName.ONE_BERRY,
       TrainCarTileName.ONE_BERRY,
     ],
+    visitors = [VisitorName.BIM_LITTLE, VisitorName.DIM_DUSTLIGHT],
     shuffleDeck = false,
     gameOptions = {},
   } = opts;
@@ -84,6 +87,16 @@ export function testInitialGameState(
     gameState.trainCarTileStack.replaceAt(1);
     gameState.trainCarTileStack.replaceAt(2);
   }
+
+  if (gameState.visitorStack) {
+    visitors.reverse();
+    for (let i = 0; i < visitors.length; i++) {
+      gameState.visitorStack?.pushTile(visitors[i]);
+    }
+    gameState.visitorStack.replaceAt(0, true);
+    gameState.visitorStack.replaceAt(1, true);
+  }
+
   gameState.players.forEach((player) => {
     player.cardsInHand = [...cardsInHand];
   });

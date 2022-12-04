@@ -1,8 +1,10 @@
 import { CardType, GameText, VisitorName } from "./types";
 import { GameState, GameStatePointsFn } from "./gameState";
-import { CardStack } from "./cardStack";
 import { Player } from "./player";
 import { toGameText } from "./gameText";
+import cloneDeep from "lodash/cloneDeep";
+import shuffle from "lodash/shuffle";
+import { VisitorStackJSON } from "./jsonTypes";
 
 // Newleaf Visitors
 export class Visitor {
@@ -317,9 +319,65 @@ const VISITOR_REGISTRY: Record<VisitorName, Visitor> = {
   }),
 };
 
-export const allVisitors = (): CardStack<VisitorName> => {
-  return new CardStack({
-    name: "Visitors",
-    cards: Object.values(VisitorName),
+export class VisitorStack {
+  private revealed: (VisitorName | null)[];
+  private rest: VisitorName[];
+
+  constructor({ revealed, rest }: VisitorStackJSON) {
+    this.revealed = revealed;
+    this.rest = rest;
+  }
+
+  getRevealedVisitors(): VisitorName[] {
+    this.revealed.forEach((x) => {
+      if (!x) {
+        throw new Error("Unexpected missing visitor.");
+      }
+    });
+    return [...this.revealed] as VisitorName[];
+  }
+
+  peekAt(position: number): VisitorName | null {
+    return this.revealed[position];
+  }
+
+  pushTile(name: VisitorName): void {
+    this.rest.unshift(name);
+  }
+
+  replaceAt(position: number, shouldDiscard: boolean): VisitorName {
+    const [next, ...rest] = this.rest;
+    this.rest = rest;
+    const currTile = this.peekAt(position);
+
+    // if there is a tile at index 'position', remove it
+    // if shouldDiscard is false, player is drawing it into their city
+    if (currTile && shouldDiscard) {
+      this.rest.push(currTile);
+    }
+
+    this.revealed[position] = next;
+    return next;
+  }
+
+  toJSON(includePrivate: boolean): VisitorStackJSON {
+    return cloneDeep({
+      revealed: this.revealed,
+      rest: [],
+      ...(includePrivate ? { rest: this.rest } : {}),
+    });
+  }
+
+  static fromJSON(visitorStackJSON: VisitorStackJSON): VisitorStack {
+    return new VisitorStack(visitorStackJSON);
+  }
+}
+
+export function intialVisitorStack(): VisitorStack {
+  const allVisitors: VisitorName[] = Object.values(VisitorName);
+  const [one, two, ...rest] = shuffle(allVisitors);
+  return new VisitorStack({
+    revealed: [one, two],
+    rest,
   });
-};
+}

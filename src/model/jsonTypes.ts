@@ -17,6 +17,7 @@ import {
   WorkerPlacementInfo,
   TrainCarTileName,
   TrainTicketStatus,
+  VisitorName,
 } from "./types";
 
 export type GameJSON = {
@@ -42,6 +43,7 @@ export type GameStateJSON = {
   adornmentsPile: CardStackJSON<AdornmentName> | null;
   stationCards: (CardName | null)[] | null;
   trainCarTileStack: TrainCarTileStackJSON | null;
+  visitorStack: VisitorStackJSON | null;
 };
 
 export type CardStackJSON<T> = {
@@ -79,4 +81,9 @@ export type RiverDestinationMapJSON = {
 export type TrainCarTileStackJSON = {
   revealed: (TrainCarTileName | null)[];
   rest: TrainCarTileName[];
+};
+
+export type VisitorStackJSON = {
+  revealed: (VisitorName | null)[];
+  rest: VisitorName[];
 };

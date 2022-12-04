@@ -12,6 +12,7 @@ import {
   CardName,
   TrainCarTileName,
   ResourceType,
+  VisitorName,
 } from "./types";
 
 const placeWorkerInput = (location: LocationName): GameInputPlaceWorker => {
@@ -1423,6 +1424,67 @@ describe("Location", () => {
         CardName.ARCHITECT,
         CardName.BARD,
       ]);
+    });
+  });
+
+  describe("STATION", () => {
+    beforeEach(() => {
+      gameState = testInitialGameState({
+        meadowCards: [
+          CardName.ARCHITECT,
+          CardName.BARD,
+          CardName.BARGE_TOAD,
+          CardName.CASTLE,
+          CardName.CEMETARY,
+          CardName.CHAPEL,
+          CardName.CHIP_SWEEP,
+          CardName.CLOCK_TOWER,
+        ],
+        visitors: [VisitorName.BIM_LITTLE, VisitorName.DIM_DUSTLIGHT],
+        gameOptions: { newleaf: { visitors: true } },
+      });
+    });
+
+    it("player can visit and claim visitor", () => {
+      const visitorStack = [
+        VisitorName.BIM_LITTLE,
+        VisitorName.DIM_DUSTLIGHT,
+        VisitorName.FRIN_STICKLY,
+      ];
+
+      gameState = testInitialGameState({
+        visitors: visitorStack,
+        gameOptions: { newleaf: { visitors: true } },
+      });
+
+      const location = Location.fromName(LocationName.STATION);
+      gameState.locationsMap[location.name] = [];
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        placeWorkerInput(location.name),
+        // selecting a visitor to discard
+        {
+          inputType: GameInputType.SELECT_VISITOR,
+          prevInputType: GameInputType.PLACE_WORKER,
+          locationContext: LocationName.STATION,
+          visitorOptions: [VisitorName.BIM_LITTLE, VisitorName.DIM_DUSTLIGHT],
+          clientOptions: {
+            selectedVisitor: VisitorName.DIM_DUSTLIGHT,
+          },
+        },
+        // selecting a visitor to keep
+        {
+          inputType: GameInputType.SELECT_VISITOR,
+          prevInputType: GameInputType.SELECT_VISITOR,
+          locationContext: LocationName.STATION,
+          visitorOptions: [VisitorName.BIM_LITTLE, VisitorName.FRIN_STICKLY],
+          clientOptions: {
+            selectedVisitor: VisitorName.FRIN_STICKLY,
+          },
+        },
+      ]);
+
+      expect(player.visitorsSelected).to.eql([VisitorName.FRIN_STICKLY]);
     });
   });
 

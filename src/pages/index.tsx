@@ -26,17 +26,10 @@ const Main: React.FC = () => {
           </button>
           <a
             target="_blank"
-            href="https://www.amazon.com/Everdell-Collectors-Edition-2nd-Printing/dp/B07WWJMQFW"
-            className={styles.link}
-          >
-            Buy the Game
-          </a>
-          <a
-            target="_blank"
             href="https://www.tabletoptycoon.com/products/everdell-collectors-edition-2nd-edition"
             className={styles.link}
           >
-            About the Game
+            Game Rules
           </a>
           <Link href="/test/ui" className={styles.link}>
             Game Cards

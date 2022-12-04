@@ -33,7 +33,7 @@ const Main: React.FC = () => {
           </a>
           <a
             target="_blank"
-            href="https://www.starling.games/everdell"
+            href="https://www.tabletoptycoon.com/products/everdell-collectors-edition-2nd-edition"
             className={styles.link}
           >
             About the Game
@@ -47,6 +47,13 @@ const Main: React.FC = () => {
             className={styles.link}
           >
             Github Source
+          </a>
+          <a
+            target="_blank"
+            href="https://elynnandmichael.notion.site/Everdell-Updates-Change-Log-12e6d498b6e9477eaed72eaf83520b6c"
+            className={styles.link}
+          >
+            What's New
           </a>
           <a
             target="_blank"

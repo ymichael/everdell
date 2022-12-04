@@ -18,7 +18,7 @@ describe("Visitor", () => {
   describe(VisitorName.BIM_LITTLE, () => {
     it("gives points when player has at least 6 destination cards in city when claimed", () => {
       player = gameState.getActivePlayer();
-      player.visitorsSelected?.push(VisitorName.BIM_LITTLE);
+      player.claimedVisitors?.push(VisitorName.BIM_LITTLE);
 
       expect(player.getPointsFromVisitors(gameState)).to.be(0);
 

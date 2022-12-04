@@ -1474,7 +1474,7 @@ describe("Location", () => {
         },
       ]);
 
-      expect(player.visitorsSelected).to.eql([VisitorName.FRIN_STICKLY]);
+      expect(player.claimedVisitors).to.eql([VisitorName.FRIN_STICKLY]);
     });
   });
 

@@ -79,7 +79,7 @@ export class Player implements IGameTextEntity {
   private reservedCard: CardName | "UNUSED" | "USED";
   private _trainTicketStatus: TrainTicketStatus | null;
 
-  public visitorsSelected: VisitorName[];
+  public claimedVisitors: VisitorName[];
 
   constructor({
     name,
@@ -108,7 +108,7 @@ export class Player implements IGameTextEntity {
     playedAdornments = [],
     trainTicketStatus = null,
     reservedCard = "UNUSED",
-    visitorsSelected = [],
+    claimedVisitors = [],
   }: {
     name: string;
     playerSecret?: string;
@@ -129,7 +129,7 @@ export class Player implements IGameTextEntity {
     numAdornmentsInHand?: number | null;
     trainTicketStatus?: TrainTicketStatus | null;
     reservedCard?: CardName | "UNUSED" | "USED";
-    visitorsSelected?: VisitorName[];
+    claimedVisitors?: VisitorName[];
   }) {
     this.playerId = playerId;
     this.playerSecret = playerSecret;
@@ -152,7 +152,7 @@ export class Player implements IGameTextEntity {
     this._trainTicketStatus = trainTicketStatus;
     this._numGoldenLeaf = numGoldenLeaf;
     this.reservedCard = reservedCard;
-    this.visitorsSelected = visitorsSelected;
+    this.claimedVisitors = claimedVisitors;
 
     this._numCardsInHand = numCardsInHand;
     this._numAdornmentsInHand = numAdornmentsInHand;
@@ -681,7 +681,7 @@ export class Player implements IGameTextEntity {
 
   getPointsFromVisitors(gameState: GameState): number {
     let points = 0;
-    this.visitorsSelected.forEach((visitorName) => {
+    this.claimedVisitors.forEach((visitorName) => {
       const visitor = Visitor.fromName(visitorName as VisitorName);
       points += visitor.getPoints(this, gameState);
     });

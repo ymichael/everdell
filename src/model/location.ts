@@ -1367,7 +1367,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
         // remove visitor from stack and don't put it back in rotation
         gameState.visitorStack?.replaceAt(visitorToKeepIndex, false);
 
-        player.visitorsSelected.push(selectedVisitor);
+        player.claimedVisitors.push(selectedVisitor);
       } else {
         throw new Error(`Unexpected input type ${gameInput.inputType}`);
       }

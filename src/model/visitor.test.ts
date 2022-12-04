@@ -1,7 +1,7 @@
 import expect from "expect.js";
 import { GameState } from "./gameState";
 import { Player } from "./player";
-import { CardName, VisitorName } from "./types";
+import { CardName, EventName, ResourceType, VisitorName } from "./types";
 import { testInitialGameState } from "./testHelpers";
 
 describe("Visitor", () => {
@@ -34,95 +34,218 @@ describe("Visitor", () => {
       expect(player.getPointsFromVisitors(gameState)).to.be(7);
     });
   });
-  describe.skip(VisitorName.BOSLEY_TEDWARDSON, () => {
+  describe(VisitorName.BOSLEY_TEDWARDSON, () => {
     it("gives correct number of points when claimed", () => {
       player = gameState.getActivePlayer();
       player.claimedVisitors?.push(VisitorName.BOSLEY_TEDWARDSON);
-      expect(false);
+      expect(player.getPointsFromVisitors(gameState)).to.be(0);
+
+      player.addToCityMulti(gameState, [
+        CardName.INN,
+        CardName.INN,
+        CardName.DUNGEON,
+        CardName.HISTORIAN,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.WANDERER,
+        CardName.WANDERER,
+        CardName.WIFE,
+        CardName.WIFE,
+      ]);
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(9);
     });
   });
-  describe.skip(VisitorName.BUTTERBELL_SWEETPAW, () => {
+  describe(VisitorName.BUTTERBELL_SWEETPAW, () => {
     it("gives correct number of points when claimed", () => {
       player = gameState.getActivePlayer();
       player.claimedVisitors?.push(VisitorName.BUTTERBELL_SWEETPAW);
-      expect(false);
+
+      for (let x = 0; x < 15; x++) {
+        expect(player.getPointsFromVisitors(gameState)).to.be(0);
+        player.addToCity(gameState, CardName.FARM);
+      }
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(6);
     });
   });
-  describe.skip(VisitorName.DIGGS_DEEPWELL, () => {
+  describe(VisitorName.DIGGS_DEEPWELL, () => {
     it("gives correct number of points when claimed", () => {
       player = gameState.getActivePlayer();
       player.claimedVisitors?.push(VisitorName.DIGGS_DEEPWELL);
-      expect(false);
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(0);
+
+      player.gainResources(gameState, { [ResourceType.PEBBLE]: 2 });
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(6);
     });
   });
-  describe.skip(VisitorName.DILLWEED_QUICKSNIFF, () => {
+  describe(VisitorName.DILLWEED_QUICKSNIFF, () => {
     it("gives correct number of points when claimed", () => {
       player = gameState.getActivePlayer();
       player.claimedVisitors?.push(VisitorName.DILLWEED_QUICKSNIFF);
-      expect(false);
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(0);
+
+      for (let x = 0; x < 3; x++) {
+        player.addToCity(gameState, CardName.FARM);
+      }
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(5);
+
+      for (let x = 0; x < 5; x++) {
+        player.addToCity(gameState, CardName.WIFE);
+      }
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(0);
     });
   });
-  describe.skip(VisitorName.DIM_DUSTLIGHT, () => {
+  describe(VisitorName.DIM_DUSTLIGHT, () => {
     it("gives correct number of points when claimed", () => {
       player = gameState.getActivePlayer();
       player.claimedVisitors?.push(VisitorName.DIM_DUSTLIGHT);
-      expect(false);
+
+      const cardsToAdd = [
+        CardName.RANGER,
+        CardName.DUNGEON,
+        CardName.QUEEN,
+        CardName.KING,
+        CardName.PALACE,
+        CardName.CASTLE,
+      ];
+
+      cardsToAdd.forEach((cardName) => {
+        expect(player.getPointsFromVisitors(gameState)).to.be(0);
+        player.addToCity(gameState, cardName);
+      });
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(5);
     });
   });
-  describe.skip(VisitorName.DIP_DUBBLE, () => {
+  describe(VisitorName.DIP_DUBBLE, () => {
     it("gives correct number of points when claimed", () => {
       player = gameState.getActivePlayer();
       player.claimedVisitors?.push(VisitorName.DIP_DUBBLE);
-      expect(false);
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(0);
+
+      player.addToCityMulti(gameState, [
+        CardName.INN,
+        CardName.INN,
+        CardName.INN,
+        CardName.INN,
+      ]);
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(5);
     });
   });
-  describe.skip(VisitorName.DUNE_TARRINGTON, () => {
+  describe(VisitorName.DUNE_TARRINGTON, () => {
     it("gives correct number of points when claimed", () => {
       player = gameState.getActivePlayer();
       player.claimedVisitors?.push(VisitorName.DUNE_TARRINGTON);
-      expect(false);
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(0);
+
+      for (let x = 0; x < 6; x++) {
+        expect(player.getPointsFromVisitors(gameState)).to.be(0);
+        player.addToCity(gameState, CardName.WIFE);
+      }
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(6);
     });
   });
-  describe.skip(VisitorName.DWELL_NORTHWATCH, () => {
+  describe(VisitorName.DWELL_NORTHWATCH, () => {
     it("gives correct number of points when claimed", () => {
       player = gameState.getActivePlayer();
       player.claimedVisitors?.push(VisitorName.DWELL_NORTHWATCH);
-      expect(false);
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(0);
+
+      for (let x = 0; x < 4; x++) {
+        expect(player.getPointsFromVisitors(gameState)).to.be(0);
+        player.addToCity(gameState, CardName.WANDERER);
+      }
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(5);
     });
   });
-  describe.skip(VisitorName.EDVARD_TRIPTAIL, () => {
+  describe(VisitorName.EDVARD_TRIPTAIL, () => {
     it("gives correct number of points when claimed", () => {
       player = gameState.getActivePlayer();
       player.claimedVisitors?.push(VisitorName.EDVARD_TRIPTAIL);
-      expect(false);
+
+      const cardsToAdd = [
+        CardName.RANGER,
+        CardName.DUNGEON,
+        CardName.QUEEN,
+        CardName.KING,
+        CardName.FARM,
+      ];
+
+      cardsToAdd.forEach((cardName) => {
+        expect(player.getPointsFromVisitors(gameState)).to.be(0);
+        player.addToCity(gameState, cardName);
+      });
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(5);
     });
   });
-  describe.skip(VisitorName.FRIN_STICKLY, () => {
+  describe(VisitorName.FRIN_STICKLY, () => {
     it("gives correct number of points when claimed", () => {
       player = gameState.getActivePlayer();
       player.claimedVisitors?.push(VisitorName.FRIN_STICKLY);
-      expect(false);
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(0);
+
+      player.gainResources(gameState, { [ResourceType.RESIN]: 4 });
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(6);
     });
   });
-  describe.skip(VisitorName.GLINDIL_FRINK, () => {
+  describe(VisitorName.GLINDIL_FRINK, () => {
     it("gives correct number of points when claimed", () => {
       player = gameState.getActivePlayer();
       player.claimedVisitors?.push(VisitorName.GLINDIL_FRINK);
-      expect(false);
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(0);
+
+      for (let x = 0; x < 4; x++) {
+        expect(player.getPointsFromVisitors(gameState)).to.be(0);
+        player.addToCity(gameState, CardName.WIFE);
+      }
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(4);
     });
   });
-  describe.skip(VisitorName.IGGY_SILVERSCALE, () => {
+  describe(VisitorName.IGGY_SILVERSCALE, () => {
     it("gives correct number of points when claimed", () => {
       player = gameState.getActivePlayer();
       player.claimedVisitors?.push(VisitorName.IGGY_SILVERSCALE);
-      expect(false);
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(0);
+
+      for (let x = 0; x < 6; x++) {
+        expect(player.getPointsFromVisitors(gameState)).to.be(0);
+        player.addToCity(gameState, CardName.WANDERER);
+      }
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(7);
     });
   });
-  describe.skip(VisitorName.MOSSY_STEPTOE, () => {
+  describe(VisitorName.MOSSY_STEPTOE, () => {
     it("gives correct number of points when claimed", () => {
       player = gameState.getActivePlayer();
       player.claimedVisitors?.push(VisitorName.MOSSY_STEPTOE);
-      expect(false);
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(0);
+
+      for (let x = 0; x < 5; x++) {
+        expect(player.getPointsFromVisitors(gameState)).to.be(0);
+        player.addToCity(gameState, CardName.FARM);
+      }
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(5);
     });
   });
   describe.skip(VisitorName.ORIN_NIMBLEPAW, () => {
@@ -132,74 +255,178 @@ describe("Visitor", () => {
       expect(false);
     });
   });
-  describe.skip(VisitorName.OSCAR_LONGTALE, () => {
+  describe(VisitorName.OSCAR_LONGTALE, () => {
     it("gives correct number of points when claimed", () => {
       player = gameState.getActivePlayer();
       player.claimedVisitors?.push(VisitorName.OSCAR_LONGTALE);
-      expect(false);
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(0);
+
+      for (let x = 0; x < 3; x++) {
+        player.addToCity(gameState, CardName.WIFE);
+      }
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(5);
+
+      for (let x = 0; x < 5; x++) {
+        player.addToCity(gameState, CardName.FARM);
+      }
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(0);
     });
   });
-  describe.skip(VisitorName.PHILL_GURGLE, () => {
+  describe(VisitorName.PHILL_GURGLE, () => {
     it("gives correct number of points when claimed", () => {
       player = gameState.getActivePlayer();
       player.claimedVisitors?.push(VisitorName.PHILL_GURGLE);
-      expect(false);
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(10);
+
+      player.addToCity(gameState, CardName.FARM);
+      expect(player.getPointsFromVisitors(gameState)).to.be(10);
+
+      player.addToCity(gameState, CardName.FARM);
+      expect(player.getPointsFromVisitors(gameState)).to.be(10);
+
+      player.addToCity(gameState, CardName.FARM);
+      expect(player.getPointsFromVisitors(gameState)).to.be(0);
     });
   });
-  describe.skip(VisitorName.PIFF_QUILLGLOW, () => {
+  describe(VisitorName.PIFF_QUILLGLOW, () => {
     it("gives correct number of points when claimed", () => {
       player = gameState.getActivePlayer();
       player.claimedVisitors?.push(VisitorName.PIFF_QUILLGLOW);
-      expect(false);
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(0);
+
+      player.gainResources(gameState, { [ResourceType.TWIG]: 5 });
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(6);
     });
   });
-  describe.skip(VisitorName.PLUM_SHORTCLAW, () => {
+  describe(VisitorName.PLUM_SHORTCLAW, () => {
     it("gives correct number of points when claimed", () => {
       player = gameState.getActivePlayer();
       player.claimedVisitors?.push(VisitorName.PLUM_SHORTCLAW);
-      expect(false);
+
+      const cardsToAdd = [
+        CardName.DUNGEON,
+        CardName.COURTHOUSE,
+        CardName.JUDGE,
+        CardName.SHOPKEEPER,
+      ];
+
+      cardsToAdd.forEach((cardName) => {
+        expect(player.getPointsFromVisitors(gameState)).to.be(0);
+        player.addToCity(gameState, cardName);
+      });
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(5);
     });
   });
-  describe.skip(VisitorName.QUINN_CLEANWHISKER, () => {
+  describe(VisitorName.QUINN_CLEANWHISKER, () => {
     it("gives correct number of points when claimed", () => {
       player = gameState.getActivePlayer();
       player.claimedVisitors?.push(VisitorName.QUINN_CLEANWHISKER);
-      expect(false);
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(0);
+
+      for (let x = 0; x < 6; x++) {
+        expect(player.getPointsFromVisitors(gameState)).to.be(0);
+        player.addToCity(gameState, CardName.WIFE);
+      }
+
+      for (let x = 0; x < 6; x++) {
+        expect(player.getPointsFromVisitors(gameState)).to.be(0);
+        player.addToCity(gameState, CardName.FARM);
+      }
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(6);
     });
   });
-  describe.skip(VisitorName.REEMY_SNIGGLE, () => {
+  describe(VisitorName.REEMY_SNIGGLE, () => {
     it("gives correct number of points when claimed", () => {
       player = gameState.getActivePlayer();
       player.claimedVisitors?.push(VisitorName.REEMY_SNIGGLE);
-      expect(false);
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(0);
+      player.claimedEvents[EventName.BASIC_FOUR_PRODUCTION] = {};
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(0);
+      player.claimedEvents[EventName.BASIC_THREE_DESTINATION] = {};
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(0);
+      player.claimedEvents[EventName.BASIC_THREE_GOVERNANCE] = {};
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(7);
     });
   });
-  describe.skip(VisitorName.RIVIL_ABLACUS, () => {
+  describe(VisitorName.RIVIL_ABLACUS, () => {
     it("gives correct number of points when claimed", () => {
       player = gameState.getActivePlayer();
       player.claimedVisitors?.push(VisitorName.RIVIL_ABLACUS);
-      expect(false);
+
+      const cardsToAdd = [
+        CardName.DUNGEON,
+        CardName.COURTHOUSE,
+        CardName.JUDGE,
+        CardName.SHOPKEEPER,
+        CardName.INNKEEPER,
+        CardName.HISTORIAN,
+      ];
+
+      cardsToAdd.forEach((cardName) => {
+        expect(player.getPointsFromVisitors(gameState)).to.be(0);
+        player.addToCity(gameState, cardName);
+      });
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(7);
     });
   });
-  describe.skip(VisitorName.RUBY_DEW, () => {
+  describe(VisitorName.RUBY_DEW, () => {
     it("gives correct number of points when claimed", () => {
       player = gameState.getActivePlayer();
       player.claimedVisitors?.push(VisitorName.RUBY_DEW);
-      expect(false);
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(0);
+      player.claimedEvents[EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED] = {};
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(0);
+      player.claimedEvents[EventName.SPECIAL_AN_EVENING_OF_FIREWORKS] = {};
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(8);
     });
   });
-  describe.skip(VisitorName.SARIS_CLEARWHISTLE, () => {
+  describe(VisitorName.SARIS_CLEARWHISTLE, () => {
     it("gives correct number of points when claimed", () => {
       player = gameState.getActivePlayer();
       player.claimedVisitors?.push(VisitorName.SARIS_CLEARWHISTLE);
-      expect(false);
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(0);
+
+      for (let x = 0; x < 6; x++) {
+        expect(player.getPointsFromVisitors(gameState)).to.be(0);
+        player.addToCity(gameState, CardName.FARM);
+      }
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(5);
     });
   });
-  describe.skip(VisitorName.SIR_TRIVLE_Q_S_MARQWILL_III, () => {
+  describe(VisitorName.SIR_TRIVLE_Q_S_MARQWILL_III, () => {
     it("gives correct number of points when claimed", () => {
       player = gameState.getActivePlayer();
       player.claimedVisitors?.push(VisitorName.SIR_TRIVLE_Q_S_MARQWILL_III);
-      expect(false);
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(0);
+
+      player.gainResources(gameState, {
+        [ResourceType.RESIN]: 1,
+        [ResourceType.TWIG]: 1,
+        [ResourceType.PEBBLE]: 1,
+        [ResourceType.BERRY]: 1,
+      });
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(7);
     });
   });
   describe.skip(VisitorName.SKIN_SHINYSNOUT, () => {
@@ -209,46 +436,101 @@ describe("Visitor", () => {
       expect(false);
     });
   });
-  describe.skip(VisitorName.SNOUT_PUDDLEHOP, () => {
+  describe(VisitorName.SNOUT_PUDDLEHOP, () => {
     it("gives correct number of points when claimed", () => {
       player = gameState.getActivePlayer();
       player.claimedVisitors?.push(VisitorName.SNOUT_PUDDLEHOP);
-      expect(false);
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(0);
+      player.claimedEvents[EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED] = {};
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(0);
+      player.claimedEvents[EventName.BASIC_FOUR_PRODUCTION] = {};
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(0);
+      player.claimedEvents[EventName.BASIC_THREE_DESTINATION] = {};
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(8);
     });
   });
-  describe.skip(VisitorName.TRISS_PESKE, () => {
+  describe(VisitorName.TRISS_PESKE, () => {
     it("gives correct number of points when claimed", () => {
       player = gameState.getActivePlayer();
       player.claimedVisitors?.push(VisitorName.TRISS_PESKE);
-      expect(false);
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(0);
+
+      for (let x = 0; x < 6; x++) {
+        expect(player.getPointsFromVisitors(gameState)).to.be(0);
+        player.addToCity(gameState, CardName.WIFE);
+      }
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(6);
     });
   });
-  describe.skip(VisitorName.VARA_AND_BRUN_MAYBERRY, () => {
+  describe(VisitorName.VARA_AND_BRUN_MAYBERRY, () => {
     it("gives correct number of points when claimed", () => {
       player = gameState.getActivePlayer();
       player.claimedVisitors?.push(VisitorName.VARA_AND_BRUN_MAYBERRY);
-      expect(false);
+
+      const cardsToAdd = [
+        CardName.RANGER,
+        CardName.DUNGEON,
+        CardName.QUEEN,
+        CardName.KING,
+        CardName.PALACE,
+        CardName.CASTLE,
+        CardName.EVERTREE,
+      ];
+
+      cardsToAdd.forEach((cardName) => {
+        expect(player.getPointsFromVisitors(gameState)).to.be(0);
+        player.addToCity(gameState, cardName);
+      });
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(7);
     });
   });
-  describe.skip(VisitorName.WILDELL_FAMILY, () => {
+  describe(VisitorName.WILDELL_FAMILY, () => {
     it("gives correct number of points when claimed", () => {
       player = gameState.getActivePlayer();
       player.claimedVisitors?.push(VisitorName.WILDELL_FAMILY);
-      expect(false);
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(0);
+
+      for (let x = 0; x < 9; x++) {
+        expect(player.getPointsFromVisitors(gameState)).to.be(0);
+        player.addToCity(gameState, CardName.FARM);
+      }
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(7);
     });
   });
-  describe.skip(VisitorName.WILLOW_GREENGRIN, () => {
+  describe(VisitorName.WILLOW_GREENGRIN, () => {
     it("gives correct number of points when claimed", () => {
       player = gameState.getActivePlayer();
       player.claimedVisitors?.push(VisitorName.WILLOW_GREENGRIN);
-      expect(false);
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(0);
+
+      for (let x = 0; x < 7; x++) {
+        expect(player.getPointsFromVisitors(gameState)).to.be(0);
+        player.addToCity(gameState, CardName.WANDERER);
+      }
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(7);
     });
   });
-  describe.skip(VisitorName.WIMBLE_WUFFLE, () => {
+  describe(VisitorName.WIMBLE_WUFFLE, () => {
     it("gives correct number of points when claimed", () => {
       player = gameState.getActivePlayer();
       player.claimedVisitors?.push(VisitorName.WIMBLE_WUFFLE);
-      expect(false);
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(0);
+
+      player.gainResources(gameState, { [ResourceType.BERRY]: 3 });
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(6);
     });
   });
 });

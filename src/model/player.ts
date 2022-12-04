@@ -613,6 +613,16 @@ export class Player implements IGameTextEntity {
     return Object.keys(this.claimedEvents).length;
   }
 
+  getNumClaimedEventsByType(eventType: EventType): number {
+    let numEvents = 0;
+    for (const eventName of Object.keys(this.claimedEvents)) {
+      if (Event.fromName(eventName as EventName).type === eventType) {
+        numEvents++;
+      }
+    }
+    return numEvents;
+  }
+
   getNumHusbandWifePairs(): number {
     return Math.min(
       this.getNumPlayedCard(CardName.HUSBAND),
@@ -708,6 +718,19 @@ export class Player implements IGameTextEntity {
     points += player.getNumResourcesByType(ResourceType.PEARL) * 2;
     points += player.getPointsFromVisitors(gameState);
     return points;
+  }
+
+  getNumWorkersOnJourney(gameState: GameState): number {
+    let numWorkersOnJourney = 0;
+    this.placedWorkers.forEach((placeWorker) => {
+      if (placeWorker.location) {
+        const location = Location.fromName(placeWorker.location);
+        if (location.type === LocationType.JOURNEY) {
+          numWorkersOnJourney++;
+        }
+      }
+    });
+    return numWorkersOnJourney;
   }
 
   getResources(): Record<ResourceType, number> {

@@ -10023,6 +10023,80 @@ describe("Card", () => {
           0
         );
       });
+      it("if playing from meadow, should replenish before activating", () => {
+        const cards = [
+          CardName.KING,
+          CardName.QUEEN,
+          CardName.POET,
+          CardName.POSTAL_PIGEON,
+          CardName.FARM,
+          CardName.HUSBAND,
+          CardName.CHAPEL,
+          CardName.MONK,
+        ];
+        gameState = testInitialGameState({ meadowCards: cards });
+
+        const topOfDeck = [
+          CardName.SCHOOL,
+          CardName.TEACHER,
+          CardName.WIFE,
+          CardName.DOCTOR,
+        ];
+        topOfDeck.reverse();
+        topOfDeck.forEach((cardName) => {
+          gameState.deck.addToStack(cardName);
+        });
+
+        let player = gameState.getActivePlayer();
+
+        const card = Card.fromName(CardName.POET);
+        player.gainResources(gameState, card.baseCost);
+
+        const playCardFromMeadowInput = {
+          inputType: GameInputType.PLAY_CARD as const,
+          clientOptions: {
+            card: CardName.POET,
+            fromMeadow: true,
+            paymentOptions: {
+              resources: {
+                [ResourceType.BERRY]: 3,
+              },
+            },
+          },
+        };
+
+        gameState = gameState.next(playCardFromMeadowInput);
+        expect(
+          gameState.meadowCards.indexOf(CardName.SCHOOL)
+        ).to.be.greaterThan(0);
+
+        gameState = gameState.next({
+          inputType: GameInputType.SELECT_OPTION_GENERIC as const,
+          prevInputType: GameInputType.PLAY_CARD,
+          cardContext: CardName.POET,
+          options: [
+            "Blue / GOVERNANCE",
+            "Green / PRODUCTION",
+            "Tan / TRAVELER",
+            "Red / DESTINATION",
+            "Purple / PROSPERITY",
+          ],
+          clientOptions: {
+            selectedOption: "Purple / PROSPERITY",
+          },
+        });
+
+        player = gameState.getPlayer(player.playerId);
+
+        // should have been able to draw the school
+        expect(player.cardsInHand.includes(CardName.SCHOOL));
+        expect(player.cardsInHand.includes(CardName.KING));
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(2);
+
+        // meadow cards should get replenished
+        expect(gameState.meadowCards.includes(CardName.TEACHER));
+        expect(gameState.meadowCards.includes(CardName.WIFE));
+      });
     });
 
     describe(CardName.TEA_HOUSE, () => {

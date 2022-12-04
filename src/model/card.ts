@@ -5686,12 +5686,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
 
-      // choose a color
-      // show cards from meadow that match that option
-      // allow player to choose which cards they want
-      // grant VP
-      // replensh meadow
-
       if (gameInput.inputType === GameInputType.PLAY_CARD) {
         // if there's no space, exit + don't give VP
         if (player.numCardsInHand >= player.maxHandSize) {
@@ -5702,6 +5696,12 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           ]);
 
           return;
+        }
+
+        // From rules: if you play the Poet from the Meadow,
+        // replenish the spot first before activating the Poet
+        if (gameState.meadowCards.length < 8) {
+          gameState.replenishMeadow();
         }
 
         gameState.pendingGameInputs.push({

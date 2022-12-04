@@ -67,8 +67,8 @@ const GameInputPlayCard: React.FC<{
             meta.value &&
             meta.value.card === cardName &&
             meta.value.source === source &&
-            meta.value.sourceIdx === sourceIdx;
-          meta.value._idx === idx;
+            meta.value.sourceIdx === sourceIdx &&
+            meta.value._idx === idx;
           return (
             <div key={idx} className={styles.clickable}>
               <div

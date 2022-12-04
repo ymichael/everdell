@@ -1430,16 +1430,6 @@ describe("Location", () => {
   describe("STATION", () => {
     beforeEach(() => {
       gameState = testInitialGameState({
-        meadowCards: [
-          CardName.ARCHITECT,
-          CardName.BARD,
-          CardName.BARGE_TOAD,
-          CardName.CASTLE,
-          CardName.CEMETARY,
-          CardName.CHAPEL,
-          CardName.CHIP_SWEEP,
-          CardName.CLOCK_TOWER,
-        ],
         visitors: [VisitorName.BIM_LITTLE, VisitorName.DIM_DUSTLIGHT],
         gameOptions: { newleaf: { visitors: true } },
       });

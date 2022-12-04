@@ -60,7 +60,7 @@ const VISITOR_REGISTRY: Record<VisitorName, Visitor> = {
     baseVP: 7,
     isEligible: (player, gameState) => {
       const numDestinations = player.getNumCardType(CardType.DESTINATION);
-      return numDestinations > 6;
+      return numDestinations >= 6;
     },
   }),
   [VisitorName.BOSLEY_TEDWARDSON]: new Visitor({

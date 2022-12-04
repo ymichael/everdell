@@ -28,6 +28,7 @@ import {
 import { PlayerJSON } from "./jsonTypes";
 import { GameState } from "./gameState";
 import { Adornment } from "./adornment";
+import { Visitor } from "./visitor";
 import { Card } from "./card";
 import { Event, oldEventEnums } from "./event";
 import { Location } from "./location";
@@ -678,6 +679,15 @@ export class Player implements IGameTextEntity {
     return points;
   }
 
+  getPointsFromVisitors(gameState: GameState): number {
+    let points = 0;
+    this.visitorsSelected.forEach((visitorName) => {
+      const visitor = Visitor.fromName(visitorName as VisitorName);
+      points += visitor.getPoints(this, gameState);
+    });
+    return points;
+  }
+
   getPlayerForPoints(): Player {
     if (process.env.NODE_ENV !== "production") {
       return Player.fromJSON(this.toJSON(false /* includePrivate */));
@@ -696,6 +706,7 @@ export class Player implements IGameTextEntity {
     points += player.getPointsFromAdornments(gameState);
     points += player.getNumResourcesByType(ResourceType.VP);
     points += player.getNumResourcesByType(ResourceType.PEARL) * 2;
+    points += player.getPointsFromVisitors(gameState);
     return points;
   }
 

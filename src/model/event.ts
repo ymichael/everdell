@@ -3225,11 +3225,15 @@ export const initialEventMap = (opt: GameOptions): EventNameToPlayerId => {
     const event = Event.fromName(eventName);
     switch (event.expansion) {
       case ExpansionType.NEWLEAF:
-        return opt.newleaf?.specialEvents;
-
+        if (opt.newleaf?.specialEvents) {
+          specialEvents.push(eventName);
+        }
+        break;
       case ExpansionType.BELLFAIRE:
-        return opt.bellfaire?.specialEvents;
-
+        if (opt.bellfaire?.specialEvents) {
+          specialEvents.push(eventName);
+        }
+        break;
       case ExpansionType.SPIRECREST:
       case ExpansionType.MISTWOOD:
         break;

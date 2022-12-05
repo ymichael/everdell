@@ -46,8 +46,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
 
     player.drawCards(gameState, idx);
-    player.cardsInHand.push(CardName.RANGER);
-    player.cardsInHand.push(CardName.BARD);
+    player.addCardToHand(gameState, CardName.RANGER);
+    player.addCardToHand(gameState, CardName.BARD);
 
     player.playedAdornments.push(AdornmentName.TIARA);
 

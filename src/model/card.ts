@@ -2170,7 +2170,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
         // Need at least 2 cards to visit this card
         const player = gameState.getActivePlayer();
-        if (player.cardsInHand.length < 2) {
+        if (player.numCardsInHand < 2) {
           return `Need at least 2 cards in hand to visit ${
             CardName.POST_OFFICE
           }\n ${JSON.stringify(player.cardsInHand, null, 2)}`;
@@ -2257,7 +2257,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             label: `Select any number of CARD to discard from your hand`,
             cardContext: CardName.POST_OFFICE,
             cardOptions: player.cardsInHand,
-            maxToSelect: player.cardsInHand.length,
+            maxToSelect: player.numCardsInHand,
             minToSelect: 0,
             clientOptions: {
               selectedCards: [],
@@ -3644,7 +3644,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.PLAY_CARD) {
-        if (player.cardsInHand.length === 0) {
+        if (player.numCardsInHand === 0) {
           gameState.addGameLogFromCard(CardName.PIRATE, [
             player,
             " has no CARD to discard.",
@@ -5838,7 +5838,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     productionInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
 
-      if (player.cardsInHand.length === 0) {
+      if (player.numCardsInHand === 0) {
         gameState.addGameLogFromCard(CardName.TEA_HOUSE, [
           player,
           " did not give any CARD to opponents.",

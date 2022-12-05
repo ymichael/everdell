@@ -115,7 +115,7 @@ describe("Card", () => {
         );
 
         expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
-        expect(player.cardsInHand).to.eql([]);
+        expect(player.numCardsInHand).to.be(0);
       });
 
       it("should gain vp corresponding to no. of discarded cards", () => {
@@ -137,7 +137,7 @@ describe("Card", () => {
         ]);
 
         expect(player.getNumResourcesByType(ResourceType.VP)).to.be(2);
-        expect(player.cardsInHand).to.eql([]);
+        expect(player.numCardsInHand).to.be(0);
       });
 
       it("should not allow more than 5 discarded cards", () => {
@@ -1352,9 +1352,9 @@ describe("Card", () => {
         player.addCardToHand(gameState, card.name);
         expect(card.canPlay(gameState, gameInput)).to.be(true);
 
-        expect(player.cardsInHand).to.not.eql([]);
+        expect(player.numCardsInHand).to.not.be(0);
         [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
-        expect(player.cardsInHand).to.eql([]);
+        expect(player.numCardsInHand).to.be(0);
       });
 
       it("should spend resources after playing it", () => {
@@ -1372,7 +1372,7 @@ describe("Card", () => {
 
         [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
 
-        expect(player.cardsInHand).to.eql([]);
+        expect(player.numCardsInHand).to.be(0);
         expect(player.hasCardInCity(CardName.FARM)).to.be(true);
         expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
         expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
@@ -1590,7 +1590,7 @@ describe("Card", () => {
         [player, gameState] = multiStepGameInputTest(gameState, [
           playCardInput(cardToPlay.name),
         ]);
-        expect(player.cardsInHand).to.eql([]);
+        expect(player.numCardsInHand).to.be(0);
       });
     });
 
@@ -2295,7 +2295,7 @@ describe("Card", () => {
 
         expect(player1.numAvailableWorkers).to.be(2);
         expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
-        expect(player1.cardsInHand.length).to.be(0);
+        expect(player1.numCardsInHand).to.be(0);
 
         [player, gameState] = multiStepGameInputTest(gameState, [
           {
@@ -2329,7 +2329,7 @@ describe("Card", () => {
 
         expect(player1.numAvailableWorkers).to.be(1);
         expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
-        expect(player1.cardsInHand.length).to.be(1);
+        expect(player1.numCardsInHand).to.be(1);
       });
 
       it("should only allow player to copy a playable forest location", () => {
@@ -2352,7 +2352,7 @@ describe("Card", () => {
         player1.addToCity(gameState, CardName.LOOKOUT);
 
         expect(player1.numAvailableWorkers).to.be(1);
-        expect(player1.cardsInHand.length).to.be(0);
+        expect(player1.numCardsInHand).to.be(0);
 
         expect(() => {
           multiStepGameInputTest(gameState, [
@@ -2404,7 +2404,7 @@ describe("Card", () => {
         player1.placeWorkerOnLocation(LocationName.BASIC_TWO_CARDS_AND_ONE_VP);
 
         expect(player1.numAvailableWorkers).to.be(1);
-        expect(player1.cardsInHand.length).to.be(4);
+        expect(player1.numCardsInHand).to.be(4);
 
         [player, gameState] = multiStepGameInputTest(gameState, [
           {
@@ -2454,7 +2454,7 @@ describe("Card", () => {
         player1 = gameState.getPlayer(player1.playerId);
 
         expect(player1.numAvailableWorkers).to.be(0);
-        expect(player1.cardsInHand.length).to.be(8);
+        expect(player1.numCardsInHand).to.be(8);
       });
 
       it("should allow player to copy location with a worker on it", () => {
@@ -2464,7 +2464,7 @@ describe("Card", () => {
 
         expect(player1.numAvailableWorkers).to.be(2);
         expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
-        expect(player1.cardsInHand.length).to.be(0);
+        expect(player1.numCardsInHand).to.be(0);
 
         // note: placeWorkerOnLocation doesn't gain the placement bonus
         player1.placeWorkerOnLocation(LocationName.FOREST_TWO_BERRY_ONE_CARD);
@@ -2501,7 +2501,7 @@ describe("Card", () => {
 
         expect(player1.numAvailableWorkers).to.be(0);
         expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
-        expect(player1.cardsInHand.length).to.be(1);
+        expect(player1.numCardsInHand).to.be(1);
       });
 
       it("should allow player to copy a location with their worker on it (in a 4 player game)", () => {
@@ -2513,7 +2513,7 @@ describe("Card", () => {
 
         expect(player1.numAvailableWorkers).to.be(2);
         expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
-        expect(player1.cardsInHand.length).to.be(0);
+        expect(player1.numCardsInHand).to.be(0);
 
         // note: placeWorkerOnLocation doesn't gain the placement bonus
         player1.placeWorkerOnLocation(LocationName.FOREST_TWO_BERRY_ONE_CARD);
@@ -2550,7 +2550,7 @@ describe("Card", () => {
 
         expect(player1.numAvailableWorkers).to.be(0);
         expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(2);
-        expect(player1.cardsInHand.length).to.be(1);
+        expect(player1.numCardsInHand).to.be(1);
       });
     });
 
@@ -2885,7 +2885,7 @@ describe("Card", () => {
         const player2Id = gameState.players[1].playerId;
 
         // put player1 in the ended state
-        gameState.getPlayer(player1Id).playerStatus = PlayerStatus.GAME_ENDED;
+        gameState.getPlayer(player1Id).updateStatus(PlayerStatus.GAME_ENDED);
 
         const selectResourcesInput = {
           inputType: GameInputType.SELECT_RESOURCES as const,
@@ -2938,7 +2938,7 @@ describe("Card", () => {
         const player1Id = gameState.players[1].playerId;
 
         // put other player in the ended state
-        gameState.getPlayer(player1Id).playerStatus = PlayerStatus.GAME_ENDED;
+        gameState.getPlayer(player1Id).updateStatus(PlayerStatus.GAME_ENDED);
 
         expect(() => {
           multiStepGameInputTest(gameState, [
@@ -5035,8 +5035,8 @@ describe("Card", () => {
         player1.gainResources(gameState, card.baseCost);
         player1.addCardToHand(gameState, card.name);
 
-        expect(player1.cardsInHand.length).to.be(1);
-        expect(player2.cardsInHand.length).to.be(0);
+        expect(player1.numCardsInHand).to.be(1);
+        expect(player2.numCardsInHand).to.be(0);
 
         const selectCardInput = {
           inputType: GameInputType.SELECT_CARDS as const,
@@ -5141,7 +5141,7 @@ describe("Card", () => {
 
         const card = Card.fromName(CardName.UNDERTAKER);
 
-        expect(player.cardsInHand).to.eql([]);
+        expect(player.numCardsInHand).to.be(0);
         expect(gameState.meadowCards.indexOf(CardName.DOCTOR)).to.be.lessThan(
           0
         );
@@ -5225,7 +5225,7 @@ describe("Card", () => {
           gameState.deck.addToStack(cardName);
         });
 
-        expect(player.cardsInHand).to.eql([]);
+        expect(player.numCardsInHand).to.be(0);
 
         // Make sure we can play this card
         player.gainResources(gameState, card.baseCost);
@@ -7521,7 +7521,7 @@ describe("Card", () => {
         gameState.deck.addToStack(CardName.PALACE);
 
         expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
-        expect(player.cardsInHand.length).to.be(3);
+        expect(player.numCardsInHand).to.be(3);
 
         const selectCardInput = {
           inputType: GameInputType.SELECT_CARDS as const,
@@ -7576,7 +7576,7 @@ describe("Card", () => {
         gameState.deck.addToStack(CardName.PALACE);
 
         expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
-        expect(player.cardsInHand.length).to.be(3);
+        expect(player.numCardsInHand).to.be(3);
 
         const selectCardInput = {
           inputType: GameInputType.SELECT_CARDS as const,
@@ -8072,7 +8072,7 @@ describe("Card", () => {
         gameState.deck.addToStack(CardName.PALACE);
 
         expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
-        expect(player.cardsInHand.length).to.be(3);
+        expect(player.numCardsInHand).to.be(3);
 
         const selectCardInput = {
           inputType: GameInputType.SELECT_CARDS as const,
@@ -8127,7 +8127,7 @@ describe("Card", () => {
         gameState.deck.addToStack(CardName.PALACE);
 
         expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
-        expect(player.cardsInHand.length).to.be(3);
+        expect(player.numCardsInHand).to.be(3);
 
         const selectCardInput = {
           inputType: GameInputType.SELECT_CARDS as const,
@@ -8682,7 +8682,7 @@ describe("Card", () => {
         });
         expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
         expect(player.hasCardInCity(CardName.WIFE)).to.be(false);
-        expect(player.cardsInHand.length).to.be(2);
+        expect(player.numCardsInHand).to.be(2);
 
         [player, gameState] = multiStepGameInputTest(gameState, [
           {
@@ -9708,7 +9708,7 @@ describe("Card", () => {
         [player, gameState] = multiStepGameInputTest(gameState, [
           playCardInput(cardToPlay.name),
         ]);
-        expect(player.cardsInHand).to.eql([]);
+        expect(player.numCardsInHand).to.be(0);
       });
     });
 
@@ -10112,8 +10112,8 @@ describe("Card", () => {
         player1.gainResources(gameState, card.baseCost);
         player1.addCardToHand(gameState, card.name);
 
-        expect(player1.cardsInHand.length).to.be(3);
-        expect(player2.cardsInHand.length).to.be(0);
+        expect(player1.numCardsInHand).to.be(3);
+        expect(player2.numCardsInHand).to.be(0);
 
         gameState.deck.addToStack(CardName.FARM);
 
@@ -10182,8 +10182,8 @@ describe("Card", () => {
         player1.gainResources(gameState, card.baseCost);
         player1.addCardToHand(gameState, card.name);
 
-        expect(player1.cardsInHand.length).to.be(3);
-        expect(player2.cardsInHand.length).to.be(0);
+        expect(player1.numCardsInHand).to.be(3);
+        expect(player2.numCardsInHand).to.be(0);
 
         const selectCardInput = {
           inputType: GameInputType.SELECT_CARDS as const,
@@ -10222,8 +10222,8 @@ describe("Card", () => {
         player1.gainResources(gameState, card.baseCost);
         player1.addCardToHand(gameState, card.name);
 
-        expect(player1.cardsInHand.length).to.be(1);
-        expect(player2.cardsInHand.length).to.be(0);
+        expect(player1.numCardsInHand).to.be(1);
+        expect(player2.numCardsInHand).to.be(0);
 
         [player, gameState] = multiStepGameInputTest(gameState, [
           playCardInput(card.name),
@@ -10232,7 +10232,7 @@ describe("Card", () => {
         player1 = gameState.getPlayer(player1.playerId);
         player2 = gameState.getPlayer(player2.playerId);
 
-        expect(player1.cardsInHand.length).to.be(0);
+        expect(player1.numCardsInHand).to.be(0);
         expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
         expect(player1.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
         expect(player1.getNumResourcesByType(ResourceType.RESIN)).to.be(0);

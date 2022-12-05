@@ -100,7 +100,7 @@ const PlayerStatus: React.FC<{
             </div>
 
             <div className={styles.status_box_bio_meta}>
-              {player.playerStatus === TPlayerStatus.GAME_ENDED ? (
+              {player.getStatus() === TPlayerStatus.GAME_ENDED ? (
                 <div
                   className={[
                     styles.status_box_bio_pill,

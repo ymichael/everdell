@@ -286,7 +286,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
         locationContext: LocationName.HAVEN,
       });
       if (gameInput.inputType === GameInputType.PLACE_WORKER) {
-        if (player.cardsInHand.length < 1) {
+        if (player.numCardsInHand < 1) {
           throw new Error("must have cards to discard");
         }
 
@@ -296,7 +296,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
           prevInputType: GameInputType.PLACE_WORKER,
           locationContext: LocationName.HAVEN,
           minCards: 0,
-          maxCards: player.cardsInHand.length,
+          maxCards: player.numCardsInHand,
           clientOptions: {
             cardsToDiscard: [],
           },
@@ -494,7 +494,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.PLACE_WORKER) {
-        if (player.cardsInHand.length < 1) {
+        if (player.numCardsInHand < 1) {
           throw new Error("must have cards to discard");
         }
 
@@ -676,7 +676,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
         });
 
         if (gameInput.inputType === GameInputType.PLACE_WORKER) {
-          if (player.cardsInHand.length < 1) {
+          if (player.numCardsInHand < 1) {
             throw new Error("Must have cards to discard");
           }
 
@@ -1634,7 +1634,7 @@ function canPlayCheckInnerJourneyFactory(
     if (player.currentSeason !== Season.AUTUMN) {
       return `Cannot visit the Journey in ${player.currentSeason}`;
     }
-    if (player.cardsInHand.length < numPoints) {
+    if (player.numCardsInHand < numPoints) {
       return `Not enough cards to discard for the Journey.\n cardsInHand: ${JSON.stringify(
         player.cardsInHand,
         null,

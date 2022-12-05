@@ -1092,12 +1092,12 @@ describe("Player", () => {
 
         expect(player.hasCardInCity(CardName.INN)).to.be(true);
         expect(card.canPlay(gameState, gameInput)).to.be(true);
-        expect(player.cardsInHand).to.not.eql([]);
+        expect(player.numCardsInHand).to.not.be(0);
 
         gameState = gameState.next(gameInput);
         player = gameState.getPlayer(player.playerId);
 
-        expect(player.cardsInHand).to.eql([]);
+        expect(player.numCardsInHand).to.be(0);
         expect(player.hasUnoccupiedConstruction(CardName.INN)).to.be(false);
         expect(player.hasCardInCity(CardName.INN)).to.be(true);
         expect(player.hasCardInCity(CardName.INNKEEPER)).to.be(true);
@@ -1107,7 +1107,7 @@ describe("Player", () => {
 
         // Now INN is occupied, try to occupy it again
         player.addCardToHand(gameState, card.name);
-        expect(player.cardsInHand).to.not.eql([]);
+        expect(player.numCardsInHand).to.not.be(0);
         expect(card.canPlay(gameState, gameInput)).to.be(false);
 
         // Innkeeper is unique.
@@ -1259,7 +1259,7 @@ describe("Player", () => {
           }),
         ]);
 
-        expect(player.cardsInHand).to.eql([]);
+        expect(player.numCardsInHand).to.be(0);
         expect(player.hasUnoccupiedConstruction(CardName.GREENHOUSE)).to.be(
           false
         );
@@ -1336,11 +1336,11 @@ describe("Player", () => {
         player.addCardToHand(gameState, card.name);
         expect(player.hasCardInCity(CardName.CRANE)).to.be(true);
         expect(card.canPlay(gameState, gameInput)).to.be(true);
-        expect(player.cardsInHand).to.not.eql([]);
+        expect(player.numCardsInHand).to.not.be(0);
         const nextGameState = gameState.next(gameInput);
         player = nextGameState.getPlayer(player.playerId);
 
-        expect(player.cardsInHand).to.eql([]);
+        expect(player.numCardsInHand).to.be(0);
         expect(player.hasCardInCity(CardName.FARM)).to.be(true);
         expect(player.hasCardInCity(CardName.CRANE)).to.be(false);
       });
@@ -1360,11 +1360,11 @@ describe("Player", () => {
         player.addCardToHand(gameState, card.name);
         expect(player.hasCardInCity(CardName.INNKEEPER)).to.be(true);
         expect(card.canPlay(gameState, gameInput)).to.be(true);
-        expect(player.cardsInHand).to.not.eql([]);
+        expect(player.numCardsInHand).to.not.be(0);
         const nextGameState = gameState.next(gameInput);
         player = nextGameState.getPlayer(player.playerId);
 
-        expect(player.cardsInHand).to.eql([]);
+        expect(player.numCardsInHand).to.be(0);
         expect(player.hasCardInCity(CardName.WIFE)).to.be(true);
         expect(player.hasCardInCity(CardName.INNKEEPER)).to.be(false);
       });
@@ -1384,7 +1384,7 @@ describe("Player", () => {
         player.addCardToHand(gameState, card.name);
 
         expect(card.canPlay(gameState, gameInput)).to.be(true);
-        expect(player.cardsInHand).to.not.eql([]);
+        expect(player.numCardsInHand).to.not.be(0);
         expect(player.numAvailableWorkers).to.be(2);
         expect(player.getFirstPlayedCard(CardName.QUEEN)).to.eql({
           cardName: CardName.QUEEN,
@@ -1394,7 +1394,7 @@ describe("Player", () => {
         const nextGameState = gameState.next(gameInput);
         player = nextGameState.getPlayer(player.playerId);
 
-        expect(player.cardsInHand).to.eql([]);
+        expect(player.numCardsInHand).to.be(0);
         expect(player.hasCardInCity(CardName.WIFE)).to.be(true);
         expect(player.getFirstPlayedCard(CardName.QUEEN)).to.eql({
           cardName: CardName.QUEEN,
@@ -1440,7 +1440,7 @@ describe("Player", () => {
 
         const nextGameState = gameState.next(gameInput);
         player = nextGameState.getPlayer(player.playerId);
-        expect(player.cardsInHand).to.eql([]);
+        expect(player.numCardsInHand).to.be(0);
         expect(player.hasCardInCity(CardName.FARM)).to.be(true);
         expect(player.hasCardInCity(CardName.WIFE)).to.be(false);
         expect(player.hasCardInCity(CardName.DUNGEON)).to.be(true);

@@ -140,7 +140,7 @@ describe("Location", () => {
 
       expect(player.numAvailableWorkers).to.be(2);
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
-      expect(player.cardsInHand).to.eql([]);
+      expect(player.numCardsInHand).to.be(0);
 
       const nextGameState = gameState.next(gameInput);
       expect(location.canPlay(nextGameState, gameInput)).to.be(false);

@@ -310,7 +310,7 @@ describe("RiverDestinationMap", () => {
       player.addCardToHand(gameState, CardName.MINE);
 
       expect(player.hasUnusedAmbassador()).to.be(true);
-      expect(player.cardsInHand).to.not.eql([]);
+      expect(player.numCardsInHand).to.not.be(0);
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
       expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
 
@@ -354,7 +354,7 @@ describe("RiverDestinationMap", () => {
       player.addCardToHand(gameState, CardName.MINE);
 
       expect(player.hasUnusedAmbassador()).to.be(true);
-      expect(player.cardsInHand).to.not.eql([]);
+      expect(player.numCardsInHand).to.not.be(0);
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
       expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
 
@@ -551,7 +551,7 @@ describe("RiverDestinationMap", () => {
       player.addCardToHand(gameState, CardName.SHOPKEEPER);
 
       expect(player.hasUnusedAmbassador()).to.be(true);
-      expect(player.cardsInHand).to.not.eql([]);
+      expect(player.numCardsInHand).to.not.be(0);
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
       expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
 
@@ -595,7 +595,7 @@ describe("RiverDestinationMap", () => {
       player.addCardToHand(gameState, CardName.SHOPKEEPER);
 
       expect(player.hasUnusedAmbassador()).to.be(true);
-      expect(player.cardsInHand).to.not.eql([]);
+      expect(player.numCardsInHand).to.not.be(0);
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(0);
       expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
 

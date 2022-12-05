@@ -183,7 +183,7 @@ export class Event implements GameStatePlayable, IGameTextEntity {
           return `Player doesn't have enough resources to pay for Wonder`;
         }
 
-        if (player.cardsInHand.length < cardsNeeded) {
+        if (player.numCardsInHand < cardsNeeded) {
           return `Player doesn't have enough cards to discard for Wonder`;
         }
       }
@@ -1949,7 +1949,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
 
           maxToSelect = gameInput.maxToSelect - cardsToGive.length;
         }
-        if (maxToSelect > 0 && player.cardsInHand.length > 0) {
+        if (maxToSelect > 0 && player.numCardsInHand > 0) {
           gameState.pendingGameInputs.push({
             inputType: GameInputType.SELECT_PLAYER,
             prevInput: gameInput,

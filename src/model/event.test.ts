@@ -1482,7 +1482,7 @@ describe("Event", () => {
       ]);
 
       // player should have 0 cards in hand
-      expect(player.cardsInHand.length).to.be(0);
+      expect(player.numCardsInHand).to.be(0);
 
       const eventInfo = player.getClaimedEvent(
         EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED
@@ -2375,7 +2375,7 @@ describe("Event", () => {
 
       expect(event.canPlay(gameState, gameInput)).to.be(false);
       expect(player.getPoints(gameState)).to.be(10);
-      expect(player.cardsInHand.length).to.be(2);
+      expect(player.numCardsInHand).to.be(2);
       expect(player.cardsInHand).to.eql([
         CardName.WIFE,
         CardName.POSTAL_PIGEON,
@@ -2468,7 +2468,7 @@ describe("Event", () => {
 
       expect(event.canPlay(gameState, gameInput)).to.be(false);
       expect(player.getPoints(gameState)).to.be(15);
-      expect(player.cardsInHand.length).to.be(2);
+      expect(player.numCardsInHand).to.be(2);
       expect(player.cardsInHand).to.eql([
         CardName.WIFE,
         CardName.POSTAL_PIGEON,
@@ -2565,7 +2565,7 @@ describe("Event", () => {
 
       expect(event.canPlay(gameState, gameInput)).to.be(false);
       expect(player.getPoints(gameState)).to.be(20);
-      expect(player.cardsInHand.length).to.be(1);
+      expect(player.numCardsInHand).to.be(1);
       expect(player.cardsInHand).to.eql([CardName.WIFE]);
     });
 
@@ -2659,7 +2659,7 @@ describe("Event", () => {
 
       expect(event.canPlay(gameState, gameInput)).to.be(false);
       expect(player.getPoints(gameState)).to.be(25);
-      expect(player.cardsInHand.length).to.be(1);
+      expect(player.numCardsInHand).to.be(1);
       expect(player.cardsInHand).to.eql([CardName.WIFE]);
     });
 
@@ -4255,7 +4255,7 @@ describe("Event", () => {
       [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
 
       expect(player.getClaimedEvent(EventName.SPECIAL_MASQUERADE_INVITATIONS));
-      expect(player.cardsInHand).to.eql([]);
+      expect(player.numCardsInHand).to.be(0);
       expect(player.getPointsFromEvents(gameState)).to.be(0);
     });
 
@@ -5546,7 +5546,7 @@ describe("Event", () => {
 
       expect(player.getClaimedEvent(EventName.SPECIAL_ROYAL_WEDDING));
       expect(player.getPointsFromEvents(gameState)).to.be(6);
-      expect(player.cardsInHand.length).to.be(0);
+      expect(player.numCardsInHand).to.be(0);
       expect(player.getNumCardsInCity()).to.be(4);
     });
     it("should not allow player to claim event if conditions not met", () => {

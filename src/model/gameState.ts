@@ -371,7 +371,7 @@ export class GameState {
       const startIdx = playerTurnOrder.indexOf(player);
       for (let i = startIdx + 1; i < playerTurnOrder.length; i++) {
         // Find the first next player that doesn't have a GAME_ENDED status.
-        if (playerTurnOrder[i].playerStatus !== PlayerStatus.GAME_ENDED) {
+        if (playerTurnOrder[i].getStatus() !== PlayerStatus.GAME_ENDED) {
           this._activePlayerId = playerTurnOrder[i].playerId;
           break;
         }
@@ -382,7 +382,7 @@ export class GameState {
   // returns list of players who do not have the GAME_END playerStatus
   getRemainingPlayers(): Player[] {
     return this.players.filter((player) => {
-      return player.playerStatus !== PlayerStatus.GAME_ENDED;
+      return player.getStatus() !== PlayerStatus.GAME_ENDED;
     });
   }
 
@@ -390,7 +390,7 @@ export class GameState {
   getRemainingPlayersExceptActivePlayer(): Player[] {
     return this.players.filter((player) => {
       return (
-        player.playerStatus !== PlayerStatus.GAME_ENDED &&
+        player.getStatus() !== PlayerStatus.GAME_ENDED &&
         player.playerId !== this.activePlayerId
       );
     });
@@ -399,7 +399,7 @@ export class GameState {
   // returns list of players who have space in their hands
   getPlayersWithHandSpace(): Player[] {
     return this.players.filter((player) => {
-      return player.cardsInHand.length < player.maxHandSize;
+      return player.numCardsInHand < player.maxHandSize;
     });
   }
 
@@ -1184,13 +1184,13 @@ export class GameState {
     if (player.numAvailableWorkers !== 0) {
       throw new Error("Still have available workers");
     }
-    if (player.playerStatus !== PlayerStatus.DURING_SEASON) {
-      throw new Error(`Unexpected playerStatus: ${player.playerStatus}`);
+    if (player.getStatus() !== PlayerStatus.DURING_SEASON) {
+      throw new Error(`Unexpected playerStatus: ${player.getStatus()}`);
     }
 
     this.addGameLog([player, " took the prepare for season action."]);
 
-    player.playerStatus = PlayerStatus.PREPARING_FOR_SEASON;
+    player.updateStatus(PlayerStatus.PREPARING_FOR_SEASON);
 
     if (player.hasCardInCity(CardName.CLOCK_TOWER)) {
       const clocktower = Card.fromName(CardName.CLOCK_TOWER);
@@ -1243,9 +1243,9 @@ export class GameState {
     } else {
       // if the player is at max hand size, don't make them
       // draw/discard cards from the meadow
-      if (player.cardsInHand.length < player.maxHandSize) {
+      if (player.numCardsInHand < player.maxHandSize) {
         const cardsToTake =
-          player.cardsInHand.length === player.maxHandSize - 1 ? 1 : 2;
+          player.numCardsInHand === player.maxHandSize - 1 ? 1 : 2;
 
         this.pendingGameInputs.push({
           inputType: GameInputType.SELECT_CARDS,
@@ -1268,7 +1268,7 @@ export class GameState {
       }
     }
 
-    player.playerStatus = PlayerStatus.DURING_SEASON;
+    player.updateStatus(PlayerStatus.DURING_SEASON);
     player.recallWorkers(this);
     this.addGameLog([
       { type: "em", text: "Prepare for season" },
@@ -1305,7 +1305,7 @@ export class GameState {
     if (player.currentSeason !== Season.AUTUMN) {
       throw new Error("Cannot end game unless you're in Autumn");
     }
-    player.playerStatus = PlayerStatus.GAME_ENDED;
+    player.updateStatus(PlayerStatus.GAME_ENDED);
     this.addGameLog([player, ` took the game end action.`]);
   }
 
@@ -1384,7 +1384,7 @@ export class GameState {
     // A player is preparing for season, complete that first.
     if (
       this.pendingGameInputs.length === 0 &&
-      player.playerStatus === PlayerStatus.PREPARING_FOR_SEASON
+      player.getStatus() === PlayerStatus.PREPARING_FOR_SEASON
     ) {
       this.prepareForSeason(player, gameInput);
     }
@@ -1452,7 +1452,7 @@ export class GameState {
     }
     if (
       pendingInput.inputType === GameInputType.DISCARD_CARDS &&
-      pendingInput.minCards === player.cardsInHand.length
+      pendingInput.minCards === player.numCardsInHand
     ) {
       return {
         ...pendingInput,

@@ -53,8 +53,8 @@ const CARDS_THAT_DONT_TAKE_SPACE: CardName[] = [
 export class Player implements IGameTextEntity {
   private playerSecret: string;
 
-  public name: string;
-  public playerId: string;
+  readonly name: string;
+  readonly playerId: string;
 
   public cardsInHand: CardName[];
   private _currentSeason: Season;
@@ -70,7 +70,7 @@ export class Player implements IGameTextEntity {
   private numAmbassadors: number;
   private _numGoldenLeaf: number;
 
-  public playerStatus: PlayerStatus;
+  private playerStatus: PlayerStatus;
 
   private adornmentsInHand: AdornmentName[];
   private _numAdornmentsInHand: number | null;
@@ -173,6 +173,15 @@ export class Player implements IGameTextEntity {
     }
   }
 
+  updateStatus(status: PlayerStatus): void {
+    // TODO validation
+    this.playerStatus = status;
+  }
+
+  getStatus(): PlayerStatus {
+    return this.playerStatus;
+  }
+
   get maxCitySize(): number {
     const MAX_CITY_SIZE = 15;
     let citySize = MAX_CITY_SIZE;
@@ -196,13 +205,13 @@ export class Player implements IGameTextEntity {
   }
 
   drawMaxCards(gameState: GameState): number {
-    const numDrawn = this.maxHandSize - this.cardsInHand.length;
+    const numDrawn = this.maxHandSize - this.numCardsInHand;
     this.drawCards(gameState, numDrawn);
     return numDrawn;
   }
 
   addCardToHand(gameState: GameState, cardName: CardName): void {
-    if (this.cardsInHand.length < this.maxHandSize) {
+    if (this.numCardsInHand < this.maxHandSize) {
       this.cardsInHand.push(cardName);
       if (this._numCardsInHand !== null) {
         this._numCardsInHand++;

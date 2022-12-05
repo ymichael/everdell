@@ -190,7 +190,7 @@ export class RiverDestinationMap {
         return `Not enough resources to visit shoal.`;
       }
 
-      if (player.cardsInHand.length < 2) {
+      if (player.numCardsInHand < 2) {
         return `Not enough cards to visit shoal.`;
       }
     }
@@ -463,7 +463,7 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
         if (player.getNumCardCostResources() < 2) {
           return "Not enough resources to spend.";
         }
-        if (player.cardsInHand.length < 2) {
+        if (player.numCardsInHand < 2) {
           return "Not enough cards to discard.";
         }
       }

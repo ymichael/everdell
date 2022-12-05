@@ -378,7 +378,7 @@ describe("GameState", () => {
       gameState.nextPlayer();
       expect(gameState.getActivePlayer().playerId).to.be(player1Id);
 
-      gameState.getActivePlayer().playerStatus = PlayerStatus.GAME_ENDED;
+      gameState.getActivePlayer().updateStatus(PlayerStatus.GAME_ENDED);
       gameState.nextPlayer();
       expect(gameState.getActivePlayer().playerId).to.be(player2Id);
       gameState.nextPlayer();
@@ -390,7 +390,7 @@ describe("GameState", () => {
       gameState.nextPlayer();
       expect(gameState.getActivePlayer().playerId).to.be(player2Id);
 
-      gameState.getActivePlayer().playerStatus = PlayerStatus.GAME_ENDED;
+      gameState.getActivePlayer().updateStatus(PlayerStatus.GAME_ENDED);
       gameState.nextPlayer();
       expect(gameState.getActivePlayer().playerId).to.be(player3Id);
 
@@ -401,7 +401,7 @@ describe("GameState", () => {
       gameState.nextPlayer();
       expect(gameState.getActivePlayer().playerId).to.be(player3Id);
 
-      gameState.getActivePlayer().playerStatus = PlayerStatus.GAME_ENDED;
+      gameState.getActivePlayer().updateStatus(PlayerStatus.GAME_ENDED);
       gameState.nextPlayer();
       expect(gameState.getActivePlayer().playerId).to.be(player0Id);
 
@@ -412,7 +412,7 @@ describe("GameState", () => {
       gameState.nextPlayer();
       expect(gameState.getActivePlayer().playerId).to.be(player0Id);
 
-      gameState.getActivePlayer().playerStatus = PlayerStatus.GAME_ENDED;
+      gameState.getActivePlayer().updateStatus(PlayerStatus.GAME_ENDED);
       gameState.nextPlayer();
       expect(gameState.getActivePlayer().playerId).to.be(player0Id);
     });
@@ -495,29 +495,33 @@ describe("GameState", () => {
       expect(remainingPlayers).to.eql([player0, player1, player2, player3]);
 
       // player1 has ended
-      gameState.getPlayer(player1.playerId).playerStatus =
-        PlayerStatus.GAME_ENDED;
+      gameState
+        .getPlayer(player1.playerId)
+        .updateStatus(PlayerStatus.GAME_ENDED);
       remainingPlayers = gameState.getRemainingPlayers();
       expect(remainingPlayers.length).to.be(3);
       expect(remainingPlayers).to.eql([player0, player2, player3]);
 
       // player3 has ended
-      gameState.getPlayer(player3.playerId).playerStatus =
-        PlayerStatus.GAME_ENDED;
+      gameState
+        .getPlayer(player3.playerId)
+        .updateStatus(PlayerStatus.GAME_ENDED);
       remainingPlayers = gameState.getRemainingPlayers();
       expect(remainingPlayers.length).to.be(2);
       expect(remainingPlayers).to.eql([player0, player2]);
 
       // player0 has ended
-      gameState.getPlayer(player0.playerId).playerStatus =
-        PlayerStatus.GAME_ENDED;
+      gameState
+        .getPlayer(player0.playerId)
+        .updateStatus(PlayerStatus.GAME_ENDED);
       remainingPlayers = gameState.getRemainingPlayers();
       expect(remainingPlayers.length).to.be(1);
       expect(remainingPlayers).to.eql([player2]);
 
       // player2 has ended, no remaining players
-      gameState.getPlayer(player2.playerId).playerStatus =
-        PlayerStatus.GAME_ENDED;
+      gameState
+        .getPlayer(player2.playerId)
+        .updateStatus(PlayerStatus.GAME_ENDED);
       remainingPlayers = gameState.getRemainingPlayers();
       expect(remainingPlayers.length).to.be(0);
       expect(remainingPlayers).to.eql([]);
@@ -552,8 +556,9 @@ describe("GameState", () => {
       ]);
 
       // put player2 in end state
-      gameState.getPlayer(player2.playerId).playerStatus =
-        PlayerStatus.GAME_ENDED;
+      gameState
+        .getPlayer(player2.playerId)
+        .updateStatus(PlayerStatus.GAME_ENDED);
       remainingPlayersExceptActivePlayer = gameState.getRemainingPlayersExceptActivePlayer();
       expect(remainingPlayersExceptActivePlayer.length).to.be(2);
       expect(remainingPlayersExceptActivePlayer).to.eql([player0, player3]);
@@ -565,8 +570,9 @@ describe("GameState", () => {
       expect(remainingPlayersExceptActivePlayer).to.eql([player0, player1]);
 
       // put active player in end state
-      gameState.getPlayer(player3.playerId).playerStatus =
-        PlayerStatus.GAME_ENDED;
+      gameState
+        .getPlayer(player3.playerId)
+        .updateStatus(PlayerStatus.GAME_ENDED);
       remainingPlayersExceptActivePlayer = gameState.getRemainingPlayersExceptActivePlayer();
       expect(remainingPlayersExceptActivePlayer.length).to.be(2);
       expect(remainingPlayersExceptActivePlayer).to.eql([player0, player1]);
@@ -587,12 +593,15 @@ describe("GameState", () => {
       ]);
 
       // put player2 in end state
-      gameState.getPlayer(player1.playerId).playerStatus =
-        PlayerStatus.GAME_ENDED;
-      gameState.getPlayer(player2.playerId).playerStatus =
-        PlayerStatus.GAME_ENDED;
-      gameState.getPlayer(player3.playerId).playerStatus =
-        PlayerStatus.GAME_ENDED;
+      gameState
+        .getPlayer(player1.playerId)
+        .updateStatus(PlayerStatus.GAME_ENDED);
+      gameState
+        .getPlayer(player2.playerId)
+        .updateStatus(PlayerStatus.GAME_ENDED);
+      gameState
+        .getPlayer(player3.playerId)
+        .updateStatus(PlayerStatus.GAME_ENDED);
       remainingPlayersExceptActivePlayer = gameState.getRemainingPlayersExceptActivePlayer();
       expect(remainingPlayersExceptActivePlayer.length).to.be(0);
       expect(remainingPlayersExceptActivePlayer).to.eql([]);
@@ -617,7 +626,7 @@ describe("GameState", () => {
       [player, gameState] = multiStepGameInputTest(gameState, [
         playCardInput(CardName.FARM, { source: "HAND" }),
       ]);
-      expect(player.cardsInHand.length).to.be(0);
+      expect(player.numCardsInHand).to.be(0);
       expect(player.hasCardInCity(CardName.FARM)).to.be(true);
     });
 
@@ -1653,7 +1662,7 @@ describe("GameState", () => {
       topOfDeck.forEach((x) => gameState.deck.addToStack(x));
 
       expect(player.currentSeason).to.be(Season.SPRING);
-      expect(player.cardsInHand).to.eql([]);
+      expect(player.numCardsInHand).to.be(0);
 
       gameState.replenishMeadow();
       expect(gameState.meadowCards).to.eql([
@@ -1915,7 +1924,7 @@ describe("GameState", () => {
 
       gameState = gameState.next({ inputType: GameInputType.GAME_END });
       player1 = gameState.getPlayer(player1.playerId);
-      expect(player1.playerStatus).to.be(PlayerStatus.GAME_ENDED);
+      expect(player1.getStatus()).to.be(PlayerStatus.GAME_ENDED);
     });
   });
 

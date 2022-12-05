@@ -66,7 +66,7 @@ export class Visitor {
         this.resourceRequirements
       )) {
         if (
-          player.getNumResourcesByType(resourceType as ResourceType) <
+          player.getNumResourcesByType(resourceType as ResourceType, true) <
           numRequired
         ) {
           return 0;
@@ -309,7 +309,6 @@ const VISITOR_REGISTRY: Record<VisitorName, Visitor> = {
   }),
   [VisitorName.SKIN_SHINYSNOUT]: new Visitor({
     name: VisitorName.SKIN_SHINYSNOUT,
-    // TODO: won't count VP on cards
     description: toGameText(["At least 10 point tokens."]),
     baseVP: 5,
     resourceRequirements: {

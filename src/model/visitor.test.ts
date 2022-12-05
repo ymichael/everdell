@@ -1,7 +1,13 @@
 import expect from "expect.js";
 import { GameState } from "./gameState";
 import { Player } from "./player";
-import { CardName, EventName, ResourceType, VisitorName } from "./types";
+import {
+  CardName,
+  EventName,
+  LocationName,
+  ResourceType,
+  VisitorName,
+} from "./types";
 import { testInitialGameState } from "./testHelpers";
 
 describe("Visitor", () => {
@@ -15,6 +21,7 @@ describe("Visitor", () => {
     });
   });
 
+  // individual cards
   describe(VisitorName.BIM_LITTLE, () => {
     it("gives points when player has at least 6 destination cards in city when claimed", () => {
       player = gameState.getActivePlayer();
@@ -248,11 +255,32 @@ describe("Visitor", () => {
       expect(player.getPointsFromVisitors(gameState)).to.be(5);
     });
   });
-  describe.skip(VisitorName.ORIN_NIMBLEPAW, () => {
+  describe(VisitorName.ORIN_NIMBLEPAW, () => {
     it("gives correct number of points when claimed", () => {
       player = gameState.getActivePlayer();
       player.claimedVisitors?.push(VisitorName.ORIN_NIMBLEPAW);
-      expect(false);
+
+      player.cardsInHand = [
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+      ];
+
+      player.nextSeason();
+      player.nextSeason();
+      player.nextSeason();
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(0);
+      player.placeWorkerOnLocation(LocationName.JOURNEY_TWO);
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(0);
+      player.placeWorkerOnLocation(LocationName.JOURNEY_TWO);
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(6);
     });
   });
   describe(VisitorName.OSCAR_LONGTALE, () => {
@@ -302,6 +330,23 @@ describe("Visitor", () => {
       player.gainResources(gameState, { [ResourceType.TWIG]: 5 });
 
       expect(player.getPointsFromVisitors(gameState)).to.be(6);
+    });
+    it("gives correctly counts resources stored on cards and events", () => {
+      player = gameState.getActivePlayer();
+      player.claimedVisitors?.push(VisitorName.PIFF_QUILLGLOW);
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+
+      player.addToCity(gameState, CardName.FREIGHT_CAR);
+      expect(player.getPointsFromVisitors(gameState)).to.be(0);
+
+      player.claimedEvents[EventName.SPECIAL_AN_EVENING_OF_FIREWORKS] = {
+        storedResources: { [ResourceType.TWIG]: 3 },
+      };
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(6);
+      expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
     });
   });
   describe(VisitorName.PLUM_SHORTCLAW, () => {
@@ -429,11 +474,20 @@ describe("Visitor", () => {
       expect(player.getPointsFromVisitors(gameState)).to.be(7);
     });
   });
-  describe.skip(VisitorName.SKIN_SHINYSNOUT, () => {
+  describe(VisitorName.SKIN_SHINYSNOUT, () => {
     it("gives correct number of points when claimed", () => {
       player = gameState.getActivePlayer();
       player.claimedVisitors?.push(VisitorName.SKIN_SHINYSNOUT);
-      expect(false);
+
+      player.addToCity(gameState, CardName.CHAPEL);
+      player.getPlayedCardForCardName(CardName.CHAPEL).forEach((info) => {
+        info.resources = { [ResourceType.VP]: 2 };
+      });
+
+      expect(player.getPointsFromVisitors(gameState)).to.be(0);
+
+      player.gainResources(gameState, { [ResourceType.VP]: 8 });
+      expect(player.getPointsFromVisitors(gameState)).to.be(5);
     });
   });
   describe(VisitorName.SNOUT_PUDDLEHOP, () => {

@@ -759,8 +759,40 @@ export class Player implements IGameTextEntity {
     return sumResources(this.resources);
   }
 
-  getNumResourcesByType(resourceType: ResourceType): number {
-    return this.resources[resourceType] || 0;
+  getNumResourcesByType(
+    resourceType: ResourceType,
+    includeStoredResources: boolean = false
+  ): number {
+    let numResources = this.resources[resourceType] || 0;
+
+    if (includeStoredResources) {
+      switch (resourceType) {
+        case ResourceType.TWIG:
+        case ResourceType.PEBBLE:
+        case ResourceType.RESIN:
+        case ResourceType.BERRY:
+        case ResourceType.VP:
+          this.forEachPlayedCard(({ resources = {} }) => {
+            numResources += resources[resourceType] || 0;
+          });
+
+          Object.keys(this.claimedEvents).forEach((eventName) => {
+            const eventInfo = this.claimedEvents[eventName as EventName];
+            if (eventInfo && eventInfo.storedResources) {
+              numResources += eventInfo.storedResources[resourceType] || 0;
+            }
+          });
+          break;
+
+        case ResourceType.PEARL:
+          break;
+
+        default:
+          assertUnreachable(resourceType, "unexpected ResourceType");
+      }
+    }
+
+    return numResources;
   }
 
   getPlayedConstructions(): PlayedCardInfo[] {

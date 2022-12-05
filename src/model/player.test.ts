@@ -5,6 +5,7 @@ import { testInitialGameState, multiStepGameInputTest } from "./testHelpers";
 import {
   ResourceType,
   CardName,
+  EventName,
   GameInputType,
   GameInputPlayCard,
   LocationName,
@@ -1594,6 +1595,63 @@ describe("Player", () => {
       const player = gameState.getActivePlayer();
       player.addToCityMulti(gameState, [CardName.CLOCK_TOWER]);
       expect(player.getPoints(gameState)).to.be(3);
+    });
+  });
+
+  describe("getNumResourcesByType", () => {
+    it("Should calculate number of resources by type that a player has availale to use", () => {
+      const player = gameState.getActivePlayer();
+
+      expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+
+      player.gainResources(gameState, {
+        [ResourceType.PEBBLE]: 2,
+        [ResourceType.BERRY]: 5,
+      });
+
+      expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(2);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(5);
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+
+      player.gainResources(gameState, {
+        [ResourceType.RESIN]: 4,
+        [ResourceType.TWIG]: 3,
+        [ResourceType.VP]: 9,
+        [ResourceType.BERRY]: 7,
+      });
+
+      expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(3);
+      expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(4);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(2);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(12);
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(9);
+    });
+    it("Should be able to include or exclude stored resources", () => {
+      const player = gameState.getActivePlayer();
+
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+
+      player.addToCity(gameState, CardName.CLOCK_TOWER);
+
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.VP, true)).to.be(3);
+
+      player.claimedEvents[EventName.SPECIAL_AN_EVENING_OF_FIREWORKS] = {
+        storedResources: { [ResourceType.TWIG]: 2 },
+      };
+
+      expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.TWIG, true)).to.be(2);
+
+      player.gainResources(gameState, { [ResourceType.TWIG]: 5 });
+      expect(player.getNumResourcesByType(ResourceType.TWIG)).to.be(5);
+      expect(player.getNumResourcesByType(ResourceType.TWIG, true)).to.be(7);
     });
   });
 });

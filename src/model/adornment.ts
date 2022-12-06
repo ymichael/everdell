@@ -506,7 +506,8 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
         if (card.baseVP > 3) {
           throw new Error("Cannot play a card worth more than 3 base VP");
         }
-        const cardExistInHand = player.getCardsInHand().indexOf(card.name) !== -1;
+        const cardExistInHand =
+          player.getCardsInHand().indexOf(card.name) !== -1;
         const cardExistInMeadow =
           gameState.meadowCards.indexOf(card.name) !== -1;
 

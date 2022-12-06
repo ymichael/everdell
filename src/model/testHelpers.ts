@@ -98,8 +98,14 @@ export function testInitialGameState(
   }
 
   gameState.players.forEach((player) => {
-    player.cardsInHand = [...cardsInHand];
+    [...player.cardsInHand].forEach((cardName) => {
+      player.removeCardFromHand(gameState, cardName, false);
+    });
+    cardsInHand.forEach((cardName) => {
+      player.addCardToHand(gameState, cardName);
+    });
   });
+
   (Object.keys(gameState.locationsMap) as LocationName[]).forEach(
     (locationName) => {
       const location = Location.fromName(locationName);

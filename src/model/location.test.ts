@@ -930,19 +930,10 @@ describe("Location", () => {
       );
 
       player = gameState.getActivePlayer();
-      const cardsInHand = [
-        CardName.FARM,
-        CardName.FARM,
-        CardName.FARM,
-        CardName.FARM,
-        CardName.FARM,
-        CardName.FARM,
-        CardName.FARM,
-        CardName.FARM,
-      ];
 
       // Player hand is full
-      player.cardsInHand = cardsInHand;
+      player.drawMaxCards(gameState);
+      const cardsInHand = [...player.cardsInHand];
 
       const gameInput = placeWorkerInput(location.name);
       gameState.locationsMap[
@@ -1488,13 +1479,9 @@ describe("Location", () => {
       it("cannot be played until autumn", () => {
         const location = Location.fromName(locationName);
         const gameInput = placeWorkerInput(locationName);
-        player.cardsInHand = [
-          CardName.FARM,
-          CardName.FARM,
-          CardName.FARM,
-          CardName.FARM,
-          CardName.FARM,
-        ];
+        for (let i = 0; i < 5; i++) {
+          player.addCardToHand(gameState, CardName.FARM);
+        }
 
         expect(player.currentSeason).to.be(Season.WINTER);
         expect(location.canPlay(gameState, gameInput)).to.be(false);
@@ -1527,13 +1514,7 @@ describe("Location", () => {
         player.addCardToHand(gameState, CardName.RUINS);
         expect(location.canPlay(gameState, gameInput)).to.be(false);
 
-        player.cardsInHand = [
-          CardName.FARM,
-          CardName.FARM,
-          CardName.FARM,
-          CardName.FARM,
-          CardName.FARM,
-        ];
+        player.drawCards(gameState, 5);
         expect(location.canPlay(gameState, gameInput)).to.be(true);
       });
     });

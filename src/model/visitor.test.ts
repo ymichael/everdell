@@ -260,15 +260,7 @@ describe("Visitor", () => {
       player = gameState.getActivePlayer();
       player.claimedVisitors?.push(VisitorName.ORIN_NIMBLEPAW);
 
-      player.cardsInHand = [
-        CardName.FARM,
-        CardName.FARM,
-        CardName.FARM,
-        CardName.FARM,
-        CardName.FARM,
-        CardName.FARM,
-        CardName.FARM,
-      ];
+      player.drawMaxCards(gameState);
 
       player.nextSeason();
       player.nextSeason();

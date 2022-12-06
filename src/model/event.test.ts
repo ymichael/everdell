@@ -222,13 +222,11 @@ describe("Event", () => {
       player.addToCity(gameState, CardName.TEACHER);
       player.addToCity(gameState, CardName.UNIVERSITY);
 
-      player.cardsInHand = [
-        CardName.POSTAL_PIGEON,
-        CardName.HUSBAND,
-        CardName.WIFE,
-        CardName.FOOL,
-        CardName.FARM,
-      ];
+      player.addCardToHand(gameState, CardName.POSTAL_PIGEON);
+      player.addCardToHand(gameState, CardName.HUSBAND);
+      player.addCardToHand(gameState, CardName.WIFE);
+      player.addCardToHand(gameState, CardName.FOOL);
+      player.addCardToHand(gameState, CardName.FARM);
 
       // Check if the player can claim the event
       expect(event.canPlay(gameState, gameInput)).to.be(true);

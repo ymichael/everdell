@@ -56,7 +56,7 @@ export class Player implements IGameTextEntity {
   readonly name: string;
   readonly playerId: string;
 
-  public cardsInHand: CardName[];
+  readonly cardsInHand: CardName[];
   private _currentSeason: Season;
   private _numCardsInHand: number | null;
 
@@ -79,7 +79,7 @@ export class Player implements IGameTextEntity {
   private reservedCard: CardName | "UNUSED" | "USED";
   private _trainTicketStatus: TrainTicketStatus | null;
 
-  public claimedVisitors: VisitorName[];
+  readonly claimedVisitors: VisitorName[];
 
   constructor({
     name,

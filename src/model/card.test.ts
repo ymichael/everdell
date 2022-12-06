@@ -142,7 +142,7 @@ describe("Card", () => {
 
       it("should not allow more than 5 discarded cards", () => {
         const card = Card.fromName(CardName.BARD);
-        player.cardsInHand = [
+        const cards = [
           CardName.BARD,
           CardName.FARM,
           CardName.RUINS,
@@ -151,6 +151,8 @@ describe("Card", () => {
           CardName.FARM,
           CardName.RUINS,
         ];
+        cards.reverse();
+        cards.forEach((c) => player.addCardToHand(gameState, c));
         player.gainResources(gameState, card.baseCost);
         expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
 
@@ -2392,12 +2394,9 @@ describe("Card", () => {
         ] = [];
         let player1 = gameState.getActivePlayer();
         player1.addToCity(gameState, CardName.LOOKOUT);
-        player1.cardsInHand = [
-          CardName.FARM,
-          CardName.FARM,
-          CardName.FARM,
-          CardName.FARM,
-        ];
+        for (let i = 0; i < 4; i++) {
+          player1.addCardToHand(gameState, CardName.FARM);
+        }
         gameState.locationsMap[LocationName.BASIC_TWO_CARDS_AND_ONE_VP] = [
           player1.playerId,
         ];
@@ -3605,12 +3604,11 @@ describe("Card", () => {
       it("should give another player 2 cards and draw max cards", () => {
         let targetPlayer = gameState.players[1];
 
-        player.cardsInHand = [
-          CardName.FARM,
-          CardName.MINE,
-          CardName.QUEEN,
-          CardName.KING,
-        ];
+        player.addCardToHand(gameState, CardName.FARM);
+        player.addCardToHand(gameState, CardName.MINE);
+        player.addCardToHand(gameState, CardName.QUEEN);
+        player.addCardToHand(gameState, CardName.KING);
+
         player.addToCity(gameState, CardName.POST_OFFICE);
 
         expect(player.numAvailableWorkers).to.be(2);

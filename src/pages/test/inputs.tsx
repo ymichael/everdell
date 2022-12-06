@@ -191,7 +191,9 @@ export default function TestGameInputPage(props: { gameJSON: GameJSON }) {
   gameStateCourthouse
     .getActivePlayer()
     .addToCity(gameStateCourthouse, CardName.COURTHOUSE);
-  gameStateCourthouse.getActivePlayer().cardsInHand.push(CardName.FAIRGROUNDS);
+  gameStateCourthouse
+    .getActivePlayer()
+    .addCardToHand(gameState, CardName.FAIRGROUNDS);
   gameStateCourthouse = gameStateCourthouse.next({
     inputType: GameInputType.PLAY_CARD,
     clientOptions: {
@@ -338,7 +340,7 @@ export default function TestGameInputPage(props: { gameJSON: GameJSON }) {
       ].map((cardName) => {
         let gameStateX = gameState.clone();
         const card = Card.fromName(cardName);
-        gameStateX.getActivePlayer().cardsInHand.push(cardName);
+        gameStateX.getActivePlayer().addCardToHand(gameStateX, cardName);
         gameStateX = gameStateX.next({
           inputType: GameInputType.PLAY_CARD,
           clientOptions: {

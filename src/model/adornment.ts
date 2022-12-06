@@ -89,7 +89,7 @@ export class Adornment implements GameStatePlayable, IGameTextEntity {
       if (idx === -1) {
         return "May only play adornments that are in your hand";
       }
-      const playedAdornments = player.playedAdornments;
+      const playedAdornments = player.getPlayedAdornments();
       idx = playedAdornments.indexOf(adornment);
       if (idx !== -1) {
         return "Cannot play an adornment that's already been played";
@@ -466,7 +466,7 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
       if (gameInput.inputType === GameInputType.PLAY_ADORNMENT) {
         // Find all playable cards worth up to 3 baseVP
         const playableCards: CardName[] = [];
-        [...player.cardsInHand, ...gameState.meadowCards].forEach(
+        [...player.getCardsInHand(), ...gameState.meadowCards].forEach(
           (cardName) => {
             const card = Card.fromName(cardName as CardName);
             if (
@@ -506,7 +506,7 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
         if (card.baseVP > 3) {
           throw new Error("Cannot play a card worth more than 3 base VP");
         }
-        const cardExistInHand = player.cardsInHand.indexOf(card.name) !== -1;
+        const cardExistInHand = player.getCardsInHand().indexOf(card.name) !== -1;
         const cardExistInMeadow =
           gameState.meadowCards.indexOf(card.name) !== -1;
 
@@ -626,7 +626,7 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
         );
         const adornmentOptions: AdornmentName[] = [];
         players.forEach((player) => {
-          const playedAdornments = player.playedAdornments;
+          const playedAdornments = player.getPlayedAdornments();
           adornmentOptions.push(...playedAdornments);
         });
 
@@ -703,7 +703,7 @@ const ADORNMENT_REGISTRY: Record<AdornmentName, Adornment> = {
           prevInputType: GameInputType.PLAY_ADORNMENT,
           label: ["Select up to 4 CARD to discard to gain 1 ANY for each."],
           adornmentContext: AdornmentName.SCALES,
-          cardOptions: player.cardsInHand,
+          cardOptions: player.getCardsInHand(),
           maxToSelect: 4,
           minToSelect: 0,
           clientOptions: {

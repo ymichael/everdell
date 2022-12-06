@@ -508,7 +508,7 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
           prevInputType: gameInput.inputType,
           label: "Discard 2 CARD (to gain 1 PEARL)",
           riverDestinationContext: RiverDestinationName.SHOAL,
-          cardOptions: player.cardsInHand,
+          cardOptions: player.getCardsInHand(),
           maxToSelect: 2,
           minToSelect: 2,
           clientOptions: {
@@ -565,7 +565,7 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.PLACE_AMBASSADOR) {
         const numCardTypesInHand = uniq(
-          player.cardsInHand.map((cardName) => {
+          player.getCardsInHand().map((cardName) => {
             return Card.fromName(cardName).cardType;
           })
         ).length;
@@ -580,7 +580,7 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
             { type: "em", text: "different colored" },
             "  CARD to discard to gain 1 VP and 1 PEARL (or none to skip action)",
           ],
-          cardOptions: player.cardsInHand,
+          cardOptions: player.getCardsInHand(),
           maxToSelect: 3,
           minToSelect: 0,
           riverDestinationContext: RiverDestinationName.BOSLEY_THE_ARTIST,
@@ -993,7 +993,7 @@ function discardCardTypeToGainVPAndPearl({
   return (gameState: GameState, gameInput: GameInput) => {
     const player = gameState.getActivePlayer();
     if (gameInput.inputType === GameInputType.PLACE_AMBASSADOR) {
-      const cardOptions = player.cardsInHand.filter((cardName) => {
+      const cardOptions = player.getCardsInHand().filter((cardName) => {
         return Card.fromName(cardName).cardType === cardType;
       });
       if (cardOptions.length < numToDiscard) {

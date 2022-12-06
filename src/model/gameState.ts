@@ -1063,7 +1063,7 @@ export class GameState {
 
     adornment.play(this, gameInput);
     player.spendResources({ [ResourceType.PEARL]: 1 });
-    player.playedAdornments.push(adornment.name);
+    player.addPlayedAdornment(adornment.name);
     player.removeAdornmentCardFromHand(adornment.name);
   }
 
@@ -1456,7 +1456,7 @@ export class GameState {
     ) {
       return {
         ...pendingInput,
-        clientOptions: { cardsToDiscard: player.cardsInHand },
+        clientOptions: { cardsToDiscard: player.getCardsInHand() },
         isAutoAdvancedInput: true,
       };
     }
@@ -1868,7 +1868,7 @@ export class GameState {
     }
     const player = this.getActivePlayer();
     if (includeHand) {
-      player.cardsInHand.forEach((cardName) => {
+      player.getCardsInHand().forEach((cardName) => {
         ret.push({ card: cardName, source: "HAND" });
       });
     }

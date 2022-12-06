@@ -86,7 +86,7 @@ const GameInputBoxInner = ({
       ) : gameInput.inputType === GameInputType.DISCARD_CARDS ? (
         <GameInputCardsSelector
           name={"gameInput.clientOptions.cardsToDiscard"}
-          options={viewingPlayer.cardsInHand}
+          options={viewingPlayer.getCardsInHand()}
         />
       ) : gameInput.inputType === GameInputType.SELECT_RESOURCES ? (
         <GameInputSelectResources

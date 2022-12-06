@@ -335,7 +335,7 @@ describe("RiverDestinationMap", () => {
       ]);
 
       expect(player.hasUnusedAmbassador()).to.be(false);
-      expect(player.cardsInHand).to.eql([
+      expect(player.getCardsInHand()).to.eql([
         CardName.FARM,
         CardName.FARM,
         CardName.QUEEN,
@@ -379,7 +379,7 @@ describe("RiverDestinationMap", () => {
       ]);
 
       expect(player.hasUnusedAmbassador()).to.be(false);
-      expect(player.cardsInHand).to.eql([CardName.QUEEN, CardName.JUDGE]);
+      expect(player.getCardsInHand()).to.eql([CardName.QUEEN, CardName.JUDGE]);
       expect(player.getNumResourcesByType(ResourceType.PEARL)).to.be(1);
       expect(player.getNumResourcesByType(ResourceType.VP)).to.be(1);
     });
@@ -576,7 +576,7 @@ describe("RiverDestinationMap", () => {
       ]);
 
       expect(player.hasUnusedAmbassador()).to.be(false);
-      expect(player.cardsInHand).to.eql([
+      expect(player.getCardsInHand()).to.eql([
         CardName.FARM,
         CardName.FARM,
         CardName.QUEEN,
@@ -620,7 +620,7 @@ describe("RiverDestinationMap", () => {
       ]);
 
       expect(player.hasUnusedAmbassador()).to.be(false);
-      expect(player.cardsInHand).to.eql([
+      expect(player.getCardsInHand()).to.eql([
         CardName.FARM,
         CardName.FARM,
         CardName.QUEEN,

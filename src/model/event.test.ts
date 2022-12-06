@@ -1553,7 +1553,7 @@ describe("Event", () => {
       ]);
 
       // player should have Queen and King
-      expect(player.cardsInHand).to.eql([CardName.QUEEN, CardName.KING]);
+      expect(player.getCardsInHand()).to.eql([CardName.QUEEN, CardName.KING]);
 
       const eventInfo = player.getClaimedEvent(
         EventName.SPECIAL_ANCIENT_SCROLLS_DISCOVERED
@@ -1631,7 +1631,7 @@ describe("Event", () => {
         },
       ]);
 
-      expect(player.cardsInHand).to.eql([
+      expect(player.getCardsInHand()).to.eql([
         CardName.QUEEN,
         CardName.FOOL,
         CardName.POSTAL_PIGEON,
@@ -2374,7 +2374,7 @@ describe("Event", () => {
       expect(event.canPlay(gameState, gameInput)).to.be(false);
       expect(player.getPoints(gameState)).to.be(10);
       expect(player.numCardsInHand).to.be(2);
-      expect(player.cardsInHand).to.eql([
+      expect(player.getCardsInHand()).to.eql([
         CardName.WIFE,
         CardName.POSTAL_PIGEON,
       ]);
@@ -2467,7 +2467,7 @@ describe("Event", () => {
       expect(event.canPlay(gameState, gameInput)).to.be(false);
       expect(player.getPoints(gameState)).to.be(15);
       expect(player.numCardsInHand).to.be(2);
-      expect(player.cardsInHand).to.eql([
+      expect(player.getCardsInHand()).to.eql([
         CardName.WIFE,
         CardName.POSTAL_PIGEON,
       ]);
@@ -2564,7 +2564,7 @@ describe("Event", () => {
       expect(event.canPlay(gameState, gameInput)).to.be(false);
       expect(player.getPoints(gameState)).to.be(20);
       expect(player.numCardsInHand).to.be(1);
-      expect(player.cardsInHand).to.eql([CardName.WIFE]);
+      expect(player.getCardsInHand()).to.eql([CardName.WIFE]);
     });
 
     it("can't claim if you don't have enough resources", () => {
@@ -2658,7 +2658,7 @@ describe("Event", () => {
       expect(event.canPlay(gameState, gameInput)).to.be(false);
       expect(player.getPoints(gameState)).to.be(25);
       expect(player.numCardsInHand).to.be(1);
-      expect(player.cardsInHand).to.eql([CardName.WIFE]);
+      expect(player.getCardsInHand()).to.eql([CardName.WIFE]);
     });
 
     it("can't claim if you don't have enough resources", () => {
@@ -3968,7 +3968,7 @@ describe("Event", () => {
         inputType: GameInputType.SELECT_CARDS as const,
         prevInputType: GameInputType.SELECT_PLAYER,
         prevInput: selectPlayerInput,
-        cardOptions: player.cardsInHand,
+        cardOptions: player.getCardsInHand(),
         maxToSelect: 6,
         minToSelect: 0,
         eventContext: EventName.SPECIAL_MASQUERADE_INVITATIONS,
@@ -3996,9 +3996,9 @@ describe("Event", () => {
 
       expect(player.getClaimedEvent(EventName.SPECIAL_MASQUERADE_INVITATIONS));
 
-      expect(player.cardsInHand).to.eql([CardName.FERRY]);
+      expect(player.getCardsInHand()).to.eql([CardName.FERRY]);
 
-      expect(player2.cardsInHand).to.eql([
+      expect(player2.getCardsInHand()).to.eql([
         CardName.HUSBAND,
         CardName.FERRY_FERRET,
         CardName.WIFE,
@@ -4037,7 +4037,7 @@ describe("Event", () => {
         inputType: GameInputType.SELECT_CARDS as const,
         prevInputType: GameInputType.SELECT_PLAYER,
         prevInput: selectPlayerInput,
-        cardOptions: player.cardsInHand,
+        cardOptions: player.getCardsInHand(),
         maxToSelect: 6,
         minToSelect: 0,
         eventContext: EventName.SPECIAL_MASQUERADE_INVITATIONS,
@@ -4073,7 +4073,7 @@ describe("Event", () => {
 
       expect(player.getClaimedEvent(EventName.SPECIAL_MASQUERADE_INVITATIONS));
 
-      expect(player.cardsInHand).to.eql([
+      expect(player.getCardsInHand()).to.eql([
         CardName.WIFE,
         CardName.WIFE,
         CardName.QUEEN,
@@ -4081,7 +4081,7 @@ describe("Event", () => {
         CardName.FERRY,
       ]);
 
-      expect(player2.cardsInHand).to.eql([
+      expect(player2.getCardsInHand()).to.eql([
         CardName.HUSBAND,
         CardName.FERRY_FERRET,
       ]);
@@ -4135,7 +4135,7 @@ describe("Event", () => {
         inputType: GameInputType.SELECT_CARDS as const,
         prevInputType: GameInputType.SELECT_PLAYER,
         prevInput: selectFirstOppo,
-        cardOptions: player.cardsInHand,
+        cardOptions: player.getCardsInHand(),
         maxToSelect: 6,
         minToSelect: 0,
         eventContext: EventName.SPECIAL_MASQUERADE_INVITATIONS,
@@ -4219,15 +4219,15 @@ describe("Event", () => {
       player4 = gameState.getPlayer(player4.playerId);
 
       expect(player.getClaimedEvent(EventName.SPECIAL_MASQUERADE_INVITATIONS));
-      expect(player.cardsInHand).to.eql([CardName.WIFE]);
+      expect(player.getCardsInHand()).to.eql([CardName.WIFE]);
       expect(player.getPointsFromEvents(gameState)).to.be(6);
 
-      expect(player2.cardsInHand).to.eql([
+      expect(player2.getCardsInHand()).to.eql([
         CardName.HUSBAND,
         CardName.FERRY_FERRET,
       ]);
-      expect(player3.cardsInHand).to.eql([CardName.FERRY]);
-      expect(player4.cardsInHand).to.eql([
+      expect(player3.getCardsInHand()).to.eql([CardName.FERRY]);
+      expect(player4.getCardsInHand()).to.eql([
         CardName.QUEEN,
         CardName.WIFE,
         CardName.KING,
@@ -4284,7 +4284,7 @@ describe("Event", () => {
         inputType: GameInputType.SELECT_CARDS as const,
         prevInputType: GameInputType.SELECT_PLAYER,
         prevInput: selectPlayerInput,
-        cardOptions: player.cardsInHand,
+        cardOptions: player.getCardsInHand(),
         maxToSelect: 6,
         minToSelect: 0,
         eventContext: EventName.SPECIAL_MASQUERADE_INVITATIONS,
@@ -4355,7 +4355,7 @@ describe("Event", () => {
         inputType: GameInputType.SELECT_CARDS as const,
         prevInputType: GameInputType.SELECT_PLAYER,
         prevInput: selectFirstOppo,
-        cardOptions: player.cardsInHand,
+        cardOptions: player.getCardsInHand(),
         maxToSelect: 6,
         minToSelect: 0,
         eventContext: EventName.SPECIAL_MASQUERADE_INVITATIONS,
@@ -5533,7 +5533,7 @@ describe("Event", () => {
           inputType: GameInputType.SELECT_CARDS,
           prevInputType: GameInputType.CLAIM_EVENT,
           eventContext: EventName.SPECIAL_ROYAL_WEDDING,
-          cardOptions: player.cardsInHand,
+          cardOptions: player.getCardsInHand(),
           maxToSelect: 3,
           minToSelect: 3,
           clientOptions: {

@@ -149,7 +149,7 @@ describe("Location", () => {
       player = nextGameState.getPlayer(player.playerId);
       expect(player.numAvailableWorkers).to.be(1);
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
-      expect(player.cardsInHand).to.eql([CardName.FARM]);
+      expect(player.getCardsInHand()).to.eql([CardName.FARM]);
     });
   });
 
@@ -833,7 +833,7 @@ describe("Location", () => {
       ]);
 
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(3);
-      expect(player.cardsInHand).to.eql([CardName.EVERTREE]);
+      expect(player.getCardsInHand()).to.eql([CardName.EVERTREE]);
       expect(player.hasCardInCity(CardName.HUSBAND)).to.be(true);
     });
 
@@ -908,7 +908,7 @@ describe("Location", () => {
       ]);
 
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(3);
-      expect(player.cardsInHand).to.eql([CardName.WIFE]);
+      expect(player.getCardsInHand()).to.eql([CardName.WIFE]);
       expect(player.hasCardInCity(CardName.HUSBAND)).to.be(true);
     });
 
@@ -933,7 +933,7 @@ describe("Location", () => {
 
       // Player hand is full
       player.drawMaxCards(gameState);
-      const cardsInHand = [...player.cardsInHand];
+      const cardsInHand = [...player.getCardsInHand()];
 
       const gameInput = placeWorkerInput(location.name);
       gameState.locationsMap[
@@ -972,7 +972,7 @@ describe("Location", () => {
         },
       ]);
 
-      expect(player.cardsInHand).to.eql(cardsInHand);
+      expect(player.getCardsInHand()).to.eql(cardsInHand);
       expect(player.hasCardInCity(CardName.INNKEEPER)).to.be(true);
     });
 
@@ -1048,7 +1048,7 @@ describe("Location", () => {
       ]);
 
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(3);
-      expect(player.cardsInHand).to.eql([CardName.RANGER]);
+      expect(player.getCardsInHand()).to.eql([CardName.RANGER]);
       expect(player.hasCardInCity(CardName.HUSBAND)).to.be(true);
     });
 
@@ -1247,7 +1247,7 @@ describe("Location", () => {
       ]);
 
       expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(4);
-      expect(player.cardsInHand).to.eql([CardName.THEATRE]);
+      expect(player.getCardsInHand()).to.eql([CardName.THEATRE]);
       expect(player.hasCardInCity(CardName.WIFE)).to.be(true);
     });
 
@@ -1410,7 +1410,7 @@ describe("Location", () => {
 
       expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
       expect(player.numCardsInHand).to.be(3);
-      expect(player.cardsInHand).to.eql([
+      expect(player.getCardsInHand()).to.eql([
         CardName.DOCTOR,
         CardName.ARCHITECT,
         CardName.BARD,

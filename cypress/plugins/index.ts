@@ -109,8 +109,8 @@ module.exports = (on: any, config: any) => {
           player.addToCity(gameState, CardName.WIFE);
           player.addToCity(gameState, CardName.WIFE);
 
-          gameState.players[1].playedAdornments.push(AdornmentName.BELL);
-          gameState.players[1].playedAdornments.push(
+          gameState.players[1].addPlayedAdornment(AdornmentName.BELL);
+          gameState.players[1].addPlayedAdornment(
             AdornmentName.KEY_TO_THE_CITY
           );
         }
@@ -194,7 +194,8 @@ module.exports = (on: any, config: any) => {
             [ResourceType.PEBBLE]: 5,
           });
           player.addCardToHand(gameState, card.name);
-          player.cardsInHand.push(CardName.FARM, CardName.MINE);
+          player.addCardToHand(gameState, CardName.FARM);
+          player.addCardToHand(gameState, CardName.MINE);
         }
       );
     },
@@ -231,7 +232,8 @@ module.exports = (on: any, config: any) => {
           [ResourceType.PEBBLE]: 5,
         });
         player.addCardToHand(gameState, card.name);
-        player.cardsInHand.push(CardName.FARM, CardName.MINE);
+        player.addCardToHand(gameState, CardName.FARM);
+        player.addCardToHand(gameState, CardName.MINE);
       });
     },
     "db:play-bard-game": async () => {
@@ -244,14 +246,12 @@ module.exports = (on: any, config: any) => {
           [ResourceType.PEBBLE]: 5,
         });
         player.addCardToHand(gameState, card.name);
-        player.cardsInHand.push(
-          CardName.FARM,
-          CardName.MINE,
-          CardName.RANGER,
-          CardName.QUEEN,
-          CardName.KING,
-          CardName.WANDERER
-        );
+        player.addCardToHand(gameState, CardName.FARM);
+        player.addCardToHand(gameState, CardName.MINE);
+        player.addCardToHand(gameState, CardName.RANGER);
+        player.addCardToHand(gameState, CardName.QUEEN);
+        player.addCardToHand(gameState, CardName.KING);
+        player.addCardToHand(gameState, CardName.WANDERER);
       });
     },
     "db:play-husband-via-farm-game": async () => {

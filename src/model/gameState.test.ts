@@ -1694,7 +1694,7 @@ describe("GameState", () => {
 
       expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
       expect(player.numAvailableWorkers).to.be(4);
-      expect(player.cardsInHand).to.eql([CardName.MINE, CardName.QUEEN]);
+      expect(player.getCardsInHand()).to.eql([CardName.MINE, CardName.QUEEN]);
       expect(gameState.meadowCards).to.eql([
         CardName.FARM,
         CardName.KING,
@@ -1748,7 +1748,7 @@ describe("GameState", () => {
       topOfDeck.forEach((x) => gameState.deck.addToStack(x));
 
       expect(player.currentSeason).to.be(Season.SPRING);
-      expect(player.cardsInHand).to.eql([
+      expect(player.getCardsInHand()).to.eql([
         CardName.FARM,
         CardName.HUSBAND,
         CardName.WIFE,
@@ -1788,7 +1788,7 @@ describe("GameState", () => {
 
       expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
       expect(player.numAvailableWorkers).to.be(4);
-      expect(player.cardsInHand).to.eql([
+      expect(player.getCardsInHand()).to.eql([
         CardName.FARM,
         CardName.HUSBAND,
         CardName.WIFE,
@@ -1852,7 +1852,7 @@ describe("GameState", () => {
       topOfDeck.forEach((x) => gameState.deck.addToStack(x));
 
       expect(player.currentSeason).to.be(Season.SPRING);
-      expect(player.cardsInHand).to.eql([
+      expect(player.getCardsInHand()).to.eql([
         CardName.FARM,
         CardName.FARM,
         CardName.FARM,
@@ -1881,7 +1881,7 @@ describe("GameState", () => {
 
       expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
       expect(player.numAvailableWorkers).to.be(4);
-      expect(player.cardsInHand).to.eql([
+      expect(player.getCardsInHand()).to.eql([
         CardName.FARM,
         CardName.FARM,
         CardName.FARM,

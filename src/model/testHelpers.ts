@@ -98,7 +98,7 @@ export function testInitialGameState(
   }
 
   gameState.players.forEach((player) => {
-    [...player.cardsInHand].forEach((cardName) => {
+    [...player.getCardsInHand()].forEach((cardName) => {
       player.removeCardFromHand(gameState, cardName, false);
     });
     cardsInHand.forEach((cardName) => {

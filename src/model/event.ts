@@ -1003,7 +1003,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
 
       if (gameInput.inputType === GameInputType.CLAIM_EVENT) {
         const critterCardsInHand: CardName[] = [];
-        player.cardsInHand.forEach((cardName) => {
+        player.getCardsInHand().forEach((cardName) => {
           const card = Card.fromName(cardName as CardName);
           if (card.isCritter) {
             critterCardsInHand.push(card.name);
@@ -1140,24 +1140,14 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         throw new Error("Cannot find event info");
       }
 
-      const playedCards = player.playedCards;
-      if (!playedCards) {
-        throw new Error("no cards in city");
-      }
-
-      const monestary = playedCards[CardName.MONASTERY];
-      if (!monestary || monestary.length === 0) {
-        // if you don't have a monestery in your city, award 0 points
+      const playedMonastery = player.getPlayedCardForCardName(
+        CardName.MONASTERY
+      )[0];
+      if (!playedMonastery) {
         return 0;
       }
 
-      if (monestary.length > 1) {
-        throw new Error("Cannot have more than one monestary");
-      }
-
-      // you can only have one monestary in your city
-      const workersInMonestary = monestary[0].workers;
-
+      const workersInMonestary = playedMonastery.workers;
       if (!workersInMonestary) {
         // if no workers in monestary, don't give points
         return 0;
@@ -1330,23 +1320,12 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
       if (!eventInfo) {
         throw new Error("Cannot find event info");
       }
-
-      const playedCards = player.playedCards;
-      if (!playedCards) {
-        throw new Error("no cards in city");
-      }
-
-      const chapel = playedCards[CardName.CHAPEL];
-      if (!chapel || chapel.length === 0) {
+      const playedChapel = player.getPlayedCardForCardName(CardName.CHAPEL)[0];
+      if (!playedChapel) {
         // if no chapel in city, should reward 0 points
         return 0;
       }
-
-      if (chapel.length > 1) {
-        throw new Error("Cannot have more than one chapel");
-      }
-      const chapelResources = chapel[0].resources;
-
+      const chapelResources = playedChapel.resources;
       if (!chapelResources) {
         throw new Error("Invalid resources");
       }
@@ -1374,24 +1353,12 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         throw new Error("Cannot find event info");
       }
 
-      const playedCards = player.playedCards;
-      if (!playedCards) {
-        throw new Error("no cards in city");
-      }
-
-      const cemetary = playedCards[CardName.CEMETARY];
-      if (!cemetary || cemetary.length === 0) {
+      const playedCard = player.getPlayedCardForCardName(CardName.CEMETARY)[0];
+      if (!playedCard) {
         // if no cemetary, we should not award any points for this event
         return 0;
       }
-
-      if (cemetary.length > 1) {
-        throw new Error("Cannot have more than one cemetary");
-      }
-
-      // you can only have one cemetary in your city
-      const workersInCemetary = cemetary[0].workers;
-
+      const workersInCemetary = playedCard.workers;
       if (!workersInCemetary) {
         // similarly, we should just not award any points
         return 0;
@@ -1998,7 +1965,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           ],
           prevInputType: gameInput.inputType,
           prevInput: gameInput,
-          cardOptions: player.cardsInHand,
+          cardOptions: player.getCardsInHand(),
           maxToSelect: maxToGive,
           minToSelect: 0,
           eventContext: EventName.SPECIAL_MASQUERADE_INVITATIONS,
@@ -2239,7 +2206,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           eventContext: EventName.WONDER_HOPEWATCH_GATE,
           maxToSelect: 2,
           minToSelect: 2,
-          cardOptions: player.cardsInHand,
+          cardOptions: player.getCardsInHand(),
           clientOptions: {
             selectedCards: [],
           },
@@ -2309,7 +2276,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           eventContext: EventName.WONDER_MISTRISE_FOUNTAIN,
           maxToSelect: 2,
           minToSelect: 2,
-          cardOptions: player.cardsInHand,
+          cardOptions: player.getCardsInHand(),
           clientOptions: {
             selectedCards: [],
           },
@@ -2379,7 +2346,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           eventContext: EventName.WONDER_SUNBLAZE_BRIDGE,
           maxToSelect: 3,
           minToSelect: 3,
-          cardOptions: player.cardsInHand,
+          cardOptions: player.getCardsInHand(),
           clientOptions: {
             selectedCards: [],
           },
@@ -2449,7 +2416,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           eventContext: EventName.WONDER_STARFALLS_FLAME,
           maxToSelect: 3,
           minToSelect: 3,
-          cardOptions: player.cardsInHand,
+          cardOptions: player.getCardsInHand(),
           clientOptions: {
             selectedCards: [],
           },
@@ -3144,7 +3111,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
           eventContext: EventName.SPECIAL_ROYAL_WEDDING,
           maxToSelect: 3,
           minToSelect: 3,
-          cardOptions: player.cardsInHand,
+          cardOptions: player.getCardsInHand(),
           clientOptions: {
             selectedCards: [],
           },

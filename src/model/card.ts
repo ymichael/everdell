@@ -293,11 +293,11 @@ export class Card<TCardType extends CardType = CardType>
           )}`;
         }
       } else if (gameInput.clientOptions.source === "HAND") {
-        if (player.cardsInHand.indexOf(this.name) === -1) {
+        if (player.getCardsInHand().indexOf(this.name) === -1) {
           return `Card ${
             this.name
           } does not exist in your hand.\n ${JSON.stringify(
-            player.cardsInHand,
+            player.getCardsInHand(),
             null,
             2
           )}`;
@@ -2173,7 +2173,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         if (player.numCardsInHand < 2) {
           return `Need at least 2 cards in hand to visit ${
             CardName.POST_OFFICE
-          }\n ${JSON.stringify(player.cardsInHand, null, 2)}`;
+          }\n ${JSON.stringify(player.getCardsInHand(), null, 2)}`;
         }
       }
       return null;
@@ -2213,7 +2213,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           ],
           prevInput: gameInput,
           cardContext: CardName.POST_OFFICE,
-          cardOptions: player.cardsInHand,
+          cardOptions: player.getCardsInHand(),
           maxToSelect: 2,
           minToSelect: 2,
           clientOptions: {
@@ -2256,7 +2256,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
             prevInputType: gameInput.inputType,
             label: `Select any number of CARD to discard from your hand`,
             cardContext: CardName.POST_OFFICE,
-            cardOptions: player.cardsInHand,
+            cardOptions: player.getCardsInHand(),
             maxToSelect: player.numCardsInHand,
             minToSelect: 0,
             clientOptions: {
@@ -4253,7 +4253,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           label:
             "You may give 1 CARD to an opponent to gain 1 VP and draw 1 CARD",
           prevInputType: gameInput.inputType,
-          cardOptions: player.cardsInHand,
+          cardOptions: player.getCardsInHand(),
           maxToSelect: 1,
           minToSelect: 0,
           cardContext: CardName.CITY_HALL,
@@ -4465,7 +4465,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           label:
             "You may give 1 CARD to an opponent to gain 1 VP and draw 1 CARD",
           prevInputType: gameInput.inputType,
-          cardOptions: player.cardsInHand,
+          cardOptions: player.getCardsInHand(),
           maxToSelect: 1,
           minToSelect: 0,
           cardContext: CardName.DIPLOMAT,
@@ -4909,7 +4909,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.VISIT_DESTINATION_CARD) {
         const resources = player.getResources();
-        const canPlayHandCard = player.cardsInHand.some((cardName) => {
+        const canPlayHandCard = player.getCardsInHand().some((cardName) => {
           const card = Card.fromName(cardName);
           return (
             card.canPlayIgnoreCostAndSource(gameState) &&
@@ -4937,7 +4937,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           inputType: GameInputType.SELECT_CARDS,
           prevInputType: gameInput.inputType,
           label: "Select 1 CARD from the Meadow to play for 3 fewer ANY",
-          cardOptions: player.cardsInHand.filter((cardName) => {
+          cardOptions: player.getCardsInHand().filter((cardName) => {
             const card = Card.fromName(cardName);
             return (
               card.canPlayIgnoreCostAndSource(gameState) &&
@@ -4968,7 +4968,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
           throw new Error("Can only play 1 card.");
         }
         const selectedCardName = selectedCards[0];
-        if (player.cardsInHand.indexOf(selectedCardName) < 0) {
+        if (player.getCardsInHand().indexOf(selectedCardName) < 0) {
           throw new Error("Cannot find selected card in the hand.");
         }
         const selectedCard = Card.fromName(selectedCardName);
@@ -5851,7 +5851,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         label:
           "You may give 1 CARD to an opponent to gain 1 ANY and draw 1 CARD",
         prevInputType: gameInput.inputType,
-        cardOptions: player.cardsInHand,
+        cardOptions: player.getCardsInHand(),
         maxToSelect: 1,
         minToSelect: 0,
         cardContext: CardName.TEA_HOUSE,

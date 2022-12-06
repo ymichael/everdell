@@ -56,12 +56,12 @@ export class Player implements IGameTextEntity {
   readonly name: string;
   readonly playerId: string;
 
-  readonly cardsInHand: CardName[];
+  private cardsInHand: CardName[];
   private _currentSeason: Season;
   private _numCardsInHand: number | null;
 
   private resources: Record<ResourceType, number>;
-  readonly playedCards: Partial<Record<CardName, PlayedCardInfo[]>>;
+  private playedCards: Partial<Record<CardName, PlayedCardInfo[]>>;
   readonly claimedEvents: Partial<Record<EventName, PlayedEventInfo>>;
 
   private numWorkers: number;
@@ -74,7 +74,7 @@ export class Player implements IGameTextEntity {
 
   private adornmentsInHand: AdornmentName[];
   private _numAdornmentsInHand: number | null;
-  readonly playedAdornments: AdornmentName[];
+  private playedAdornments: AdornmentName[];
 
   private reservedCard: CardName | "UNUSED" | "USED";
   private _trainTicketStatus: TrainTicketStatus | null;
@@ -210,6 +210,10 @@ export class Player implements IGameTextEntity {
     return numDrawn;
   }
 
+  getCardsInHand(): CardName[] {
+    return [...this.cardsInHand];
+  }
+
   addCardToHand(gameState: GameState, cardName: CardName): void {
     if (this.numCardsInHand < this.maxHandSize) {
       this.cardsInHand.push(cardName);
@@ -240,8 +244,16 @@ export class Player implements IGameTextEntity {
     }
   }
 
-  getAdornmentsInHand(): AdornmentName[] {
+  getAdornmentsInHand(): ReadonlyArray<AdornmentName> {
     return [...this.adornmentsInHand];
+  }
+
+  getPlayedAdornments(): ReadonlyArray<AdornmentName> {
+    return this.playedAdornments;
+  }
+
+  addPlayedAdornment(adornmentName: AdornmentName): void {
+    this.playedAdornments.push(adornmentName);
   }
 
   addAdornmentCardToHand(adornmentName: AdornmentName): void {

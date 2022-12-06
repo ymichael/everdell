@@ -972,7 +972,7 @@ describe("Card", () => {
         player = intermediateGameState.getPlayer(player.playerId);
         expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(4);
         expect(player.numAvailableWorkers).to.be(3);
-        expect(player.cardsInHand).to.eql([CardName.TEACHER]);
+        expect(player.getCardsInHand()).to.eql([CardName.TEACHER]);
         expect(
           player.getPlayedCardForCardName(CardName.CLOCK_TOWER)?.[0]
         ).to.eql({
@@ -1565,7 +1565,7 @@ describe("Card", () => {
           playCardInput(cardToPlay.name),
         ]);
 
-        expect(player.cardsInHand).to.eql([CardName.KING]);
+        expect(player.getCardsInHand()).to.eql([CardName.KING]);
       });
 
       it("should draw a card if player plays a critter", () => {
@@ -1581,7 +1581,7 @@ describe("Card", () => {
           playCardInput(cardToPlay.name),
         ]);
 
-        expect(player.cardsInHand).to.eql([CardName.KING]);
+        expect(player.getCardsInHand()).to.eql([CardName.KING]);
       });
 
       it("should not draw a card when the player plays the historian", () => {
@@ -2010,7 +2010,8 @@ describe("Card", () => {
         expect(player.numAvailableWorkers).to.be(1);
         expect(player.hasCardInCity(CardName.WIFE)).to.be(true);
 
-        const hasWifeInHand = player.cardsInHand.indexOf(CardName.WIFE) >= 0;
+        const hasWifeInHand =
+          player.getCardsInHand().indexOf(CardName.WIFE) >= 0;
         expect(hasWifeInHand).to.be(true);
 
         const wifeInMeadow = gameState.meadowCards.indexOf(CardName.WIFE) >= 0;
@@ -2580,7 +2581,7 @@ describe("Card", () => {
 
         // Make sure we can play this card
         player1.gainResources(gameState, card.baseCost);
-        player1.cardsInHand.push(card.name);
+        player1.addCardToHand(gameState, card.name);
 
         expect(player1.hasCardInCity(card.name)).to.be(false);
 
@@ -2619,7 +2620,7 @@ describe("Card", () => {
 
         // Make sure we can play this card
         player1.gainResources(gameState, card.baseCost);
-        player1.cardsInHand.push(card.name);
+        player1.addCardToHand(gameState, card.name);
 
         expect(player1.hasCardInCity(card.name)).to.be(false);
 
@@ -2659,7 +2660,7 @@ describe("Card", () => {
 
         // Make sure we can play this card
         player1.gainResources(gameState, card.baseCost);
-        player1.cardsInHand.push(card.name);
+        player1.addCardToHand(gameState, card.name);
 
         expect(player1.hasCardInCity(card.name)).to.be(false);
 
@@ -2709,7 +2710,7 @@ describe("Card", () => {
 
         // Make sure we can play this card
         player1.gainResources(gameState, card.baseCost);
-        player1.cardsInHand.push(card.name);
+        player1.addCardToHand(gameState, card.name);
 
         expect(player1.hasCardInCity(card.name)).to.be(false);
 
@@ -2747,7 +2748,7 @@ describe("Card", () => {
 
         // Make sure we can play this card
         player1.gainResources(gameState, card.baseCost);
-        player1.cardsInHand.push(card.name);
+        player1.addCardToHand(gameState, card.name);
 
         expect(player1.hasCardInCity(card.name)).to.be(false);
 
@@ -3648,7 +3649,7 @@ describe("Card", () => {
           prevInputType: GameInputType.SELECT_PLAYER as const,
           prevInput: selectPlayer,
           cardContext: CardName.POST_OFFICE,
-          cardOptions: player.cardsInHand,
+          cardOptions: player.getCardsInHand(),
           maxToSelect: 2,
           minToSelect: 2,
           clientOptions: {
@@ -3685,11 +3686,11 @@ describe("Card", () => {
             workers: [player.playerId],
           },
         ]);
-        expect(targetPlayer.cardsInHand).to.eql([
+        expect(targetPlayer.getCardsInHand()).to.eql([
           CardName.MINE,
           CardName.QUEEN,
         ]);
-        expect(player.cardsInHand).to.eql([
+        expect(player.getCardsInHand()).to.eql([
           CardName.MINER_MOLE,
           CardName.MINER_MOLE,
           CardName.MINER_MOLE,
@@ -3742,7 +3743,7 @@ describe("Card", () => {
 
         expect(gameState2.meadowCards.indexOf(CardName.FARM)).to.be(-1);
         expect(gameState2.meadowCards.length).to.be(8);
-        expect(playerMeadow.cardsInHand.indexOf(CardName.FARM)).to.be(0);
+        expect(playerMeadow.getCardsInHand().indexOf(CardName.FARM)).to.be(0);
         expect(playerMeadow.numAvailableWorkers).to.be(1);
         expect(playerMeadow.hasCardInCity(CardName.FARM)).to.be(true);
 
@@ -3762,7 +3763,7 @@ describe("Card", () => {
 
         expect(gameState3.meadowCards.indexOf(CardName.FARM)).to.be(0);
         expect(gameState3.meadowCards.length).to.be(8);
-        expect(playerHand.cardsInHand.indexOf(CardName.FARM)).to.be(-1);
+        expect(playerHand.getCardsInHand().indexOf(CardName.FARM)).to.be(-1);
         expect(playerHand.numAvailableWorkers).to.be(1);
         expect(playerHand.hasCardInCity(CardName.FARM)).to.be(true);
       });
@@ -3792,7 +3793,7 @@ describe("Card", () => {
 
         expect(player.numAvailableWorkers).to.be(1);
         expect(player.hasCardInCity(CardName.HUSBAND)).to.be(true);
-        expect(player.cardsInHand.indexOf(CardName.HUSBAND)).to.be(-1);
+        expect(player.getCardsInHand().indexOf(CardName.HUSBAND)).to.be(-1);
       });
 
       it("should allow player to play card from the meadow for less than 3 points for free", () => {
@@ -5067,9 +5068,9 @@ describe("Card", () => {
         player1 = gameState.getPlayer(player1.playerId);
         player2 = gameState.getPlayer(player2.playerId);
 
-        expect(player1.cardsInHand).to.eql([CardName.FARM]);
+        expect(player1.getCardsInHand()).to.eql([CardName.FARM]);
 
-        expect(player2.cardsInHand).to.eql([CardName.QUEEN]);
+        expect(player2.getCardsInHand()).to.eql([CardName.QUEEN]);
       });
     });
 
@@ -5192,7 +5193,7 @@ describe("Card", () => {
           },
         ]);
 
-        expect(player.cardsInHand).to.eql([CardName.TEACHER]);
+        expect(player.getCardsInHand()).to.eql([CardName.TEACHER]);
         expect(
           gameState.meadowCards.indexOf(CardName.DOCTOR)
         ).to.be.greaterThan(0);
@@ -5271,7 +5272,7 @@ describe("Card", () => {
           },
         ]);
 
-        expect(player.cardsInHand).to.eql([CardName.TEACHER]);
+        expect(player.getCardsInHand()).to.eql([CardName.TEACHER]);
       });
     });
 
@@ -5543,11 +5544,11 @@ describe("Card", () => {
 
         player.addCardToHand(gameState, card.name);
         player.gainResources(gameState, card.baseCost);
-        expect(player.cardsInHand).to.eql([card.name]);
+        expect(player.getCardsInHand()).to.eql([card.name]);
 
         [player, gameState] = multiStepGameInputTest(gameState, [gameInput]);
         expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
-        expect(player.cardsInHand).to.eql([
+        expect(player.getCardsInHand()).to.eql([
           CardName.FARM,
           CardName.FARM,
           CardName.FARM,
@@ -7159,14 +7160,13 @@ describe("Card", () => {
       });
 
       it("should prompt player to discard cards", () => {
-        player.cardsInHand.push(
-          card.name,
-          CardName.FARM,
-          CardName.FARM,
-          CardName.FARM,
-          CardName.FARM
-        );
+        player.addCardToHand(gameState, card.name);
         player.gainResources(gameState, card.baseCost);
+
+        player.addCardToHand(gameState, CardName.FARM);
+        player.addCardToHand(gameState, CardName.FARM);
+        player.addCardToHand(gameState, CardName.FARM);
+        player.addCardToHand(gameState, CardName.FARM);
 
         gameState.deck.addToStack(CardName.KING);
         gameState.deck.addToStack(CardName.QUEEN);
@@ -7188,7 +7188,7 @@ describe("Card", () => {
           },
         ]);
         expect(player.hasCardInCity(card.name));
-        expect(player.cardsInHand).to.eql([
+        expect(player.getCardsInHand()).to.eql([
           CardName.FARM,
           CardName.BARGE_TOAD,
           CardName.MINE,
@@ -7198,14 +7198,14 @@ describe("Card", () => {
       });
 
       it("should not gain PEARL if base points of revealed cards less than 7", () => {
-        player.cardsInHand.push(
-          card.name,
-          CardName.FARM,
-          CardName.FARM,
-          CardName.FARM,
-          CardName.FARM
-        );
+        player.addCardToHand(gameState, card.name);
         player.gainResources(gameState, card.baseCost);
+
+        player.addCardToHand(gameState, CardName.FARM);
+        player.addCardToHand(gameState, CardName.FARM);
+        player.addCardToHand(gameState, CardName.FARM);
+        player.addCardToHand(gameState, CardName.FARM);
+
         gameState.deck.addToStack(CardName.RUINS);
         gameState.deck.addToStack(CardName.RUINS);
         gameState.deck.addToStack(CardName.RUINS);
@@ -7226,7 +7226,7 @@ describe("Card", () => {
           },
         ]);
         expect(player.hasCardInCity(card.name));
-        expect(player.cardsInHand).to.eql([
+        expect(player.getCardsInHand()).to.eql([
           CardName.FARM,
           CardName.RUINS,
           CardName.RUINS,
@@ -7554,8 +7554,11 @@ describe("Card", () => {
         player2 = gameState.getPlayer(player2.playerId);
 
         expect(player.numCardsInHand).to.be(2);
-        expect(player.cardsInHand).to.eql([CardName.WIFE, CardName.PALACE]);
-        expect(player2.cardsInHand).to.eql([CardName.HUSBAND]);
+        expect(player.getCardsInHand()).to.eql([
+          CardName.WIFE,
+          CardName.PALACE,
+        ]);
+        expect(player2.getCardsInHand()).to.eql([CardName.HUSBAND]);
         expect(player.getNumResourcesByType(ResourceType.VP)).to.be(1);
       });
 
@@ -7596,8 +7599,11 @@ describe("Card", () => {
         player2 = gameState.getPlayer(player2.playerId);
 
         expect(player.numCardsInHand).to.be(2);
-        expect(player.cardsInHand).to.eql([CardName.WIFE, CardName.HUSBAND]);
-        expect(player2.cardsInHand).to.eql([]);
+        expect(player.getCardsInHand()).to.eql([
+          CardName.WIFE,
+          CardName.HUSBAND,
+        ]);
+        expect(player2.getCardsInHand()).to.eql([]);
         expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
       });
     });
@@ -8105,8 +8111,11 @@ describe("Card", () => {
         player2 = gameState.getPlayer(player2.playerId);
 
         expect(player.numCardsInHand).to.be(2);
-        expect(player.cardsInHand).to.eql([CardName.WIFE, CardName.PALACE]);
-        expect(player2.cardsInHand).to.eql([CardName.HUSBAND]);
+        expect(player.getCardsInHand()).to.eql([
+          CardName.WIFE,
+          CardName.PALACE,
+        ]);
+        expect(player2.getCardsInHand()).to.eql([CardName.HUSBAND]);
         expect(player.getNumResourcesByType(ResourceType.VP)).to.be(1);
       });
 
@@ -8147,8 +8156,11 @@ describe("Card", () => {
         player2 = gameState.getPlayer(player2.playerId);
 
         expect(player.numCardsInHand).to.be(2);
-        expect(player.cardsInHand).to.eql([CardName.WIFE, CardName.HUSBAND]);
-        expect(player2.cardsInHand).to.eql([]);
+        expect(player.getCardsInHand()).to.eql([
+          CardName.WIFE,
+          CardName.HUSBAND,
+        ]);
+        expect(player2.getCardsInHand()).to.eql([]);
         expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
       });
     });
@@ -8704,7 +8716,7 @@ describe("Card", () => {
 
         expect(player.numAvailableWorkers).to.be(1);
         expect(player.hasCardInCity(CardName.WIFE)).to.be(true);
-        expect(player.cardsInHand).to.eql([CardName.PALACE]);
+        expect(player.getCardsInHand()).to.eql([CardName.PALACE]);
         expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
         expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
       });
@@ -8935,7 +8947,8 @@ describe("Card", () => {
         expect(player.numAvailableWorkers).to.be(1);
         expect(player.hasCardInCity(CardName.WIFE)).to.be(true);
 
-        const hasWifeInHand = player.cardsInHand.indexOf(CardName.WIFE) >= 0;
+        const hasWifeInHand =
+          player.getCardsInHand().indexOf(CardName.WIFE) >= 0;
         expect(hasWifeInHand).to.be(false);
 
         const wifeInMeadow = gameState.meadowCards.indexOf(CardName.WIFE) >= 0;
@@ -9137,7 +9150,7 @@ describe("Card", () => {
         ]);
 
         expect(player.numCardsInHand).to.be(2);
-        expect(player.cardsInHand).to.eql([CardName.QUEEN, CardName.KING]);
+        expect(player.getCardsInHand()).to.eql([CardName.QUEEN, CardName.KING]);
         expect(player.hasCardInCity(CardName.LAMPLIGHTER)).to.be(true);
       });
 
@@ -9169,7 +9182,7 @@ describe("Card", () => {
         ]);
 
         expect(player.numCardsInHand).to.be(2);
-        expect(player.cardsInHand).to.eql([
+        expect(player.getCardsInHand()).to.eql([
           CardName.MINER_MOLE,
           CardName.HUSBAND,
         ]);
@@ -9678,7 +9691,7 @@ describe("Card", () => {
           playCardInput(cardToPlay.name),
         ]);
 
-        expect(player.cardsInHand).to.eql([CardName.QUEEN, CardName.KING]);
+        expect(player.getCardsInHand()).to.eql([CardName.QUEEN, CardName.KING]);
       });
 
       it("should draw a card if player plays a critter", () => {
@@ -9695,7 +9708,7 @@ describe("Card", () => {
           playCardInput(cardToPlay.name),
         ]);
 
-        expect(player.cardsInHand).to.eql([CardName.QUEEN, CardName.KING]);
+        expect(player.getCardsInHand()).to.eql([CardName.QUEEN, CardName.KING]);
       });
 
       it("should not draw a card when the player plays the Museum", () => {
@@ -9827,9 +9840,9 @@ describe("Card", () => {
         expect(player.getNumResourcesByType(ResourceType.VP)).to.be(3);
 
         // check state of player's hand
-        expect(player.cardsInHand.indexOf(CardName.FARM) >= 0);
-        expect(player.cardsInHand.indexOf(CardName.HUSBAND) >= 0);
-        expect(player.cardsInHand.indexOf(CardName.MONK) >= 0);
+        expect(player.getCardsInHand().indexOf(CardName.FARM) >= 0);
+        expect(player.getCardsInHand().indexOf(CardName.HUSBAND) >= 0);
+        expect(player.getCardsInHand().indexOf(CardName.MONK) >= 0);
 
         // check state of the Meadow
         expect(gameState.meadowCards.indexOf(CardName.HUSBAND)).to.be.lessThan(
@@ -9911,9 +9924,15 @@ describe("Card", () => {
         expect(player.getNumResourcesByType(ResourceType.VP)).to.be(1);
 
         // check state of player's hand
-        expect(player.cardsInHand.indexOf(CardName.FARM)).to.be.greaterThan(0);
-        expect(player.cardsInHand.indexOf(CardName.HUSBAND)).to.be.lessThan(0);
-        expect(player.cardsInHand.indexOf(CardName.MONK)).to.be.lessThan(0);
+        expect(
+          player.getCardsInHand().indexOf(CardName.FARM)
+        ).to.be.greaterThan(0);
+        expect(
+          player.getCardsInHand().indexOf(CardName.HUSBAND)
+        ).to.be.lessThan(0);
+        expect(player.getCardsInHand().indexOf(CardName.MONK)).to.be.lessThan(
+          0
+        );
 
         // check state of the Meadow
         expect(
@@ -9991,10 +10010,16 @@ describe("Card", () => {
         expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
 
         // check state of player's hand
-        expect(player.cardsInHand.indexOf(CardName.FARM)).to.be.lessThan(0);
-        expect(player.cardsInHand.indexOf(CardName.HUSBAND)).to.be.lessThan(0);
-        expect(player.cardsInHand.indexOf(CardName.MONK)).to.be.lessThan(0);
-        expect(player.cardsInHand).to.eql([
+        expect(player.getCardsInHand().indexOf(CardName.FARM)).to.be.lessThan(
+          0
+        );
+        expect(
+          player.getCardsInHand().indexOf(CardName.HUSBAND)
+        ).to.be.lessThan(0);
+        expect(player.getCardsInHand().indexOf(CardName.MONK)).to.be.lessThan(
+          0
+        );
+        expect(player.getCardsInHand()).to.eql([
           CardName.WIFE,
           CardName.WIFE,
           CardName.WIFE,
@@ -10087,8 +10112,8 @@ describe("Card", () => {
         player = gameState.getPlayer(player.playerId);
 
         // should have been able to draw the school
-        expect(player.cardsInHand.includes(CardName.SCHOOL));
-        expect(player.cardsInHand.includes(CardName.KING));
+        expect(player.getCardsInHand().includes(CardName.SCHOOL));
+        expect(player.getCardsInHand().includes(CardName.KING));
         expect(player.getNumResourcesByType(ResourceType.VP)).to.be(2);
 
         // meadow cards should get replenished
@@ -10163,10 +10188,13 @@ describe("Card", () => {
         player1 = gameState.getPlayer(player1.playerId);
         player2 = gameState.getPlayer(player2.playerId);
 
-        expect(player1.cardsInHand).to.eql([CardName.QUEEN, CardName.FARM]);
+        expect(player1.getCardsInHand()).to.eql([
+          CardName.QUEEN,
+          CardName.FARM,
+        ]);
         expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
 
-        expect(player2.cardsInHand).to.eql([CardName.KING]);
+        expect(player2.getCardsInHand()).to.eql([CardName.KING]);
       });
       it("allow player to select 0 cards to give", () => {
         let player1 = gameState.players[0];
@@ -10203,13 +10231,16 @@ describe("Card", () => {
         player1 = gameState.getPlayer(player1.playerId);
         player2 = gameState.getPlayer(player2.playerId);
 
-        expect(player1.cardsInHand).to.eql([CardName.KING, CardName.QUEEN]);
+        expect(player1.getCardsInHand()).to.eql([
+          CardName.KING,
+          CardName.QUEEN,
+        ]);
         expect(player1.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
         expect(player1.getNumResourcesByType(ResourceType.TWIG)).to.be(0);
         expect(player1.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
         expect(player1.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
 
-        expect(player2.cardsInHand).to.eql([]);
+        expect(player2.getCardsInHand()).to.eql([]);
       });
       it("handle case where player has 0 cards in hand", () => {
         let player1 = gameState.players[0];
@@ -10236,7 +10267,7 @@ describe("Card", () => {
         expect(player1.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
         expect(player1.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
 
-        expect(player2.cardsInHand).to.eql([]);
+        expect(player2.getCardsInHand()).to.eql([]);
       });
     });
   });

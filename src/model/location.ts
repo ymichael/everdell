@@ -1636,7 +1636,7 @@ function canPlayCheckInnerJourneyFactory(
     }
     if (player.numCardsInHand < numPoints) {
       return `Not enough cards to discard for the Journey.\n cardsInHand: ${JSON.stringify(
-        player.cardsInHand,
+        player.getCardsInHand(),
         null,
         2
       )}, Required: ${numPoints}`;

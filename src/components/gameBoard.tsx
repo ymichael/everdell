@@ -244,7 +244,7 @@ export const PlayerCity: React.FC<{
   viewerId: string | null;
 }> = ({ player, viewerId, gameState }) => {
   const playedCards = player.getPlayedCards();
-  const playedAdornments = player.playedAdornments;
+  const playedAdornments = player.getPlayedAdornments();
 
   const labelToCount: [string, number][] = [
     ["Critters", player.getNumPlayedCritters()],

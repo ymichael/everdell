@@ -49,7 +49,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     player.addCardToHand(gameState, CardName.RANGER);
     player.addCardToHand(gameState, CardName.BARD);
 
-    player.playedAdornments.push(AdornmentName.TIARA);
+    player.addPlayedAdornment(AdornmentName.TIARA);
 
     player.gainResources(gameState, {
       [ResourceType.VP]: 12,

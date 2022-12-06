@@ -93,7 +93,7 @@ function splitOnSpaceOrPunc(str: string): string[] {
   return ret;
 }
 
-export function cardListToGameText(cards: CardName[]): GameText {
+export function cardListToGameText(cards: ReadonlyArray<CardName>): GameText {
   const ret: GameText = [];
   for (let i = 0; i < cards.length; i++) {
     if (i !== 0) {

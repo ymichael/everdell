@@ -4128,7 +4128,12 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       cardOwner: Player,
       playedCard: PlayedCardInfo
     ) => {
-      (playedCard.resources![ResourceType.VP] as number) += 1;
+      const origPlayedCard = cardOwner.findPlayedCard(playedCard);
+      if (!origPlayedCard) {
+        throw new Error("Cannot find played card");
+      }
+
+      (origPlayedCard.resources![ResourceType.VP] as number) += 1;
       gameState.addGameLogFromCard(CardName.BANK, [
         cardOwner,
         " added 1 VP to their ",

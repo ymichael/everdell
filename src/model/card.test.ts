@@ -8627,6 +8627,39 @@ describe("Card", () => {
 
         expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(1);
       });
+
+      it("should be able to reactivate the bank properly", () => {
+        let player = gameState.getActivePlayer();
+        const card = Card.fromName(CardName.GARDENER);
+
+        player.addToCity(gameState, CardName.BANK);
+
+        // Make sure we can play this card
+        player.gainResources(gameState, card.baseCost);
+        player.addCardToHand(gameState, card.name);
+
+        expect(player.getNumResourcesByType(ResourceType.VP, true)).to.be(0);
+
+        const selectPlayedCardInput = {
+          inputType: GameInputType.SELECT_PLAYED_CARDS as const,
+          prevInputType: GameInputType.PLAY_CARD,
+          cardContext: CardName.GARDENER,
+          maxToSelect: 1,
+          minToSelect: 1,
+          cardOptions: [...player.getPlayedCardForCardName(CardName.BANK)],
+          clientOptions: {
+            selectedCards: [player.getFirstPlayedCard(CardName.BANK)],
+          },
+        };
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardInput(card.name),
+          selectPlayedCardInput,
+        ]);
+
+        expect(player.getNumResourcesByType(ResourceType.VP, true)).to.be(1);
+        expect(player.maxHandSize).to.be(9);
+      });
     });
 
     describe(CardName.GREENHOUSE, () => {

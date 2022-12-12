@@ -57,7 +57,7 @@ type ProductionInnerFn = (
   gameState: GameState,
   gameInput: GameInput,
   cardOwner: Player,
-  playedCard: PlayedCardInfo
+  playedCard: PlayedCardInfo | undefined
 ) => void;
 type ProductionWillActivateInnerFn = (
   gameState: GameState,
@@ -436,9 +436,11 @@ export class Card<TCardType extends CardType = CardType>
     gameState: GameState,
     gameInput: GameInput,
     cardOwner: Player,
-    playedCard: PlayedCardInfo
+    playedCard: PlayedCardInfo | undefined
   ): void {
     const player = gameState.getActivePlayer();
+    playedCard = playedCard ? cardOwner.findPlayedCard(playedCard) : undefined;
+
     if (this.resourcesToGain && sumResources(this.resourcesToGain)) {
       player.gainResources(gameState, omit(this.resourcesToGain, ["CARD"]));
       if (this.resourcesToGain.CARD) {
@@ -458,13 +460,9 @@ export class Card<TCardType extends CardType = CardType>
         ]);
       }
     }
-    if (this.productionInner) {
-      this.productionInner(gameState, gameInput, cardOwner, playedCard);
-    }
-    if (this.playInner) {
-      const playCardGameInput = this.getPlayCardInput(gameInput, playedCard);
-      this.playInner(gameState, playCardGameInput);
-    }
+
+    this.productionInner?.(gameState, gameInput, cardOwner, playedCard);
+    this.playInner?.(gameState, this.getPlayCardInput(gameInput, playedCard));
   }
 
   productionWillActivate(
@@ -2943,12 +2941,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         [ResourceType.BERRY]: 0,
       },
     },
-    productionInner: (
-      gameState: GameState,
-      gameInput: GameInput,
-      cardOwner: Player,
-      playedCard: PlayedCardInfo
-    ) => {
+    productionInner: (gameState, gameInput, cardOwner, playedCard) => {
       gameState.pendingGameInputs.push({
         inputType: GameInputType.SELECT_OPTION_GENERIC,
         prevInputType: gameInput.inputType,
@@ -4122,18 +4115,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         [ResourceType.VP]: 0,
       },
     },
-    productionInner: (
-      gameState: GameState,
-      gameInput: GameInput,
-      cardOwner: Player,
-      playedCard: PlayedCardInfo
-    ) => {
-      const origPlayedCard = cardOwner.findPlayedCard(playedCard);
-      if (!origPlayedCard) {
+    productionInner: (gameState, gameInput, cardOwner, playedCard) => {
+      if (!playedCard) {
         throw new Error("Cannot find played card");
       }
-
-      (origPlayedCard.resources![ResourceType.VP] as number) += 1;
+      (playedCard.resources![ResourceType.VP] as number) += 1;
       gameState.addGameLogFromCard(CardName.BANK, [
         cardOwner,
         " added 1 VP to their ",
@@ -4601,12 +4587,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         [ResourceType.PEBBLE]: 2,
       },
     },
-    productionInner: (
-      gameState: GameState,
-      gameInput: GameInput,
-      cardOwner: Player,
-      playedCard: PlayedCardInfo
-    ) => {
+    productionInner: (gameState, gameInput, cardOwner, playedCard) => {
       gameState.pendingGameInputs.push({
         inputType: GameInputType.SELECT_RESOURCES,
         label: "Choose 2 resources to gain from this Freight Car",
@@ -5525,12 +5506,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     baseCost: {
       [ResourceType.BERRY]: 4,
     },
-    productionInner: (
-      gameState: GameState,
-      gameInput: GameInput,
-      cardOwner: Player,
-      playedCard: PlayedCardInfo
-    ) => {
+    productionInner: (gameState, gameInput, cardOwner, playedCard) => {
       const player = gameState.getActivePlayer();
       // calculate this based on the card owner's city, but give
       // resources to the active player

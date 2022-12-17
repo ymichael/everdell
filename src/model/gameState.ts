@@ -1031,7 +1031,7 @@ export class GameState {
       cardOwner.gainResources(this, { [ResourceType.VP]: VPToGain });
       this.addGameLog([
         cardOwner,
-        " gained 1 VP when ",
+        ` gained ${VPToGain} VP when `,
         activePlayer,
         " placed a worker on ",
         ...workerPlacementToGameText({ playedCard }),

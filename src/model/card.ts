@@ -4551,7 +4551,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       [ResourceType.PEBBLE]: 3,
     },
     pointsInner: (player) => {
-      return Math.floor(player.getNumOccupiedSpacesInCity(true) / 5);
+      return Math.floor(player.getNumOccupiedSpacesInCity(true) / 5) * 2;
     },
   }),
   [CardName.FREIGHT_CAR]: new Card({

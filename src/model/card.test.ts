@@ -8183,8 +8183,8 @@ describe("Card", () => {
 
         player.addToCityMulti(gameState, [CardName.POSTAL_PIGEON]);
 
-        // Now player has 5 occupied spots, so should be 6 + 1
-        expect(player.getPointsFromCards(gameState)).to.be(6 + 1);
+        // Now player has 5 occupied spots, so should be 6 + (1*2)
+        expect(player.getPointsFromCards(gameState)).to.be(6 + 1 * 2);
 
         player.addToCityMulti(gameState, [
           CardName.POSTAL_PIGEON,
@@ -8199,8 +8199,8 @@ describe("Card", () => {
           CardName.POSTAL_PIGEON,
         ]);
 
-        // 15 / 5 = 3 + 6 from Ever Wall
-        expect(player.getPointsFromCards(gameState)).to.be(6 + 3);
+        // 15 / 5 = (3*2) + 6 from Ever Wall
+        expect(player.getPointsFromCards(gameState)).to.be(6 + 3 * 2);
 
         player.addToCityMulti(gameState, [
           CardName.WANDERER,
@@ -8211,7 +8211,7 @@ describe("Card", () => {
         ]);
 
         // Adding additional wanderer shouldn't add more than 1 VP per Wanderer
-        expect(player.getPointsFromCards(gameState)).to.be(6 + 3 + 5);
+        expect(player.getPointsFromCards(gameState)).to.be(6 + 3 * 2 + 5);
         expect(player.getNumCardsInCity()).to.be(21);
       });
       it("should handle shared spaces correctly", () => {
@@ -8229,7 +8229,7 @@ describe("Card", () => {
         // Ever Wall has base 6 VP, Husband + Wife together are worth 2+2+3 = 7
         // Even though the Husband and Wife can share a space, for scoring this
         // would be counted as 5 occupied spots
-        expect(player.getPointsFromCards(gameState)).to.be(6 + 7 + 1);
+        expect(player.getPointsFromCards(gameState)).to.be(6 + 7 + 1 * 2);
         expect(player.getNumCardsInCity()).to.be(6);
       });
     });

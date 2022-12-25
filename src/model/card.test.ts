@@ -7309,7 +7309,33 @@ describe("Card", () => {
       });
     });
 
-    describe(CardName.BAKER, () => {});
+    describe(CardName.BAKER, () => {
+      it("should award points based on num berries", () => {
+        player.addToCity(gameState, CardName.BAKER);
+
+        // Baker worth 2 points on its own
+        expect(player.getPoints(gameState)).to.be(2);
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+
+        player.gainResources(gameState, { [ResourceType.BERRY]: 1 });
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
+
+        // Baker worth 2 points on its own, 2 points per berry
+        expect(player.getPoints(gameState)).to.be(2 + 2);
+
+        player.gainResources(gameState, { [ResourceType.BERRY]: 2 });
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(3);
+
+        // Baker worth 2 points on its own, 2 points per berry
+        expect(player.getPoints(gameState)).to.be(2 + 2 * 3);
+
+        player.gainResources(gameState, { [ResourceType.BERRY]: 1 });
+        expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(4);
+
+        // Baker worth 2 points on its own, 2 points per berry, max of 3
+        expect(player.getPoints(gameState)).to.be(2 + 2 * 3);
+      });
+    });
 
     describe(CardName.BANK, () => {
       it("should add resources to the bank and increase hand size", () => {

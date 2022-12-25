@@ -4090,7 +4090,11 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       [ResourceType.BERRY]: 3,
     },
     pointsInner: (player) => {
-      return Math.max(player.getNumResourcesByType(ResourceType.BERRY), 3);
+      const numBerries = Math.min(
+        player.getNumResourcesByType(ResourceType.BERRY),
+        3
+      );
+      return numBerries * 2;
     },
   }),
   [CardName.BANK]: new Card({

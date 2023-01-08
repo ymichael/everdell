@@ -792,8 +792,8 @@ describe("GameState", () => {
         gameOptions: { newleaf: { cards: true }, allowUndo: true },
       });
 
-      let player1 = gameState.players[0];
-      let player2 = gameState.players[1];
+      const player1 = gameState.players[0];
+      const player2 = gameState.players[1];
 
       const card = Card.fromName(CardName.TEA_HOUSE);
       player1.gainResources(gameState, card.baseCost);

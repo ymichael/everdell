@@ -50,6 +50,7 @@ const gameInputSortOrder: Partial<Record<GameInputType, number>> = {
   [GameInputType.VISIT_DESTINATION_CARD]: 4,
   [GameInputType.PREPARE_FOR_SEASON]: defaultOrder + 1,
   [GameInputType.GAME_END]: defaultOrder + 2,
+  [GameInputType.UNDO]: defaultOrder + 3,
 };
 
 const GameInputBoxInner = ({
@@ -82,6 +83,8 @@ const GameInputBoxInner = ({
       ) : gameInput.inputType === GameInputType.PREPARE_FOR_SEASON ? (
         <></>
       ) : gameInput.inputType === GameInputType.GAME_END ? (
+        <></>
+      ) : gameInput.inputType === GameInputType.UNDO ? (
         <></>
       ) : gameInput.inputType === GameInputType.DISCARD_CARDS ? (
         <GameInputCardsSelector

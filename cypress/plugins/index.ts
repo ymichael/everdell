@@ -199,6 +199,30 @@ module.exports = (on: any, config: any) => {
         }
       );
     },
+    "db:undo-action-game": async () => {
+      return await getTestGameJSON(
+        {
+          gameOptions: { allowUndo: true },
+        },
+        (gameState, player) => {
+          const card = Card.fromName(CardName.RANGER);
+          player.addCardToHand(gameState, card.name);
+          player.gainResources(gameState, card.baseCost);
+
+          // Place 2 workers.
+          gameState.locationsMap[LocationName.BASIC_ONE_STONE]!.push(
+            player.playerId
+          );
+          gameState.locationsMap[
+            LocationName.BASIC_TWO_TWIGS_AND_ONE_CARD
+          ]!.push(player.playerId);
+          player.placeWorkerOnLocation(LocationName.BASIC_ONE_STONE);
+          player.placeWorkerOnLocation(
+            LocationName.BASIC_TWO_TWIGS_AND_ONE_CARD
+          );
+        }
+      );
+    },
     "db:play-ranger-game": async () => {
       return await getTestGameJSON({}, (gameState, player) => {
         const card = Card.fromName(CardName.RANGER);

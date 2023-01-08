@@ -608,6 +608,247 @@ describe("GameState", () => {
     });
   });
 
+  describe("UNDO", () => {
+    it("should allow player to undo basic", () => {
+      gameState = testInitialGameState({ gameOptions: { allowUndo: true } });
+      player = gameState.getActivePlayer();
+      expect(player.numAvailableWorkers).to.eql(2);
+
+      const location = Location.fromName(LocationName.FOREST_TWO_WILD);
+      gameState.locationsMap[location.name] = [];
+
+      [player, gameState] = multiStepGameInputTest(
+        gameState,
+        [
+          {
+            inputType: GameInputType.PLACE_WORKER,
+            clientOptions: { location: location.name },
+          },
+          { inputType: GameInputType.UNDO },
+        ],
+        { skipLastCheck: true }
+      );
+
+      expect(gameState.getActivePlayer().playerId).to.eql(player.playerId);
+      expect(player.numAvailableWorkers).to.eql(2);
+    });
+
+    it("should allow player to undo multiple times", () => {
+      const meadowCards = [
+        CardName.KING,
+        CardName.QUEEN,
+        CardName.POSTAL_PIGEON,
+        CardName.POSTAL_PIGEON,
+        CardName.FARM,
+        CardName.HUSBAND,
+        CardName.CHAPEL,
+        CardName.MONK,
+      ];
+
+      gameState = testInitialGameState({
+        meadowCards,
+        gameOptions: { allowUndo: true },
+      });
+      gameState.deck.addToStack(CardName.WIFE);
+
+      player = gameState.getActivePlayer();
+
+      player.addToCity(gameState, CardName.INN);
+      expect(player.numAvailableWorkers).to.be(2);
+      expect(player.hasCardInCity(CardName.POSTAL_PIGEON)).to.be(false);
+
+      [player, gameState] = multiStepGameInputTest(
+        gameState,
+        [
+          {
+            inputType: GameInputType.VISIT_DESTINATION_CARD,
+            clientOptions: {
+              playedCard: player.getFirstPlayedCard(CardName.INN),
+            },
+          },
+          {
+            inputType: GameInputType.SELECT_CARDS,
+            clientOptions: {
+              selectedCards: [CardName.POSTAL_PIGEON],
+            },
+          },
+          { inputType: GameInputType.UNDO },
+          { inputType: GameInputType.UNDO },
+        ],
+        { skipLastCheck: true }
+      );
+
+      expect(gameState.getActivePlayer().playerId).to.eql(player.playerId);
+      expect(player.numAvailableWorkers).to.eql(2);
+      expect(player.hasCardInCity(CardName.POSTAL_PIGEON)).to.be(false);
+      expect(gameState.meadowCards).to.eql(meadowCards);
+    });
+
+    it("should allow player to undo partial actions", () => {
+      const meadowCards = [
+        CardName.KING,
+        CardName.QUEEN,
+        CardName.POSTAL_PIGEON,
+        CardName.POSTAL_PIGEON,
+        CardName.FARM,
+        CardName.HUSBAND,
+        CardName.CHAPEL,
+        CardName.MONK,
+      ];
+
+      gameState = testInitialGameState({
+        meadowCards,
+        gameOptions: { allowUndo: true },
+      });
+      gameState.deck.addToStack(CardName.WIFE);
+
+      player = gameState.getActivePlayer();
+
+      player.addToCity(gameState, CardName.INN);
+      expect(player.numAvailableWorkers).to.be(2);
+      expect(player.hasCardInCity(CardName.POSTAL_PIGEON)).to.be(false);
+      expect(player.hasCardInCity(CardName.FARM)).to.be(false);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        {
+          inputType: GameInputType.VISIT_DESTINATION_CARD,
+          clientOptions: {
+            playedCard: player.getFirstPlayedCard(CardName.INN),
+          },
+        },
+        {
+          inputType: GameInputType.SELECT_CARDS,
+          clientOptions: {
+            selectedCards: [CardName.POSTAL_PIGEON],
+          },
+        },
+        { inputType: GameInputType.UNDO },
+        {
+          inputType: GameInputType.SELECT_CARDS,
+          clientOptions: {
+            selectedCards: [CardName.FARM],
+          },
+        },
+      ]);
+
+      expect(player.numAvailableWorkers).to.eql(1);
+      expect(player.hasCardInCity(CardName.POSTAL_PIGEON)).to.be(false);
+      expect(player.hasCardInCity(CardName.FARM)).to.be(true);
+      expect(gameState.meadowCards).to.not.eql(meadowCards);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(1);
+    });
+
+    it("should allow player to undo PREPARE_FOR_SEASON", () => {
+      gameState = testInitialGameState({
+        gameOptions: { allowUndo: true },
+      });
+      player = gameState.getActivePlayer();
+
+      player.addToCity(gameState, CardName.MONK);
+      player.addToCity(gameState, CardName.DOCTOR);
+      player.addToCity(gameState, CardName.WOODCARVER);
+      player.addToCity(gameState, CardName.PEDDLER);
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.MINE);
+
+      expect(player.currentSeason).to.be(Season.WINTER);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.be(0);
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
+
+      // Use up all workers
+      gameState.locationsMap[LocationName.BASIC_TWO_CARDS_AND_ONE_VP]!.push(
+        player.playerId,
+        player.playerId
+      );
+      player.placeWorkerOnLocation(LocationName.BASIC_TWO_CARDS_AND_ONE_VP);
+      player.placeWorkerOnLocation(LocationName.BASIC_TWO_CARDS_AND_ONE_VP);
+
+      player.addToCity(gameState, CardName.INN);
+
+      [player, gameState] = multiStepGameInputTest(
+        gameState,
+        [
+          { inputType: GameInputType.PREPARE_FOR_SEASON },
+          {
+            inputType: GameInputType.SELECT_RESOURCES,
+            prevInputType: GameInputType.PREPARE_FOR_SEASON,
+            cardContext: CardName.DOCTOR,
+            clientOptions: { resources: { [ResourceType.BERRY]: 1 } },
+          },
+          { inputType: GameInputType.UNDO },
+          { inputType: GameInputType.UNDO },
+        ],
+        { skipLastCheck: true }
+      );
+
+      expect(gameState.getActivePlayer().playerId).to.eql(player.playerId);
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+    });
+
+    it("should work with autoAdvance inputs", () => {
+      gameState = testInitialGameState({
+        gameOptions: { newleaf: { cards: true }, allowUndo: true },
+      });
+
+      let player1 = gameState.players[0];
+      let player2 = gameState.players[1];
+
+      const card = Card.fromName(CardName.TEA_HOUSE);
+      player1.gainResources(gameState, card.baseCost);
+      player1.addCardToHand(gameState, card.name);
+
+      player1.addCardToHand(gameState, CardName.KING);
+      player1.addCardToHand(gameState, CardName.QUEEN);
+
+      expect(player1.numCardsInHand).to.be(3);
+      expect(player2.numCardsInHand).to.be(0);
+
+      gameState.deck.addToStack(CardName.FARM);
+
+      [player, gameState] = multiStepGameInputTest(
+        gameState,
+        [
+          playCardInput(card.name),
+          {
+            inputType: GameInputType.SELECT_CARDS,
+            clientOptions: { selectedCards: [CardName.KING] },
+          },
+          { inputType: GameInputType.UNDO },
+          { inputType: GameInputType.UNDO },
+        ],
+        { autoAdvance: true, skipLastCheck: true }
+      );
+
+      expect(player.numCardsInHand).to.be(3);
+      expect(gameState.pendingGameInputs.length).to.be(0);
+    });
+
+    it("should not allow the next player to UNDO", () => {
+      gameState = testInitialGameState({
+        gameOptions: { allowUndo: true },
+      });
+      player = gameState.getActivePlayer();
+
+      const card = Card.fromName(CardName.FARM);
+      player.addCardToHand(gameState, card.name);
+      player.gainResources(gameState, card.baseCost);
+      [player, gameState] = multiStepGameInputTest(
+        gameState,
+        [playCardInput(CardName.FARM, { source: "HAND" })],
+        { autoAdvance: true }
+      );
+      const player2 = gameState.players[1];
+      expect(gameState.getActivePlayer().playerId).to.eql(player2.playerId);
+      expect(() => {
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          { inputType: GameInputType.UNDO },
+        ]);
+      }).to.throwException(/Unable to undo/i);
+    });
+  });
+
   describe("PLAY_CARD", () => {
     it("should be able to pay for the card to play it", () => {
       const card = Card.fromName(CardName.FARM);

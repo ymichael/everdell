@@ -275,6 +275,8 @@ export const renderGameInputLabel = (
       return <span>{"Play Train Ticket"}</span>;
     case GameInputType.SELECT_VISITOR:
       return <span>{"Select Visitor"}</span>;
+    case GameInputType.UNDO:
+      return <span>{"Undo last action"}</span>;
     default:
       return renderMultiStepGameInputLabel(gameInput);
   }

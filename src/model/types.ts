@@ -22,6 +22,8 @@ export enum GameInputType {
   PREPARE_FOR_SEASON = "PREPARE_FOR_SEASON",
   GAME_END = "GAME_END",
 
+  UNDO = "UNDO",
+
   // multi
   SELECT_CARDS = "SELECT_CARDS",
   SELECT_CARDS_WITH_SOURCE = "SELECT_CARDS_WITH_SOURCE",
@@ -122,6 +124,10 @@ export type GameInputGameEnd = {
   inputType: GameInputType.GAME_END;
 };
 
+export type GameInputUndo = {
+  inputType: GameInputType.UNDO;
+};
+
 export type GameInputPrepareForSeason = {
   inputType: GameInputType.PREPARE_FOR_SEASON;
 };
@@ -140,6 +146,7 @@ export type GameInputSimple =
   | GameInputPlaceAmbassador
   | GameInputPlayTrainTicket
   | GameInputReserveCard
+  | GameInputUndo
   | GameInputPrepareForSeason;
 
 export type GameInputDiscardCards = {
@@ -788,6 +795,7 @@ export interface IGameTextEntity {
 
 export type GameOptions = {
   realtimePoints: boolean;
+  allowUndo?: boolean;
   pearlbrook: boolean;
 
   // NOT IMPLEMENTED YET

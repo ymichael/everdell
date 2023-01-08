@@ -136,6 +136,12 @@ const GameBuilder: React.FC = () => {
                             <Field type="checkbox" name="realtimePoints" />
                             {"Show points in realtime"}
                           </label>
+                          <label className={styles.game_builder_option}>
+                            <Field type="checkbox" name="allowUndo" />
+                            {"Allow undo"}
+                            &nbsp;
+                            <span className={styles.beta}>beta</span>
+                          </label>
                         </div>
                       </div>
                     )}

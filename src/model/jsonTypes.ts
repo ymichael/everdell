@@ -44,6 +44,7 @@ export type GameStateJSON = {
   stationCards: (CardName | null)[] | null;
   trainCarTileStack: TrainCarTileStackJSON | null;
   visitorStack: VisitorStackJSON | null;
+  gameStateJSONForUndo: GameStateJSON | null;
 };
 
 export type CardStackJSON<T> = {

@@ -32,6 +32,7 @@ export default async (
     ? shuffle([...body.players])
     : [...body.players];
   const realtimePoints = !!body.realtimePoints;
+  const allowUndo = !!body.allowUndo;
   const pearlbrook = !!body.pearlbrook;
   const newleaf = body.newleaf
     ? {
@@ -49,7 +50,13 @@ export default async (
     : {};
   const game = await createGame(
     players.map((p: any) => p.name),
-    { realtimePoints, pearlbrook, newleaf, bellfaire }
+    {
+      allowUndo,
+      realtimePoints,
+      pearlbrook,
+      newleaf,
+      bellfaire,
+    }
   );
   res.json({
     success: "ok",

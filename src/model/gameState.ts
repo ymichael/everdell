@@ -16,6 +16,7 @@ import {
   GameInputPlayCard,
   GameInputPrepareForSeason,
   GameInputType,
+  GameInputUndo,
   GameInputVisitDestinationCard,
   GameInputPlaceAmbassador,
   GameInputWorkerPlacementTypes,
@@ -147,6 +148,9 @@ export class GameState {
   // start of the active player's turn.
   private playedGameInputs: GameInput[];
 
+  // If set, undoing an action will reset to this game state.
+  private gameStateForUndo: GameState | null;
+
   // Player & Active Player
   private _activePlayerId: Player["playerId"];
   readonly players: Player[];
@@ -183,6 +187,7 @@ export class GameState {
     stationCards = [],
     trainCarTileStack = null,
     visitorStack = null,
+    gameStateForUndo = null,
   }: {
     gameStateId: number;
     activePlayerId?: Player["playerId"];
@@ -201,6 +206,7 @@ export class GameState {
     playedGameInputs?: GameInput[];
     gameLog: GameLogEntry[];
     gameOptions?: Partial<GameOptions>;
+    gameStateForUndo?: GameState | null;
   }) {
     this.gameStateId = gameStateId;
     this.players = players;
@@ -218,6 +224,7 @@ export class GameState {
     this.riverDestinationMap = riverDestinationMap;
     this.trainCarTileStack = trainCarTileStack;
     this.visitorStack = visitorStack;
+    this.gameStateForUndo = gameStateForUndo;
     this.gameOptions = defaultGameOptions(gameOptions);
   }
 
@@ -349,11 +356,15 @@ export class GameState {
           ? this.visitorStack.toJSON(includePrivate)
           : null,
         stationCards: this.stationCards,
+        gameStateJSONForUndo: null,
       },
       ...(includePrivate
         ? {
             pendingGameInputs: this.pendingGameInputs,
             playedGameInputs: this.playedGameInputs,
+            gameStateJSONForUndo: this.gameStateForUndo
+              ? this.gameStateForUndo.toJSON(true)
+              : null,
           }
         : {}),
     });
@@ -508,6 +519,11 @@ export class GameState {
   }
 
   clone(): GameState {
+    const gameStateJSON = this.toJSON(true /* includePrivate */);
+    return GameState.fromJSON(gameStateJSON);
+  }
+
+  private cloneAndIncrementGameStateId(): GameState {
     const gameStateJSON = this.toJSON(true /* includePrivate */);
     gameStateJSON.gameStateId += 1;
     return GameState.fromJSON(gameStateJSON);
@@ -1309,15 +1325,29 @@ export class GameState {
     this.addGameLog([player, ` took the game end action.`]);
   }
 
-  next(gameInput: GameInput, autoAdvance = true): GameState {
-    return this.clone().nextInner(gameInput, autoAdvance);
-  }
-
   addPlayedGameInput(gameInput: GameInput): void {
     this.playedGameInputs.push(gameInput);
   }
 
-  private nextInner(gameInput: GameInput, autoAdvance = true): GameState {
+  next(gameInput: GameInput, autoAdvance = true, skipUndo = false): GameState {
+    const nextGameState = this.cloneAndIncrementGameStateId();
+    if (gameInput.inputType === GameInputType.UNDO) {
+      if (!this.gameStateForUndo) {
+        throw new Error("Unable to undo");
+      }
+      return this.gameStateForUndo;
+    }
+    return nextGameState.nextInner(gameInput, autoAdvance, skipUndo);
+  }
+
+  private nextInner(
+    gameInput: Exclude<GameInput, GameInputUndo>,
+    autoAdvance = true,
+    skipUndo = false
+  ): GameState {
+    if (this.gameOptions.allowUndo && !skipUndo) {
+      this.gameStateForUndo = this.clone();
+    }
     if (this.pendingGameInputs.length !== 0) {
       this.removeMultiStepGameInput(gameInput as any);
     }
@@ -1401,6 +1431,7 @@ export class GameState {
 
     // If there are no more pending game inputs go to the next player.
     if (this.pendingGameInputs.length === 0) {
+      this.gameStateForUndo = null;
       this.nextPlayer();
     }
 
@@ -1421,7 +1452,11 @@ export class GameState {
     const selectPlayerGameInput =
       selectPlayerInputs && this.getAutoAdvanceInput(selectPlayerInputs);
     if (selectPlayerGameInput) {
-      return this.next(selectPlayerGameInput);
+      return this.next(
+        selectPlayerGameInput,
+        true /* autoAdvance */,
+        true /* skipUndo */
+      );
     }
 
     // Check if we can advance other types of inputs.
@@ -1429,7 +1464,11 @@ export class GameState {
       return this.getAutoAdvanceInput(input);
     });
     if (pendingInputs.every(Boolean) && this.pendingGameInputs.length !== 0) {
-      return this.next(pendingInputs[0]!);
+      return this.next(
+        pendingInputs[0]!,
+        true /* autoAdvance */,
+        true /* skipUndo */
+      );
     }
     return this;
   }
@@ -1634,6 +1673,9 @@ export class GameState {
         : null,
       visitorStack: gameStateJSON.visitorStack
         ? VisitorStack.fromJSON(gameStateJSON.visitorStack)
+        : null,
+      gameStateForUndo: gameStateJSON.gameStateJSONForUndo
+        ? GameState.fromJSON(gameStateJSON.gameStateJSONForUndo)
         : null,
     });
   }
@@ -1897,12 +1939,17 @@ export class GameState {
       return [];
     }
 
+    const possibleGameInputs: GameInput[] = [...this.pendingGameInputs];
+
+    if (this.gameStateForUndo) {
+      possibleGameInputs.push({ inputType: GameInputType.UNDO });
+    }
+
     if (this.pendingGameInputs.length !== 0) {
-      return this.pendingGameInputs;
+      return possibleGameInputs;
     }
 
     const player = this.getActivePlayer();
-    const possibleGameInputs: GameInput[] = [];
 
     if (player.numAvailableWorkers > 0) {
       if (this.getPlayableLocations().length !== 0) {

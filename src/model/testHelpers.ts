@@ -16,6 +16,7 @@ import {
   GameInputMultiStep,
   GameInputType,
   GameInputPlayCard,
+  GameInputUndo,
   TrainCarTileName,
   VisitorName,
 } from "./types";
@@ -133,8 +134,11 @@ export const multiStepGameInputTest = (
   gameState: GameState,
   gameInputs: [
     GameInputSimple,
-    ...(Pick<GameInputMultiStep, "clientOptions"> &
-      Partial<GameInputMultiStep>)[]
+    ...(
+      | (Pick<GameInputMultiStep, "clientOptions"> &
+          Partial<GameInputMultiStep>)
+      | GameInputUndo
+    )[]
   ],
   opts: {
     autoAdvance?: boolean;
@@ -180,46 +184,53 @@ export const multiStepGameInputTest = (
   playInput(simpleInput, multiStepInputs.length === 0);
 
   multiStepInputs.forEach((partialInput, idx) => {
-    // Find the input the matches this one
-    let nextInput = gameState.pendingGameInputs[0];
-    // If there are multiple pending inputs, enforce that
-    // we specify the type and context
-    if (gameState.pendingGameInputs.length > 1) {
-      expect(partialInput.inputType).to.be.ok();
-      expect(partialInput.prevInputType).to.be.ok();
-      expect(
-        partialInput.eventContext ||
-          partialInput.cardContext ||
-          partialInput.playedCardContext ||
-          partialInput.locationContext ||
-          partialInput.adornmentContext ||
-          partialInput.riverDestinationContext ||
-          partialInput.trainCarTileContext
-      ).to.be.ok();
-      nextInput = gameState.pendingGameInputs.find((x) => {
-        return (
-          x.inputType === partialInput.inputType &&
-          x.prevInputType === partialInput.prevInputType &&
-          x.eventContext === partialInput.eventContext &&
-          x.cardContext === partialInput.cardContext &&
-          x.locationContext === partialInput.locationContext &&
-          x.adornmentContext === partialInput.adornmentContext &&
-          x.riverDestinationContext === partialInput.riverDestinationContext &&
-          x.trainCarTileContext === partialInput.trainCarTileContext
-        );
-      })!;
-      expect(nextInput).to.be.ok();
-    }
+    let nextInput: GameInput;
 
-    // Verify the pending input matches
-    if (!skipMultiPendingInputCheck) {
-      const keysToOmit = ["clientOptions", "label", "prevInput"];
-      const keysToMatch = Object.keys(partialInput).filter(
-        (x) => !keysToOmit.includes(x)
-      );
-      expect(pick(nextInput, keysToMatch)).to.eql(
-        omit(partialInput, keysToOmit)
-      );
+    if (partialInput.inputType === GameInputType.UNDO) {
+      nextInput = partialInput;
+    } else {
+      // Find the input the matches this one
+      nextInput = gameState.pendingGameInputs[0];
+      // If there are multiple pending inputs, enforce that
+      // we specify the type and context
+      if (gameState.pendingGameInputs.length > 1) {
+        expect(partialInput.inputType).to.be.ok();
+        expect(partialInput.prevInputType).to.be.ok();
+        expect(
+          partialInput.eventContext ||
+            partialInput.cardContext ||
+            partialInput.playedCardContext ||
+            partialInput.locationContext ||
+            partialInput.adornmentContext ||
+            partialInput.riverDestinationContext ||
+            partialInput.trainCarTileContext
+        ).to.be.ok();
+        nextInput = gameState.pendingGameInputs.find((x) => {
+          return (
+            x.inputType === partialInput.inputType &&
+            x.prevInputType === partialInput.prevInputType &&
+            x.eventContext === partialInput.eventContext &&
+            x.cardContext === partialInput.cardContext &&
+            x.locationContext === partialInput.locationContext &&
+            x.adornmentContext === partialInput.adornmentContext &&
+            x.riverDestinationContext ===
+              partialInput.riverDestinationContext &&
+            x.trainCarTileContext === partialInput.trainCarTileContext
+          );
+        })!;
+        expect(nextInput).to.be.ok();
+      }
+
+      // Verify the pending input matches
+      if (!skipMultiPendingInputCheck) {
+        const keysToOmit = ["clientOptions", "label", "prevInput"];
+        const keysToMatch = Object.keys(partialInput).filter(
+          (x) => !keysToOmit.includes(x)
+        );
+        expect(pick(nextInput, keysToMatch)).to.eql(
+          omit(partialInput, keysToOmit)
+        );
+      }
     }
 
     // Play input

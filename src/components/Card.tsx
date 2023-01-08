@@ -260,12 +260,35 @@ export const EmptyCard = () => {
 
 export default Card;
 
+const CardPoints: React.FC<{
+  cardName: CardName;
+  cardIdx: number;
+  cardOwner: Player;
+  gameState: GameState;
+}> = ({ cardName, cardIdx, cardOwner, gameState }) => {
+  const card = CardModel.fromName(cardName);
+
+  // Bonus for the WIFE needs to be computed separately because it
+  // relies on the whole city.
+  let extraPoints = 0;
+  if (
+    cardName === CardName.WIFE &&
+    cardOwner.getNumHusbandWifePairs() >= cardIdx
+  ) {
+    extraPoints += 3;
+  }
+  return (
+    <div>Points: {card.getPoints(cardOwner, gameState) + extraPoints}</div>
+  );
+};
+
 export const PlayedCard: React.FC<{
   playedCard: PlayedCardInfo;
   cardOwner: Player;
   gameState: GameState;
   viewerId: string | null;
-}> = ({ playedCard, cardOwner, gameState, viewerId }) => {
+  cardIdx?: number;
+}> = ({ playedCard, cardOwner, gameState, viewerId, cardIdx }) => {
   const {
     cardOwnerId,
     cardName,
@@ -289,8 +312,13 @@ export const PlayedCard: React.FC<{
         <div>
           Card Owner: {viewerId === cardOwnerId ? "You" : cardOwner.name}
         </div>
-        {card.cardType === CardType.PROSPERITY && (
-          <div>Points: {card.getPoints(cardOwner, gameState)}</div>
+        {cardIdx && card.cardType === CardType.PROSPERITY && (
+          <CardPoints
+            cardName={cardName}
+            cardIdx={cardIdx}
+            cardOwner={cardOwner}
+            gameState={gameState}
+          />
         )}
         {"workers" in playedCard && (
           <div>Workers on card: {workers.length}</div>

@@ -51,8 +51,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     player.addToCity(gameState, CardName.DUNGEON);
     player.addToCity(gameState, CardName.EVERTREE);
     player.addToCity(gameState, CardName.INNKEEPER);
-    player.addToCity(gameState, CardName.RESIN_REFINERY);
-    player.addToCity(gameState, CardName.INN);
+    player.addToCity(gameState, CardName.WIFE);
+    player.addToCity(gameState, CardName.WIFE);
+    player.addToCity(gameState, CardName.HUSBAND);
     player.addToCity(gameState, CardName.FARM);
     player.addToCity(gameState, CardName.MINE).usedForCritter = true;
     player.addToCity(gameState, CardName.CLOCK_TOWER);

@@ -245,6 +245,7 @@ export const PlayerCity: React.FC<{
 }> = ({ player, viewerId, gameState }) => {
   const playedCards = player.getPlayedCards();
   const playedAdornments = player.getPlayedAdornments();
+  const playedCardIdx: { [cardName: string]: number } = {};
 
   const labelToCount: [string, number][] = [
     ["Critters", player.getNumPlayedCritters()],
@@ -273,16 +274,21 @@ export const PlayerCity: React.FC<{
           })}
       </div>
       <div className={styles.items}>
-        {playedCards.map((playedCard, idx) => (
-          <ItemWrapper key={`card-${idx}`}>
-            <PlayedCard
-              playedCard={playedCard}
-              gameState={gameState}
-              viewerId={viewerId}
-              cardOwner={player}
-            />
-          </ItemWrapper>
-        ))}
+        {playedCards.map((playedCard, idx) => {
+          const cardName = playedCard.cardName;
+          playedCardIdx[cardName] = (playedCardIdx[cardName] || 0) + 1;
+          return (
+            <ItemWrapper key={`card-${idx}`}>
+              <PlayedCard
+                playedCard={playedCard}
+                gameState={gameState}
+                viewerId={viewerId}
+                cardOwner={player}
+                cardIdx={playedCardIdx[cardName]}
+              />
+            </ItemWrapper>
+          );
+        })}
         {playedAdornments.map((playedAdornment, idx) => (
           <Adornment key={`adornment-${idx}`} name={playedAdornment} />
         ))}

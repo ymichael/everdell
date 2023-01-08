@@ -3379,8 +3379,6 @@ const CARD_REGISTRY: Record<CardName, Card> = {
       { type: "entity", entityType: "card", card: CardName.HUSBAND },
     ]),
     pointsInner: (player) => {
-      // NOTE: this is implemented in player because if you have multiple
-      // of each card, we only want to count each pair once!
       return 0;
     },
   }),

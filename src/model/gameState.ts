@@ -1330,14 +1330,17 @@ export class GameState {
   }
 
   next(gameInput: GameInput, autoAdvance = true, skipUndo = false): GameState {
-    const nextGameState = this.cloneAndIncrementGameStateId();
     if (gameInput.inputType === GameInputType.UNDO) {
       if (!this.gameStateForUndo) {
         throw new Error("Unable to undo");
       }
       return this.gameStateForUndo;
     }
-    return nextGameState.nextInner(gameInput, autoAdvance, skipUndo);
+    if (this.gameOptions.allowUndo && !skipUndo) {
+      this.gameStateForUndo = this.clone();
+    }
+    const nextState = this.cloneAndIncrementGameStateId();
+    return nextState.nextInner(gameInput, autoAdvance, skipUndo);
   }
 
   private nextInner(
@@ -1345,9 +1348,6 @@ export class GameState {
     autoAdvance = true,
     skipUndo = false
   ): GameState {
-    if (this.gameOptions.allowUndo && !skipUndo) {
-      this.gameStateForUndo = this.clone();
-    }
     if (this.pendingGameInputs.length !== 0) {
       this.removeMultiStepGameInput(gameInput as any);
     }

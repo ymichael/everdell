@@ -44,15 +44,14 @@ describe("Undo", () => {
       cy.contains("Submit").click();
     });
 
-    cy.contains("Ranger: Place your worker");
-
     cy.get("#js-game-input-box-form").within(() => {
+      cy.contains("Ranger: Place your worker");
       cy.contains("Undo last action").click();
       cy.contains("Submit").click();
     });
 
     cy.get("#js-game-input-box-form").within(() => {
-      cy.contains("Ranger: Place your worker");
+      cy.contains("Ranger: Select a deployed worker to move");
       cy.contains("Undo last action").click();
       cy.contains("Submit").click();
     });

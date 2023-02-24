@@ -320,7 +320,7 @@ const SelectedCardInfo = ({
             : clientOptions.source === "MEADOW"
             ? toGameText(["Play ", card, " from your the Meadow:"])
             : clientOptions.source === "STATION"
-            ? toGameText(["Play ", card, " from your the Station:"])
+            ? toGameText(["Play ", card, " from the Station:"])
             : clientOptions.source === "RESERVED"
             ? toGameText(["Play your reserved ", card, " for 1 fewer ANY."])
             : assertUnreachable(clientOptions.source, "Unexpected source")

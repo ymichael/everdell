@@ -476,6 +476,7 @@ export enum EventName {
   SPECIAL_SUNFLOWER_PARADE = "Sunflower Parade",
 
   // // Bellfaire events
+  BASIC_FLOWER_FESTIVAL = "GOVERNANCE DESTINATION PRODUCTION TRAVELER PROSPERITY",
   SPECIAL_ARCHITECTURAL_RENAISSANCE = "Architectural Renaissance",
   SPECIAL_ARTS_AND_MUSIC_FESTIVAL = "Arts and Music Festival",
   SPECIAL_BED_AND_BREAKFAST_GUILD = "Bed and Breakfast Guild",
@@ -807,8 +808,8 @@ export type GameOptions = {
   bellfaire?: {
     market?: boolean;
     garlandAward?: boolean;
-    flowerFestival?: boolean;
     forestLocations?: boolean;
+    basicEvents?: boolean;
     specialEvents?: boolean;
     playerPowers?: boolean;
   };

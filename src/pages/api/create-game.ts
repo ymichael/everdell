@@ -47,7 +47,7 @@ export default async (
       }
     : {};
   const bellfaire = body.bellfaire
-    ? { forestLocations: true, specialEvents: true }
+    ? { forestLocations: true, specialEvents: true, basicEvents: true }
     : {};
   const game = await createGame(
     players.map((p: any) => p.name),

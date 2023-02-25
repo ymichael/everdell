@@ -2946,6 +2946,28 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
   }),
 
   // Bellfaire events
+  [EventName.BASIC_FLOWER_FESTIVAL]: new Event({
+    name: EventName.BASIC_FLOWER_FESTIVAL,
+    type: EventType.BASIC,
+    baseVP: 4,
+    eventRequirementsDescription: toGameText(
+      "GOVERNANCE DESTINATION PRODUCTION TRAVELER PROSPERITY"
+    ),
+    expansion: ExpansionType.BELLFAIRE,
+    canPlayCheckInner: (gameState: GameState) => {
+      const player = gameState.getActivePlayer();
+      if (
+        player.getNumCardType(CardType.GOVERNANCE) < 1 ||
+        player.getNumCardType(CardType.DESTINATION) < 1 ||
+        player.getNumCardType(CardType.PRODUCTION) < 1 ||
+        player.getNumCardType(CardType.TRAVELER) < 1 ||
+        player.getNumCardType(CardType.PROSPERITY) < 1
+      ) {
+        return `Need at least 1 card of each color to claim event`;
+      }
+      return null;
+    },
+  }),
   [EventName.SPECIAL_ARCHITECTURAL_RENAISSANCE]: new Event({
     name: EventName.SPECIAL_ARCHITECTURAL_RENAISSANCE,
     type: EventType.SPECIAL,
@@ -3211,6 +3233,10 @@ export const initialEventMap = (opt: GameOptions): EventNameToPlayerId => {
     Event.byType(EventType.BASIC).forEach((ty) => {
       if (Event.fromName(ty).expansion === ExpansionType.NEWLEAF) {
         if (opt.newleaf?.basicEvents) {
+          ret[ty] = null;
+        }
+      } else if (Event.fromName(ty).expansion === ExpansionType.BELLFAIRE) {
+        if (opt.bellfaire?.basicEvents) {
           ret[ty] = null;
         }
       } else {

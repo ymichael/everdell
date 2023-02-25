@@ -71,7 +71,7 @@ describe("Event", () => {
     });
   });
 
-  it("should not include newleaf events if not playing with newleaf", () => {
+  it("should not include newleaf basic events if not playing with newleaf", () => {
     let eventsMap = initialEventMap(defaultGameOptions({}));
     expect(
       Object.keys(eventsMap).filter((eventName) => {
@@ -93,6 +93,30 @@ describe("Event", () => {
         );
       })
     ).to.eql([EventName.BASIC_BIG_CITY, EventName.BASIC_THREE_PROSPERITY]);
+  });
+
+  it("should not include bellfaire basic events if not playing with bellfaire", () => {
+    let eventsMap = initialEventMap(defaultGameOptions({}));
+    expect(
+      Object.keys(eventsMap).filter((eventName) => {
+        return (
+          Event.fromName(eventName as EventName).expansion ===
+          ExpansionType.BELLFAIRE
+        );
+      })
+    ).to.eql([]);
+
+    eventsMap = initialEventMap(
+      defaultGameOptions({ bellfaire: { basicEvents: true } })
+    );
+    expect(
+      Object.keys(eventsMap).filter((eventName) => {
+        return (
+          Event.fromName(eventName as EventName).expansion ===
+          ExpansionType.BELLFAIRE
+        );
+      })
+    ).to.eql([EventName.BASIC_FLOWER_FESTIVAL]);
   });
 
   it("should be able to claim 2 events in one season", () => {
@@ -5287,6 +5311,40 @@ describe("Event", () => {
   });
 
   // Bellfaire Events
+
+  describe(EventName.BASIC_FLOWER_FESTIVAL, () => {
+    it("should only be playable if 1 of each of the 5 colors in city", () => {
+      gameState = testInitialGameState({
+        gameOptions: { bellfaire: { basicEvents: true } },
+      });
+      player = gameState.getActivePlayer();
+
+      const event = Event.fromName(EventName.BASIC_FLOWER_FESTIVAL);
+      const gameInput = claimEventInput(event.name);
+
+      expect(event.canPlay(gameState, gameInput)).to.be(false);
+
+      player.addToCity(gameState, CardName.FARM);
+      expect(event.canPlay(gameState, gameInput)).to.be(false);
+
+      player.addToCity(gameState, CardName.WANDERER);
+      expect(event.canPlay(gameState, gameInput)).to.be(false);
+
+      player.addToCity(gameState, CardName.HISTORIAN);
+      expect(event.canPlay(gameState, gameInput)).to.be(false);
+
+      player.addToCity(gameState, CardName.INN);
+      expect(event.canPlay(gameState, gameInput)).to.be(false);
+
+      player.addToCity(gameState, CardName.PHOTOGRAPHER);
+      expect(event.canPlay(gameState, gameInput)).to.be(true);
+
+      event.play(gameState, gameInput);
+      expect(player.getClaimedEvent(EventName.BASIC_FLOWER_FESTIVAL));
+      expect(player.getNumClaimedEvents() == 1).to.be(true);
+    });
+  });
+
   describe(EventName.SPECIAL_ARCHITECTURAL_RENAISSANCE, () => {
     beforeEach(() => {
       gameState = testInitialGameState();

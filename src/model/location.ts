@@ -1229,7 +1229,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
 
           // only allow players to draw up to their max hand size
           if (player.numCardsInHand < player.maxHandSize) {
-            let cardsToTake = Math.min(
+            const cardsToTake = Math.min(
               player.maxHandSize - player.numCardsInHand,
               3
             );

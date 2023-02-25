@@ -52,7 +52,7 @@ async function getTestGameJSON(
   return game.toJSON(true);
 }
 
-module.exports = (on: any, config: any) => {
+export default function setupNodeEvents(on: any, config: any) {
   on("task", {
     "db:basic-game": async () => {
       return await getTestGameJSON();

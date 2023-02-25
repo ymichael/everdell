@@ -1,14 +1,14 @@
 import { GameJSON } from "../../src/model/jsonTypes";
 
+let gameJSON: GameJSON;
+
+beforeEach(async () => {
+  gameJSON = await ((cy.task(
+    "db:select-played-adornment-game"
+  ) as unknown) as Promise<GameJSON>);
+});
+
 describe("Select Played Adornment", () => {
-  let gameJSON: GameJSON;
-
-  beforeEach(async () => {
-    gameJSON = await ((cy.task(
-      "db:select-played-adornment-game"
-    ) as unknown) as Promise<GameJSON>);
-  });
-
   it("should allow player to select a played adornment", () => {
     const player1 = gameJSON.gameState.players[0];
 

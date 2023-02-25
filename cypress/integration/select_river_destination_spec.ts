@@ -1,14 +1,14 @@
 import { GameJSON } from "../../src/model/jsonTypes";
 
+let gameJSON: GameJSON;
+
+beforeEach(async () => {
+  gameJSON = await ((cy.task(
+    "db:select-river-destination-game"
+  ) as unknown) as Promise<GameJSON>);
+});
+
 describe("Select River Destination to copy", () => {
-  let gameJSON: GameJSON;
-
-  beforeEach(async () => {
-    gameJSON = await ((cy.task(
-      "db:select-river-destination-game"
-    ) as unknown) as Promise<GameJSON>);
-  });
-
   it("should allow player to select a river destination when visiting FERRY", () => {
     const player1 = gameJSON.gameState.players[0];
 

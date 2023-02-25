@@ -1,9 +1,0 @@
-{
-  "projectId": "vkcycj",
-  "viewportHeight": 900,
-  "viewportWidth": 1440,
-  "fixturesFolder": false,
-  "nodeVersion": "system",
-  "scrollBehavior": "center",
-  "baseUrl": "http://localhost:3000"
-}

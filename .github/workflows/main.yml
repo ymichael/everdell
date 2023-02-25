@@ -47,17 +47,17 @@ jobs:
       - name: Start server
         run: |
           PORT=3000 npm run start &
-          sleep 5 && 
+          sleep 5 &&
           curl http://localhost:3000/api/status -I
 
       - name: Cypress run
-        uses: cypress-io/github-action@v2.7.0
+        uses: cypress-io/github-action@v5
         with:
           record: true
           quiet: true
           # we have already installed all dependencies above
-          install: false  
+          install: false
         env:
           DB_PATH: ./db/game.sqlite
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

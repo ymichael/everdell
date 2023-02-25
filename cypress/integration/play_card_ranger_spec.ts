@@ -1,14 +1,14 @@
 import { GameJSON } from "../../src/model/jsonTypes";
 
+let gameJSON: GameJSON;
+
+beforeEach(async () => {
+  gameJSON = await ((cy.task(
+    "db:play-ranger-game"
+  ) as unknown) as Promise<GameJSON>);
+});
+
 describe("Play Ranger", () => {
-  let gameJSON: GameJSON;
-
-  beforeEach(async () => {
-    gameJSON = await ((cy.task(
-      "db:play-ranger-game"
-    ) as unknown) as Promise<GameJSON>);
-  });
-
   it("should allow player to play ranger", () => {
     const player1 = gameJSON.gameState.players[0];
     cy.visit(`/game/${gameJSON.gameId}?playerSecret=${player1.playerSecret}`);

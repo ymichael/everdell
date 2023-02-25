@@ -4754,20 +4754,23 @@ describe("Event", () => {
       ]);
       expect(player.getNumCardsInCity()).to.be(5);
 
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.HUSBAND);
+      player.addCardToHand(gameState, CardName.WIFE);
+      player.addCardToHand(gameState, CardName.TWIG_BARGE);
+      expect(player.numCardsInHand).to.be(4);
+
       [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
         {
-          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          inputType: GameInputType.SELECT_CARDS,
           prevInputType: GameInputType.CLAIM_EVENT,
           eventContext: EventName.SPECIAL_GLOW_LIGHT_FESTIVAL,
-          cardOptions: player.getPlayedCards(),
+          cardOptions: player.getCardsInHand(),
           maxToSelect: 3,
           minToSelect: 0,
           clientOptions: {
-            selectedCards: [
-              player.getFirstPlayedCard(CardName.FARM),
-              player.getFirstPlayedCard(CardName.WANDERER),
-            ],
+            selectedCards: [CardName.FARM, CardName.WIFE],
           },
         },
       ]);
@@ -4775,7 +4778,8 @@ describe("Event", () => {
       expect(player.getClaimedEvent(EventName.SPECIAL_GLOW_LIGHT_FESTIVAL));
       expect(player.getPointsFromEvents(gameState)).to.be(3);
       expect(player.getNumResourcesByType(ResourceType.VP)).to.be(2);
-      expect(player.getNumCardsInCity()).to.be(3);
+      expect(player.getNumCardsInCity()).to.be(5);
+      expect(player.numCardsInHand).to.be(2);
     });
     it("should allow player to claim event and not discard cards", () => {
       const event = Event.fromName(EventName.SPECIAL_GLOW_LIGHT_FESTIVAL);
@@ -4794,13 +4798,19 @@ describe("Event", () => {
       ]);
       expect(player.getNumCardsInCity()).to.be(5);
 
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.HUSBAND);
+      player.addCardToHand(gameState, CardName.WIFE);
+      player.addCardToHand(gameState, CardName.TWIG_BARGE);
+      expect(player.numCardsInHand).to.be(4);
+
       [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
         {
-          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          inputType: GameInputType.SELECT_CARDS,
           prevInputType: GameInputType.CLAIM_EVENT,
           eventContext: EventName.SPECIAL_GLOW_LIGHT_FESTIVAL,
-          cardOptions: player.getPlayedCards(),
+          cardOptions: player.getCardsInHand(),
           maxToSelect: 3,
           minToSelect: 0,
           clientOptions: {
@@ -4813,6 +4823,7 @@ describe("Event", () => {
       expect(player.getPointsFromEvents(gameState)).to.be(3);
       expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
       expect(player.getNumCardsInCity()).to.be(5);
+      expect(player.numCardsInHand).to.be(4);
     });
   });
 
@@ -4855,25 +4866,32 @@ describe("Event", () => {
       ]);
       expect(player.getNumCardsInCity()).to.be(4);
 
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.HUSBAND);
+      player.addCardToHand(gameState, CardName.WIFE);
+      player.addCardToHand(gameState, CardName.TWIG_BARGE);
+      expect(player.numCardsInHand).to.be(4);
+
       [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
         {
-          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          inputType: GameInputType.SELECT_CARDS,
           prevInputType: GameInputType.CLAIM_EVENT,
           eventContext: EventName.SPECIAL_HOT_AIR_BALLOON_RACE,
-          cardOptions: player.getPlayedCards(),
+          cardOptions: player.getCardsInHand(),
           maxToSelect: 2,
           minToSelect: 0,
           clientOptions: {
-            selectedCards: [player.getFirstPlayedCard(CardName.SHOPKEEPER)],
+            selectedCards: [CardName.WIFE, CardName.TWIG_BARGE],
           },
         },
       ]);
 
       expect(player.getClaimedEvent(EventName.SPECIAL_HOT_AIR_BALLOON_RACE));
       expect(player.getPointsFromEvents(gameState)).to.be(4);
-      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(1);
-      expect(player.getNumCardsInCity()).to.be(3);
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(2);
+      expect(player.getNumCardsInCity()).to.be(4);
+      expect(player.numCardsInHand).to.be(2);
     });
     it("should allow player to claim event and not discard cards", () => {
       const event = Event.fromName(EventName.SPECIAL_HOT_AIR_BALLOON_RACE);
@@ -4891,13 +4909,19 @@ describe("Event", () => {
       ]);
       expect(player.getNumCardsInCity()).to.be(4);
 
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.HUSBAND);
+      player.addCardToHand(gameState, CardName.WIFE);
+      player.addCardToHand(gameState, CardName.TWIG_BARGE);
+      expect(player.numCardsInHand).to.be(4);
+
       [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
         {
-          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          inputType: GameInputType.SELECT_CARDS,
           prevInputType: GameInputType.CLAIM_EVENT,
           eventContext: EventName.SPECIAL_HOT_AIR_BALLOON_RACE,
-          cardOptions: player.getPlayedCards(),
+          cardOptions: player.getCardsInHand(),
           maxToSelect: 2,
           minToSelect: 0,
           clientOptions: {
@@ -4910,6 +4934,7 @@ describe("Event", () => {
       expect(player.getPointsFromEvents(gameState)).to.be(4);
       expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
       expect(player.getNumCardsInCity()).to.be(4);
+      expect(player.numCardsInHand).to.be(4);
     });
   });
 
@@ -5004,20 +5029,23 @@ describe("Event", () => {
       ]);
       expect(player.getNumCardsInCity()).to.be(5);
 
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.HUSBAND);
+      player.addCardToHand(gameState, CardName.WIFE);
+      player.addCardToHand(gameState, CardName.TWIG_BARGE);
+      expect(player.numCardsInHand).to.be(4);
+
       [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
         {
-          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          inputType: GameInputType.SELECT_CARDS,
           prevInputType: GameInputType.CLAIM_EVENT,
           eventContext: EventName.SPECIAL_MAGIC_SNOW,
-          cardOptions: player.getPlayedCards(),
+          cardOptions: player.getCardsInHand(),
           maxToSelect: 2,
           minToSelect: 0,
           clientOptions: {
-            selectedCards: [
-              player.getFirstPlayedCard(CardName.LOOKOUT),
-              player.getFirstPlayedCard(CardName.KING),
-            ],
+            selectedCards: [CardName.FARM, CardName.HUSBAND],
           },
         },
       ]);
@@ -5025,7 +5053,8 @@ describe("Event", () => {
       expect(player.getClaimedEvent(EventName.SPECIAL_MAGIC_SNOW));
       expect(player.getPointsFromEvents(gameState)).to.be(4);
       expect(player.getNumResourcesByType(ResourceType.VP)).to.be(2);
-      expect(player.getNumCardsInCity()).to.be(3);
+      expect(player.getNumCardsInCity()).to.be(5);
+      expect(player.numCardsInHand).to.be(2);
     });
     it("should allow player to claim event and not discard cards", () => {
       const event = Event.fromName(EventName.SPECIAL_MAGIC_SNOW);
@@ -5044,13 +5073,19 @@ describe("Event", () => {
       ]);
       expect(player.getNumCardsInCity()).to.be(5);
 
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.HUSBAND);
+      player.addCardToHand(gameState, CardName.WIFE);
+      player.addCardToHand(gameState, CardName.TWIG_BARGE);
+      expect(player.numCardsInHand).to.be(4);
+
       [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
         {
-          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          inputType: GameInputType.SELECT_CARDS,
           prevInputType: GameInputType.CLAIM_EVENT,
           eventContext: EventName.SPECIAL_MAGIC_SNOW,
-          cardOptions: player.getPlayedCards(),
+          cardOptions: player.getCardsInHand(),
           maxToSelect: 2,
           minToSelect: 0,
           clientOptions: {
@@ -5063,6 +5098,7 @@ describe("Event", () => {
       expect(player.getPointsFromEvents(gameState)).to.be(4);
       expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
       expect(player.getNumCardsInCity()).to.be(5);
+      expect(player.numCardsInHand).to.be(4);
     });
   });
   describe(EventName.SPECIAL_ROYAL_TEA, () => {
@@ -5106,20 +5142,23 @@ describe("Event", () => {
       ]);
       expect(player.getNumCardsInCity()).to.be(6);
 
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.HUSBAND);
+      player.addCardToHand(gameState, CardName.WIFE);
+      player.addCardToHand(gameState, CardName.TWIG_BARGE);
+      expect(player.numCardsInHand).to.be(4);
+
       [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
         {
-          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          inputType: GameInputType.SELECT_CARDS,
           prevInputType: GameInputType.CLAIM_EVENT,
           eventContext: EventName.SPECIAL_ROYAL_TEA,
-          cardOptions: player.getPlayedCards(),
+          cardOptions: player.getCardsInHand(),
           maxToSelect: 3,
           minToSelect: 0,
           clientOptions: {
-            selectedCards: [
-              player.getFirstPlayedCard(CardName.FARM),
-              player.getFirstPlayedCard(CardName.TWIG_BARGE),
-            ],
+            selectedCards: [CardName.FARM, CardName.TWIG_BARGE],
           },
         },
       ]);
@@ -5127,7 +5166,8 @@ describe("Event", () => {
       expect(player.getClaimedEvent(EventName.SPECIAL_ROYAL_TEA));
       expect(player.getPointsFromEvents(gameState)).to.be(4);
       expect(player.getNumResourcesByType(ResourceType.VP)).to.be(2);
-      expect(player.getNumCardsInCity()).to.be(4);
+      expect(player.getNumCardsInCity()).to.be(6);
+      expect(player.numCardsInHand).to.be(2);
     });
     it("should allow player to claim event and not discard cards", () => {
       const event = Event.fromName(EventName.SPECIAL_ROYAL_TEA);
@@ -5147,13 +5187,19 @@ describe("Event", () => {
       ]);
       expect(player.getNumCardsInCity()).to.be(6);
 
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.HUSBAND);
+      player.addCardToHand(gameState, CardName.WIFE);
+      player.addCardToHand(gameState, CardName.TWIG_BARGE);
+      expect(player.numCardsInHand).to.be(4);
+
       [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
         {
-          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          inputType: GameInputType.SELECT_CARDS,
           prevInputType: GameInputType.CLAIM_EVENT,
           eventContext: EventName.SPECIAL_ROYAL_TEA,
-          cardOptions: player.getPlayedCards(),
+          cardOptions: player.getCardsInHand(),
           maxToSelect: 3,
           minToSelect: 0,
           clientOptions: {
@@ -5166,6 +5212,7 @@ describe("Event", () => {
       expect(player.getPointsFromEvents(gameState)).to.be(4);
       expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
       expect(player.getNumCardsInCity()).to.be(6);
+      expect(player.numCardsInHand).to.be(4);
     });
   });
   describe(EventName.SPECIAL_STOCK_MARKET_BOOM, () => {
@@ -5207,25 +5254,33 @@ describe("Event", () => {
       ]);
       expect(player.getNumCardsInCity()).to.be(4);
 
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.HUSBAND);
+      player.addCardToHand(gameState, CardName.WIFE);
+      player.addCardToHand(gameState, CardName.TWIG_BARGE);
+      expect(player.numCardsInHand).to.be(4);
+
       [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
         {
-          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          inputType: GameInputType.SELECT_CARDS,
           prevInputType: GameInputType.CLAIM_EVENT,
           eventContext: EventName.SPECIAL_STOCK_MARKET_BOOM,
-          cardOptions: player.getPlayedCards(),
+          cardOptions: player.getCardsInHand(),
           maxToSelect: 2,
           minToSelect: 0,
           clientOptions: {
-            selectedCards: [player.getFirstPlayedCard(CardName.INN)],
+            selectedCards: [CardName.FARM, CardName.HUSBAND],
           },
         },
       ]);
 
       expect(player.getClaimedEvent(EventName.SPECIAL_STOCK_MARKET_BOOM));
+      // base VP is 4 points
       expect(player.getPointsFromEvents(gameState)).to.be(4);
-      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(1);
-      expect(player.getNumCardsInCity()).to.be(3);
+      expect(player.getNumResourcesByType(ResourceType.VP)).to.be(2);
+      expect(player.getNumCardsInCity()).to.be(4);
+      expect(player.numCardsInHand).to.be(2);
     });
     it("should allow player to claim event and not discard cards", () => {
       const event = Event.fromName(EventName.SPECIAL_STOCK_MARKET_BOOM);
@@ -5243,13 +5298,19 @@ describe("Event", () => {
       ]);
       expect(player.getNumCardsInCity()).to.be(4);
 
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.HUSBAND);
+      player.addCardToHand(gameState, CardName.WIFE);
+      player.addCardToHand(gameState, CardName.TWIG_BARGE);
+      expect(player.numCardsInHand).to.be(4);
+
       [player, gameState] = multiStepGameInputTest(gameState, [
         gameInput,
         {
-          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          inputType: GameInputType.SELECT_CARDS,
           prevInputType: GameInputType.CLAIM_EVENT,
           eventContext: EventName.SPECIAL_STOCK_MARKET_BOOM,
-          cardOptions: player.getPlayedCards(),
+          cardOptions: player.getCardsInHand(),
           maxToSelect: 2,
           minToSelect: 0,
           clientOptions: {
@@ -5262,6 +5323,7 @@ describe("Event", () => {
       expect(player.getPointsFromEvents(gameState)).to.be(4);
       expect(player.getNumResourcesByType(ResourceType.VP)).to.be(0);
       expect(player.getNumCardsInCity()).to.be(4);
+      expect(player.numCardsInHand).to.be(4);
     });
   });
   describe(EventName.SPECIAL_SUNFLOWER_PARADE, () => {

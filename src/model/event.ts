@@ -2574,18 +2574,18 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
 
         // ask player to choose which cards to discard
         gameState.pendingGameInputs.push({
-          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          inputType: GameInputType.SELECT_CARDS,
           prevInputType: GameInputType.CLAIM_EVENT,
-          label: `You may discard up to ${numProductionCards} CARD from your city for 1 VP each`,
+          label: `You may discard up to ${numProductionCards} CARD from your hand for 1 VP each`,
           eventContext: EventName.SPECIAL_GLOW_LIGHT_FESTIVAL,
-          cardOptions: player.getPlayedCards(),
+          cardOptions: player.getCardsInHand(),
           maxToSelect: numProductionCards,
           minToSelect: 0,
           clientOptions: {
             selectedCards: [],
           },
         });
-      } else if (gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS) {
+      } else if (gameInput.inputType === GameInputType.SELECT_CARDS) {
         const selectedCards = gameInput.clientOptions.selectedCards;
         if (!selectedCards) {
           throw new Error("invalid input");
@@ -2599,20 +2599,20 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         if (!eventInfo) {
           throw new Error("Cannot find event info");
         }
-        selectedCards.forEach((playedCardInfo) => {
-          player.removeCardFromCity(gameState, playedCardInfo);
+        selectedCards.forEach((cardName) => {
+          player.removeCardFromHand(gameState, cardName);
         });
 
         gameState.addGameLogFromEvent(EventName.SPECIAL_GLOW_LIGHT_FESTIVAL, [
           player,
           " discarded ",
-          ...cardListToGameText(selectedCards.map(({ cardName }) => cardName)),
-          " from their city.",
+          `${selectedCards.length}`,
+          " from their hand.",
         ]);
         player.gainResources(gameState, { VP: selectedCards.length });
         gameState.addGameLogFromEvent(EventName.SPECIAL_GLOW_LIGHT_FESTIVAL, [
           player,
-          " gained 1 VP per card discarded from their city.",
+          " gained 1 VP per card discarded from their hand.",
         ]);
       } else {
         throw new Error(`Invalid input type ${gameInput.inputType}`);
@@ -2647,18 +2647,18 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
 
         // ask player to choose which cards to discard
         gameState.pendingGameInputs.push({
-          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          inputType: GameInputType.SELECT_CARDS,
           prevInputType: GameInputType.CLAIM_EVENT,
-          label: `You may discard up to ${numTravelerCards} CARD from your city for 1 VP each`,
+          label: `You may discard up to ${numTravelerCards} CARD from your hand for 1 VP each`,
           eventContext: EventName.SPECIAL_HOT_AIR_BALLOON_RACE,
-          cardOptions: player.getPlayedCards(),
+          cardOptions: player.getCardsInHand(),
           maxToSelect: numTravelerCards,
           minToSelect: 0,
           clientOptions: {
             selectedCards: [],
           },
         });
-      } else if (gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS) {
+      } else if (gameInput.inputType === GameInputType.SELECT_CARDS) {
         const selectedCards = gameInput.clientOptions.selectedCards;
         if (!selectedCards) {
           throw new Error("invalid input");
@@ -2672,20 +2672,20 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         if (!eventInfo) {
           throw new Error("Cannot find event info");
         }
-        selectedCards.forEach((playedCardInfo) => {
-          player.removeCardFromCity(gameState, playedCardInfo);
+        selectedCards.forEach((cardName) => {
+          player.removeCardFromHand(gameState, cardName);
         });
 
         gameState.addGameLogFromEvent(EventName.SPECIAL_HOT_AIR_BALLOON_RACE, [
           player,
           " discarded ",
-          ...cardListToGameText(selectedCards.map(({ cardName }) => cardName)),
-          " from their city.",
+          `${selectedCards.length}`,
+          " from their hand.",
         ]);
         player.gainResources(gameState, { VP: selectedCards.length });
         gameState.addGameLogFromEvent(EventName.SPECIAL_HOT_AIR_BALLOON_RACE, [
           player,
-          " gained 1 VP per card discarded from their city.",
+          " gained 1 VP per card discarded.",
         ]);
       } else {
         throw new Error(`Invalid input type ${gameInput.inputType}`);
@@ -2718,7 +2718,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     eventDescription: toGameText([
       "2 DESTINATION 2 PROSPERITY",
       { type: "HR" },
-      "When achieved, you may discard 1 CARD for each DESTINATION fin your city. ",
+      "When achieved, you may discard 1 CARD for each DESTINATION in your city. ",
       "Gain 1 VP for each discarded CARD.",
     ]),
     expansion: ExpansionType.NEWLEAF,
@@ -2739,18 +2739,18 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
 
         // ask player to choose which cards to discard
         gameState.pendingGameInputs.push({
-          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          inputType: GameInputType.SELECT_CARDS,
           prevInputType: GameInputType.CLAIM_EVENT,
-          label: `You may discard up to ${numDestination} CARD from your city for 1 VP each`,
+          label: `You may discard up to ${numDestination} CARD from your hand for 1 VP each`,
           eventContext: EventName.SPECIAL_MAGIC_SNOW,
-          cardOptions: player.getPlayedCards(),
+          cardOptions: player.getCardsInHand(),
           maxToSelect: numDestination,
           minToSelect: 0,
           clientOptions: {
             selectedCards: [],
           },
         });
-      } else if (gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS) {
+      } else if (gameInput.inputType === GameInputType.SELECT_CARDS) {
         const selectedCards = gameInput.clientOptions.selectedCards;
         if (!selectedCards) {
           throw new Error("invalid input");
@@ -2762,20 +2762,20 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         if (!eventInfo) {
           throw new Error("Cannot find event info");
         }
-        selectedCards.forEach((playedCardInfo) => {
-          player.removeCardFromCity(gameState, playedCardInfo);
+        selectedCards.forEach((cardName) => {
+          player.removeCardFromHand(gameState, cardName);
         });
 
         gameState.addGameLogFromEvent(EventName.SPECIAL_MAGIC_SNOW, [
           player,
           " discarded ",
-          ...cardListToGameText(selectedCards.map(({ cardName }) => cardName)),
-          " from their city.",
+          `${selectedCards.length}`,
+          " from their hand.",
         ]);
         player.gainResources(gameState, { VP: selectedCards.length });
         gameState.addGameLogFromEvent(EventName.SPECIAL_MAGIC_SNOW, [
           player,
-          " gained 1 VP per card discarded from their city.",
+          " gained 1 VP per card discarded.",
         ]);
       } else {
         throw new Error(`Invalid input type ${gameInput.inputType}`);
@@ -2810,18 +2810,18 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
 
         // ask player to choose which cards to discard
         gameState.pendingGameInputs.push({
-          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          inputType: GameInputType.SELECT_CARDS,
           prevInputType: GameInputType.CLAIM_EVENT,
-          label: `You may discard up to ${numProsperity} CARD from your city for 1 VP each`,
+          label: `You may discard up to ${numProsperity} CARD from your hand for 1 VP each`,
           eventContext: EventName.SPECIAL_ROYAL_TEA,
-          cardOptions: player.getPlayedCards(),
+          cardOptions: player.getCardsInHand(),
           maxToSelect: numProsperity,
           minToSelect: 0,
           clientOptions: {
             selectedCards: [],
           },
         });
-      } else if (gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS) {
+      } else if (gameInput.inputType === GameInputType.SELECT_CARDS) {
         const selectedCards = gameInput.clientOptions.selectedCards;
         if (!selectedCards) {
           throw new Error("invalid input");
@@ -2833,20 +2833,20 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         if (!eventInfo) {
           throw new Error("Cannot find event info");
         }
-        selectedCards.forEach((playedCardInfo) => {
-          player.removeCardFromCity(gameState, playedCardInfo);
+        selectedCards.forEach((cardName) => {
+          player.removeCardFromHand(gameState, cardName);
         });
 
         gameState.addGameLogFromEvent(EventName.SPECIAL_ROYAL_TEA, [
           player,
           " discarded ",
-          ...cardListToGameText(selectedCards.map(({ cardName }) => cardName)),
-          " from their city.",
+          `${selectedCards.length}`,
+          " from their hand.",
         ]);
         player.gainResources(gameState, { VP: selectedCards.length });
         gameState.addGameLogFromEvent(EventName.SPECIAL_ROYAL_TEA, [
           player,
-          " gained 1 VP per card discarded from their city.",
+          " gained 1 VP per card discarded.",
         ]);
       } else {
         throw new Error(`Invalid input type ${gameInput.inputType}`);
@@ -2881,18 +2881,18 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
 
         // ask player to choose which cards to discard
         gameState.pendingGameInputs.push({
-          inputType: GameInputType.SELECT_PLAYED_CARDS,
+          inputType: GameInputType.SELECT_CARDS,
           prevInputType: GameInputType.CLAIM_EVENT,
-          label: `You may discard up to ${numGovernance} CARD from your city for 1 VP each`,
+          label: `You may discard up to ${numGovernance} CARD from your hand for 1 VP each`,
           eventContext: EventName.SPECIAL_STOCK_MARKET_BOOM,
-          cardOptions: player.getPlayedCards(),
+          cardOptions: player.getCardsInHand(),
           maxToSelect: numGovernance,
           minToSelect: 0,
           clientOptions: {
             selectedCards: [],
           },
         });
-      } else if (gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS) {
+      } else if (gameInput.inputType === GameInputType.SELECT_CARDS) {
         const selectedCards = gameInput.clientOptions.selectedCards;
         if (!selectedCards) {
           throw new Error("invalid input");
@@ -2906,20 +2906,20 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
         if (!eventInfo) {
           throw new Error("Cannot find event info");
         }
-        selectedCards.forEach((playedCardInfo) => {
-          player.removeCardFromCity(gameState, playedCardInfo);
+        selectedCards.forEach((cardName) => {
+          player.removeCardFromHand(gameState, cardName);
         });
 
         gameState.addGameLogFromEvent(EventName.SPECIAL_STOCK_MARKET_BOOM, [
           player,
           " discarded ",
-          ...cardListToGameText(selectedCards.map(({ cardName }) => cardName)),
-          " from their city.",
+          `${selectedCards.length}`,
+          " CARD from their hand",
         ]);
         player.gainResources(gameState, { VP: selectedCards.length });
         gameState.addGameLogFromEvent(EventName.SPECIAL_STOCK_MARKET_BOOM, [
           player,
-          " gained 1 VP per card discarded from their city.",
+          " gained 1 VP per card discarded.",
         ]);
       } else {
         throw new Error(`Invalid input type ${gameInput.inputType}`);

@@ -1377,6 +1377,7 @@ describe("Location", () => {
         ],
         gameOptions: { newleaf: { station: true, knoll: true } },
       });
+      player = gameState.getActivePlayer();
     });
 
     it("player can visit", () => {
@@ -1414,6 +1415,137 @@ describe("Location", () => {
         CardName.DOCTOR,
         CardName.ARCHITECT,
         CardName.BARD,
+      ]);
+    });
+    it("don't allow player to draw cards if hand is full", () => {
+      const location = Location.fromName(LocationName.KNOLL);
+      gameState.locationsMap[location.name] = [];
+
+      expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
+
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.FARM);
+      expect(player.numCardsInHand).to.be(8);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        placeWorkerInput(location.name),
+        {
+          clientOptions: {
+            selectedCards: [
+              { card: CardName.CRANE, source: "STATION", sourceIdx: 1 },
+              { card: CardName.CHIP_SWEEP, source: "MEADOW", sourceIdx: 6 },
+              { card: CardName.CLOCK_TOWER, source: "MEADOW", sourceIdx: 7 },
+            ],
+          },
+        },
+      ]);
+
+      expect(player.numCardsInHand).to.be(8);
+    });
+
+    it("only allow player to draw cards up to their hand limit (2 spaces)", () => {
+      const location = Location.fromName(LocationName.KNOLL);
+      gameState.locationsMap[location.name] = [];
+
+      expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
+
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.FARM);
+      expect(player.numCardsInHand).to.be(6);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        placeWorkerInput(location.name),
+        {
+          clientOptions: {
+            selectedCards: [
+              { card: CardName.CRANE, source: "STATION", sourceIdx: 1 },
+              { card: CardName.CHIP_SWEEP, source: "MEADOW", sourceIdx: 6 },
+              { card: CardName.CLOCK_TOWER, source: "MEADOW", sourceIdx: 7 },
+            ],
+          },
+        },
+        {
+          clientOptions: {
+            selectedCards: [
+              { card: CardName.DOCTOR, source: "STATION", sourceIdx: 2 },
+              { card: CardName.ARCHITECT, source: "MEADOW", sourceIdx: 0 },
+            ],
+          },
+        },
+        { clientOptions: { trainCarTileIdx: 1 } },
+      ]);
+
+      expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
+      expect(player.numCardsInHand).to.be(8);
+      expect(player.getCardsInHand()).to.eql([
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.DOCTOR,
+        CardName.ARCHITECT,
+      ]);
+    });
+
+    it("only allow player to draw cards up to their hand limit (1 space)", () => {
+      const location = Location.fromName(LocationName.KNOLL);
+      gameState.locationsMap[location.name] = [];
+
+      expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
+
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.FARM);
+      expect(player.numCardsInHand).to.be(7);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        placeWorkerInput(location.name),
+        {
+          clientOptions: {
+            selectedCards: [
+              { card: CardName.CRANE, source: "STATION", sourceIdx: 1 },
+              { card: CardName.CHIP_SWEEP, source: "MEADOW", sourceIdx: 6 },
+              { card: CardName.CLOCK_TOWER, source: "MEADOW", sourceIdx: 7 },
+            ],
+          },
+        },
+        {
+          clientOptions: {
+            selectedCards: [
+              { card: CardName.DOCTOR, source: "STATION", sourceIdx: 2 },
+            ],
+          },
+        },
+        { clientOptions: { trainCarTileIdx: 1 } },
+      ]);
+
+      expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
+      expect(player.numCardsInHand).to.be(8);
+      expect(player.getCardsInHand()).to.eql([
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.FARM,
+        CardName.DOCTOR,
       ]);
     });
   });

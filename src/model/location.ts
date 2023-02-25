@@ -1227,18 +1227,32 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
           gameState.replenishMeadow();
           gameState.replenishStation();
 
-          gameState.pendingGameInputs.push({
-            inputType: GameInputType.SELECT_CARDS_WITH_SOURCE,
-            prevInputType: gameInput.inputType,
-            locationContext: LocationName.KNOLL,
-            label: "Select 3 CARD to keep from the Meadow / Station",
-            cardOptions: gameState.getCardsWithSource(false, false),
-            maxToSelect: 3,
-            minToSelect: 3,
-            clientOptions: {
-              selectedCards: [],
-            },
-          });
+          // only allow players to draw up to their max hand size
+          if (player.numCardsInHand < player.maxHandSize) {
+            let cardsToTake = Math.min(
+              player.maxHandSize - player.numCardsInHand,
+              3
+            );
+
+            gameState.pendingGameInputs.push({
+              inputType: GameInputType.SELECT_CARDS_WITH_SOURCE,
+              prevInputType: gameInput.inputType,
+              locationContext: LocationName.KNOLL,
+              label: "Select 3 CARD to keep from the Meadow / Station",
+              cardOptions: gameState.getCardsWithSource(false, false),
+              maxToSelect: cardsToTake,
+              minToSelect: cardsToTake,
+              clientOptions: {
+                selectedCards: [],
+              },
+            });
+          } else {
+            gameState.addGameLogFromLocation(LocationName.KNOLL, [
+              player,
+              " did not select any cards from the Meadow or Station because",
+              " they do not have space in their hand.",
+            ]);
+          }
         } else {
           const selectedCards = gameInput.clientOptions.selectedCards;
           const meadowCards: CardName[] = [];

@@ -1,14 +1,12 @@
 import { GameJSON } from "../../src/model/jsonTypes";
 
+let gameJSON: GameJSON;
+
+beforeEach(async () => {
+  gameJSON = await ((cy.task("db:basic-game") as unknown) as Promise<GameJSON>);
+});
+
 describe("Place Worker", () => {
-  let gameJSON: GameJSON;
-
-  beforeEach(async () => {
-    gameJSON = await ((cy.task(
-      "db:basic-game"
-    ) as unknown) as Promise<GameJSON>);
-  });
-
   it("should allow players to place workers", () => {
     const player1 = gameJSON.gameState.players[0];
     const player2 = gameJSON.gameState.players[1];

@@ -1,14 +1,14 @@
 import { GameJSON } from "../../src/model/jsonTypes";
 
+let gameJSON: GameJSON;
+
+beforeEach(async () => {
+  gameJSON = await ((cy.task(
+    "db:prepare-for-season-spring-pick-one"
+  ) as unknown) as Promise<GameJSON>);
+});
+
 describe("Select cards from meadow", () => {
-  let gameJSON: GameJSON;
-
-  beforeEach(async () => {
-    gameJSON = await ((cy.task(
-      "db:prepare-for-season-spring-pick-one"
-    ) as unknown) as Promise<GameJSON>);
-  });
-
   it("SPRING: player should only pick and keep 1 card if at max hand size - 1", () => {
     const player1 = gameJSON.gameState.players[0];
 

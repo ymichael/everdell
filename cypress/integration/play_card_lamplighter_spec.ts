@@ -1,14 +1,14 @@
 import { GameJSON } from "../../src/model/jsonTypes";
 
+let gameJSON: GameJSON;
+
+beforeEach(async () => {
+  gameJSON = await ((cy.task(
+    "db:play-lamp-lighter-game"
+  ) as unknown) as Promise<GameJSON>);
+});
+
 describe("Play Lamplighter and select cards to draw", () => {
-  let gameJSON: GameJSON;
-
-  beforeEach(async () => {
-    gameJSON = await ((cy.task(
-      "db:play-lamp-lighter-game"
-    ) as unknown) as Promise<GameJSON>);
-  });
-
   it("should allow players to play cards", () => {
     const player1 = gameJSON.gameState.players[0];
     cy.visit(`/game/${gameJSON.gameId}?playerSecret=${player1.playerSecret}`);

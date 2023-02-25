@@ -463,6 +463,8 @@ export enum EventName {
   WONDER_MISTRISE_FOUNTAIN = "Mistrise Fountain",
 
   // Newleaf events
+  BASIC_BIG_CITY = "15 CARD in city",
+  BASIC_THREE_PROSPERITY = "3 PROSPERITY",
   SPECIAL_CITY_JUBILEE = "City Jubilee",
   SPECIAL_EVER_WALL_TOWER_CONSTRUCTED = "Ever Wall Tower Constructed",
   SPECIAL_GLOW_LIGHT_FESTIVAL = "Glow Light Festival",
@@ -813,6 +815,7 @@ export type GameOptions = {
   newleaf?: {
     cards?: boolean;
     forestLocations?: boolean;
+    basicEvents?: boolean;
     specialEvents?: boolean;
     reserving?: boolean;
     station?: boolean;

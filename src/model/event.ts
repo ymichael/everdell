@@ -2460,6 +2460,35 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
   }),
 
   // Newleaf events
+
+  [EventName.BASIC_BIG_CITY]: new Event({
+    name: EventName.BASIC_BIG_CITY,
+    type: EventType.BASIC,
+    baseVP: 5,
+    eventRequirementsDescription: toGameText("15 CARD in city"),
+    expansion: ExpansionType.NEWLEAF,
+    canPlayCheckInner: (gameState: GameState) => {
+      const player = gameState.getActivePlayer();
+      if (player.getNumCardsInCity() < 15) {
+        return `Need at least 15 CARD in city to claim event`;
+      }
+      return null;
+    },
+  }),
+  [EventName.BASIC_THREE_PROSPERITY]: new Event({
+    name: EventName.BASIC_THREE_PROSPERITY,
+    type: EventType.BASIC,
+    baseVP: 3,
+    eventRequirementsDescription: toGameText("3 PROSPERITY"),
+    expansion: ExpansionType.NEWLEAF,
+    canPlayCheckInner: (gameState: GameState) => {
+      const player = gameState.getActivePlayer();
+      if (player.getNumCardType(CardType.PROSPERITY) < 3) {
+        return `Need at least 3 ${CardType.PROSPERITY} cards to claim event`;
+      }
+      return null;
+    },
+  }),
   [EventName.SPECIAL_CITY_JUBILEE]: new Event({
     name: EventName.SPECIAL_CITY_JUBILEE,
     type: EventType.SPECIAL,
@@ -3180,7 +3209,13 @@ export const initialEventMap = (opt: GameOptions): EventNameToPlayerId => {
     });
   } else {
     Event.byType(EventType.BASIC).forEach((ty) => {
-      ret[ty] = null;
+      if (Event.fromName(ty).expansion === ExpansionType.NEWLEAF) {
+        if (opt.newleaf?.basicEvents) {
+          ret[ty] = null;
+        }
+      } else {
+        ret[ty] = null;
+      }
     });
   }
 

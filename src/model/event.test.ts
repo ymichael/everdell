@@ -71,6 +71,30 @@ describe("Event", () => {
     });
   });
 
+  it("should not include newleaf events if not playing with newleaf", () => {
+    let eventsMap = initialEventMap(defaultGameOptions({}));
+    expect(
+      Object.keys(eventsMap).filter((eventName) => {
+        return (
+          Event.fromName(eventName as EventName).expansion ===
+          ExpansionType.NEWLEAF
+        );
+      })
+    ).to.eql([]);
+
+    eventsMap = initialEventMap(
+      defaultGameOptions({ newleaf: { basicEvents: true } })
+    );
+    expect(
+      Object.keys(eventsMap).filter((eventName) => {
+        return (
+          Event.fromName(eventName as EventName).expansion ===
+          ExpansionType.NEWLEAF
+        );
+      })
+    ).to.eql([EventName.BASIC_BIG_CITY, EventName.BASIC_THREE_PROSPERITY]);
+  });
+
   it("should be able to claim 2 events in one season", () => {
     player.addToCity(gameState, CardName.MINE);
     player.addToCity(gameState, CardName.GENERAL_STORE);
@@ -4415,6 +4439,113 @@ describe("Event", () => {
   });
 
   // Newleaf events
+  describe(EventName.BASIC_BIG_CITY, () => {
+    it("should only be playable with 15 cards in city", () => {
+      gameState = testInitialGameState({
+        gameOptions: { newleaf: { basicEvents: true } },
+      });
+      player = gameState.getActivePlayer();
+
+      const event = Event.fromName(EventName.BASIC_BIG_CITY);
+      const gameInput = claimEventInput(event.name);
+
+      expect(event.canPlay(gameState, gameInput)).to.be(false);
+
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
+      expect(event.canPlay(gameState, gameInput)).to.be(false);
+
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
+      expect(event.canPlay(gameState, gameInput)).to.be(false);
+
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
+      expect(event.canPlay(gameState, gameInput)).to.be(false);
+
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
+      expect(event.canPlay(gameState, gameInput)).to.be(false);
+
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
+
+      expect(event.canPlay(gameState, gameInput)).to.be(true);
+
+      event.play(gameState, gameInput);
+      expect(player.getClaimedEvent(EventName.BASIC_BIG_CITY));
+      expect(player.getNumClaimedEvents() == 1).to.be(true);
+    });
+    it("should count cards that share spaces or don't take up space", () => {
+      gameState = testInitialGameState({
+        gameOptions: { newleaf: { basicEvents: true } },
+      });
+      player = gameState.getActivePlayer();
+
+      const event = Event.fromName(EventName.BASIC_BIG_CITY);
+      const gameInput = claimEventInput(event.name);
+
+      expect(event.canPlay(gameState, gameInput)).to.be(false);
+
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
+      expect(event.canPlay(gameState, gameInput)).to.be(false);
+
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
+      expect(event.canPlay(gameState, gameInput)).to.be(false);
+
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
+      expect(event.canPlay(gameState, gameInput)).to.be(false);
+
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
+      player.addToCity(gameState, CardName.FARM);
+      expect(event.canPlay(gameState, gameInput)).to.be(false);
+
+      player.addToCity(gameState, CardName.WANDERER);
+      player.addToCity(gameState, CardName.WANDERER);
+      player.addToCity(gameState, CardName.WANDERER);
+
+      expect(event.canPlay(gameState, gameInput)).to.be(true);
+
+      event.play(gameState, gameInput);
+      expect(player.getClaimedEvent(EventName.BASIC_BIG_CITY));
+      expect(player.getNumClaimedEvents() == 1).to.be(true);
+    });
+  });
+  describe(EventName.BASIC_THREE_PROSPERITY, () => {
+    it("should only be playable if 3 PROSPERITY cards in city", () => {
+      gameState = testInitialGameState({
+        gameOptions: { newleaf: { basicEvents: true } },
+      });
+      player = gameState.getActivePlayer();
+
+      const event = Event.fromName(EventName.BASIC_THREE_PROSPERITY);
+      const gameInput = claimEventInput(event.name);
+
+      expect(event.canPlay(gameState, gameInput)).to.be(false);
+
+      player.addToCity(gameState, CardName.PHOTOGRAPHER);
+      player.addToCity(gameState, CardName.ARCHITECT);
+      player.addToCity(gameState, CardName.SHIPWRIGHT);
+      expect(event.canPlay(gameState, gameInput)).to.be(true);
+
+      event.play(gameState, gameInput);
+      expect(player.getClaimedEvent(EventName.BASIC_THREE_PROSPERITY));
+      expect(player.getNumClaimedEvents() == 1).to.be(true);
+    });
+  });
+
   describe(EventName.SPECIAL_CITY_JUBILEE, () => {
     beforeEach(() => {
       gameState = testInitialGameState();

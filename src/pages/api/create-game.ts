@@ -38,6 +38,7 @@ export default async (
     ? {
         cards: true,
         forestLocations: true,
+        basicEvents: true,
         specialEvents: true,
         station: true,
         ticket: true,

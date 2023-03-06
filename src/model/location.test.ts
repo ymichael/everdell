@@ -1378,6 +1378,19 @@ describe("Location", () => {
         gameOptions: { newleaf: { station: true, knoll: true } },
       });
       player = gameState.getActivePlayer();
+
+      const topOfDeck = [
+        CardName.HUSBAND,
+        CardName.WIFE,
+        CardName.FARM,
+        CardName.HISTORIAN,
+        CardName.SHOPKEEPER,
+        CardName.GENERAL_STORE,
+      ];
+      topOfDeck.reverse();
+      topOfDeck.forEach((cardName) => {
+        gameState.deck.addToStack(cardName);
+      });
     });
 
     it("player can visit", () => {
@@ -1416,6 +1429,84 @@ describe("Location", () => {
         CardName.ARCHITECT,
         CardName.BARD,
       ]);
+
+      // check that meadow and station are what we expect
+      // we remove from meadow first, then station
+      expect(gameState.meadowCards.indexOf(CardName.HUSBAND)).to.be.greaterThan(
+        0
+      );
+      expect(gameState.meadowCards.indexOf(CardName.WIFE)).to.be.greaterThan(0);
+      expect(gameState.stationCards.indexOf(CardName.FARM)).to.be.greaterThan(
+        0
+      );
+
+      expect(
+        gameState.meadowCards.indexOf(CardName.HISTORIAN)
+      ).to.be.greaterThan(0);
+      expect(
+        gameState.meadowCards.indexOf(CardName.SHOPKEEPER)
+      ).to.be.greaterThan(0);
+      expect(
+        gameState.stationCards.indexOf(CardName.GENERAL_STORE)
+      ).to.be.greaterThan(0);
+    });
+    it("player can choose card revealed when they discard from meadow or station", () => {
+      const location = Location.fromName(LocationName.KNOLL);
+      gameState.locationsMap[location.name] = [];
+
+      expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        placeWorkerInput(location.name),
+        {
+          clientOptions: {
+            selectedCards: [
+              { card: CardName.CRANE, source: "STATION", sourceIdx: 1 },
+              { card: CardName.CHIP_SWEEP, source: "MEADOW", sourceIdx: 6 },
+              { card: CardName.CLOCK_TOWER, source: "MEADOW", sourceIdx: 7 },
+            ],
+          },
+        },
+        {
+          clientOptions: {
+            selectedCards: [
+              { card: CardName.HUSBAND, source: "MEADOW", sourceIdx: 6 },
+              { card: CardName.ARCHITECT, source: "MEADOW", sourceIdx: 0 },
+              { card: CardName.BARD, source: "MEADOW", sourceIdx: 1 },
+            ],
+          },
+        },
+        { clientOptions: { trainCarTileIdx: 1 } },
+      ]);
+
+      expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(1);
+      expect(player.numCardsInHand).to.be(3);
+      expect(player.getCardsInHand()).to.eql([
+        CardName.HUSBAND,
+        CardName.ARCHITECT,
+        CardName.BARD,
+      ]);
+
+      // check that meadow and station are what we expect
+      // we remove from meadow first, then station
+      expect(gameState.meadowCards.indexOf(CardName.HUSBAND)).to.be.lessThan(0);
+      expect(gameState.stationCards.indexOf(CardName.HUSBAND)).to.be.lessThan(
+        0
+      );
+      expect(gameState.meadowCards.indexOf(CardName.WIFE)).to.be.greaterThan(0);
+      expect(gameState.stationCards.indexOf(CardName.FARM)).to.be.greaterThan(
+        0
+      );
+
+      expect(
+        gameState.meadowCards.indexOf(CardName.HISTORIAN)
+      ).to.be.greaterThan(0);
+      expect(
+        gameState.meadowCards.indexOf(CardName.SHOPKEEPER)
+      ).to.be.greaterThan(0);
+      expect(
+        gameState.meadowCards.indexOf(CardName.GENERAL_STORE)
+      ).to.be.greaterThan(0);
     });
     it("don't allow player to draw cards if hand is full", () => {
       const location = Location.fromName(LocationName.KNOLL);
@@ -1447,6 +1538,112 @@ describe("Location", () => {
       ]);
 
       expect(player.numCardsInHand).to.be(8);
+
+      // check that meadow and station are what we expect
+      // we remove from meadow first, then station
+      expect(gameState.meadowCards.indexOf(CardName.HUSBAND)).to.be.greaterThan(
+        0
+      );
+      expect(gameState.meadowCards.indexOf(CardName.WIFE)).to.be.greaterThan(0);
+      expect(gameState.stationCards.indexOf(CardName.FARM)).to.be.greaterThan(
+        0
+      );
+
+      expect(gameState.meadowCards.indexOf(CardName.HISTORIAN)).to.be.lessThan(
+        0
+      );
+      expect(gameState.meadowCards.indexOf(CardName.SHOPKEEPER)).to.be.lessThan(
+        0
+      );
+      expect(
+        gameState.meadowCards.indexOf(CardName.GENERAL_STORE)
+      ).to.be.lessThan(0);
+
+      expect(gameState.stationCards.indexOf(CardName.HISTORIAN)).to.be.lessThan(
+        0
+      );
+      expect(
+        gameState.stationCards.indexOf(CardName.SHOPKEEPER)
+      ).to.be.lessThan(0);
+      expect(
+        gameState.stationCards.indexOf(CardName.GENERAL_STORE)
+      ).to.be.lessThan(0);
+    });
+
+    it("handle case where player's hand is greater than max hand size", () => {
+      const location = Location.fromName(LocationName.KNOLL);
+      gameState.locationsMap[location.name] = [];
+
+      expect(player.getNumResourcesByType(ResourceType.RESIN)).to.be(0);
+
+      // increase player's max hand size
+      player.gainResources(gameState, { PEARL: 1 });
+      player.addToCity(gameState, CardName.BRIDGE);
+      expect(player.maxHandSize).to.be(9);
+
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.FARM);
+      player.addCardToHand(gameState, CardName.FARM);
+      expect(player.numCardsInHand).to.be(9);
+
+      player.removeCardFromCity(
+        gameState,
+        player.getFirstPlayedCard(CardName.BRIDGE)
+      );
+
+      expect(player.maxHandSize).to.be(8);
+      expect(player.numCardsInHand).to.be(9);
+
+      [player, gameState] = multiStepGameInputTest(gameState, [
+        placeWorkerInput(location.name),
+        {
+          clientOptions: {
+            selectedCards: [
+              { card: CardName.CRANE, source: "STATION", sourceIdx: 1 },
+              { card: CardName.CHIP_SWEEP, source: "MEADOW", sourceIdx: 6 },
+              { card: CardName.CLOCK_TOWER, source: "MEADOW", sourceIdx: 7 },
+            ],
+          },
+        },
+      ]);
+
+      // check that meadow and station are what we expect
+      // we remove from meadow first, then station
+      expect(gameState.meadowCards.indexOf(CardName.HUSBAND)).to.be.greaterThan(
+        0
+      );
+      expect(gameState.meadowCards.indexOf(CardName.WIFE)).to.be.greaterThan(0);
+      expect(gameState.stationCards.indexOf(CardName.FARM)).to.be.greaterThan(
+        0
+      );
+
+      expect(gameState.meadowCards.indexOf(CardName.HISTORIAN)).to.be.lessThan(
+        0
+      );
+      expect(gameState.meadowCards.indexOf(CardName.SHOPKEEPER)).to.be.lessThan(
+        0
+      );
+      expect(
+        gameState.meadowCards.indexOf(CardName.GENERAL_STORE)
+      ).to.be.lessThan(0);
+
+      expect(gameState.stationCards.indexOf(CardName.HISTORIAN)).to.be.lessThan(
+        0
+      );
+      expect(
+        gameState.stationCards.indexOf(CardName.SHOPKEEPER)
+      ).to.be.lessThan(0);
+      expect(
+        gameState.stationCards.indexOf(CardName.GENERAL_STORE)
+      ).to.be.lessThan(0);
+
+      expect(player.numCardsInHand).to.be(9);
     });
 
     it("only allow player to draw cards up to their hand limit (2 spaces)", () => {
@@ -1497,6 +1694,29 @@ describe("Location", () => {
         CardName.DOCTOR,
         CardName.ARCHITECT,
       ]);
+
+      // check that meadow and station are what we expect
+      // we remove from meadow first, then station
+      expect(gameState.meadowCards.indexOf(CardName.HUSBAND)).to.be.greaterThan(
+        0
+      );
+      expect(gameState.meadowCards.indexOf(CardName.WIFE)).to.be.greaterThan(0);
+      expect(gameState.stationCards.indexOf(CardName.FARM)).to.be.greaterThan(
+        0
+      );
+
+      expect(
+        gameState.meadowCards.indexOf(CardName.HISTORIAN)
+      ).to.be.greaterThan(0);
+      expect(
+        gameState.stationCards.indexOf(CardName.SHOPKEEPER)
+      ).to.be.greaterThan(0);
+      expect(
+        gameState.meadowCards.indexOf(CardName.GENERAL_STORE)
+      ).to.be.lessThan(0);
+      expect(
+        gameState.stationCards.indexOf(CardName.GENERAL_STORE)
+      ).to.be.lessThan(0);
     });
 
     it("only allow player to draw cards up to their hand limit (1 space)", () => {
@@ -1547,6 +1767,33 @@ describe("Location", () => {
         CardName.FARM,
         CardName.DOCTOR,
       ]);
+
+      // check that meadow and station are what we expect
+      // we remove from meadow first, then station
+      expect(gameState.meadowCards.indexOf(CardName.HUSBAND)).to.be.greaterThan(
+        0
+      );
+      expect(gameState.meadowCards.indexOf(CardName.WIFE)).to.be.greaterThan(0);
+      expect(gameState.stationCards.indexOf(CardName.FARM)).to.be.greaterThan(
+        0
+      );
+      expect(
+        gameState.stationCards.indexOf(CardName.HISTORIAN)
+      ).to.be.greaterThan(0);
+
+      expect(gameState.meadowCards.indexOf(CardName.SHOPKEEPER)).to.be.lessThan(
+        0
+      );
+      expect(
+        gameState.meadowCards.indexOf(CardName.GENERAL_STORE)
+      ).to.be.lessThan(0);
+
+      expect(
+        gameState.stationCards.indexOf(CardName.SHOPKEEPER)
+      ).to.be.lessThan(0);
+      expect(
+        gameState.stationCards.indexOf(CardName.GENERAL_STORE)
+      ).to.be.lessThan(0);
     });
   });
 

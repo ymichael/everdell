@@ -1228,7 +1228,10 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
           gameState.replenishStation();
 
           // only allow players to draw up to their max hand size
-          if (player.numCardsInHand < player.maxHandSize) {
+          if (
+            player.numCardsInHand < player.maxHandSize &&
+            player.maxHandSize - player.numCardsInHand > 0
+          ) {
             const cardsToTake = Math.min(
               player.maxHandSize - player.numCardsInHand,
               3

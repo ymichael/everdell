@@ -5732,45 +5732,56 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         );
 
         // between (1) number of cards in meadow of chosen type and
-        // (2) availalbe space in player's hand, pick the smaller number.
+        // (2) available space in player's hand, pick the smaller number.
         // If (1) is smaller, then we don't need the player to choose cards.
         const numToPick = Math.min(
           meadowCardsOFType.length,
           player.maxHandSize - player.numCardsInHand
         );
 
-        // if player can draw all the cards, have them draw all the cards
-        if (meadowCardsOFType.length === numToPick) {
-          meadowCardsOFType.forEach((cardName) => {
-            gameState.removeCardFromMeadow(cardName);
-            player.addCardToHand(gameState, cardName);
-          });
+        // numToPick can be negative if player's max hand size changes (eg, they had a
+        // BRIDGE and then discarded their pearl)
+        // if numToPick is 0, they don't need to draw cards
+        if (numToPick > 0) {
+          // if player can draw all the cards, have them draw all the cards
+          if (meadowCardsOFType.length === numToPick) {
+            meadowCardsOFType.forEach((cardName) => {
+              gameState.removeCardFromMeadow(cardName);
+              player.addCardToHand(gameState, cardName);
+            });
 
-          player.gainResources(gameState, {
-            [ResourceType.VP]: meadowCardsOFType.length,
-          });
+            player.gainResources(gameState, {
+              [ResourceType.VP]: meadowCardsOFType.length,
+            });
 
+            gameState.addGameLogFromCard(CardName.POET, [
+              player,
+              " drew ",
+              ...cardListToGameText(meadowCardsOFType),
+              ` from the Meadow and gained ${meadowCardsOFType.length} VP.`,
+            ]);
+            return;
+          }
+
+          gameState.pendingGameInputs.push({
+            inputType: GameInputType.SELECT_CARDS,
+            prevInputType: gameInput.inputType,
+            label: `Choose ${numToPick} CARD to gain 1 VP per card drawn. The rest not be drawn from the Meadow.`,
+            cardOptions: meadowCardsOFType,
+            maxToSelect: numToPick,
+            minToSelect: numToPick,
+            cardContext: CardName.POET,
+            clientOptions: {
+              selectedCards: [],
+            },
+          });
+        } else {
           gameState.addGameLogFromCard(CardName.POET, [
             player,
-            " drew ",
-            ...cardListToGameText(meadowCardsOFType),
-            ` from the Meadow and gained ${meadowCardsOFType.length} VP.`,
+            " did not draw any cards because they do not",
+            " have space in their hand. They did not gain any VP.",
           ]);
-          return;
         }
-
-        gameState.pendingGameInputs.push({
-          inputType: GameInputType.SELECT_CARDS,
-          prevInputType: gameInput.inputType,
-          label: `Choose ${numToPick} CARD to gain 1 VP per card drawn. The rest not be drawn from the Meadow.`,
-          cardOptions: meadowCardsOFType,
-          maxToSelect: numToPick,
-          minToSelect: numToPick,
-          cardContext: CardName.POET,
-          clientOptions: {
-            selectedCards: [],
-          },
-        });
       } else if (
         gameInput.inputType === GameInputType.SELECT_CARDS &&
         gameInput.prevInputType === GameInputType.SELECT_OPTION_GENERIC &&

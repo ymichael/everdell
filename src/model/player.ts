@@ -206,7 +206,12 @@ export class Player implements IGameTextEntity {
 
   drawMaxCards(gameState: GameState): number {
     const numDrawn = this.maxHandSize - this.numCardsInHand;
-    this.drawCards(gameState, numDrawn);
+
+    // numDrawn could be negative if max hand size changes (eg, player
+    // increases hand size with BRIDGE, and then spends a PEARL)
+    if (numDrawn >= 0) {
+      this.drawCards(gameState, numDrawn);
+    }
     return numDrawn;
   }
 

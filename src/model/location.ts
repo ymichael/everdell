@@ -1241,7 +1241,7 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
               inputType: GameInputType.SELECT_CARDS_WITH_SOURCE,
               prevInputType: gameInput.inputType,
               locationContext: LocationName.KNOLL,
-              label: "Select 3 CARD to keep from the Meadow / Station",
+              label: `Select ${cardsToTake} CARD to keep from the Meadow / Station.`,
               cardOptions: gameState.getCardsWithSource(false, false),
               maxToSelect: cardsToTake,
               minToSelect: cardsToTake,

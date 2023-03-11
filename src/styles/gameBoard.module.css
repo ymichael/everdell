@@ -66,6 +66,13 @@
   flex-direction: column;
 }
 
+.forest_locations_newleaf {
+  height: auto;
+  margin-left: -10px;
+  display: flex;
+  flex-direction: row;
+}
+
 .forest_locations > div {
   min-height: 120px;
 }
@@ -90,4 +97,11 @@
   gap: 6px;
   flex-direction: row;
   align-items: center;
+}
+
+.visitor_styles {
+  height: auto;
+  margin-left: -10px;
+  display: flex;
+  flex-direction: column;
 }

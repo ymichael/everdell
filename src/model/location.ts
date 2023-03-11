@@ -1594,6 +1594,7 @@ export const initialLocationsMap = (
     ...Location.byType(LocationType.BASIC),
     ...forestLocationsToPlay,
     ...(opt.newleaf?.knoll ? Location.byType(LocationType.KNOLL) : []),
+    ...(opt.newleaf?.visitors ? Location.byType(LocationType.STATION) : []),
     ...Location.byType(LocationType.HAVEN),
     ...Location.byType(LocationType.JOURNEY),
   ].forEach((ty) => {

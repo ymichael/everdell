@@ -1,0 +1,28 @@
+.visitor {
+  height: 100px;
+  width: 200px;
+  border-radius: 5px;
+  color: var(--color-loc);
+  background-color: var(--bg-color-item);
+  border: 2px solid var(--border-color-visitor);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.visitor_center {
+  padding: 10px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.visitor_bot {
+  text-transform: uppercase;
+  font-size: 10px;
+  font-weight: var(--font-bold);
+  justify-content: space-between;
+  align-items: flex-end;
+  text-align: center;
+  margin: 5px;
+}

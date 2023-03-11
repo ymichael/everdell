@@ -12,6 +12,7 @@ import { GameState } from "../model/gameState";
 import { GameStateJSON } from "../model/jsonTypes";
 import { Event as EventModel, oldEventEnums } from "../model/event";
 import { Location as LocationModel } from "../model/location";
+import { VisitorStack } from "../model/visitor";
 
 import GameLog from "./GameLog";
 import Card, { PlayedCard, EmptyCard } from "./Card";
@@ -20,6 +21,7 @@ import TrainCarTile from "./TrainCarTile";
 import { RiverDestinationSpot } from "./RiverDestination";
 import Adornment from "./Adornment";
 import Event from "./Event";
+import Visitor from "./Visitor";
 import { GameBlock, ItemWrapper } from "./common";
 
 export const Meadow: React.FC<{ meadowCards: CardName[] }> = ({
@@ -44,6 +46,25 @@ export const Meadow: React.FC<{ meadowCards: CardName[] }> = ({
         </div>
       </div>
     </GameBlock>
+  );
+};
+
+export const VisitorList: React.FC<{ visitorStack: VisitorStack }> = ({
+  visitorStack,
+}) => {
+  return (
+    <div id={"js-visitors"}>
+      <div>
+        <ItemWrapper key={0}>
+          <Visitor name={visitorStack.getRevealedVisitors()[0]} />
+        </ItemWrapper>
+      </div>
+      <div className={styles.items_no_wrap}>
+        <ItemWrapper key={1}>
+          <Visitor name={visitorStack.getRevealedVisitors()[1]} />
+        </ItemWrapper>
+      </div>
+    </div>
   );
 };
 
@@ -166,15 +187,27 @@ export const LocationForType: React.FC<{
     );
   };
 
-  return allForestLocationObjs.length === 0 ? null : (
-    <GameBlock title={title}>
-      <div className={styles.forest_locations}>
-        {allForestLocationObjs.map((location, idx) => {
-          return renderLocationWithPlayerNames(location.name);
-        })}
-      </div>
-    </GameBlock>
-  );
+  if (allForestLocationObjs.length === 0) {
+    return null;
+  } else {
+    return gameState.gameOptions.newleaf ? (
+      <GameBlock title={title}>
+        <div className={styles.forest_locations_newleaf}>
+          {allForestLocationObjs.map((location, idx) => {
+            return renderLocationWithPlayerNames(location.name);
+          })}
+        </div>
+      </GameBlock>
+    ) : (
+      <GameBlock title={title}>
+        <div className={styles.forest_locations}>
+          {allForestLocationObjs.map((location, idx) => {
+            return renderLocationWithPlayerNames(location.name);
+          })}
+        </div>
+      </GameBlock>
+    );
+  }
 };
 
 export const Events: React.FC<{
@@ -309,6 +342,16 @@ export const GameBoard: React.FC<{
   return (
     <div className={styles.game_board}>
       <div>
+        {gameState.gameOptions.newleaf?.visitors ? (
+          <div>
+            <LocationForType
+              gameState={gameState}
+              locationType={LocationType.FOREST}
+              title="Forest Locations"
+              viewingPlayer={viewingPlayer}
+            />{" "}
+          </div>
+        ) : null}
         <div className={styles.game_board_meadow}>
           <Meadow meadowCards={gameState.meadowCards} />
         </div>
@@ -318,12 +361,28 @@ export const GameBoard: React.FC<{
         <>
           <Station gameState={gameState} />
           <div>
-            <LocationForType
-              gameState={gameState}
-              locationType={LocationType.FOREST}
-              title="Forest Locations"
-              viewingPlayer={viewingPlayer}
-            />
+            {gameState.gameOptions.newleaf?.visitors &&
+            gameState.visitorStack !== null ? (
+              <div>
+                <LocationForType
+                  gameState={gameState}
+                  locationType={LocationType.STATION}
+                  title="Visitors"
+                  viewingPlayer={viewingPlayer}
+                />
+                <ItemWrapper key={0}>
+                  <Visitor
+                    name={gameState.visitorStack.getRevealedVisitors()[0]}
+                  />
+                </ItemWrapper>
+
+                <ItemWrapper key={1}>
+                  <Visitor
+                    name={gameState.visitorStack.getRevealedVisitors()[1]}
+                  />
+                </ItemWrapper>
+              </div>
+            ) : null}
             <LocationForType
               gameState={gameState}
               locationType={LocationType.KNOLL}

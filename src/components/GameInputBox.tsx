@@ -25,6 +25,7 @@ import GameInputSelectWorkerPlacement from "./GameInputSelectWorkerPlacement";
 import GameInputSelectOptionGeneric from "./GameInputSelectOptionGeneric";
 import GameInputSelectCardWithSourceSelector from "./GameInputSelectCardWithSourceSelector";
 import GameInputSelectTrainCarTileSelector from "./GameInputSelectTrainCarTileSelector";
+// import GameInputVisitorSelector from "./GameInputVisitorSelector";
 import GameInputPlayCard from "./GameInputPlayCard";
 
 import { assertUnreachable } from "../utils";

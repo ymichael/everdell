@@ -73,6 +73,7 @@ export type PlayerJSON = {
   trainTicketStatus: TrainTicketStatus | null;
   reservedCard: CardName | "UNUSED" | "USED";
   numGoldenLeaf: number;
+  claimedVisitors: VisitorName[];
 };
 
 export type RiverDestinationMapJSON = {

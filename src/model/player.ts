@@ -2089,6 +2089,7 @@ export class Player implements IGameTextEntity {
       numWorkers: this.numWorkers,
       currentSeason: this.currentSeason,
       claimedEvents: this.claimedEvents,
+      claimedVisitors: this.claimedVisitors,
       numAmbassadors: this.numAmbassadors,
       placedWorkers: this.placedWorkers,
       playerStatus: this.playerStatus,

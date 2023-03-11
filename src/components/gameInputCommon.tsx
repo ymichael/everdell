@@ -234,7 +234,7 @@ const renderMultiStepGameInputLabel = (
         <Description
           textParts={[
             ...inputContextPrefix(gameInput),
-            { type: "text", text: `Select Visitor` },
+            { type: "text", text: `Select Visitor to Discard` },
           ]}
         />
       );
@@ -274,7 +274,13 @@ export const renderGameInputLabel = (
     case GameInputType.PLAY_TRAIN_TICKET:
       return <span>{"Play Train Ticket"}</span>;
     case GameInputType.SELECT_VISITOR:
-      return <span>{"Select Visitor"}</span>;
+      return (
+        <span>
+          {gameInput.prevInputType === GameInputType.PLACE_WORKER
+            ? "Select Visitor to discard"
+            : "Select Visitor to keep"}
+        </span>
+      );
     case GameInputType.UNDO:
       return <span>{"Undo last action"}</span>;
     default:

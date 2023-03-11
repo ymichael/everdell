@@ -190,7 +190,7 @@ export const LocationForType: React.FC<{
   if (allForestLocationObjs.length === 0) {
     return null;
   } else {
-    return gameState.gameOptions.newleaf ? (
+    return gameState.gameOptions.newleaf?.visitors ? (
       <GameBlock title={title}>
         <div className={styles.forest_locations_newleaf}>
           {allForestLocationObjs.map((location, idx) => {
@@ -279,6 +279,7 @@ export const PlayerCity: React.FC<{
   const playedCards = player.getPlayedCards();
   const playedAdornments = player.getPlayedAdornments();
   const playedCardIdx: { [cardName: string]: number } = {};
+  const claimedVisitors = player.claimedVisitors;
 
   const labelToCount: [string, number][] = [
     ["Critters", player.getNumPlayedCritters()],
@@ -289,7 +290,9 @@ export const PlayerCity: React.FC<{
     ["Unique Constructions", player.getNumPlayedUniqueConstructions()],
   ];
 
-  return playedCards.length !== 0 || playedAdornments.length !== 0 ? (
+  return playedCards.length !== 0 ||
+    playedAdornments.length !== 0 ||
+    claimedVisitors.length !== 0 ? (
     <div data-cy={`player-city:${player.name}`}>
       <div className={styles.city_stats}>
         {labelToCount
@@ -324,6 +327,9 @@ export const PlayerCity: React.FC<{
         })}
         {playedAdornments.map((playedAdornment, idx) => (
           <Adornment key={`adornment-${idx}`} name={playedAdornment} />
+        ))}
+        {claimedVisitors.map((claimedVisitor, idx) => (
+          <Visitor key={`visitor-${idx}`} name={claimedVisitor} />
         ))}
       </div>
     </div>

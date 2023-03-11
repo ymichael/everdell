@@ -44,6 +44,7 @@ export default async (
         ticket: true,
         knoll: true,
         reserving: true,
+        visitors: true,
       }
     : {};
   const bellfaire = body.bellfaire

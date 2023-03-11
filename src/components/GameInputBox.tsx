@@ -25,7 +25,7 @@ import GameInputSelectWorkerPlacement from "./GameInputSelectWorkerPlacement";
 import GameInputSelectOptionGeneric from "./GameInputSelectOptionGeneric";
 import GameInputSelectCardWithSourceSelector from "./GameInputSelectCardWithSourceSelector";
 import GameInputSelectTrainCarTileSelector from "./GameInputSelectTrainCarTileSelector";
-// import GameInputVisitorSelector from "./GameInputVisitorSelector";
+import GameInputVisitorSelector from "./GameInputVisitorSelector";
 import GameInputPlayCard from "./GameInputPlayCard";
 
 import { assertUnreachable } from "../utils";
@@ -207,11 +207,10 @@ const GameInputBoxInner = ({
           options={gameInput.options}
         />
       ) : gameInput.inputType === GameInputType.SELECT_VISITOR ? (
-        // <GameInputSelectVisitorSelector
-        //   name={"gameInput.clientOptions.trainCarTileIdx"}
-        //   options={gameInput.options}
-        // />
-        <div>TODO</div>
+        <GameInputVisitorSelector
+          name={"gameInput.clientOptions.selectedVisitor"}
+          options={gameInput.visitorOptions}
+        />
       ) : (
         <>
           {assertUnreachable(

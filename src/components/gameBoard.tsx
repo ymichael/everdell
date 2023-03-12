@@ -12,6 +12,7 @@ import { GameState } from "../model/gameState";
 import { GameStateJSON } from "../model/jsonTypes";
 import { Event as EventModel, oldEventEnums } from "../model/event";
 import { Location as LocationModel } from "../model/location";
+import { Visitor as VisitorModel } from "../model/visitor";
 
 import GameLog from "./GameLog";
 import Card, { PlayedCard, EmptyCard } from "./Card";
@@ -310,7 +311,14 @@ export const PlayerCity: React.FC<{
         ))}
         {claimedVisitors.map((claimedVisitor, idx) => (
           <ItemWrapper key={`visitor-${idx}`}>
-            <Visitor name={claimedVisitor} />{" "}
+            <Visitor name={claimedVisitor} />
+            <div className={styles.visitor_meta_data}>
+              Points:{" "}
+              {VisitorModel.fromName(claimedVisitor).getPoints(
+                player,
+                gameState
+              )}
+            </div>
           </ItemWrapper>
         ))}
       </div>

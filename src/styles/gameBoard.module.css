@@ -105,3 +105,8 @@
   display: flex;
   flex-direction: column;
 }
+
+.visitor_meta_data {
+  margin: 5px 0;
+  font-size: 10px;
+}

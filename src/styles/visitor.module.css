@@ -17,12 +17,22 @@
   font-size: 14px;
 }
 
+.visitor_name {
+  text-align: center;
+  margin: 5px;
+}
+
 .visitor_bot {
+  display: flex;
   text-transform: uppercase;
   font-size: 10px;
   font-weight: var(--font-bold);
   justify-content: space-between;
   align-items: flex-end;
-  text-align: center;
-  margin: 5px;
+  max-height: 10px;
+}
+
+.base_vp {
+  font-size: 12px;
+  padding: 8px;
 }

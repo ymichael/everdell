@@ -17,7 +17,14 @@ const Visitor: React.FC<{
         <div className={styles.visitor_center}>
           <Description textParts={visitor.description} />
         </div>
-        <div className={styles.visitor_bot}>{name}</div>
+        <div className={styles.visitor_bot}>
+          <div className={styles.base_vp}>
+            <Description
+              textParts={[{ type: "points", value: visitor.baseVP }]}
+            />
+          </div>
+          <div className={styles.visitor_name}>{name}</div>
+        </div>
       </div>
     </>
   );

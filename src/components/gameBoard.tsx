@@ -12,7 +12,6 @@ import { GameState } from "../model/gameState";
 import { GameStateJSON } from "../model/jsonTypes";
 import { Event as EventModel, oldEventEnums } from "../model/event";
 import { Location as LocationModel } from "../model/location";
-import { VisitorStack } from "../model/visitor";
 
 import GameLog from "./GameLog";
 import Card, { PlayedCard, EmptyCard } from "./Card";
@@ -46,25 +45,6 @@ export const Meadow: React.FC<{ meadowCards: CardName[] }> = ({
         </div>
       </div>
     </GameBlock>
-  );
-};
-
-export const VisitorList: React.FC<{ visitorStack: VisitorStack }> = ({
-  visitorStack,
-}) => {
-  return (
-    <div id={"js-visitors"}>
-      <div>
-        <ItemWrapper key={0}>
-          <Visitor name={visitorStack.getRevealedVisitors()[0]} />
-        </ItemWrapper>
-      </div>
-      <div className={styles.items_no_wrap}>
-        <ItemWrapper key={1}>
-          <Visitor name={visitorStack.getRevealedVisitors()[1]} />
-        </ItemWrapper>
-      </div>
-    </div>
   );
 };
 
@@ -371,12 +351,15 @@ export const GameBoard: React.FC<{
           <div>
             {gameState.gameOptions.newleaf?.visitors &&
             gameState.visitorStack !== null ? (
-              <div>
-                <LocationForType
+              <GameBlock title="Visitors">
+                <Location
+                  key={LocationName.STATION}
+                  name={LocationName.STATION}
                   gameState={gameState}
-                  locationType={LocationType.STATION}
-                  title="Visitors"
                   viewingPlayer={viewingPlayer}
+                  playerWorkers={(
+                    gameState.locationsMap[LocationName.STATION] || []
+                  ).map((pId) => gameState.getPlayer(pId).name)}
                 />
                 <ItemWrapper key={0}>
                   <Visitor
@@ -389,7 +372,7 @@ export const GameBoard: React.FC<{
                     name={gameState.visitorStack.getRevealedVisitors()[1]}
                   />
                 </ItemWrapper>
-              </div>
+              </GameBlock>
             ) : null}
             <LocationForType
               gameState={gameState}

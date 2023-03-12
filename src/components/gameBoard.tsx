@@ -329,7 +329,9 @@ export const PlayerCity: React.FC<{
           <Adornment key={`adornment-${idx}`} name={playedAdornment} />
         ))}
         {claimedVisitors.map((claimedVisitor, idx) => (
-          <Visitor key={`visitor-${idx}`} name={claimedVisitor} />
+          <ItemWrapper key={`visitor-${idx}`}>
+            <Visitor name={claimedVisitor} />{" "}
+          </ItemWrapper>
         ))}
       </div>
     </div>

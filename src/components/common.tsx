@@ -385,6 +385,13 @@ export const Description = ({ textParts }: { textParts: GameText }) => {
                 </span>
               );
             }
+            if (part.entityType === "visitor") {
+              return (
+                <span key={idx} className={styles.entity_part}>
+                  {part.visitor}
+                </span>
+              );
+            }
             assertUnreachable(part, `Unexpected part: ${JSON.stringify(part)}`);
             break;
           default:

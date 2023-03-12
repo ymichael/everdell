@@ -122,6 +122,9 @@ export const gameTextToDebugStr = (gameText: GameText): string => {
           if (part.entityType === "trainCarTile") {
             return part.trainCarTile;
           }
+          if (part.entityType === "visitor") {
+            return part.visitor;
+          }
           if (part.entityType === "riverDestinationSpot") {
             return gameTextToDebugStr(
               RiverDestinationSpot.fromName(part.spot).shortName

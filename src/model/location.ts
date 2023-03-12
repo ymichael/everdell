@@ -1357,6 +1357,13 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
         // discard this visitor and replace it with a different one
         gameState.visitorStack?.replaceAt(visitorToDiscardIndex, true);
 
+        gameState.addGameLogFromLocation(LocationName.STATION, [
+          player,
+          " discarded ",
+          { type: "entity", entityType: "visitor", visitor: selectedVisitor },
+          ".",
+        ]);
+
         // after discarding, select the one to keep
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_VISITOR,
@@ -1383,6 +1390,13 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
 
         // remove visitor from stack and don't put it back in rotation
         gameState.visitorStack?.replaceAt(visitorToKeepIndex, false);
+
+        gameState.addGameLogFromLocation(LocationName.STATION, [
+          player,
+          " claimed ",
+          { type: "entity", entityType: "visitor", visitor: selectedVisitor },
+          ".",
+        ]);
 
         player.claimedVisitors.push(selectedVisitor);
       } else {

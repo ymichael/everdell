@@ -5,6 +5,7 @@ import {
   ResourceMap,
   VisitorName,
   EventType,
+  TextPartEntity,
 } from "./types";
 import { GameState, GameStatePointsFn } from "./gameState";
 import { Player } from "./player";
@@ -51,14 +52,13 @@ export class Visitor {
     this.eventTypeRequirements = eventTypeRequirements;
   }
 
-  // TODO: Implement
-  //   getGameTextPart(): TextPartEntity {
-  //     return {
-  //       type: "entity",
-  //       entityType: "visitor",
-  //       visitor: this.name,
-  //     };
-  //   }
+  getGameTextPart(): TextPartEntity {
+    return {
+      type: "entity",
+      entityType: "visitor",
+      visitor: this.name,
+    };
+  }
 
   getPoints(player: Player, gameState: GameState): number {
     if (this.resourceRequirements) {

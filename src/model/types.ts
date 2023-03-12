@@ -756,6 +756,11 @@ export type TextPartEntity =
       type: "entity";
       entityType: "trainCarTile";
       trainCarTile: TrainCarTileName;
+    }
+  | {
+      type: "entity";
+      entityType: "visitor";
+      visitor: VisitorName;
     };
 
 export type TextPartPlayer = {

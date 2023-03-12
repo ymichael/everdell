@@ -10,6 +10,7 @@ import Adornment from "./Adornment";
 import Location from "./Location";
 import Event from "./Event";
 import RiverDestination from "./RiverDestination";
+import Visitor from "./Visitor";
 
 import { assertUnreachable } from "../utils";
 
@@ -44,6 +45,9 @@ const EntityList = ({ textParts }: { textParts: GameText }) => {
         }
         if (part.entityType === "trainCarTile") {
           return null;
+        }
+        if (part.entityType === "visitor") {
+          return <Visitor key={idx} name={part.visitor} />;
         }
         assertUnreachable(part, `Unexpected part: ${JSON.stringify(part)}`);
         return null;

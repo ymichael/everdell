@@ -21,7 +21,7 @@ import TrainCarTile from "./TrainCarTile";
 import { RiverDestinationSpot } from "./RiverDestination";
 import Adornment from "./Adornment";
 import Event from "./Event";
-import Visitor from "./Visitor";
+import { VisitorInner as Visitor } from "./Visitor";
 import { GameBlock, ItemWrapper } from "./common";
 
 export const Meadow: React.FC<{ meadowCards: CardName[] }> = ({
@@ -360,26 +360,28 @@ export const GameBoard: React.FC<{
             {gameState.gameOptions.newleaf?.visitors &&
             gameState.visitorStack !== null ? (
               <GameBlock title="Visitors">
-                <Location
-                  key={LocationName.STATION}
-                  name={LocationName.STATION}
-                  gameState={gameState}
-                  viewingPlayer={viewingPlayer}
-                  playerWorkers={(
-                    gameState.locationsMap[LocationName.STATION] || []
-                  ).map((pId) => gameState.getPlayer(pId).name)}
-                />
-                <ItemWrapper key={0}>
-                  <Visitor
-                    name={gameState.visitorStack.getRevealedVisitors()[0]}
+                <div className={styles.station_visitors}>
+                  <Location
+                    key={LocationName.STATION}
+                    name={LocationName.STATION}
+                    gameState={gameState}
+                    viewingPlayer={viewingPlayer}
+                    playerWorkers={(
+                      gameState.locationsMap[LocationName.STATION] || []
+                    ).map((pId) => gameState.getPlayer(pId).name)}
                   />
-                </ItemWrapper>
+                  <ItemWrapper>
+                    <Visitor
+                      name={gameState.visitorStack.getRevealedVisitors()[0]}
+                    />
+                  </ItemWrapper>
 
-                <ItemWrapper key={1}>
-                  <Visitor
-                    name={gameState.visitorStack.getRevealedVisitors()[1]}
-                  />
-                </ItemWrapper>
+                  <ItemWrapper>
+                    <Visitor
+                      name={gameState.visitorStack.getRevealedVisitors()[1]}
+                    />
+                  </ItemWrapper>
+                </div>
               </GameBlock>
             ) : null}
             <LocationForType

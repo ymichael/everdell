@@ -2,11 +2,10 @@ import * as React from "react";
 import styles from "../styles/visitor.module.css";
 
 import { Visitor as VisitorModel } from "../model/visitor";
-
 import { VisitorName } from "../model/types";
-import { Description } from "./common";
+import { Description, ItemWrapper } from "./common";
 
-const Visitor: React.FC<{
+export const VisitorInner: React.FC<{
   name: VisitorName;
 }> = ({ name }) => {
   const visitor = VisitorModel.fromName(name);
@@ -27,6 +26,14 @@ const Visitor: React.FC<{
         </div>
       </div>
     </>
+  );
+};
+
+const Visitor = ({ name }: { name: VisitorName }) => {
+  return (
+    <ItemWrapper>
+      <VisitorInner name={name} />
+    </ItemWrapper>
   );
 };
 

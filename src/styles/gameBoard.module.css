@@ -66,6 +66,13 @@
   flex-direction: column;
 }
 
+.station_visitors {
+  height: auto;
+  margin-left: -10px;
+  display: flex;
+  flex-direction: column;
+}
+
 .forest_locations_newleaf {
   height: auto;
   margin-left: -10px;

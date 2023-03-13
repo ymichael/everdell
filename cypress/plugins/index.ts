@@ -9,6 +9,7 @@ import {
   ResourceType,
   RiverDestinationName,
   RiverDestinationSpotName,
+  VisitorName,
   TrainCarTileName,
 } from "../../src/model/types";
 import { GameJSON } from "../../src/model/jsonTypes";
@@ -361,6 +362,46 @@ export default function setupNodeEvents(on: any, config: any) {
         }
       );
     },
+    "db:claim-visitor-game": async () => {
+      return await getTestGameJSON(
+        {
+          meadowCards: [
+            CardName.ARCHITECT,
+            CardName.BARD,
+            CardName.BARGE_TOAD,
+            CardName.CASTLE,
+            CardName.CEMETARY,
+            CardName.CHAPEL,
+            CardName.CHIP_SWEEP,
+            CardName.CLOCK_TOWER,
+          ],
+          stationCards: [CardName.COURTHOUSE, CardName.CRANE, CardName.DOCTOR],
+          trainCarTiles: [
+            TrainCarTileName.ONE_BERRY,
+            TrainCarTileName.ONE_PEBBLE,
+            TrainCarTileName.ONE_RESIN,
+          ],
+          visitors: [
+            VisitorName.BIM_LITTLE,
+            VisitorName.DIM_DUSTLIGHT,
+            VisitorName.FRIN_STICKLY,
+          ],
+          gameOptions: {
+            newleaf: {
+              cards: true,
+              station: true,
+              reserving: true,
+              visitors: true,
+              knoll: true,
+            },
+          },
+        },
+        (gameState, player) => {
+          const card = Card.fromName(CardName.HUSBAND);
+          player.gainResources(gameState, card.baseCost);
+        }
+      );
+    },
     "db:visit-knoll-game": async () => {
       return await getTestGameJSON(
         {
@@ -498,4 +539,4 @@ export default function setupNodeEvents(on: any, config: any) {
       );
     },
   });
-};
+}

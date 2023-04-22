@@ -94,7 +94,7 @@ class PgDb implements IDb {
   async createGamesTableIfNotExists(): Promise<void> {
     await this.pool.query(
       `CREATE TABLE IF NOT EXISTS
-        games(
+        everdell(
           game_id varchar,
           game text,
           created_time timestamp default now(),
@@ -113,14 +113,14 @@ class PgDb implements IDb {
   }
 
   async createGame(gameId: string, gameJSON: string): Promise<void> {
-    await this.pool.query("INSERT INTO games(game_id, game) VALUES($1, $2)", [
-      gameId,
-      gameJSON,
-    ]);
+    await this.pool.query(
+      "INSERT INTO everdell(game_id, game) VALUES($1, $2)",
+      [gameId, gameJSON]
+    );
   }
 
   async updateGame(gameId: string, gameJSON: string): Promise<void> {
-    await this.pool.query("UPDATE games SET game = $1 WHERE game_id = $2", [
+    await this.pool.query("UPDATE everdell SET game = $1 WHERE game_id = $2", [
       gameJSON,
       gameId,
     ]);
@@ -128,7 +128,7 @@ class PgDb implements IDb {
 
   async hasSavedGame(gameId: string): Promise<boolean> {
     const result = await this.pool.query(
-      "SELECT game_id FROM games WHERE game_id = $1",
+      "SELECT game_id FROM everdell WHERE game_id = $1",
       [gameId]
     );
     return result.rows.length === 1;
@@ -136,14 +136,16 @@ class PgDb implements IDb {
 
   async getGameJSONById(gameId: string): Promise<GameJSON | null> {
     const result = await this.pool.query(
-      "SELECT game game FROM games WHERE game_id = $1",
+      "SELECT game game FROM everdell WHERE game_id = $1",
       [gameId]
     );
     return result.rows.length === 1 ? JSON.parse(result.rows[0].game) : null;
   }
 
   async getAllGameIds(): Promise<string[]> {
-    const result = await this.pool.query("SELECT game_id game_id FROM games");
+    const result = await this.pool.query(
+      "SELECT game_id game_id FROM everdell"
+    );
     return result.rows.map((x) => x.game_id);
   }
 }
@@ -163,7 +165,7 @@ class SqliteDb implements IDb {
     return new Promise((resolve, reject) => {
       this.db.run(
         `CREATE TABLE IF NOT EXISTS
-          games(
+          everdell(
             game_id varchar,
             game text,
             created_time timestamp default (strftime('%s', 'now')
@@ -192,7 +194,7 @@ class SqliteDb implements IDb {
   updateGame(gameId: string, gameJSON: string): Promise<void> {
     return new Promise((resolve, reject) => {
       this.db.run(
-        "UPDATE games SET game = ? WHERE game_id = ?",
+        "UPDATE everdell SET game = ? WHERE game_id = ?",
         [gameJSON, gameId],
         (err: { message: any }) => {
           if (err) {
@@ -208,7 +210,7 @@ class SqliteDb implements IDb {
   createGame(gameId: string, gameJSON: string): Promise<void> {
     return new Promise((resolve, reject) => {
       this.db.run(
-        "INSERT INTO games(game_id, game) VALUES(?, ?)",
+        "INSERT INTO everdell(game_id, game) VALUES(?, ?)",
         [gameId, gameJSON],
         (err: { message: any }) => {
           if (err) {
@@ -224,7 +226,7 @@ class SqliteDb implements IDb {
   hasSavedGame(gameId: string): Promise<boolean> {
     return new Promise((resolve, reject) => {
       this.db.get(
-        "SELECT game_id FROM games WHERE game_id = ?",
+        "SELECT game_id FROM everdell WHERE game_id = ?",
         [gameId],
         (err: { message: any }, row: { game_id: string }) => {
           if (err) {
@@ -242,7 +244,7 @@ class SqliteDb implements IDb {
   getGameJSONById(gameId: string): Promise<GameJSON | null> {
     return new Promise((resolve, reject) => {
       this.db.get(
-        "SELECT game game FROM games WHERE game_id = ?",
+        "SELECT game game FROM everdell WHERE game_id = ?",
         [gameId],
         (err: { message: any }, row: { game: string }) => {
           if (err) {
@@ -260,7 +262,7 @@ class SqliteDb implements IDb {
   async getAllGameIds(): Promise<string[]> {
     return new Promise((resolve, reject) => {
       this.db.all(
-        "SELECT game_id game_id FROM games",
+        "SELECT game_id game_id FROM everdell",
         (err: { message: any }, rows: { game_id: string }[]) => {
           if (err) {
             reject(err);

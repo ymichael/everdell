@@ -61,7 +61,7 @@ const getDbInstance = (preferredOrder: StoreType[]): IDb => {
 const getDbForGameId = (gameId: string): IDb => {
   return gameId.startsWith("v3:")
     ? getDbInstance(["pg", "local"])
-    : getDbInstance(["pg-deprecated", "local"]);
+    : getDbInstance(["pg", "local"]);
 };
 
 interface IDb {

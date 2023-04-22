@@ -285,11 +285,12 @@ export const getGameJSONById = async (
   return db.getGameJSONById(gameId);
 };
 
-export const getAllGameIds = async (): Promise<string[]> => {
-  const db = getDb();
-  await db.createGamesTableIfNotExists();
-  return db.getAllGameIds();
-};
+// Unused
+// export const getAllGameIds = async (): Promise<string[]> => {
+//   const db = getDb();
+//   await db.createGamesTableIfNotExists();
+//   return db.getAllGameIds();
+// };
 
 export const saveGameJSONById = async (
   gameId: string,

@@ -9,7 +9,7 @@ import { GameJSON } from "./jsonTypes";
 type StoreType = "pg" | "pg-deprecated" | "local";
 const storeUrlForType: Record<StoreType, string | undefined> = {
   pg: process.env.DATABASE_URL_SUPABASE,
-  "pg-deprecated": process.env.DATABASE_URL_HEROKU,
+  "pg-deprecated": process.env.DATABASE_URL_SUPABASE_OLD,
   local: process.env.DB_PATH,
 };
 if (Object.values(storeUrlForType).filter((x) => !!x).length === 0) {
@@ -58,8 +58,10 @@ const getDbInstance = (preferredOrder: StoreType[]): IDb => {
   throw new Error("Unable to instantiate DB instance.");
 };
 
-const getDb = (): IDb => {
-  return getDbInstance(["pg", "local"]);
+const getDbForGameId = (gameId: string): IDb => {
+  return gameId.startsWith("v3:")
+    ? getDbInstance(["pg", "local"])
+    : getDbInstance(["pg-deprecated", "local"]);
 };
 
 interface IDb {
@@ -278,7 +280,7 @@ class SqliteDb implements IDb {
 export const getGameJSONById = async (
   gameId: string
 ): Promise<GameJSON | null> => {
-  const db = getDb();
+  const db = getDbForGameId(gameId);
   await db.createGamesTableIfNotExists();
   return db.getGameJSONById(gameId);
 };
@@ -293,7 +295,7 @@ export const saveGameJSONById = async (
   gameId: string,
   gameJSON: GameJSON
 ): Promise<void> => {
-  const db = getDb();
+  const db = getDbForGameId(gameId);
   await db.createGamesTableIfNotExists();
   return db.saveGame(gameId, JSON.stringify(gameJSON));
 };

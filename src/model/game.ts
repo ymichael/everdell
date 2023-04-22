@@ -91,7 +91,7 @@ export class Game {
 }
 
 function generateNewGameId(): string {
-  return `v2:${uuid()}`;
+  return `v3:${uuid()}`;
 }
 
 export const createGameFromGameState = async (

@@ -616,7 +616,7 @@ const REGISTRY: Record<RiverDestinationName, RiverDestination> = {
           RiverDestinationName.BOSLEY_THE_ARTIST,
           [
             player,
-            ` discarded 3 differnt colored cards from their hand (`,
+            ` discarded 3 different colored cards from their hand (`,
             ...cardListToGameText(selectedCards),
             ") to gain 1 VP and 1 PEARL.",
           ]

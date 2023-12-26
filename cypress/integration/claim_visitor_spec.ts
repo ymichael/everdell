@@ -37,6 +37,13 @@ describe("Claim Visitor", () => {
       cy.contains("Submit").click();
     });
 
+    cy.contains("Station: Michael claimed Frin Stickly.");
+    cy.contains("Station: Select 1 Train Car Tile");
+    cy.get("#js-game-input-box-form").within(() => {
+      cy.get("[data-cy='select-train-car-tile:ONE_PEBBLE:1']").click();
+      cy.contains("Submit").click();
+    });
+
     cy.contains("Waiting for Elynn");
     cy.get("[data-cy='player-city:Michael']").within(() => {
       cy.contains("Frin Stickly");

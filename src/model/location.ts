@@ -552,13 +552,21 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
       if (gameInput.inputType === GameInputType.PLACE_WORKER) {
         player.drawCards(gameState, 1);
 
+        const keys = (Object.keys(
+          gameState.locationsMap
+        ) as unknown) as LocationName[];
+
+        const basicLocations = keys.filter((location) => {
+          return Location.byType(LocationType.BASIC).indexOf(location) > -1;
+        });
+
         // Ask player which location they want to copy
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_LOCATION,
           prevInputType: GameInputType.PLACE_WORKER,
           label: "Select basic location to copy",
           locationContext: LocationName.FOREST_COPY_BASIC_ONE_CARD,
-          locationOptions: Location.byType(LocationType.BASIC),
+          locationOptions: basicLocations,
           clientOptions: {
             selectedLocation: null,
           },
@@ -1126,13 +1134,21 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.PLACE_WORKER) {
+        const keys = (Object.keys(
+          gameState.locationsMap
+        ) as unknown) as LocationName[];
+
+        const forestLocations = keys.filter((location) => {
+          return Location.byType(LocationType.FOREST).indexOf(location) > 0;
+        });
+
         // Ask player which location they want to copy
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_LOCATION,
           prevInputType: GameInputType.PLACE_WORKER,
           label: "Select basic location to copy",
           locationContext: LocationName.FOREST_COPY_ANY_FOREST_LOCATION,
-          locationOptions: Location.byType(LocationType.FOREST).filter(
+          locationOptions: forestLocations.filter(
             // filter out this location
             (loc) => loc != LocationName.FOREST_COPY_ANY_FOREST_LOCATION
           ),

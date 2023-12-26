@@ -688,6 +688,8 @@ describe("Location", () => {
       );
       const gameInput = placeWorkerInput(location.name);
       gameState.locationsMap[LocationName.FOREST_COPY_ANY_FOREST_LOCATION] = [];
+      gameState.locationsMap[LocationName.FOREST_FOUR_TWIG] = [];
+      player = gameState.getActivePlayer();
 
       player.addCardToHand(gameState, CardName.BARD);
       player.addCardToHand(gameState, CardName.INN);
@@ -701,9 +703,7 @@ describe("Location", () => {
           inputType: GameInputType.SELECT_LOCATION,
           prevInputType: GameInputType.PLACE_WORKER,
           locationContext: LocationName.FOREST_COPY_ANY_FOREST_LOCATION,
-          locationOptions: Location.byType(LocationType.FOREST).filter(
-            (loc) => loc != LocationName.FOREST_COPY_ANY_FOREST_LOCATION
-          ),
+          locationOptions: [LocationName.FOREST_FOUR_TWIG],
           clientOptions: {
             selectedLocation: LocationName.FOREST_FOUR_TWIG,
           },
@@ -719,6 +719,7 @@ describe("Location", () => {
       );
       const gameInput = placeWorkerInput(location.name);
       gameState.locationsMap[LocationName.FOREST_COPY_ANY_FOREST_LOCATION] = [];
+      gameState.locationsMap[LocationName.FOREST_FOUR_TWIG] = [];
 
       gameState = gameState.next(gameInput);
       expect(() => {
@@ -726,9 +727,7 @@ describe("Location", () => {
           inputType: GameInputType.SELECT_LOCATION,
           prevInputType: GameInputType.PLACE_WORKER,
           locationContext: LocationName.FOREST_COPY_ANY_FOREST_LOCATION,
-          locationOptions: Location.byType(LocationType.FOREST).filter(
-            (loc) => loc != LocationName.FOREST_COPY_ANY_FOREST_LOCATION
-          ),
+          locationOptions: [LocationName.FOREST_FOUR_TWIG],
           clientOptions: {
             selectedLocation: LocationName.FOREST_COPY_ANY_FOREST_LOCATION,
           },
@@ -741,6 +740,7 @@ describe("Location", () => {
       );
       const gameInput = placeWorkerInput(location.name);
       gameState.locationsMap[LocationName.FOREST_COPY_ANY_FOREST_LOCATION] = [];
+      gameState.locationsMap[LocationName.FOREST_FOUR_TWIG] = [];
 
       gameState = gameState.next(gameInput);
       expect(() => {
@@ -748,11 +748,32 @@ describe("Location", () => {
           inputType: GameInputType.SELECT_LOCATION,
           prevInputType: GameInputType.PLACE_WORKER,
           locationContext: LocationName.FOREST_COPY_ANY_FOREST_LOCATION,
-          locationOptions: Location.byType(LocationType.FOREST).filter(
-            (loc) => loc != LocationName.FOREST_COPY_ANY_FOREST_LOCATION
-          ),
+          locationOptions: [LocationName.FOREST_FOUR_TWIG],
           clientOptions: {
             selectedLocation: LocationName.BASIC_ONE_BERRY,
+          },
+        });
+      }).to.throwException(/Invalid location selected/i);
+
+      expect(player.getNumResourcesByType(ResourceType.BERRY)).to.be(0);
+    });
+    it("player cannot copy location that's not in play", () => {
+      const location = Location.fromName(
+        LocationName.FOREST_COPY_ANY_FOREST_LOCATION
+      );
+      const gameInput = placeWorkerInput(location.name);
+      gameState.locationsMap[LocationName.FOREST_COPY_ANY_FOREST_LOCATION] = [];
+      gameState.locationsMap[LocationName.FOREST_FOUR_TWIG] = [];
+
+      gameState = gameState.next(gameInput);
+      expect(() => {
+        gameState.next({
+          inputType: GameInputType.SELECT_LOCATION,
+          prevInputType: GameInputType.PLACE_WORKER,
+          locationContext: LocationName.FOREST_COPY_ANY_FOREST_LOCATION,
+          locationOptions: [LocationName.FOREST_FOUR_TWIG],
+          clientOptions: {
+            selectedLocation: LocationName.FOREST_ONE_PEBBLE_THREE_CARD,
           },
         });
       }).to.throwException(/Invalid location selected/i);

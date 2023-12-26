@@ -1594,6 +1594,81 @@ describe("Card", () => {
         ]);
         expect(player.numCardsInHand).to.be(0);
       });
+
+      it("should not draw a card when the player's hand is full", () => {
+        const cards = [
+          CardName.KING,
+          CardName.QUEEN,
+          CardName.POSTAL_PIGEON,
+          CardName.POSTAL_PIGEON,
+          CardName.FARM,
+          CardName.HUSBAND,
+          CardName.CHAPEL,
+          CardName.MONK,
+        ];
+        gameState = testInitialGameState({ meadowCards: cards });
+
+        // card we expect to draw, if we had space in our hand
+        gameState.deck.addToStack(CardName.WIFE);
+
+        // card that will be filled into the meadow
+        gameState.deck.addToStack(CardName.KING);
+
+        const deckLength = gameState.deck.length;
+
+        player = gameState.getActivePlayer();
+
+        player.addToCity(gameState, CardName.HISTORIAN);
+        player.addCardToHand(gameState, CardName.WANDERER);
+        player.addCardToHand(gameState, CardName.WANDERER);
+        player.addCardToHand(gameState, CardName.WANDERER);
+        player.addCardToHand(gameState, CardName.WANDERER);
+        player.addCardToHand(gameState, CardName.WANDERER);
+        player.addCardToHand(gameState, CardName.WANDERER);
+        player.addCardToHand(gameState, CardName.WANDERER);
+        player.addCardToHand(gameState, CardName.WANDERER);
+
+        const cardToPlay = Card.fromName(CardName.FARM);
+        player.gainResources(gameState, cardToPlay.baseCost);
+
+        const playCardFromMeadowInput = {
+          inputType: GameInputType.PLAY_CARD as const,
+          clientOptions: {
+            card: CardName.FARM,
+            fromMeadow: true,
+            paymentOptions: {
+              resources: {
+                [ResourceType.TWIG]: 2,
+                [ResourceType.RESIN]: 1,
+              },
+            },
+          },
+        };
+
+        [player, gameState] = multiStepGameInputTest(gameState, [
+          playCardFromMeadowInput,
+        ]);
+
+        // check state of player's hand
+        expect(player.getCardsInHand().indexOf(CardName.WIFE)).to.be.lessThan(
+          0
+        );
+
+        expect(player.getCardsInHand()).to.eql([
+          CardName.WANDERER,
+          CardName.WANDERER,
+          CardName.WANDERER,
+          CardName.WANDERER,
+          CardName.WANDERER,
+          CardName.WANDERER,
+          CardName.WANDERER,
+          CardName.WANDERER,
+        ]);
+
+        // expect that 1 card was taken from the deck to replenish meadow
+        // if a second card had been drawn, we would expect the difference to be 2
+        expect(gameState.deck.length).to.be(deckLength - 1);
+      });
     });
 
     describe(CardName.HUSBAND, () => {

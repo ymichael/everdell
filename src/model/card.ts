@@ -1307,11 +1307,19 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         gameInput.inputType === GameInputType.PLAY_CARD &&
         gameInput.clientOptions.card !== CardName.HISTORIAN
       ) {
-        player.drawCards(gameState, 1);
-        gameState.addGameLogFromCard(CardName.HISTORIAN, [
-          player,
-          ` drew 1 CARD.`,
-        ]);
+        if (player.numCardsInHand >= player.maxHandSize) {
+          gameState.addGameLogFromCard(CardName.HISTORIAN, [
+            player,
+            `already has ${player.maxHandSize} CARD in their hand. `,
+            `No additional CARD were drawn or discarded`,
+          ]);
+        } else {
+          player.drawCards(gameState, 1);
+          gameState.addGameLogFromCard(CardName.HISTORIAN, [
+            player,
+            ` drew 1 CARD.`,
+          ]);
+        }
       }
     },
   }),

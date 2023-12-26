@@ -824,8 +824,8 @@ export type GameOptions = {
     basicEvents?: boolean;
     specialEvents?: boolean;
     reserving?: boolean;
-    station?: boolean;
-    visitors?: boolean;
+    station?: boolean; // refers to cards source
+    visitors?: boolean; // refers to station location
     knoll?: boolean;
     ticket?: boolean;
   };

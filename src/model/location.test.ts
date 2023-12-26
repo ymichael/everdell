@@ -1814,11 +1814,18 @@ describe("Location", () => {
 
       gameState = testInitialGameState({
         visitors: visitorStack,
+        trainCarTiles: [
+          TrainCarTileName.ONE_BERRY,
+          TrainCarTileName.ONE_PEBBLE,
+          TrainCarTileName.ONE_RESIN,
+        ],
         gameOptions: { newleaf: { visitors: true } },
       });
 
       const location = Location.fromName(LocationName.STATION);
       gameState.locationsMap[location.name] = [];
+
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.eql(0);
 
       [player, gameState] = multiStepGameInputTest(gameState, [
         placeWorkerInput(location.name),
@@ -1842,9 +1849,24 @@ describe("Location", () => {
             selectedVisitor: VisitorName.FRIN_STICKLY,
           },
         },
+        // selecting train tile to keep
+        {
+          inputType: GameInputType.SELECT_TRAIN_CAR_TILE,
+          prevInputType: GameInputType.SELECT_VISITOR,
+          locationContext: LocationName.STATION,
+          options: [
+            TrainCarTileName.ONE_BERRY,
+            TrainCarTileName.ONE_PEBBLE,
+            TrainCarTileName.ONE_RESIN,
+          ],
+          clientOptions: {
+            trainCarTileIdx: 1,
+          },
+        },
       ]);
 
       expect(player.claimedVisitors).to.eql([VisitorName.FRIN_STICKLY]);
+      expect(player.getNumResourcesByType(ResourceType.PEBBLE)).to.eql(1);
     });
   });
 

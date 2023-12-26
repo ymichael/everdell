@@ -1399,6 +1399,29 @@ const LOCATION_REGISTRY: Record<LocationName, Location> = {
         ]);
 
         player.claimedVisitors.push(selectedVisitor);
+
+        //then, select train tile to keep
+        gameState.pendingGameInputs.push({
+          inputType: GameInputType.SELECT_TRAIN_CAR_TILE,
+          prevInputType: gameInput.inputType,
+          locationContext: LocationName.STATION,
+          label: "Select 1 Train Car Tile",
+          options: gameState.trainCarTileStack!.getRevealedTiles(),
+          clientOptions: {
+            trainCarTileIdx: -1,
+          },
+        });
+      } else if (gameInput.inputType === GameInputType.SELECT_TRAIN_CAR_TILE) {
+        const selectedIdx = gameInput.clientOptions.trainCarTileIdx;
+        const selectedTile = gameInput.options[selectedIdx];
+        if (
+          !selectedTile ||
+          gameState.trainCarTileStack?.peekAt(selectedIdx) !== selectedTile
+        ) {
+          throw new Error("Invalid train car tile selected");
+        }
+        TrainCarTile.fromName(selectedTile).playTile(gameState, gameInput);
+        gameState.trainCarTileStack!.replaceAt(selectedIdx);
       } else {
         throw new Error(`Unexpected input type ${gameInput.inputType}`);
       }

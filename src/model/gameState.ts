@@ -1711,9 +1711,11 @@ export class GameState {
       ),
       adornmentsPile: withPearlbrook ? allAdornments() : null,
       riverDestinationMap: withPearlbrook ? initialRiverDestinationMap() : null,
-      trainCarTileStack: gameOptionsWithDefaults?.newleaf?.station
-        ? intialTrainCarTileStack()
-        : null,
+      trainCarTileStack:
+        gameOptionsWithDefaults?.newleaf?.station ||
+        gameOptionsWithDefaults?.newleaf?.visitors
+          ? intialTrainCarTileStack()
+          : null,
       visitorStack: gameOptionsWithDefaults?.newleaf?.visitors
         ? intialVisitorStack()
         : null,

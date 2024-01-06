@@ -4932,7 +4932,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         gameState.pendingGameInputs.push({
           inputType: GameInputType.SELECT_CARDS,
           prevInputType: gameInput.inputType,
-          label: "Select 1 CARD from the Meadow to play for 3 fewer ANY",
+          label: "Select 1 CARD from your hand to play for 3 fewer ANY",
           cardOptions: player.getCardsInHand().filter((cardName) => {
             const card = Card.fromName(cardName);
             return (
@@ -5016,7 +5016,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
         player.removeCardFromHand(gameState, card.name);
         card.addToCityAndPlay(gameState, gameInput);
 
-        gameState.addGameLogFromCard(CardName.INN, [
+        gameState.addGameLogFromCard(CardName.HOTEL, [
           player,
           " played ",
           card,

@@ -273,14 +273,14 @@ class SqliteDb implements IDb {
   async getGameStateIdForGame(gameId: string): Promise<string | null> {
     return new Promise((resolve, reject) => {
       this.db.get(
-        "SELECT game FROM everdell WHERE game_id = ?",
+        "SELECT game game FROM everdell WHERE game_id = ?",
         [gameId],
         (err: { message: any }, row: { game: string }) => {
           if (err) {
             reject(err);
           } else if (row?.game) {
             const gameJSON = JSON.parse(row.game);
-            resolve(gameJSON.gameStateId || null);
+            resolve(gameJSON.gameState?.gameStateId || null);
           } else {
             resolve(null);
           }

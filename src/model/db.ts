@@ -71,6 +71,7 @@ interface IDb {
   updateGame(gameId: string, gameJSON: string): Promise<void>;
   hasSavedGame(gameId: string): Promise<boolean>;
   getGameJSONById(gameId: string): Promise<GameJSON | null>;
+  getGameStateIdForGame(gameId: string): Promise<string | null>;
   getAllGameIds(): Promise<string[]>;
 }
 
@@ -134,6 +135,14 @@ class PgDb implements IDb {
       [gameId]
     );
     return result.rows.length === 1;
+  }
+
+  async getGameStateIdForGame(gameId: string): Promise<string | null> {
+    const result = await this.pool.query(
+      "SELECT json_extract_path_text(game::json, 'gameState', 'gameStateId') as state_id FROM everdell WHERE game_id = $1",
+      [gameId]
+    );
+    return result.rows.length === 1 ? result.rows[0].state_id : null;
   }
 
   async getGameJSONById(gameId: string): Promise<GameJSON | null> {
@@ -261,6 +270,25 @@ class SqliteDb implements IDb {
     });
   }
 
+  async getGameStateIdForGame(gameId: string): Promise<string | null> {
+    return new Promise((resolve, reject) => {
+      this.db.get(
+        "SELECT game FROM everdell WHERE game_id = ?",
+        [gameId],
+        (err: { message: any }, row: { game: string }) => {
+          if (err) {
+            reject(err);
+          } else if (row?.game) {
+            const gameJSON = JSON.parse(row.game);
+            resolve(gameJSON.gameStateId || null);
+          } else {
+            resolve(null);
+          }
+        }
+      );
+    });
+  }
+
   async getAllGameIds(): Promise<string[]> {
     return new Promise((resolve, reject) => {
       this.db.all(
@@ -283,6 +311,14 @@ export const getGameJSONById = async (
   const db = getDbForGameId(gameId);
   await db.createGamesTableIfNotExists();
   return db.getGameJSONById(gameId);
+};
+
+export const getGameStateIdForGame = async (
+  gameId: string
+): Promise<string | null> => {
+  const db = getDbForGameId(gameId);
+  await db.createGamesTableIfNotExists();
+  return db.getGameStateIdForGame(gameId);
 };
 
 // Unused

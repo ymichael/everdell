@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getGameById } from "../../model/game";
+import { getGameStateIdForGame } from "../../model/db";
 import { Player } from "../../model/player";
 
 export default async (
@@ -15,15 +16,14 @@ export default async (
   // Validate query
   const { query } = req;
   const { gameId, playerId, playerSecret, gameStateId } = query || {};
-  const game = await getGameById(gameId as string);
-  if (!game) {
+  const currentGameStateId = await getGameStateIdForGame(gameId as string);
+  if (!currentGameStateId) {
     res.status(404).json({
       success: false,
       error: "Game not found",
     });
     return;
   }
-
   if (!gameStateId) {
     res.status(404).json({
       success: false,
@@ -32,8 +32,17 @@ export default async (
     return;
   }
 
-  if (String(game.getGameStateId()) === gameStateId) {
+  if (currentGameStateId === gameStateId) {
     res.status(304).end("Not Modified");
+    return;
+  }
+
+  const game = await getGameById(gameId as string);
+  if (!game) {
+    res.status(404).json({
+      success: false,
+      error: "Game not found",
+    });
     return;
   }
 

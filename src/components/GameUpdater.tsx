@@ -83,7 +83,7 @@ const GameUpdater: React.FC<{
     let timer: any = null;
     const isActivePlayer = activePlayerId === playerId;
     if (!isGameOver && !isActivePlayer) {
-      timer = setInterval(updateGameState, 2000);
+      timer = setInterval(updateGameState, 5000);
     } else {
       if (isActivePlayer && !isFirstLoadRef.current) {
         try {

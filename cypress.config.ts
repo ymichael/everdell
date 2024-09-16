@@ -1,5 +1,5 @@
-import { defineConfig } from 'cypress'
-import setupNodeEvents from './cypress/plugins/index'
+import { defineConfig } from "cypress";
+import setupNodeEvents from "./cypress/plugins/index";
 
 export default defineConfig({
   projectId: "vkcycj",
@@ -7,10 +7,11 @@ export default defineConfig({
   scrollBehavior: "center",
   viewportHeight: 900,
   viewportWidth: 1440,
+  defaultCommandTimeout: 10000,
   e2e: {
     supportFile: false,
     specPattern: "cypress/integration/*spec.ts",
-    baseUrl: 'http://localhost:3000',
+    baseUrl: "http://localhost:3000",
     setupNodeEvents,
   },
-})
+});

@@ -1,6 +1,6 @@
 import "../styles/globals.css";
 import Head from "next/head";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function App<T extends JSX.IntrinsicAttributes>({
   Component,
@@ -25,6 +25,22 @@ export default function App<T extends JSX.IntrinsicAttributes>({
       }
     }
   }, []);
+
+  const [isDarkMode, setIsDarkMode] = useState(false); // Initial state
+
+  // Function to toggle dark mode
+  const toggleDarkMode = () => {
+    setIsDarkMode(!isDarkMode);
+  };
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [isDarkMode]); // Run effect whenever isDarkMode changes
+
   return (
     <>
       <Head>
@@ -38,6 +54,10 @@ export default function App<T extends JSX.IntrinsicAttributes>({
         <link rel="shortcut icon" href="/images/favicon.png" />
         <title>Everdell</title>
       </Head>
+
+      <button onClick={toggleDarkMode}>
+        {isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+      </button>
       <Component {...pageProps} />
     </>
   );

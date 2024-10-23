@@ -1,0 +1,5 @@
+.github/
+.next/
+db/
+node_modules/
+public/

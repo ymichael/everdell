@@ -15,7 +15,6 @@ import { GameBlock } from "./common";
 import { PlayerCity } from "./gameBoard";
 import {
   InfoIconSvg,
-  VPIcon,
   CardIcon,
   GoldenLeafIcon,
   ReservationTokenIcon,
@@ -203,7 +202,7 @@ const CardTypeItem: React.FC<{
 export const OtherResources: React.FC<{
   player: Player;
   gameState: GameState;
-  showRealtimePoints: boolean;
+  showRealtimePoints?: boolean;
 }> = ({ player, gameState, showRealtimePoints }) => {
   return (
     <div className={styles.status_box_item_resource_list}>

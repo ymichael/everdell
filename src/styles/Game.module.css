@@ -5,4 +5,21 @@
   flex-direction: column;
   color: var(--text-color);
   width: 1420px;
+  position: relative; /* Important for positioning the sticky bar */
+  min-height: 100vh; /* Ensure the container is at least the viewport height */
+}
+
+.stickyBar {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 10px;
+  background-color: var(--bg-color);
+  /* Add any other styling you need */
+}
+
+.sticky_bar_item {
+  display: flex;
+  width: fit-content;
 }

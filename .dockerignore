@@ -2,3 +2,6 @@
 .next/cache
 db/
 node_modules/
+
+docker-compose.yml
+.prettier*

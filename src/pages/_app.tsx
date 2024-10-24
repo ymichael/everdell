@@ -1,8 +1,9 @@
+import { appWithTranslation } from "next-i18next";
 import "../styles/globals.css";
 import Head from "next/head";
 import { useEffect, useState } from "react";
 
-export default function App<T extends JSX.IntrinsicAttributes>({
+function App<T extends JSX.IntrinsicAttributes>({
   Component,
   pageProps,
 }: {
@@ -62,3 +63,5 @@ export default function App<T extends JSX.IntrinsicAttributes>({
     </>
   );
 }
+
+export default appWithTranslation(App);

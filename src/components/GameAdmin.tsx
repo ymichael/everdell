@@ -7,6 +7,7 @@ import { Meadow } from "./gameBoard";
 import GameInputBox from "./GameInputBox";
 
 import styles from "../styles/GameAdmin.module.css";
+import { useTranslation } from "next-i18next";
 
 const GameAdmin = ({
   gameJSON,
@@ -15,12 +16,14 @@ const GameAdmin = ({
   gameJSON: GameJSON;
   devDebugMode: boolean;
 }) => {
+  const { t } = useTranslation("common");
+
   const gameState = GameState.fromJSON(gameJSON.gameState);
   return (
     <div id={"js-game-admin"} className={styles.container}>
-      <GameBlock title={"Game Created"}>
+      <GameBlock title={t("Game Created")}>
         <div className={styles.label}>
-          Copy links to share with other players:
+          {t('Copy links to share with other players:')}
         </div>
         <ul className={styles.links}>
           {gameState.players.map((p: any, idx: number) => (

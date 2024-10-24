@@ -1,12 +1,18 @@
-import * as React from "react";
-import { useState } from "react";
+import { useTranslation } from "next-i18next";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import Head from "next/head";
 import Link from "next/link";
+import * as React from "react";
+import { useState } from "react";
+import i18nextConfig from "../..//next-i18next.config";
+import GameBuilder from "../components/GameBuilder";
 import styles from "../styles/Home.module.css";
 
-import GameBuilder from "../components/GameBuilder";
+export const availableLocales = i18nextConfig.i18n.locales;
 
 const Main: React.FC = () => {
+  const { t } = useTranslation("common");
+
   const [showGameBuilder, setShowGameBuilder] = useState(false);
   return (
     <div>
@@ -22,7 +28,7 @@ const Main: React.FC = () => {
             className={styles.button}
             onClick={() => setShowGameBuilder(true)}
           >
-            New Game
+            {t("New Game")}
           </button>
           <a
             target="_blank"
@@ -60,6 +66,15 @@ const Main: React.FC = () => {
     </div>
   );
 };
+
+export async function getStaticProps({ locale }: { locale: string }) {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ["common", "footer"])),
+      // Will be passed to the page component as props
+    },
+  };
+}
 
 export default function IndexPage() {
   return (

@@ -1,5 +1,6 @@
 .github/
-.next/cache
+.next/
+.vscode/
 db/
 node_modules/
 

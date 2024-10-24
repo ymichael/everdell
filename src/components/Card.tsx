@@ -1,24 +1,25 @@
+import { useTranslation } from "next-i18next";
 import * as React from "react";
 import { Card as CardModel } from "../model/card";
 import { GameState } from "../model/gameState";
-import styles from "../styles/card.module.css";
-import {
-  ResourceType,
-  CardName,
-  PlayedCardInfo,
-  CardType,
-} from "../model/types";
-import { Player } from "../model/player";
-import { resourceMapToGameText, toGameText } from "../model/gameText";
-import {
-  GameIcon,
-  AmbassadorSpotIcon,
-  WorkerSpotIcon,
-  Description,
-  CardTypeSymbol,
-} from "./common";
 import { sumResources } from "../model/gameStatePlayHelpers";
+import { resourceMapToGameText, toGameText } from "../model/gameText";
+import { Player } from "../model/player";
+import {
+  CardName,
+  CardType,
+  PlayedCardInfo,
+  ResourceType,
+} from "../model/types";
+import styles from "../styles/card.module.css";
 import { assertUnreachable } from "../utils";
+import {
+  AmbassadorSpotIcon,
+  CardTypeSymbol,
+  Description,
+  GameIcon,
+  WorkerSpotIcon,
+} from "./common";
 
 const colorClassMap = {
   GOVERNANCE: styles.color_governance,
@@ -79,13 +80,16 @@ const getRarityLabel = (card: CardModel) => {
 
 // handle the farm and evertree
 const getAssociatedCard = (card: CardModel) => {
+  const { t } = useTranslation("cards");
+  const tDescriptions = useTranslation("descriptions").t;
+
   const associatedCard = card.associatedCard;
   if (associatedCard.type === "CARD") {
-    return associatedCard.cardName;
+    return t(associatedCard.cardName);
   } else if (associatedCard.type === "HUSBAND_WIFE") {
-    return "Husband / Wife";
+    return tDescriptions("Husband / Wife");
   } else if (associatedCard.type === "ANY") {
-    return "Any";
+    return tDescriptions("Any");
   } else if (associatedCard.type === "GOLDEN_LEAF") {
     const textParts = toGameText([
       "Any ",
@@ -184,9 +188,10 @@ const Card: React.FC<{ name: CardName; usedForCritter?: boolean }> = ({
   name,
   usedForCritter = false,
 }) => {
+  const { t } = useTranslation("cards");
+
   const card = CardModel.fromName(name as any);
   const colorClass = colorClassMap[card.cardType];
-  const rarityLabel = getRarityLabel(card);
   return (
     <div className={styles.card}>
       <div className={styles.card_header_row}>
@@ -203,7 +208,7 @@ const Card: React.FC<{ name: CardName; usedForCritter?: boolean }> = ({
           <span className={styles.card_header_vp_number}>{card.baseVP}</span>
         </div>
         <div className={[styles.card_header, colorClass].join(" ")}>
-          <span>{name}</span>
+          <span>{t(name)}</span>
           {card.expansion && (
             <span className={styles.expansion}>{card.expansion}</span>
           )}
@@ -243,13 +248,24 @@ const Card: React.FC<{ name: CardName; usedForCritter?: boolean }> = ({
           <CardDescription card={card} />
         </div>
       </div>
-      <div className={styles.card_bottom_row}>
-        <div className={styles.rarity_label}>
-          {rarityLabel}
-          &nbsp;&middot;&nbsp;{romanize(card.numInDeck)}
-        </div>
-        <AssociatedCard card={card} usedForCritter={usedForCritter} />
+      <CardFooter card={card} usedForCritter={usedForCritter} />
+    </div>
+  );
+};
+
+const CardFooter: React.FC<{
+  card: CardModel;
+  usedForCritter: boolean;
+}> = ({ card, usedForCritter }) => {
+  const { t } = useTranslation("rarity");
+  const rarityLabel = getRarityLabel(card);
+  return (
+    <div className={styles.card_bottom_row}>
+      <div className={styles.rarity_label}>
+        {t(rarityLabel)}
+        &nbsp;&middot;&nbsp;{romanize(card.numInDeck)}
       </div>
+      <AssociatedCard card={card} usedForCritter={usedForCritter} />
     </div>
   );
 };

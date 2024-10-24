@@ -5,6 +5,7 @@ import { GameJSON, PlayerJSON } from "../../model/jsonTypes";
 import { GameInput } from "../../model/types";
 import GameAdmin from "../../components/GameAdmin";
 import Game from "../../components/Game";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const {
@@ -13,6 +14,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     playerSecret = null,
     debug = null,
   } = context.query;
+  const locale = context.locale;
+
   const game = await getGameById(gameId as string);
   if (!game) {
     return { redirect: { statusCode: 302, destination: "/" } };
@@ -26,6 +29,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   return {
     props: {
+      ...(await serverSideTranslations(locale || "en", [
+        "common",
+        "cards",
+        "descriptions",
+        "rarity",
+      ])),
       isGameAdmin,
       devDebugMode: process.env.NODE_ENV === "development" && !!debug,
       gameJSON:

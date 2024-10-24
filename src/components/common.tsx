@@ -14,6 +14,7 @@ import {
   CardType,
 } from "../model/types";
 import { assertUnreachable } from "../utils";
+import { useTranslation } from "next-i18next";
 
 export const GameBlockTitle: React.FC = ({ children }) => {
   return (
@@ -259,12 +260,14 @@ export const GameIcon = ({
 };
 
 export const Description = ({ textParts }: { textParts: GameText }) => {
+  const { t } = useTranslation("descriptions");
+
   return textParts ? (
     <span>
       {textParts.map((part: TextPart, idx: number) => {
         switch (part.type) {
           case "text":
-            return part.text;
+            return t(part.text);
           case "iblock":
             return (
               <span key={idx} className={styles.i_part}>
@@ -274,13 +277,13 @@ export const Description = ({ textParts }: { textParts: GameText }) => {
           case "i":
             return (
               <span key={idx} className={styles.i_part}>
-                {part.text}
+                {t(part.text)}
               </span>
             );
           case "em":
             return (
               <span key={idx} className={styles.em_part}>
-                {part.text}
+                {t(part.text)}
               </span>
             );
           case "BR":

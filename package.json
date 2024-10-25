@@ -22,7 +22,6 @@
     "lint": "eslint src --quiet --ext .ts,tsx"
   },
   "dependencies": {
-    "@ladle/react": "^4.1.2",
     "cypress": "^12.7.0",
     "eslint-config-next": "^13.0.5",
     "expect.js": "^0.3.1",
@@ -32,6 +31,7 @@
     "mocha": "^10.2.0",
     "next": "^13.0.5",
     "next-i18next": "^15.3.1",
+    "next-themes": "^0.3.0",
     "nodemon": "^2.0.7",
     "pg": "^8.5.1",
     "react": "^18.2.0",

@@ -1,11 +1,12 @@
 import { GetServerSideProps } from "next";
 
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { i18n } from "../../../next-i18next.config";
+import Game from "../../components/Game";
+import GameAdmin from "../../components/GameAdmin";
 import { getGameById } from "../../model/game";
 import { GameJSON, PlayerJSON } from "../../model/jsonTypes";
 import { GameInput } from "../../model/types";
-import GameAdmin from "../../components/GameAdmin";
-import Game from "../../components/Game";
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const {
@@ -29,7 +30,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   return {
     props: {
-      ...(await serverSideTranslations(locale || "en", [
+      ...(await serverSideTranslations(locale || i18n.defaultLocale, [
         "common",
         "cards",
         "descriptions",

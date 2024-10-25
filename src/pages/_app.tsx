@@ -1,7 +1,8 @@
 import { appWithTranslation } from "next-i18next";
-import "../styles/globals.css";
+import { ThemeProvider } from "next-themes";
 import Head from "next/head";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import "../styles/globals.css";
 
 function App<T extends JSX.IntrinsicAttributes>({
   Component,
@@ -27,21 +28,6 @@ function App<T extends JSX.IntrinsicAttributes>({
     }
   }, []);
 
-  const [isDarkMode, setIsDarkMode] = useState(false); // Initial state
-
-  // Function to toggle dark mode
-  const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
-  };
-
-  useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, [isDarkMode]); // Run effect whenever isDarkMode changes
-
   return (
     <>
       <Head>
@@ -55,11 +41,9 @@ function App<T extends JSX.IntrinsicAttributes>({
         <link rel="shortcut icon" href="/images/favicon.png" />
         <title>Everdell</title>
       </Head>
-
-      <button onClick={toggleDarkMode}>
-        {isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
-      </button>
-      <Component {...pageProps} />
+      <ThemeProvider attribute="class">
+        <Component {...pageProps} />
+      </ThemeProvider>
     </>
   );
 }

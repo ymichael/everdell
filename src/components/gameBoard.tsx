@@ -23,12 +23,15 @@ import Adornment from "./Adornment";
 import Event from "./Event";
 import { VisitorInner as Visitor } from "./Visitor";
 import { GameBlock, ItemWrapper } from "./common";
+import { useTranslation } from "next-i18next";
 
 export const Meadow: React.FC<{ meadowCards: CardName[] }> = ({
   meadowCards,
 }) => {
+  const { t } = useTranslation("descriptions");
+
   return (
-    <GameBlock title={"Meadow"}>
+    <GameBlock title={t("Meadow")}>
       <div id={"js-meadow-cards"}>
         <div className={styles.items_no_wrap}>
           {meadowCards.slice(0, 4).map((cardName, idx) => (
@@ -335,6 +338,8 @@ export const GameBoard: React.FC<{
   gameStateJSON: GameStateJSON;
   viewingPlayer: Player | null;
 }> = ({ gameState, gameStateJSON, viewingPlayer }) => {
+  const { t } = useTranslation("descriptions");
+
   return (
     <div className={styles.game_board}>
       <div>
@@ -343,7 +348,7 @@ export const GameBoard: React.FC<{
             <LocationForType
               gameState={gameState}
               locationType={LocationType.FOREST}
-              title="Forest Locations"
+              title={t("Forest Locations")}
               viewingPlayer={viewingPlayer}
             />{" "}
           </div>
@@ -397,7 +402,7 @@ export const GameBoard: React.FC<{
           <LocationForType
             gameState={gameState}
             locationType={LocationType.FOREST}
-            title="Forest Locations"
+            title={t("Forest Locations")}
             viewingPlayer={viewingPlayer}
           />
 

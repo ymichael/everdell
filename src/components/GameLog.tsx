@@ -9,6 +9,7 @@ import { GameLogEntry } from "../model/types";
 import { GameState } from "../model/gameState";
 import { GameStateJSON } from "../model/jsonTypes";
 import { Description, GameBlock } from "./common";
+import { useTranslation } from "next-i18next";
 
 const GameLog: React.FC<{
   logs: GameLogEntry[];
@@ -47,8 +48,10 @@ const GameLog: React.FC<{
     );
   }
 
+  const { t } = useTranslation("descriptions");
+
   return (
-    <GameBlock title={"Game Log"}>
+    <GameBlock title={t("Game Log")}>
       {gameStateJSON && (
         <div className={styles.log_stats}>
           {activePlayerEl}

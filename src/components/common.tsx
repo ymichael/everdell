@@ -29,9 +29,11 @@ export const GameBlock: React.FC<{ title: string; id?: string }> = ({
   id,
   children,
 }) => {
+  const { t } = useTranslation("descriptions");
+  
   return (
     <div id={id} className={styles.block}>
-      <GameBlockTitle>{title}</GameBlockTitle>
+      <GameBlockTitle>{t(title)}</GameBlockTitle>
       {children}
     </div>
   );
@@ -175,6 +177,8 @@ export const ResourceTypeIcon = ({
 }: {
   resourceType: ResourceType;
 }) => {
+  const { t } = useTranslation("descriptions");
+
   return (
     <>
       {resourceType === ResourceType.BERRY ? (
@@ -213,7 +217,7 @@ export const ResourceTypeIcon = ({
           priority
         />
       ) : (
-        <>{resourceType}</>
+        <>{t(resourceType.toString())}</>
       )}
     </>
   );

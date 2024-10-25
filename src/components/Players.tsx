@@ -24,6 +24,7 @@ import {
   EmptyCitySpotIcon,
   TicketIcon,
 } from "./common";
+import { useTranslation } from "next-i18next";
 
 export const Players = ({
   gameState,
@@ -290,9 +291,13 @@ const TrainTicketItem: React.FC<{ player: Player }> = ({ player }) => {
 };
 
 const WorkerCountItem: React.FC<{ player: Player }> = ({ player }) => {
+  const { t } = useTranslation("descriptions");
+
   return (
     <div className={styles.status_box_item_resource}>
-      <div className={styles.status_box_item_resource_label}>{"WORKERS"}</div>
+      <div className={styles.status_box_item_resource_label}>
+        {t("WORKERS")}
+      </div>
       <div className={styles.status_box_item_resource_count}>
         {player.numAvailableWorkers}
       </div>
@@ -301,10 +306,12 @@ const WorkerCountItem: React.FC<{ player: Player }> = ({ player }) => {
 };
 
 const AmbassadorCountItem: React.FC<{ player: Player }> = ({ player }) => {
+  const { t } = useTranslation("descriptions");
+
   return (
     <div className={styles.status_box_item_resource}>
       <div className={styles.status_box_item_resource_label}>
-        {"AMBASSADORS"}
+        {t("AMBASSADORS")}
       </div>
       <div className={styles.status_box_item_resource_count}>
         {player.hasUnusedAmbassador() ? 1 : 0}
@@ -317,9 +324,11 @@ const PointsItem: React.FC<{ player: Player; gameState: GameState }> = ({
   player,
   gameState,
 }) => {
+  const { t } = useTranslation("descriptions");
+
   return (
     <div className={styles.status_box_item_resource}>
-      <div className={styles.status_box_item_resource_label}>{"POINTS"}</div>
+      <div className={styles.status_box_item_resource_label}>{t("POINTS")}</div>
       <div className={styles.status_box_item_resource_count}>
         {player.getPoints(gameState)}
       </div>

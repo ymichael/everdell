@@ -42,7 +42,7 @@ const GameAdmin = ({
             Game ID: {gameJSON.gameId}
             &nbsp;&middot;&nbsp;
             <a target="_blank" href={`/game/${gameJSON.gameId}`}>
-              spectator link
+              {t("spectator link")}
             </a>
           </i>
         </div>

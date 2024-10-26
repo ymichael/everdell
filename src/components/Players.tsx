@@ -354,6 +354,7 @@ const PlayerStatus: React.FC<{
   showRealtimePoints,
 }) => {
   const [showCity, setShowCity] = useState(false);
+  const { t } = useTranslation("common");
 
   return (
     <>
@@ -386,7 +387,7 @@ const PlayerStatus: React.FC<{
       </div>
       {showCity && (
         <div className={styles.status_box_city}>
-          <GameBlock title={`${player.name}'s City`}>
+          <GameBlock title={`${player.name}${t("'s City")}`}>
             <PlayerCity
               player={player}
               gameState={gameState}

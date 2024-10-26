@@ -35,12 +35,11 @@ export const StickyBar: React.FC<{
                 <PlayerName
                   name={name}
                   onClick={function (): void {
-                    throw new Error("Function not implemented.");
+                    return;
                   }}
                 />
                 <ResourceList playerResources={playerResources[name]} />
                 <CardTypeList player={players.find((p) => p.name === name)!} />
-
                 <OtherResources
                   player={players.find((p) => p.name === name)!}
                   gameState={gameState}

@@ -29,6 +29,7 @@ import GameInputVisitorSelector from "./GameInputVisitorSelector";
 import GameInputPlayCard from "./GameInputPlayCard";
 
 import { assertUnreachable } from "../utils";
+import { useTranslation } from "next-i18next";
 
 const GameInputBoxText: React.FC<{
   title?: string;
@@ -257,6 +258,8 @@ const GameInputBox: React.FC<{
   viewingPlayer,
 }) => {
   const activePlayer = gameState.getActivePlayer();
+  const { t } = useTranslation("common");
+
   if (gameState.isGameOver()) {
     return <GameInputBoxText title={title} text={`Game Over!`} />;
   }
@@ -269,7 +272,7 @@ const GameInputBox: React.FC<{
     return (
       <GameInputBoxText
         title={title}
-        text={`Waiting for ${activePlayer.name}`}
+        text={`${t("Waiting for")} ${activePlayer.name}`}
       />
     );
   }
@@ -300,7 +303,7 @@ const GameInputBox: React.FC<{
 
         // For inputs that require selecting multiple things, update the button
         // text to say how many have been selected.
-        let submitLabel = "Submit";
+        let submitLabel = t("Submit");
         if (selectedGameInput) {
           if (
             selectedGameInput.inputType === GameInputType.SELECT_CARDS ||
@@ -308,13 +311,13 @@ const GameInputBox: React.FC<{
           ) {
             const numSelected =
               selectedGameInput.clientOptions.selectedCards.length;
-            submitLabel = `${numSelected} Selected`;
+            submitLabel = `${numSelected} ${t("Selected")}`;
           } else if (
             selectedGameInput.inputType === GameInputType.DISCARD_CARDS
           ) {
             const numSelected =
               selectedGameInput.clientOptions.cardsToDiscard.length;
-            submitLabel = `${numSelected} Selected`;
+            submitLabel = `${numSelected} ${t("Selected")}`;
           }
         }
 

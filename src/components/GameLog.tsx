@@ -26,6 +26,7 @@ const GameLog: React.FC<{
       logsElRef.current.scrollTop = lastLogElRef.current.offsetTop;
     }
   }, [logs.length]);
+  const { t } = useTranslation("common");
 
   let activePlayerEl = null;
   if (gameStateJSON) {
@@ -35,10 +36,10 @@ const GameLog: React.FC<{
       <>
         <div className={styles.log_stat}>
           {gameStateImpl.isGameOver() ? (
-            <span>Game Over</span>
+            <span>{t("Game Over")}</span>
           ) : (
             <>
-              <span>Active: </span>
+              <span>{t("Active: ")}</span>
               <span>{activePlayerImpl.name}</span>
             </>
           )}
@@ -48,20 +49,18 @@ const GameLog: React.FC<{
     );
   }
 
-  const { t } = useTranslation("common");
-
   return (
     <GameBlock title={t("Game Log")}>
       {gameStateJSON && (
         <div className={styles.log_stats}>
           {activePlayerEl}
           <div className={styles.log_stat}>
-            <span>Deck: </span>
+            <span>{t("Deck: ")}</span>
             <span>{gameStateJSON.deck.numCards}</span>
           </div>
           {" / "}
           <div className={styles.log_stat}>
-            <span>Discard: </span>
+            <span>{t("Discard: ")}</span>
             <span>{gameStateJSON.discardPile.numCards}</span>
           </div>
         </div>

@@ -40,7 +40,7 @@ export const LocationInner: React.FC<{ name: LocationName }> = ({ name }) => {
             {location.occupancy === LocationOccupancy.UNLIMITED
               ? "1+"
               : location.occupancy === LocationOccupancy.UNLIMITED_MAX_ONE
-              ? "1 / PLAYER"
+              ? t("1 / PLAYER")
               : ""}
           </div>
         </div>
@@ -56,6 +56,7 @@ const Location: React.FC<{
   gameState?: GameState | null;
 }> = ({ name, playerWorkers = [], viewingPlayer = null, gameState = null }) => {
   const location = LocationModel.fromName(name);
+  const { t } = useTranslation("common");
   let acceptingWorkers = true;
 
   if (location.occupancy === LocationOccupancy.EXCLUSIVE) {
@@ -85,7 +86,7 @@ const Location: React.FC<{
       footerChildren={
         playerWorkers.length !== 0 && (
           <div className={styles.location_workers}>
-            <span>Workers: </span>
+            <span>{t("Workers: ")}</span>
             <span className={styles.location_worker}>
               {playerWorkers.join(", ")}
             </span>

@@ -261,7 +261,7 @@ const GameInputBox: React.FC<{
   const { t } = useTranslation("common");
 
   if (gameState.isGameOver()) {
-    return <GameInputBoxText title={title} text={`Game Over!`} />;
+    return <GameInputBoxText title={title} text="Game Over!" />;
   }
   if (!viewingPlayer) {
     return (

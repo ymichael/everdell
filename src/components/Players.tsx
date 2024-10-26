@@ -85,6 +85,7 @@ const PlayerStatusPill: React.FC<{
   player: Player;
   isActivePlayer: boolean;
 }> = ({ player, isActivePlayer }) => {
+  const { t } = useTranslation("common");
   return (
     <div className={styles.status_box_bio_meta}>
       {player.getStatus() === TPlayerStatus.GAME_ENDED ? (
@@ -93,7 +94,7 @@ const PlayerStatusPill: React.FC<{
             " "
           )}
         >
-          passed
+          {t("passed")}
         </div>
       ) : (
         <>
@@ -108,7 +109,7 @@ const PlayerStatusPill: React.FC<{
               .filter(Boolean)
               .join(" ")}
           >
-            {player.currentSeason.toLowerCase()}
+            {t(player.currentSeason.toLowerCase())}
           </div>
           {isActivePlayer && (
             <div
@@ -116,7 +117,7 @@ const PlayerStatusPill: React.FC<{
                 " "
               )}
             >
-              active
+              {t("active")}
             </div>
           )}
         </>

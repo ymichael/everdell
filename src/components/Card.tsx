@@ -304,6 +304,8 @@ export const PlayedCard: React.FC<{
   viewerId: string | null;
   cardIdx?: number;
 }> = ({ playedCard, cardOwner, gameState, viewerId, cardIdx }) => {
+  const { t } = useTranslation("common");
+
   const {
     cardOwnerId,
     cardName,
@@ -325,7 +327,7 @@ export const PlayedCard: React.FC<{
       </div>
       <div className={styles.played_card_meta}>
         <div>
-          Card Owner: {viewerId === cardOwnerId ? "You" : cardOwner.name}
+          {t("Card Owner:")} {viewerId === cardOwnerId ? t("You") : cardOwner.name}
         </div>
         {cardIdx && card.cardType === CardType.PROSPERITY && (
           <CardPoints
@@ -336,23 +338,23 @@ export const PlayedCard: React.FC<{
           />
         )}
         {"workers" in playedCard && (
-          <div>Workers on card: {workers.length}</div>
+          <div>{t("Workers on card:")} {workers.length}</div>
         )}
         {"ambassador" in playedCard && (
-          <div>Ambassadors on card: {ambassador ? "1" : "0"}</div>
+          <div>{t("Ambassadors on card:")} {ambassador ? "1" : "0"}</div>
         )}
         {"shareSpaceWith" in playedCard && shareSpaceWith && (
-          <div>Share space: {shareSpaceWith}</div>
+          <div>{t("Share space:")} {shareSpaceWith}</div>
         )}
         {"pairedCards" in playedCard && (
           <div>
-            Beneath Card:{" "}
+            {t("Beneath Card:")}{" "}
             <Description textParts={toGameText(`${pairedCards.length} CARD`)} />
           </div>
         )}
         {"resources" in playedCard && (
           <div>
-            On Card:{" "}
+            {t("On Card:")}{" "}
             <Description textParts={resourceMapToGameText(resources)} />
           </div>
         )}

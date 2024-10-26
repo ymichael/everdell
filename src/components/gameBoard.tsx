@@ -264,17 +264,16 @@ export const PlayerCity: React.FC<{
   const playedAdornments = player.getPlayedAdornments();
   const playedCardIdx: { [cardName: string]: number } = {};
   const claimedVisitors = player.claimedVisitors;
+  const { t } = useTranslation("common");
 
   const labelToCount: [string, number][] = [
-    ["Critters", player.getNumPlayedCritters()],
-    ["Constructions", player.getNumPlayedConstructions()],
-    ["Common Critters", player.getNumPlayedCommonCritters()],
-    ["Common Constructions", player.getNumPlayedCommonConstructions()],
-    ["Unique Critters", player.getNumPlayedUniqueCritters()],
-    ["Unique Constructions", player.getNumPlayedUniqueConstructions()],
+    [t("Critters"), player.getNumPlayedCritters()],
+    [t("Constructions"), player.getNumPlayedConstructions()],
+    [t("Common Critters"), player.getNumPlayedCommonCritters()],
+    [t("Common Constructions"), player.getNumPlayedCommonConstructions()],
+    [t("Unique Critters"), player.getNumPlayedUniqueCritters()],
+    [t("Unique Constructions"), player.getNumPlayedUniqueConstructions()],
   ];
-
-  const { t } = useTranslation("common");
 
   return playedCards.length !== 0 ||
     playedAdornments.length !== 0 ||

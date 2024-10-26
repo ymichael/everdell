@@ -216,8 +216,15 @@ export const ResourceTypeIcon = ({
           layout="fill"
           priority
         />
+      ) : resourceType === ResourceType.VP ? (
+        <Image
+          alt="VP Resource"
+          src="/images/vp.png"
+          layout="fill"
+          priority
+        />
       ) : (
-        <>{t(resourceType.toString())}</>
+        <>{t(resourceType)}</>
       )}
     </>
   );

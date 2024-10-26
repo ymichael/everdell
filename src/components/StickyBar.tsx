@@ -2,7 +2,7 @@ import * as React from "react";
 import { GameState } from "../model/gameState";
 import { Player } from "../model/player";
 import { ResourceType } from "../model/types";
-import styles from "../styles/Game.module.css"; // Import your Game component's styles
+import styles from "../styles/StickyBar.module.css"; // Import your Game component's styles
 import {
   CardTypeList,
   OtherResources,

@@ -291,7 +291,7 @@ const TrainTicketItem: React.FC<{ player: Player }> = ({ player }) => {
 };
 
 const WorkerCountItem: React.FC<{ player: Player }> = ({ player }) => {
-  const { t } = useTranslation("descriptions");
+  const { t } = useTranslation("common");
 
   return (
     <div className={styles.status_box_item_resource}>
@@ -306,7 +306,7 @@ const WorkerCountItem: React.FC<{ player: Player }> = ({ player }) => {
 };
 
 const AmbassadorCountItem: React.FC<{ player: Player }> = ({ player }) => {
-  const { t } = useTranslation("descriptions");
+  const { t } = useTranslation("common");
 
   return (
     <div className={styles.status_box_item_resource}>
@@ -324,7 +324,7 @@ const PointsItem: React.FC<{ player: Player; gameState: GameState }> = ({
   player,
   gameState,
 }) => {
-  const { t } = useTranslation("descriptions");
+  const { t } = useTranslation("common");
 
   return (
     <div className={styles.status_box_item_resource}>

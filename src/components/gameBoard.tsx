@@ -28,7 +28,7 @@ import { useTranslation } from "next-i18next";
 export const Meadow: React.FC<{ meadowCards: CardName[] }> = ({
   meadowCards,
 }) => {
-  const { t } = useTranslation("descriptions");
+  const { t } = useTranslation("common");
 
   return (
     <GameBlock title={t("Meadow")}>
@@ -274,6 +274,8 @@ export const PlayerCity: React.FC<{
     ["Unique Constructions", player.getNumPlayedUniqueConstructions()],
   ];
 
+  const { t } = useTranslation("common");
+
   return playedCards.length !== 0 ||
     playedAdornments.length !== 0 ||
     claimedVisitors.length !== 0 ? (
@@ -328,7 +330,7 @@ export const PlayerCity: React.FC<{
     </div>
   ) : (
     <div data-cy={`player-city:${player.name}`} className={styles.empty_city}>
-      City is empty.
+      {t("City is empty.")}
     </div>
   );
 };
@@ -338,7 +340,7 @@ export const GameBoard: React.FC<{
   gameStateJSON: GameStateJSON;
   viewingPlayer: Player | null;
 }> = ({ gameState, gameStateJSON, viewingPlayer }) => {
-  const { t } = useTranslation("descriptions");
+  const { t } = useTranslation("common");
 
   return (
     <div className={styles.game_board}>

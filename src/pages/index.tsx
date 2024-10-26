@@ -35,31 +35,31 @@ const Main: React.FC = () => {
             href="https://www.tabletoptycoon.com/products/everdell-standard-edition-3rd-edition"
             className={styles.link}
           >
-            About the Game
+            {t("About the Game")}
           </a>
           <Link href="/test/ui" className={styles.link}>
-            Game Cards
+            {t("Game Cards")}
           </Link>
           <a
             target="_blank"
             href="https://github.com/ymichael/everdell"
             className={styles.link}
           >
-            Github Source
+            {t("Github Source")}
           </a>
           <a
             target="_blank"
             href="https://elynnandmichael.notion.site/Everdell-Updates-Change-Log-12e6d498b6e9477eaed72eaf83520b6c"
             className={styles.link}
           >
-            What's New
+            {t("What's New")}
           </a>
           <a
             target="_blank"
             href="https://forms.gle/YYZmW3yDNaFnfSJC6"
             className={styles.link}
           >
-            Share Feedback
+            {t("Share Feedback")}
           </a>
         </div>
       )}

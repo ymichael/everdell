@@ -32,9 +32,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     props: {
       ...(await serverSideTranslations(locale || i18n.defaultLocale, [
         "common",
-        "cards",
-        "descriptions",
-        "rarity",
       ])),
       isGameAdmin,
       devDebugMode: process.env.NODE_ENV === "development" && !!debug,

@@ -48,7 +48,7 @@ const GameLog: React.FC<{
     );
   }
 
-  const { t } = useTranslation("descriptions");
+  const { t } = useTranslation("common");
 
   return (
     <GameBlock title={t("Game Log")}>

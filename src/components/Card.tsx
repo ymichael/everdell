@@ -80,16 +80,15 @@ const getRarityLabel = (card: CardModel) => {
 
 // handle the farm and evertree
 const getAssociatedCard = (card: CardModel) => {
-  const { t } = useTranslation("cards");
-  const tDescriptions = useTranslation("descriptions").t;
+  const { t } = useTranslation("common");
 
   const associatedCard = card.associatedCard;
   if (associatedCard.type === "CARD") {
     return t(associatedCard.cardName);
   } else if (associatedCard.type === "HUSBAND_WIFE") {
-    return tDescriptions("Husband / Wife");
+    return t("Husband / Wife");
   } else if (associatedCard.type === "ANY") {
-    return tDescriptions("Any");
+    return t("Any");
   } else if (associatedCard.type === "GOLDEN_LEAF") {
     const textParts = toGameText([
       "Any ",
@@ -188,7 +187,7 @@ const Card: React.FC<{ name: CardName; usedForCritter?: boolean }> = ({
   name,
   usedForCritter = false,
 }) => {
-  const { t } = useTranslation("cards");
+  const { t } = useTranslation("common");
 
   const card = CardModel.fromName(name as any);
   const colorClass = colorClassMap[card.cardType];
@@ -257,7 +256,7 @@ const CardFooter: React.FC<{
   card: CardModel;
   usedForCritter: boolean;
 }> = ({ card, usedForCritter }) => {
-  const { t } = useTranslation("rarity");
+  const { t } = useTranslation("common");
   const rarityLabel = getRarityLabel(card);
   return (
     <div className={styles.card_bottom_row}>

@@ -11,6 +11,7 @@ import {
   LocationOccupancy,
 } from "../model/types";
 import { Description, ItemWrapper } from "./common";
+import { useTranslation } from "next-i18next";
 
 const colorClassMap = {
   BASIC: styles.color_basic,
@@ -24,6 +25,7 @@ const colorClassMap = {
 export const LocationInner: React.FC<{ name: LocationName }> = ({ name }) => {
   const location = LocationModel.fromName(name as any);
   const colorClass = colorClassMap[location.type];
+  const { t } = useTranslation("common");
   return (
     <>
       <div className={[styles.location, colorClass].join(" ")}>
@@ -33,7 +35,7 @@ export const LocationInner: React.FC<{ name: LocationName }> = ({ name }) => {
         </div>
         <div className={styles.location_bot}>
           <div className={styles.location_bot_spacer}> </div>
-          <div className={styles.location_type}>{location.type}</div>
+          <div className={styles.location_type}>{t(location.type)}</div>
           <div className={styles.location_occupancy}>
             {location.occupancy === LocationOccupancy.UNLIMITED
               ? "1+"

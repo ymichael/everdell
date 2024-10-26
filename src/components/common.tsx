@@ -29,7 +29,7 @@ export const GameBlock: React.FC<{ title: string; id?: string }> = ({
   id,
   children,
 }) => {
-  const { t } = useTranslation("descriptions");
+  const { t } = useTranslation("common");
   
   return (
     <div id={id} className={styles.block}>
@@ -177,7 +177,7 @@ export const ResourceTypeIcon = ({
 }: {
   resourceType: ResourceType;
 }) => {
-  const { t } = useTranslation("descriptions");
+  const { t } = useTranslation("common");
 
   return (
     <>
@@ -264,7 +264,7 @@ export const GameIcon = ({
 };
 
 export const Description = ({ textParts }: { textParts: GameText }) => {
-  const { t } = useTranslation("descriptions");
+  const { t } = useTranslation("common");
 
   return textParts ? (
     <span>

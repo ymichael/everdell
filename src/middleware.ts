@@ -14,11 +14,13 @@ export async function middleware(req: NextRequest) {
 
   const localeHeader = req.headers.get("accept-language");
   if (localeHeader === null) return;
-  const locale = acceptLanguage(localeHeader).split("-")[0];
-
-  if (req.nextUrl.locale !== locale) {
+  const locale = acceptLanguage(localeHeader);
+  const parts = locale.split('-');
+  const newLocale = parts.length > 1 ? `${parts[0]}-${parts[1].toUpperCase()}` : locale;
+  
+  if (req.nextUrl.locale !== newLocale) {
     return NextResponse.redirect(
-      new URL(`/${locale}${req.nextUrl.pathname}${req.nextUrl.search}`, req.url)
+      new URL(`/${newLocale}${req.nextUrl.pathname}${req.nextUrl.search}`, req.url)
     );
   }
 }

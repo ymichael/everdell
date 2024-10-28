@@ -35,9 +35,11 @@ const GameInputBoxText: React.FC<{
   title?: string;
   text: string;
 }> = ({ title = "Game Input", text }) => {
+  const { t } = useTranslation("common");
+
   return (
     <GameBlock title={title}>
-      <p id={"js-game-input-box-text"}>{text}</p>
+      <p id={"js-game-input-box-text"}>{t(text)}</p>
     </GameBlock>
   );
 };

@@ -282,6 +282,7 @@ const CardPoints: React.FC<{
   gameState: GameState;
 }> = ({ cardName, cardIdx, cardOwner, gameState }) => {
   const card = CardModel.fromName(cardName);
+  const { t } = useTranslation("common");
 
   // Bonus for the WIFE needs to be computed separately because it
   // relies on the whole city.
@@ -293,7 +294,7 @@ const CardPoints: React.FC<{
     extraPoints += 3;
   }
   return (
-    <div>Points: {card.getPoints(cardOwner, gameState) + extraPoints}</div>
+    <div>{t("Points: ")} {card.getPoints(cardOwner, gameState) + extraPoints}</div>
   );
 };
 

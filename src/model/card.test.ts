@@ -7382,6 +7382,35 @@ describe("Card", () => {
         );
         expect(player.numCardsInHand).to.be(3);
       });
+      it("should allow you to copy MESSENGER in another player's city", () => {
+        let player2 = gameState.players[1];
+        player2.addToCity(gameState, CardName.FARM);
+        player2.addToCity(gameState, CardName.MESSENGER);
+        player2.updatePlayedCard(
+          gameState,
+          player2.getFirstPlayedCard(CardName.FARM),
+          { shareSpaceWith: CardName.MESSENGER }
+        );
+        player2.updatePlayedCard(
+          gameState,
+          player2.getFirstPlayedCard(CardName.MESSENGER),
+          { shareSpaceWith: CardName.FARM }
+        );
+
+        // player plays AIR_BALLOON card
+        const card = Card.fromName(CardName.AIR_BALLOON);
+        player.addCardToHand(gameState, card.name);
+        player.gainResources(gameState, card.baseCost);
+        expect(player.numCardsInHand).to.be(1);
+
+        [player, gameState] = multiStepGameInputTest(
+          gameState,
+          [playCardInput(CardName.AIR_BALLOON)],
+          { autoAdvance: true }
+        );
+        expect(player.numCardsInHand).to.be(1);
+        expect(player.getNumResourcesByType(ResourceType.VP)).to.be(1);
+      });
     });
 
     describe(CardName.BAKER, () => {

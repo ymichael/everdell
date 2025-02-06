@@ -4014,65 +4014,58 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     playInner: (gameState: GameState, gameInput: GameInput) => {
       const player = gameState.getActivePlayer();
       if (gameInput.inputType === GameInputType.PLAY_CARD) {
-        const seenCards: Set<CardName> = new Set();
-        const cardOptions: Set<CardName> = new Set();
-        gameState.players.forEach((p) => {
-          if (p.playerId === player.playerId) {
-            return;
-          }
-          p.getAllPlayedCardsByType(CardType.TRAVELER).forEach(
-            ({ cardName }) => {
-              if (seenCards.has(cardName)) {
-                return;
-              }
-              seenCards.add(cardName);
-              if (
-                cardName === CardName.FOOL ||
-                cardName === CardName.MAIN_ROAD ||
-                cardName === CardName.RUINS
-              ) {
-                return;
-              }
-              const card = Card.fromName(cardName);
-              if (card.canReactivateCard(gameState)) {
-                cardOptions.add(cardName);
-              }
-            }
-          );
-        });
-        if (cardOptions.size === 0) {
-          return;
+        // Get all opponent TRAVELER cards that can be copied
+        const cardOptions = gameState.players
+          .filter((p) => p.playerId !== player.playerId)
+          .flatMap((p) => {
+            return p
+              .getAllPlayedCardsByType(CardType.TRAVELER)
+              .filter((playedCard) => {
+                // Filter out cards that can't be copied
+                const cardName = playedCard.cardName;
+                return ![
+                  CardName.FOOL,
+                  CardName.MAIN_ROAD,
+                  CardName.RUINS,
+                ].includes(cardName);
+              });
+          });
+
+        if (cardOptions.length !== 0) {
+          gameState.pendingGameInputs.push({
+            inputType: GameInputType.SELECT_PLAYED_CARDS,
+            prevInputType: gameInput.inputType,
+            cardContext: CardName.AIR_BALLOON,
+            playedCardContext: gameInput.playedCardContext, // Pass this through
+            cardOptions,
+            maxToSelect: 1,
+            minToSelect: 1,
+            clientOptions: {
+              selectedCards: [],
+            },
+          });
         }
-        // Ask player to select 1
-        gameState.pendingGameInputs.push({
-          inputType: GameInputType.SELECT_CARDS,
-          prevInputType: gameInput.inputType,
-          label: "Select 1 TRAVELER to copy",
-          cardOptions: Array.from(cardOptions),
-          maxToSelect: 1,
-          minToSelect: 1,
-          cardContext: CardName.AIR_BALLOON,
-          clientOptions: {
-            selectedCards: [],
-          },
-        });
-      } else if (gameInput.inputType === GameInputType.SELECT_CARDS) {
+      } else if (
+        gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS &&
+        gameInput.cardContext === CardName.AIR_BALLOON
+      ) {
         const selectedCards = gameInput.clientOptions.selectedCards;
-        if (selectedCards.length !== 1) {
-          throw new Error(`Please select 1 card to copy`);
+        if (!selectedCards || selectedCards.length !== 1) {
+          throw new Error("Must select one card to copy");
         }
         const selectedCard = selectedCards[0];
-        gameState.addGameLogFromCard(CardName.AIR_BALLOON, [
+        const card = Card.fromName(selectedCard.cardName);
+
+        // When copying the card, make sure to pass the playedCardContext
+        card.reactivateCard(
+          gameState,
+          {
+            ...gameInput,
+            playedCardContext: selectedCard, // Important: Pass the selected card as context
+          },
           player,
-          " reactivated ",
-          { type: "entity", entityType: "card", card: selectedCard },
-          ".",
-        ]);
-        const targetCard = Card.fromName(selectedCard);
-        targetCard.reactivateCard(gameState, gameInput, player, {
-          cardOwnerId: "",
-          cardName: selectedCard,
-        });
+          selectedCard
+        );
       }
     },
   }),

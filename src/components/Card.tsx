@@ -1,24 +1,25 @@
+import { useTranslation } from "next-i18next";
 import * as React from "react";
 import { Card as CardModel } from "../model/card";
 import { GameState } from "../model/gameState";
-import styles from "../styles/card.module.css";
-import {
-  ResourceType,
-  CardName,
-  PlayedCardInfo,
-  CardType,
-} from "../model/types";
-import { Player } from "../model/player";
-import { resourceMapToGameText, toGameText } from "../model/gameText";
-import {
-  GameIcon,
-  AmbassadorSpotIcon,
-  WorkerSpotIcon,
-  Description,
-  CardTypeSymbol,
-} from "./common";
 import { sumResources } from "../model/gameStatePlayHelpers";
+import { resourceMapToGameText, toGameText } from "../model/gameText";
+import { Player } from "../model/player";
+import {
+  CardName,
+  CardType,
+  PlayedCardInfo,
+  ResourceType,
+} from "../model/types";
+import styles from "../styles/card.module.css";
 import { assertUnreachable } from "../utils";
+import {
+  AmbassadorSpotIcon,
+  CardTypeSymbol,
+  Description,
+  GameIcon,
+  WorkerSpotIcon,
+} from "./common";
 
 const colorClassMap = {
   GOVERNANCE: styles.color_governance,
@@ -79,13 +80,15 @@ const getRarityLabel = (card: CardModel) => {
 
 // handle the farm and evertree
 const getAssociatedCard = (card: CardModel) => {
+  const { t } = useTranslation("common");
+
   const associatedCard = card.associatedCard;
   if (associatedCard.type === "CARD") {
-    return associatedCard.cardName;
+    return t(associatedCard.cardName);
   } else if (associatedCard.type === "HUSBAND_WIFE") {
-    return "Husband / Wife";
+    return t("Husband / Wife");
   } else if (associatedCard.type === "ANY") {
-    return "Any";
+    return t("Any");
   } else if (associatedCard.type === "GOLDEN_LEAF") {
     const textParts = toGameText([
       "Any ",
@@ -184,9 +187,10 @@ const Card: React.FC<{ name: CardName; usedForCritter?: boolean }> = ({
   name,
   usedForCritter = false,
 }) => {
+  const { t } = useTranslation("common");
+
   const card = CardModel.fromName(name as any);
   const colorClass = colorClassMap[card.cardType];
-  const rarityLabel = getRarityLabel(card);
   return (
     <div className={styles.card}>
       <div className={styles.card_header_row}>
@@ -203,7 +207,7 @@ const Card: React.FC<{ name: CardName; usedForCritter?: boolean }> = ({
           <span className={styles.card_header_vp_number}>{card.baseVP}</span>
         </div>
         <div className={[styles.card_header, colorClass].join(" ")}>
-          <span>{name}</span>
+          <span>{t(name)}</span>
           {card.expansion && (
             <span className={styles.expansion}>{card.expansion}</span>
           )}
@@ -243,13 +247,24 @@ const Card: React.FC<{ name: CardName; usedForCritter?: boolean }> = ({
           <CardDescription card={card} />
         </div>
       </div>
-      <div className={styles.card_bottom_row}>
-        <div className={styles.rarity_label}>
-          {rarityLabel}
-          &nbsp;&middot;&nbsp;{romanize(card.numInDeck)}
-        </div>
-        <AssociatedCard card={card} usedForCritter={usedForCritter} />
+      <CardFooter card={card} usedForCritter={usedForCritter} />
+    </div>
+  );
+};
+
+const CardFooter: React.FC<{
+  card: CardModel;
+  usedForCritter: boolean;
+}> = ({ card, usedForCritter }) => {
+  const { t } = useTranslation("common");
+  const rarityLabel = getRarityLabel(card);
+  return (
+    <div className={styles.card_bottom_row}>
+      <div className={styles.rarity_label}>
+        {t(rarityLabel)}
+        &nbsp;&middot;&nbsp;{romanize(card.numInDeck)}
       </div>
+      <AssociatedCard card={card} usedForCritter={usedForCritter} />
     </div>
   );
 };
@@ -267,6 +282,7 @@ const CardPoints: React.FC<{
   gameState: GameState;
 }> = ({ cardName, cardIdx, cardOwner, gameState }) => {
   const card = CardModel.fromName(cardName);
+  const { t } = useTranslation("common");
 
   // Bonus for the WIFE needs to be computed separately because it
   // relies on the whole city.
@@ -278,7 +294,7 @@ const CardPoints: React.FC<{
     extraPoints += 3;
   }
   return (
-    <div>Points: {card.getPoints(cardOwner, gameState) + extraPoints}</div>
+    <div>{t("Points: ")} {card.getPoints(cardOwner, gameState) + extraPoints}</div>
   );
 };
 
@@ -289,6 +305,8 @@ export const PlayedCard: React.FC<{
   viewerId: string | null;
   cardIdx?: number;
 }> = ({ playedCard, cardOwner, gameState, viewerId, cardIdx }) => {
+  const { t } = useTranslation("common");
+
   const {
     cardOwnerId,
     cardName,
@@ -310,7 +328,7 @@ export const PlayedCard: React.FC<{
       </div>
       <div className={styles.played_card_meta}>
         <div>
-          Card Owner: {viewerId === cardOwnerId ? "You" : cardOwner.name}
+          {t("Card Owner:")} {viewerId === cardOwnerId ? t("You") : cardOwner.name}
         </div>
         {cardIdx && card.cardType === CardType.PROSPERITY && (
           <CardPoints
@@ -321,23 +339,23 @@ export const PlayedCard: React.FC<{
           />
         )}
         {"workers" in playedCard && (
-          <div>Workers on card: {workers.length}</div>
+          <div>{t("Workers on card:")} {workers.length}</div>
         )}
         {"ambassador" in playedCard && (
-          <div>Ambassadors on card: {ambassador ? "1" : "0"}</div>
+          <div>{t("Ambassadors on card:")} {ambassador ? "1" : "0"}</div>
         )}
         {"shareSpaceWith" in playedCard && shareSpaceWith && (
-          <div>Share space: {shareSpaceWith}</div>
+          <div>{t("Share space:")} {shareSpaceWith}</div>
         )}
         {"pairedCards" in playedCard && (
           <div>
-            Beneath Card:{" "}
+            {t("Beneath Card:")}{" "}
             <Description textParts={toGameText(`${pairedCards.length} CARD`)} />
           </div>
         )}
         {"resources" in playedCard && (
           <div>
-            On Card:{" "}
+            {t("On Card:")}{" "}
             <Description textParts={resourceMapToGameText(resources)} />
           </div>
         )}

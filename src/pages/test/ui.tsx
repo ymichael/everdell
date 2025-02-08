@@ -26,6 +26,7 @@ import {
   RiverDestinationName,
   RiverDestinationSpotName,
 } from "../../model/types";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 const ItemsList: React.FC<{ title: string; visible: boolean }> = ({
   title,
@@ -43,7 +44,9 @@ const ItemsList: React.FC<{ title: string; visible: boolean }> = ({
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
-    props: {},
+    props: {
+      ...(await serverSideTranslations(context.locale || "en", ["common"])),
+    },
   };
 };
 

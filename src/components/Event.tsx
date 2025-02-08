@@ -6,11 +6,13 @@ import { Event as EventModel } from "../model/event";
 import { EventName, EventType } from "../model/types";
 
 import { Description, ItemWrapper } from "./common";
+import { useTranslation } from "next-i18next";
 
 export const EventInner: React.FC<{
   name: EventName;
 }> = ({ name }) => {
   const event = EventModel.fromName(name as any);
+  const { t } = useTranslation("common");
   return (
     <>
       <div className={styles.event}>
@@ -39,7 +41,7 @@ export const EventInner: React.FC<{
                     />
                   </>
                 ) : (
-                  name
+                  t(name)
                 )}
               </div>
             </div>
@@ -74,6 +76,7 @@ export const Event = ({
   name: EventName;
   claimedBy?: string | null;
 }) => {
+  const { t } = useTranslation("common");
   return (
     <div data-cy={`event:${name}`}>
       <ItemWrapper
@@ -81,7 +84,7 @@ export const Event = ({
         footerChildren={
           claimedBy && (
             <div className={styles.claimed_by}>
-              <span className={styles.claimed_label}>{"Claimed: "}</span>
+              <span className={styles.claimed_label}>{t("Claimed: ")}</span>
               <span className={styles.claimed_by_text}>{claimedBy}</span>
             </div>
           )

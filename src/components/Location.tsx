@@ -11,6 +11,7 @@ import {
   LocationOccupancy,
 } from "../model/types";
 import { Description, ItemWrapper } from "./common";
+import { useTranslation } from "next-i18next";
 
 const colorClassMap = {
   BASIC: styles.color_basic,
@@ -24,6 +25,7 @@ const colorClassMap = {
 export const LocationInner: React.FC<{ name: LocationName }> = ({ name }) => {
   const location = LocationModel.fromName(name as any);
   const colorClass = colorClassMap[location.type];
+  const { t } = useTranslation("common");
   return (
     <>
       <div className={[styles.location, colorClass].join(" ")}>
@@ -33,12 +35,12 @@ export const LocationInner: React.FC<{ name: LocationName }> = ({ name }) => {
         </div>
         <div className={styles.location_bot}>
           <div className={styles.location_bot_spacer}> </div>
-          <div className={styles.location_type}>{location.type}</div>
+          <div className={styles.location_type}>{t(location.type)}</div>
           <div className={styles.location_occupancy}>
             {location.occupancy === LocationOccupancy.UNLIMITED
               ? "1+"
               : location.occupancy === LocationOccupancy.UNLIMITED_MAX_ONE
-              ? "1 / PLAYER"
+              ? t("1 / PLAYER")
               : ""}
           </div>
         </div>
@@ -54,6 +56,7 @@ const Location: React.FC<{
   gameState?: GameState | null;
 }> = ({ name, playerWorkers = [], viewingPlayer = null, gameState = null }) => {
   const location = LocationModel.fromName(name);
+  const { t } = useTranslation("common");
   let acceptingWorkers = true;
 
   if (location.occupancy === LocationOccupancy.EXCLUSIVE) {
@@ -83,7 +86,7 @@ const Location: React.FC<{
       footerChildren={
         playerWorkers.length !== 0 && (
           <div className={styles.location_workers}>
-            <span>Workers: </span>
+            <span>{t("Workers: ")}</span>
             <span className={styles.location_worker}>
               {playerWorkers.join(", ")}
             </span>

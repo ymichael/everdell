@@ -1,8 +1,10 @@
-import "../styles/globals.css";
+import { appWithTranslation } from "next-i18next";
+import { ThemeProvider } from "next-themes";
 import Head from "next/head";
 import { useEffect } from "react";
+import "../styles/globals.css";
 
-export default function App<T extends JSX.IntrinsicAttributes>({
+function App<T extends JSX.IntrinsicAttributes>({
   Component,
   pageProps,
 }: {
@@ -25,6 +27,7 @@ export default function App<T extends JSX.IntrinsicAttributes>({
       }
     }
   }, []);
+
   return (
     <>
       <Head>
@@ -38,7 +41,11 @@ export default function App<T extends JSX.IntrinsicAttributes>({
         <link rel="shortcut icon" href="/images/favicon.png" />
         <title>Everdell</title>
       </Head>
-      <Component {...pageProps} />
+      <ThemeProvider attribute="class">
+        <Component {...pageProps} />
+      </ThemeProvider>
     </>
   );
 }
+
+export default appWithTranslation(App);

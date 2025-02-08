@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  everdell:
+    build:
+      context: .
+      target: production
+    ports:
+      - "3010:3000"
+    volumes:
+      - everdell-db:/app/db # Mount the volume at /app/db inside the container
+    environment:
+      - DB_PATH=/app/db/game.sqlite # Update DB_PATH to use the mounted volume
+      - PORT=3000
+    # entrypoint: ["/bin/sleep", "infinty"]
+
+volumes:
+  everdell-db: # Named volume for the database

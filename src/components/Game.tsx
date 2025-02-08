@@ -10,10 +10,11 @@ import GameInputBox from "./GameInputBox";
 import GameUpdater from "./GameUpdater";
 import { Player } from "../model/player";
 import { GameState } from "../model/gameState";
-import { GameInput } from "../model/types";
+import { GameInput, ResourceType } from "../model/types";
 import { GameJSON, PlayerJSON } from "../model/jsonTypes";
 
 import styles from "../styles/Game.module.css";
+import StickyBar from "./StickyBar";
 
 const Game: React.FC<{
   gameJSON: GameJSON;
@@ -99,6 +100,17 @@ const Game: React.FC<{
           viewingPlayer={viewingPlayer}
         />
       </GameUpdater>
+      <StickyBar
+        playerNames={gameState.players.map((p) => p.name)}
+        playerResources={gameState.players.reduce<
+          Record<string, Record<ResourceType, number>>
+        >((acc, player) => {
+          acc[player.name] = player.getResources();
+          return acc;
+        }, {})}
+        players={gameState.players}
+        gameState={gameState}
+      />
     </div>
   );
 };

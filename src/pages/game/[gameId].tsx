@@ -1,10 +1,12 @@
 import { GetServerSideProps } from "next";
 
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { i18n } from "../../../next-i18next.config";
+import Game from "../../components/Game";
+import GameAdmin from "../../components/GameAdmin";
 import { getGameById } from "../../model/game";
 import { GameJSON, PlayerJSON } from "../../model/jsonTypes";
 import { GameInput } from "../../model/types";
-import GameAdmin from "../../components/GameAdmin";
-import Game from "../../components/Game";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const {
@@ -13,6 +15,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     playerSecret = null,
     debug = null,
   } = context.query;
+  const locale = context.locale;
+
   const game = await getGameById(gameId as string);
   if (!game) {
     return { redirect: { statusCode: 302, destination: "/" } };
@@ -26,6 +30,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   return {
     props: {
+      ...(await serverSideTranslations(locale || i18n.defaultLocale, [
+        "common",
+      ])),
       isGameAdmin,
       devDebugMode: process.env.NODE_ENV === "development" && !!debug,
       gameJSON:

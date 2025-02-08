@@ -13,15 +13,18 @@ import {
 } from "../model/types";
 
 import { Description, ItemWrapper } from "./common";
+import { useTranslation } from "next-i18next";
 
 const RiverDestinationInner = ({ name }: { name: RiverDestinationName }) => {
   const riverDestination = RiverDestinationModel.fromName(name);
+  const { t } = useTranslation("common");
+
   return (
     <div className={styles.item}>
       <div className={styles.header}>
-        {riverDestination.name}
+        {t(riverDestination.name)}
         {riverDestination.name !== RiverDestinationName.SHOAL && (
-          <div className={styles.location_type}>{riverDestination.type}</div>
+          <div className={styles.location_type}>{t(riverDestination.type)}</div>
         )}
       </div>
       <div className={styles.description}>

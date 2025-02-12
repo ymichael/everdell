@@ -439,7 +439,17 @@ export class Card<TCardType extends CardType = CardType>
     playedCard: PlayedCardInfo | undefined
   ): void {
     const player = gameState.getActivePlayer();
-    playedCard = playedCard ? cardOwner.findPlayedCard(playedCard) : undefined;
+
+    // If copying card with AIR_BALLOON, don't check if card exists in
+    // active player's city (because it won't)
+    const shouldVerifyCardOwnership = !(
+      gameInput.inputType === GameInputType.SELECT_PLAYED_CARDS &&
+      gameInput.cardContext === CardName.AIR_BALLOON
+    );
+
+    if (shouldVerifyCardOwnership && playedCard) {
+      playedCard = cardOwner.findPlayedCard(playedCard);
+    }
 
     if (this.resourcesToGain && sumResources(this.resourcesToGain)) {
       player.gainResources(gameState, omit(this.resourcesToGain, ["CARD"]));

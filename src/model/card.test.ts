@@ -7354,8 +7354,11 @@ describe("Card", () => {
 
       it("should allow you to select which TRAVELLER to copy from an opponent's city", () => {
         const player2 = gameState.players[1];
-        player2.addToCity(gameState, CardName.WANDERER);
-        player2.addToCity(gameState, CardName.POSTAL_PIGEON);
+        const wanderer = player2.addToCity(gameState, CardName.WANDERER);
+        const postalPigeon = player2.addToCity(
+          gameState,
+          CardName.POSTAL_PIGEON
+        );
 
         const card = Card.fromName(CardName.AIR_BALLOON);
         player.addCardToHand(gameState, card.name);
@@ -7367,14 +7370,14 @@ describe("Card", () => {
           [
             playCardInput(card.name),
             {
-              inputType: GameInputType.SELECT_CARDS,
+              inputType: GameInputType.SELECT_PLAYED_CARDS,
               prevInputType: GameInputType.PLAY_CARD,
               cardContext: CardName.AIR_BALLOON,
-              cardOptions: [CardName.WANDERER, CardName.POSTAL_PIGEON],
+              cardOptions: [wanderer, postalPigeon],
               maxToSelect: 1,
               minToSelect: 1,
               clientOptions: {
-                selectedCards: [CardName.WANDERER],
+                selectedCards: [wanderer],
               },
             },
           ],
@@ -7383,7 +7386,7 @@ describe("Card", () => {
         expect(player.numCardsInHand).to.be(3);
       });
       it("should allow you to copy MESSENGER in another player's city", () => {
-        let player2 = gameState.players[1];
+        const player2 = gameState.players[1];
         player2.addToCity(gameState, CardName.FARM);
         player2.addToCity(gameState, CardName.MESSENGER);
         player2.updatePlayedCard(

@@ -65,7 +65,7 @@ export class Game {
     return cloneDeep({
       gameId: this.gameId,
       gameSecret: "",
-      gameState: this.gameState.toJSON(includePrivate),
+      gameState: this.gameState.toJSON({ includePrivate, isRoot: true }),
       // Deprecated, remove after 3/1/21
       gameOptions: this.gameOptionsDeprecated,
       ...(includePrivate

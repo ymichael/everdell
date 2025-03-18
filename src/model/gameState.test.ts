@@ -2192,14 +2192,14 @@ describe("GameState", () => {
         player.nextSeason();
         player.nextSeason();
       });
-      expect(gameState.gameLog).eql([
+      expect(gameState.getGameLog()).eql([
         { entry: [{ type: "text", text: "Game created with 2 players." }] },
         { entry: [{ type: "text", text: "Dealing cards to each player." }] },
         { entry: [{ type: "text", text: "Dealing cards to the Meadow." }] },
       ]);
       gameState = gameState.next({ inputType: GameInputType.GAME_END });
       gameState = gameState.next({ inputType: GameInputType.GAME_END });
-      expect(gameState.gameLog).eql([
+      expect(gameState.getGameLog()).eql([
         { entry: [{ type: "text", text: "Game created with 2 players." }] },
         { entry: [{ type: "text", text: "Dealing cards to each player." }] },
         { entry: [{ type: "text", text: "Dealing cards to the Meadow." }] },

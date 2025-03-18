@@ -71,7 +71,7 @@ import { VisitorStack, intialVisitorStack } from "./visitor";
 const MEADOW_SIZE = 8;
 const STATION_SIZE = 3;
 const STARTING_PLAYER_HAND_SIZE = 5;
-const MAX_GAME_LOG_BUFFER = 500;
+const MAX_GAME_LOG_BUFFER = 100;
 
 const PRINT_GAME_LOGS = false;
 
@@ -142,7 +142,7 @@ export const gameTextToDebugStr = (gameText: GameText): string => {
 export class GameState {
   readonly gameStateId: number;
   readonly gameOptions: GameOptions;
-  readonly gameLog: GameLogEntry[];
+  private gameLog: GameLogEntry[];
 
   // GameInputs that need to be shown to the user.
   readonly pendingGameInputs: GameInputMultiStep[];
@@ -233,6 +233,14 @@ export class GameState {
 
   get activePlayerId(): string {
     return this._activePlayerId;
+  }
+
+  getGameLog(): GameLogEntry[] {
+    return this.gameLog;
+  }
+
+  setGameLog(gameLog: GameLogEntry[]): void {
+    this.gameLog = gameLog;
   }
 
   addGameLogFromTrainCarTile(
@@ -331,7 +339,13 @@ export class GameState {
     });
   }
 
-  toJSON(includePrivate: boolean): GameStateJSON {
+  toJSON({
+    includePrivate,
+    isRoot,
+  }: {
+    includePrivate: boolean;
+    isRoot: boolean;
+  }): GameStateJSON {
     return cloneDeep({
       ...{
         gameStateId: this.gameStateId,
@@ -344,7 +358,6 @@ export class GameState {
         playedGameInputs: [],
         deck: this.deck.toJSON(includePrivate),
         discardPile: this.discardPile.toJSON(includePrivate),
-        gameLog: this.gameLog,
         gameOptions: this.gameOptions,
         riverDestinationMap: this.riverDestinationMap
           ? this.riverDestinationMap.toJSON(includePrivate)
@@ -360,13 +373,14 @@ export class GameState {
           : null,
         stationCards: this.stationCards,
         gameStateJSONForUndo: null,
+        gameLog: isRoot ? this.gameLog.slice(-MAX_GAME_LOG_BUFFER) : [],
       },
       ...(includePrivate
         ? {
             pendingGameInputs: this.pendingGameInputs,
             playedGameInputs: this.playedGameInputs,
             gameStateJSONForUndo: this.gameStateForUndo
-              ? this.gameStateForUndo.toJSON(true)
+              ? this.gameStateForUndo.toJSON({ includePrivate, isRoot: false })
               : null,
           }
         : {}),
@@ -522,12 +536,12 @@ export class GameState {
   }
 
   clone(): GameState {
-    const gameStateJSON = this.toJSON(true /* includePrivate */);
+    const gameStateJSON = this.toJSON({ includePrivate: true, isRoot: true });
     return GameState.fromJSON(gameStateJSON);
   }
 
   private cloneAndIncrementGameStateId(): GameState {
-    const gameStateJSON = this.toJSON(true /* includePrivate */);
+    const gameStateJSON = this.toJSON({ includePrivate: true, isRoot: true });
     gameStateJSON.gameStateId += 1;
     return GameState.fromJSON(gameStateJSON);
   }
@@ -1337,7 +1351,13 @@ export class GameState {
       if (!this.gameStateForUndo) {
         throw new Error("Unable to undo");
       }
-      return this.gameStateForUndo;
+      const nextState = this.gameStateForUndo;
+      nextState.setGameLog(this.gameLog.slice(-MAX_GAME_LOG_BUFFER));
+      nextState.addGameLog([
+        this.getActivePlayer(),
+        " undid their last action.",
+      ]);
+      return nextState;
     }
     if (this.gameOptions.allowUndo && !skipUndo) {
       this.gameStateForUndo = this.clone();

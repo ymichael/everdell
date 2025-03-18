@@ -351,7 +351,7 @@ export const GameBoard: React.FC<{
         <div className={styles.game_board_meadow}>
           <Meadow meadowCards={gameState.meadowCards} />
         </div>
-        <GameLog logs={gameState.gameLog} gameStateJSON={gameStateJSON} />
+        <GameLog logs={gameState.getGameLog()} gameStateJSON={gameStateJSON} />
       </div>
       {gameState.gameOptions.newleaf?.station ? (
         <>

@@ -9,6 +9,7 @@
 
 .status_box_item {
   padding: 5px;
+  position: relative;
 }
 
 .status_box_city {
@@ -19,7 +20,7 @@
   padding: 3px;
   padding-right: 0;
   display: flex;
-  height: 100%;
+  height: auto;
   width: 150px;
   flex-direction: column;
   justify-content: space-between;
@@ -33,6 +34,10 @@
 
 .status_box_bio_meta {
   display: flex;
+  font-weight: var(--font-bold);
+  margin-top: auto;
+  bottom: 5px;
+  position: absolute;
 }
 
 .status_box_bio_pill {
@@ -81,10 +86,6 @@
 
 .status_box_bio_season {
   text-transform: uppercase;
-}
-
-.status_box_bio_meta {
-  font-weight: var(--font-bold);
 }
 
 .status_box_item_resource_list {

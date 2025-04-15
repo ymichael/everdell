@@ -2,6 +2,7 @@ import * as React from "react";
 import { useRouter } from "next/router";
 import { Formik, Form, Field, FieldArray } from "formik";
 import styles from "../styles/Home.module.css";
+import { useTranslation } from "next-i18next";
 
 let playerIdx = 0;
 const getDummyPlayer = (name = "") => {
@@ -13,6 +14,8 @@ const getDummyPlayer = (name = "") => {
 
 const GameBuilder: React.FC = () => {
   const router = useRouter();
+  const { t } = useTranslation("common");
+
   return (
     <div id={"js-game-builder"}>
       <Formik
@@ -51,8 +54,8 @@ const GameBuilder: React.FC = () => {
                     name="players"
                     render={(arrayHelpers) => (
                       <div className={styles.game_builder_wrapper}>
-                        <h2>New Game</h2>
-                        <h3>Players</h3>
+                        <h2>{t("New Game")}</h2>
+                        <h3>{t("Players")}</h3>
                         {numPlayers > 0 ? (
                           players.map((player, idx) => (
                             <div
@@ -105,7 +108,7 @@ const GameBuilder: React.FC = () => {
                           <></>
                         )}
                         <div>
-                          <h3>Expansions</h3>
+                          <h3>{t("Expansions")}</h3>
                           <label className={styles.game_builder_option}>
                             <Field type="checkbox" name="pearlbrook" />
                             {"Pearlbrook"}
@@ -124,21 +127,21 @@ const GameBuilder: React.FC = () => {
                           </label>
                         </div>
                         <div>
-                          <h3>Settings</h3>
+                          <h3>{t("Settings")}</h3>
                           <label className={styles.game_builder_option}>
                             <Field
                               type="checkbox"
                               name="randomizeStartingPlayer"
                             />
-                            {"Randomize player order"}
+                            {t("Randomize player order")}
                           </label>
                           <label className={styles.game_builder_option}>
                             <Field type="checkbox" name="realtimePoints" />
-                            {"Show points in realtime"}
+                            {t("Show points in realtime")}
                           </label>
                           <label className={styles.game_builder_option}>
                             <Field type="checkbox" name="allowUndo" />
-                            {"Allow undo"}
+                            {t("Allow undo")}
                             &nbsp;
                             <span className={styles.beta}>beta</span>
                           </label>
@@ -152,7 +155,7 @@ const GameBuilder: React.FC = () => {
                   className={styles.button}
                   type="submit"
                 >
-                  Start Game
+                  {t("Start Game")}
                 </button>
               </div>
             </Form>

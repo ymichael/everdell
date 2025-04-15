@@ -23,12 +23,15 @@ import Adornment from "./Adornment";
 import Event from "./Event";
 import { VisitorInner as Visitor } from "./Visitor";
 import { GameBlock, ItemWrapper } from "./common";
+import { useTranslation } from "next-i18next";
 
 export const Meadow: React.FC<{ meadowCards: CardName[] }> = ({
   meadowCards,
 }) => {
+  const { t } = useTranslation("common");
+
   return (
-    <GameBlock title={"Meadow"}>
+    <GameBlock title={t("Meadow")}>
       <div id={"js-meadow-cards"}>
         <div className={styles.items_no_wrap}>
           {meadowCards.slice(0, 4).map((cardName, idx) => (
@@ -261,14 +264,15 @@ export const PlayerCity: React.FC<{
   const playedAdornments = player.getPlayedAdornments();
   const playedCardIdx: { [cardName: string]: number } = {};
   const claimedVisitors = player.claimedVisitors;
+  const { t } = useTranslation("common");
 
   const labelToCount: [string, number][] = [
-    ["Critters", player.getNumPlayedCritters()],
-    ["Constructions", player.getNumPlayedConstructions()],
-    ["Common Critters", player.getNumPlayedCommonCritters()],
-    ["Common Constructions", player.getNumPlayedCommonConstructions()],
-    ["Unique Critters", player.getNumPlayedUniqueCritters()],
-    ["Unique Constructions", player.getNumPlayedUniqueConstructions()],
+    [t("Critters"), player.getNumPlayedCritters()],
+    [t("Constructions"), player.getNumPlayedConstructions()],
+    [t("Common Critters"), player.getNumPlayedCommonCritters()],
+    [t("Common Constructions"), player.getNumPlayedCommonConstructions()],
+    [t("Unique Critters"), player.getNumPlayedUniqueCritters()],
+    [t("Unique Constructions"), player.getNumPlayedUniqueConstructions()],
   ];
 
   return playedCards.length !== 0 ||
@@ -325,7 +329,7 @@ export const PlayerCity: React.FC<{
     </div>
   ) : (
     <div data-cy={`player-city:${player.name}`} className={styles.empty_city}>
-      City is empty.
+      {t("City is empty.")}
     </div>
   );
 };
@@ -335,6 +339,8 @@ export const GameBoard: React.FC<{
   gameStateJSON: GameStateJSON;
   viewingPlayer: Player | null;
 }> = ({ gameState, gameStateJSON, viewingPlayer }) => {
+  const { t } = useTranslation("common");
+
   return (
     <div className={styles.game_board}>
       <div>
@@ -343,7 +349,7 @@ export const GameBoard: React.FC<{
             <LocationForType
               gameState={gameState}
               locationType={LocationType.FOREST}
-              title="Forest Locations"
+              title={t("Forest Locations")}
               viewingPlayer={viewingPlayer}
             />{" "}
           </div>
@@ -397,7 +403,7 @@ export const GameBoard: React.FC<{
           <LocationForType
             gameState={gameState}
             locationType={LocationType.FOREST}
-            title="Forest Locations"
+            title={t("Forest Locations")}
             viewingPlayer={viewingPlayer}
           />
 

@@ -5,26 +5,28 @@ import { ResourceType } from "../model/types";
 import { GameState } from "../model/gameState";
 
 import { GameBlock, Description } from "./common";
+import { useTranslation } from "next-i18next";
 
 const GamePointsBreakdown: React.FC<{
   gameState: GameState;
 }> = ({ gameState }) => {
+  const { t } = useTranslation("common");
   return (
     <GameBlock title={"Points Breakdown"}>
       <div>
         <table className={styles.summary_table}>
           <thead>
             <tr>
-              <th>{"Player"}</th>
-              <th>{"Card Points"}</th>
-              <th>{"Event Points"}</th>
+              <th>{t("Player")}</th>
+              <th>{t("Card Points")}</th>
+              <th>{t("Event Points")}</th>
               {gameState.gameOptions.pearlbrook && (
                 <>
-                  <th>{"Adornment Points"}</th>
-                  <th>{"Wonder Points"}</th>
+                  <th>{t("Adornment Points")}</th>
+                  <th>{t("Wonder Points")}</th>
                 </>
               )}
-              <th>{"Journey Points"}</th>
+              <th>{t("Journey Points")}</th>
               <th>
                 <Description textParts={[{ type: "symbol", symbol: "VP" }]} />
               </th>
@@ -37,7 +39,7 @@ const GamePointsBreakdown: React.FC<{
                   />
                 </th>
               )}
-              <th className={styles.total_cell}>{"Total"}</th>
+              <th className={styles.total_cell}>{t("Total")}</th>
             </tr>
           </thead>
           <tbody>

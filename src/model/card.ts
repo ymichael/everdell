@@ -4086,7 +4086,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     cardType: CardType.PROSPERITY,
     cardDescription: toGameText([
       { type: "points", value: 2 },
-      "for each of your unused BERRY ",
+      " for each of your unused BERRY ",
       { type: "BR" },
       "to a maximum of 3.",
     ]),
@@ -5488,7 +5488,7 @@ const CARD_REGISTRY: Record<CardName, Card> = {
     associatedCard: { type: "GOLDEN_LEAF", cardType: "COMMON" },
     cardType: CardType.TRAVELER,
     cardDescription: toGameText([
-      { type: "i", text: "Does not take up space in your city." },
+      { type: "i", text: "Does not take up a space in your city." },
       { type: "BR" },
       "Opens an additional space in your city. ",
       { type: "i", text: "May not be copied, removed, or reactivated." },

@@ -14,6 +14,7 @@ import {
   CardType,
 } from "../model/types";
 import { assertUnreachable } from "../utils";
+import { useTranslation } from "next-i18next";
 
 export const GameBlockTitle: React.FC = ({ children }) => {
   return (
@@ -28,9 +29,11 @@ export const GameBlock: React.FC<{ title: string; id?: string }> = ({
   id,
   children,
 }) => {
+  const { t } = useTranslation("common");
+  
   return (
     <div id={id} className={styles.block}>
-      <GameBlockTitle>{title}</GameBlockTitle>
+      <GameBlockTitle>{t(title)}</GameBlockTitle>
       {children}
     </div>
   );
@@ -174,6 +177,8 @@ export const ResourceTypeIcon = ({
 }: {
   resourceType: ResourceType;
 }) => {
+  const { t } = useTranslation("common");
+
   return (
     <>
       {resourceType === ResourceType.BERRY ? (
@@ -211,8 +216,15 @@ export const ResourceTypeIcon = ({
           layout="fill"
           priority
         />
+      ) : resourceType === ResourceType.VP ? (
+        <Image
+          alt="VP Resource"
+          src="/images/vp.png"
+          layout="fill"
+          priority
+        />
       ) : (
-        <>{resourceType}</>
+        <>{t(resourceType)}</>
       )}
     </>
   );
@@ -259,12 +271,14 @@ export const GameIcon = ({
 };
 
 export const Description = ({ textParts }: { textParts: GameText }) => {
+  const { t } = useTranslation("common");
+
   return textParts ? (
     <span>
       {textParts.map((part: TextPart, idx: number) => {
         switch (part.type) {
           case "text":
-            return part.text;
+            return t(part.text);
           case "iblock":
             return (
               <span key={idx} className={styles.i_part}>
@@ -274,13 +288,13 @@ export const Description = ({ textParts }: { textParts: GameText }) => {
           case "i":
             return (
               <span key={idx} className={styles.i_part}>
-                {part.text}
+                {t(part.text)}
               </span>
             );
           case "em":
             return (
               <span key={idx} className={styles.em_part}>
-                {part.text}
+                {t(part.text)}
               </span>
             );
           case "BR":

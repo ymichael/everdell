@@ -1,0 +1,8 @@
+.github/
+.next/
+.vscode/
+db/
+node_modules/
+
+docker-compose.yml
+.prettier*

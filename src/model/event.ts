@@ -2052,7 +2052,7 @@ const EVENT_REGISTRY: Record<EventName, Event> = {
     requiredCards: [CardName.FERRY_FERRET, CardName.TWIG_BARGE],
     type: EventType.SPECIAL,
     eventDescription: toGameText([
-      "When achived, place either your ",
+      "When achieved, place either your ",
       { type: "entity", entityType: "card", card: CardName.FERRY_FERRET },
       " or ",
       { type: "entity", entityType: "card", card: CardName.TWIG_BARGE },

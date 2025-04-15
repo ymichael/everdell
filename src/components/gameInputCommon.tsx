@@ -16,6 +16,7 @@ import { inputContextPrefix, toGameText } from "../model/gameText";
 import { GameBlock, Description } from "./common";
 import { assertUnreachable } from "../utils";
 import { GameUpdaterContext } from "./GameUpdater";
+import { useTranslation } from "next-i18next";
 
 type TValues = {
   gameInput: GameInput | null;
@@ -248,41 +249,42 @@ export const renderGameInputLabel = (
   gameInput: GameInput,
   gameOptions: Pick<GameOptions, "pearlbrook"> = { pearlbrook: false }
 ): React.ReactElement => {
+  const { t } = useTranslation("common");
   switch (gameInput.inputType) {
     case GameInputType.PLAY_CARD:
-      return <span>{"Play Card"}</span>;
+      return <span>{t("Play Card")}</span>;
     case GameInputType.PLACE_WORKER:
-      return <span>{"Visit Location"}</span>;
+      return <span>{t("Visit Location")}</span>;
     case GameInputType.VISIT_DESTINATION_CARD:
-      return <span>{"Visit Destination Card"}</span>;
+      return <span>{t("Visit Destination Card")}</span>;
     case GameInputType.CLAIM_EVENT:
       return (
         <span>
-          {gameOptions?.pearlbrook ? "Claim Event / Wonders" : "Claim Event"}
+          {gameOptions?.pearlbrook ? t("Claim Event / Wonders") : t("Claim Event")}
         </span>
       );
     case GameInputType.PREPARE_FOR_SEASON:
-      return <span>{"Prepare for Season"}</span>;
+      return <span>{t("Prepare for Season")}</span>;
     case GameInputType.GAME_END:
-      return <span>{"End Game"}</span>;
+      return <span>{t("End Game")}</span>;
     case GameInputType.PLAY_ADORNMENT:
-      return <span>{"Play Adornment"}</span>;
+      return <span>{t("Play Adornment")}</span>;
     case GameInputType.PLACE_AMBASSADOR:
-      return <span>{"Place Ambassador"}</span>;
+      return <span>{t("Place Ambassador")}</span>;
     case GameInputType.RESERVE_CARD:
-      return <span>{"Reserve Meadow/Station Card"}</span>;
+      return <span>{t("Reserve Meadow/Station Card")}</span>;
     case GameInputType.PLAY_TRAIN_TICKET:
-      return <span>{"Play Train Ticket"}</span>;
+      return <span>{t("Play Train Ticket")}</span>;
     case GameInputType.SELECT_VISITOR:
       return (
         <span>
           {gameInput.prevInputType === GameInputType.PLACE_WORKER
-            ? "Select Visitor to discard"
-            : "Select Visitor to keep"}
+            ? t("Select Visitor to discard")
+            : t("Select Visitor to keep")}
         </span>
       );
     case GameInputType.UNDO:
-      return <span>{"Undo last action"}</span>;
+      return <span>{t("Undo last action")}</span>;
     default:
       return renderMultiStepGameInputLabel(gameInput);
   }
